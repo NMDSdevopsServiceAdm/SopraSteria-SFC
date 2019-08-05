@@ -5,6 +5,7 @@ const SOCIAL_CARE_QUALIFICATION_TYPE = ['Yes', 'No', 'Don\'t know'];
 exports.WorkerQualificationInSocialCareProperty = class WorkerQualificationInSocialCareProperty extends ChangePropertyPrototype {
     constructor() {
         super('QualificationInSocialCare');
+        this._wdfTemporal = false;        
     }
 
     static clone() {
@@ -35,7 +36,16 @@ exports.WorkerQualificationInSocialCareProperty = class WorkerQualificationInSoc
         return currentValue && newValue && currentValue === newValue;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return {
+                qualificationInSocialCare: {
+                    value: this.property,
+                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
+                }
+            };
+        }   
+
         if (!withHistory) {
             // simple form
             return {

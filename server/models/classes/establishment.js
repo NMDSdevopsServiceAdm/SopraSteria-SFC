@@ -852,13 +852,11 @@ class Establishment extends EntityValidator {
                         //  This decision is done based on if the Establishment is being marked as Completed.
                         // There does not yet exist a Completed property for establishment.
                         // For now, we'll recalculate on every update!
-                        const completedProperty = this._properties.get('Completed');
-                        if (this._properties.get('Completed') && this._properties.get('Completed').modified) {
+                        */
+                        
+                        if(!bulkUploadCompleted){
                             await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        } else {
-                            // TODO - include Completed logic.
-                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        } */
+                        }
 
                         // if requested, propagate the saving of this establishment down to each of the associated entities
                         if (associatedEntities) {
@@ -1342,17 +1340,22 @@ class Establishment extends EntityValidator {
     };
 
 
+    async getTotalWorkers(){
+        return await models.worker.count({ where: { establishmentFk: this._id, archived: false }});
+    }
+
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at User and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given User
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false, wdf = false) {
         if (!showHistoryTimeline) {
             if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
                 throw new Error('Establishment::toJSON filteredPropertiesByName must be a simple Array of names');
             }
-
+            console.log('wdf')
+            console.log(wdf)
             // JSON representation of extendable properties - with optional filter
-            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName);
+            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName, wdf ? WdfCalculator.effectiveDate: null);
 
             // add Establishment default properties
             //  using the default formatters
@@ -1618,6 +1621,10 @@ class Establishment extends EntityValidator {
         myWdf['vacancies'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No';
         myWdf['starters'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No';
         myWdf['leavers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No';
+
+        let totalWorkerCount = await this.getTotalWorkers();
+
+        myWdf['numberOfStaff'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No';        
 
         return myWdf;
     }
@@ -1913,30 +1920,27 @@ class Establishment extends EntityValidator {
 
         const missingEstablishmentsWithWorkerCountQuery = `
             select
+            "Establishment"."EstablishmentID",
+            "EstablishmentUID",
+            "NameValue",
+            "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
+            CASE WHEN "WorkerTotals"."TotalWorkers" IS NULL THEN 0 ELSE "WorkerTotals"."TotalWorkers" END AS "TotalWorkers"
+          from cqc."Establishment"
+            left join
+            (
+              select
                 "EstablishmentID",
-                "EstablishmentUID",
-                "NameValue",
-                "EstablishmentLocal",
-                CASE WHEN "EstablishmentLocal" IS NULL THEN 0 ELSE count(0) END AS TotalWorkers
-            from (
-                select
-                    "EstablishmentID",
-                    "EstablishmentUID",
-                    "NameValue",
-                    "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
-                    "Worker"."ID" AS "WorkerID",
-                    "WorkerUID",
-                    "NameOrIdValue",
-                    "Worker"."LocalIdentifierValue" AS "WorkerLocal"
-                from cqc."Establishment"
-                    inner join cqc."Worker" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
-                where (("EstablishmentID" = 30) OR ("ParentID" = 30 AND "Owner" = 'Parent'))
-                and "Establishment"."Archived" = false
-                and "Worker"."Archived" = false
-                and ("Establishment"."LocalIdentifierValue" is null OR "Worker"."LocalIdentifierValue" is null)
-            ) ByEstablishment
-            group by "EstablishmentID", "EstablishmentUID", "NameValue", "EstablishmentLocal"
-            order by "EstablishmentID"`;
+                count(0) AS "TotalWorkers"
+              from cqc."Worker"
+                inner join cqc."Establishment" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
+              where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+              and "Worker"."Archived" = false
+              and "Worker"."LocalIdentifierValue" is null
+              group by "EstablishmentID"
+            ) "WorkerTotals" on "WorkerTotals"."EstablishmentID" = "Establishment"."EstablishmentID"
+          where (("Establishment"."EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+            and "Establishment"."Archived" = false
+            and ("Establishment"."LocalIdentifierValue" is null)`;
 
         const results = await models.sequelize.query(
             missingEstablishmentsWithWorkerCountQuery,
@@ -1951,17 +1955,17 @@ class Establishment extends EntityValidator {
         //     EstablishmentUID: '2d3fcc78-c9e8-4723-8927-a9c11988ba51',
         //     NameValue: 'WOZiTech Rest Home for IT Professionals',
         //     EstablishmentLocal: null,
-        //     totalworkers: '0' },
+        //     TotalWorkers: '0' },
         //   { EstablishmentID: 104,
         //     EstablishmentUID: 'defefda6-9730-4c72-a505-6807ded10c21',
         //     NameValue: 'WOZiTech Cares Sub 2',
         //     EstablishmentLocal: 'BOB2',
-        //     totalworkers: '1' } ]
+        //     TotalWorkers: '1' } ]
         //
         const missingEstablishments = [];
         if (results && Array.isArray(results)) {
             results.forEach(thisEstablishment => {
-                const totalWorkers = parseInt(thisEstablishment.totalworkers);
+                const totalWorkers = parseInt(thisEstablishment.TotalWorkers);
                 missingEstablishments.push({
                     uid: thisEstablishment.EstablishmentUID,
                     name: thisEstablishment.NameValue,

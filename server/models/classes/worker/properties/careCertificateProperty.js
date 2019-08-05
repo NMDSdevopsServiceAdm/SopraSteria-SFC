@@ -5,6 +5,7 @@ const CARE_CERTIFICATE_TYPE = ['Yes, completed', 'Yes, in progress or partially 
 exports.WorkerCareCertificateProperty = class WorkerCareCertificateProperty extends ChangePropertyPrototype {
     constructor() {
         super('CareCertificate');
+        this._wdfTemporal = false;              
     }
 
     static clone() {
@@ -36,7 +37,16 @@ exports.WorkerCareCertificateProperty = class WorkerCareCertificateProperty exte
         return currentValue && newValue && currentValue === newValue;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return {
+                careCertificate: {
+                    value: this.property,
+                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
+                }
+            };
+        }   
+
         if (!withHistory) {
             // simple form
             return {

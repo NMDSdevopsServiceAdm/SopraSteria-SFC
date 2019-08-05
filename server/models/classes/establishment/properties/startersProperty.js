@@ -10,6 +10,8 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
 
     static clone() {
         return new StartersProperty();
+
+        this._wdfTemporal = false;
     }
 
     // concrete implementations
@@ -113,8 +115,17 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
         }
     }
 
-    toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {       
         const jsonPresentation = JobHelpers.formatJSON(this.property, 'Starters', 'TotalStarters');
+
+        if (wdfEffectiveDate) {
+            return {
+                starters: {
+                    value: jsonPresentation.Starters,
+                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
+                }
+            };
+        }
 
         if (!withHistory) {
             // simple form - includes 
