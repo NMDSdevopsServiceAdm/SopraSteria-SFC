@@ -5,6 +5,7 @@ const WEEKLY_HOURS_TYPE = ['Yes', 'No'];
 exports.WorkerWeeklyHoursContractedProperty = class WorkerWeeklyHoursContractedProperty extends ChangePropertyPrototype {
     constructor() {
         super('WeeklyHoursContracted');
+        this._wdfTemporal = false;         
     }
 
     static clone() {
@@ -80,7 +81,16 @@ exports.WorkerWeeklyHoursContractedProperty = class WorkerWeeklyHoursContractedP
         return currentValue && newValue && currentValue.value === newValue.value && hoursEqual;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return {
+                weeklyHoursContracted: {
+                    value: this.property,
+                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
+                }
+            };
+        }
+
         if (!withHistory) {
             // simple form
             return {

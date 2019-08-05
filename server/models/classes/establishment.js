@@ -852,13 +852,11 @@ class Establishment extends EntityValidator {
                         //  This decision is done based on if the Establishment is being marked as Completed.
                         // There does not yet exist a Completed property for establishment.
                         // For now, we'll recalculate on every update!
-                        const completedProperty = this._properties.get('Completed');
-                        if (this._properties.get('Completed') && this._properties.get('Completed').modified) {
+                        */
+                        
+                        if(!bulkUploadCompleted){
                             await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        } else {
-                            // TODO - include Completed logic.
-                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        } */
+                        }
 
                         // if requested, propagate the saving of this establishment down to each of the associated entities
                         if (associatedEntities) {
@@ -1342,17 +1340,22 @@ class Establishment extends EntityValidator {
     };
 
 
+    async getTotalWorkers(){
+        return await models.worker.count({ where: { establishmentFk: this._id, archived: false }});
+    }
+
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at User and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given User
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false, wdf = false) {
         if (!showHistoryTimeline) {
             if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
                 throw new Error('Establishment::toJSON filteredPropertiesByName must be a simple Array of names');
             }
-
+            console.log('wdf')
+            console.log(wdf)
             // JSON representation of extendable properties - with optional filter
-            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName);
+            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName, wdf ? WdfCalculator.effectiveDate: null);
 
             // add Establishment default properties
             //  using the default formatters
@@ -1618,6 +1621,10 @@ class Establishment extends EntityValidator {
         myWdf['vacancies'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No';
         myWdf['starters'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No';
         myWdf['leavers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No';
+
+        let totalWorkerCount = await this.getTotalWorkers();
+
+        myWdf['numberOfStaff'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No';        
 
         return myWdf;
     }
