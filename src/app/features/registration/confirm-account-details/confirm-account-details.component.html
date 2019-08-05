@@ -25,9 +25,10 @@
           </legend>
           <span id="termsAndConditions-hint" class="govuk-hint">
             Check the box to confirm you agree to the
-            <a [routerLink]="['/public', 'terms-and-conditions']" target="_blank">
-              terms and conditions<span class="govuk-visually-hidden">, (opens in a new window)</span> </a
-            >. You must agree to them before you can submit your application.
+            <a [routerLink]="['/terms-and-conditions']" target="_blank">
+              terms and conditions<span class="govuk-visually-hidden">, (opens in a new window)</span>
+            </a>
+            . You must agree to them before you can submit your application.
           </span>
           <span *ngIf="submitted && form.invalid" id="termsAndConditions-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>

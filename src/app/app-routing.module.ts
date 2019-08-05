@@ -34,7 +34,7 @@ const routes: Routes = [
     data: { title: 'Problem with the Service' },
   },
   {
-    path: 'public',
+    path: '',
     loadChildren: '@features/public/public.module#PublicModule',
   },
   {
