@@ -1,13 +1,17 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { ADD_USER_API, API_PATTERN } from '@core/constants/constants';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
+import { throwError } from 'rxjs';
 import { Observable } from 'rxjs/Observable';
 
 import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+  private jwt = new JwtHelperService();
+
   constructor(private authService: AuthService, private createAccountService: CreateAccountService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -17,6 +21,10 @@ export class AuthInterceptor implements HttpInterceptor {
       const cloned = request.clone({
         headers: request.headers.set('Authorization', token),
       });
+
+      if (this.jwt.isTokenExpired(token)) {
+        return throwError(new HttpErrorResponse({ error: 'Not Authorised', status: 403 }));
+      }
 
       return next.handle(cloned);
     }
