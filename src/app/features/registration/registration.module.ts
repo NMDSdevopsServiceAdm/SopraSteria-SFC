@@ -16,6 +16,7 @@ import { SelectWorkplaceAddressComponent } from '@features/registration/select-w
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { SharedModule } from '@shared/shared.module';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
+import { StartComponent } from './start/start.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule],
@@ -33,6 +34,7 @@ import { YourDetailsComponent } from '@features/registration/your-details/your-d
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
     YourDetailsComponent,
+    StartComponent,
   ]
 })
 export class RegistrationModule {}
