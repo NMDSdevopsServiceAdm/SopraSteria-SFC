@@ -155,3 +155,26 @@
     background: url('/assets/images/icon-download.svg') no-repeat 0 0;
   }
 }
+
+.govuk-list--counters {
+  counter-reset: item;
+}
+
+.govuk-list--counters,
+.govuk-list--counters .govuk-list--counters {
+  margin-top: govuk-spacing(4);
+}
+
+.govuk-list--counters li {
+  display: block;
+  margin-bottom: govuk-spacing(4);
+}
+
+.govuk-list--counters .heading:before {
+  @include govuk-font(24, 'bold');
+}
+.govuk-list--counters li:before {
+  content: counters(item, '.') ' ';
+  counter-increment: item;
+  margin-bottom: govuk-spacing(4);
+}
