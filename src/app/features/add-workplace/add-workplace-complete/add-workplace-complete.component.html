@@ -1,25 +1,81 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <app-panel [title]="'&#10003; Application complete'">
-      Your account is<br />
-      waiting for approval.
-    </app-panel>
+    <ng-container *ngIf="addWorkplaceFlow === nonCQC; else cqc">
+      <app-panel [title]="'&#10003; Application complete'">
+        Your account is<br />
+        waiting for approval.
+      </app-panel>
+    </ng-container>
 
-    <h2 class="govuk-heading-m">What happens next</h2>
+    <ng-template #cqc>
+      <app-panel [title]="'&#10003; Success'">
+        Your workplace<br />
+        has been added.
+      </app-panel>
+    </ng-template>
 
-    <p>
-      We will review your application within 24 hours and get back to you with an email, or you may hear from us by
-      phone.
-    </p>
-    <p>
-      <a [routerLink]="['/public/contact-us']" target="_blank">Contact us</a> if you have any questions about your
-      application.
-    </p>
+    <ng-container *ngIf="addWorkplaceFlow === cqcWithUser">
+      <p>We have sent you a confirmation email.</p>
 
-    <div class="govuk-button-group">
-      <a role="button" draggable="false" class="govuk-button" [routerLink]="['/workplace', 'view-my-workplaces']">
-        Return to my workplaces
-      </a>
-    </div>
+      <h2 class="govuk-heading-m">What happens next</h2>
+
+      <p>
+        An email has been sent to the address provided for the new user account containing a link to complete the set
+        up.
+      </p>
+
+      <p>To continue you can</p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          <a [routerLink]="['/workplace', 'view-my-workplaces']">return to workplaces</a>
+        </li>
+        <li>
+          <a [routerLink]="['/dashboard']">go to your dashboard</a>
+        </li>
+      </ul>
+    </ng-container>
+
+    <ng-container *ngIf="addWorkplaceFlow === CQCNoUser">
+      <p>We have sent you a confirmation email.</p>
+
+      <p>To continue you can</p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          <a [routerLink]="['/workplace', 'view-my-workplaces']">add workplace information</a>
+        </li>
+        <li>
+          <a [routerLink]="['/dashboard']" [fragment]="'staff-records'">add staff records</a>
+        </li>
+        <li>
+          <a [routerLink]="['/dashboard']" [fragment]="'user-accounts'">create a user account</a>
+        </li>
+      </ul>
+    </ng-container>
+
+    <ng-container *ngIf="addWorkplaceFlow === nonCQC">
+      <h2 class="govuk-heading-m">What happens next</h2>
+
+      <p>
+        We will review your application within 24 hours and get back to you with an email, or you may hear from us by
+        phone.
+      </p>
+
+      <p>To continue you can</p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          <a [routerLink]="['/workplace', 'view-my-workplaces']">return to workplaces</a>
+        </li>
+        <li>
+          <a [routerLink]="['/dashboard']">go to your dashboard</a>
+        </li>
+        <li>
+          <a [routerLink]="['/public/contact-us']" target="_blank">Contact us</a> if you have any questions about your
+          application.
+        </li>
+      </ul>
+    </ng-container>
   </div>
 </div>

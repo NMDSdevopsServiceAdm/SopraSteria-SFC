@@ -12,6 +12,7 @@ import { ErrorDefinition } from '@core/model/errorSummary.model';
 export class WorkplaceService {
   constructor(private http: HttpClient) {}
   public addWorkplaceInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public addWorkplaceFlow$: BehaviorSubject<string> = new BehaviorSubject(null);
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
