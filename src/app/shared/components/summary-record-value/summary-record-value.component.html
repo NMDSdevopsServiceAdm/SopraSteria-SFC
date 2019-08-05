@@ -1,11 +1,11 @@
-<ng-container *ngIf="wdfView && wdfValue === 'No'; else answer">
+<ng-container *ngIf="wdfView && wdfValue.isEligible === 'No'; else answer">
   <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
 </ng-container>
 
 <ng-template #answer>
-  <div [class.govuk-util__bold]="isWdfOutdated">
+  <div [class.govuk-util__bold]="wdfView && !wdfValue?.updatedSinceEffectiveDate">
     <ng-content></ng-content>
-    <div *ngIf="isWdfOutdated" class="govuk-!-margin-top-2">
+    <div *ngIf="wdfView && !wdfValue?.updatedSinceEffectiveDate" class="govuk-!-margin-top-2">
       <app-eligibility-icon [eligible]="false" [check]="true"></app-eligibility-icon>
     </div>
   </div>

@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
-import { Worker } from '@core/model/worker.model';
+import { WDFValue } from '@core/model/wdf.model';
 
 @Component({
   selector: 'app-summary-record-value',
@@ -8,14 +7,5 @@ import { Worker } from '@core/model/worker.model';
 })
 export class SummaryRecordValueComponent {
   @Input() wdfView: boolean;
-  @Input() wdfValue: string;
-  @Input() item: Worker | Establishment;
-
-  /**
-   * TODO: Implement isOutdated logic
-   */
-  get isWdfOutdated() {
-    return false;
-    // return this.wdfView && !this.item.wdf.currentEligibility && this.item.wdf.lastEligibility !== null;
-  }
+  @Input() wdfValue: WDFValue;
 }
