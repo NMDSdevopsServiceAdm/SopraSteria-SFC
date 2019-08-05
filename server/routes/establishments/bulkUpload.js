@@ -7,6 +7,8 @@ const moment = require('moment');
 const dbmodels = require('../../models');
 const config = require('../../config/config');
 
+const timerLog = require('../../utils/timerLog');
+
 const UserAgentParser = require('ua-parser-js');
 
 const router = express.Router();
@@ -898,11 +900,15 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   const myEstablishments = [], myWorkers = [], myTrainings = [];
   const workersKeyed = [];
 
+  const validateStartTime = new Date();
+
   // restore the current known state this primary establishment (including all subs)
   const RESTORE_ASSOCIATION_LEVEL=1;
   const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent, RESTORE_ASSOCIATION_LEVEL, false);
 
-  console.log("WA DEBUG - have restored existing state as reference")
+  const validateRestoredStateTime = new Date();
+
+  timerLog('WA DEBUG - have restored existing state as reference', validateStartTime, validateRestoredStateTime);
 
   // rather than an array of entities, entities will be known by their line number within the source, e.g:
   // establishments: {
@@ -938,11 +944,13 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
       }
     });
-    console.log("WA DEBUG -  checkpoint - have validated establishments")
   } else {
     console.info("API bulkupload - validateBulkUploadFiles: no establishment records");
     status = false;
   }
+
+  const validateEstablishmentsTime = new Date();
+  timerLog("CHECKPOINT - BU Validate - have validated establishments", validateRestoredStateTime, validateEstablishmentsTime);
 
   establishments.establishmentMetadata.records = myEstablishments.length;
 
@@ -1008,13 +1016,15 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         }
       }
     });
-    console.log("WA DEBUG -  checkpoint - have validated workers and qualifications")
 
   } else {
     console.info("API bulkupload - validateBulkUploadFiles: no workers records");
     status = false;
   }
   workers.workerMetadata.records = myWorkers.length;
+
+  const validateWorkersTime = new Date();
+  timerLog("CHECKPOINT - BU Validate - have validated workers", validateEstablishmentsTime, validateWorkersTime);
 
   // parse and process Training CSV
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType == "Training") {
@@ -1068,13 +1078,16 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
       }
     });
-    console.log("WA DEBUG -  checkpoint - have validated establishments")
 
   } else {
       console.info("API bulkupload - validateBulkUploadFiles: no training records");
       status = false;
   }
   training.trainingMetadata.records = myTrainings.length;
+
+  const validateTrainingTime = new Date();
+  timerLog("CHECKPOINT - BU Validate - have validated training", validateWorkersTime, validateTrainingTime);
+
 
   // prepare entities ready for upload/return
   const establishmentsAsArray = Object.values(myAPIEstablishments);
@@ -1145,9 +1158,18 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
   training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
+
+  const validateCompleteTime = new Date();
+  timerLog("CHECKPOINT - BU Validate - have cross-checked validations", validateTrainingTime, validateCompleteTime);
+  timerLog("CHECKPOINT - BU Validate - overall validations", validateRestoredStateTime, validateCompleteTime);
+
+
   // create the difference report, which includes trapping for deleting of primary establishment
   const report = validationDifferenceReport(establishmentId, establishmentsAsArray, myCurrentEstablishments);
 
+  const validateDifferenceReportTime = new Date();
+  timerLog("CHECKPOINT - BU Validate - diference report", validateCompleteTime, validateDifferenceReportTime);
+  timerLog("CHECKPOINT - BU Validate - overall validations including restoring state and difference report", validateStartTime, validateDifferenceReportTime);
 
   // from the validation report, get a summary of deleted establishments and workers
   // the report will always have new, udpated, deleted array values, even if empty
@@ -1156,8 +1178,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   const numberOfDeletedWorkersFromUpdatedEstablishments = report.updated.reduce((total, current) => total += current.workers.deleted.length, 0);
   const numberOfDeletedWorkersFromDeletedEstablishments = report.deleted.reduce((total, current) => total += current.workers.deleted.length, 0);
   workers.workerMetadata.deleted = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
-
-  console.log("WA DEBUG -  checkpoint- have completed validation, uploading artifacts to S3");
 
   // upload intermediary/validation S3 objects
   if (commit) {
@@ -1209,6 +1229,11 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     // before returning, wait for all uploads to complete
     await Promise.all(s3UploadPromises);
   }
+
+  const validateS3UploadTime = new Date();
+  timerLog("CHECKPOINT - BU Validate - upload artifacts to S3", validateDifferenceReportTime, validateS3UploadTime);
+
+  timerLog("CHECKPOINT - BU Validate - total", validateStartTime, validateS3UploadTime);
 
   status = csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0 || csvTrainingSchemaErrors.length > 0 ? false : true;
 
@@ -1673,6 +1698,8 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
 
 const completeNewEstablishment = async (thisNewEstablishment, theLoggedInUser, transaction, onloadEstablishments, primaryEstablishmentId, primaryEstablishmentUid) => {
   try {
+    const startTime = new Date();
+
     // find the onload establishment by key
     const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisNewEstablishment.key);
 
@@ -1683,6 +1710,10 @@ const completeNewEstablishment = async (thisNewEstablishment, theLoggedInUser, t
       await foundOnloadEstablishment.save(theLoggedInUser, true, 0, transaction, true);
     }
 
+    const endTime = new Date();
+    const numberOfWorkers = foundOnloadEstablishment.workers.length;
+    timerLog("CHECKPOINT - BU COMPLETE - new establishment", startTime, endTime, numberOfWorkers);
+
   } catch (err) {
     console.error("completeNewEstablishment: failed to complete upon new establishment: ", thisNewEstablishment.key);
     throw err;
@@ -1691,6 +1722,8 @@ const completeNewEstablishment = async (thisNewEstablishment, theLoggedInUser, t
 
 const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedInUser, transaction, onloadEstablishments, myCurrentEstablishments) => {
   try {
+    const startTime = new Date();
+
     // find the current establishment and onload establishment by key
     const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisUpdatedEstablishment.key);
     const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisUpdatedEstablishment.key);
@@ -1705,8 +1738,11 @@ const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedIn
       delete thisEstablishmentJSON.localIdentifier;
 
       await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
-
       await foundCurrentEstablishment.save(theLoggedInUser, true, 0, transaction, true)
+
+      const endTime = new Date();
+      const numberOfWorkers = foundCurrentEstablishment.workers.length;
+      timerLog("CHECKPOINT - BU COMPLETE - update establishment", startTime, endTime, numberOfWorkers);
     }
   } catch (err) {
     console.error("completeUpdateEstablishment: failed to complete upon existing establishment: ", thisUpdatedEstablishment.key);
@@ -1716,6 +1752,8 @@ const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedIn
 
 const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedInUser, transaction, myCurrentEstablishments) => {
   try {
+    const startTime = new Date();
+
     // find the current establishment by key
     const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisDeletedEstablishment.key);
 
@@ -1723,6 +1761,10 @@ const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedIn
     if (foundCurrentEstablishment) {
       await foundCurrentEstablishment.delete(theLoggedInUser, transaction, true);
     }
+
+    const endTime = new Date();
+    const numberOfWorkers = foundCurrentEstablishment.workers.length;
+    timerLog("CHECKPOINT - BU COMPLETE - delete establishment", startTime, endTime, numberOfWorkers);
   } catch (err) {
     console.error("completeDeleteEstablishment: failed to complete upon deleting establishment: ", thisDeletedEstablishment.key);
     throw err;
@@ -1745,20 +1787,26 @@ router.route('/complete').post(async (req, res) => {
     // completing bulk upload must always work on the current set of known entities and not rely
     //  on any aspect of the current entities at the time of validation; there may be minutes/hours
     //  validating a bulk upload and completing it.
+    const completeStartTime = new Date();
     const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1);    // association level is just 1 (we need Establishment's workers for completion, but not the Worker's associated training and qualification)
-    console.log("WA DEBUG - checkpoint - have restored current state of establishments/workers")
+
+    const restoredExistingStateTime = new Date();
+    timerLog("CHECKPOINT - BU COMPLETE - have restored current state of establishments/workers", completeStartTime, restoredExistingStateTime);
 
     try {
       const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId);
       const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null);
       const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
-      console.log("WA DEBUG - checkpoint - have restored onloaded state from validation stage")
+
+      const restoredOnLoadStateTime = new Date();
+      timerLog("CHECKPOINT - BU COMPLETE - have restored onloaded state from validation stage", restoredExistingStateTime, restoredOnLoadStateTime);
 
       // sequential promise console logger
       const log = result => result=null;
 
       // could look to parallel the three above tasks as each is relatively intensive - but happy path first
       // process the set of new, updated and deleted entities for bulk upload completion, within a single transaction
+      let completeCommitTransactionTime = null;
       try {
         // all creates, updates and deletes (archive) are done in one transaction to ensure database integrity
         await dbmodels.sequelize.transaction(async t => {
@@ -1776,13 +1824,23 @@ router.route('/complete').post(async (req, res) => {
           const starterDeletedPromise = Promise.resolve(null);
           await validationDiferenceReport.deleted.reduce((p, thisDeletedEstablishment) => p.then(() => completeDeleteEstablishment(thisDeletedEstablishment, theLoggedInUser, t, myCurrentEstablishments).then(log)), starterDeletedPromise);
 
-          // gets here having successfully completed upon the bulk upload
-          //  clean up the S3 objects
-          await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
+          completeCommitTransactionTime = new Date();
         });
+
+        const completeSaveTime = new Date();
+        completeCommitTransactionTime ? timerLog("CHECKPOINT - BU COMPLETE - commit transaction", completeCommitTransactionTime, completeSaveTime) : true;
+        timerLog("CHECKPOINT - BU COMPLETE - have completed all establishments", restoredOnLoadStateTime, completeSaveTime);
+
+        // gets here having successfully completed upon the bulk upload
+        //  clean up the S3 objects
+        await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
 
         // confirm success against the primary establishment
         await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
+
+        const completeEndTime = new Date();
+        timerLog("CHECKPOINT - BU COMPLETE - clean up", completeSaveTime, completeEndTime);
+        timerLog("CHECKPOINT - BU COMPLETE - overall", completeStartTime, completeEndTime);
 
         return res.status(200).send({});
 
