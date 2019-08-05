@@ -16,3 +16,9 @@ export interface AddWorkplaceResponse {
   nmdsId: string;
   status: number;
 }
+
+export enum AddWorkplaceFlow {
+  CQC_WITH_USER = 'CQC with user',
+  CQC_NO_USER = 'CQC no user',
+  NON_CQC = 'non cqc',
+}

@@ -15,10 +15,6 @@
             Do you want to create a user account for {{ locationAddress.locationName }}?
           </h1>
         </legend>
-        <p>
-          This will allow {{ locationAddress.locationName }} to add their own staff records and access other areas of
-          the service.
-        </p>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
           <span *ngIf="submitted && form.invalid" id="createUserAccount-error" class="govuk-error-message">

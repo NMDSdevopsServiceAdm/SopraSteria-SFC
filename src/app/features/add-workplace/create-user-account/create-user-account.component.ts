@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
+import { AddWorkplaceFlow } from '@core/model/workplace.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -108,7 +109,10 @@ export class CreateUserAccountComponent implements OnInit, OnDestroy {
           this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace)
         )
         .subscribe(
-          () => this.router.navigate([`${this.flow}/complete`]),
+          () => {
+            this.workplaceService.addWorkplaceFlow$.next(AddWorkplaceFlow.CQC_NO_USER);
+            this.router.navigate([`${this.flow}/complete`]);
+          },
           (response: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
             this.errorSummaryService.scrollToErrorSummary();
