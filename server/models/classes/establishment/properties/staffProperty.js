@@ -5,7 +5,7 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
     constructor() {
         super('NumberOfStaff');
 
-        this._wdfTemporal = false;
+        this._wdfTemporal = true;
     }
 
     static clone() {
@@ -44,12 +44,7 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {       
         if (wdfEffectiveDate) {
-            return {
-                numberOfStaff: {
-                    value: this.property,
-                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
-                }
-            };
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
         }
 
         if (!withHistory) {

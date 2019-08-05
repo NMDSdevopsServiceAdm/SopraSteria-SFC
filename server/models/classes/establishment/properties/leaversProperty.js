@@ -7,7 +7,7 @@ exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype 
     constructor() {
         super('Leavers');
 
-        this._wdfTemporal = false;
+        this._wdfTemporal = true;
     }
 
     static clone() {
@@ -119,12 +119,7 @@ exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype 
         const jsonPresentation = JobHelpers.formatJSON(this.property, 'Leavers', 'TotalLeavers');
 
         if (wdfEffectiveDate) {
-            return {
-                leavers:{
-                    value: jsonPresentation.Leavers,
-                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
-                }
-            };
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
         }
 
         if (!withHistory) {

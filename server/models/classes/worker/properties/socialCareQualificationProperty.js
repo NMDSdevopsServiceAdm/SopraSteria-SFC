@@ -47,13 +47,8 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return {
-                socialCareQualification: {
-                    value: this.property,
-                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
-                }
-            };
-        }   
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+        }
 
         if (!withHistory) {
             // simple form

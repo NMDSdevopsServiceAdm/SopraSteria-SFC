@@ -167,12 +167,7 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = null) {
 
         if (wdfEffectiveDate) {
-            return {
-                capacities : {
-                    value: CapacityFormatters.capacitiesJSON(this.property),
-                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
-                }
-            };
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
         }
 
         if (!withHistory) {

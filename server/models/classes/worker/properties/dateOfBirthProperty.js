@@ -57,12 +57,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return {
-                dateOfBirth: {
-                    value: this.property ? this.property : null,
-                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
-                }
-            };
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
         }
 
         if (!withHistory) {
