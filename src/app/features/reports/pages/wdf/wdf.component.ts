@@ -57,7 +57,7 @@ export class WdfComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       combineLatest(
-        this.establishmentService.getEstablishment(workplaceUid),
+        this.establishmentService.getEstablishment(workplaceUid, true),
         this.reportService.getWDFReport(workplaceUid),
         this.workerService.getTotalStaffRecords(workplaceUid)
       )
