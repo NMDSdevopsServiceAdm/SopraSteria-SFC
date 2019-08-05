@@ -104,14 +104,16 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
   }
 
   public selectableAuthorities(index): LocalAuthorityModel[] {
-    return this.authorities.filter(
-      authority =>
-        !this.localAuthoritiesArray.controls.some(
-          localAuth =>
-            localAuth !== this.localAuthoritiesArray.controls[index] &&
-            parseInt(localAuth.get('custodianCode').value, 10) === authority.custodianCode
-        )
-    );
+    if (this.authorities) {
+      return this.authorities.filter(
+        authority =>
+          !this.localAuthoritiesArray.controls.some(
+            localAuth =>
+              localAuth !== this.localAuthoritiesArray.controls[index] &&
+              parseInt(localAuth.get('custodianCode').value, 10) === authority.custodianCode
+          )
+      );
+    }
   }
 
   protected updateEstablishment(props) {
