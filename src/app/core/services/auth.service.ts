@@ -11,7 +11,7 @@ import { UserService } from './user.service';
   providedIn: 'root',
 })
 export class AuthService {
-  private helper = new JwtHelperService();
+  private jwt = new JwtHelperService();
   public redirect: string;
 
   constructor(
@@ -22,7 +22,7 @@ export class AuthService {
   ) {}
 
   public isAuthenticated(): boolean {
-    return this.token ? !this.helper.isTokenExpired(this.token) : false;
+    return this.token ? !this.jwt.isTokenExpired(this.token) : false;
   }
 
   public get token() {
