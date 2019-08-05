@@ -7,7 +7,7 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
     constructor() {
         super('Vacancies');
 
-        this._wdfTemporal = false;
+        this._wdfTemporal = true;
     }
 
     static clone() {
@@ -120,12 +120,7 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
         const jsonPresentation = JobHelpers.formatJSON(this.property, 'Vacancies', 'TotalVacencies');
 
         if (wdfEffectiveDate) {
-            return {
-                vacancies: {
-                    value: jsonPresentation.Vacancies,
-                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
-                }
-            };
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
         }
 
         if (!withHistory) {

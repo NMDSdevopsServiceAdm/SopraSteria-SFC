@@ -1352,10 +1352,9 @@ class Establishment extends EntityValidator {
             if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
                 throw new Error('Establishment::toJSON filteredPropertiesByName must be a simple Array of names');
             }
-            console.log('wdf')
-            console.log(wdf)
+
             // JSON representation of extendable properties - with optional filter
-            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName, wdf ? WdfCalculator.effectiveDate: null);
+            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName, false);
 
             // add Establishment default properties
             //  using the default formatters
@@ -1579,17 +1578,27 @@ class Establishment extends EntityValidator {
         const effectiveFromEpoch = effectiveFrom.getTime();
 
         // employer type
-        myWdf['employerType'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType')) ? 'Yes' : 'No';
+        myWdf['employerType'] = { 
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('EmployerType').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         // main service & Other Service & Service Capacities & Service Users
-        myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
-        myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
+        myWdf['mainService'] = {
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('MainServiceFK').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['otherService'] = {
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('OtherServices').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)
         //   are capacities. Otherwise, it (capacities eligibility) is not relevant.
         // All Known Capacities is available from the CapacityServices property JSON
         const hasCapacities = this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').toJSON(false, false).allServiceCapacities.length > 0 : false;
-
+        let capacitiesEligible;
         if (hasCapacities) {
             // first validate whether any of the capacities are eligible - this is simply a check that capacities are valid.
             const capacitiesProperty = this._properties.get('CapacityServices');
@@ -1606,25 +1615,48 @@ class Establishment extends EntityValidator {
             });
 
             if (mainServiceCapacities.length === 0) {
-                myWdf['capacities'] = 'Not relevant';
+                capacitiesEligible = 'Not relevant';
             } else {
                 // ensure all all main service's capacities have been answered - note, the can only be one Main Service capacity set
-                myWdf['capacities'] = mainServiceCapacities[0].questions.every(thisQuestion => thisQuestion.hasOwnProperty('answer')) ? 'Yes' : 'No';
+                capacitiesEligible = mainServiceCapacities[0].questions.every(thisQuestion => thisQuestion.hasOwnProperty('answer')) ? 'Yes' : 'No';
             }
 
         } else {
-            myWdf['capacities'] = 'Not relevant';
+            capacitiesEligible = 'Not relevant';
         }
-        myWdf['serviceUsers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? 'Yes' : 'No';
+
+        myWdf['capacities'] = {
+            isEligible: capacitiesEligible,
+            updatedSinceEffectiveDate: this._properties.get('CapacityServices').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['serviceUsers'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('ServiceUsers').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         // vacancies, starters and leavers
-        myWdf['vacancies'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No';
-        myWdf['starters'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No';
-        myWdf['leavers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No';
+        myWdf['vacancies'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('Vacancies').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['starters'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('Starters').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['leavers'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('Leavers').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         let totalWorkerCount = await this.getTotalWorkers();
 
-        myWdf['numberOfStaff'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No';
+        myWdf['numberOfStaff'] = {
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('NumberOfStaff').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         return myWdf;
     }
