@@ -5,6 +5,7 @@ const DAYS_SICK_TYPE = ['Yes', 'No'];
 exports.WorkerDaysSickProperty = class WorkerDaysSickProperty extends ChangePropertyPrototype {
     constructor() {
         super('DaysSick');
+        this._wdfTemporal = false;              
     }
 
     static clone() {
@@ -80,7 +81,16 @@ exports.WorkerDaysSickProperty = class WorkerDaysSickProperty extends ChangeProp
         return currentValue && newValue && currentValue.value === newValue.value && daysEqual;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return {
+                daysSick: {
+                    value: this.property,
+                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
+                }
+            };
+        }
+
         if (!withHistory) {
             // simple form
             return {

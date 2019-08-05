@@ -168,8 +168,9 @@ router.route('/:workerId').get(async (req, res) => {
 
     try {
         if (await thisWorker.restore(workerId, showHistory && req.query.history !== 'property')) {
-            const jsonResponse = thisWorker.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false);
-            if (!showHistory) jsonResponse.wdf = await thisWorker.wdfToJson();
+            const jsonResponse = thisWorker.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, req.query.wdf);
+            
+            if (req.query.wdf) jsonResponse.wdf = await thisWorker.wdfToJson();
 
             return res.status(200).json(jsonResponse);
         } else {

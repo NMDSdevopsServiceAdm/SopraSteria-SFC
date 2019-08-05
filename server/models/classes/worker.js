@@ -628,16 +628,10 @@ class Worker extends EntityValidator {
                             );
                         });
                         await Promise.all(createMmodelPromises);
-
-                        /* https://trello.com/c/5V5sAa4w
-                        // TODO: ideally I'd like to publish this to pub/sub topic and process async - but do not have pub/sub to hand here
-                        // having updated the Worker, check to see whether it is necessary to recalculate
-                        //  the overall WDF eligibility for this Worker's establishment and all its workers.
-                        //  This decision is done based on if this Worker is being marked as Completed.
-                        const completedProperty = this._properties.get('Completed');
-                        if (completedProperty && completedProperty.modified) {
+                        
+                        if(!bulkUploadCompleted){
                             await WdfCalculator.calculate(savedBy.toLowerCase(), this._establishmentId, null, thisTransaction);
-                        }*/
+                        }
 
                         if (associatedEntities) {
                             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
@@ -1041,10 +1035,11 @@ class Worker extends EntityValidator {
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at Worker and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given Worker
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, associatedEntities=false) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, associatedEntities=false, wdf=false) {
         if (!showHistoryTimeline) {
             // JSON representation of extendable properties
-            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties);
+
+            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, null, wdf ? WdfCalculator.effectiveDate: null);
 
             // add worker default properties
             const myDefaultJSON = {
@@ -1246,13 +1241,13 @@ class Worker extends EntityValidator {
         const PER_PROPERTY_ELIGIBLE=0;
         const RECORD_LEVEL_ELIGIBLE=1;
         const COMPLETED_PROPERTY_ELIGIBLE=2;
-        const ELIGIBILITY_REFERENCE = COMPLETED_PROPERTY_ELIGIBLE;
+        const ELIGIBILITY_REFERENCE = PER_PROPERTY_ELIGIBLE;
 
         let referenceTime = null;
 
         switch (ELIGIBILITY_REFERENCE) {
             case PER_PROPERTY_ELIGIBLE:
-              referenceTime = property.savedAt.getTime();
+              referenceTime = property.savedAt ? property.savedAt.getTime() : null;
               break;
             case RECORD_LEVEL_ELIGIBLE:
               referenceTime = this._updated.getTime();
