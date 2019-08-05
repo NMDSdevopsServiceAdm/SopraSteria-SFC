@@ -22,7 +22,7 @@ export class CreateUserGuard implements CanActivate {
     };
 
     // Clear localstorage, session and auth token in case user is already logged in
-    this.authService.resetAuth();
+    this.authService.logoutWithoutRouting();
 
     return this.createAccountService.validateAccountActivationToken(requestPayload).pipe(
       map(response => {

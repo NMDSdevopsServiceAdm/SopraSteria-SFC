@@ -2,10 +2,10 @@ import { I18nPluralPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { LoggedInEstablishment } from '@core/model/logged-in.model';
-import { AuthService } from '@core/services/auth.service';
+import { Establishment } from '@core/model/establishment.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { combineLatest, Subscription } from 'rxjs';
 
 @Component({
@@ -15,7 +15,7 @@ import { combineLatest, Subscription } from 'rxjs';
 })
 export class BulkUploadPageComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public establishment: LoggedInEstablishment | null;
+  public establishment: Establishment;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public uploadValidationErrors: Array<ErrorDefinition>;
@@ -23,13 +23,13 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public showErrorSummary: boolean;
 
   constructor(
-    private authService: AuthService,
+    private establishmentService: EstablishmentService,
     private bulkUploadService: BulkUploadService,
     private errorSummaryService: ErrorSummaryService
   ) {}
 
   ngOnInit() {
-    this.establishment = this.authService.establishment;
+    this.establishment = this.establishmentService.primaryWorkplace;
     this.setupFormErrorsMap();
     this.setupUploadValidationErrors();
     this.setupSubscription();
