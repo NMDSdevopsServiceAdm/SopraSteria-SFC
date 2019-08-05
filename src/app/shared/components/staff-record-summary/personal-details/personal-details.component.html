@@ -26,7 +26,7 @@
       Date of birth
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.dateOfBirth" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.dateOfBirth" [item]="worker">
         {{ worker.dateOfBirth ? dob : '-' }}
       </app-summary-record-value>
     </dd>
@@ -71,7 +71,7 @@
     </dt>
 
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.gender" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.gender" [item]="worker">
         {{ worker.gender | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
@@ -136,7 +136,7 @@
       Nationality
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.nationality" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.nationality" [item]="worker">
         {{
           worker.nationality?.other?.nationality !== null
             ? worker.nationality?.other?.nationality
