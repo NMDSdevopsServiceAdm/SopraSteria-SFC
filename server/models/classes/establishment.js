@@ -853,10 +853,10 @@ class Establishment extends EntityValidator {
                         // There does not yet exist a Completed property for establishment.
                         // For now, we'll recalculate on every update!
                         */
-                        
-                        if(!bulkUploadCompleted){
-                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        }
+
+                        // if(!bulkUploadCompleted){
+                        //     await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
+                        // }
 
                         // if requested, propagate the saving of this establishment down to each of the associated entities
                         if (associatedEntities) {
@@ -1624,7 +1624,7 @@ class Establishment extends EntityValidator {
 
         let totalWorkerCount = await this.getTotalWorkers();
 
-        myWdf['numberOfStaff'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No';        
+        myWdf['numberOfStaff'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No';
 
         return myWdf;
     }
