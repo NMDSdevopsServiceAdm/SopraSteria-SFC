@@ -18,13 +18,13 @@ export class AuthInterceptor implements HttpInterceptor {
     const token = this.getToken(request.url);
 
     if (token) {
-      const cloned = request.clone({
-        headers: request.headers.set('Authorization', token),
-      });
-
       if (this.jwt.isTokenExpired(token)) {
         return throwError(new HttpErrorResponse({ error: 'Not Authorised', status: 403 }));
       }
+
+      const cloned = request.clone({
+        headers: request.headers.set('Authorization', token),
+      });
 
       return next.handle(cloned);
     }
