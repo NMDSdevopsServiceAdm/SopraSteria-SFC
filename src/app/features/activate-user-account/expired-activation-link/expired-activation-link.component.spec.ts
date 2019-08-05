@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ExpiredActivationLinkComponent } from '@features/public/expired-activation-link/expired-activation-link.component';
+
+import { ExpiredActivationLinkComponent } from './expired-activation-link.component';
 
 describe('ExpiredActivationLinkComponent', () => {
   let component: ExpiredActivationLinkComponent;
