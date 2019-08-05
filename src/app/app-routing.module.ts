@@ -12,12 +12,10 @@ import { CreateUsernameComponent } from '@features/create-username/create-userna
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
-import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { RegistrationCompleteComponent } from '@features/registration-complete/registration-complete.component';
 import { ReportsComponent } from '@features/reports/reports.component';
-import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SecurityQuestionComponent } from '@features/security-question/security-question.component';
 import { SelectMainServiceComponent } from '@features/select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from '@features/select-workplace-address/select-workplace-address.component';
@@ -41,14 +39,14 @@ const routes: Routes = [
     path: 'logged-out',
     component: LogoutComponent,
   },
-  {
-    path: 'forgot-your-password',
-    component: ForgotYourPasswordComponent,
-  },
-  {
-    path: 'reset-password',
-    component: ResetPasswordComponent,
-  },
+  // {
+  //   path: 'forgot-your-password',
+  //   component: ForgotYourPasswordComponent,
+  // },
+  // {
+  //   path: 'reset-password',
+  //   component: ResetPasswordComponent,
+  // },
   {
     path: 'change-user-summary',
     component: ChangeUserSummaryComponent,
