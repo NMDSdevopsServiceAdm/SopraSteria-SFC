@@ -438,7 +438,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is NEW but worker already exists`,
+              error: `Staff record has a STATUS of NEW but already exists, please change to one of the other statues available`,
               source: myStatus,
             });
           }
@@ -451,21 +451,23 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: 'Staff has a status of delete but does not exist.  This will be ignored.',
+              error: 'Staff has a status of DELETE but does not exist.',
               source: myStatus,
             });
           }
           break;
         case 'UNCHECKED':
-          // this._validationErrors.push({
-          //   name: this._currentLine.LOCALESTID,
-          //   worker: this._currentLine.UNIQUEWORKERID,
-          //   lineNumber: this._lineNumber,
-          //   warnCode: Worker.STATUS_WARNING,
-          //   warnType: `STATUS_WARNING`,
-          //   warning: `STATUS is UNCHECKED and will be ignored`,
-          //   source: myStatus,
-          // });
+          if (!thisWorkerExists(this._establishmentKey, this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              worker: this._currentLine.UNIQUEWORKERID,
+              lineNumber: this._lineNumber,
+              errCode: Worker.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `Staff record has a status of UNCHECKED but doens't exist, please change to NEW if you want to add this staff record`,
+              source: myStatus,
+            });
+          }
           break;
         case 'NOCHANGE':
           if (!thisWorkerExists(this._establishmentKey, this._key)) {
@@ -475,7 +477,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is NOCHANGE but worker does not exist`,
+              error: `Staff record has a status of NOCHANGE but doens't exist, please change to NEW if you want to add this staff record`,
               source: myStatus,
             });
           }
@@ -488,7 +490,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is UPDATE but worker does not exist`,
+              error: `Staff record has a status of UPDATE but doens't exist, please change to NEW if you want to add this staff record`,
               source: myStatus,
             });
           }
@@ -502,7 +504,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is CHGSUB but worker already exists in target Establishment`,
+              error: `STATUS is CHGSUB but staff already exists in the new workplace`,
               source: myStatus,
             });
           }
@@ -517,7 +519,7 @@ class Worker {
 
   _validateDisplayId() {
     const myDisplayId = this._currentLine.DISPLAYID;
-    const MAX_LENGTH = 120;
+    const MAX_LENGTH = 50;            // lowering to 50 because this is restricted in ASC WDS
 
     if (!myDisplayId) {
       this._validationErrors.push({
@@ -537,7 +539,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.DISPLAY_ID_ERROR,
           errType: `WORKER_DISPLAY_ID_ERROR`,
-          error: `DISPLAYID is longer than 120 characters`,
+          error: `DISPLAYID is longer than ${MAX_LENGTH} characters`,
           source: this._currentLine.DISPLAYID,
         });
         return false;
@@ -2404,7 +2406,21 @@ class Worker {
       lineNumber: this._lineNumber,
       errCode: Worker.DUPLICATE_ERROR,
       errType: `DUPLICATE_ERROR`,
-      error: `The combination of LOCALESTID with this UNIQUEWORKERID/CHGUNIQUEWORKERID is not unique`,
+      error: `UNIQUEWORKERID is not unique`,
+      source: this._currentLine.UNIQUEWORKERID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+    };
+  }
+
+  // add a duplicate validation error to the current set
+  addChgDuplicate(originalLineNumber) {
+    return {
+      origin: 'Workers',
+      lineNumber: this._lineNumber,
+      errCode: Worker.DUPLICATE_ERROR,
+      errType: `DUPLICATE_ERROR`,
+      error: `CHGUNIQUEWORKERID is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
@@ -2418,7 +2434,7 @@ class Worker {
       lineNumber: this._lineNumber,
       errCode: Worker.UNCHECKED_ESTABLISHMENT_ERROR,
       errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
-      error: `The LOCALESTID set for this staff record does not exist in your workplace file`,
+      error: `LOCALESTID does not exist in Workplace file`,
       source: this._currentLine.LOCALESTID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
@@ -2447,8 +2463,8 @@ class Worker {
     if (this._headers_v1.join(',') !== headers &&
         this._headers_v1_without_chgUnique.join(',') !== headers) {
       this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
+        worker: null,
+        name: null,
         lineNumber: 1,
         errCode: Worker.HEADERS_ERROR,
         errType: `HEADERS_ERROR`,

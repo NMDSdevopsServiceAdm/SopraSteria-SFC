@@ -217,7 +217,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
-        error: "Local Identifier must be defined",
+        error: "LOCALESTID has not been supplied",
         source: this._currentLine.LOCALESTID,
       });
       return false;
@@ -226,7 +226,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
-        error: `Local Identifier (LOCALESTID) must be no more than ${MAX_LENGTH} characters`,
+        error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: myLocalId,
       });
       return false;
@@ -242,13 +242,23 @@ class Establishment {
     const myStatus = this._currentLine.STATUS ? this._currentLine.STATUS.toUpperCase() : this._currentLine.STATUS;
 
     // must be present and must be one of the preset values (case insensitive)
-    if (!statusValues.includes(myStatus)) {
-
+    if (!this._currentLine.STATUS || this._currentLine.STATUS.length == 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STATUS_ERROR,
         errType: `STATUS_ERROR`,
-        error: `Status (STATUS) must be one of: ${statusValues}`,
+        error: `STATUS is blank`,
+        source: this._currentLine.STATUS,
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
+
+    } if (!statusValues.includes(myStatus)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.STATUS_ERROR,
+        errType: `STATUS_ERROR`,
+        error: `The code you have entered for STATUS is incorrect`,
         source: this._currentLine.STATUS,
         name: this._currentLine.LOCALESTID,
       });
@@ -271,7 +281,7 @@ class Establishment {
               lineNumber: this._lineNumber,
               errCode: Establishment.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is NEW but establishment already exists`,
+              error: `Workplace has a STATUS of NEW but already exists, please use one of the other statuses`,
               source: myStatus,
             });
           }
@@ -283,20 +293,22 @@ class Establishment {
               lineNumber: this._lineNumber,
               errCode: Establishment.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: 'Workplace has a status of delete but does not exist.  This will be ignored.',
+              error: 'Workplace has a status of DELETE but does not exist',
               source: myStatus,
             });
           }
           break;
         case 'UNCHECKED':
-          // this._validationErrors.push({
-          //   name: this._currentLine.LOCALESTID,
-          //   lineNumber: this._lineNumber,
-          //   warnCode: Establishment.STATUS_WARNING,
-          //   warnType: `STATUS_WARNING`,
-          //   warning: `STATUS is UNCHECKED and will be ignored`,
-          //   source: myStatus,
-          // });
+          if (!thisEstablishmentExists(this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              lineNumber: this._lineNumber,
+              errCode: Establishment.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `Workplace has a STATUS of UNCHECKED but does not exist, please change to NEW to add it`,
+              source: myStatus,
+            });
+          }
           break;
         case 'NOCHANGE':
           if (!thisEstablishmentExists(this._key)) {
@@ -305,7 +317,7 @@ class Establishment {
               lineNumber: this._lineNumber,
               errCode: Establishment.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is NOCHANGE but establishment does not exist`,
+              error: `Workplace has a STATUS of NOCHANGE but does not exist, please change to NEW to add it`,
               source: myStatus,
             });
           }
@@ -317,7 +329,7 @@ class Establishment {
               lineNumber: this._lineNumber,
               errCode: Establishment.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is UPDATE but establishment does not exist`,
+              error: `Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it`,
               source: myStatus,
             });
           }
@@ -340,7 +352,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.NAME_ERROR,
         errType: `NAME_ERROR`,
-        error: 'Establishment Name (ESTNAME) must be defined',
+        error: 'ESTNAME is blank',
         source: myName,
         name: this._currentLine.LOCALESTID,
       });
@@ -350,7 +362,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.NAME_ERROR,
         errType: `NAME_ERROR`,
-        error: `Establishment Name (ESTNAME) must be no more than ${MAX_LENGTH} characters`,
+        error: `ESTNAME is longer than ${MAX_LENGTH} characters`,
         source: myName,
         name: this._currentLine.LOCALESTID,
       });
@@ -380,7 +392,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
-        error: 'First line of address (ADDRESS1) must be defined',
+        error: 'ADDRESS1 is blank',
         name: this._currentLine.LOCALESTID,
       });
     } else if (myAddress1.length > MAX_LENGTH) {
@@ -388,7 +400,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
-        error: `First line of address (ADDRESS1) must be no more than ${MAX_LENGTH} characters`,
+        error: `ADDRESS1 is longer than ${MAX_LENGTH} characters`,
         source: myAddress1,
         name: this._currentLine.LOCALESTID,
       });
@@ -399,7 +411,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
-        error: `Second line of address (ADDRESS2) must be no more than ${MAX_LENGTH} characters`,
+        error: `ADDRESS2 is longer than ${MAX_LENGTH} characters`,
         source: myAddress2,
         name: this._currentLine.LOCALESTID,
       });
@@ -410,7 +422,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
-        error: `Third line of address (ADDRESS3) must be no more than ${MAX_LENGTH} characters`,
+        error: `ADDRESS3 is longer than ${MAX_LENGTH} characters`,
         source: myAddress3,
         name: this._currentLine.LOCALESTID,
       });
@@ -421,7 +433,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
-        error: `{Post town} (POSTTOWN) must be no more than ${MAX_LENGTH} characters`,
+        error: `POSTTOWN is longer than ${MAX_LENGTH} characters`,
         source: myTown,
         name: this._currentLine.LOCALESTID,
       });
@@ -429,13 +441,13 @@ class Establishment {
 
     // TODO - registration/establishment APIs do not validate postcode (relies on the frontend - this must be fixed)
     const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
-    const POSTCODE_MAX_LENGTH = 40;
+    const POSTCODE_MAX_LENGTH = 10;
     if (!myPostcode || myPostcode.length == 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
-        error: 'Postcode (POSTCODE) must be defined',
+        error: 'POSTCODE has not been supplied',
         source: myPostcode,
         name: this._currentLine.LOCALESTID,
       });
@@ -444,7 +456,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
-        error: `Postcode (POSTCODE) must be no more than ${POSTCODE_MAX_LENGTH} characters`,
+        error: `POSTCODE is longer than ${POSTCODE_MAX_LENGTH} characters`,
         source: myPostcode,
         name: this._currentLine.LOCALESTID,
       });
@@ -453,7 +465,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
-        error: `Postcode (POSTCODE) unexpected format`,
+        error: `POSTCODE is incorrectly formatted`,
         source: myPostcode,
         name: this._currentLine.LOCALESTID,
       });
@@ -479,12 +491,22 @@ class Establishment {
     const myOtherEstablishmentType = this._currentLine.OTHERTYPE;
 
     const localValidationErrors = [];
-    if (Number.isNaN(myEstablishmentType)) {
+    if (!this._currentLine.ESTTYPE || this._currentLine.ESTTYPE.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
-        error: "The ESTTYPE you have supplied is an incorrect code",
+        error: "ESTTYPE has not been supplied",
+        source: this._currentLine.ESTTYPE,
+        name: this._currentLine.LOCALESTID,
+      });
+
+    } else if (Number.isNaN(myEstablishmentType)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+        errType: `ESTABLISHMENT_TYPE_ERROR`,
+        error: "The code you have entered for ESTTYPE is incorrect",
         source: this._currentLine.ESTTYPE,
         name: this._currentLine.LOCALESTID,
       });
@@ -493,7 +515,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
-        error: "Establishment Type (ESTTYPE) between 1 and 8 only",
+        error: "The code you have entered for ESTTYPE is incorrect",
         source: this._currentLine.ESTTYPE,
         name: this._currentLine.LOCALESTID,
       });
@@ -501,12 +523,12 @@ class Establishment {
 
     // if the establishment type is "other" (8), then OTHERTYPE must be defined
     const MAX_LENGTH = 240;
-    if (myEstablishmentType == 8 && (!myOtherEstablishmentType || myOtherEstablishmentType.length == 0)) {
+    if (myEstablishmentType === 8 && (!myOtherEstablishmentType || myOtherEstablishmentType.length == 0)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         warnCode: Establishment.ESTABLISHMENT_TYPE_WARNING,
         warnType: `ESTABLISHMENT_TYPE_WARNING`,
-        warning: `Establishment Type (ESTTYPE) is 'Other (8)'; missing description (OTHERTYPE)`,
+        warning: `OTHERTYPE has not been supplied`,
         source: myOtherEstablishmentType,
         name: this._currentLine.LOCALESTID,
       });
@@ -515,12 +537,21 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
-        error: `Establishment Type (ESTTYPE) is 'Other (8)', but OTHERTYPE must be no more than ${MAX_LENGTH} characters`,
+        error: `OTHERTYPE is longer than ${MAX_LENGTH} characters`,
         source: myOtherEstablishmentType,
         name: this._currentLine.LOCALESTID,
       });
-    } else if (myEstablishmentType == 8) {
+    } else if (myEstablishmentType === 8) {
       this._establishmentTypeOther = myOtherEstablishmentType;
+    } else if (myEstablishmentType !== 8 && myOtherEstablishmentType && myOtherEstablishmentType.length > 0) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: Establishment.ESTABLISHMENT_TYPE_WARNING,
+        warnType: `ESTABLISHMENT_TYPE_WARNING`,
+        warning: `OTHERTYPE will be ignored`,
+        source: myOtherEstablishmentType,
+        name: this._currentLine.LOCALESTID,
+      });
     }
 
     if (localValidationErrors.length > 0) {
@@ -535,14 +566,24 @@ class Establishment {
   _validateShareWithCQC() {
     const ALLOWED_VALUES = [0,1];
     const myShareWithCqc = parseInt(this._currentLine.PERMCQC);
-    if (Number.isNaN(myShareWithCqc)) {
+    if (!this._currentLine.PERMCQC || this._currentLine.PERMCQC.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.SHARE_WITH_ERROR,
         errType: `SHARE_WITH_ERROR`,
-        error: "Share with CQC (PERMCQC) must be an integer",
+        error: "PERMCQC has not been supplied",
         source: this._currentLine.PERMCQC,
-        name: this._currentLine.LOCALESTID,
+        name: this._currentLine.PERMCQC,
+      });
+      return false;
+    } else if (Number.isNaN(myShareWithCqc)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.SHARE_WITH_ERROR,
+        errType: `SHARE_WITH_ERROR`,
+        error: "The code you have entered for PERMCQC is incorrect",
+        source: this._currentLine.PERMCQC,
+        name: this._currentLine.PERMCQC,
       });
       return false;
     } else if (!ALLOWED_VALUES.includes(myShareWithCqc)) {
@@ -550,9 +591,9 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.SHARE_WITH_ERROR,
         errType: `SHARE_WITH_ERROR`,
-        error: "Share with CQC (PERMCQC) must be 0 or 1",
+        error: "The code you have entered for PERMCQC is incorrect",
         source: myShareWithCqc,
-        name: this._currentLine.LOCALESTID,
+        name: this._currentLine.PERMCQC,
       });
       return false;
     } else {
@@ -564,14 +605,24 @@ class Establishment {
   _validateShareWithLA() {
     const ALLOWED_VALUES = [0,1];
     const myShareWithLa = parseInt(this._currentLine.PERMLA);
-    if (Number.isNaN(myShareWithLa)) {
+    if (!this._currentLine.PERMLA || this._currentLine.PERMLA.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.SHARE_WITH_ERROR,
         errType: `SHARE_WITH_ERROR`,
-        error: "Share with LA (PERMLA) must be an integer",
+        error: "PERMLA has not been supplied",
         source: this._currentLine.PERMLA,
-        name: this._currentLine.LOCALESTID,
+        name: this._currentLine.PERMLA,
+      });
+      return false;
+    } else if (Number.isNaN(myShareWithLa)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.SHARE_WITH_ERROR,
+        errType: `SHARE_WITH_ERROR`,
+        error: "The code you have entered for PERMLA is incorrect",
+        source: this._currentLine.PERMLA,
+        name: this._currentLine.PERMLA,
       });
       return false;
     } else if (!ALLOWED_VALUES.includes(myShareWithLa)) {
@@ -579,9 +630,9 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.SHARE_WITH_ERROR,
         errType: `SHARE_WITH_ERROR`,
-        error: "Share with LA (PERMLA) must be 0 or 1",
+        error: "The code you have entered for PERMLA is incorrect",
         source: myShareWithLa,
-        name: this._currentLine.LOCALESTID,
+        name: this._currentLine.PERMLA,
       });
       return false;
     } else {
@@ -596,16 +647,27 @@ class Establishment {
       const listOfLAs = this._currentLine.SHARELA.split(';');
       const isValid = listOfLAs.every(thisLA => !Number.isNaN(parseInt(thisLA)));
 
+      console.log("WA DEBUG - SHARELA validation - this._shareWithLA", this._shareWithLA, listOfLAs, listOfLAs.length)
+
       if (!isValid) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Establishment.LOCAL_AUTHORITIES_ERROR,
           errType: `LOCAL_AUTHORITIES_ERROR`,
-          error: "Local Authorities (SHARELA) must be a semi-colon delimited list of integers",
+          error: "An entry for code in SHARELA will be ignored as this is invalid",
           source: this._currentLine.SHARELA,
           name: this._currentLine.LOCALESTID,
         });
         return false;
+      } else if (this._shareWithLA !== null && this._shareWithLA === 0 && listOfLAs && listOfLAs.length > 0) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.LOCAL_AUTHORITIES_WARNING,
+          errType: `LOCAL_AUTHORITIES_WARNING`,
+          error: "SHARELAS will be ignored",
+          source: this._currentLine.SHARELA,
+          name: this._currentLine.LOCALESTID,
+        });
       } else {
         this._localAuthorities = listOfLAs.map(thisLA => parseInt(thisLA, 10));
         return true;
@@ -619,12 +681,22 @@ class Establishment {
   _validateRegType() {
     const myRegType = parseInt(this._currentLine.REGTYPE, 10);
 
-    if (Number.isNaN(myRegType) || (myRegType !== 0 && myRegType !== 2)) {
+    if (!this._currentLine.REGTYPE || this._currentLine.REGTYPE.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.REGTYPE_ERROR,
         errType: `REGTYPE_ERROR`,
-        error: "Registration Type (REGTYPE) must be given and must be either 0 or 2",
+        error: "REGTYPE has not been supplied",
+        source: this._currentLine.REGTYPE,
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
+    } else if (Number.isNaN(myRegType) || (myRegType !== 0 && myRegType !== 2)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.REGTYPE_ERROR,
+        errType: `REGTYPE_ERROR`,
+        error: "The code you have entered for REGTYPE is incorrect",
         source: this._currentLine.REGTYPE,
         name: this._currentLine.LOCALESTID,
       });
@@ -669,7 +741,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         warnCode: Establishment.PROV_ID_WARNING,
         warnType: `PROV_ID_WARNING`,
-        warning: "PROVNUM will be ignored as not required for this MAINSERVICE",
+        warning: "PROVNUM will be ignored as not required for this REGTYPE",
         source: myprovID,
         name: this._currentLine.LOCALESTID,
       });
@@ -718,7 +790,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         warnCode: Establishment.LOCATION_ID_WARNING,
         warnType: `LOCATION_ID_WARNING`,
-        warning: "LOCATIONID will be ignored as not required for this MAINSERVICE",
+        warning: "LOCATIONID will be ignored as not required for this REGTYPE",
         source: myLocationID,
         name: this._currentLine.LOCALESTID,
       });
@@ -728,12 +800,23 @@ class Establishment {
 
   _validateMainService() {
     const myMainService = parseInt(this._currentLine.MAINSERVICE);
-    if (Number.isNaN(myMainService)) {
+
+    if (!this._currentLine.MAINSERVICE || this._currentLine.MAINSERVICE.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.MAIN_SERVICE_ERROR,
         errType: `MAIN_SERVICE_ERROR`,
-        error: "Main Service (MAINSERVICE) must be an integer",
+        error: "MAINSERVICE has not been supplied",
+        source: this._currentLine.MAINSERVICE,
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
+    } else if (Number.isNaN(myMainService)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.MAIN_SERVICE_ERROR,
+        errType: `MAIN_SERVICE_ERROR`,
+        error: "MAINSERVICE has not been supplied",
         source: this._currentLine.MAINSERVICE,
         name: this._currentLine.LOCALESTID,
       });
@@ -752,7 +835,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
         errType: `ALL_SERVICES_ERROR`,
-        error: "All Services (ALLSERVICES) must be defined and must include at least the main service (MAINSERVICE)",
+        error: "MAINSERVICE is not included in ALLSERVICES",
         source: this._currentLine.ALLSERVICES,
         name: this._currentLine.LOCALESTID,
       });
@@ -772,7 +855,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
         errType: `ALL_SERVICES_ERROR`,
-        error: "All Services (ALLSERVICES) must be a semi-colon delimited list of integers",
+        error: "There is an empty element in ALLSERVICES",
         source: this._currentLine.ALLSERVICES,
         name: this._currentLine.LOCALESTID,
       });
@@ -781,7 +864,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
         errType: `ALL_SERVICES_ERROR`,
-        error: "All Services (ALLSERVICES) count and Service Description (SERVICEDESC) count must equal",
+        error: "ALLSERVICES/CAPACITY/UTILISATION/SERVICEDESC do not have the same number of items (i.e. numbers and/or semi colons",
         source: this._currentLine.SERVICEDESC,
         name: this._currentLine.LOCALESTID,
       });
@@ -800,7 +883,7 @@ class Establishment {
               lineNumber: this._lineNumber,
               errCode: Establishment.ALL_SERVICES_ERROR,
               errType: `ALL_SERVICES_ERROR`,
-              error: `All Services (ALLSERVICES:${index+1}) is an 'other' service and (SERVICEDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
+              error: `SERVICEDESC(${index+1}) is longer than ${MAX_LENGTH} characters`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
               name: this._currentLine.LOCALESTID,
             });
@@ -837,9 +920,9 @@ class Establishment {
       if (!isValid) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.SERVICE_USERS_ERROR,
-          errType: `SERVICE_USERS_ERROR`,
-          error: "The SERVICEUSERS you have supplied has an incorrect code",
+          warnCode: Establishment.SERVICE_USERS_WARNING,
+          warnType: `SERVICE_USERS_WARNING`,
+          warning: "Entry for code in SERVICEUSERS you have supplied will be ignored as this is invalid",
           source: this._currentLine.SERVICEUSERS,
           name: this._currentLine.LOCALESTID,
         });
@@ -865,9 +948,9 @@ class Establishment {
             if (!myServiceUserOther || myServiceUserOther.length == 0) {
               localValidationErrors.push({
                 lineNumber: this._lineNumber,
-                errCode: Establishment.SERVICE_USERS_ERROR,
-                errType: `SERVICE_USERS_ERROR`,
-                error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and consequently (OTHERUSERDESC:${index+1}) must be defined`,
+                warnCode: Establishment.SERVICE_USERS_WARNING,
+                warnType: `SERVICE_USERS_WARNING`,
+                warning: `OTHERUSERDESC(${index+1}) has not been supplied`,
                 source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
                 name: this._currentLine.LOCALESTID,
               });
@@ -1620,7 +1703,7 @@ class Establishment {
       lineNumber: this._lineNumber,
       errCode: Establishment.DUPLICATE_ERROR,
       errType: `DUPLICATE_ERROR`,
-      error: `Duplicate of line ${originalLineNumber}`,
+      error: `LOCALESTID is not unique`,
       source: this._currentLine.LOCALESTID,
       name: this._currentLine.LOCALESTID,
     };
@@ -1818,7 +1901,7 @@ class Establishment {
       localAuthorities: this._localAuthorities ? this._localAuthorities : [],
       mainService: this._mainService,
       services: this._allServices ? this._allServices
-        .filter(thisService => thisService !== this._mainService.id)   // main service cannot appear in otherServices
+        .filter(thisService => this._mainService ? this._mainService.id !== thisService : true )   // main service cannot appear in otherServices
         .map((thisService, index) => {
           const returnThis = {
             id: thisService,
