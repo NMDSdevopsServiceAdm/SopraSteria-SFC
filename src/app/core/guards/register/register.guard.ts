@@ -3,7 +3,7 @@ import { CanActivate, Router } from '@angular/router';
 import { RegistrationService } from '@core/services/registration.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RegisterGuard implements CanActivate {
   private registrationInProgress: boolean;
@@ -12,7 +12,7 @@ export class RegisterGuard implements CanActivate {
 
   canActivate() {
     this.registrationService.registrationInProgress$.subscribe(
-      (registrationInProgress: boolean) => this.registrationInProgress = registrationInProgress
+      (registrationInProgress: boolean) => (this.registrationInProgress = registrationInProgress)
     );
 
     // check if registration process has started
@@ -20,7 +20,7 @@ export class RegisterGuard implements CanActivate {
       return true;
     }
 
-    this.router.navigate(['/registration/regulated-by-cqc']);
+    this.router.navigate(['/registration/start']);
     return false;
   }
 }
