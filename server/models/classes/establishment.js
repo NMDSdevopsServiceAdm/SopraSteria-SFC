@@ -1538,7 +1538,7 @@ class Establishment extends EntityValidator {
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
             isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
-            currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty !== 'No'),
+            currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
             ... wdfByProperty
         };
     }
