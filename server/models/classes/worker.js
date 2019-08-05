@@ -628,10 +628,10 @@ class Worker extends EntityValidator {
                             );
                         });
                         await Promise.all(createMmodelPromises);
-                        
-                        if(!bulkUploadCompleted){
-                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._establishmentId, null, thisTransaction);
-                        }
+
+                        // if(!bulkUploadCompleted){
+                        //     await WdfCalculator.calculate(savedBy.toLowerCase(), this._establishmentId, null, thisTransaction);
+                        // }
 
                         if (associatedEntities) {
                             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
