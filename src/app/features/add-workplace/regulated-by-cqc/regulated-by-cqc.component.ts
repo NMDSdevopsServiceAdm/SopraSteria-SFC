@@ -40,4 +40,8 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
       this.navigateToNextRoute(data);
     }
   }
+
+  protected onLocationFailure() {
+    this.navigateToWorkplaceNotFoundRoute();
+  }
 }

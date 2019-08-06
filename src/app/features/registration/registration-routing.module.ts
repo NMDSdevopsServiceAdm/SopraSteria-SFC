@@ -26,6 +26,7 @@ import { SelectWorkplaceComponent } from '@features/registration/select-workplac
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 
 import { StartComponent } from './start/start.component';
+import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const routes: Routes = [
   {
@@ -37,6 +38,12 @@ const routes: Routes = [
     path: 'regulated-by-cqc',
     component: RegulatedByCqcComponent,
     data: { title: 'Regulated by CQC' },
+  },
+  {
+    path: 'workplace-not-found',
+    component: WorkplaceNotFoundComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Workplace Not Found' },
   },
   {
     path: 'select-workplace',
