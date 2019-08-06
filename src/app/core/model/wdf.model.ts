@@ -1,4 +1,10 @@
+export enum Eligibility {
+  YES = 'Yes',
+  NO = 'No',
+  NOT_RELEVANT = 'Not relevant',
+}
+
 export interface WDFValue {
-  isEligible: 'Yes' | 'No' | 'Not relevant';
+  isEligible: Eligibility;
   updatedSinceEffectiveDate: boolean;
 }
