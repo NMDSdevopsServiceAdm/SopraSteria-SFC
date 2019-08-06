@@ -16,7 +16,7 @@
           </h1>
         </legend>
         <div class="govuk-form-group govuk-!-margin-bottom-2">
-          <p>
+          <p id="postcode-hint">
             Enter your postcode to find your workplace or
             <a [routerLink]="['/registration', 'regulated-by-cqc']">go back and try again</a>.
           </p>
@@ -32,6 +32,7 @@
             {{ serverError }}
           </span>
           <input
+            aria-describedby="postcode-hint"
             class="govuk-input govuk-input--width-10 govuk-!-margin-right-2"
             [class.govuk-input--error]="submitted && form.get('postcode').invalid"
             [formControlName]="'postcode'"
