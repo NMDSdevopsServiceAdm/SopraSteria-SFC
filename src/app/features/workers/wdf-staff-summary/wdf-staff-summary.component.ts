@@ -9,7 +9,6 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 import {
   WdfWorkerConfirmationDialogComponent,
@@ -49,20 +48,23 @@ export class WdfStaffSummaryComponent implements OnInit {
     });
   }
 
-  /**
-   * TODO: If daysSick and pay are `upToDate' we should skip the modal
-   * Only display quesitons that need confirming on the modal itself.
-   */
   public onConfirmAndSubmit() {
-    const dialog = this.dialogService.open(WdfWorkerConfirmationDialogComponent, {
-      daysSick: this.worker.daysSick,
-      pay: this.worker.annualHourlyPay,
-    });
-    dialog.afterClosed.subscribe(confirmed => {
-      if (confirmed) {
-        this.confirmAndSubmit();
-      }
-    });
+    if (
+      !this.worker.wdf.daysSick.updatedSinceEffectiveDate ||
+      !this.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate
+    ) {
+      const dialog = this.dialogService.open(WdfWorkerConfirmationDialogComponent, {
+        daysSick: !this.worker.wdf.daysSick.updatedSinceEffectiveDate ? this.worker.daysSick : null,
+        pay: !this.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate ? this.worker.annualHourlyPay : null,
+      });
+      dialog.afterClosed.subscribe(confirmed => {
+        if (confirmed) {
+          this.confirmAndSubmit();
+        }
+      });
+    } else {
+      this.confirmAndSubmit();
+    }
   }
 
   /**
@@ -71,34 +73,13 @@ export class WdfStaffSummaryComponent implements OnInit {
   private confirmAndSubmit() {
     this.subscriptions.add(
       this.workerService.updateWorker(this.workplace.uid, this.worker.uid, {}).subscribe(() => {
-        this.goToWdfPage();
+        this.router.navigate(this.exitUrl.url, { fragment: this.exitUrl.fragment });
         this.alertService.addAlert({ type: 'success', message: 'The staff record has been saved and confirmed.' });
       })
     );
   }
 
-  /**
-   * TODO: Remove this method once solution to wdf records not updating until record is 'complete'
-   */
-  public saveAndComplete() {
-    this.workerService
-      .updateWorker(this.workplace.uid, this.worker.uid, {
-        completed: true,
-      })
-      .pipe(take(1))
-      .subscribe(() => this.goToWdfPage());
-  }
-
-  public goToWdfPage() {
-    this.router.navigate(this.exitUrl.url, { fragment: this.exitUrl.fragment });
-  }
-
-  /**
-   * TODO: Functionality not implemented
-   * It should just be a case of uncommenting the return
-   */
   get displayConfirmationPanel() {
-    return false;
-    // return this.worker.wdf.isEligible && !this.worker.wdf.currentEligibility;
+    return this.worker.wdf.isEligible && !this.worker.wdf.currentEligibility;
   }
 }
