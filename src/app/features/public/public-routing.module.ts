@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ContactUsComponent } from '@features/public/contact-us/contact-us.component';
+import { CookiePolicyComponent } from '@features/public/cookie-policy/cookie-policy.component';
 import { FeedbackComponent } from '@features/public/feedback/feedback.component';
 import { TermsConditionsComponent } from '@features/public/terms-conditions/terms-conditions.component';
 
@@ -19,6 +20,11 @@ const routes: Routes = [
     path: 'terms-and-conditions',
     component: TermsConditionsComponent,
     data: { title: 'Terms and Conditions' },
+  },
+  {
+    path: 'cookie-policy',
+    component: CookiePolicyComponent,
+    data: { title: 'Cookie Policy' },
   },
 ];
 
