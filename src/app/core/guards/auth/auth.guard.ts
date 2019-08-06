@@ -18,7 +18,6 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
   private checkLogin(): boolean {
     if (!this.authService.isAuthenticated()) {
-      console.log('TOKEN EXPIRED', this.authService.isAuthenticated(), this.authService.expiryDate());
       this.router.navigate(['/logged-out']);
       return false;
     }
