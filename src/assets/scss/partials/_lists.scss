@@ -158,23 +158,39 @@
 
 .govuk-list--counters {
   counter-reset: item;
-}
 
-.govuk-list--counters,
-.govuk-list--counters .govuk-list--counters {
-  margin-top: govuk-spacing(4);
-}
+  .govuk-list--counters-heading:before {
+    content: counters(item, '.') '.';
+    @include govuk-font(24, 'bold');
+    display: inline-block;
+    padding-right: govuk-spacing(2);
+    width: auto;
+  }
 
-.govuk-list--counters li {
-  display: block;
-  margin-bottom: govuk-spacing(4);
-}
+  .govuk-list--counters {
+    margin-top: govuk-spacing(4);
+    margin-bottom: 0;
 
-.govuk-list--counters .heading:before {
-  @include govuk-font(24, 'bold');
-}
-.govuk-list--counters li:before {
-  content: counters(item, '.') ' ';
-  counter-increment: item;
-  margin-bottom: govuk-spacing(4);
+    li:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  li {
+    display: table;
+    margin-bottom: govuk-spacing(4);
+
+    &:before {
+      content: counters(item, '.') ' ';
+      counter-increment: item;
+      margin-bottom: govuk-spacing(4);
+      display: table-cell;
+      width: 65px;
+    }
+  }
+
+  .govuk-list--counters-has-nested-list:before {
+    display: block;
+    float: left;
+  }
 }
