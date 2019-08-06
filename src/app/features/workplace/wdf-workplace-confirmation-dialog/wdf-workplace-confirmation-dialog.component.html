@@ -3,7 +3,7 @@
 <p>Check and confirm the mandatory WDF information is up-to-date before applying for funding.</p>
 
 <dl class="govuk-summary-list govuk-summary-list--wide govuk-summary-list--top-border">
-  <div class="govuk-summary-list__row">
+  <div *ngIf="!data.workplace.wdf.vacancies.updatedSinceEffectiveDate" class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key govuk-summary-list__key">
       Staff vacancies
     </dt>
@@ -11,7 +11,7 @@
       {{ data.workplace.totalVacancies }}
     </dd>
   </div>
-  <div class="govuk-summary-list__row">
+  <div *ngIf="!data.workplace.wdf.starters.updatedSinceEffectiveDate" class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key govuk-summary-list__key">
       New starters
     </dt>
@@ -19,7 +19,7 @@
       {{ data.workplace.totalStarters }}
     </dd>
   </div>
-  <div class="govuk-summary-list__row">
+  <div *ngIf="!data.workplace.wdf.leavers.updatedSinceEffectiveDate" class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key govuk-summary-list__key">
       Staff leavers
     </dt>
@@ -27,7 +27,7 @@
       {{ data.workplace.totalLeavers }}
     </dd>
   </div>
-  <div class="govuk-summary-list__row">
+  <div *ngIf="!data.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate" class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key govuk-summary-list__key">
       Total number of staff
     </dt>

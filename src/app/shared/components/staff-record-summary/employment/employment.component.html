@@ -26,7 +26,7 @@
       Date started
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.mainJobStartDate" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.mainJobStartDate">
         {{ worker.mainJobStartDate ? mainStartDate : '-' }}
       </app-summary-record-value>
     </dd>
@@ -70,21 +70,23 @@
       Other job roles
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="!worker.otherJobs?.length; else otherJobs">
-        -
-      </ng-container>
-      <ng-template #otherJobs>
-        <ul class="govuk-list govuk-!-margin-bottom-0">
-          <li *ngFor="let otherJob of worker.otherJobs">
-            <ng-container *ngIf="otherJob.other; else title">
-              <span>{{ otherJob.other }}</span>
-            </ng-container>
-            <ng-template #title>
-              <span>{{ otherJob.title }}</span>
-            </ng-template>
-          </li>
-        </ul>
-      </ng-template>
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.otherJobs">
+        <ng-container *ngIf="!worker.otherJobs?.length; else otherJobs">
+          -
+        </ng-container>
+        <ng-template #otherJobs>
+          <ul class="govuk-list govuk-!-margin-bottom-0">
+            <li *ngFor="let otherJob of worker.otherJobs">
+              <ng-container *ngIf="otherJob.other; else title">
+                <span>{{ otherJob.other }}</span>
+              </ng-container>
+              <ng-template #title>
+                <span>{{ otherJob.title }}</span>
+              </ng-template>
+            </li>
+          </ul>
+        </ng-template>
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('other-job-roles')" (click)="setReturn()">
@@ -147,7 +149,7 @@
       Recruited from
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.recruitedFrom" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.recruitedFrom">
         {{
           worker.recruitedFrom?.from?.from !== null
             ? worker.recruitedFrom?.from?.from
@@ -199,7 +201,7 @@
       Sickness in last 12 months
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.daysSick" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.daysSick">
         {{ worker.daysSick | workerDays | openEndedAnswer }}
       </app-summary-record-value>
     </dd>
@@ -222,7 +224,7 @@
       Zero hours contract
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.zeroHoursContract" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.zeroHoursContract">
         {{ worker.zeroHoursContract | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
@@ -245,7 +247,7 @@
       Average weekly working hours
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.weeklyHoursAverage" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.weeklyHoursAverage">
         {{
           isNumber(worker.weeklyHoursAverage?.hours)
             ? worker.weeklyHoursAverage?.hours
@@ -272,7 +274,7 @@
       Contracted weekly hours
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.weeklyHoursContracted" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.weeklyHoursContracted">
         {{
           isNumber(worker.weeklyHoursContracted?.hours)
             ? worker.weeklyHoursContracted?.hours
@@ -300,7 +302,7 @@
     </dt>
 
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.annualHourlyPay" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.annualHourlyPay">
         {{ worker.annualHourlyPay | workerPay | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>

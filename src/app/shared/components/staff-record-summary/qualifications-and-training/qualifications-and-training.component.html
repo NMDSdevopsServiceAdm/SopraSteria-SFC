@@ -27,7 +27,7 @@
     </dt>
 
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.careCertificate" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.careCertificate">
         {{ worker.careCertificate || '-' }}
       </app-summary-record-value>
     </dd>
@@ -51,7 +51,7 @@
       Any social care qualification
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.qualificationInSocialCare" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.qualificationInSocialCare">
         {{ worker.qualificationInSocialCare | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
@@ -74,7 +74,7 @@
       Highest level of social care qualification
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.socialCareQualification" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.socialCareQualification">
         {{ worker.socialCareQualification?.title | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
@@ -97,7 +97,7 @@
       Non-social care qualification
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.socialCareQualification" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.socialCareQualification">
         {{ worker.otherQualification | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
@@ -120,7 +120,7 @@
       Highest level of non-social care qualification
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.socialCareQualification" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.socialCareQualification">
         {{ worker.highestQualification?.title || '-' }}
       </app-summary-record-value>
     </dd>

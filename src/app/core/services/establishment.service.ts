@@ -134,8 +134,9 @@ export class EstablishmentService {
     this.returnTo$.next(returnTo);
   }
 
-  getEstablishment(id: string) {
-    return this.http.get<any>(`/api/establishment/${id}`);
+  getEstablishment(id: string, wdf: boolean = false) {
+    const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
+    return this.http.get<any>(`/api/establishment/${id}`, { params });
   }
 
   getCapacity(establishmentId, all = false) {

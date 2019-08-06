@@ -57,7 +57,7 @@ export class WdfComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       combineLatest(
-        this.establishmentService.getEstablishment(workplaceUid),
+        this.establishmentService.getEstablishment(workplaceUid, true),
         this.reportService.getWDFReport(workplaceUid),
         this.workerService.getTotalStaffRecords(workplaceUid)
       )
@@ -85,17 +85,22 @@ export class WdfComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  /**
-   * TODO: if totalVacancies & totalStarters & totalLeavers && numberOfStaff are 'upToDate' skip the modal
-   * Only display quesitons that need confirming on the modal itself.
-   */
   public onConfirmAndSubmit() {
-    const dialog = this.dialogService.open(WdfWorkplaceConfirmationDialogComponent, { workplace: this.workplace });
-    dialog.afterClosed.subscribe(confirmed => {
-      if (confirmed) {
-        this.confirmAndSubmit();
-      }
-    });
+    if (
+      !this.workplace.wdf.starters.updatedSinceEffectiveDate ||
+      !this.workplace.wdf.leavers.updatedSinceEffectiveDate ||
+      !this.workplace.wdf.vacancies.updatedSinceEffectiveDate ||
+      !this.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate
+    ) {
+      const dialog = this.dialogService.open(WdfWorkplaceConfirmationDialogComponent, { workplace: this.workplace });
+      dialog.afterClosed.subscribe(confirmed => {
+        if (confirmed) {
+          this.confirmAndSubmit();
+        }
+      });
+    } else {
+      this.confirmAndSubmit();
+    }
   }
 
   /**
@@ -106,12 +111,7 @@ export class WdfComponent implements OnInit, OnDestroy {
     this.alertService.addAlert({ type: 'success', message: 'The workplace has been saved and confirmed.' });
   }
 
-  /**
-   * TODO: Functionality not implemented
-   * It should just be a case of uncommenting the return
-   */
   get displayConfirmationPanel() {
-    return false;
-    // return this.worker.wdf.isEligible && !this.worker.wdf.currentEligibility;
+    return this.workplace && this.workplace.wdf.isEligible && !this.workplace.wdf.currentEligibility;
   }
 }

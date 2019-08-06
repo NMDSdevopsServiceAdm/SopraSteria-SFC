@@ -1,5 +1,6 @@
 import { Contracts } from './contracts.enum';
 import { JobRole } from './job.model';
+import { WDFValue } from './wdf.model';
 
 export interface Worker {
   uid?: string;
@@ -93,31 +94,29 @@ export interface WorkerDays {
 }
 
 export interface WorkerWdfRecord {
-  annualHourlyPay: wdfStatus;
-  careCertificate: wdfStatus;
-  contract: wdfStatus;
+  annualHourlyPay: WDFValue;
+  careCertificate: WDFValue;
+  contract: WDFValue;
   currentEligibility: boolean;
-  dateOfBirth: wdfStatus;
-  daysSick: wdfStatus;
+  dateOfBirth: WDFValue;
+  daysSick: WDFValue;
   effectiveFrom: string;
-  gender: wdfStatus;
-  highestQualification: wdfStatus;
+  gender: WDFValue;
+  highestQualification: WDFValue;
   isEligible: boolean;
   lastEligibility: string;
-  mainJob: wdfStatus;
-  mainJobStartDate: wdfStatus;
-  nationality: wdfStatus;
-  otherJobs: wdfStatus;
-  otherQualification: wdfStatus;
-  qualificationInSocialCare: wdfStatus;
-  recruitedFrom: wdfStatus;
-  socialCareQualification: wdfStatus;
-  weeklyHoursAverage: wdfStatus;
-  weeklyHoursContracted: wdfStatus;
-  zeroHoursContract: wdfStatus;
+  mainJob: WDFValue;
+  mainJobStartDate: WDFValue;
+  nationality: WDFValue;
+  otherJobs: WDFValue;
+  otherQualification: WDFValue;
+  qualificationInSocialCare: WDFValue;
+  recruitedFrom: WDFValue;
+  socialCareQualification: WDFValue;
+  weeklyHoursAverage: WDFValue;
+  weeklyHoursContracted: WDFValue;
+  zeroHoursContract: WDFValue;
 }
-
-export type wdfStatus = 'Yes' | 'No' | 'Not relevant';
 
 export interface WorkersResponse {
   workers: Worker[];

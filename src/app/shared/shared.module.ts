@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import {
   SummaryRecordValueComponent,
-} from '@shared/components/staff-record-summary/summary-record-value/summary-record-value.component';
+} from '@shared/components/summary-record-value/summary-record-value.component';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
