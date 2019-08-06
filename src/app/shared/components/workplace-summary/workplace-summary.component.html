@@ -264,28 +264,21 @@
       New starters
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="isArray(workplace.starters)">
-        <ul class="govuk-list govuk-!-margin-bottom-0">
-          <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
-        </ul>
-      </ng-container>
-      <ng-container *ngIf="!isArray(workplace.starters)">
-        <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.starters">
-          <ng-container *ngIf="!workplace.starters?.length; else starters">
-            -
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.starters">
+        <ng-container *ngIf="!workplace.starters?.length; else starters">
+          -
+        </ng-container>
+        <ng-template #starters>
+          <ng-container *ngIf="isArray(workplace.starters)">
+            <ul class="govuk-list govuk-!-margin-bottom-0">
+              <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
+            </ul>
           </ng-container>
-          <ng-template #starters>
-            <ng-container *ngIf="isArray(workplace.starters)">
-              <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
-              </ul>
-            </ng-container>
-            <ng-container *ngIf="!isArray(workplace.starters)">
-              {{ workplace.starters }}
-            </ng-container>
-          </ng-template>
-        </app-summary-record-value>
-      </ng-container>
+          <ng-container *ngIf="!isArray(workplace.starters)">
+            {{ workplace.starters }}
+          </ng-container>
+        </ng-template>
+      </app-summary-record-value>
     </dd>
     <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <a [routerLink]="['/workplace', workplace.uid, 'starters']" (click)="setReturn()">
