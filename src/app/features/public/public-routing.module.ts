@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AccessibilityStatementComponent } from '@features/public/accessibility-statement/accessibility-statement.component';
 import { ContactUsComponent } from '@features/public/contact-us/contact-us.component';
 import { CookiePolicyComponent } from '@features/public/cookie-policy/cookie-policy.component';
 import { FeedbackComponent } from '@features/public/feedback/feedback.component';
@@ -25,6 +26,11 @@ const routes: Routes = [
     path: 'cookie-policy',
     component: CookiePolicyComponent,
     data: { title: 'Cookie Policy' },
+  },
+  {
+    path: 'accessibility-statement',
+    component: AccessibilityStatementComponent,
+    data: { title: 'Accessibility Statement' },
   },
 ];
 
