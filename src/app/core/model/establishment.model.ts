@@ -62,7 +62,6 @@ export interface WDF {
   currentEligibility: boolean;
   employerType: WDFValue;
   mainService: WDFValue;
-  otherService: WDFValue;
   capacities: WDFValue;
   serviceUsers: WDFValue;
   vacancies: WDFValue;
