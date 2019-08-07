@@ -5,7 +5,6 @@ const PAY_TYPE = ['Hourly', 'Annually', 'Don\'t know'];
 exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty extends ChangePropertyPrototype {
     constructor() {
         super('AnnualHourlyPay');
-        this._wdfTemporal = true;          
     }
 
     static clone() {
@@ -76,7 +75,7 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
         if (document.AnnualHourlyPayValue !== "Don't know") {
             payDocument.rate = parseFloat(document.AnnualHourlyPayRate);
         }
-        
+
         return payDocument;
     }
     savePropertyToSequelize() {
@@ -84,7 +83,7 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
             AnnualHourlyPayValue: this.property.value,
             AnnualHourlyPayRate: this.property.value !== "Don't know" ? this.property.rate : null
         };
-        
+
         return payDocument;
     }
 
@@ -102,7 +101,7 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -111,7 +110,7 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
                 annualHourlyPay: this.property
             };
         }
-        
+
         return {
             annualHourlyPay : {
                 currentValue: this.property,

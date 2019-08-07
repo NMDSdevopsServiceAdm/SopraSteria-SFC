@@ -8,8 +8,6 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
     constructor() {
         super('CapacityServices');
 
-        this._wdfTemporal = false;
-        
         // other services needs reference to main service and All (Known for this Establishment) Service Capacities
         this._mainService = null;
         this._allCapacities = null;
@@ -167,7 +165,7 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = null) {
 
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {

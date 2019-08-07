@@ -5,7 +5,6 @@ const ZERO_CONTRACT_TYPE = ['Yes', 'No', 'Don\'t know'];
 exports.WorkerZeroContractProperty = class WorkerZeroContractProperty extends ChangePropertyPrototype {
     constructor() {
         super('ZeroHoursContract');
-        this._wdfTemporal = false;        
     }
 
     static clone() {
@@ -39,7 +38,7 @@ exports.WorkerZeroContractProperty = class WorkerZeroContractProperty extends Ch
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -48,7 +47,7 @@ exports.WorkerZeroContractProperty = class WorkerZeroContractProperty extends Ch
                 zeroHoursContract: this.property
             };
         }
-        
+
         return {
             zeroHoursContract : {
                 currentValue: this.property,

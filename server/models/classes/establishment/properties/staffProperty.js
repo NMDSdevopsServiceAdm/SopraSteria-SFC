@@ -4,8 +4,6 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
     constructor() {
         super('NumberOfStaff');
-
-        this._wdfTemporal = true;
     }
 
     static clone() {
@@ -42,9 +40,9 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
         return currentValue !== null && newValue !== null && currentValue === newValue;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {       
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -53,7 +51,7 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
                 numberOfStaff: this.property
             };
         }
-        
+
         return {
             numberOfStaff: {
                 currentValue: this.property,

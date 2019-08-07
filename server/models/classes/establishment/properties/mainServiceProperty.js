@@ -6,8 +6,6 @@ const OTHER_MAX_LENGTH=120;
 exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPrototype {
     constructor() {
         super('MainServiceFK');
-
-        this._wdfTemporal = false;        
     }
 
     static clone() {
@@ -52,9 +50,9 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
             (!currentValue.other && !newValue.other));
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {       
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -63,7 +61,7 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
                 mainService: this.property
             };
         }
-        
+
         return {
             mainService: {
                 currentValue: this.property,

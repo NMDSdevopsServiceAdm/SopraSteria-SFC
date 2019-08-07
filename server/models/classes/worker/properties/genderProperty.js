@@ -5,8 +5,6 @@ const GENDER_TYPE = ['Female', 'Male', 'Other', "Don't know"];
 exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangePropertyPrototype {
     constructor() {
         super('Gender');
-
-        this._wdfTemporal = false;
     }
 
     static clone() {
@@ -40,7 +38,7 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangeProperty
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -49,7 +47,7 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangeProperty
                 gender: this.property
             };
         }
-        
+
         return {
             gender : {
                 currentValue: this.property,
