@@ -1263,8 +1263,7 @@ class Worker extends EntityValidator {
         return  property &&
                 (property.property !== null && property.property !== undefined) &&
                 property.valid &&
-                referenceTime !== null &&
-                referenceTime > refEpoch;
+                referenceTime !== null;
     }
 
     // returns the WDF eligibility of each WDF relevant property as referenced from
@@ -1327,7 +1326,7 @@ class Worker extends EntityValidator {
 
         let weeklyHoursContractedEligible;
         let weeklyHoursAverageEligible;
-        
+
         if (this._properties.get('ZeroHoursContract').property === null) {
             // we have insufficient information to calculate whether the average/contracted weekly hours is WDF eligibnle
             weeklyHoursContractedEligible = 'Not relevant';
@@ -1398,7 +1397,7 @@ class Worker extends EntityValidator {
 
         let socialCareQualificationEligible;
         let highestQualificationEligible;
-        
+
         if (this._properties.get('QualificationInSocialCare').property === null || this._properties.get('QualificationInSocialCare').property === 'No') {
             // if not having defined 'having a qualification in social care' or 'have said no'
             socialCareQualificationEligible = 'Not relevant';

@@ -1567,8 +1567,7 @@ class Establishment extends EntityValidator {
         return property &&
                (property.property !== null && property.property !== undefined) &&
                property.valid &&
-               referenceTime !== null &&
-               referenceTime > refEpoch;
+               referenceTime !== null;
     }
 
     // returns the WDF eligibility of each WDF relevant property as referenced from
@@ -1578,7 +1577,7 @@ class Establishment extends EntityValidator {
         const effectiveFromEpoch = effectiveFrom.getTime();
 
         // employer type
-        myWdf['employerType'] = { 
+        myWdf['employerType'] = {
             isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType')) ? 'Yes' : 'No',
             updatedSinceEffectiveDate: this._properties.get('EmployerType').toJSON(false, true, WdfCalculator.effectiveDate)
         }
