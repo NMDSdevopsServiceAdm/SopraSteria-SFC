@@ -70,23 +70,21 @@
       Other job roles
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.otherJobs">
-        <ng-container *ngIf="!worker.otherJobs?.length; else otherJobs">
-          -
-        </ng-container>
-        <ng-template #otherJobs>
-          <ul class="govuk-list govuk-!-margin-bottom-0">
-            <li *ngFor="let otherJob of worker.otherJobs">
-              <ng-container *ngIf="otherJob.other; else title">
-                <span>{{ otherJob.other }}</span>
-              </ng-container>
-              <ng-template #title>
-                <span>{{ otherJob.title }}</span>
-              </ng-template>
-            </li>
-          </ul>
-        </ng-template>
-      </app-summary-record-value>
+      <ng-container *ngIf="!worker.otherJobs?.length; else otherJobs">
+        -
+      </ng-container>
+      <ng-template #otherJobs>
+        <ul class="govuk-list govuk-!-margin-bottom-0">
+          <li *ngFor="let otherJob of worker.otherJobs">
+            <ng-container *ngIf="otherJob.other; else title">
+              <span>{{ otherJob.other }}</span>
+            </ng-container>
+            <ng-template #title>
+              <span>{{ otherJob.title }}</span>
+            </ng-template>
+          </li>
+        </ul>
+      </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('other-job-roles')" (click)="setReturn()">
