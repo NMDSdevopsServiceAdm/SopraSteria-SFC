@@ -767,7 +767,7 @@ class Establishment extends EntityValidator {
                     //  the last WDF Eligibility status
                     const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
                     let wdfAudit = null;
-                    if (currentWdfEligibiity.currentEligibility) {
+                    if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
                         console.log("WA DEBUG - updating this establishment's last WDF Eligible timestamp")
                         updateDocument.lastWdfEligibility = updatedTimestamp;
                         wdfAudit = {
@@ -1537,7 +1537,8 @@ class Establishment extends EntityValidator {
         //  the WDF by property will show the current eligibility of each property
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-            isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
+            //isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
+            isEligible: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No' && thisWdfProperty.updatedSinceEffectiveDate === true),
             currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
             ... wdfByProperty
         };
@@ -1586,11 +1587,6 @@ class Establishment extends EntityValidator {
         myWdf['mainService'] = {
             isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No',
             updatedSinceEffectiveDate: this._properties.get('MainServiceFK').toJSON(false, true, WdfCalculator.effectiveDate)
-        }
-
-        myWdf['otherService'] = {
-            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No',
-            updatedSinceEffectiveDate: this._properties.get('OtherServices').toJSON(false, true, WdfCalculator.effectiveDate)
         }
 
         // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)

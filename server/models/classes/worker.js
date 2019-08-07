@@ -552,9 +552,10 @@ class Worker extends EntityValidator {
                     //  it's current WDF Eligibility, and if it is eligible, update
                     //  the last WDF Eligibility status
                     const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
+                    const effectiveDateTime = WdfCalculator.effectiveTime;
 
                     let wdfAudit = null;
-                    if (currentWdfEligibiity.currentEligibility) {
+                    if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
                         updateDocument.lastWdfEligibility = updatedTimestamp;
                         wdfAudit = {
                             username: savedBy.toLowerCase(),
@@ -1230,7 +1231,8 @@ class Worker extends EntityValidator {
 
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-            isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
+            //isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
+            isEligible: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No' && thisWdfProperty.updatedSinceEffectiveDate === true),
             currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
             ... wdfByProperty
         };
@@ -1293,11 +1295,6 @@ class Worker extends EntityValidator {
         myWdf['mainJob'] = {
             isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJob')) ? 'Yes' : 'No',
             updatedSinceEffectiveDate: this._properties.get('MainJob').toJSON(false, true, WdfCalculator.effectiveDate)
-        }
-
-        myWdf['otherJobs'] = {
-            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherJobs')) ? 'Yes' : 'No',
-            updatedSinceEffectiveDate: this._properties.get('OtherJobs').toJSON(false, true, WdfCalculator.effectiveDate)
         }
 
         myWdf['mainJobStartDate'] = {
