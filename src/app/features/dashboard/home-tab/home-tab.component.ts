@@ -21,6 +21,7 @@ export class HomeTabComponent implements OnInit {
   public updateStaffRecords: boolean;
   public updateWorkplace: boolean;
   public user: UserDetails;
+  public canEdit: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -31,8 +32,9 @@ export class HomeTabComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.userService.loggedInUser;
+    this.canEdit = this.user.role === (Roles.Edit || Roles.Admin);
 
-    if (this.workplace && this.user.role === (Roles.Edit || Roles.Admin)) {
+    if (this.workplace && this.canEdit) {
       this.subscriptions.add(
         this.workerService
           .getAllWorkers(this.workplace.uid)
