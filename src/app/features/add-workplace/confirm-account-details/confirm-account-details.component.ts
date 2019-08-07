@@ -4,7 +4,7 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CreateAccountRequest, CreateAccountResponse } from '@core/model/account.model';
 import { Roles } from '@core/model/roles.enum';
-import { AddWorkplaceFlow } from '@core/model/workplace.model';
+import { AddWorkplaceFlow, AddWorkplaceResponse } from '@core/model/workplace.model';
 import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -109,7 +109,8 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       .createAccount(establishmentUid, this.generateCreateAccountRequest())
       .pipe(take(1))
       .subscribe(
-        () => {
+        (response: AddWorkplaceResponse) => {
+          this.workplaceService.newWorkplaceUid$.next(response.establishmentUid);
           this.workplaceService.addWorkplaceFlow$.next(AddWorkplaceFlow.CQC_WITH_USER);
           this.router.navigate([`${this.flow}/complete`]);
         },

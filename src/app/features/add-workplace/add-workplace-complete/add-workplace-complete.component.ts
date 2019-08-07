@@ -8,13 +8,15 @@ import { WorkplaceService } from '@core/services/workplace.service';
 })
 export class AddWorkplaceCompleteComponent implements OnInit {
   public addWorkplaceFlow: string;
-  public cqcWithUser: string = AddWorkplaceFlow.CQC_WITH_USER;
   public CQCNoUser: string = AddWorkplaceFlow.CQC_NO_USER;
+  public cqcWithUser: string = AddWorkplaceFlow.CQC_WITH_USER;
+  public newWorkplaceUid: string;
   public nonCQC: string = AddWorkplaceFlow.NON_CQC;
 
   constructor(private workplaceService: WorkplaceService) {}
 
   ngOnInit(): void {
+    this.newWorkplaceUid = this.workplaceService.newWorkplaceUid$.value;
     this.addWorkplaceFlow = this.workplaceService.addWorkplaceFlow$.value;
     this.workplaceService.addWorkplaceInProgress$.next(false);
   }
