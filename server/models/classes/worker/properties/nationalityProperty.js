@@ -8,8 +8,6 @@ const KNOWN_NATIONALITIES = ['British', 'Other', "Don't know"];
 exports.WorkerNationalityProperty = class WorkerNationalityProperty extends ChangePropertyPrototype {
     constructor() {
         super('Nationality');
-
-        this._wdfTemporal = false;        
     }
 
     static clone() {
@@ -105,7 +103,7 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -114,7 +112,7 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
                 nationality: this.property
             };
         }
-        
+
         return {
             nationality : {
                 currentValue: this.property,
