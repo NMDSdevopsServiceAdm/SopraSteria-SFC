@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
+import { Eligibility } from '@core/model/wdf.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { isObject, pick, pickBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 import {
@@ -67,12 +69,20 @@ export class WdfStaffSummaryComponent implements OnInit {
     }
   }
 
-  /**
-   * TODO: This does not do anything (awaiting implementation of BE 'save')
-   */
   private confirmAndSubmit() {
+    const wdfProperties = pickBy(this.worker.wdf, isObject);
+    const keys = Object.keys(
+      pickBy(wdfProperties, function(wdfProperty, key) {
+        if (wdfProperty.hasOwnProperty('updatedSinceEffectiveDate')) {
+          return wdfProperty.isEligible === Eligibility.YES && !wdfProperty.updatedSinceEffectiveDate;
+        }
+        return false;
+      })
+    );
+    const props = pick(this.worker, keys);
+
     this.subscriptions.add(
-      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, {}).subscribe(() => {
+      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {
         this.router.navigate(this.exitUrl.url, { fragment: this.exitUrl.fragment });
         this.alertService.addAlert({ type: 'success', message: 'The staff record has been saved and confirmed.' });
       })
