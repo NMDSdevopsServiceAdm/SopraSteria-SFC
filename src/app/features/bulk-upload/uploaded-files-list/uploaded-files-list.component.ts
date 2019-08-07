@@ -10,7 +10,6 @@ import {
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { AlertService } from '@core/services/alert.service';
-import { AuthService } from '@core/services/auth.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -42,7 +41,6 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     private router: Router,
     private alertService: AlertService,
     private dialogService: DialogService,
-    private authService: AuthService
   ) {}
 
   ngOnInit() {
