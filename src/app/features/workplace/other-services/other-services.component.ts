@@ -37,7 +37,7 @@ export class OtherServicesComponent extends Question {
 
   protected init() {
     this.subscriptions.add(
-      this.establishmentService.getAllServices(this.establishment.id).subscribe(
+      this.establishmentService.getAllServices(this.establishment.uid).subscribe(
         (serviceGroups: Array<ServiceGroup>) => {
           this.serviceGroups = serviceGroups;
           this.serviceGroups.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
@@ -51,7 +51,7 @@ export class OtherServicesComponent extends Question {
       )
     );
 
-    this.previous = ['/workplace', `${this.establishment.id}`, 'type-of-employer'];
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'type-of-employer'];
   }
 
   private updateForm(): void {
@@ -140,7 +140,7 @@ export class OtherServicesComponent extends Question {
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .updateOtherServices(this.establishment.id, props)
+        .updateOtherServices(this.establishment.uid, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
@@ -148,12 +148,12 @@ export class OtherServicesComponent extends Question {
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
     this.subscriptions.add(
-      this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
+      this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         response => {
           this.next =
             response.allServiceCapacities && response.allServiceCapacities.length
-              ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
-              : ['/workplace', `${this.establishment.id}`, 'service-users'];
+              ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
+              : ['/workplace', `${this.establishment.uid}`, 'service-users'];
           this.navigate();
         },
         error => this.onError(error)

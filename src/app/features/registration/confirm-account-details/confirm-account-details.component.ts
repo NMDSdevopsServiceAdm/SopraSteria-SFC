@@ -41,10 +41,10 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
         this.registrationService.selectedWorkplaceService$,
         this.registrationService.loginCredentials$,
         this.registrationService.securityDetails$
-      ).subscribe(([userDetails, locationAddress, workplaceService, loginCredentials, securityDetails]) => {
+      ).subscribe(([userDetails, locationAddress, service, loginCredentials, securityDetails]) => {
         this.userDetails = userDetails;
         this.locationAddress = locationAddress;
-        this.workplaceService = workplaceService;
+        this.service = service;
         this.loginCredentials = loginCredentials;
         this.securityDetails = securityDetails;
         this.setAccountDetails();
@@ -104,10 +104,10 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
 
   private generatePayload(): Array<RegistrationPayload> {
     const payload: any = this.locationAddress;
-    payload.locationId = this.workplaceService.isCQC ? this.locationAddress.locationId : null;
-    payload.mainService = this.workplaceService.name;
-    payload.mainServiceOther = this.workplaceService.otherName ? this.workplaceService.otherName : null;
-    payload.isRegulated = this.workplaceService.isCQC;
+    payload.locationId = this.service.isCQC ? this.locationAddress.locationId : null;
+    payload.mainService = this.service.name;
+    payload.mainServiceOther = this.service.otherName ? this.service.otherName : null;
+    payload.isRegulated = this.service.isCQC;
     payload.user = this.userDetails;
     payload.user.username = this.loginCredentials.username;
     payload.user.password = this.loginCredentials.password;

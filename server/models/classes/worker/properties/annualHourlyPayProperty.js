@@ -5,6 +5,7 @@ const PAY_TYPE = ['Hourly', 'Annually', 'Don\'t know'];
 exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty extends ChangePropertyPrototype {
     constructor() {
         super('AnnualHourlyPay');
+        this._wdfTemporal = true;          
     }
 
     static clone() {
@@ -99,7 +100,11 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
         return currentValue && newValue && currentValue.value === newValue.value && rateEqual;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {

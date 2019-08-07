@@ -1,14 +1,14 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavigationExtras, Router } from '@angular/router';
-import { LoginCredentials } from '@core/model/login-credentials.model';
+import { Router } from '@angular/router';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { AuthService } from '@core/services/auth.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { Subscription } from 'rxjs';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { take } from 'rxjs/operators';
 
 const PING_INTERVAL = 240;
 const TIMEOUT_INTERVAL = 1800;
@@ -18,9 +18,9 @@ const TIMEOUT_INTERVAL = 1800;
   templateUrl: './login.component.html',
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public submitted = false;
-  private subscriptions: Subscription = new Subscription();
   public formErrorsMap: Array<ErrorDetails>;
   public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
@@ -93,72 +93,49 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.save();
+      this.login();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private getLoginCredentials(): LoginCredentials {
-    return {
-      username: this.form.get('username').value,
-      password: this.form.get('password').value,
-    };
-  }
+  private login(): void {
+    const { username, password } = this.form.value;
 
-  private save(): void {
     this.subscriptions.add(
-      this.authService.postLogin(this.getLoginCredentials()).subscribe(
+      this.authService.authenticate(username, password).subscribe(
         response => {
-          this.authService.updateState(response.body);
-
-          if (response.body.establishment && response.body.establishment.id) {
-            this.establishmentService.checkIfSameLoggedInUser(response.body.establishment.id);
+          if (response.body.establishment && response.body.establishment.uid) {
+            this.establishmentService.checkIfSameLoggedInUser(response.body.establishment.uid);
 
             // update the establishment service state with the given establishment id
-            this.establishmentService.establishmentId = response.body.establishment.id;
+            this.establishmentService.establishmentId = response.body.establishment.uid;
           }
-
-          const token = response.headers.get('authorization');
-          this.authService.authorise(token);
 
           this.idleService.init(PING_INTERVAL, TIMEOUT_INTERVAL);
           this.idleService.start();
 
           this.idleService.ping$.subscribe(() => {
-            this.authService.refreshToken().subscribe(res => {
-              this.authService.authorise(res.headers.get('authorization'));
-            });
+            this.authService
+              .refreshToken()
+              .pipe(take(1))
+              .subscribe();
           });
 
           this.idleService.onTimeout().subscribe(() => {
             this.authService.logoutWithoutRouting();
             this.router.navigate(['/logged-out']);
           });
+
+          this.router.navigate(['/dashboard']);
         },
         (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        },
-        () => {
-          const redirect = this.authService.redirect;
-
-          if (redirect && redirect.length) {
-            this.router.navigateByUrl(redirect);
-            this.authService.redirect = null;
-          } else {
-            this.router.navigate(['/dashboard']);
-          }
         }
       )
     );

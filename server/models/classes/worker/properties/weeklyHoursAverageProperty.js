@@ -5,6 +5,7 @@ const WEEKLY_HOURS_TYPE = ['Yes', 'No'];
 exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAverageProperty extends ChangePropertyPrototype {
     constructor() {
         super('WeeklyHoursAverage');
+        this._wdfTemporal = false;         
     }
 
     static clone() {
@@ -80,7 +81,11 @@ exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAveragePropert
         return currentValue && newValue && currentValue.value === newValue.value && hoursEqual;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {

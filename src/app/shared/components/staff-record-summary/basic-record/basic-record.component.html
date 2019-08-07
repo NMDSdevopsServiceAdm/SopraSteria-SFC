@@ -20,7 +20,7 @@
       Main job role
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.mainJob" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.mainJob">
         <ng-container *ngIf="worker.mainJob.other; else title">
           <span>{{ worker.mainJob.other }}</span>
         </ng-container>
@@ -36,7 +36,7 @@
       Contract type
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.contract" [item]="worker">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.contract">
         {{ worker.contract }}
       </app-summary-record-value>
     </dd>

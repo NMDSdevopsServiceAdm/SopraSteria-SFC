@@ -1,3 +1,5 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <h1 class="govuk-heading-xl">Provide basic information for each member of staff.</h1>
@@ -57,7 +59,7 @@
             <span
               *ngIf="staffRecord.get('nameOrId').invalid && staffRecord.get('nameOrId').touched"
               class="govuk-error-message"
-              id="nameOrId-{{ i }}-error"
+              id="staffRecords-nameOrId-error"
             >
               <span class="govuk-visually-hidden"> Error:</span> Enter a full name or ID number.
             </span>
@@ -82,7 +84,7 @@
             <span
               *ngIf="staffRecord.get('mainJobRole').invalid && staffRecord.get('mainJobRole').touched"
               class="govuk-error-message"
-              id="mainJobRole-{{ i }}-error"
+              id="staffRecords-mainJobRole-error"
             >
               <span class="govuk-visually-hidden">Error:</span> Select a job role.
             </span>
@@ -114,7 +116,7 @@
             <span
               *ngIf="staffRecord.get('otherJobRole').invalid && staffRecord.get('otherJobRole').touched"
               class="govuk-error-message"
-              id="otherJobRole-{{ i }}-error"
+              id="staffRecords-otherJobRole-error"
             >
               <span class="govuk-visually-hidden">Error:</span>
               Your job role must be {{ this.otherJobRoleCharacterLimit }} characters or less.
@@ -142,12 +144,12 @@
             <span
               *ngIf="staffRecord.get('contract').invalid && staffRecord.get('contract').touched"
               class="govuk-error-message"
-              id="contract-{{ i }}-error"
+              id="staffRecords-contract-error"
             >
               <span class="govuk-visually-hidden">
                 Error:
               </span>
-              Select yes if you have changed your name.
+              Select a contract type.
             </span>
             <div class="govuk-radios">
               <div class="govuk-radios__item" *ngFor="let contract of contracts; let idx = index">

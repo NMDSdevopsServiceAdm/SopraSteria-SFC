@@ -5,6 +5,7 @@ const OTHER_QUALIFICATION_TYPE = ['Yes', 'No', 'Don\'t know'];
 exports.WorkerOtherQualificationProperty = class WorkerOtherQualificationProperty extends ChangePropertyPrototype {
     constructor() {
         super('OtherQualifications');
+        this._wdfTemporal = false;
     }
 
     static clone() {
@@ -35,7 +36,11 @@ exports.WorkerOtherQualificationProperty = class WorkerOtherQualificationPropert
         return currentValue && newValue && currentValue === newValue;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {

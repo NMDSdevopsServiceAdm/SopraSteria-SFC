@@ -3,6 +3,7 @@ export interface AddWorkplaceRequest {
   addressLine2: string;
   county: string;
   isRegulated: boolean;
+  locationId: string;
   locationName: string;
   mainService: string;
   postalCode: string;
@@ -15,4 +16,10 @@ export interface AddWorkplaceResponse {
   message: string;
   nmdsId: string;
   status: number;
+}
+
+export enum AddWorkplaceFlow {
+  CQC_WITH_USER = 'CQC with user',
+  CQC_NO_USER = 'CQC no user',
+  NON_CQC = 'non cqc',
 }

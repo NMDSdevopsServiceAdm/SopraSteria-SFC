@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 
@@ -55,19 +54,16 @@ const routes: Routes = [
   {
     path: 'start-screen',
     component: CreateStaffRecordStartScreenComponent,
-    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Create Staff Record Start' },
   },
   {
     path: 'total-staff',
     component: TotalStaffComponent,
-    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Total Staff' },
   },
   {
     path: 'basic-records-start-screen',
     component: CreateBasicRecordsStartScreenComponent,
-    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Create Basic Records Start' },
   },
   {
@@ -78,7 +74,6 @@ const routes: Routes = [
   {
     path: 'basic-records-save-success',
     component: BasicRecordsSaveSuccessComponent,
-    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Basic Records Save Success' },
   },
   {
@@ -89,7 +84,7 @@ const routes: Routes = [
   {
     path: ':id',
     component: EditWorkerComponent,
-    resolve: { worker: WorkerResolver, primaryWorkplace: PrimaryWorkplaceResolver },
+    resolve: { worker: WorkerResolver },
     children: [
       {
         path: '',

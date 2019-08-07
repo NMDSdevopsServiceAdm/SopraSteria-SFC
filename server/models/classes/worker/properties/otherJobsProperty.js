@@ -8,6 +8,8 @@ const OTHER_MAX_LENGTH=120;
 exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePropertyPrototype {
     constructor() {
         super('OtherJobs');
+
+        this._wdfTemporal = false;        
     }
 
     static clone() {
@@ -111,7 +113,11 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
         return returnVal;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {

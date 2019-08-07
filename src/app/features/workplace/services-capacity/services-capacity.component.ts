@@ -34,11 +34,11 @@ export class ServicesCapacityComponent extends Question {
 
   protected init(): void {
     this.subscriptions.add(
-      this.establishmentService.getCapacity(this.establishment.id, true).subscribe(capacities => {
+      this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(capacities => {
         this.capacities = capacities.allServiceCapacities;
 
         if (this.capacities.length === 0) {
-          this.router.navigate(['/workplace', this.establishment.id, 'other-services'], { replaceUrl: true });
+          this.router.navigate(['/workplace', this.establishment.uid, 'other-services'], { replaceUrl: true });
         }
 
         capacities.allServiceCapacities.forEach((service, i) => {
@@ -80,8 +80,8 @@ export class ServicesCapacityComponent extends Question {
       })
     );
 
-    this.next = ['/workplace', `${this.establishment.id}`, 'service-users'];
-    this.previous = ['/workplace', `${this.establishment.id}`, 'other-services'];
+    this.next = ['/workplace', `${this.establishment.uid}`, 'service-users'];
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'other-services'];
   }
 
   protected setupServerErrorsMap(): void {
@@ -113,7 +113,7 @@ export class ServicesCapacityComponent extends Question {
   protected updateEstablishment(props): void {
     this.subscriptions.add(
       this.establishmentService
-        .updateCapacity(this.establishment.id, props)
+        .updateCapacity(this.establishment.uid, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }

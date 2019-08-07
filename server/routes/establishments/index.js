@@ -211,11 +211,15 @@ router.route('/:id').get(async (req, res) => {
             //  we don't want those on the root GET establishment; only necessary for the
             //  direct GET endpoints "establishment/:eid/service" and
             //  establishment/:eid/service respectively
-            const jsonResponse = thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false)
+
+            const jsonResponse = thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, true, null, false, req.query.wdf)
             delete jsonResponse.allOtherServices;
             delete jsonResponse.allServiceCapacities;
 
-            if (!showHistory) jsonResponse.wdf = await thisEstablishment.wdfToJson();
+            if (req.query.wdf) {
+              jsonResponse.wdf = await thisEstablishment.wdfToJson();
+              jsonResponse.totalWorkers = await thisEstablishment.getTotalWorkers();
+            }
 
             // need also to return the WDF eligibility
             return res.status(200).json(jsonResponse);

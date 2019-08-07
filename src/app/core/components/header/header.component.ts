@@ -31,7 +31,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public isLoggedIn(): boolean {
-    return this.authService.isLoggedIn;
+    return this.authService.isAuthenticated();
   }
 
   public toggleMenu(): void {

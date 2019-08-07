@@ -76,13 +76,17 @@ export class Question implements OnInit, OnDestroy {
 
   protected navigate(): void {
     const action = this.submitAction.action;
+    if (!action) {
+      return;
+    }
+
     switch (action) {
       case 'continue':
         this.router.navigate(this.next);
         break;
 
       case 'summary':
-        this.router.navigate(['/workplace', this.establishment.id, 'check-answers']);
+        this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
         break;
 
       case 'exit':
@@ -140,6 +144,9 @@ export class Question implements OnInit, OnDestroy {
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
+    if (this.establishment.uid === this.primaryWorkplace.uid) {
+      this.establishmentService.setPrimaryWorkplace({ ...this.establishment, ...data });
+    }
     this.onSuccess();
     this.navigate();
   }

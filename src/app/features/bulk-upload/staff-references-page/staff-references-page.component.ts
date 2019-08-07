@@ -4,10 +4,10 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { WorkPlaceReference } from '@core/model/my-workplaces.model';
-import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
 import { filter as _filter, findIndex } from 'lodash';
@@ -29,7 +29,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    protected authService: AuthService,
+    protected establishmentService: EstablishmentService,
     protected bulkUploadService: BulkUploadService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -37,7 +37,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
     protected router: Router,
     protected workerService: WorkerService
   ) {
-    super(authService, bulkUploadService, router, formBuilder, errorSummaryService);
+    super(establishmentService, bulkUploadService, router, formBuilder, errorSummaryService);
 
     this.subscriptions.add(
       this.router.events

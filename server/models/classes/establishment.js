@@ -852,13 +852,11 @@ class Establishment extends EntityValidator {
                         //  This decision is done based on if the Establishment is being marked as Completed.
                         // There does not yet exist a Completed property for establishment.
                         // For now, we'll recalculate on every update!
-                        const completedProperty = this._properties.get('Completed');
-                        if (this._properties.get('Completed') && this._properties.get('Completed').modified) {
-                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        } else {
-                            // TODO - include Completed logic.
-                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        } */
+                        */
+
+                        // if(!bulkUploadCompleted){
+                        //     await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
+                        // }
 
                         // if requested, propagate the saving of this establishment down to each of the associated entities
                         if (associatedEntities) {
@@ -1342,17 +1340,21 @@ class Establishment extends EntityValidator {
     };
 
 
+    async getTotalWorkers(){
+        return await models.worker.count({ where: { establishmentFk: this._id, archived: false }});
+    }
+
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at User and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given User
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false, wdf = false) {
         if (!showHistoryTimeline) {
             if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
                 throw new Error('Establishment::toJSON filteredPropertiesByName must be a simple Array of names');
             }
 
             // JSON representation of extendable properties - with optional filter
-            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName);
+            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName, false);
 
             // add Establishment default properties
             //  using the default formatters
@@ -1536,7 +1538,7 @@ class Establishment extends EntityValidator {
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
             isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
-            currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty !== 'No'),
+            currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
             ... wdfByProperty
         };
     }
@@ -1576,17 +1578,27 @@ class Establishment extends EntityValidator {
         const effectiveFromEpoch = effectiveFrom.getTime();
 
         // employer type
-        myWdf['employerType'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType')) ? 'Yes' : 'No';
+        myWdf['employerType'] = { 
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('EmployerType').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         // main service & Other Service & Service Capacities & Service Users
-        myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
-        myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
+        myWdf['mainService'] = {
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('MainServiceFK').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['otherService'] = {
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('OtherServices').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)
         //   are capacities. Otherwise, it (capacities eligibility) is not relevant.
         // All Known Capacities is available from the CapacityServices property JSON
         const hasCapacities = this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').toJSON(false, false).allServiceCapacities.length > 0 : false;
-
+        let capacitiesEligible;
         if (hasCapacities) {
             // first validate whether any of the capacities are eligible - this is simply a check that capacities are valid.
             const capacitiesProperty = this._properties.get('CapacityServices');
@@ -1603,21 +1615,48 @@ class Establishment extends EntityValidator {
             });
 
             if (mainServiceCapacities.length === 0) {
-                myWdf['capacities'] = 'Not relevant';
+                capacitiesEligible = 'Not relevant';
             } else {
                 // ensure all all main service's capacities have been answered - note, the can only be one Main Service capacity set
-                myWdf['capacities'] = mainServiceCapacities[0].questions.every(thisQuestion => thisQuestion.hasOwnProperty('answer')) ? 'Yes' : 'No';
+                capacitiesEligible = mainServiceCapacities[0].questions.every(thisQuestion => thisQuestion.hasOwnProperty('answer')) ? 'Yes' : 'No';
             }
 
         } else {
-            myWdf['capacities'] = 'Not relevant';
+            capacitiesEligible = 'Not relevant';
         }
-        myWdf['serviceUsers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? 'Yes' : 'No';
+
+        myWdf['capacities'] = {
+            isEligible: capacitiesEligible,
+            updatedSinceEffectiveDate: this._properties.get('CapacityServices').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['serviceUsers'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('ServiceUsers').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         // vacancies, starters and leavers
-        myWdf['vacancies'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No';
-        myWdf['starters'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No';
-        myWdf['leavers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No';
+        myWdf['vacancies'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('Vacancies').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['starters'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('Starters').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['leavers'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('Leavers').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        let totalWorkerCount = await this.getTotalWorkers();
+
+        myWdf['numberOfStaff'] = {
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('NumberOfStaff').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         return myWdf;
     }
@@ -1911,19 +1950,64 @@ class Establishment extends EntityValidator {
             and "Worker"."Archived" = false
             and ("Establishment"."LocalIdentifierValue" is null OR "Worker"."LocalIdentifierValue" is null)`;
 
+        const missingEstablishmentsWithWorkerCountQuery = `
+            select
+            "Establishment"."EstablishmentID",
+            "EstablishmentUID",
+            "NameValue",
+            "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
+            CASE WHEN "WorkerTotals"."TotalWorkers" IS NULL THEN 0 ELSE "WorkerTotals"."TotalWorkers" END AS "TotalWorkers"
+          from cqc."Establishment"
+            left join
+            (
+              select
+                "EstablishmentID",
+                count(0) AS "TotalWorkers"
+              from cqc."Worker"
+                inner join cqc."Establishment" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
+              where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+              and "Worker"."Archived" = false
+              and "Worker"."LocalIdentifierValue" is null
+              group by "EstablishmentID"
+            ) "WorkerTotals" on "WorkerTotals"."EstablishmentID" = "Establishment"."EstablishmentID"
+          where (("Establishment"."EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+            and "Establishment"."Archived" = false
+            and ("Establishment"."LocalIdentifierValue" is null)`;
+
         const results = await models.sequelize.query(
-            query,
+            missingEstablishmentsWithWorkerCountQuery,
             {
               type: models.sequelize.QueryTypes.SELECT
             }
           );
 
-          // note - postgres returns the Total as a string not an integer
-        if (results && results[0] && parseInt(results[0].Total,10) === 0) {
-          return false;
-        } else {
-          return true;
+        // note - postgres returns the Total as a string not an integer
+        // eg.:
+        // [ { EstablishmentID: 30,
+        //     EstablishmentUID: '2d3fcc78-c9e8-4723-8927-a9c11988ba51',
+        //     NameValue: 'WOZiTech Rest Home for IT Professionals',
+        //     EstablishmentLocal: null,
+        //     TotalWorkers: '0' },
+        //   { EstablishmentID: 104,
+        //     EstablishmentUID: 'defefda6-9730-4c72-a505-6807ded10c21',
+        //     NameValue: 'WOZiTech Cares Sub 2',
+        //     EstablishmentLocal: 'BOB2',
+        //     TotalWorkers: '1' } ]
+        //
+        const missingEstablishments = [];
+        if (results && Array.isArray(results)) {
+            results.forEach(thisEstablishment => {
+                const totalWorkers = parseInt(thisEstablishment.TotalWorkers);
+                missingEstablishments.push({
+                    uid: thisEstablishment.EstablishmentUID,
+                    name: thisEstablishment.NameValue,
+                    missing: thisEstablishment.EstablishmentLocal === null ? true : undefined,
+                    workers: totalWorkers,
+                });
+            })
         }
+
+        return missingEstablishments;
       } catch (err) {
         console.error('Establishment::missingLocalIdentifiers error: ', err);
         throw err;

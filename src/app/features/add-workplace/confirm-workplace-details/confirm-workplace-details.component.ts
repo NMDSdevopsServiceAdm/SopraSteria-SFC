@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
+import { AddWorkplaceFlow } from '@core/model/workplace.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -15,7 +16,7 @@ import { combineLatest } from 'rxjs';
 })
 export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   public serverError: string;
-  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverErrorsMap: ErrorDefinition[] = this.workplaceService.serverErrorsMap;
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
@@ -29,17 +30,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
 
   protected init(): void {
     this.flow = '/add-workplace';
-    this.setupServerErrorsMap();
     this.getWorkplaceData();
-  }
-
-  public setupServerErrorsMap(): void {
-    this.serverErrorsMap = [
-      {
-        name: 400,
-        message: 'Data validation error.',
-      },
-    ];
   }
 
   protected getWorkplaceData(): void {
@@ -70,7 +61,10 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
           this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace)
         )
         .subscribe(
-          () => this.router.navigate([`${this.flow}/complete`]),
+          () => {
+            this.workplaceService.addWorkplaceFlow$.next(AddWorkplaceFlow.NON_CQC);
+            this.router.navigate([`${this.flow}/complete`]);
+          },
           (response: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
             this.errorSummaryService.scrollToErrorSummary();

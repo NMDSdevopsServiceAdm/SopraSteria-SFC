@@ -5,7 +5,6 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { Workplace } from '@core/model/my-workplaces.model';
-import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -28,16 +27,15 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   private exit: string[] = ['/bulk-upload'];
 
   constructor(
-    private establishmentService: EstablishmentService,
     private activatedRoute: ActivatedRoute,
-    protected authService: AuthService,
+    protected establishmentService: EstablishmentService,
     protected bulkUploadService: BulkUploadService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router
   ) {
-    super(authService, bulkUploadService, router, formBuilder, errorSummaryService);
+    super(establishmentService, bulkUploadService, router, formBuilder, errorSummaryService);
   }
 
   protected init(): void {

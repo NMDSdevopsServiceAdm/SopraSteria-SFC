@@ -6,6 +6,8 @@ const JobHelpers = require('./jobHelper');
 exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype {
     constructor() {
         super('Leavers');
+
+        this._wdfTemporal = true;
     }
 
     static clone() {
@@ -113,8 +115,12 @@ exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype 
         }
     }
 
-    toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {       
         const jsonPresentation = JobHelpers.formatJSON(this.property, 'Leavers', 'TotalLeavers');
+
+        if (wdfEffectiveDate) {
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+        }
 
         if (!withHistory) {
             // simple form - includes 

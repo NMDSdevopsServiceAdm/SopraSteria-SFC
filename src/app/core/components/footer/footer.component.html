@@ -12,12 +12,17 @@
       </div>
 
       <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
-        <ul class="govuk-list govuk-list--inline">
-          <li><a [routerLink]="['/help']" class="govuk-footer__link">Help</a></li>
-          <li><a [routerLink]="['/cookies']" class="govuk-footer__link">Cookies</a></li>
-          <li><a [routerLink]="['/public', 'contact-us']" class="govuk-footer__link">Contact us</a></li>
+        <ul class="govuk-list govuk-list--inline govuk-!-font-size-16">
+          <li><a [routerLink]="['/cookie-policy']" class="govuk-footer__link">Cookie policy</a></li>
+          <li><a [routerLink]="['/contact-us']" class="govuk-footer__link">Contact us</a></li>
           <li>
-            <a [routerLink]="['/public', 'terms-and-conditions']" class="govuk-footer__link">Terms and conditions</a>
+            <a [routerLink]="['/accessibility-statement']" class="govuk-footer__link">Accessibility statement</a>
+          </li>
+          <li>
+            <a [routerLink]="['/terms-and-conditions']" class="govuk-footer__link">Terms and conditions</a>
+          </li>
+          <li>
+            <a [routerLink]="['/privacy-notice']" class="govuk-footer__link">Privacy notice</a>
           </li>
         </ul>
       </div>

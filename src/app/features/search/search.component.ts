@@ -105,13 +105,13 @@ export class SearchComponent implements OnInit {
   }
 
   private onSwapSuccess(data) {
-    if (data.body && data.body.establishment && data.body.establishment.id) {
+    if (data.body && data.body.establishment && data.body.establishment.uid) {
       this.authService.token = data.headers.get('authorization');
 
-      const workplaceId = data.body.establishment.id;
+      const workplaceUid = data.body.establishment.uid;
 
       this.establishmentService
-        .getEstablishment(workplaceId)
+        .getEstablishment(workplaceUid)
         .pipe(take(1))
         .subscribe(workplace => {
           this.establishmentService.setState(workplace);

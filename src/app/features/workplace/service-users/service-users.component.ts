@@ -44,14 +44,14 @@ export class ServiceUsersComponent extends Question {
       })
     );
 
-    this.next = ['/workplace', `${this.establishment.id}`, 'sharing-data'];
+    this.next = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
     this.subscriptions.add(
-      this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
+      this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         response => {
           this.previous =
             response.allServiceCapacities && response.allServiceCapacities.length
-              ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
-              : ['/workplace', `${this.establishment.id}`, 'other-services'];
+              ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
+              : ['/workplace', `${this.establishment.uid}`, 'other-services'];
           this.setBackLink();
         },
         error => this.onError(error)
@@ -135,7 +135,7 @@ export class ServiceUsersComponent extends Question {
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .updateServiceUsers(this.establishment.id, props)
+        .updateServiceUsers(this.establishment.uid, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }

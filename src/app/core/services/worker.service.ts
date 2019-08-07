@@ -83,8 +83,9 @@ export class WorkerService {
     this.totalStaffReturn$.next(val);
   }
 
-  getWorker(workplaceUid: string, workerId: string): Observable<Worker> {
-    return this.http.get<Worker>(`/api/establishment/${workplaceUid}/worker/${workerId}`);
+  getWorker(workplaceUid: string, workerId: string, wdf: boolean = false): Observable<Worker> {
+    const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
+    return this.http.get<Worker>(`/api/establishment/${workplaceUid}/worker/${workerId}`, { params });
   }
 
   public getAllWorkers(establishmentuid: string): Observable<Worker[]> {

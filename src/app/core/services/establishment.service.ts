@@ -45,15 +45,15 @@ interface EmployerTypeRequest {
 export class EstablishmentService {
   private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
-  public previousEstablishmentId: number;
+  public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
 
   constructor(private http: HttpClient) {}
 
-  private _establishmentId: number = null;
+  private _establishmentId: string = null;
 
-  public checkIfSameLoggedInUser(establishmentId: number): void {
+  public checkIfSameLoggedInUser(establishmentId: string): void {
     if (!this.previousEstablishmentId || this.previousEstablishmentId !== establishmentId) {
       this.previousEstablishmentId = establishmentId;
       this.isSameLoggedInUser = false;
@@ -95,9 +95,10 @@ export class EstablishmentService {
 
   public resetState() {
     this._establishment$.next(null);
+    this.setPrimaryWorkplace(null);
   }
 
-  public set establishmentId(value: number) {
+  public set establishmentId(value: string) {
     this._establishmentId = value;
     localStorage.setItem('establishmentId', value.toString());
   }
@@ -114,7 +115,7 @@ export class EstablishmentService {
       return this._establishmentId;
     }
 
-    this._establishmentId = parseFloat(localStorage.getItem('establishmentId'));
+    this._establishmentId = localStorage.getItem('establishmentId');
 
     if (isDevMode()) {
       if (!this._establishmentId) {
@@ -133,8 +134,9 @@ export class EstablishmentService {
     this.returnTo$.next(returnTo);
   }
 
-  getEstablishment(id: string) {
-    return this.http.get<any>(`/api/establishment/${id}`);
+  getEstablishment(id: string, wdf: boolean = false) {
+    const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
+    return this.http.get<any>(`/api/establishment/${id}`, { params });
   }
 
   getCapacity(establishmentId, all = false) {

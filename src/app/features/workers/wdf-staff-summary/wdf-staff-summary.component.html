@@ -35,9 +35,4 @@
     (confirmed)="onConfirmAndSubmit()"
     [exitUrl]="exitUrl"
   ></app-wdf-confirmation-panel>
-
-  <!-- TODO REMOVE DEV BUTTON -->
-  <div *ngIf="!worker.completed">
-    <button type="button" (click)="saveAndComplete()" class="govuk-button">Complete</button>
-  </div>
 </ng-container>

@@ -94,7 +94,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   }
 
   private setPreviousRoute(): void {
-    this.previous = ['/workplace', `${this.establishment.id}`, 'starters'];
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'starters'];
   }
 
   private getJobs(): void {
@@ -201,16 +201,17 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
       this.establishmentService
-        .updateJobs(this.establishment.id, props)
+        .updateJobs(this.establishment.uid, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
 
   protected onSuccess(): void {
     if (this.establishment.leavers && Array.isArray(this.establishment.leavers)) {
-      this.next = ['/workplace', `${this.establishment.id}`, 'confirm-leavers'];
+      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-leavers']);
+      this.submitAction.action = null;
     } else {
-      this.next = ['/workplace', `${this.establishment.id}`, 'check-answers'];
+      this.next = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
     }
   }
 

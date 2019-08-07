@@ -96,8 +96,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
   private setPreviousRoute(): void {
     this.previous = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
-      ? ['/workplace', `${this.establishment.id}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.id}`, 'sharing-data'];
+      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
+      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
 
   private getJobs(): void {
@@ -205,16 +205,17 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
       this.establishmentService
-        .updateJobs(this.establishment.id, props)
+        .updateJobs(this.establishment.uid, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
 
   protected onSuccess(): void {
     if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies)) {
-      this.next = ['/workplace', `${this.establishment.id}`, 'confirm-vacancies'];
+      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-vacancies']);
+      this.submitAction.action = null;
     } else {
-      this.next = ['/workplace', `${this.establishment.id}`, 'starters'];
+      this.next = ['/workplace', `${this.establishment.uid}`, 'starters'];
     }
   }
 

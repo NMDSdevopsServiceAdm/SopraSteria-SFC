@@ -8,6 +8,7 @@ const models = require('../../../index');
 exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty extends ChangePropertyPrototype {
     constructor() {
         super('MainJobStartDate');
+        this._wdfTemporal = false;        
     }
 
     static clone() {
@@ -66,7 +67,11 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
         return currentValue && newValue && currentValue === newValue;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {

@@ -38,7 +38,7 @@
 
 <div class="govuk-grid-row" *ngIf="filesUploading">
   <div class="govuk-grid-column-full">
-    <div class="govuk-util__normal govuk-!-font-size-19 govuk-util__inline-block">Files uploading</div>
+    <div role="status" class="govuk-util__normal govuk-!-font-size-19 govuk-util__inline-block">Files uploading</div>
     <app-progress [value]="progress" max="100" class="govuk-!-margin-right-8 govuk-!-margin-left-8"></app-progress>
   </div>
 </div>

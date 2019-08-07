@@ -7,6 +7,7 @@ const models = require('../../../index');
 exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificationProperty extends ChangePropertyPrototype {
     constructor() {
         super('SocialCareQualification', 'SocialCareQualificationFk');
+        this._wdfTemporal = false;         
     }
 
     static clone() {
@@ -44,7 +45,11 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
         return currentValue && newValue && currentValue.qualificationId === newValue.qualificationId;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {

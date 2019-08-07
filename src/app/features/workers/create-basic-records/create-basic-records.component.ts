@@ -1,11 +1,13 @@
-import { Component, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -28,14 +30,13 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
   private otherJobRoleCharacterLimit = 120;
 
   constructor(
-    private elementRef: ElementRef,
-    private renderer: Renderer2,
     private formBuilder: FormBuilder,
     private router: Router,
     private backService: BackService,
     private establishmentService: EstablishmentService,
     private jobService: JobService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private errorSummaryService: ErrorSummaryService
   ) {
     this.addStaffRecord = this.addStaffRecord.bind(this);
 
@@ -131,25 +132,16 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
   private _openStaffRecord(index: number) {
     this.closeStaffRecords();
     this.staffRecordsControl.controls[index].patchValue({ active: true });
-    setTimeout(() => {
-      this.renderer.selectRootElement(`#staffRecord_${index}`, true).scrollIntoView({ behavior: 'smooth' });
-    });
   }
 
   private closeStaffRecords() {
     this.staffRecordsControl.controls.forEach(control => {
       control.patchValue({ active: false });
     });
+    this.submitted = false;
   }
 
   submitHandler() {
-    // TODO: Better validation and accessibility when submitting the form.
-    this.submitted = true;
-
-    const active = this.staffRecordsControl.controls.findIndex(group => {
-      return group.get('active').value;
-    });
-
     if (this.form.valid || this.staffRecordsControl.length === 0) {
       this.workerService.setCreateStaffResponse(
         this.staffRecordsControl.controls.filter(record => record.get('uid').value).length
@@ -163,18 +155,23 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
       if (unsavedIndex >= 0) {
         this._openStaffRecord(unsavedIndex);
         this.saveStaffRecord(unsavedIndex);
-      } else {
-        this.elementRef.nativeElement.querySelector('form').scrollIntoView(true);
       }
     }
   }
 
   public saveStaffRecord(index: number) {
+    this.submitted = true;
+
     const staffRecord = <FormGroup>this.staffRecordsControl.controls[index];
 
     Object.keys(staffRecord.controls).forEach(key => {
       staffRecord.get(key).markAsTouched();
     });
+
+    if (staffRecord.invalid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
 
     if (staffRecord.valid) {
       const { nameOrId, contract, mainJobRole, otherJobRole, uid } = staffRecord.controls;
@@ -211,5 +208,37 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
         );
       }
     }
+  }
+
+  get formErrorsMap(): Array<ErrorDetails> {
+    return [
+      {
+        item: 'staffRecords.nameOrId',
+        type: [
+          {
+            name: 'required',
+            message: 'Full name or ID number is required.',
+          },
+        ],
+      },
+      {
+        item: 'staffRecords.mainJobRole',
+        type: [
+          {
+            name: 'required',
+            message: 'Main job role is required.',
+          },
+        ],
+      },
+      {
+        item: 'staffRecords.contract',
+        type: [
+          {
+            name: 'required',
+            message: 'Type of contract is required.',
+          },
+        ],
+      },
+    ];
   }
 }

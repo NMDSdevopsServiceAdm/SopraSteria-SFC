@@ -1,3 +1,47 @@
-<p>
-  create-user-account works!
-</p>
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            Do you want to create a user account for {{ locationAddress.locationName }}?
+          </h1>
+        </legend>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
+          <span *ngIf="submitted && form.invalid" id="createUserAccount-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('createUserAccount') }}
+          </span>
+
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let item of formControlsMap; let i = index">
+              <input
+                class="govuk-radios__input"
+                id="createUserAccount-{{ i }}"
+                name="createUserAccount"
+                type="radio"
+                value="{{ item.toLowerCase() }}"
+                [formControlName]="'createUserAccount'"
+              />
+              <label class="govuk-label govuk-radios__label" for="createUserAccount-{{ i }}">
+                {{ item }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button" type="submit">Continue</button>
+      </div>
+    </form>
+  </div>
+</div>

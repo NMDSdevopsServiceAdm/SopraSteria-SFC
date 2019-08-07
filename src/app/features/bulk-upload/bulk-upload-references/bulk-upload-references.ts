@@ -8,9 +8,9 @@ import { LocalIdentifiersRequest } from '@core/model/establishment.model';
 import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { AuthService } from '@core/services/auth.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 export class BulkUploadReferences implements OnInit, OnDestroy {
@@ -31,7 +31,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public submitted = false;
 
   constructor(
-    protected authService: AuthService,
+    protected establishmentService: EstablishmentService,
     protected bulkUploadService: BulkUploadService,
     protected router: Router,
     protected formBuilder: FormBuilder,
@@ -47,7 +47,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   protected init() {}
 
   private setPrimaryEstablishmentName(): void {
-    this.primaryEstablishmentName = this.authService.establishment ? this.authService.establishment.name : null;
+    this.primaryEstablishmentName = this.establishmentService.primaryWorkplace.name;
   }
 
   protected setupForm(): void {

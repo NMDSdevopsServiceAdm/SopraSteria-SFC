@@ -1,3 +1,5 @@
+import { WDFValue } from './wdf.model';
+
 export interface MainService {
   id: number;
   name: string;
@@ -58,14 +60,15 @@ export interface WDF {
   lastEligibility: Date;
   isEligible: boolean;
   currentEligibility: boolean;
-  employerType: string;
-  mainService: string;
-  otherService: string;
-  capacities: string;
-  serviceUsers: string;
-  vacancies: string;
-  starters: string;
-  leavers: string;
+  employerType: WDFValue;
+  mainService: WDFValue;
+  otherService: WDFValue;
+  capacities: WDFValue;
+  serviceUsers: WDFValue;
+  vacancies: WDFValue;
+  starters: WDFValue;
+  leavers: WDFValue;
+  numberOfStaff: WDFValue;
 }
 
 export interface Establishment {
@@ -86,6 +89,7 @@ export interface Establishment {
     other: string;
   };
   numberOfStaff: number;
+  totalWorkers: number;
   otherServices: any[];
   serviceUsers: ServiceUser[];
   capacities: Capacity[];
@@ -99,10 +103,9 @@ export interface Establishment {
   totalStarters: number;
   leavers: Leaver[] | string;
   totalLeavers: number;
-  wdf: WDF;
+  wdf?: WDF;
   isParent?: boolean;
   parentName?: string;
-  isFirstBulkUpload?: boolean;
 }
 
 export interface UpdateJobsRequest {

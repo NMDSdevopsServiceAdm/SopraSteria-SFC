@@ -1,8 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
+import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
@@ -16,9 +19,9 @@ import { ResetPasswordComponent } from '@features/reset-password/reset-password.
 
 const routes: Routes = [
   {
-    path: 'login',
-    component: LoginComponent,
-    data: { title: 'Login' },
+    path: '',
+    redirectTo: '/dashboard',
+    pathMatch: 'full',
   },
   {
     path: 'logged-out',
@@ -26,68 +29,75 @@ const routes: Routes = [
     data: { title: 'Logged Out' },
   },
   {
-    path: 'forgot-your-password',
-    component: ForgotYourPasswordComponent,
-    data: { title: 'Forgotten Password' },
-  },
-  {
-    path: 'reset-password',
-    component: ResetPasswordComponent,
-    data: { title: 'Reset Password' },
-  },
-  {
     path: 'problem-with-the-service',
     component: ProblemWithTheServiceComponent,
     data: { title: 'Problem with the Service' },
   },
   {
-    path: 'public',
+    path: '',
     loadChildren: '@features/public/public.module#PublicModule',
   },
   {
-    path: 'registration',
-    loadChildren: '@features/registration/registration.module#RegistrationModule',
-    data: { title: 'Registration' },
-  },
-  {
-    path: 'activate-account',
-    loadChildren: '@features/activate-user-account/activate-user-account.module#ActivateUserAccountModule',
-    data: { title: 'Activate User Account' },
+    path: '',
+    canActivateChild: [LoggedOutGuard],
+    children: [
+      {
+        path: 'login',
+        component: LoginComponent,
+        data: { title: 'Login' },
+      },
+      {
+        path: 'registration',
+        loadChildren: '@features/registration/registration.module#RegistrationModule',
+        data: { title: 'Registration' },
+      },
+      {
+        path: 'activate-account',
+        loadChildren: '@features/activate-user-account/activate-user-account.module#ActivateUserAccountModule',
+        data: { title: 'Activate User Account' },
+      },
+      {
+        path: 'forgot-your-password',
+        component: ForgotYourPasswordComponent,
+        data: { title: 'Forgotten Password' },
+      },
+      {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        data: { title: 'Reset Password' },
+      },
+    ],
   },
   {
     path: '',
-    resolve: { loggedInUser: LoggedInUserResolver },
+    canActivateChild: [AuthGuard],
+    resolve: { loggedInUser: LoggedInUserResolver, primaryWorkplace: PrimaryWorkplaceResolver },
     children: [
       {
         path: 'workplace',
         loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
-        canActivate: [AuthGuard],
         data: { title: 'Workplace' },
       },
       {
         path: 'add-workplace',
         loadChildren: '@features/add-workplace/add-workplace.module#AddWorkplaceModule',
-        canActivate: [AuthGuard, ParentGuard],
+        canActivate: [ParentGuard],
         data: { title: 'Add Workplace' },
       },
       {
         path: 'account-management',
         loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
-        canActivate: [AuthGuard],
         data: { title: 'User Account' },
       },
       {
         path: 'dashboard',
         component: DashboardComponent,
-        canActivate: [AuthGuard],
-        resolve: { workplace: PrimaryWorkplaceResolver },
         data: { title: 'Dashboard' },
       },
       {
         path: 'bulk-upload',
         loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
-        canActivate: [AuthGuard, RoleGuard],
-        resolve: { workplace: PrimaryWorkplaceResolver },
+        canActivate: [RoleGuard],
         data: {
           roles: [Roles.Edit, Roles.Admin],
           title: 'Bulk Upload',
@@ -96,7 +106,7 @@ const routes: Routes = [
       {
         path: 'search-users',
         loadChildren: '@features/search/search.module#SearchModule',
-        canActivate: [AuthGuard, RoleGuard],
+        canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin],
           title: 'Search Users',
@@ -105,18 +115,13 @@ const routes: Routes = [
       {
         path: 'search-establishments',
         loadChildren: '@features/search/search.module#SearchModule',
-        canActivate: [AuthGuard, RoleGuard],
+        canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin],
           title: 'Search Establishments',
         },
       },
     ],
-  },
-  {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
   },
   {
     path: '**',
