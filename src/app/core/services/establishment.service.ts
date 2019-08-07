@@ -162,6 +162,10 @@ export class EstablishmentService {
     return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`);
   }
 
+  public updateWorkplace(workplaceUid: string, data): Observable<any> {
+    return this.http.put<any>(`/api/establishment/${workplaceUid}`, data);
+  }
+
   updateServiceUsers(establishmentId, data) {
     return this.http.post<any>(`/api/establishment/${establishmentId}/serviceUsers`, data);
   }
