@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UploadedFilesListComponent } from './uploaded-files-list.component';
 
-describe('ValidatedFilesListComponent', () => {
+describe('UploadedFilesListComponent', () => {
   let component: UploadedFilesListComponent;
   let fixture: ComponentFixture<UploadedFilesListComponent>;
 
