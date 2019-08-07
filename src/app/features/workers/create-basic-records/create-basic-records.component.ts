@@ -138,6 +138,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     this.staffRecordsControl.controls.forEach(control => {
       control.patchValue({ active: false });
     });
+    this.submitted = false;
   }
 
   submitHandler() {
