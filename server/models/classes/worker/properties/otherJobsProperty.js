@@ -112,10 +112,6 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
-        if (wdfEffectiveDate) {
-            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
-        }
-
         if (!withHistory) {
             // simple form
             return {
