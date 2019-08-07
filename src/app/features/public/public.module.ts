@@ -6,6 +6,7 @@ import { AccessibilityStatementComponent } from './accessibility-statement/acces
 import { ContactUsComponent } from './contact-us/contact-us.component';
 import { CookiePolicyComponent } from './cookie-policy/cookie-policy.component';
 import { FeedbackComponent } from './feedback/feedback.component';
+import { PrivacyNoticeComponent } from './privacy-notice/privacy-notice.component';
 import { PublicRoutingModule } from './public-routing.module';
 import { TermsConditionsComponent } from './terms-conditions/terms-conditions.component';
 
@@ -16,6 +17,7 @@ import { TermsConditionsComponent } from './terms-conditions/terms-conditions.co
     ContactUsComponent,
     CookiePolicyComponent,
     FeedbackComponent,
+    PrivacyNoticeComponent,
     TermsConditionsComponent,
   ],
 })

@@ -4,6 +4,7 @@ import { AccessibilityStatementComponent } from '@features/public/accessibility-
 import { ContactUsComponent } from '@features/public/contact-us/contact-us.component';
 import { CookiePolicyComponent } from '@features/public/cookie-policy/cookie-policy.component';
 import { FeedbackComponent } from '@features/public/feedback/feedback.component';
+import { PrivacyNoticeComponent } from '@features/public/privacy-notice/privacy-notice.component';
 import { TermsConditionsComponent } from '@features/public/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -31,6 +32,11 @@ const routes: Routes = [
     path: 'accessibility-statement',
     component: AccessibilityStatementComponent,
     data: { title: 'Accessibility Statement' },
+  },
+  {
+    path: 'privacy-notice',
+    component: PrivacyNoticeComponent,
+    data: { title: 'Privacy Notice' },
   },
 ];
 
