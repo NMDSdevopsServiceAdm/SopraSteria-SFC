@@ -13,6 +13,7 @@ import { UserService } from './user.service';
 export class AuthService {
   private jwt = new JwtHelperService();
   public redirect: string;
+  private previousUser: string;
 
   constructor(
     private http: HttpClient,
@@ -33,6 +34,14 @@ export class AuthService {
     localStorage.setItem('auth-token', token);
   }
 
+  public isPreviousUser(username: string) {
+    return username === this.previousUser;
+  }
+
+  public clearPreviousUser(): void {
+    this.previousUser = null;
+  }
+
   public authenticate(username: string, password: string) {
     return this.http
       .post<any>('/api/login/', { username, password }, { observe: 'response' })
@@ -46,6 +55,7 @@ export class AuthService {
   }
 
   public logout(): void {
+    this.setPreviousUser();
     this.unauthenticate();
     this.router.navigate(['/logged-out']);
   }
@@ -58,5 +68,10 @@ export class AuthService {
     localStorage.clear();
     this.userService.loggedInUser = null;
     this.establishmentService.resetState();
+  }
+
+  private setPreviousUser(): void {
+    const data = this.jwt.decodeToken(this.token);
+    this.previousUser = data && data.sub ? data.sub : null;
   }
 }

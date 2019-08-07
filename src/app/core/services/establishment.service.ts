@@ -53,15 +53,6 @@ export class EstablishmentService {
 
   private _establishmentId: string = null;
 
-  public checkIfSameLoggedInUser(establishmentId: string): void {
-    if (!this.previousEstablishmentId || this.previousEstablishmentId !== establishmentId) {
-      this.previousEstablishmentId = establishmentId;
-      this.isSameLoggedInUser = false;
-    } else {
-      this.isSameLoggedInUser = true;
-    }
-  }
-
   public get primaryWorkplace$(): Observable<Establishment> {
     return this._primaryWorkplace$.asObservable();
   }
@@ -91,6 +82,9 @@ export class EstablishmentService {
 
   setState(establishment) {
     this._establishment$.next(establishment);
+    if (establishment.uid === this.primaryWorkplace.uid) {
+      this.setPrimaryWorkplace(this.establishment);
+    }
   }
 
   public resetState() {
