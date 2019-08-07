@@ -162,10 +162,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
-        if (wdfEffectiveDate) {
-            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
-        }
-
         if (!withHistory) {
             // simple form
             return this.formatOtherServicesResponse(
