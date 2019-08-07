@@ -116,8 +116,6 @@ export class WdfComponent implements OnInit, OnDestroy {
     );
     const props = pick(this.workplace, keys);
 
-    console.log(JSON.stringify(props));
-
     this.establishmentService
       .updateWorkplace(this.workplace.uid, props)
       .pipe(
