@@ -766,9 +766,12 @@ class Establishment extends EntityValidator {
                     //  it's current WDF Eligibility, and if it is eligible, update
                     //  the last WDF Eligibility status
                     const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
+                    const effectiveDateTime = WdfCalculator.effectiveTime;
+
                     let wdfAudit = null;
+                    let localWdfUpdated = false;
                     if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
-                        console.log("WA DEBUG - updating this establishment's last WDF Eligible timestamp")
+                        localWdfUpdated = true;
                         updateDocument.lastWdfEligibility = updatedTimestamp;
                         wdfAudit = {
                             username: savedBy.toLowerCase(),
@@ -854,9 +857,9 @@ class Establishment extends EntityValidator {
                         // For now, we'll recalculate on every update!
                         */
 
-                        // if(!bulkUploadCompleted){
-                        //     await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        // }
+                        if(localWdfUpdated){
+                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
+                        }
 
                         // if requested, propagate the saving of this establishment down to each of the associated entities
                         if (associatedEntities) {
