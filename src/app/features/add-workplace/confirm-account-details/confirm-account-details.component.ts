@@ -110,7 +110,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       .pipe(take(1))
       .subscribe(
         (response: AddWorkplaceResponse) => {
-          this.workplaceService.newWorkplaceUid$.next(response.establishmentUid);
+          this.workplaceService.newWorkplaceUid = response.establishmentUid;
           this.workplaceService.addWorkplaceFlow$.next(AddWorkplaceFlow.CQC_WITH_USER);
           this.router.navigate([`${this.flow}/complete`]);
         },

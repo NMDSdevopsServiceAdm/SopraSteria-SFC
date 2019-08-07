@@ -62,7 +62,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
         )
         .subscribe(
           (response: AddWorkplaceResponse) => {
-            this.workplaceService.newWorkplaceUid$.next(response.establishmentUid);
+            this.workplaceService.newWorkplaceUid = response.establishmentUid;
             this.workplaceService.addWorkplaceFlow$.next(AddWorkplaceFlow.NON_CQC);
             this.router.navigate([`${this.flow}/complete`]);
           },
