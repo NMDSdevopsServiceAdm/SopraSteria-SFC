@@ -125,12 +125,12 @@ export class LoginComponent implements OnInit, OnDestroy {
           });
 
           this.idleService.onTimeout().subscribe(() => {
-            this.authService.redirect = this.router.routerState.snapshot.url;
+            this.authService.storeRedirectLocation();
             this.authService.logout();
           });
 
-          if (this.authService.isPreviousUser(username) && this.authService.redirect) {
-            this.router.navigateByUrl(this.authService.redirect);
+          if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
+            this.router.navigateByUrl(this.authService.redirectLocation);
           } else {
             this.router.navigate(['/dashboard']);
           }

@@ -16,7 +16,7 @@ export class HttpErrorHandler {
 
   handleHttpError(error: HttpErrorResponse) {
     if (error.status === 403) {
-      this.authService.redirect = this.router.routerState.snapshot.url;
+      this.authService.storeRedirectLocation();
       this.authService.logout();
       return throwError('403');
     }
