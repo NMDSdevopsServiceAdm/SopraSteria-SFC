@@ -72,6 +72,6 @@ export class AuthService {
 
   private setPreviousUser(): void {
     const data = this.jwt.decodeToken(this.token);
-    this.previousUser = data.sub;
+    this.previousUser = data && data.sub ? data.sub : null;
   }
 }
