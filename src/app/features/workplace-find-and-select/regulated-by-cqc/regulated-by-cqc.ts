@@ -6,10 +6,10 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { LocationService } from '@core/services/location.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
-import { LocationService } from '@core/services/location.service';
 
 export class RegulatedByCQC implements OnInit, OnDestroy {
   protected flow: string;
@@ -228,6 +228,8 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
 
   protected onSuccess(data: LocationSearchResponse): void {}
 
+  protected onLocationFailure(): void {}
+
   protected navigateToNextRoute(data: LocationSearchResponse): void {
     if (data.locationdata) {
       this.router.navigate([`${this.flow}/select-workplace`]);
@@ -236,7 +238,15 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
     }
   }
 
+  protected navigateToWorkplaceNotFoundRoute() {
+    this.router.navigate([this.flow, 'workplace-not-found']);
+  }
+
   private onError(error: HttpErrorResponse): void {
+    if (error.status === 404) {
+      this.onLocationFailure();
+      return;
+    }
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
   }

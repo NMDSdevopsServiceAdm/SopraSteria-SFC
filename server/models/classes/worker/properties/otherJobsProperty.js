@@ -8,8 +8,6 @@ const OTHER_MAX_LENGTH=120;
 exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePropertyPrototype {
     constructor() {
         super('OtherJobs');
-
-        this._wdfTemporal = false;        
     }
 
     static clone() {
@@ -33,7 +31,7 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                 }
 
             } else if (Array.isArray(document.otherJobs)) {
-                // other jobs property needs to be an array of 
+                // other jobs property needs to be an array of
                 this.property = {
                     value: 'No'
                 };
@@ -100,7 +98,7 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                     //  current value, and confirm it is in the the new data set.
                     //  Array.every will drop out on the first iteration to return false
                     arraysEqual = currentValue.otherJobs.every(thisJob => {
-                        return newValue.otherJobs.find(newJob => newJob.jobId === thisJob.jobId 
+                        return newValue.otherJobs.find(newJob => newJob.jobId === thisJob.jobId
                             && ((newJob.other === thisJob.other) || (!newJob.other && !thisJob.other)) );
                     });
                 } else {
@@ -115,7 +113,7 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -124,7 +122,7 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                 otherJobs: this.property.value === 'Yes' ? this.property.otherJobs : []
             };
         }
-        
+
         return {
             otherJobs : {
                 currentValue: this.property.value === 'Yes' ? this.property.otherJobs : [],
@@ -182,13 +180,13 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
             if (referenceJob && referenceJob.id) {
                 // found a job match - prevent duplicates by checking if the reference job already exists
                 if (!setOfValidatedJobs.find(thisJob => thisJob.jobId === referenceJob.id)) {
-                    if (!referenceJob.other || referenceJob.other === undefined || !thisJob.other || 
+                    if (!referenceJob.other || referenceJob.other === undefined || !thisJob.other ||
                         (referenceJob.other && thisJob.other && thisJob.other.length <= OTHER_MAX_LENGTH )) {
                         setOfValidatedJobs.push({
                             jobId: referenceJob.id,
                             title: referenceJob.title,
                             other: (referenceJob.other && thisJob.other) ? thisJob.other : undefined
-                        });  
+                        });
                     } else {
                         setOfValidatedJobsInvalid = true;
                         break;

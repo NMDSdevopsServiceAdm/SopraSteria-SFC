@@ -5,7 +5,6 @@ const CONTRACT_TYPE = ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other']
 exports.WorkerContractProperty = class WorkerContractProperty extends ChangePropertyPrototype {
     constructor() {
         super('Contract');
-        this._wdfTemporal = false;        
     }
 
     static clone() {
@@ -39,7 +38,7 @@ exports.WorkerContractProperty = class WorkerContractProperty extends ChangeProp
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -48,7 +47,7 @@ exports.WorkerContractProperty = class WorkerContractProperty extends ChangeProp
                 contract: this.property
             };
         }
-        
+
         return {
             contract : {
                 currentValue: this.property,

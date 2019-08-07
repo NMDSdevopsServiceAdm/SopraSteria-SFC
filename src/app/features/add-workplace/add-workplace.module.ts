@@ -5,6 +5,7 @@ import { AddWorkplaceRoutingModule } from '@features/add-workplace/add-workplace
 import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { StartComponent } from '@features/add-workplace/start/start.component';
 import { SharedModule } from '@shared/shared.module';
+
 import { AddWorkplaceCompleteComponent } from './add-workplace-complete/add-workplace-complete.component';
 import { ChangeYourDetailsComponent } from './change-your-details/change-your-details.component';
 import { ConfirmAccountDetailsComponent } from './confirm-account-details/confirm-account-details.component';
@@ -15,6 +16,7 @@ import { FindWorkplaceAddressComponent } from './find-workplace-address/find-wor
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
+import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 @NgModule({
   imports: [CommonModule, AddWorkplaceRoutingModule, ReactiveFormsModule, SharedModule],
@@ -31,6 +33,7 @@ import { SelectWorkplaceComponent } from './select-workplace/select-workplace.co
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
     StartComponent,
+    WorkplaceNotFoundComponent,
   ],
 })
 export class AddWorkplaceModule {}
