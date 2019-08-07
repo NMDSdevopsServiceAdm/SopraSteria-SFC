@@ -13,7 +13,7 @@ import { UserService } from './user.service';
 export class AuthService {
   private jwt = new JwtHelperService();
   private previousUser: string;
-  private _redirect: string;
+  private redirect: string;
 
   constructor(
     private http: HttpClient,
@@ -35,7 +35,7 @@ export class AuthService {
   }
 
   public get redirectLocation(): string {
-    return this._redirect;
+    return this.redirect;
   }
 
   public isPreviousUser(username: string) {
@@ -47,7 +47,7 @@ export class AuthService {
   }
 
   public storeRedirectLocation(): void {
-    this._redirect = this.router.routerState.snapshot.url;
+    this.redirect = this.router.routerState.snapshot.url;
   }
 
   public authenticate(username: string, password: string) {
