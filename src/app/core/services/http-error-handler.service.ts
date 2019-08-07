@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterStateSnapshot } from '@angular/router';
 import { throwError } from 'rxjs';
 
 import { AuthService } from './auth.service';
@@ -10,14 +10,19 @@ import { MessageService } from './message.service';
   providedIn: 'root',
 })
 export class HttpErrorHandler {
-  constructor(private router: Router, private messageService: MessageService, private authService: AuthService) {
+  constructor(
+    private router: Router,
+    private state: RouterStateSnapshot,
+    private messageService: MessageService,
+    private authService: AuthService
+  ) {
     this.handleHttpError = this.handleHttpError.bind(this);
   }
 
   handleHttpError(error: HttpErrorResponse) {
     if (error.status === 403) {
-      this.authService.logoutWithoutRouting();
-      this.router.navigate(['/logged-out']);
+      this.authService.redirect = this.state.url;
+      this.authService.logout();
       return throwError('403');
     }
 

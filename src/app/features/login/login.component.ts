@@ -110,8 +110,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.authService.authenticate(username, password).subscribe(
         response => {
           if (response.body.establishment && response.body.establishment.uid) {
-            this.establishmentService.checkIfSameLoggedInUser(response.body.establishment.uid);
-
             // update the establishment service state with the given establishment id
             this.establishmentService.establishmentId = response.body.establishment.uid;
           }
@@ -127,11 +125,17 @@ export class LoginComponent implements OnInit, OnDestroy {
           });
 
           this.idleService.onTimeout().subscribe(() => {
-            this.authService.logoutWithoutRouting();
-            this.router.navigate(['/logged-out']);
+            // NEED TO ADD STATE URL TO THIS
+            this.authService.logout();
           });
 
-          this.router.navigate(['/dashboard']);
+          if (this.authService.isPreviousUser(username) && this.authService.redirect) {
+            this.router.navigateByUrl(this.authService.redirect);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+
+          this.authService.clearPreviousUser();
         },
         (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
