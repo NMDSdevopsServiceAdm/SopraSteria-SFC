@@ -108,7 +108,6 @@ export interface WorkerWdfRecord {
   mainJob: WDFValue;
   mainJobStartDate: WDFValue;
   nationality: WDFValue;
-  otherJobs: WDFValue;
   otherQualification: WDFValue;
   qualificationInSocialCare: WDFValue;
   recruitedFrom: WDFValue;
