@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 
@@ -7,7 +7,7 @@ import { UserService } from '@core/services/user.service';
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate, CanActivateChild {
-  constructor(private authService: AuthService, private userService: UserService) {}
+  constructor(private router: Router, private authService: AuthService, private userService: UserService) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     return this.checkLogin(state);
@@ -18,6 +18,12 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   }
 
   private checkLogin(state: RouterStateSnapshot): boolean {
+    if (!this.authService.token) {
+      this.authService.logoutWithoutRouting();
+      this.router.navigate(['/login']);
+      return false;
+    }
+
     if (!this.authService.isAuthenticated()) {
       this.authService.redirect = state.url;
       this.authService.logout();
