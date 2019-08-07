@@ -33,6 +33,10 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   public uploadedFiles: ValidatedFile[];
   public validationErrors: Array<ErrorDefinition> = [];
   public validationComplete = false;
+  public pluralMap: { [key: string]: string } = {
+    '=1': 'There was # error in the file',
+    other: 'There were # errors in the file',
+  };
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -40,7 +44,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     private i18nPluralPipe: I18nPluralPipe,
     private router: Router,
     private alertService: AlertService,
-    private dialogService: DialogService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit() {
@@ -116,7 +120,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   public getErrorMessage(file: ValidatedFile) {
     const errorDefinition = this.validationErrors.find(validatedFile => validatedFile.name === this.getFileId(file));
-    return errorDefinition ? errorDefinition.message : null;
+    return errorDefinition ? errorDefinition.message : this.i18nPluralPipe.transform(file.errors, this.pluralMap);
   }
 
   public getFileType(fileName: string): string {
@@ -184,10 +188,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   public getValidationError(file: ValidatedFile): ErrorDefinition {
     return {
       name: this.getFileId(file),
-      message: this.i18nPluralPipe.transform(file.errors, {
-        '=1': 'There was # error in the file',
-        other: 'There were # errors in the file',
-      }),
+      message: this.i18nPluralPipe.transform(file.errors, this.pluralMap),
     };
   }
 
