@@ -135,6 +135,6 @@ export class WdfComponent implements OnInit, OnDestroy {
   }
 
   get displayConfirmationPanel() {
-    return true; // this.workplace && this.workplace.wdf.currentEligibility && !this.workplace.wdf.isEligible;
+    return this.workplace && this.workplace.wdf.currentEligibility && !this.workplace.wdf.isEligible;
   }
 }
