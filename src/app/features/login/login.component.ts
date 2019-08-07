@@ -125,7 +125,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           });
 
           this.idleService.onTimeout().subscribe(() => {
-            // NEED TO ADD STATE URL TO THIS
+            this.authService.redirect = this.router.routerState.snapshot.url;
             this.authService.logout();
           });
 
