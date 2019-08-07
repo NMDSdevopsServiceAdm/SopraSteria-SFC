@@ -80,6 +80,6 @@ export class WdfStaffSummaryComponent implements OnInit {
   }
 
   get displayConfirmationPanel() {
-    return this.worker.wdf.isEligible && !this.worker.wdf.currentEligibility;
+    return this.worker.wdf.currentEligibility && !this.worker.wdf.isEligible;
   }
 }
