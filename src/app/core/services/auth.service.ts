@@ -12,8 +12,8 @@ import { UserService } from './user.service';
 })
 export class AuthService {
   private jwt = new JwtHelperService();
-  public redirect: string;
   private previousUser: string;
+  private redirect: string;
 
   constructor(
     private http: HttpClient,
@@ -34,12 +34,20 @@ export class AuthService {
     localStorage.setItem('auth-token', token);
   }
 
+  public get redirectLocation(): string {
+    return this.redirect;
+  }
+
   public isPreviousUser(username: string) {
     return username === this.previousUser;
   }
 
   public clearPreviousUser(): void {
     this.previousUser = null;
+  }
+
+  public storeRedirectLocation(): void {
+    this.redirect = this.router.routerState.snapshot.url;
   }
 
   public authenticate(username: string, password: string) {
