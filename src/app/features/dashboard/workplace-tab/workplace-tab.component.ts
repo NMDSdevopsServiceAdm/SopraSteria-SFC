@@ -19,6 +19,6 @@ export class WorkplaceTabComponent implements OnInit {
   ngOnInit() {
     const user = this.userService.loggedInUser;
     this.summaryReturnUrl = { url: ['/dashboard'], fragment: 'workplace' };
-    this.updateWorkplace = !this.workplace.employerType && user.role === (Roles.Edit || Roles.Admin);
+    this.updateWorkplace = !this.workplace.employerType && [Roles.Edit, Roles.Admin].includes(user.role);
   }
 }

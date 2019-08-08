@@ -82,7 +82,7 @@ export class EstablishmentService {
 
   setState(establishment) {
     this._establishment$.next(establishment);
-    if (establishment.uid === this.primaryWorkplace.uid) {
+    if (this.primaryWorkplace && establishment.uid === this.primaryWorkplace.uid) {
       this.setPrimaryWorkplace(this.establishment);
     }
   }
