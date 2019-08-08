@@ -91,7 +91,7 @@ export class Question implements OnInit, OnDestroy {
 
       case 'exit':
         const url =
-          this.establishment.uid === this.primaryWorkplace.uid
+          this.primaryWorkplace && this.establishment.uid === this.primaryWorkplace.uid
             ? ['/dashboard']
             : ['/workplace', this.establishment.uid];
         this.router.navigate(url, { fragment: 'workplace' });
@@ -144,9 +144,6 @@ export class Question implements OnInit, OnDestroy {
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
-    if (this.establishment.uid === this.primaryWorkplace.uid) {
-      this.establishmentService.setPrimaryWorkplace({ ...this.establishment, ...data });
-    }
     this.onSuccess();
     this.navigate();
   }

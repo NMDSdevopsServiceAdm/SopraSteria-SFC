@@ -49,6 +49,9 @@ import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import {
+  MigratedUserTermsConditionsComponent
+} from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +65,7 @@ import { AppComponent } from './app.component';
     HomeTabComponent,
     LoginComponent,
     LogoutComponent,
+    MigratedUserTermsConditionsComponent,
     PageNotFoundComponent,
     ProblemWithTheServiceComponent,
     ResetPasswordComponent,

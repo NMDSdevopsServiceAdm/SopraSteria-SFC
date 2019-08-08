@@ -7,7 +7,6 @@ const models = require('../../../index');
 exports.WorkerHighestQualificationProperty = class WorkerHighestQualificationProperty extends ChangePropertyPrototype {
     constructor() {
         super('HighestQualification', 'HighestQualificationFk');
-        this._wdfTemporal = false;
     }
 
     static clone() {
@@ -47,16 +46,16 @@ exports.WorkerHighestQualificationProperty = class WorkerHighestQualificationPro
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
-        
+
         if (!withHistory) {
             // simple form
             return {
                 highestQualification: this.property
             };
         }
-        
+
         return {
             highestQualification : {
                 currentValue: this.property,

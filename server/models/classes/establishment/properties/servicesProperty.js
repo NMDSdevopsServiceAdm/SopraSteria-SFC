@@ -9,8 +9,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     constructor() {
         super('OtherServices');
 
-        this._wdfTemporal = false;
-
         // other services needs reference to main service and All (Known for this Establishment) Services
         this._mainService = null;
         this._allServices = null;
@@ -163,11 +161,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         };
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {       
-        if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
-        }
-
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
         if (!withHistory) {
             // simple form
             return this.formatOtherServicesResponse(

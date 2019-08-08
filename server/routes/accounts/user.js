@@ -51,6 +51,9 @@ router.route('/establishment/:id').get(async (req, res) => {
 
 const getUser = async (req, res) => {
     let userId;
+    const establishment = req.establishment;
+
+    console.log("WA DEBUG - establishment from req: ", establishment)
 
     if(req.params.userId){
         userId = req.params.userId;
@@ -73,6 +76,7 @@ const getUser = async (req, res) => {
     }
 
     const thisUser = new User.User(establishmentId);
+    thisUser.establishmentUid = establishment.uid;
 
     try {
         if (await thisUser.restore(byUUID, byUsername, showHistory && req.query.history !== 'property')) {
@@ -142,25 +146,25 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
                 console.error('/add/establishment/:id - given user does not have sufficient permission')
                 return res.status(401).send();
             }
-        
+
             if(req.body.role && thisUser.userRole !== req.body.role){
                 if(!(req.body.role == 'Edit' || req.body.role == 'Read')){
                     return res.status(400).send("Invalid request");
                 }
-                    
+
                 let limits = {'Edit': User.User.MAX_EDIT_SINGLE_USERS, 'Read' : User.User.MAX_READ_SINGLE_USERS};
-        
+
                 if(req.isParent && req.establishmentId == req.establishment.id){
                     limits = {'Edit': User.User.MAX_EDIT_PARENT_USERS, 'Read' : User.User.MAX_READ_PARENT_USERS};
                 }
-                
+
                 const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
-            
+
                 if(currentTypeLimits[req.body.role]+1 > limits[req.body.role]){
                     return res.status(400).send(`Cannot create new account as ${req.body.role} account type limit reached`);
                 }
             }
-        
+
             // force lowercase on email when updating
             req.body.email = req.body.email ? req.body.email.toLowerCase() : req.body.email;
 
@@ -172,7 +176,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
             if (isValidUser) {
 
                 await thisUser.save(req.username, expiresTTLms, null);
-    
+
                 // if local/dev - we're not sending email so return the add user tracking UUID if it exists
                 let response = thisUser.toJSON(false, false, false, true);
                 if (isLocal(req) && thisUser.trackingId) {
@@ -481,7 +485,7 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
     }
 
     const thisUser = new User.User(establishmentId);
-    
+
     try {
         const passTokenResults = await models.addUserTracking.findOne({
             where: {
@@ -513,9 +517,9 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
                 return res.status(200).send(response);
             }
         }
-        
+
         return res.status(404).send("Not found");
-        
+
     }
     catch(err){
         return res.status(503).send(err.safe);
@@ -553,7 +557,7 @@ router.route('/validateAddUser').post(async (req, res) => {
         });
 
         if (passTokenResults && passTokenResults.id && !passTokenResults.completed && !(passTokenResults.expires.getTime() < new Date().getTime())) {
-            
+
             // gets this far if the token is valid. Generate a JWT, which requires knowing the associated User UUID.
             if (passTokenResults.user && passTokenResults.user.id) {
                 // generate JWT and attach it to the header (Authorization) - JWT username is the name of the User who registered the user (for audit purposes)
@@ -612,7 +616,7 @@ router.route('/establishment/:id/:userid').delete(async (req, res) => {
             return res.status(204).send();
         } else {
             console.log('404 not found that user')
-            return res.status(404).send('Not Found');            
+            return res.status(404).send('Not Found');
         }
     } catch (err) {
         const thisError = new User.UserExceptions.UserRestoreException(
@@ -662,7 +666,7 @@ router.route('/add').post(async (req, res) => {
 
             if (await thisUser.restore(trackingResponse.user.uid, null, null)) {
                 // TODO: JSON validation
-        
+
                 // only those properties defined in the POST body will be updated (peristed) along with
                 //   the additional role property - ovverwrites against that could be passed in the body
                 const newUserProperties = {

@@ -11,7 +11,7 @@ const routes: Routes = [
   },
   {
     path: 'wdf',
-    data: { title: 'Workplace Development Fund Report' },
+    data: { title: 'Workforce Development Fund Report' },
     children: [
       {
         path: '',

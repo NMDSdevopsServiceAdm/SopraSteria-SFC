@@ -97,7 +97,7 @@
       Non-social care qualification
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.socialCareQualification">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.otherQualification">
         {{ worker.otherQualification | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
@@ -120,7 +120,7 @@
       Highest level of non-social care qualification
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.socialCareQualification">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.highestQualification">
         {{ worker.highestQualification?.title || '-' }}
       </app-summary-record-value>
     </dd>

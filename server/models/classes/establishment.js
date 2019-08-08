@@ -766,9 +766,12 @@ class Establishment extends EntityValidator {
                     //  it's current WDF Eligibility, and if it is eligible, update
                     //  the last WDF Eligibility status
                     const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
+                    const effectiveDateTime = WdfCalculator.effectiveTime;
+
                     let wdfAudit = null;
-                    if (currentWdfEligibiity.currentEligibility) {
-                        console.log("WA DEBUG - updating this establishment's last WDF Eligible timestamp")
+                    let localWdfUpdated = false;
+                    if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
+                        localWdfUpdated = true;
                         updateDocument.lastWdfEligibility = updatedTimestamp;
                         wdfAudit = {
                             username: savedBy.toLowerCase(),
@@ -854,9 +857,9 @@ class Establishment extends EntityValidator {
                         // For now, we'll recalculate on every update!
                         */
 
-                        // if(!bulkUploadCompleted){
-                        //     await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        // }
+                        if(localWdfUpdated){
+                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
+                        }
 
                         // if requested, propagate the saving of this establishment down to each of the associated entities
                         if (associatedEntities) {
@@ -1537,7 +1540,7 @@ class Establishment extends EntityValidator {
         //  the WDF by property will show the current eligibility of each property
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-            isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
+            isEligible: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No' && thisWdfProperty.isEligible === 'Yes' ? thisWdfProperty.updatedSinceEffectiveDate === true : true),
             currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
             ... wdfByProperty
         };
@@ -1567,8 +1570,7 @@ class Establishment extends EntityValidator {
         return property &&
                (property.property !== null && property.property !== undefined) &&
                property.valid &&
-               referenceTime !== null &&
-               referenceTime > refEpoch;
+               referenceTime !== null;
     }
 
     // returns the WDF eligibility of each WDF relevant property as referenced from
@@ -1578,7 +1580,7 @@ class Establishment extends EntityValidator {
         const effectiveFromEpoch = effectiveFrom.getTime();
 
         // employer type
-        myWdf['employerType'] = { 
+        myWdf['employerType'] = {
             isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType')) ? 'Yes' : 'No',
             updatedSinceEffectiveDate: this._properties.get('EmployerType').toJSON(false, true, WdfCalculator.effectiveDate)
         }
@@ -1587,11 +1589,6 @@ class Establishment extends EntityValidator {
         myWdf['mainService'] = {
             isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No',
             updatedSinceEffectiveDate: this._properties.get('MainServiceFK').toJSON(false, true, WdfCalculator.effectiveDate)
-        }
-
-        myWdf['otherService'] = {
-            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No',
-            updatedSinceEffectiveDate: this._properties.get('OtherServices').toJSON(false, true, WdfCalculator.effectiveDate)
         }
 
         // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)

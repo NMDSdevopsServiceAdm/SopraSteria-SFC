@@ -8,8 +8,6 @@ const OTHER_MAX_LENGTH=120;
 exports.EmployerTypeProperty = class EmployerTypeProperty extends ChangePropertyPrototype {
     constructor() {
         super('EmployerType');
-
-        this._wdfTemporal = false;
     }
 
     static clone() {
@@ -53,7 +51,7 @@ exports.EmployerTypeProperty = class EmployerTypeProperty extends ChangeProperty
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -65,7 +63,7 @@ exports.EmployerTypeProperty = class EmployerTypeProperty extends ChangeProperty
                 }
             };
         }
-        
+
         return {
             employerType: {
                 currentValue: {

@@ -6,8 +6,6 @@ const models = require('../../../index');
 exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangePropertyPrototype {
     constructor() {
         super('ServiceUsers');
-
-        this._wdfTemporal = false;
     }
 
     static clone() {
@@ -78,7 +76,7 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
             //  current value, and confirm it is in the the new data set.
             //  Array.every will drop out on the first iteration to return false
             arraysEqual = currentValue.every(thisService => {
-                return newValue.find(newService => 
+                return newValue.find(newService =>
                     newService.id === thisService.id && (
                         (thisService.other && newService.other && thisService.other === newService.other) ||
                         (!thisService.other && !newService.other)
@@ -105,9 +103,9 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
         });
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {       
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!this.property) return null;

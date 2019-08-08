@@ -1,7 +1,7 @@
 <div class="govuk-grid-row govuk-!-margin-top-3">
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-m">Home</h2>
-    <ng-container *ngIf="workplace">
+    <ng-container *ngIf="workplace && canEdit">
       <p *ngIf="!workplace.employerType || updateStaffRecords">What you need to do first.</p>
       <app-inset-text *ngIf="!workplace?.employerType" [color]="'todo'">
         You need to provide information on your workplace.<br />
@@ -28,7 +28,7 @@
         <li *ngIf="workplace.isParent">
           <a [routerLink]="['/workplace', 'view-my-workplaces']">View my workplaces</a>
         </li>
-        <li><a [routerLink]="['/workplace', workplace.uid, 'reports']">View reports</a></li>
+        <!--<li><a [routerLink]="['/workplace', workplace.uid, 'reports']">View reports</a></li>-->
       </ng-container>
       <ng-container *ngIf="[adminRole].includes(user.role)">
         <li><a [routerLink]="['/search-users']">Search Users</a></li>

@@ -8,8 +8,6 @@ const OTHER_MAX_LENGTH=120;
 exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangePropertyPrototype {
     constructor() {
         super('MainJob', 'MainJobFk');
-
-        this._wdfTemporal = false;
     }
 
     static clone() {
@@ -21,7 +19,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
         // TODO: it's a little more than assuming the JSON representation
         if (document.mainJob) {
 
-            
+
             const validatedJob = await this._validateJob(document.mainJob);
             if (validatedJob) {
                 this.property = validatedJob;
@@ -55,7 +53,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -64,7 +62,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
                 mainJob: this.property
             };
         }
-        
+
         return {
             mainJob : {
                 currentValue: this.property,

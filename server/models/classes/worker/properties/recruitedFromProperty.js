@@ -8,7 +8,6 @@ const KNOWN_ORIGINS = ['Yes', 'No'];
 exports.WorkerRecruitedFromProperty = class WorkerRecruitedFromProperty extends ChangePropertyPrototype {
     constructor() {
         super('RecruitedFrom');
-        this._wdfTemporal = false;        
     }
 
     static clone() {
@@ -94,7 +93,7 @@ exports.WorkerRecruitedFromProperty = class WorkerRecruitedFromProperty extends 
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
         }
 
         if (!withHistory) {
@@ -103,7 +102,7 @@ exports.WorkerRecruitedFromProperty = class WorkerRecruitedFromProperty extends 
                 recruitedFrom: this.property
             };
         }
-        
+
         return {
             recruitedFrom : {
                 currentValue: this.property,

@@ -16,15 +16,10 @@ export class IdleService {
   private isTimeout = false;
   private ping = false;
   private lastActivity: number;
-  private idle: number;
-  private pingInterval: number;
+  private idlePeriod = 1800;
+  private pingInterval = 240;
 
-  constructor() {}
-
-  init(pingInterval: number, idle: number) {
-    this.pingInterval = pingInterval;
-    this.idle = idle;
-
+  constructor() {
     this.activity$ = merge(
       fromEvent(window, 'mousemove'),
       fromEvent(document, 'keydown'),
@@ -37,8 +32,12 @@ export class IdleService {
     );
   }
 
+  public get isRunning(): boolean {
+    return !!this.timerSubscription;
+  }
+
   start() {
-    this.setupTimer(this.idle);
+    this.setupTimer(this.idlePeriod);
     this.setupPing(this.pingInterval);
 
     this.isTimeout = false;
@@ -68,12 +67,12 @@ export class IdleService {
     this.lastActivity = null;
   }
 
-  private setupTimer(idle: number) {
+  private setupTimer(idlePeriod: number) {
     this.timer$ = interval(1000).pipe(
       takeWhile(() => !this.isTimeout),
       tap(() => {
         const now = Date.now();
-        const timeleft = this.lastActivity + idle * 1000;
+        const timeleft = this.lastActivity + idlePeriod * 1000;
 
         if (timeleft - now < 0) {
           this.timeout$.next(true);

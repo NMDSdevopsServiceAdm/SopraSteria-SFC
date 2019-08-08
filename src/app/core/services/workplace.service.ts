@@ -11,9 +11,10 @@ import { ErrorDefinition } from '@core/model/errorSummary.model';
 })
 export class WorkplaceService {
   constructor(private http: HttpClient) {}
-  public addWorkplaceInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public addWorkplaceFlow$: BehaviorSubject<string> = new BehaviorSubject(null);
+  public addWorkplaceInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
+  public newWorkplaceUid: string;
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
   public serverErrorsMap: ErrorDefinition[] = [

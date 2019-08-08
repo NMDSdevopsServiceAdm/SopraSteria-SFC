@@ -113,7 +113,7 @@ router.post('/', async (req, res) => {
     //  we need to first validate password using tribal hashing
     let tribalErr = null;
     let tribalHashValidated = false;
-    if (establishmentUser.user.tribalId !== null && login.Hash === null) {
+    if (establishmentUser.user.tribalId !== null && establishmentUser.Hash === null) {
       tribalHashValidated = true;
       const tribalHashCompareReset = tribalHashCompare(givenPassword, login.tribalSalt, login.tribalHash);
 
@@ -150,6 +150,10 @@ router.post('/', async (req, res) => {
           }
         }
 
+        // migrated user info
+        const migratedUserFirstLogon = establishmentUser.user.tribalId !== null && establishmentUser.lastLogin === null ? true : false;
+        const migratedUser = establishmentUser.user._tribalId !== null ? true : false;
+
         const response = formatSuccessulLoginResponse(
           establishmentUser.user.uid,
           establishmentUser.user.FullNameValue,
@@ -158,7 +162,11 @@ router.post('/', async (req, res) => {
           establishmentUser.user.UserRoleValue,
           establishmentUser.user.establishment,
           givenUsername,
-          new Date(date).toISOString()
+          new Date(date).toISOString(),
+          {
+            migratedUserFirstLogon,
+            migratedUser
+          }
         );
 
         await models.sequelize.transaction(async t => {

@@ -53,15 +53,6 @@ export class EstablishmentService {
 
   private _establishmentId: string = null;
 
-  public checkIfSameLoggedInUser(establishmentId: string): void {
-    if (!this.previousEstablishmentId || this.previousEstablishmentId !== establishmentId) {
-      this.previousEstablishmentId = establishmentId;
-      this.isSameLoggedInUser = false;
-    } else {
-      this.isSameLoggedInUser = true;
-    }
-  }
-
   public get primaryWorkplace$(): Observable<Establishment> {
     return this._primaryWorkplace$.asObservable();
   }
@@ -91,6 +82,9 @@ export class EstablishmentService {
 
   setState(establishment) {
     this._establishment$.next(establishment);
+    if (this.primaryWorkplace && establishment.uid === this.primaryWorkplace.uid) {
+      this.setPrimaryWorkplace(this.establishment);
+    }
   }
 
   public resetState() {
@@ -166,6 +160,10 @@ export class EstablishmentService {
 
   getEmployerType() {
     return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`);
+  }
+
+  public updateWorkplace(workplaceUid: string, data): Observable<any> {
+    return this.http.put<any>(`/api/establishment/${workplaceUid}`, data);
   }
 
   updateServiceUsers(establishmentId, data) {
