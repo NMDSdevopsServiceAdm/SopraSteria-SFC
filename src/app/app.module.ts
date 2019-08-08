@@ -34,7 +34,6 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
-import { WorkplaceTabComponent } from '@features/dashboard/workplace-tab/workplace-tab.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
 import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/edit/edit.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
@@ -72,7 +71,6 @@ import {
     ResetPasswordConfirmationComponent,
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
-    WorkplaceTabComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

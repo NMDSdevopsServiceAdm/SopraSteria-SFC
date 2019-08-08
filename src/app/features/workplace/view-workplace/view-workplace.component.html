@@ -23,8 +23,8 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-tabs>
-      <app-tab [title]="'Workplace'">
-        <app-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-workplace-summary>
+      <app-tab *ngIf="workplace" [title]="'Workplace'">
+        <app-workplace-tab [workplace]="workplace"></app-workplace-tab>
       </app-tab>
 
       <app-tab *ngIf="canViewStaffRecords" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
