@@ -2,7 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { tap } from 'rxjs/operators';
+import { isNull } from 'lodash';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
 
 import { EstablishmentService } from './establishment.service';
 import { UserService } from './user.service';
@@ -11,6 +13,7 @@ import { UserService } from './user.service';
   providedIn: 'root',
 })
 export class AuthService {
+  private _isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   private jwt = new JwtHelperService();
   private previousUser: string;
   private redirect: string;
@@ -22,8 +25,17 @@ export class AuthService {
     private userService: UserService
   ) {}
 
+  public get isAutheticated$(): Observable<boolean> {
+    return this._isAuthenticated$.asObservable().pipe(
+      filter(authenticated => !isNull(authenticated)),
+      distinctUntilChanged()
+    );
+  }
+
   public isAuthenticated(): boolean {
-    return this.token ? !this.jwt.isTokenExpired(this.token) : false;
+    const authenticated = this.token ? !this.jwt.isTokenExpired(this.token) : false;
+    this._isAuthenticated$.next(authenticated);
+    return this._isAuthenticated$.value;
   }
 
   public get token() {
@@ -74,6 +86,7 @@ export class AuthService {
 
   private unauthenticate(): void {
     localStorage.clear();
+    this._isAuthenticated$.next(false);
     this.userService.loggedInUser = null;
     this.establishmentService.resetState();
   }
