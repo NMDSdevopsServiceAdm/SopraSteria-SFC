@@ -113,7 +113,7 @@ router.post('/', async (req, res) => {
     //  we need to first validate password using tribal hashing
     let tribalErr = null;
     let tribalHashValidated = false;
-    if (establishmentUser.user.tribalId !== null && login.Hash === null) {
+    if (establishmentUser.user.tribalId !== null && establishmentUser.Hash === null) {
       tribalHashValidated = true;
       const tribalHashCompareReset = tribalHashCompare(givenPassword, login.tribalSalt, login.tribalHash);
 
