@@ -8,9 +8,8 @@ describe('ContractWithZeroHoursComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ContractWithZeroHoursComponent ]
-    })
-    .compileComponents();
+      declarations: [ContractWithZeroHoursComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

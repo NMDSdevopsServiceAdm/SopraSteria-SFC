@@ -1,16 +1,31 @@
-<div class="main-page-container confirmation-page col-12">
-  <h1 class="h1">New starters in the last 12 months.</h1>
-
-  <h2>You told us you have:</h2>
-  <div class="facts">
-    <span class="amount">{{total}}</span>
-    <span class="label">new starters</span>
+<div class="govuk-panel govuk-panel--interruption">
+  <h1 class="govuk-panel__title">New starters in the last 12 months</h1>
+  <div class="govuk-panel__body">
+    <p class="govuk-heading-m">You told us you have:</p>
+    <dl class="govuk-list--definition govuk-list--definition-xl govuk-!-margin-bottom-8">
+      <dt>New starters</dt>
+      <dd>{{ establishment.totalStarters }}</dd>
+    </dl>
+    <p>Continue if this is correct or go back and make a change.</p>
+    <div class="govuk-button-group">
+      <a
+        class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
+        role="button"
+        draggable="false"
+        [routerLink]="next.url"
+        [fragment]="next.fragment"
+      >
+        {{ return ? 'Return' : 'Continue' }}
+      </a>
+      <span class="govuk-visually-hidden">or</span>
+      <a
+        class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+        role="button"
+        draggable="false"
+        [routerLink]="['/workplace', this.establishment.uid, 'starters']"
+      >
+        Make a change <span class="govuk-visually-hidden">to the number of new starters in the last 12 months</span>
+      </a>
+    </div>
   </div>
-
-  <h2>Continue if this is correct or go back and make a change.</h2>
-  <button type="button" class="btn btn-primary" (click)="submitHandler()">Save and continue</button>
-  <app-messages></app-messages>
-
-  <button type="button" class="btn btn-link" (click)="makeChangeHandler()">Make a change</button>
-  <app-messages></app-messages>
 </div>

@@ -1,0 +1,58 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            What is your workplace address?
+          </h1>
+        </legend>
+
+        <dl class="govuk-summary-list govuk-summary-list--no-border">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Postcode
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ enteredPostcode }}
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a [routerLink]="[flow, 'find-workplace-address']">
+                Change<span class="govuk-visually-hidden"> postcode</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress.errors">
+          <label class="govuk-label" for="address">
+            Select an address
+          </label>
+          <span *ngIf="submitted && getAddress.errors" id="address-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('address', 'required') }}
+          </span>
+          <select
+            class="govuk-select"
+            [class.govuk-select--error]="submitted && getAddress.errors"
+            [formControlName]="'address'"
+            id="address"
+            name="address"
+            (change)="onLocationChange($event.target.value)"
+          >
+            <option [value]="">{{ locationAddresses.length }} addresses found</option>
+            <option *ngFor="let location of locationAddresses; let i = index" [value]="i">
+              {{ getLocationName(location) }}
+            </option>
+          </select>
+        </div>
+
+        <p><a [routerLink]="[flow, 'enter-workplace-address']">I can't find my address</a></p>
+      </fieldset>
+
+      <button class="govuk-button" type="submit">Continue</button>
+    </form>
+  </div>
+</div>

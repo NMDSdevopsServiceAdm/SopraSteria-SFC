@@ -1,141 +1,132 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavigationExtras, Router } from '@angular/router';
-import { LoginApiModel } from '@core/model/loginApi.model';
-import { AuthService } from '@core/services/auth-service';
+import { Router } from '@angular/router';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { AuthService } from '@core/services/auth.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
-import { MessageService } from '@core/services/message.service';
-
-const PING_INTERVAL = 240;
-const TIMEOUT_INTERVAL = 1800;
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  loginForm: FormGroup;
-  // loginUser = new LoginUser();
-
-  login: LoginApiModel;
-
-  // Login values
-  usernameValue: string;
-  userPasswordValue: string;
-
-  private subscriptions = [];
-
-  // Set up Validation messages
-  usernameMessage: string;
-  passwordMessage: string;
+  private subscriptions: Subscription = new Subscription();
+  public form: FormGroup;
+  public submitted = false;
+  public formErrorsMap: Array<ErrorDetails>;
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverError: string;
 
   constructor(
     private idleService: IdleService,
     private authService: AuthService,
     private establishmentService: EstablishmentService,
-    private messageService: MessageService,
     private router: Router,
-    private fb: FormBuilder
+    private formBuilder: FormBuilder,
+    private errorSummaryService: ErrorSummaryService
   ) {}
 
-  // Get user fullname
-  get getUsernameInput() {
-    return this.loginForm.get('username');
-  }
-
-  // Get user job title
-  get getPasswordInput() {
-    return this.loginForm.get('password');
-  }
-
   ngOnInit() {
-    this.loginForm = this.fb.group({
-      username: ['', [Validators.required, Validators.maxLength(120)]],
-      password: ['', [Validators.required, Validators.maxLength(120)]],
+    this.form = this.formBuilder.group({
+      username: [null, Validators.required],
+      password: [null, Validators.required],
     });
 
-    this.subscriptions.push(
-      this.loginForm.valueChanges.subscribe(value => {
-        if (this.loginForm.valid) {
-          this.messageService.clearError();
-        }
-      })
-    );
-
-    this.subscriptions.push(this.authService.auth$.subscribe(login => (this.login = login)));
-  }
-
-  onSubmit() {
-    this.usernameValue = this.getUsernameInput.value;
-    this.userPasswordValue = this.getPasswordInput.value;
-
-    if (this.loginForm.invalid) {
-      this.messageService.clearError();
-      this.messageService.show('error', 'Please fill the required fields.');
-    } else {
-      this.save();
-    }
-  }
-
-  save() {
-    this.login.username = this.usernameValue;
-    this.login.password = this.userPasswordValue;
-    this.messageService.clearError();
-
-    this.subscriptions.push(
-      this.authService.postLogin(this.login).subscribe(
-        response => {
-          response.body['username'] = this.usernameValue;
-          this.authService.updateState(response.body);
-
-
-          // // update the establishment service state with the given establishment oid
-          this.establishmentService.establishmentId = response.body.establishment.id;
-
-          const token = response.headers.get('authorization');
-          this.authService.authorise(token);
-
-          this.idleService.init(PING_INTERVAL, TIMEOUT_INTERVAL);
-          this.idleService.start();
-
-          this.idleService.ping$.subscribe(() => {
-            this.authService.refreshToken().subscribe(res => {
-              this.authService.authorise(res.headers.get('authorization'));
-            });
-          });
-
-          this.idleService.onTimeout().subscribe(() => {
-            this.authService.logoutWithoutRouting();
-            this.router.navigate(['/logged-out']);
-          });
-        },
-        err => {
-          const message = err.error.message || 'Invalid username or password.';
-          this.messageService.show('error', message);
-        },
-        () => {
-          const redirect = this.authService.redirect;
-
-          if (redirect && redirect.url.length) {
-            const navExtras: NavigationExtras = {
-              queryParams: redirect.queryParams,
-              fragment: redirect.fragment,
-            };
-
-            this.authService.redirect = null;
-            this.router.navigate([redirect.url.toString()], navExtras);
-          } else {
-            this.router.navigate(['/dashboard']);
-          }
-        }
-      )
-    );
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-    this.messageService.clearAll();
+    this.subscriptions.unsubscribe();
+  }
+
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'username',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your username.',
+          },
+        ],
+      },
+      {
+        item: 'password',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your password.',
+          },
+        ],
+      },
+    ];
+  }
+
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 401,
+        message: 'User unauthorised - username or password is incorrect.',
+      },
+      {
+        name: 404,
+        message: 'User not found.',
+      },
+      {
+        name: 503,
+        message: 'Unable to authenticate user.',
+      },
+    ];
+  }
+
+  public onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (this.form.valid) {
+      this.login();
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
+    }
+  }
+
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private login(): void {
+    const { username, password } = this.form.value;
+
+    this.subscriptions.add(
+      this.authService.authenticate(username, password).subscribe(
+        response => {
+          if (response.body.establishment && response.body.establishment.uid) {
+            // update the establishment service state with the given establishment id
+            this.establishmentService.establishmentId = response.body.establishment.uid;
+          }
+
+          if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
+            this.router.navigateByUrl(this.authService.redirectLocation);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+
+          this.authService.clearPreviousUser();
+
+          if (response.body.migratedUserFirstLogon) {
+            this.router.navigate(['/migrated-user-terms-and-conditions']);
+          }
+        },
+        (error: HttpErrorResponse) => {
+          this.form.setErrors({ serverError: true });
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        }
+      )
+    );
   }
 }

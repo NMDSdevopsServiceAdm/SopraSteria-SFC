@@ -1,58 +1,84 @@
-<div class="sub-page-container col-12">
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [form]="form"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+>
+</app-error-summary>
 
-  <div id="back" class="back-link">
-    <a href="#" (click)="goBack($event)">
-      <span class="arrow"></span>Back
-    </a>
+<form *ngIf="renderForm" (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Who are your service users?</h1>
+        </legend>
+        <p>Select all that apply.</p>
+        <div class="govuk-form-group" *ngFor="let group of serviceUserGroups">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">
+                {{ group.group }}
+              </h2>
+            </legend>
+            <div class="govuk-checkboxes">
+              <ng-container *ngFor="let service of group.services">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    id="serviceUsers-{{ service.id }}"
+                    name="serviceUsers"
+                    type="checkbox"
+                    [value]="service.id"
+                    [checked]="form.get('serviceUsers').value.includes(service.id)"
+                    (change)="toggle($event.target)"
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" for="serviceUsers-{{ service.id }}">
+                    {{ service.service }}
+                  </label>
+                </div>
+                <div
+                  *ngIf="service.other"
+                  class="govuk-checkboxes__conditional"
+                  [class.govuk-checkboxes__conditional--hidden]="!form.get('serviceUsers').value.includes(service.id)"
+                  id="serviceUsers-conditional-{{ i }}"
+                >
+                  <div
+                    class="govuk-form-group"
+                    [class.govuk-form-group--error]="
+                      submitted && form.get('serviceUsers-' + service.id + '-otherService').invalid
+                    "
+                  >
+                    <label class="govuk-label" for="serviceUsers-{{ service.id }}-otherService">
+                      Enter your other service users
+                    </label>
+                    <span
+                      id="serviceUsers-{{ service.id }}-otherService-error"
+                      class="govuk-error-message"
+                      *ngIf="submitted && form.get('serviceUsers-' + service.id + '-otherService').invalid"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ getFormErrorMessage('serviceUsers-' + service.id + '-otherService', 'maxlength') }}
+                    </span>
+                    <input
+                      class="govuk-input govuk-!-width-one-third"
+                      [class.govuk-input--error]="
+                        submitted && form.get('serviceUsers-' + service.id + '-otherService').invalid
+                      "
+                      id="serviceUsers-{{ service.id }}-otherService"
+                      name="serviceUsers-{{ service.id }}-otherService"
+                      [formControlName]="'serviceUsers-' + service.id + '-otherService'"
+                      type="text"
+                    />
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </fieldset>
+        </div>
+      </fieldset>
+    </div>
   </div>
 
-  <h1 class="h1">Who are your service users?</h1>
-
-  <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">Select all that apply.</p>
-
-  <form novalidate
-    (ngSubmit)="onSubmit()"
-    [formGroup]="serviceUsersForm">
-
-    <div class="form-group">
-
-      <div class="field-group pb-4" [ngClass]="{'is-invalid': isInvalid }">
-
-        <span class="invalid-feedback">
-          <span class="main-body-text mb-2" *ngIf="isInvalid">
-            Please select a service user.
-          </span>
-        </span>
-
-        <div class="mt-5" *ngFor="let item of serviceUsersData; let i = index">
-          <label class="main-body-text-bold mb-4 p-0 d-block" *ngIf="item">{{ item.group }}</label>
-
-          <div *ngFor="let data of item.services">
-            <div class="row mb-4">
-              <div class="col-12">
-
-                  <label class="check main-body-text p-0" for="{{ data.id }}">
-                    <input type="checkbox" id="{{ data.id }}" formControlName="serviceUserSelected"
-                    [checked]="checkboxesSelected.includes(data.id)" value="{{ data.id }}" (change)="toggleCheckbox($event.target)" />
-                    <span class="checkmark"></span>
-
-                    <span class="check-label main-body-text mt-0">{{ data.service }}</span>
-                  </label>
-
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="btn-container">
-      <button class="btn btn-primary" type="submit">Save and continue</button>
-    </div>
-
-  </form>
-
-
-</div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

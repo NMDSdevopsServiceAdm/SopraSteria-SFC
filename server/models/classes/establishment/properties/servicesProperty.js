@@ -3,7 +3,9 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 
 const ServiceFormatters = require('../../../api/services');
 
-exports.ServicesProperty = class ServicesPropertyProperty extends ChangePropertyPrototype {
+const OTHER_MAX_LENGTH=120;
+
+exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototype {
     constructor() {
         super('OtherServices');
 
@@ -13,13 +15,42 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
     }
 
     static clone() {
-        return new ServicesPropertyProperty();
+        return new ServicesProperty();
     }
 
     // concrete implementations
     async restoreFromJson(document) {
+        // typically, all services (this._allServices) for this `Other Service` property will be set when restoring the establishment and this property from the database
+        //  but during bulk upload, the Establishment will be restored from JSON not database. In those situations, this._allServices will be null, and it
+        //  will be necessary to populate this._allServices from the given JSON document. When restoring fully from JSON, then the
+        //  all services as given fromt he JSON (load) document must take precedence over any stored.
+        if (document.allMyServices && Array.isArray(document.allMyServices) && document.mainService) {
+            // whilst serialising from JSON other services, make a note of main service and all "other" services
+            //  - required in toJSON response and for validation
+            this._allServices = this.mergeServices(
+                document.allMyServices,
+                document.otherServices,
+                document.mainService,
+            );
+
+            if (document.mainService) this._mainService = document.mainService;            // can be an empty array
+        }
+
+        // if restoring from an Establishment's full JSON presentation, rather than from the establishment/:eid/services endpoint, transform the set of "otherServices" into the required input set of "services"
+        if (document.otherServices) {
+            if (Array.isArray(document.otherServices)) {
+                document.services = [];
+                document.otherServices.forEach(thisServiceCategory => {
+                    thisServiceCategory.services.forEach(thisService => {
+                        document.services.push({
+                            id: thisService.id
+                        });
+                    });
+                });
+            }
+        }
+
         if (document.services) {
-            // can be an empty array
             if (Array.isArray(document.services)) {
                 const validatedServices = await this._validateServices(document.services);
 
@@ -69,7 +100,8 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
                 return {
                     id: thisService.id,
                     name: thisService.name,
-                    category: thisService.category
+                    category: thisService.category,
+                    other: thisService.other ? thisService.other : undefined
                 };
             });
         }
@@ -85,7 +117,8 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
             servicesDocument.additionalModels = {
                 establishmentServices: this.property.map(thisService => {
                     return {
-                        serviceId: thisService.id
+                        serviceId: thisService.id,
+                        other: thisService.other ? thisService.other : null,
                     };
                 })
             };
@@ -105,7 +138,12 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
             //  current value, and confirm it is in the the new data set.
             //  Array.every will drop out on the first iteration to return false
             arraysEqual = currentValue.every(thisService => {
-                return newValue.find(newService => newService.id === thisService.id);
+                return newValue.find(newService =>
+                    newService.id === thisService.id && (
+                        (thisService.other && newService.other && thisService.other === newService.other) ||
+                        (!thisService.other && !newService.other)
+                    )
+                );
             });
         } else {
             // if the arrays are lengths are not equal, then we know they're not equal
@@ -123,7 +161,7 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
         };
     }
 
-    toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
         if (!withHistory) {
             // simple form
             return this.formatOtherServicesResponse(
@@ -185,11 +223,17 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
             if (referenceService && referenceService.id) {
                 // found a service match - prevent duplicates by checking if the reference service already exists
                 if (!setOfValidatedServices.find(thisService => thisService.id === referenceService.id)) {
-                    setOfValidatedServices.push({
-                        id: referenceService.id,
-                        name: referenceService.name,
-                        category: referenceService.category
-                    });
+
+                    if (referenceService.other && thisService.other && thisService.other.length && thisService.other.length > OTHER_MAX_LENGTH) {
+                        setOfValidatedServicesInvalid = true;
+                    } else {
+                        setOfValidatedServices.push({
+                            id: referenceService.id,
+                            name: referenceService.name,
+                            category: referenceService.category,
+                            other: (thisService.other && referenceService.other) ? thisService.other : undefined,
+                        });
+                    }
                 }
             } else {
                 setOfValidatedServicesInvalid = true;

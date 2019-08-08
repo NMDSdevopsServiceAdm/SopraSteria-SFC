@@ -1,0 +1,46 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third-from-desktop">
+    <span class="govuk-caption-l">User Account</span>
+    <h1 class="govuk-heading-l">{{ user.fullname }}</h1>
+  </div>
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <div class="govuk-button-heading-group">
+      <button *ngIf="canResendActivationLink" class="govuk-button govuk-button--link" (click)="resendActivationLink()">
+        Resend account set up link
+      </button>
+      <button *ngIf="canDeleteUser" class="govuk-button govuk-button--link" (click)="onDeleteUser()">
+        <img src="/assets/images/bin.svg" alt="" />
+        <span class="govuk-!-margin-left-1">
+          Delete <span class="govuk-visually-hidden">{{ user.fullname }}'s</span> user account
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-summary-list [topBorder]="true" [summaryList]="userInfo"></app-summary-list>
+    <app-summary-list *ngIf="canEdit" [topBorder]="true" [summaryList]="loginInfo"></app-summary-list>
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wrap-border govuk-!-margin-bottom-0"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Permissions
+        </dt>
+        <dd class="govuk-summary-list__value">{{ user.isPrimary ? 'Primary' : '' }} {{ user.role }}</dd>
+        <dd *ngIf="canEdit" class="govuk-summary-list__actions">
+          <a [routerLink]="['permissions']">
+            Change
+            <span class="govuk-visually-hidden"> user permissions</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</div>
+<div class="govuk-button-group">
+  <a role="button" draggable="false" class="govuk-button" [routerLink]="return.url" [fragment]="'user-accounts'">
+    Return to user accounts
+  </a>
+</div>

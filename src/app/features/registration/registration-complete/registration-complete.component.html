@@ -1,0 +1,17 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <app-panel [title]="'Application complete'">
+      We've approved <br />
+      your account
+    </app-panel>
+
+    <p class="govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+      <a [routerLink]="['/contact-us']" target="_blank">
+        Contact us<span class="govuk-visually-hidden">, (opens in a new window)</span>
+      </a>
+      if you have any questions about your application.
+    </p>
+
+    <a role="button" draggable="false" class="govuk-button" [routerLink]="['/login']">Continue to sign in</a>
+  </div>
+</div>

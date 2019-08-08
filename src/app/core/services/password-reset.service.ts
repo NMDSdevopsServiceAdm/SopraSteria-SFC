@@ -16,7 +16,7 @@ export class PasswordResetService {
   constructor(private http: HttpClient) {}
 
   requestPasswordReset(usernameOrEmail: string) {
-    return this.http.post<RequestPasswordResetResponse>('/api/registration/requestPasswordReset', usernameOrEmail);
+    return this.http.post<RequestPasswordResetResponse>('/api/registration/requestPasswordReset', { usernameOrEmail });
   }
 
   validatePasswordReset(data) {

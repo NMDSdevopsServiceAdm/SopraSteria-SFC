@@ -1,0 +1,42 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">User account</span>
+          <h1 class="govuk-fieldset__heading">
+            Create security question
+          </h1>
+        </legend>
+
+        <p>You will need this if you forget your username or if you speak to Skills for Care about your account.</p>
+
+        <ng-container *ngFor="let item of formControlsMap">
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
+            <label class="govuk-label" for="{{ item.name }}">
+              {{ item.label }}
+            </label>
+            <span
+              *ngIf="submitted && form.get(item.name).errors"
+              id="{{ item.name }}-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
+            </span>
+            <input
+              class="govuk-input govuk-input--width-20"
+              [formControlName]="item.name"
+              id="{{ item.name }}"
+              name="{{ item.name }}"
+              [class.govuk-input--error]="submitted && form.get(item.name).errors"
+              type="text"
+            />
+          </div>
+        </ng-container>
+      </fieldset>
+    </div>
+  </div>
+  <app-submit-exit-buttons [return]="return"></app-submit-exit-buttons>
+</form>

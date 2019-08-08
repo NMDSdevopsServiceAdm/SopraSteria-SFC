@@ -1,13 +1,13 @@
-<h3 class="fs-24 mb-4 text-weight-bold">Workplace</h3>
+<h2 class="govuk-heading-m">Workplace</h2>
 <ng-container *ngIf="updateWorkplace; then alert; else summary"></ng-container>
 
 <ng-template #alert>
   <app-inset-text *ngIf="updateWorkplace" color="todo">
     You need to provide information on your workplace.<br />
-    <a [routerLink]="['/workplace', 'type-of-employer']">Add workplace information</a>
+    <a [routerLink]="['/workplace', workplace.id, 'start']">Add workplace information</a>
   </app-inset-text>
 </ng-template>
 
 <ng-template #summary>
-  <app-workplace-summary [workplace]="workplace" [displayWDFReport]="displayWDFReport"></app-workplace-summary>
+  <app-workplace-summary *ngIf="workplace" [workplace]="workplace" [return]="summaryReturnUrl"></app-workplace-summary>
 </ng-template>

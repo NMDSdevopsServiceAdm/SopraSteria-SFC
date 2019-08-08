@@ -1,27 +1,25 @@
-<div class="row">
-  <div class="col-lg-4">
-    <a routerLink="/worker/total-staff" class="change-link" (click)="setReturn()">Change</a>
-    <span class="text-weight-bold fs-30 mb-3 mt-4 dib">{{ totalStaff }}</span>
-    <p>Total number of staff</p>
-  </div>
+<dl class="govuk-list--definition">
+  <dt>Total number of staff</dt>
+  <dd>
+    {{ totalStaff }}
+    <a
+      *ngIf="canEdit"
+      [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']"
+      class="govuk-util__float-right govuk-!-font-size-19 govuk-!-font-weight-regular"
+      (click)="setReturn()"
+    >
+      Change <span class="govuk-visually-hidden"> total number of staff</span>
+    </a>
+  </dd>
   <ng-container *ngIf="totalStaff !== totalWorkers">
-    <div class="col-lg-4">
-      <span
-        class="text-weight-bold fs-30 mb-3 mt-4 dib"
-        [ngClass]="{ 'icon-link icon-flag': totalStaff < totalWorkers }"
-      >
-        {{ totalWorkers }}
-      </span>
-      <p>Staff records added</p>
-    </div>
-    <div class="col-lg-4">
-      <span
-        class="text-weight-bold fs-30 mb-3 mt-4 dib"
-        [ngClass]="{ 'icon-link icon-flag': totalStaff > totalWorkers }"
-      >
-        {{ totalStaff > totalWorkers ? totalStaff - totalWorkers : 0 }}
-      </span>
-      <p>Staff records missing</p>
-    </div>
+    <dt>Staff records added</dt>
+    <dd>
+      <img *ngIf="totalStaff < totalWorkers" src="/assets/images/flag-orange.svg" alt="Warning" /> {{ totalWorkers }}
+    </dd>
+    <dt>Staff records missing</dt>
+    <dd>
+      <img *ngIf="totalStaff > totalWorkers" src="/assets/images/flag-orange.svg" alt="Warning" />
+      {{ totalStaff > totalWorkers ? totalStaff - totalWorkers : 0 }}
+    </dd>
   </ng-container>
-</div>
+</dl>

@@ -1,0 +1,32 @@
+<app-reports-header
+  *ngIf="workplace"
+  [workplace]="workplace"
+  [title]="'Workforce Development Fund'"
+></app-reports-header>
+
+<app-wdf-eligibility *ngIf="report" [report]="report"></app-wdf-eligibility>
+
+<app-tabs>
+  <app-tab [title]="'Workplace'">
+    <app-workplace-summary
+      *ngIf="workplace"
+      [workplace]="workplace"
+      [workerCount]="workerCount"
+      [return]="returnUrl"
+      [wdfView]="true"
+    ></app-workplace-summary>
+    <app-wdf-confirmation-panel
+      *ngIf="displayConfirmationPanel"
+      (confirmed)="onConfirmAndSubmit()"
+      [exitUrl]="exitUrl"
+    ></app-wdf-confirmation-panel>
+  </app-tab>
+  <app-tab *ngIf="canViewStaffRecords" [title]="'Staff records'">
+    <app-staff-summary
+      *ngIf="workers && workplace"
+      [workplace]="workplace"
+      [workers]="workers"
+      [wdfView]="true"
+    ></app-staff-summary>
+  </app-tab>
+</app-tabs>

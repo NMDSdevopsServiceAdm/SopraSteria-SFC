@@ -1,41 +1,45 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a routerLink="/worker/start-screen"> <span class="arrow"></span>Back </a>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('totalStaff').invalid">
+        <h1 class="govuk-label-wrapper">
+          <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="totalStaff">
+            What is the total number of staff at your workplace?
+          </label>
+        </h1>
+        <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('totalStaff') }}
+        </span>
+        <span id="totalStaff-hint" class="govuk-hint">
+          This includes permanent, temporary, pool/bank or agency staff
+        </span>
+        <input
+          class="govuk-input govuk-input--width-4"
+          [class.govuk-input--error]="submitted && form.get('totalStaff').invalid"
+          [formControlName]="'totalStaff'"
+          id="totalStaff"
+          name="totalStaff"
+          type="text"
+          aria-describedby="totalStaff-hint"
+        />
+      </div>
+    </div>
   </div>
 
-  <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
-    <header>
-      <h1 class="h1 col-12 col-lg-8">What is the total number of staff at your workplace?</h1>
-    </header>
-
-    <app-messages></app-messages>
-
-    <div class="form-group mt-5">
-      <div class="field-group">
-        <label class="form-label">
-          <span class="example">This includes permanent, temporary, pool/bank or agency staff</span>
-          <input
-            type="text"
-            formControlName="totalStaff"
-            class="form-control col-2"
-            [ngClass]="{
-              'is-invalid':
-                (form.get('totalStaff').touched || form.get('totalStaff').dirty) && !form.get('totalStaff').valid
-            }"
-          />
-        </label>
-      </div>
-    </div>
-
-    <div class="btn-container container">
-      <div class="row">
-        <button type="submit" class="btn btn-primary">
-          {{ returnToDash ? 'Save and return' : 'Save and continue' }}
-        </button>
-        <a [routerLink]="['/dashboard']" fragment="staff-records" class="btn btn-link btn-link-no-underline col-md-3">
-          Cancel
-        </a>
-      </div>
-    </div>
-  </form>
-</div>
+  <div class="govuk-button-group">
+    <button type="submit" class="govuk-button">
+      {{ returnToDash ? 'Save and return' : 'Save and continue' }}
+    </button>
+    <a
+      class="govuk-button govuk-button--link govuk-util__float-right"
+      role="button"
+      draggable="false"
+      [routerLink]="return.url"
+      [fragment]="'staff-records'"
+    >
+      Cancel
+    </a>
+  </div>
+</form>

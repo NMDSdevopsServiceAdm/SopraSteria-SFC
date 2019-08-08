@@ -1,199 +1,230 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DataSharingOptions } from '@core/model/data-sharing.model';
+import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import { MessageService } from '@core/services/message.service';
+import { take } from 'rxjs/operators';
+
+import { Question } from '../question/question.component';
 
 @Component({
   selector: 'app-vacancies',
   templateUrl: './vacancies.component.html',
-  styleUrls: ['./vacancies.component.scss'],
 })
-export class VacanciesComponent implements OnInit, OnDestroy {
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private jobService: JobService,
-    private establishmentService: EstablishmentService,
-    private messageService: MessageService
-  ) {
-    this.validatorRecordTotal = this.validatorRecordTotal.bind(this);
-    this.validatorRecordJobId = this.validatorRecordJobId.bind(this);
-  }
-
-  vacanciesForm: FormGroup;
-  total: number = 0;
-  jobsAvailable: Job[] = [];
-
-  private subscriptions = [];
-
-  noVacanciesReasonOptions = [
+export class VacanciesComponent extends Question implements OnInit, OnDestroy {
+  public total = 0;
+  public jobs: Job[] = [];
+  public vacanciesKnownOptions = [
     {
       label: 'There are no current staff vacancies.',
-      value: 'no-staff',
+      value: jobOptionsEnum.NONE,
     },
     {
       label: `I don't know how many current staff vacancies there are.`,
-      value: 'dont-know',
+      value: jobOptionsEnum.DONT_KNOW,
     },
   ];
+  private minVacancies = 0;
+  private maxVacancies = 999;
 
-  goBack(event) {
-    event.preventDefault();
-    this.subscriptions.push(
-      this.establishmentService.getSharingOptions().subscribe(res => {
-        if (res.share.enabled && res.share.with && res.share.with.includes('Local Authority')) {
-          this.router.navigate(['/workplace', 'share-local-authority']);
-        } else {
-          this.router.navigate(['/workplace', 'share-options']);
+  constructor(
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    private jobService: JobService
+  ) {
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+
+    this.setupForm();
+  }
+
+  get vacanciesArray(): FormArray {
+    return <FormArray>this.form.get('vacancies');
+  }
+
+  get allJobsSelected(): boolean {
+    return this.vacanciesArray.length >= this.jobs.length;
+  }
+
+  get totalVacancies(): number {
+    return this.vacanciesArray.value.reduce((total, current) => (total += current.total ? current.total : 0), 0);
+  }
+
+  protected init(): void {
+    this.getJobs();
+    this.setPreviousRoute();
+    this.prefill();
+
+    this.subscriptions.add(
+      this.form.get('vacanciesKnown').valueChanges.subscribe(value => {
+        while (this.vacanciesArray.length > 1) {
+          this.vacanciesArray.removeAt(1);
         }
+
+        this.clearValidators(0);
+        this.vacanciesArray.reset([], { emitEvent: false });
+
+        this.form.get('vacanciesKnown').setValue(value, { emitEvent: false });
+      })
+    );
+
+    this.subscriptions.add(
+      this.vacanciesArray.valueChanges.subscribe(() => {
+        this.vacanciesArray.controls[0].get('jobRole').setValidators([Validators.required]);
+        this.vacanciesArray.controls[0]
+          .get('total')
+          .setValidators([Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]);
+
+        this.form.get('vacanciesKnown').setValue(null, { emitEvent: false });
       })
     );
   }
 
-  submitHandler(): void {
-    const { vacancyControl, noVacanciesReason } = this.vacanciesForm.controls;
+  private setupForm(): void {
+    this.form = this.formBuilder.group({
+      vacancies: this.formBuilder.array([]),
+      vacanciesKnown: null,
+    });
+  }
 
-    if (this.vacanciesForm.valid || noVacanciesReason.value === 'no-staff' || noVacanciesReason.value === 'dont-know') {
-      // regardless of which option is chosen, must always submit to backend
-      let vacanciesToSubmit = null;
-      let nextStepNavigation = null;
+  private setPreviousRoute(): void {
+    this.previous = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
+      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
+      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+  }
 
-      if (noVacanciesReason.value === 'dont-know') {
-        vacanciesToSubmit = `Don't know`;
-        nextStepNavigation = '/workplace/starters';
-      } else if (noVacanciesReason.value === 'no-staff') {
-        vacanciesToSubmit = 'None';
-        nextStepNavigation = '/workplace/starters';
-      } else {
-        // default being to send the set of all the current jobs which then need to be confirmed.
-        vacanciesToSubmit = vacancyControl.value.map(v => ({ jobId: parseInt(v.jobId), total: v.total }));
-        nextStepNavigation = '/workplace/confirm-vacancies';
-      }
+  private getJobs(): void {
+    this.subscriptions.add(
+      this.jobService
+        .getJobs()
+        .pipe(take(1))
+        .subscribe(jobs => (this.jobs = jobs))
+    );
+  }
 
-      this.subscriptions.push(
-        this.establishmentService.postVacancies(vacanciesToSubmit).subscribe(() => {
-          this.router.navigate([nextStepNavigation]);
-        })
+  private prefill(): void {
+    if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
+      this.establishment.vacancies.forEach(vacancy =>
+        this.vacanciesArray.push(this.createVacancyControl(vacancy.jobId, vacancy.total))
       );
     } else {
-      this.messageService.clearError();
-      this.messageService.show('error', 'Please fill the required fields.');
+      this.vacanciesArray.push(this.createVacancyControl());
+      if (
+        this.establishment.vacancies === jobOptionsEnum.NONE ||
+        this.establishment.vacancies === jobOptionsEnum.DONT_KNOW
+      ) {
+        this.form.get('vacanciesKnown').setValue(this.establishment.vacancies);
+        this.clearValidators(0);
+      }
     }
   }
 
-  jobsLeft(idx) {
-    const vacancyControl = <FormArray>this.vacanciesForm.controls.vacancyControl;
-    const thisVacancy = vacancyControl.controls[idx];
-    return this.jobsAvailable.filter(
-      j => !vacancyControl.controls.some(v => v !== thisVacancy && parseFloat(v.value.jobId) === j.id)
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'vacancies.jobRole',
+        type: [
+          {
+            name: 'required',
+            message: 'Job Role is required',
+          },
+        ],
+      },
+      {
+        item: 'vacancies.total',
+        type: [
+          {
+            name: 'required',
+            message: 'Total is required',
+          },
+          {
+            name: 'min',
+            message: `Total must be ${this.minVacancies} or above`,
+          },
+          {
+            name: 'max',
+            message: `Total must be ${this.maxVacancies} or lower`,
+          },
+        ],
+      },
+    ];
+  }
+
+  public selectableJobs(index): Job[] {
+    return this.jobs.filter(
+      job =>
+        !this.vacanciesArray.controls.some(
+          vacancy =>
+            vacancy !== this.vacanciesArray.controls[index] && parseInt(vacancy.get('jobRole').value, 10) === job.id
+        )
     );
   }
 
-  addVacancy(): void {
-    const vacancyControl = <FormArray>this.vacanciesForm.controls.vacancyControl;
-
-    vacancyControl.push(this.createVacancyControlItem());
+  public addVacancy(): void {
+    this.vacanciesArray.push(this.createVacancyControl());
   }
 
-  isJobsNotTakenLeft() {
-    return this.jobsAvailable.length !== this.vacanciesForm.controls.vacancyControl.value.length;
+  public removeVacancy(event: Event, index): void {
+    event.preventDefault();
+    this.vacanciesArray.removeAt(index);
   }
 
-  removeVacancy(index): void {
-    (<FormArray>this.vacanciesForm.controls.vacancyControl).removeAt(index);
-  }
-
-  validatorRecordTotal(control) {
-    return control.value !== null || this.vacanciesForm.controls.noVacanciesReason.value.length ? {} : { total: true };
-  }
-
-  validatorRecordJobId(control) {
-    return control.value !== null || this.vacanciesForm.controls.noVacanciesReason.value.length ? {} : { jobId: true };
-  }
-
-  createVacancyControlItem(jobId = null, total = null): FormGroup {
-    return this.fb.group({
-      jobId: [jobId, this.validatorRecordJobId],
-      total: [total, this.validatorRecordTotal],
+  private createVacancyControl(jobId = null, total = null): FormGroup {
+    return this.formBuilder.group({
+      jobRole: [jobId, [Validators.required]],
+      total: [total, [Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]],
     });
   }
 
-  calculateTotal(vacancies) {
-    return vacancies.reduce((acc, i) => (acc += parseInt(i.total, 10) || 0), 0) || 0;
+  protected generateUpdateProps(): UpdateJobsRequest {
+    const { vacanciesKnown } = this.form.controls;
+
+    if (vacanciesKnown.value === jobOptionsEnum.NONE || vacanciesKnown.value === jobOptionsEnum.DONT_KNOW) {
+      return { vacancies: vacanciesKnown.value };
+    }
+
+    if (this.vacanciesArray.length) {
+      return {
+        vacancies: this.vacanciesArray.value.map(vacancy => ({
+          jobId: parseInt(vacancy.jobRole, 10),
+          total: vacancy.total,
+        })),
+      };
+    }
+
+    return null;
   }
 
-  ngOnInit() {
-    this.subscriptions.push(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
-
-    this.vacanciesForm = this.fb.group({
-      vacancyControl: this.fb.array([]),
-      noVacanciesReason: '',
-    });
-
-    const vacancyControl = <FormArray>this.vacanciesForm.controls.vacancyControl;
-
-    this.subscriptions.push(
-      this.establishmentService.getVacancies().subscribe(vacancies => {
-        if (vacancies === 'None') {
-          // Even if "None" option on restore, want a single job role shown
-          // to force another deployment
-          vacancyControl.push(this.createVacancyControlItem());
-
-          this.vacanciesForm.patchValue({ noVacanciesReason: 'no-staff' }, { emitEvent: true });
-        } else if (vacancies === `Don't know`) {
-          // Even if "Don't know" option on restore, want a single job role shown
-          vacancyControl.push(this.createVacancyControlItem());
-
-          this.vacanciesForm.patchValue({ noVacanciesReason: 'dont-know' }, { emitEvent: true });
-        } else if (Array.isArray(vacancies) && vacancies.length) {
-          vacancies.forEach(v => vacancyControl.push(this.createVacancyControlItem(v.jobId.toString(), v.total)));
-        } else {
-          // If no options and no vacancies (the value has never been set) - just the default (select job) drop down
-          vacancyControl.push(this.createVacancyControlItem());
-        }
-      })
-    );
-
-    this.total = this.calculateTotal(vacancyControl.value);
-
-    this.subscriptions.push(
-      vacancyControl.valueChanges.subscribe(value => {
-        this.total = this.calculateTotal(value);
-
-        if (document.activeElement && document.activeElement.getAttribute('type') !== 'radio') {
-          this.vacanciesForm.patchValue(
-            {
-              noVacanciesReason: '',
-            },
-            { emitEvent: false }
-          );
-        }
-      })
-    );
-
-    this.subscriptions.push(
-      this.vacanciesForm.controls.noVacanciesReason.valueChanges.subscribe(() => {
-        while (vacancyControl.length > 1) {
-          vacancyControl.removeAt(1);
-        }
-
-        vacancyControl.reset([], { emitEvent: false });
-        this.total = 0;
-      })
-    );
-
-    this.subscriptions.push(
-      this.vacanciesForm.valueChanges.subscribe(() => {
-        this.messageService.clearAll();
-      })
+  protected updateEstablishment(props: UpdateJobsRequest): void {
+    this.subscriptions.add(
+      this.establishmentService
+        .updateJobs(this.establishment.uid, props)
+        .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-    this.messageService.clearAll();
+  protected onSuccess(): void {
+    if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies)) {
+      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-vacancies']);
+      this.submitAction.action = null;
+    } else {
+      this.next = ['/workplace', `${this.establishment.uid}`, 'starters'];
+    }
+  }
+
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private clearValidators(index: number) {
+    this.vacanciesArray.controls[index].get('jobRole').clearValidators();
+    this.vacanciesArray.controls[index].get('total').clearValidators();
   }
 }

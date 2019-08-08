@@ -1,0 +1,201 @@
+.govuk-list--inline {
+  > li {
+    display: inline-block;
+
+    margin-right: govuk-spacing(4);
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.govuk-list--definition {
+  display: grid;
+
+  margin: 0;
+  @include govuk-responsive-margin(4, 'bottom');
+
+  grid-template-columns: 1fr;
+  @include govuk-media-query($from: tablet) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  dt {
+    @include govuk-responsive-padding(3, 'left');
+    @include govuk-responsive-padding(3, 'right');
+    @include govuk-responsive-padding(3, 'bottom');
+    margin: 0;
+    position: relative;
+
+    @include govuk-font(19);
+    background-color: govuk-colour('grey-3');
+  }
+
+  dd {
+    @include govuk-responsive-padding(3, 'top');
+    @include govuk-responsive-padding(3, 'left');
+    @include govuk-responsive-padding(3, 'right');
+    margin: 0;
+    position: relative;
+
+    @include govuk-font(24, 'bold');
+    background-color: govuk-colour('grey-3');
+  }
+
+  &.govuk-list--definition-xl {
+    dt {
+      @include govuk-font(24, 'bold');
+    }
+    dd {
+      @include govuk-font(80, 'bold');
+    }
+  }
+
+  @for $i from 1 through 3 {
+    dt:nth-of-type(#{$i}) {
+      grid-row-start: 2 + (2 * ($i - 1));
+      grid-row-end: 3 + (2 * ($i - 1));
+      grid-column-start: 1;
+      grid-column-end: 2;
+
+      @include govuk-media-query($from: tablet) {
+        grid-row-start: 2;
+        grid-row-end: 3;
+        grid-column-start: $i;
+        grid-column-end: $i + 1;
+
+        @if $i > 1 {
+          &:before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 15px;
+
+            border-left: 1px solid govuk-colour('grey-1');
+          }
+        }
+      }
+    }
+
+    dd:nth-of-type(#{$i}) {
+      grid-row-start: 1 + (2 * ($i - 1));
+      grid-row-end: 2 + (2 * ($i - 1));
+      grid-column-start: 1;
+      grid-column-end: 2;
+      @if $i > 1 {
+        border-top: 1px solid govuk-colour('grey-1');
+      }
+
+      @include govuk-media-query($from: tablet) {
+        grid-row-start: 1;
+        grid-row-end: 2;
+        grid-column-start: $i;
+        grid-column-end: $i + 1;
+        border-top: 0;
+
+        @if $i > 1 {
+          &:before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 15px;
+            left: 0;
+            bottom: 0;
+            border-left: 1px solid govuk-colour('grey-1');
+          }
+        }
+      }
+    }
+  }
+}
+
+.govuk-list--definition-heading-grid {
+  @include govuk-media-query($from: tablet) {
+    display: table;
+    width: 100%;
+    margin: 0;
+    @include govuk-responsive-margin(4, 'bottom');
+
+    .govuk-list--definition-heading-grid__row {
+      display: table-row;
+    }
+
+    .govuk-list--definition-heading-grid__col {
+      display: table-cell;
+    }
+  }
+
+  dt {
+    @include govuk-responsive-padding(3);
+    margin: 0;
+    position: relative;
+    @include govuk-font(19, $weight: bold);
+    background-color: govuk-colour('grey-3');
+  }
+
+  dd {
+    @include govuk-responsive-padding(3, 'bottom');
+    @include govuk-responsive-padding(3, 'left');
+    @include govuk-responsive-padding(3, 'right');
+    margin: 0;
+    position: relative;
+    background-color: govuk-colour('grey-3');
+  }
+}
+
+.govuk-list--download {
+  > li {
+    min-height: 26px;
+    padding-left: 35px;
+    @include govuk-responsive-margin(3, 'bottom');
+
+    background: url('/assets/images/icon-download.svg') no-repeat 0 0;
+  }
+}
+
+.govuk-list--counters {
+  counter-reset: item;
+
+  .govuk-list--counters-heading:before {
+    content: counters(item, '.') '.';
+    @include govuk-font(24, 'bold');
+    display: inline-block;
+    padding-right: govuk-spacing(2);
+    width: auto;
+  }
+
+  .govuk-list--counters {
+    margin-top: govuk-spacing(4);
+    margin-bottom: 0;
+
+    li:last-child {
+      margin-bottom: 0;
+    }
+
+    .govuk-list--counters {
+      position: relative;
+      left: -65px;
+    }
+  }
+
+  li {
+    display: table;
+    margin-bottom: govuk-spacing(4);
+
+    &:before {
+      content: counters(item, '.') ' ';
+      counter-increment: item;
+      margin-bottom: govuk-spacing(4);
+      display: table-cell;
+      width: 65px;
+    }
+  }
+
+  .govuk-list--counters-has-nested-list:before {
+    display: block;
+    float: left;
+  }
+}

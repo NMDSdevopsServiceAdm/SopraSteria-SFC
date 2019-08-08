@@ -1,9 +1,25 @@
-<app-header id="app-header" class="container-fluid p-0"></app-header>
+<div tabindex="-1" #top class="govuk-util__no-focus">
+  <a class="govuk-skip-link" href="#main-content" (click)="skip($event)">Skip to main content</a>
+  <app-header></app-header>
 
-<div id="app-main" class="container-fluid p-0">
-  <main class="container" id="main-content" role="main">
-    <router-outlet></router-outlet>
-  </main>
+  <div id="content" class="govuk-width-container">
+    <app-phase-banner phase="beta">
+      This is a new service – your <a [routerLink]="['/feedback']">feedback</a> will help us to improve it.
+    </app-phase-banner>
+    <app-back-link></app-back-link>
+    <app-breadcrumbs></app-breadcrumbs>
+    <app-alert></app-alert>
+
+    <main
+      id="main-content"
+      class="govuk-main-wrapper app-main-class govuk-util__no-focus"
+      #content
+      role="main"
+      tabindex="-1"
+    >
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <app-footer></app-footer>
 </div>
-
-<app-footer id="app-footer" class="col-12 p-0"></app-footer>

@@ -1,0 +1,63 @@
+// Tertiary button variables
+$govuk-tertiary-button-colour: #0058be;
+$govuk-tertiary-button-hover-colour: govuk-shade($govuk-tertiary-button-colour, 10%);
+$govuk-tertiary-button-shadow-colour: govuk-shade($govuk-tertiary-button-colour, 40%);
+$govuk-tertiary-button-text-colour: govuk-colour('white');
+
+$button-shadow-size: $govuk-border-width-form-element;
+
+.govuk-button--tertiary {
+  background-color: $govuk-tertiary-button-colour;
+  box-shadow: 0 $button-shadow-size 0 $govuk-tertiary-button-shadow-colour;
+
+  &,
+  &:link,
+  &:visited,
+  &:active,
+  &:hover {
+    color: $govuk-tertiary-button-text-colour;
+  }
+
+  // alphagov/govuk_template includes a specific a:link:focus selector
+  // designed to make unvisited links a slightly darker blue when focussed, so
+  // we need to override the text colour for that combination of selectors so
+  // so that unvisited links styled as buttons do not end up with dark blue
+  // text when focussed.
+  @include govuk-compatibility(govuk_template) {
+    &:link:focus {
+      color: $govuk-tertiary-button-text-colour;
+    }
+  }
+
+  &:hover,
+  &:focus {
+    background-color: $govuk-tertiary-button-hover-colour;
+  }
+}
+
+.govuk-button-group {
+  margin-top: govuk-spacing(8);
+}
+
+.govuk-button-heading-group {
+  display: flex;
+  @include govuk-media-query($from: desktop) {
+    margin-top: govuk-spacing(6);
+    justify-content: flex-end;
+  }
+  .govuk-button--link {
+    display: flex;
+    align-items: center;
+    &:not(:first-of-type) {
+      margin-left: govuk-spacing(5);
+    }
+  }
+}
+
+.govuk-button {
+  &.govuk-button--link {
+    background: none;
+    box-shadow: none;
+    color: $govuk-link-colour;
+  }
+}

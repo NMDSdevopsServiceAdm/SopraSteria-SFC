@@ -1,0 +1,43 @@
+<h1 id="dialogHeading" class="govuk-heading-l">You have information that hasn't changed in 12 months.</h1>
+
+<p>Check and confirm the mandatory WDF information is up-to-date before applying for funding.</p>
+
+<dl class="govuk-summary-list govuk-summary-list--wide govuk-summary-list--top-border">
+  <div *ngIf="!data.workplace.wdf.vacancies.updatedSinceEffectiveDate" class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-summary-list__key">
+      Staff vacancies
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.workplace.totalVacancies }}
+    </dd>
+  </div>
+  <div *ngIf="!data.workplace.wdf.starters.updatedSinceEffectiveDate" class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-summary-list__key">
+      New starters
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.workplace.totalStarters }}
+    </dd>
+  </div>
+  <div *ngIf="!data.workplace.wdf.leavers.updatedSinceEffectiveDate" class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-summary-list__key">
+      Staff leavers
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.workplace.totalLeavers }}
+    </dd>
+  </div>
+  <div *ngIf="!data.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate" class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-summary-list__key">
+      Total number of staff
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.workplace.numberOfStaff }}
+    </dd>
+  </div>
+</dl>
+
+<button (click)="close(true)" class="govuk-button">Confirm and Submit</button>
+<button (click)="close(false)" class="govuk-button govuk-button--link govuk-util__float-right">
+  Go back and make a change
+</button>

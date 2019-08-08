@@ -1,19 +1,25 @@
-<div class="sub-page-container col-8">
-  <app-panel title="&#10003; Success">
-    {{ total }} basic staff records<br />
-    have been saved
-  </app-panel>
-  <h4 class="h4">What you can do next?</h4>
-  <p class="mb-4">You can add more staff records, or return to your homepage</p>
-  <ul class="list list--bullet">
-    <li>Provide more information for each basic staff record.</li>
-    <li>Add more basic staff records.</li>
-    <li>Add a full staff record.</li>
-  </ul>
-  <div class="btn-container container">
-    <div class="row">
-      <a routerLink="/dashboard" fragment="staff-records" role="button" class="btn btn-primary mt-5">
-        Go to staff records
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <app-panel [title]="'&#10003; Success'">
+      {{ total }} basic staff records<br />
+      have been saved
+    </app-panel>
+    <h2 class="govuk-heading-m">What you can do next?</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Provide more information for each basic staff record.</li>
+      <li>Add more basic staff records.</li>
+      <li>Add a full staff record.</li>
+    </ul>
+    <div class="govuk-button-group">
+      <a
+        *ngIf="returnTo"
+        [routerLink]="returnTo.link"
+        [fragment]="returnTo.fragment"
+        role="button"
+        draggable="false"
+        class="govuk-button"
+      >
+        {{ returnTo.label }}
       </a>
     </div>
   </div>

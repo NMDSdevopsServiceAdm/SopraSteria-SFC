@@ -3,6 +3,7 @@ const router = express.Router({mergeParams: true});
 const models = require('../models');
 
 const slack = require('../utils/slack/slack-logger');
+const sns = require('../aws/sns');
 
 // note - intentionally no get for feedback
 
@@ -34,6 +35,8 @@ router.route('/').post(async (req, res) => {
     // send feedback via slack
     slack.info("Feedback", JSON.stringify(feedbackMsg, null, 2));
 
+    // post through feedback topic - async method but don't wait for a responseThe
+    sns.postToFeedback(feedbackMsg);
 
     if (results) {
       return res.status(201).send();

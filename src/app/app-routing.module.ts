@@ -1,175 +1,136 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ConfirmAccountDetailsComponent } from '@features/confirm-account-details/confirm-account-details.component';
-import { ConfirmWorkplaceDetailsComponent } from '@features/confirm-workplace-details/confirm-workplace-details.component';
-import { ContactUsComponent } from '@features/contactUs/contactUs.component';
-import { ContinueCreatingAccountComponent } from '@features/continue-creating-account/continue-creating-account.component';
-import { CqcRegisteredQuestionComponent } from '@features/cqc-registered-question/cqc-registered-question.component';
-import { CreateUsernameComponent } from '@features/create-username/create-username.component';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { AuthGuard } from '@core/guards/auth/auth.guard';
+import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
+import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
+import { ParentGuard } from '@core/guards/parent/parent.guard';
+import { RoleGuard } from '@core/guards/role/role.guard';
+import { Roles } from '@core/model/roles.enum';
+import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
+import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
-import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-address/enter-workplace-address.component';
-import { FeedbackComponent } from '@features/feedback/feedback.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import { RegistrationCompleteComponent } from '@features/registration-complete/registration-complete.component';
-import { SecurityQuestionComponent } from '@features/security-question/security-question.component';
-import { SelectMainServiceComponent } from '@features/select-main-service/select-main-service.component';
-import { SelectWorkplaceAddressComponent } from '@features/select-workplace-address/select-workplace-address.component';
-import { SelectWorkplaceComponent } from '@features/select-workplace/select-workplace.component';
-import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
-import { UserDetailsComponent } from '@features/user-details/user-details.component';
-
-import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServicePagesComponent,
-} from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
-import { RegisterGuard } from './core/guards/register/register.guard';
-import { AuthGuard } from './core/services/auth-guard.service';
-import { ChangePasswordComponent } from '@features/change-password/change-password.component';
-import { ChangeUserDetailsComponent } from '@features/change-user-details/change-user-details.component';
-import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
-import { ChangeUserSummaryComponent } from '@features/change-user-summary/change-user-summary.component';
-import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
+import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
-import { ReportsComponent } from '@features/reports/reports.component';
 
 const routes: Routes = [
   {
-    path: 'login',
-    component: LoginComponent,
+    path: '',
+    redirectTo: '/dashboard',
+    pathMatch: 'full',
   },
   {
     path: 'logged-out',
     component: LogoutComponent,
-  },
-  {
-    path: 'forgot-your-password',
-    component: ForgotYourPasswordComponent,
-  },
-  {
-    path: 'reset-password',
-    component: ResetPasswordComponent,
-  },
-  {
-    path: 'change-user-summary',
-    component: ChangeUserSummaryComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'change-password',
-    component: ChangePasswordComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'change-user-details',
-    component: ChangeUserDetailsComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'change-user-security',
-    component: ChangeUserSecurityComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'registered-question',
-    component: CqcRegisteredQuestionComponent,
-  },
-  {
-    path: 'select-workplace',
-    component: SelectWorkplaceComponent,
-    canActivate: [RegisterGuard],
-  },
-  {
-    path: 'confirm-workplace-details',
-    component: ConfirmWorkplaceDetailsComponent,
-    canActivate: [RegisterGuard],
-  },
-  {
-    path: 'user-details',
-    component: UserDetailsComponent,
-    canActivate: [RegisterGuard],
-  },
-  {
-    path: 'create-username',
-    component: CreateUsernameComponent,
-    canActivate: [RegisterGuard],
-  },
-  {
-    path: 'security-question',
-    component: SecurityQuestionComponent,
-    canActivate: [RegisterGuard],
-  },
-  {
-    path: 'confirm-account-details',
-    component: ConfirmAccountDetailsComponent,
-    canActivate: [RegisterGuard],
-  },
-  {
-    path: 'registration-complete',
-    component: RegistrationCompleteComponent,
-    canActivate: [RegisterGuard],
-  },
-  {
-    path: 'select-workplace-address',
-    component: SelectWorkplaceAddressComponent,
-    canActivate: [RegisterGuard],
-  },
-  {
-    path: 'enter-workplace-address',
-    component: EnterWorkplaceAddressComponent,
-    canActivate: [RegisterGuard],
-  },
-  {
-    path: 'select-main-service',
-    component: SelectMainServiceComponent,
-    canActivate: [RegisterGuard],
-  },
-  {
-    path: 'continue-creating-account',
-    component: ContinueCreatingAccountComponent,
-  },
-  {
-    path: 'feedback',
-    component: FeedbackComponent,
-  },
-  {
-    path: 'contact-us',
-    component: ContactUsComponent,
-  },
-  {
-    path: 'terms-and-conditions',
-    component: TermsConditionsComponent,
+    data: { title: 'Logged Out' },
   },
   {
     path: 'problem-with-the-service',
-    component: ProblemWithTheServicePagesComponent,
-  },
-  {
-    path: 'workplace',
-    loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'reports',
-    component: ReportsComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'worker',
-    loadChildren: '@features/workers/workers.module#WorkersModule',
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    canActivate: [AuthGuard],
+    component: ProblemWithTheServiceComponent,
+    data: { title: 'Problem with the Service' },
   },
   {
     path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
+    loadChildren: '@features/public/public.module#PublicModule',
   },
-
+  {
+    path: '',
+    canActivateChild: [LoggedOutGuard],
+    children: [
+      {
+        path: 'login',
+        component: LoginComponent,
+        data: { title: 'Login' },
+      },
+      {
+        path: 'registration',
+        loadChildren: '@features/registration/registration.module#RegistrationModule',
+        data: { title: 'Registration' },
+      },
+      {
+        path: 'activate-account',
+        loadChildren: '@features/activate-user-account/activate-user-account.module#ActivateUserAccountModule',
+        data: { title: 'Activate User Account' },
+      },
+      {
+        path: 'forgot-your-password',
+        component: ForgotYourPasswordComponent,
+        data: { title: 'Forgotten Password' },
+      },
+      {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        data: { title: 'Reset Password' },
+      },
+    ],
+  },
+  {
+    path: '',
+    canActivateChild: [AuthGuard],
+    resolve: { loggedInUser: LoggedInUserResolver, primaryWorkplace: PrimaryWorkplaceResolver },
+    children: [
+      {
+        path: 'migrated-user-terms-and-conditions',
+        canActivate: [MigratedUserGuard],
+        component: MigratedUserTermsConditionsComponent,
+        data: { title: 'Migrated User Terms And Conditions' },
+      },
+      {
+        path: 'workplace',
+        loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
+        data: { title: 'Workplace' },
+      },
+      {
+        path: 'add-workplace',
+        loadChildren: '@features/add-workplace/add-workplace.module#AddWorkplaceModule',
+        canActivate: [ParentGuard],
+        data: { title: 'Add Workplace' },
+      },
+      {
+        path: 'account-management',
+        loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
+        data: { title: 'User Account' },
+      },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        data: { title: 'Dashboard' },
+      },
+      {
+        path: 'bulk-upload',
+        loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Edit, Roles.Admin],
+          title: 'Bulk Upload',
+        },
+      },
+      {
+        path: 'search-users',
+        loadChildren: '@features/search/search.module#SearchModule',
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Search Users',
+        },
+      },
+      {
+        path: 'search-establishments',
+        loadChildren: '@features/search/search.module#SearchModule',
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Search Establishments',
+        },
+      },
+    ],
+  },
   {
     path: '**',
     component: PageNotFoundComponent,
@@ -177,7 +138,13 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes, {
+      anchorScrolling: 'enabled',
+      onSameUrlNavigation: 'reload',
+      paramsInheritanceStrategy: 'always',
+    }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

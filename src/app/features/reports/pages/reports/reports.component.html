@@ -1,0 +1,28 @@
+<app-reports-header *ngIf="workplace" [workplace]="workplace"></app-reports-header>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-3">
+  <div class="govuk-grid-column-full">
+    <a class="govuk-body-m" [routerLink]="['../wdf']">Workforce Development Fund</a>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-details [title]="'What is the Workforce Development Fund'">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds-from-desktop">
+          <p>
+            Find out more about the Workforce Development Fund and how to claim it on
+            <a
+              class="govuk-!-margin-right-2"
+              href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx"
+              target="_blank"
+            >
+              Skills for Care<span class="govuk-visually-hidden">, (opens in a new window)</span>
+            </a>
+            website.
+          </p>
+        </div>
+      </div>
+    </app-details>
+  </div>
+</div>

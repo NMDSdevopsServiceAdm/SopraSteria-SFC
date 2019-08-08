@@ -36,14 +36,18 @@ exports.WorkerZeroContractProperty = class WorkerZeroContractProperty extends Ch
         return currentValue && newValue && currentValue === newValue;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 zeroHoursContract: this.property
             };
         }
-        
+
         return {
             zeroHoursContract : {
                 currentValue: this.property,

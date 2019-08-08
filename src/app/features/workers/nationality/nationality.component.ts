@@ -1,138 +1,118 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Worker } from '@core/model/worker.model';
-import { MessageService } from '@core/services/message.service';
-import { NationalityResponse, NationalityService } from '@core/services/nationality.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Nationality } from '@core/model/nationality.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { NationalityService } from '@core/services/nationality.service';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-nationality',
   templateUrl: './nationality.component.html',
 })
-export class NationalityComponent implements OnInit, OnDestroy {
-  public availableOtherNationalities: NationalityResponse[];
-  public form: FormGroup;
-  public backLink: string;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
+export class NationalityComponent extends QuestionComponent {
+  public availableNationalities: Nationality[];
 
   constructor(
-    private workerService: WorkerService,
-    private nationalityService: NationalityService,
-    private messageService: MessageService,
-    private formBuilder: FormBuilder,
-    private router: Router
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService,
+    private nationalityService: NationalityService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+
     this.nationalityNameValidator = this.nationalityNameValidator.bind(this);
     this.nationalityNameFilter = this.nationalityNameFilter.bind(this);
-  }
 
-  ngOnInit() {
     this.form = this.formBuilder.group({
       nationalityKnown: null,
-      nationalityName: [null, this.nationalityNameValidator],
+      nationalityName: null,
     });
+  }
 
-    if (this.workerService.returnToSummary) {
-      this.backLink = 'summary';
-    } else {
-      this.backLink = 'ethnicity';
-    }
-
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
-
-      if (this.worker.nationality) {
-        const { value, other } = this.worker.nationality;
-
-        this.form.patchValue({
-          nationalityKnown: value,
-          nationalityName: other ? other.nationality : null,
-        });
-      }
-    });
-
+  init() {
     this.subscriptions.add(
-      this.nationalityService.getNationalities().subscribe(res => (this.availableOtherNationalities = res))
+      this.nationalityService
+        .getNationalities()
+        .subscribe(nationalities => (this.availableNationalities = nationalities))
     );
 
     this.subscriptions.add(
-      this.form.controls.nationalityKnown.valueChanges.subscribe(() => {
-        this.form.controls.nationalityName.reset();
-        this.form.controls.nationalityName.updateValueAndValidity();
-      })
-    );
-  }
+      this.form.get('nationalityKnown').valueChanges.subscribe(value => {
+        this.form.get('nationalityName').clearValidators();
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
-  }
-
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-
-      const { nationalityKnown } = this.form.value;
-
-      if (nationalityKnown === 'British') {
-        this.router.navigate(['/worker', this.worker.uid, 'country-of-birth']);
-      } else {
-        this.router.navigate(['/worker', this.worker.uid, 'british-citizenship']);
-      }
-    } catch (err) {
-      // keep typescript transpiler silent
-    }
-  }
-
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { nationalityName, nationalityKnown } = this.form.controls;
-      this.messageService.clearError();
-
-      if (this.form.valid) {
-        const props = {
-          ...(nationalityKnown.value && {
-            nationality: {
-              value: nationalityKnown.value,
-              ...(nationalityName.value && {
-                other: {
-                  nationality: nationalityName.value,
-                },
-              }),
-            },
-          }),
-        };
-
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        if (nationalityName.errors.validNationality) {
-          this.messageService.show('error', 'Invalid nationality.');
+        if (value === 'Other') {
+          this.form.get('nationalityName').setValidators([this.nationalityNameValidator]);
         }
 
-        reject();
-      }
-    });
+        this.form.get('nationalityName').updateValueAndValidity();
+      })
+    );
+
+    if (this.worker.nationality) {
+      const { value, other } = this.worker.nationality;
+
+      this.form.patchValue({
+        nationalityKnown: value,
+        nationalityName: other ? other.nationality : null,
+      });
+    }
+
+    this.previous = this.getRoutePath('ethnicity');
+  }
+
+  setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'nationalityName',
+        type: [
+          {
+            name: 'validNationality',
+            message: 'Invalid nationality.',
+          },
+        ],
+      },
+    ];
+  }
+
+  generateUpdateProps() {
+    const { nationalityName, nationalityKnown } = this.form.controls;
+
+    return nationalityKnown.value
+      ? {
+          nationality: {
+            value: nationalityKnown.value,
+            ...(nationalityName.value && {
+              other: {
+                nationality: nationalityName.value,
+              },
+            }),
+          },
+        }
+      : null;
+  }
+
+  onSuccess() {
+    this.next =
+      this.worker.nationality && this.worker.nationality.value === 'British'
+        ? this.getRoutePath('country-of-birth')
+        : this.getRoutePath('british-citizenship');
   }
 
   nationalityNameValidator() {
-    if (this.form && this.availableOtherNationalities) {
-      const { nationalityKnown } = this.form.value;
-      const nationalityName = this.form.controls.nationalityName.value;
+    if (this.form && this.availableNationalities) {
+      const { nationalityKnown, nationalityName } = this.form.controls;
 
-      if (nationalityKnown === 'Other') {
-        if (nationalityName) {
-          const nationalityNameLowerCase = nationalityName.toLowerCase();
-          return this.availableOtherNationalities.some(n => n.nationality.toLowerCase() === nationalityNameLowerCase)
+      if (nationalityKnown.value === 'Other') {
+        if (nationalityName.value) {
+          const nationalityNameLowerCase = nationalityName.value.toLowerCase();
+          return this.availableNationalities.some(n => n.nationality.toLowerCase() === nationalityNameLowerCase)
             ? null
             : { validNationality: true };
         }
@@ -145,9 +125,9 @@ export class NationalityComponent implements OnInit, OnDestroy {
   nationalityNameFilter(): string[] {
     const { nationalityName } = this.form.value;
 
-    if (this.availableOtherNationalities && nationalityName && nationalityName.length) {
+    if (this.availableNationalities && nationalityName && nationalityName.length) {
       const nationalityNameLowerCase = nationalityName.toLowerCase();
-      return this.availableOtherNationalities
+      return this.availableNationalities
         .filter(n => n.nationality.toLowerCase().startsWith(nationalityNameLowerCase))
         .filter(n => n.nationality.toLowerCase() !== nationalityNameLowerCase)
         .map(n => n.nationality);

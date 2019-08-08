@@ -21,7 +21,8 @@ const getToken = (headers) => {
 const isAuthorised = (req, res , next) => {
     const AUTH_HEADER = 'authorization';
     const token = getToken(req.headers[AUTH_HEADER]);
-  
+    const Token_Secret = config.get('jwt.secret');
+
     if (token) {
       jwt.verify(token, Token_Secret, function (err, claim) {
         if (err || claim.aud !== 'ADS-WDS-on-demand-reporting' || claim.iss !== thisIss) {
@@ -29,7 +30,7 @@ const isAuthorised = (req, res , next) => {
         } else {
           next();
         }
-      });    
+      });
     } else {
       // not authenticated
       res.status(401).send('Requires authorisation');
@@ -40,6 +41,7 @@ const isAuthorised = (req, res , next) => {
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
 router.use('/', isAuthorised);
 router.route('/').get(async (req, res) => {
+    req.setTimeout(15 * 60 * 1000);   // fifteen minutes
     try {
         // rather than define a sequelize model, instead, simply query directly upon a view
         // NOTE - the order of the records is defined by the view

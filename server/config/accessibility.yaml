@@ -1,0 +1,40 @@
+aws:
+    region: eu-west-1
+    secrets:
+        use: true
+        wallet: demo/api
+  kinesis:
+    enabled: false
+  sns:
+    enabled: false
+
+db:
+    pool: 15
+    ssl: true
+    username: sfcdemoadmin
+    database: sfcdemodb
+    client_ssl:
+        status: true
+        usingFiles: false
+
+slack:
+    level : 3     # enables Slack notifications
+
+jwt:
+    iss: 'sfcaccessibility.cloudapps.digital'
+    ttl:
+        login: 10
+
+notify:
+    replyTo: '73711295-a4da-4303-9127-65be2a409681'
+    templates:
+        resetPassword: 'f2c43610-9ec9-4271-b9b1-dd55569b191c'
+        addUser: 'e581eea2-4206-4c90-8594-4357960e3e74'
+
+bulkupload:
+    region: eu-west-2
+    bucketname: sfc-bulkupload-demo
+
+public:
+    download:
+        baseurl: https://sfc-public-staging.s3.eu-west-2.amazonaws.com/public/download

@@ -1,240 +1,43 @@
-html {
-  font-size: 62.5%;
-}
+/* autoprefixer grid: on */
+
+@import '~govuk-frontend/settings/all';
+
+$govuk-global-styles: true;
+$govuk-font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+
+@import '~govuk-frontend/all';
 
 body {
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-weight: 300;
+  font-family: $govuk-font-family;
 }
 
-ul {
-  margin: 0;
-  padding: 0;
+@import 'modules/overlay';
+@import 'modules/sticky-footer';
+@import 'modules/utils';
+@import 'modules/responsive';
 
-  li {
-    list-style: none;
+// Custom Partials
+@import 'partials/lists';
+@import 'partials/typography';
 
-    a {
-      display: inline-block;
-      text-decoration: underline;
-
-      @include rem(font-size, 19px);
-      @include rem(padding, 6px 0);
-    }
-  }
-}
-
-//a:not([href]):not([tabindex])
-
-a,
-.text-link {
-  text-decoration: underline;
-  color: #007bff;
-  cursor: pointer;
-
-  @include rem(font-size, 19px);
-
-  &:hover {
-    color: #0056b3;
-  }
-
-  &:not([href]):not([tabindex]) {
-    text-decoration: underline;
-    color: #007bff;
-    cursor: pointer;
-
-    @include rem(font-size, 19px);
-
-    &:hover {
-      color: #0056b3;
-    }
-  }
-}
-
-p {
-
-  @include rem(font-size, 19px);
-}
-
-// Structure
-
-.container {
-  max-width: 960px;
-}
-
-#main-content {
-  min-height: calc(100vh - 351px);
-
-  @media (min-width: 961px) {
-    padding: 0;
-  }
-
-  .main-page-container {
-
-    @include rem(padding, 30px 0 120px);
-  }
-
-  .sub-page-container {
-
-    @include rem(padding, 30px 0 60px 0);
-
-  }
-}
-
-.back-link {
-  @include rem(padding, 0 0 30px 0);
-
-  a {
-    color: $black;
-    text-decoration: none;
-    border-bottom: 1px solid $black;
-
-    @include rem(font-size, 16px);
-
-    .arrow {
-      content: '';
-      display: inline-block;
-      width: 0;
-      height: 0;
-      border-top: 4px solid transparent;
-      border-right: 5px solid $black;
-      border-bottom: 4px solid transparent;
-      left: 0;
-      //margin: -6px 10px 0 0;
-      @include rem(margin, -6px 10px 0 0);
-    }
-  }
-}
-
-.panel {
-
-  &.collapse {
-
-    @include rem(margin, 0 0 0 0);
-
-    ul {
-      @include rem(margin, 0 0 0 15px);
-
-      li {
-        list-style-type: disc;
-      }
-    }
-  }
-
-}
-
-.panel-border-narrow {
-  width: 100%;
-  border-left: 10px solid #bfc1c3;
-
-  @include rem(padding, 0 0 0 30px);
-  @include rem(margin, 20px 0 0 0);
-}
-
-
-
-.border-line-bottom {
-  border-bottom: 1px solid $headerline-border-grey;
-}
-
-.completion-message {
-  background: $mint-green;
-  color: $white;
-  text-align: center;
-
-  @include rem(padding, 40px 0);
-}
-
-.link-nounderline {
-  text-decoration: none;
-}
-
-.icon-link {
-  white-space: nowrap;
-  line-height: 24px;
-  text-decoration: none;
-
-  &:before {
-    content: '';
-    display: inline-block;
-    margin-right: 5px;
-    vertical-align: text-bottom;
-
-    width: 24px;
-    height: 24px;
-  }
-
-  &.icon-flag {
-    &:before {
-    background-image: url('/assets/img/flag-orange.svg');
-    }
-  }
-}
-
-.tick-icon {
-  &:before {
-    background-image: url('/assets/img/tick-icon.svg');
-  }
-}
-
-.cross-icon {
-  &:before {
-    background-image: url('/assets/img/cross-icon.svg');
-  }
-}
-
-/* ---- Warning Text .Gov ---- */
-.govuk-warning-text {
-  @include rem(font-size, 19px);
-  color: $black;
-
-  position: relative;
-  @include rem(margin-bottom, 30px);
-  @include rem(padding, 10px 0);
-}
-
-.govuk-warning-text__icon {
-  @include rem(font-size, 1.6em);
-  font-weight: bold;
-
-  display: inline-block;
-
-  position: absolute;
-  top: 50%;
-  left: 0;
-
-  min-width: 34px;
-  min-height: 34px;
-  margin-top: -20px; // Half the height of the circle (adjusted for NTA)
-  padding-top: 0;
-
-  // When a user customises their colours the background colour will often be removed.
-  // Adding a border to the component keeps it's shape as a circle.
-  border: 3px solid $black;
-  border-radius: 50%;
-
-  color: $white;
-  background: $black;
-
-  font-size: 1.6em;
-  line-height: 29px;
-
-  text-align: center;
-
-  // Prevent the exclamation mark from being included when the warning text
-  // is copied, for example.
-  user-select: none;
-}
-
-.govuk-warning-text__text {
-  display: block;
-  font-weight: normal;
-  padding-left: 50px;
-}
-
-.dib.icon-link {
-  &:before {
-    vertical-align: inherit;
-  }
-}
-
+// Custom Components
+@import 'components/auto-suggest';
+@import 'components/breadcrumbs';
+@import 'components/buttons';
+@import 'components/checkboxes';
+@import 'components/doh-logo';
+@import 'components/fieldset';
+@import 'components/footer';
+@import 'components/form-group';
+@import 'components/grid';
+@import 'components/header';
+@import 'components/input';
+@import 'components/inset-text';
+@import 'components/panel';
+@import 'components/progress';
+@import 'components/radios';
+@import 'components/select';
+@import 'components/summary-list';
+@import 'components/tables';
+@import 'components/tabs';
+@import 'components/tag';

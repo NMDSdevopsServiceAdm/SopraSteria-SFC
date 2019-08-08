@@ -1,26 +1,29 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a [routerLink]="['/worker', worker.uid, backLink]">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-  <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="form">
-
-    <header>
-      <h1 class="h1 col-12 col-lg-8">What is their home postcode?</h1>
-    </header>
-
-    <app-messages></app-messages>
-
-    <div class="form-group mt-5">
-      <div class="field-group col-12 col-md-8 col-lg-6">
-        <input type="text" formControlName="postcode" maxlength="12" class="form-control col-12" [ngClass]="{'is-invalid': (form.get('postcode').touched || form.get('postcode').dirty) && !form.get('postcode').valid}" />
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('postcode').invalid">
+        <h1 class="govuk-label-wrapper">
+          <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="postcode">
+            What is their home postcode?
+          </label>
+        </h1>
+        <span *ngIf="submitted && form.get('postcode').errors" id="postcode-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFormErrorMessage('postcode', 'validPostcode') }}
+        </span>
+        <input
+          class="govuk-input govuk-input--width-10"
+          [class.govuk-input--error]="submitted && form.get('postcode').invalid"
+          [formControlName]="'postcode'"
+          id="postcode"
+          name="postcode"
+          type="text"
+        />
       </div>
     </div>
+  </div>
 
-    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
-  </form>
-</div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

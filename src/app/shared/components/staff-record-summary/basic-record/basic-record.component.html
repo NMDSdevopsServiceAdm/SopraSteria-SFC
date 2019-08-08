@@ -1,0 +1,44 @@
+<h2 class="govuk-heading-m">Basic record</h2>
+<dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wrap-border">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Name or ID number
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.nameOrId }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('staff-details')" (click)="setReturn()">
+        Change
+        <span class="govuk-visually-hidden"> basic record details</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Main job role
+    </dt>
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.mainJob">
+        <ng-container *ngIf="worker.mainJob.other; else title">
+          <span>{{ worker.mainJob.other }}</span>
+        </ng-container>
+        <ng-template #title>
+          <span>{{ worker.mainJob.title }}</span>
+        </ng-template>
+      </app-summary-record-value>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Contract type
+    </dt>
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.contract">
+        {{ worker.contract }}
+      </app-summary-record-value>
+    </dd>
+  </div>
+</dl>

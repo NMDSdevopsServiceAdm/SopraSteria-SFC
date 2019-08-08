@@ -13,7 +13,7 @@ exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAveragePropert
 
     // concrete implementations
     async restoreFromJson(document) {
-        const MAXIMUM_HOURS=65;
+        const MAXIMUM_HOURS=75;
 
         if (document.weeklyHoursAverage) {
             if (WEEKLY_HOURS_TYPE.includes(document.weeklyHoursAverage.value)) {
@@ -64,7 +64,7 @@ exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAveragePropert
             WeeklyHoursAverageValue: this.property.value,
             WeeklyHoursAverageHours: this.property.value === 'Yes' ? this.property.hours : null
         };
-        
+
         return hoursDocument;
     }
 
@@ -80,14 +80,18 @@ exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAveragePropert
         return currentValue && newValue && currentValue.value === newValue.value && hoursEqual;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 weeklyHoursAverage: this.property
             };
         }
-        
+
         return {
             weeklyHoursAverage : {
                 currentValue: this.property,

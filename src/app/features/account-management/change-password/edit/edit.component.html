@@ -1,0 +1,95 @@
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">User account</span>
+          <h1 class="govuk-fieldset__heading">
+            Change password
+          </h1>
+        </legend>
+
+        <p>Change password for account {{ userDetails?.username }}</p>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getOldPasswordInput.errors">
+          <label class="govuk-label" for="oldPasswordInput">
+            Password
+          </label>
+          <span *ngIf="submitted && getOldPasswordInput.errors" id="oldPasswordInput-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('oldPasswordInput', 'required') }}
+          </span>
+          <input
+            class="govuk-input govuk-input--width-10"
+            [formControlName]="'oldPasswordInput'"
+            id="oldPasswordInput"
+            name="oldPasswordInput"
+            [class.govuk-input--error]="submitted && getOldPasswordInput.errors"
+            type="password"
+          />
+        </div>
+
+        <div [formGroupName]="'passwordGroup'">
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getCreatePasswordInput.errors">
+            <label class="govuk-label" for="createPasswordInput">
+              New password
+            </label>
+            <span id="createPasswordInput-hint" class="govuk-hint">
+              This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
+            </span>
+            <span *ngIf="submitted" id="createPasswordInput-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              <span *ngIf="getCreatePasswordInput.hasError('required')">
+                {{ getFormErrorMessage('passwordGroup.createPasswordInput', 'required') }}
+              </span>
+              <span *ngIf="getCreatePasswordInput.hasError('pattern')">
+                {{ getFormErrorMessage('passwordGroup.createPasswordInput', 'pattern') }}
+              </span>
+            </span>
+            <input
+              aria-describedby="createPasswordInput-hint"
+              class="govuk-input govuk-input--width-10"
+              [formControlName]="'createPasswordInput'"
+              id="createPasswordInput"
+              name="createPasswordInput"
+              [class.govuk-input--error]="submitted && getCreatePasswordInput.errors"
+              type="password"
+            />
+          </div>
+
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors">
+            <label class="govuk-label" for="confirmPasswordInput">
+              Confirm password
+            </label>
+            <span *ngIf="submitted" id="confirmPasswordInput-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              <span
+                *ngIf="getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')"
+                id="passwordGroup-error"
+              >
+                {{ getFormErrorMessage('passwordGroup.confirmPasswordInput', 'required') }}
+              </span>
+            </span>
+            <input
+              class="govuk-input govuk-input--width-10"
+              [formControlName]="'confirmPasswordInput'"
+              id="confirmPasswordInput"
+              name="confirmPasswordInput"
+              [class.govuk-input--error]="submitted && getConfirmPasswordInput.errors"
+              type="password"
+            />
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <app-submit-exit-buttons [cta]="'Save new password'" [return]="return"></app-submit-exit-buttons>
+</form>

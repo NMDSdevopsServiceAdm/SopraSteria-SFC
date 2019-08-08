@@ -1,10 +1,10 @@
 <ng-container *ngIf="qualifications?.length">
-  <div class="row">
-    <div class="col-lg-6">
-      <h3 class="fs-24 mb-4 text-weight-bold">Qualifications</h3>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h2 class="govuk-heading-m">Qualifications</h2>
     </div>
-    <div class="col-lg-6 text-align-right">
-      <p>Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
+    <div class="govuk-grid-column-one-half">
+      <p class="govuk-util__float-right">Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
     </div>
   </div>
 
@@ -18,10 +18,12 @@
           {{ qualification.qualification.group }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link mr-5" href="#" (click)="deleteQualification(qualification, $event)"
+          <a class="govuk-link--no-visited-state" href="#" (click)="deleteQualification(qualification, $event)"
             >Delete<span class="govuk-visually-hidden"> {{ qualification.title }} qualification</span></a
           >
-          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'qualification', qualification.uid]"
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['../qualification', qualification.uid]"
             >Change<span class="govuk-visually-hidden"> {{ qualification.title }} qualification</span></a
           >
         </dd>
@@ -35,6 +37,7 @@
           {{ qualification.qualification.title }}
         </dd>
         <dd class="govuk-summary-list__actions"></dd>
+        <dd class="govuk-summary-list__actions"></dd>
       </div>
 
       <div class="govuk-summary-list__row">
@@ -44,6 +47,7 @@
         <dd class="govuk-summary-list__value">
           {{ qualification?.qualification?.level ? qualification.qualification.level : '-' }}
         </dd>
+        <dd class="govuk-summary-list__actions"></dd>
         <dd class="govuk-summary-list__actions"></dd>
       </div>
 
@@ -55,6 +59,7 @@
           {{ qualification?.year ? qualification.year : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions"></dd>
+        <dd class="govuk-summary-list__actions"></dd>
       </div>
 
       <div class="govuk-summary-list__row govuk-summary-list--bottom-border">
@@ -64,6 +69,7 @@
         <dd class="govuk-summary-list__value">
           {{ qualification?.notes ? qualification.notes : '-' }}
         </dd>
+        <dd class="govuk-summary-list__actions"></dd>
         <dd class="govuk-summary-list__actions"></dd>
       </div>
     </ng-container>

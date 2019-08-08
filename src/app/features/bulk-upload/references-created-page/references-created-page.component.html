@@ -1,0 +1,19 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <app-panel [title]="'&#10003; Success'">
+      All workplace and staff references<br />
+      have been created
+    </app-panel>
+    <h2 class="govuk-heading-m govuk-!-margin-top-6">What you can do next?</h2>
+    <p>You can start bulk uploading files, or return to your dashboard.</p>
+    <div class="govuk-button-group">
+      <a role="button" draggable="false" class="govuk-button govuk-!-margin-right-8" [routerLink]="['/bulk-upload/']">
+        Start bulk uploading
+      </a>
+      <span class="govuk-visually-hidden">or</span>
+      <a role="button" draggable="false" class="govuk-button govuk-button--link" [routerLink]="['/dashboard']">
+        Return to dashboard
+      </a>
+    </div>
+  </div>
+</div>

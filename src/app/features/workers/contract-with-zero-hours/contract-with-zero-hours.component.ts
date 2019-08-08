@@ -1,101 +1,64 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Contracts } from '@core/constants/contracts.enum';
-import { Worker } from '@core/model/worker.model';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Contracts } from '@core/model/contracts.enum';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-contract-with-zero-hours',
   templateUrl: './contract-with-zero-hours.component.html',
 })
-export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
-  public backLink: string;
+export class ContractWithZeroHoursComponent extends QuestionComponent {
   public answersAvailable = ['Yes', 'No', `Don't know`];
-  public form: FormGroup;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private workerService: WorkerService,
-    private messageService: MessageService,
-    private formBuilder: FormBuilder,
-    private router: Router
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-  }
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
-  ngOnInit() {
     this.form = this.formBuilder.group({
       zeroHoursContract: null,
     });
-
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
-
-      if (this.workerService.returnToSummary) {
-        this.backLink = 'summary';
-      } else {
-        this.backLink = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
-          ? 'days-of-sickness'
-          : 'adult-social-care-started';
-      }
-
-      if (this.worker.zeroHoursContract) {
-        this.form.patchValue({
-          zeroHoursContract: this.worker.zeroHoursContract,
-        });
-      }
-    });
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
-  }
-
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-
-      const { zeroHoursContract } = this.form.value;
-      if (
-        zeroHoursContract === 'Yes' ||
-        [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-      ) {
-        this.router.navigate(['/worker', this.worker.uid, 'average-weekly-hours']);
-      } else {
-        this.router.navigate(['/worker', this.worker.uid, 'weekly-contracted-hours']);
-      }
-    } catch (err) {
-      // keep typescript transpiler silent
+  init() {
+    if (this.worker.zeroHoursContract) {
+      this.form.patchValue({
+        zeroHoursContract: this.worker.zeroHoursContract,
+      });
     }
+
+    this.previous = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
+      ? this.getRoutePath('days-of-sickness')
+      : this.getRoutePath('adult-social-care-started');
   }
 
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { zeroHoursContract } = this.form.controls;
-      this.messageService.clearError();
+  generateUpdateProps() {
+    const { zeroHoursContract } = this.form.value;
 
-      if (this.form.valid) {
-        const props = {
-          zeroHoursContract: zeroHoursContract.value,
-        };
+    if (!zeroHoursContract) {
+      return null;
+    }
 
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        this.messageService.show('error', 'Please fill the required fields.');
+    return {
+      zeroHoursContract: zeroHoursContract,
+    };
+  }
 
-        reject();
-      }
-    });
+  onSuccess() {
+    this.next =
+      this.worker.zeroHoursContract === 'Yes' ||
+      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
+        ? this.getRoutePath('average-weekly-hours')
+        : this.getRoutePath('weekly-contracted-hours');
   }
 }

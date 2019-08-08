@@ -4,6 +4,4 @@ import { Component } from '@angular/core';
   selector: 'app-rp-confirmation',
   templateUrl: './confirmation.component.html',
 })
-export class ResetPasswordConfirmationComponent {
-
-}
+export class ResetPasswordConfirmationComponent {}

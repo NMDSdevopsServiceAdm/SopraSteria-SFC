@@ -20,8 +20,7 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
                 const validatedServices = await this._validateServices(document.serviceUsers);
 
                 if (validatedServices) {
-                    this.property = validatedServices;
-
+                    this.property = validatedServices
                 } else {
                     this.property = null;
                 }
@@ -38,10 +37,10 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
                 return {
                     id: thisService.id,
                     service: thisService.service,
-                    group: thisService.group
+                    group: thisService.group,
+                    other: thisService.other ? thisService.other : undefined
                 };
             });
-
             return restoredRecords;
         }
     }
@@ -56,7 +55,8 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
             servicesDocument.additionalModels = {
                 establishmentServiceUsers: this.property.map(thisService => {
                     return {
-                        serviceUserId: thisService.id
+                        serviceUserId: thisService.id,
+                        other: thisService.other ? thisService.other : null,
                     };
                 })
             };
@@ -76,7 +76,13 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
             //  current value, and confirm it is in the the new data set.
             //  Array.every will drop out on the first iteration to return false
             arraysEqual = currentValue.every(thisService => {
-                return newValue.find(newService => newService.id === thisService.id);
+                return newValue.find(newService =>
+                    newService.id === thisService.id && (
+                        (thisService.other && newService.other && thisService.other === newService.other) ||
+                        (!thisService.other && !newService.other)
+                    )
+                );
+
             });
         } else {
             // if the arrays are lengths are not equal, then we know they're not equal
@@ -91,12 +97,17 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
             return {
                 id: thisService.id,
                 group: thisService.group,
-                service: thisService.service
+                service: thisService.service,
+                other: thisService.other ? thisService.other : undefined
             };
         });
     }
 
-    toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!this.property) return null;
 
         if (!withHistory) {
@@ -161,14 +172,20 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
                 });
             }
 
+            const OTHER_MAX_LENGTH=120;
             if (referenceService && referenceService.id) {
                 // found a service match - prevent duplicates by checking if the reference service already exists
                 if (!setOfValidatedServices.find(thisService => thisService.id === referenceService.id)) {
-                    setOfValidatedServices.push({
-                        id: referenceService.id,
-                        service: referenceService.service,
-                        group: referenceService.group
-                    });
+                    if (referenceService.other && thisService.other && thisService.other.length && thisService.other.length > OTHER_MAX_LENGTH) {
+                        setOfValidatedServicesInvalid = true;
+                    } else {
+                        setOfValidatedServices.push({
+                            id: referenceService.id,
+                            service: referenceService.service,
+                            group: referenceService.group,
+                            other: (thisService.other && referenceService.other) ? thisService.other : undefined,
+                        });
+                    }
                 }
             } else {
                 setOfValidatedServicesInvalid = true;

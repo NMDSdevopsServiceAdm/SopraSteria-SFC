@@ -8,9 +8,8 @@ describe('AutoSuggestComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AutoSuggestComponent ]
-    })
-    .compileComponents();
+      declarations: [AutoSuggestComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

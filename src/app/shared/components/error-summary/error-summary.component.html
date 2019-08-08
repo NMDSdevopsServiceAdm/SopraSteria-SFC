@@ -4,23 +4,37 @@
   role="alert"
   tabindex="-1"
   data-module="error-summary"
+  #errorSummary
 >
   <h2 class="govuk-error-summary__title" id="error-summary-title">
     There is a problem
   </h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list">
-      <li *ngFor="let error of errors">
-        <ng-container *ngIf="error.fragment">
-          <a [routerLink]="" [fragment]="error.fragment">{{ error.text }}</a>
-        </ng-container>
-        <ng-container *ngIf="error.action">
-          <a (click)="error.action">{{ error.text }}</a>
-        </ng-container>
-        <ng-container *ngIf="!error.fragment && !error.action">
-          {{ error.text }}
-        </ng-container>
+      <ng-container *ngIf="errors">
+        <li *ngFor="let i of errors">
+          <a
+            [routerLink]="'.'"
+            [fragment]="transformFragmentName(i.item) + '-error'"
+            [queryParamsHandling]="'merge'"
+            [innerHTML]="getFormErrorMessage(i.item, i.errors[0])"
+          >
+          </a>
+        </li>
+      </ng-container>
+      <li *ngIf="serverError">
+        <a [routerLink]="'.'" [fragment]="'server-error'" [queryParamsHandling]="'merge'" [innerHTML]="serverError"></a>
       </li>
+      <ng-container *ngIf="customErrors">
+        <li *ngFor="let customError of customErrors">
+          <a
+            [routerLink]="'.'"
+            [fragment]="customError.name"
+            [queryParamsHandling]="merge"
+            [innerHTML]="customError.message"
+          ></a>
+        </li>
+      </ng-container>
     </ul>
   </div>
 </div>

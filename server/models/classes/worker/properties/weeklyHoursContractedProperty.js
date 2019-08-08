@@ -13,7 +13,7 @@ exports.WorkerWeeklyHoursContractedProperty = class WorkerWeeklyHoursContractedP
 
     // concrete implementations
     async restoreFromJson(document) {
-        const MAXIMUM_HOURS=65;
+        const MAXIMUM_HOURS=75;
 
         if (document.weeklyHoursContracted) {
             if (WEEKLY_HOURS_TYPE.includes(document.weeklyHoursContracted.value)) {
@@ -64,7 +64,7 @@ exports.WorkerWeeklyHoursContractedProperty = class WorkerWeeklyHoursContractedP
             WeeklyHoursContractedValue: this.property.value,
             WeeklyHoursContractedHours: this.property.value === 'Yes' ? this.property.hours : null
         };
-        
+
         return hoursDocument;
     }
 
@@ -80,14 +80,18 @@ exports.WorkerWeeklyHoursContractedProperty = class WorkerWeeklyHoursContractedP
         return currentValue && newValue && currentValue.value === newValue.value && hoursEqual;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 weeklyHoursContracted: this.property
             };
         }
-        
+
         return {
             weeklyHoursContracted : {
                 currentValue: this.property,

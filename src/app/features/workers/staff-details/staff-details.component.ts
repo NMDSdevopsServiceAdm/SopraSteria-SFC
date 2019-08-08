@@ -1,138 +1,148 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Contracts } from '@core/constants/contracts.enum';
+import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Contracts } from '@core/model/contracts.enum';
 import { Job } from '@core/model/job.model';
-import { Worker } from '@core/model/worker.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-staff-details',
   templateUrl: './staff-details.component.html',
 })
-export class StaffDetailsComponent implements OnInit, OnDestroy {
+export class StaffDetailsComponent extends QuestionComponent implements OnInit, OnDestroy {
   public contractsAvailable: Array<string> = [];
-  public form: FormGroup;
   public jobsAvailable: Job[] = [];
-  public backLink: string[] = null;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
+  public showInputTextforOtherRole: boolean;
+
+  private otherJobRoleCharacterLimit = 120;
 
   constructor(
-    private workerService: WorkerService,
-    private jobService: JobService,
-    private messageService: MessageService,
-    private formBuilder: FormBuilder,
-    private router: Router
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService,
+    private jobService: JobService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-  }
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
-  ngOnInit() {
     this.form = this.formBuilder.group({
       nameOrId: [null, Validators.required],
       mainJob: [null, Validators.required],
+      otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
       contract: [null, Validators.required],
     });
+  }
 
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      if (worker) {
-        this.worker = worker;
-
-        if (this.workerService.returnToSummary) {
-          this.backLink = ['/worker', this.worker.uid, 'summary'];
-        } else {
-          this.backLink = ['/worker', 'start-screen'];
-        }
-
-        this.form.patchValue({
-          nameOrId: this.worker.nameOrId,
-          mainJob: this.worker.mainJob.jobId,
-          contract: this.worker.contract,
-        });
-      } else {
-        this.backLink = ['/dashboard'];
-      }
-    });
-
+  init(): void {
     this.contractsAvailable = Object.values(Contracts);
 
-    this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
-  }
-
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-
-      const { mainJob } = this.form.value;
-
-      if (parseInt(mainJob, 10) === 27) {
-        this.router.navigate(['/worker', this.worker.uid, 'mental-health-professional']);
-      } else {
-        this.router.navigate(['/worker', this.worker.uid, 'main-job-start-date']);
-      }
-    } catch (err) {
-      // keep typescript transpiler silent
-    }
-  }
-
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { nameOrId, contract, mainJob } = this.form.controls;
-      this.messageService.clearError();
-
-      if (this.form.valid) {
-        const props = {
-          nameOrId: nameOrId.value,
-          contract: contract.value,
-          mainJob: {
-            jobId: parseInt(mainJob.value, 10),
-          },
-        };
-
+    this.subscriptions.add(
+      this.jobService.getJobs().subscribe(jobs => {
+        this.jobsAvailable = jobs;
         if (this.worker) {
-          // TODO: https://trello.com/c/x3N7dQJP
-          if (this.worker.otherJobs) {
-            (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
-          }
+          this.renderInEditMode();
+        }
+      })
+    );
 
-          this.subscriptions.add(
-            this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-              this.workerService.setState({ ...this.worker, ...data });
-              resolve();
-            }, reject)
-          );
-        } else {
-          this.subscriptions.add(
-            this.workerService.createWorker(props as Worker).subscribe(data => {
-              this.workerService.setState({ ...this.worker, ...data });
-              this.worker = data as Worker;
-              resolve();
-            }, reject)
-          );
-        }
-      } else {
-        if (nameOrId.errors && nameOrId.errors.required) {
-          this.messageService.show('error', `'Full name or ID number' is required.`);
-        }
-        if (mainJob.errors && mainJob.errors.required) {
-          this.messageService.show('error', `'Main job role' is required.`);
-        }
-        if (contract.errors && contract.errors.required) {
-          this.messageService.show('error', `'Type of contract' is required.`);
-        }
+    this.previous = ['/workplace', this.workplace.uid, 'staff-record', 'start-screen'];
+  }
 
-        reject();
-      }
+  renderInEditMode() {
+    this.form.patchValue({
+      nameOrId: this.worker.nameOrId,
+      mainJob: this.worker.mainJob.jobId,
+      otherJobRole: this.worker.mainJob.other,
+      contract: this.worker.contract,
     });
+
+    this.selectedJobRole(this.worker.mainJob.jobId);
+    // TODO: This is a race condition where this.previous is not getting
+    // picked up by the setBack function as it is done on init.
+    this.previous =
+      this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid
+        ? ['/dashboard']
+        : ['/workplace', this.workplace.uid];
+  }
+
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'nameOrId',
+        type: [
+          {
+            name: 'required',
+            message: `Full name or ID number is required.`,
+          },
+        ],
+      },
+      {
+        item: 'mainJob',
+        type: [
+          {
+            name: 'required',
+            message: `Main job role is required.`,
+          },
+        ],
+      },
+      {
+        item: 'otherJobRole',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Your job role must be ${this.otherJobRoleCharacterLimit} characters or less.`,
+          },
+        ],
+      },
+      {
+        item: 'contract',
+        type: [
+          {
+            name: 'required',
+            message: `Type of contract is required.`,
+          },
+        ],
+      },
+    ];
+  }
+
+  generateUpdateProps() {
+    const { nameOrId, contract, mainJob, otherJobRole } = this.form.controls;
+
+    const props = {
+      nameOrId: nameOrId.value,
+      contract: contract.value,
+      mainJob: {
+        jobId: parseInt(mainJob.value, 10),
+        ...(otherJobRole.value && { other: otherJobRole.value }),
+      },
+    };
+
+    // TODO: Removing Other Jobs should be handled by the Server
+    // https://trello.com/c/x3N7dQJP
+    if (this.worker && this.worker.otherJobs) {
+      (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
+    }
+
+    return props;
+  }
+
+  onSuccess() {
+    this.next = this.getRoutePath('main-job-start-date');
+  }
+
+  selectedJobRole(id: number) {
+    this.showInputTextforOtherRole = false;
+    const otherJob = this.jobsAvailable.find(job => job.id === +id);
+    if (otherJob && otherJob.other) {
+      this.showInputTextforOtherRole = true;
+    }
   }
 }

@@ -1,0 +1,5 @@
+<ng-container *ngIf="alert$ | async as alert">
+  <app-inset-text [color]="alert.type" [closable]="true" (closed)="remove()">
+    <span role="status">{{ alert.message }}</span>
+  </app-inset-text>
+</ng-container>

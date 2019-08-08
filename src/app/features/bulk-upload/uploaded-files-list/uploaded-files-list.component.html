@@ -1,0 +1,95 @@
+<div class="govuk-grid-row" *ngIf="validationComplete">
+  <div class="govuk-grid-column-two-thirds govuk-!-margin-top-2">
+    <app-inset-text *ngIf="!hasErrors" [color]="hasWarnings ? 'warning' : 'success'">
+      <div role="status">
+        The files have passed validation with <strong>{{ totalWarnings }}</strong>
+        {{ totalWarnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }}.
+      </div>
+    </app-inset-text>
+  </div>
+</div>
+<table class="govuk-table" [class.govuk-error-table]="hasErrors" [class.govuk-!-margin-top-6]="!validationComplete">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">File name</th>
+      <th class="govuk-table__header" scope="col">File type</th>
+      <th class="govuk-table__header" scope="col">Records in the file</th>
+      <th class="govuk-table__header" scope="col">Uploaded by</th>
+      <th class="govuk-table__header" scope="col">Validation</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <ng-container *ngFor="let file of uploadedFiles">
+      <tr *ngIf="file.errors">
+        <td class="govuk-error-table__message-cell" colspan="5">
+          <p class="govuk-error-message govuk-error-table__message" [innerText]="getErrorMessage(file)"></p>
+        </td>
+      </tr>
+      <tr [id]="getFileId(file)" class="govuk-table__row" [class.govuk-error-table__row]="file.errors">
+        <td
+          class="govuk-table__cell"
+          [class.govuk-error-table__cell]="file.errors"
+          [class.govuk-!-padding-left-6]="file.errors"
+        >
+          <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-2">
+            <a href="#" (click)="downloadFile($event, file.key)">{{ file.filename }}</a>
+          </p>
+          <p *ngIf="file.warnings" class="govuk-!-margin-bottom-1 govuk-!-margin-top-2">
+            <strong class="govuk__flex">
+              <img class="govuk-!-margin-right-2" src="/assets/images/flag-orange.svg" alt="" />
+              {{ file.warnings }}
+              {{ file.warnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }}
+            </strong>
+          </p>
+          <p *ngIf="displayDownloadReportLink(file)" class="govuk-!-margin-bottom-0 govuk-!-margin-top-2">
+            <app-report-download-link [fileType]="file.fileType"></app-report-download-link>
+          </p>
+        </td>
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
+          {{ file.fileType ? bulkUploadFileTypeEnum[file.fileType] : getFileType(file.filename) }}
+        </td>
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
+          {{ file.records ? file.records : '-' }}
+        </td>
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
+          {{ file.username ? file.username : '-' }}
+        </td>
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
+          <app-file-validate-status [status]="file.status"></app-file-validate-status>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
+
+<ng-container *ngIf="!preValidationError && !validationComplete">
+  <p role="status">The files must be validated before completing the upload.</p>
+
+  <button type="button" class="govuk-button govuk-button--tertiary govuk-!-margin-top-2" (click)="validateFiles()">
+    Validate files
+  </button>
+</ng-container>
+
+<ng-container *ngIf="validationComplete">
+  <p *ngIf="hasErrors" role="status">
+    Review the <strong>{{ totalErrors }}</strong> errors.
+  </p>
+
+  <p *ngIf="hasWarnings && !hasErrors" role="status">
+    Review the <strong>{{ totalWarnings }}</strong>
+    {{ totalWarnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }} or complete the upload to import the data.
+  </p>
+
+  <p *ngIf="!hasWarnings && !hasErrors" role="status">
+    You need to complete the upload to import the data.
+  </p>
+
+  <button
+    *ngIf="!hasErrors"
+    type="button"
+    class="govuk-button govuk-button--primary govuk-!-margin-top-2"
+    (click)="beginCompleteUpload()"
+  >
+    Complete upload
+  </button>
+</ng-container>

@@ -1,0 +1,89 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [form]="form"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+></app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-xl">Sharing your data</h1>
+    <p>We would like to share your data with other organisations.</p>
+    <p>
+      Before we can do that, in order to comply with the Data Protection Act and The General Data Protection Regulations
+      (GDPR) we need your consent.
+    </p>
+    <app-details [title]="'Why do we share your data?'">
+      <p>
+        The Care Quality Commission use the data you provide as part of their overall suite of intelligence about adult
+        social care providers and the wider sector. Local authorities use it to check compliance if the data for this
+        service has been included as part of the criteria for a contract. Sharing your data with local authorities also
+        makes them aware of your business. It allows them to discuss things like training events, advice and guidance
+        with you.
+      </p>
+    </app-details>
+    <app-details *ngIf="establishment.isRegulated" [title]="'What do we share with CQC?'">
+      <p>We share all data, including individual worker records, with the exception of:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>Record ID</li>
+        <li>Pay</li>
+        <li>Sickness absence</li>
+        <li>Date of birth</li>
+        <li>National Insurance number</li>
+        <li>Ethnicity</li>
+        <li>Nationality</li>
+        <li>Country of birth</li>
+        <li>Year of arrival in UK</li>
+        <li>Hours worked in the last 7 days</li>
+      </ul>
+      <p>CQC cannot identify workers through this process</p>
+    </app-details>
+    <app-details [title]="'What do we share with local authorities?'">
+      <p>We will share the following data with your local authority:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>Your unique workplace reference</li>
+        <li>Workplace name</li>
+        <li>Address</li>
+        <li>Main service</li>
+        <li>Number of staff</li>
+        <li>Percentage of worker records completed</li>
+        <li>When your account was last updated</li>
+      </ul>
+    </app-details>
+  </div>
+</div>
+
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">Do you agree to us sharing data with:</h2>
+          </legend>
+          <div class="govuk-checkboxes">
+            <div class="govuk-checkboxes__item" *ngIf="establishment.isRegulated">
+              <input class="govuk-checkboxes__input" id="shareWith-cqc" [formControlName]="'cqc'" type="checkbox" />
+              <label class="govuk-label govuk-checkboxes__label" for="shareWith-cqc">
+                Care Quality Commission (CQC)
+              </label>
+            </div>
+            <div class="govuk-checkboxes__item">
+              <input
+                class="govuk-checkboxes__input"
+                id="shareWith-localAuthorities"
+                [formControlName]="'localAuthorities'"
+                type="checkbox"
+              />
+              <label class="govuk-label govuk-checkboxes__label" for="shareWith-localAuthorities">
+                Local authorities
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"> </app-submit-button>
+</form>

@@ -1,0 +1,94 @@
+$govuk-header-background: govuk-colour('white');
+$govuk-header-border-color: $govuk-brand-colour;
+$govuk-header-border-width: govuk-spacing(2);
+$govuk-header-text: govuk-colour('black');
+$govuk-header-link: govuk-colour('black');
+$govuk-header-link-hover: govuk-colour('black');
+$govuk-header-link-active: #1d8feb;
+$govuk-header-nav-item-border-color: #2e3133;
+
+.govuk-header {
+  border-bottom: 5px solid $govuk-header-border-color;
+  color: $govuk-header-text;
+  background: $govuk-header-background;
+
+  .govuk-header__container {
+    position: static;
+    @include govuk-responsive-padding(6, 'top');
+    @include govuk-responsive-padding(6, 'bottom');
+    margin-bottom: 0;
+    border-bottom: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .govuk-header__link {
+    @include govuk-focusable-fill;
+
+    text-decoration: none;
+    font-weight: 400;
+
+    &:link,
+    &:visited {
+      color: $govuk-header-link;
+    }
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    // When focussed, the text colour needs to be darker to ensure that colour
+    // contrast is still acceptable
+    &:focus {
+      color: $govuk-focus-text-colour;
+    }
+  }
+
+  nav {
+    flex: 1;
+  }
+
+  .govuk-header__strapline {
+    display: inline-block;
+    text-decoration: none;
+    background: $govuk-brand-colour;
+    @include govuk-font($size: 19, $weight: bold);
+    color: govuk-colour('white');
+    @include govuk-responsive-margin(2, 'bottom');
+    @include govuk-responsive-margin(6, 'left');
+    padding: 5px 10px;
+  }
+
+  .govuk-header__navigation {
+    text-align: right;
+
+    .govuk-header__navigation-item {
+      padding: govuk-spacing(2) 0;
+      @include govuk-responsive-margin(3, 'right');
+      border-bottom: 0;
+
+      &::after {
+        content: '|';
+        @include govuk-responsive-margin(3, 'left');
+      }
+
+      &:last-child {
+        margin-right: 0;
+        &::after {
+          display: none;
+        }
+      }
+
+      @include mq($from: desktop) {
+        display: inline-block;
+        padding: govuk-spacing(1) 0;
+        border: 0;
+      }
+
+      a {
+        @include govuk-font($size: 16, $weight: 400);
+        white-space: nowrap;
+      }
+    }
+  }
+}

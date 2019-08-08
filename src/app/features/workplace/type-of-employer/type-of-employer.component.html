@@ -1,44 +1,69 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a routerLink="/dashboard">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-  <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="form">
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">What type of employer is {{ establishment.name }}?</h1>
+          </legend>
 
-    <header>
-      <h1 class="h1">{{employerName}}</h1>
-    </header>
+          <span
+            *ngIf="submitted && form.get('employerType').invalid"
+            id="employerType-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('employerType') }}
+          </span>
+          <div class="govuk-radios govuk-radios--conditional">
+            <ng-container *ngFor="let answer of options; let idx = index">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [formControlName]="'employerType'"
+                  id="employerType-{{ idx }}"
+                  name="employerType"
+                  type="radio"
+                  [value]="answer"
+                />
+                <label class="govuk-label govuk-radios__label" for="employerType-{{ idx }}">
+                  {{ answer }}
+                </label>
+              </div>
 
-    <app-messages></app-messages>
-
-    <div class="form-group mb-5">
-      <div class="col-12 p-0">
-        <div>
-          <div class="row">
-            <div class="col-12">
-              <h2>What type of employer are you?</h2>
-            </div>
-
-            <div *ngFor="let option of options; let idx = index" class="row col-12">
-              <div class="col-12">
-                <div class="multiple-choice">
-                  <input type="radio" id="selectOption-{{idx}}" formControlName="employerType" [value]="option" />
-                  <label class="main-body-text p-0" for="selectOption-{{idx}}">{{option}}</label>
+              <div
+                *ngIf="answer === 'Other'"
+                class="govuk-radios__conditional"
+                [class.govuk-radios__conditional--hidden]="form.get('employerType').value !== 'Other'"
+                id="conditional-employerType-conditional-1"
+              >
+                <div class="govuk-form-group">
+                  <label class="govuk-label" for="other">
+                    Other Employer Type
+                  </label>
+                  <span id="employerType-hint" class="govuk-hint">
+                    Optional
+                  </span>
+                  <span *ngIf="submitted && form.get('other').invalid" id="other-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('other') }}
+                  </span>
+                  <input
+                    class="govuk-input govuk-input--width-20"
+                    [class.govuk-input--error]="submitted && form.get('other').invalid"
+                    id="other"
+                    [formControlName]="'other'"
+                    name="other"
+                    type="text"
+                  />
                 </div>
               </div>
-            </div>
-
+            </ng-container>
           </div>
-        </div>
+        </fieldset>
       </div>
     </div>
+  </div>
 
-    <div class="btn-container">
-      <button type="submit" class="btn btn-primary">Save and continue</button>
-    </div>
-  </form>
-</div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

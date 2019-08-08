@@ -3,6 +3,7 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 
 // database models
 const models = require('../../../index');
+const OTHER_MAX_LENGTH=120;
 
 exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePropertyPrototype {
     constructor() {
@@ -30,7 +31,7 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                 }
 
             } else if (Array.isArray(document.otherJobs)) {
-                // other jobs property needs to be an array of 
+                // other jobs property needs to be an array of
                 this.property = {
                     value: 'No'
                 };
@@ -50,7 +51,8 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
             otherJobsDocument.otherJobs = document.otherJobs.map(thisJob => {
                 return {
                     jobId: thisJob.workerJobs.jobFk,
-                    title: thisJob.title
+                    title: thisJob.title,
+                    other: thisJob.workerJobs.other ? thisJob.workerJobs.other : undefined
                 };
             });
         }
@@ -67,7 +69,8 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
             otherJobsDocument.additionalModels = {
                 workerJobs : this.property.otherJobs.map(thisJob => {
                     return {
-                        jobFk : thisJob.jobId
+                        jobFk : thisJob.jobId,
+                        other: thisJob.other ? thisJob.other : null
                     };
                 })
             };
@@ -95,7 +98,8 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                     //  current value, and confirm it is in the the new data set.
                     //  Array.every will drop out on the first iteration to return false
                     arraysEqual = currentValue.otherJobs.every(thisJob => {
-                        return newValue.otherJobs.find(newJob => newJob.jobId === thisJob.jobId);
+                        return newValue.otherJobs.find(newJob => newJob.jobId === thisJob.jobId
+                            && ((newJob.other === thisJob.other) || (!newJob.other && !thisJob.other)) );
                     });
                 } else {
                     // if the arrays are lengths are not equal, then we know they're not equal
@@ -107,14 +111,14 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
         return returnVal;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (!withHistory) {
             // simple form
             return {
                 otherJobs: this.property.value === 'Yes' ? this.property.otherJobs : []
             };
         }
-        
+
         return {
             otherJobs : {
                 currentValue: this.property.value === 'Yes' ? this.property.otherJobs : [],
@@ -158,30 +162,36 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                     where: {
                         id: thisJob.jobId
                     },
-                    attributes: ['id', 'title'],
+                    attributes: ['id', 'title', 'other'],
                 });
             } else {
                 referenceJob = await models.job.findOne({
                     where: {
                         title: thisJob.title
                     },
-                    attributes: ['id', 'title'],
+                    attributes: ['id', 'title', 'other'],
                 });
             }
 
             if (referenceJob && referenceJob.id) {
                 // found a job match - prevent duplicates by checking if the reference job already exists
                 if (!setOfValidatedJobs.find(thisJob => thisJob.jobId === referenceJob.id)) {
-                    setOfValidatedJobs.push({
-                        jobId: referenceJob.id,
-                        title: referenceJob.title
-                    });    
+                    if (!referenceJob.other || referenceJob.other === undefined || !thisJob.other ||
+                        (referenceJob.other && thisJob.other && thisJob.other.length <= OTHER_MAX_LENGTH )) {
+                        setOfValidatedJobs.push({
+                            jobId: referenceJob.id,
+                            title: referenceJob.title,
+                            other: (referenceJob.other && thisJob.other) ? thisJob.other : undefined
+                        });
+                    } else {
+                        setOfValidatedJobsInvalid = true;
+                        break;
+                    }
                 }
             } else {
                 setOfValidatedJobsInvalid = true;
                 break;
             }
-
         }
 
         // if having processed each job correctly, return the set of now validated jobs

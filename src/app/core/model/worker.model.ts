@@ -1,13 +1,15 @@
-import { Contracts } from '../constants/contracts.enum';
-import { Job } from './job.model';
+import { Contracts } from './contracts.enum';
+import { JobRole } from './job.model';
+import { WDFValue } from './wdf.model';
 
 export interface Worker {
   uid?: string;
   nameOrId: string;
   contract: Contracts;
-  mainJob: Job;
+  mainJob: JobRole;
+  localIdentifier: string;
   approvedMentalHealthWorker?: string;
-  otherJobs?: Job[];
+  otherJobs?: JobRole[];
   mainJobStartDate?: string;
   nationalInsuranceNumber?: string;
   dateOfBirth?: string;
@@ -48,10 +50,7 @@ export interface Worker {
     value: string;
     year: number;
   };
-  daysSick?: {
-    value: number;
-    days?: number;
-  };
+  daysSick?: WorkerDays;
   zeroHoursContract: string;
   weeklyHoursAverage: {
     value: string;
@@ -61,10 +60,7 @@ export interface Worker {
     value: string;
     hours: number;
   };
-  annualHourlyPay: {
-    value: string;
-    rate: number;
-  };
+  annualHourlyPay: WorkerPay;
   careCertificate: string;
   apprenticeshipTraining: string;
   qualificationInSocialCare: string;
@@ -77,7 +73,54 @@ export interface Worker {
     qualificationId: number;
     title?: string;
   };
+  registeredNurse: string;
+  nurseSpecialism: {
+    specialism: string;
+  };
   created?: string;
   updated?: string;
   completed?: boolean;
+  wdf?: WorkerWdfRecord;
+}
+
+export interface WorkerPay {
+  value: string;
+  rate: number;
+}
+
+export interface WorkerDays {
+  value: number;
+  days?: number;
+}
+
+export interface WorkerWdfRecord {
+  annualHourlyPay: WDFValue;
+  careCertificate: WDFValue;
+  contract: WDFValue;
+  currentEligibility: boolean;
+  dateOfBirth: WDFValue;
+  daysSick: WDFValue;
+  effectiveFrom: string;
+  gender: WDFValue;
+  highestQualification: WDFValue;
+  isEligible: boolean;
+  lastEligibility: string;
+  mainJob: WDFValue;
+  mainJobStartDate: WDFValue;
+  nationality: WDFValue;
+  otherQualification: WDFValue;
+  qualificationInSocialCare: WDFValue;
+  recruitedFrom: WDFValue;
+  socialCareQualification: WDFValue;
+  weeklyHoursAverage: WDFValue;
+  weeklyHoursContracted: WDFValue;
+  zeroHoursContract: WDFValue;
+}
+
+export interface WorkersResponse {
+  workers: Worker[];
+}
+
+export interface WorkerEditResponse {
+  uid: string;
 }

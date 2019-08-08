@@ -1,0 +1,33 @@
+<app-error-summary *ngIf="serverError" [serverError]="serverError"></app-error-summary>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+  <div class="govuk-grid-column-full govuk__flex govuk__justify-content-space-between govuk__align-items-flex-end">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+      <span *ngIf="primaryWorkplace.name" class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
+      My workplaces ({{ workplacesCount }})
+    </h1>
+    <!--
+    <a
+      *ngIf="canAddWorkplace"
+      class="govuk-button govuk-!-margin-bottom-0"
+      [routerLink]="['/add-workplace/start']"
+      role="button"
+      draggable="false"
+    >
+      Add a new workplace
+    </a>
+    -->
+  </div>
+</div>
+
+<ng-container *ngIf="workplaces.length; else noWorkPlaces">
+  <ul class="govuk-list">
+    <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngFor="let workplace of workplaces">
+      <app-workplace-info-panel [workplace]="workplace"></app-workplace-info-panel>
+    </li>
+  </ul>
+</ng-container>
+
+<ng-template #noWorkPlaces>
+  <p>There are no workplaces.</p>
+</ng-template>

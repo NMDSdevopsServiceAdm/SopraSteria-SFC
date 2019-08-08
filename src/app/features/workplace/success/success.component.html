@@ -1,0 +1,19 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <app-panel [title]="'&#10003; Success'">
+      You have saved your<br />
+      workplace details
+    </app-panel>
+    <div class="govuk-button-group">
+      <a
+        class="govuk-button govuk-button--link"
+        role="button"
+        draggable="false"
+        [routerLink]="['/dashboard']"
+        [fragment]="'workplace'"
+      >
+        Return to dashboard
+      </a>
+    </div>
+  </div>
+</div>

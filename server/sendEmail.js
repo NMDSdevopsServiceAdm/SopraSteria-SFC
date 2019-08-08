@@ -78,7 +78,7 @@ const badParam = {
       /* more items */
     ],
   };
- 
+
 
 const sendMyEmail = async () =>  {
     try {

@@ -1,12 +1,25 @@
-<div class="btn-container container">
-  <div class="row">
-    <ng-template [ngIf]="!returnToSummary" [ngIfElse]="summary">
-      <button type="submit" class="btn btn-primary col-12 col-sm-4 col-lg-3">Save and continue</button>
-      <button type="button" class="btn btn-link btn-link-no-underline col-md-5" (click)="saveAndNavigate(['/worker', workerId, 'summary'])">View record summary</button>
-    </ng-template>
-    <ng-template #summary>
-        <button type="button" class="btn btn-primary" (click)="saveAndNavigate(['/worker', workerId, 'summary'])">Save and return</button>
-    </ng-template>
-    <button type="button" class="btn btn-link btn-link-no-underline col-md-3" (click)="saveAndNavigate(['/dashboard'])">Save and exit</button>
-  </div>
+<div class="govuk-button-group">
+  <ng-container *ngIf="!return; else summary">
+    <button type="button" class="govuk-button" (click)="onClick('continue', true)">Save and continue</button>
+    <button
+      type="button"
+      class="govuk-button govuk-button--link govuk-!-margin-left-8"
+      (click)="onClick('summary', false)"
+    >
+      View record summary
+    </button>
+  </ng-container>
+  <ng-template #summary>
+    <button type="button" class="govuk-button" (click)="onClick('return', true)">
+      Save and return
+    </button>
+  </ng-template>
+  <span class="govuk-visually-hidden">or</span>
+  <button
+    type="button"
+    class="govuk-button govuk-button--link govuk-util__float-right"
+    (click)="onClick('exit', false)"
+  >
+    Exit
+  </button>
 </div>

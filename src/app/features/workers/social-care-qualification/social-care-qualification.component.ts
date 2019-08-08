@@ -1,94 +1,60 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Worker } from '@core/model/worker.model';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-social-care-qualification',
   templateUrl: './social-care-qualification.component.html',
 })
-export class SocialCareQualificationComponent implements OnInit, OnDestroy {
+export class SocialCareQualificationComponent extends QuestionComponent {
   public answersAvailable = ['Yes', 'No', `Don't know`];
-  public form: FormGroup;
-  public backLink: string;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private workerService: WorkerService,
-    private messageService: MessageService,
-    private formBuilder: FormBuilder,
-    private router: Router
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-  }
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
-  ngOnInit() {
     this.form = this.formBuilder.group({
       qualificationInSocialCare: null,
     });
+  }
 
-    if (this.workerService.returnToSummary) {
-      this.backLink = 'summary';
-    } else {
-      this.backLink = 'apprenticeship-training';
+  init() {
+    if (this.worker.qualificationInSocialCare) {
+      this.form.patchValue({
+        qualificationInSocialCare: this.worker.qualificationInSocialCare,
+      });
     }
 
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
-
-      if (this.worker.qualificationInSocialCare) {
-        this.form.patchValue({
-          qualificationInSocialCare: this.worker.qualificationInSocialCare,
-        });
-      }
-    });
+    this.previous = this.getRoutePath('apprenticeship-training');
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
-  }
+  generateUpdateProps() {
+    const { qualificationInSocialCare } = this.form.value;
 
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-
-      const { qualificationInSocialCare } = this.form.value;
-
-      if (qualificationInSocialCare === 'Yes') {
-        this.router.navigate(['/worker', this.worker.uid, 'social-care-qualification-level']);
-      } else {
-        this.router.navigate(['/worker', this.worker.uid, 'other-qualifications']);
-      }
-    } catch (err) {
-      // keep typescript transpiler silent
+    if (!qualificationInSocialCare) {
+      return null;
     }
+
+    return {
+      qualificationInSocialCare: qualificationInSocialCare,
+    };
   }
 
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { qualificationInSocialCare } = this.form.controls;
-      this.messageService.clearError();
-
-      if (this.form.valid) {
-        const props = {
-          qualificationInSocialCare: qualificationInSocialCare.value,
-        };
-
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        reject();
-      }
-    });
+  onSuccess() {
+    this.next =
+      this.worker.qualificationInSocialCare === 'Yes'
+        ? this.getRoutePath('social-care-qualification-level')
+        : this.getRoutePath('other-qualifications');
   }
 }

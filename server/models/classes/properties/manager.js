@@ -187,27 +187,27 @@ class PropertyManager {
     }
 
     // returns a JSON object representation of all known/filter properties
-    toJSON(withHistory=false, showPropertyHistoryOnly=true, modifiedPropertiesOnly=false, filteredPropertiesByName=null) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, modifiedPropertiesOnly=false, filteredPropertiesByName=null, wdf=null) {
         let thisJsonObject = {};
         const allProperties = Object.keys(this._properties);
-
         if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
             throw new Error('PropertyManager::toJSON filteredPropertiesByName must be a simple Array of names');
         }
 
         allProperties.forEach(thisPropertyName => {
             const thisProperty = this._properties[thisPropertyName];
+
             if (thisProperty.property !== null &&
                 (!modifiedPropertiesOnly || (modifiedPropertiesOnly && thisProperty.modified)) &&
                 (filteredPropertiesByName === null || filteredPropertiesByName.includes(thisProperty.name))
                ) {
+
                 thisJsonObject = {
                     ...thisJsonObject,
-                    ...thisProperty.toJSON(withHistory, showPropertyHistoryOnly)
+                    ...thisProperty.toJSON(withHistory, showPropertyHistoryOnly, wdf)
                 }
             }
         });
-
         return thisJsonObject;
     }
 

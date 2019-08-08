@@ -15,15 +15,40 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"EstablishmentUID"'
     },
-    address: {
+    address1: {
       type: DataTypes.TEXT,
-      allowNull: false,
-      field: '"Address"'
+      allowNull: true,
+      field: '"Address1"'
+    },
+    address2: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Address2"'
+    },
+    address3: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Address3"'
+    },
+    town: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Town"'
+    },
+    county: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"County"'
     },
     locationId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: '"LocationID"'
+    },
+    provId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"ProvID"'
     },
     postcode: {
       type: DataTypes.TEXT,
@@ -44,6 +69,35 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       field: '"LastWdfEligibility"'
+    },
+    isParent: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      default: false,
+      field: '"IsParent"'
+    },
+    parentId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"ParentID"'
+    },
+    parentUid: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      field: '"ParentUID"'
+    },
+    dataOwner: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ['Workplace','Parent'],
+      field: '"Owner"',
+      default: 'Workplace',
+    },
+    parentPermissions: {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Workplace','Worker'],
+      field: '"ParentAccess"',
     },
     NameValue: {
       type: DataTypes.TEXT,
@@ -96,6 +150,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"MainServiceFKChangedBy"'
     },
+    MainServiceFkOther: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      primaryKey: false,
+      field: '"MainServiceFkOther"'
+    },
     EmployerTypeValue: {
       type: DataTypes.ENUM,
       allowNull: true,
@@ -121,6 +181,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"EmployerTypeChangedBy"'
+    },
+    EmployerTypeOther: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      primaryKey: false,
+      field: '"EmployerTypeOther"'
     },
     NumberOfStaffValue: {
       type: DataTypes.INTEGER,
@@ -340,10 +406,59 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"LeaversChangedBy"'
     },
+    LocalIdentifierValue: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      unique: true,
+      field: '"LocalIdentifierValue"'
+    },
+    LocalIdentifierSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocalIdentifierSavedAt"'
+    },
+    LocalIdentifierChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocalIdentifierChangedAt"'
+    },
+    LocalIdentifierSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocalIdentifierSavedBy"'
+    },
+    LocalIdentifierChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocalIdentifierChangedBy"'
+    },
+    archived: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"Archived"',
+      defaultValue: false
+    },
     nmdsId: {
       type: DataTypes.TEXT,
       allowNull: false,
       field: '"NmdsID"'
+    },
+    source: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ["Online","Bulk"],
+      default: 'Online',
+      field: '"DataSource"'
+    },
+    lastBulkUploaded: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LastBulkUploaded"'
+    },
+    reasonsForLeaving: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ReasonsForLeaving"'
     },
     created: {
       type: DataTypes.DATE,
@@ -361,8 +476,13 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false,
       field: 'updatedby'
-    },
+    }
   }, {
+    defaultScope: {
+      where: {
+        archived: false
+      }
+    },
     tableName: '"Establishment"',
     schema: 'cqc',
     createdAt: false,

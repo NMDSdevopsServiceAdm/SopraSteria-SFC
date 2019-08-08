@@ -1,0 +1,58 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <h2 class="govuk-heading-m">User accounts ({{ users.length }})</h2>
+  </div>
+  <div class="govuk-grid-column-one-half govuk-util__align-right">
+    <a
+      *ngIf="canAddUser"
+      role="button"
+      draggable="false"
+      class="govuk-button"
+      [routerLink]="['/workplace', workplace.uid, 'user', 'create']"
+    >
+      Add a new user account
+    </a>
+  </div>
+</div>
+<ng-container *ngIf="users.length > 0; else noUsers">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">Full name</th>
+            <th class="govuk-table__header" scope="col">Username</th>
+            <th class="govuk-table__header" scope="col">Last updated</th>
+            <th class="govuk-table__header" scope="col">Type</th>
+            <th class="govuk-table__header" scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <ng-container *ngFor="let user of users">
+            <tr class="govuk-table__row" [class.govuk-error-table__row--highlight]="isPending(user)">
+              <td class="govuk-table__cell">
+                <a [routerLink]="['/workplace', workplace.uid, 'user', user.uid]">{{ user.fullname }}</a>
+              </td>
+              <td class="govuk-table__cell">
+                {{ isPending(user) ? '-' : user.username }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ user.updated | date: 'd MMM y' }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ getUserType(user) }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ user.status }}
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #noUsers>
+  <p>There are no user accounts.</p>
+</ng-template>

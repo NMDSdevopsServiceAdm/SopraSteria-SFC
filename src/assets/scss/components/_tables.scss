@@ -1,0 +1,71 @@
+$error_border_size: $govuk-border-width-form-element-error;
+$error_row_indent: 8px;
+$error_row_padding: $govuk-gutter-half;
+
+.govuk-table__row {
+  .govuk-table__cell:first-of-type {
+    padding-left: $error_row_padding / 2;
+  }
+
+  .govuk-table__cell:last-of-type {
+    padding-right: $error_row_padding / 2;
+  }
+}
+
+.govuk-error-table__row {
+  border: $error_border_size solid $shiraz;
+}
+
+.govuk-error-table__row--highlight {
+  background: rgba(govuk-colour('blue'), 0.15);
+
+}
+
+.govuk-error-table__cell {
+  position: relative;
+  padding-top: $error_row_padding;
+  padding-bottom: $error_row_padding;
+
+  &:first-of-type:before,
+  &:first-of-type:after,
+  &:last-of-type:before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    padding-bottom: $error_row_indent;
+    top: $error_border_size * -1;
+  }
+
+  &:first-of-type {
+    &:before {
+      width: $error_row_indent;
+      background: #fff;
+      left: 0;
+    }
+    &:after {
+      width: $error_border_size;
+      background: $shiraz;
+      left: $error_row_indent;
+    }
+  }
+}
+
+.govuk-error-table__message-cell {
+  padding-top: $error_row_padding * 1.5;
+  padding-bottom: 0;
+}
+
+.govuk-error-table__message {
+  margin-bottom: 0;
+  padding-bottom: $error_row_padding;
+  padding-left: $error_row_indent;
+  position: relative;
+  &:before {
+    content: '';
+    position: absolute;
+    left: ($error_border_size - 1) * -1;
+    width: $error_border_size;
+    background: $shiraz;
+    height: 100%;
+  }
+}

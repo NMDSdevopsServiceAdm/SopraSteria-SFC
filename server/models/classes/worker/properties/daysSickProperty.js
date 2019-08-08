@@ -64,7 +64,7 @@ exports.WorkerDaysSickProperty = class WorkerDaysSickProperty extends ChangeProp
             DaysSickValue: this.property.value,
             DaysSickDays: this.property.value === 'Yes' ? this.property.days : null
         };
-        
+
         return daysSickDocument;
     }
 
@@ -80,14 +80,18 @@ exports.WorkerDaysSickProperty = class WorkerDaysSickProperty extends ChangeProp
         return currentValue && newValue && currentValue.value === newValue.value && daysEqual;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 daysSick: this.property
             };
         }
-        
+
         return {
             daysSick : {
                 currentValue: this.property,

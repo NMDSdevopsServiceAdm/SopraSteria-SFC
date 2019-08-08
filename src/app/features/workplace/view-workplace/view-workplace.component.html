@@ -1,0 +1,39 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-l">
+      <span *ngIf="workplace?.parentName" class="govuk-caption-xl">{{ workplace.parentName }}</span>
+      {{ workplace.name }}
+    </h1>
+  </div>
+
+  <div class="govuk-grid-column-one-third-from-desktop govuk-util__align-right">
+    <button
+      *ngIf="canDelete"
+      class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
+      (click)="onDeleteWorkplace($event)"
+    >
+      <img src="/assets/images/bin.svg" alt="" />
+      <span class="govuk-!-margin-left-1">
+        Delete <span class="govuk-visually-hidden">{{ workplace.name }}</span> Workplace
+      </span>
+    </button>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-tabs>
+      <app-tab [title]="'Workplace'">
+        <app-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-workplace-summary>
+      </app-tab>
+
+      <app-tab *ngIf="canViewStaffRecords" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
+        <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
+      </app-tab>
+
+      <app-tab [title]="'User accounts'">
+        <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
+      </app-tab>
+    </app-tabs>
+  </div>
+</div>

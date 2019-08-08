@@ -1,6 +1,7 @@
 // the main service property is an FK value property only, that needs validation
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 const models = require('../../../index');
+const OTHER_MAX_LENGTH=120;
 
 exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPrototype {
     constructor() {
@@ -14,11 +15,7 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
     // concrete implementations
     async restoreFromJson(document) {
         if (document.mainService) {
-            console.log("WA restoring from JSON: ", document.mainService)
             const validatedService = await this._validateService(document.mainService);
-
-            console.log("WA DEBUG - validated main service: ", validatedService)
-
             if (validatedService) {
                 this.property = validatedService;
             } else {
@@ -33,29 +30,38 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
             return {
                 id: document.mainService.id,
                 name: document.mainService.name,
-            };
+                other: document.mainService.other ? document.mainService.other : undefined,
+            }
         }
     }
+
     savePropertyToSequelize() {
         // as an FK property, we only store the id
         return {
-            MainServiceFKValue: this.property.id
+            MainServiceFKValue: this.property.id,
+            MainServiceFkOther: this.property.other ? this.property.other : null,
         };
     }
 
     isEqual(currentValue, newValue) {
         // employer type is a simple string
-        return currentValue && newValue && currentValue.id === newValue.id;
+        return (currentValue && newValue && currentValue.id === newValue.id) && (
+            (currentValue.other && newValue.other && currentValue.other === newValue.other) ||
+            (!currentValue.other && !newValue.other));
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 mainService: this.property
             };
         }
-        
+
         return {
             mainService: {
                 currentValue: this.property,
@@ -110,10 +116,16 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
 
         if (referenceService && referenceService.id) {
             // found a service match
-            return {
-                id: referenceService.id,
-                name: referenceService.name,
-            };
+            if (referenceService.other && serviceDef.other && serviceDef.other.length && serviceDef.other.length > OTHER_MAX_LENGTH) {
+                return false;
+            } else {
+                return {
+                    id: referenceService.id,
+                    name: referenceService.name,
+                    other: (serviceDef.other && referenceService.other) ? serviceDef.other : undefined,
+                };
+            }
+
         } else {
             return false;
         }

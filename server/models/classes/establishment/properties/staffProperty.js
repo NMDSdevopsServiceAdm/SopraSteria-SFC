@@ -40,14 +40,18 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
         return currentValue !== null && newValue !== null && currentValue === newValue;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 numberOfStaff: this.property
             };
         }
-        
+
         return {
             numberOfStaff: {
                 currentValue: this.property,

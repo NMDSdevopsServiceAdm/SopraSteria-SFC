@@ -1,0 +1,49 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [form]="form"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            We could not find your workplace in our database.
+          </h1>
+        </legend>
+        <div class="govuk-form-group govuk-!-margin-bottom-2">
+          <p id="postcode-hint">
+            Enter your postcode to find your workplace or
+            <a [routerLink]="['/registration', 'regulated-by-cqc']">go back and try again</a>.
+          </p>
+          <label class="govuk-label" for="postcode">
+            Postcode
+          </label>
+          <span *ngIf="submitted && form.get('postcode').errors" id="postcode-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage() }}
+          </span>
+          <span *ngIf="serverError" id="postcode-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ serverError }}
+          </span>
+          <input
+            aria-describedby="postcode-hint"
+            class="govuk-input govuk-input--width-10 govuk-!-margin-right-2"
+            [class.govuk-input--error]="submitted && form.get('postcode').invalid"
+            [formControlName]="'postcode'"
+            required
+            id="postcode"
+            name="postcode"
+            type="text"
+          />
+          <button class="govuk-button" type="submit">Find address</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>

@@ -3,9 +3,6 @@
 const config = require('../../config/config');
 const axios = require('axios');
 
-// to #asc-wds-dev - 
-const slackWebHookUrl = config.get('slack.url');
-
 // log to slack; if given level is less than equal to environment Slack log level
 const SLACK_TRACE = 5;
 const SLACK_INFO = 3;
@@ -14,7 +11,7 @@ const SLACK_ERROR = 1;
 const SLACK_DISABLED = 0;
 
 // posts the given "Slack formatted" message
-const postToSlack = async (slackMsg) => {
+const postToSlack = async (slackWebHookUrl, slackMsg) => {
     try {
         const apiResponse = await axios.post(
             slackWebHookUrl,
@@ -34,10 +31,13 @@ const postToSlack = async (slackMsg) => {
 const logToSlack = async (level, slackMsg) => {
     // default to logging errors only; 0 disables logging
     const ENV_LOG_LEVEL = config.get('slack.level');
+    const slackWebHookUrl = config.get('slack.url');
+
     if (slackWebHookUrl === 'unknown') return;
 
     if (level <= ENV_LOG_LEVEL) {
-        await postToSlack(slackMsg);
+        console.log("Posting to slack: ", slackWebHookUrl)
+        await postToSlack(slackWebHookUrl, slackMsg);
     }
 };
 

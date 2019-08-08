@@ -1,185 +1,241 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import { MessageService } from '@core/services/message.service';
+import { Question } from '@features/workplace/question/question.component';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-starters',
   templateUrl: './starters.component.html',
-  styleUrls: ['./starters.component.scss'],
 })
-export class StartersComponent implements OnInit, OnDestroy {
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private jobService: JobService,
-    private establishmentService: EstablishmentService,
-    private messageService: MessageService
-  ) {
-    this.validatorRecordTotal = this.validatorRecordTotal.bind(this);
-    this.validatorRecordJobId = this.validatorRecordJobId.bind(this);
-  }
-
-  form: FormGroup;
-  total: number = 0;
-  jobsAvailable: Job[] = [];
-
-  private subscriptions = [];
-
-  noRecordsReasons = [
+export class StartersComponent extends Question {
+  public total = 0;
+  public jobs: Job[] = [];
+  public startersKnownOptions = [
     {
       label: 'There have been no new starters.',
-      value: 'no-new',
+      value: jobOptionsEnum.NONE,
     },
     {
       label: `I don't know how many new starters there have been.`,
-      value: 'dont-know',
+      value: jobOptionsEnum.DONT_KNOW,
     },
   ];
+  private minStarters = 0;
+  private maxStarters = 999;
 
-  submitHandler(): void {
-    const { recordsControl, noRecordsReason } = this.form.controls;
+  constructor(
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    private jobService: JobService
+  ) {
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
-    if (this.form.valid || noRecordsReason.value === 'no-new' || noRecordsReason.value === 'dont-know') {
-      // regardless of which option is chosen, must always submit to backend
-      let startersToSubmit = null;
-      let nextStepNavigation = null;
+    this.setupForm();
+  }
 
-      if (noRecordsReason.value === 'dont-know') {
-        startersToSubmit = `Don't know`;
-        nextStepNavigation = '/workplace/leavers';
-      } else if (noRecordsReason.value === 'no-new') {
-        startersToSubmit = 'None';
-        nextStepNavigation = '/workplace/leavers';
-      } else {
-        // default being to send the set of all the current jobs which then need to be confirmed.
-        startersToSubmit = recordsControl.value.map(v => ({ jobId: parseInt(v.jobId, 10), total: v.total }));
-        nextStepNavigation = '/workplace/confirm-starters';
-      }
+  get starterRecords(): FormArray {
+    return <FormArray>this.form.get('starterRecords');
+  }
 
-      this.subscriptions.push(
-        this.establishmentService.postStarters(startersToSubmit).subscribe(() => {
-          this.router.navigate([nextStepNavigation]);
-        })
+  get noRecordsReason(): AbstractControl {
+    return <FormControl>this.form.get('noRecordsReason');
+  }
+
+  get allJobsSelected(): boolean {
+    return this.starterRecords.length >= this.jobs.length;
+  }
+
+  get totalStarters(): number {
+    return this.starterRecords.value.reduce((total, current) => (total += current.total ? current.total : 0), 0);
+  }
+
+  protected init() {
+    this.getJobs();
+    this.setPreviousRoute();
+    this.prefill();
+
+    this.subscriptions.add(
+      this.form.get('noRecordsReason').valueChanges.subscribe(value => {
+        while (this.starterRecords.length > 1) {
+          this.starterRecords.removeAt(1);
+        }
+
+        this.clearValidators(0);
+        this.starterRecords.reset([], { emitEvent: false });
+
+        this.form.get('noRecordsReason').setValue(value, { emitEvent: false });
+      })
+    );
+
+    this.subscriptions.add(
+      this.starterRecords.valueChanges.subscribe(() => {
+        this.starterRecords.controls[0].get('jobId').setValidators([Validators.required]);
+        this.starterRecords.controls[0]
+          .get('total')
+          .setValidators([Validators.required, Validators.min(this.minStarters), Validators.max(this.maxStarters)]);
+
+        this.form.get('noRecordsReason').setValue(null, { emitEvent: false });
+      })
+    );
+  }
+
+  private setupForm(): void {
+    this.form = this.formBuilder.group({
+      starterRecords: this.formBuilder.array([]),
+      noRecordsReason: null,
+    });
+  }
+
+  private setPreviousRoute(): void {
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
+  }
+
+  private getJobs(): void {
+    this.subscriptions.add(
+      this.jobService
+        .getJobs()
+        .pipe(take(1))
+        .subscribe(jobs => (this.jobs = jobs))
+    );
+  }
+
+  private prefill(): void {
+    if (Array.isArray(this.establishment.starters) && this.establishment.starters.length) {
+      this.establishment.starters.forEach(starter =>
+        this.starterRecords.push(this.createRecordItem(starter.jobId, starter.total))
       );
     } else {
-      this.messageService.clearError();
-      this.messageService.show('error', 'Please fill the required fields.');
+      this.starterRecords.push(this.createRecordItem());
+      if (
+        this.establishment.starters === jobOptionsEnum.NONE ||
+        this.establishment.starters === jobOptionsEnum.DONT_KNOW
+      ) {
+        this.form.get('noRecordsReason').setValue(this.establishment.starters);
+        this.clearValidators(0);
+      }
     }
   }
 
-  jobsLeft(idx) {
-    const recordsControl = <FormArray>this.form.controls.recordsControl;
-    const thisRecord = recordsControl.controls[idx];
-    return this.jobsAvailable.filter(
-      j => !recordsControl.controls.some(v => v !== thisRecord && parseFloat(v.value.jobId) === j.id)
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'starterRecords.jobId',
+        type: [
+          {
+            name: 'required',
+            message: 'Job Role is required',
+          },
+        ],
+      },
+      {
+        item: 'starterRecords.total',
+        type: [
+          {
+            name: 'required',
+            message: 'Total is required',
+          },
+          {
+            name: 'min',
+            message: `Total must be ${this.minStarters} or above`,
+          },
+          {
+            name: 'max',
+            message: `Total must be ${this.maxStarters} or lower`,
+          },
+        ],
+      },
+    ];
+  }
+
+  public selectableJobs(index): Job[] {
+    return this.jobs.filter(
+      job =>
+        !this.starterRecords.controls.some(
+          starter =>
+            starter !== this.starterRecords.controls[index] && parseInt(starter.get('jobId').value, 10) === job.id
+        )
     );
   }
 
-  addVacancy(): void {
-    const recordsControl = <FormArray>this.form.controls.recordsControl;
-
-    recordsControl.push(this.createRecordItem());
+  /**
+   * Add new starter record
+   * And reset no records reason and clear validators
+   * As the radio's shouldn't be selected
+   */
+  public addStarter(): void {
+    this.starterRecords.push(this.createRecordItem());
   }
 
-  isJobsNotTakenLeft() {
-    return this.jobsAvailable.length !== this.form.controls.recordsControl.value.length;
+  /**
+   * Remove starter record
+   * And if all starter records have been removed
+   * Then set required validator on radios
+   * @param index
+   */
+  public removeRecord(event: Event, index: number): void {
+    event.preventDefault();
+    this.starterRecords.removeAt(index);
   }
 
-  removeRecord(index): void {
-    (<FormArray>this.form.controls.recordsControl).removeAt(index);
-  }
-
-  validatorRecordTotal(control) {
-    return control.value !== null || this.form.controls.noRecordsReason.value.length ? {} : { total: true };
-  }
-
-  validatorRecordJobId(control) {
-    return control.value !== null || this.form.controls.noRecordsReason.value.length ? {} : { jobId: true };
-  }
-
-  createRecordItem(jobId = null, total = null): FormGroup {
-    return this.fb.group({
-      jobId: [jobId, this.validatorRecordJobId],
-      total: [total, this.validatorRecordTotal],
+  private createRecordItem(jobId: number = null, total: number = null): FormGroup {
+    return this.formBuilder.group({
+      jobId: [jobId, [Validators.required]],
+      total: [total, [Validators.required, Validators.min(this.minStarters), Validators.max(this.maxStarters)]],
     });
   }
 
-  calculateTotal(records) {
-    return records.reduce((acc, i) => (acc += parseInt(i.total, 10) || 0), 0) || 0;
+  protected generateUpdateProps(): UpdateJobsRequest {
+    const { noRecordsReason } = this.form.value;
+
+    if (noRecordsReason === jobOptionsEnum.NONE || noRecordsReason === jobOptionsEnum.DONT_KNOW) {
+      return { starters: noRecordsReason };
+    }
+
+    if (this.starterRecords.length) {
+      return {
+        starters: this.starterRecords.value.map(starterRecord => ({
+          jobId: parseInt(starterRecord.jobId, 10),
+          total: starterRecord.total,
+        })),
+      };
+    }
+
+    return null;
   }
 
-  ngOnInit() {
-    this.subscriptions.push(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
-
-    this.form = this.fb.group({
-      recordsControl: this.fb.array([]),
-      noRecordsReason: '',
-    });
-
-    const recordsControl = <FormArray>this.form.controls.recordsControl;
-
-    this.subscriptions.push(
-      this.establishmentService.getStarters().subscribe(starters => {
-        if (starters === 'None') {
-          // Even if "None" option on restore, want a single job role shown
-          recordsControl.push(this.createRecordItem());
-
-          this.form.patchValue({ noRecordsReason: 'no-new' }, { emitEvent: true });
-        } else if (starters === `Don't know`) {
-          // Even if "Don't know" option on restore, want a single job role shown
-          recordsControl.push(this.createRecordItem());
-
-          this.form.patchValue({ noRecordsReason: 'dont-know' }, { emitEvent: true });
-        } else if (Array.isArray(starters) && starters.length) {
-          starters.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)));
-        } else {
-          // If no options and no starters (the value has never been set) - just the default (select job) drop down
-          recordsControl.push(this.createRecordItem());
-        }
-      })
-    );
-
-    this.total = this.calculateTotal(recordsControl.value);
-
-    this.subscriptions.push(
-      recordsControl.valueChanges.subscribe(value => {
-        this.total = this.calculateTotal(value);
-
-        if (document.activeElement && document.activeElement.getAttribute('type') !== 'radio') {
-          this.form.patchValue(
-            {
-              noRecordsReason: '',
-            },
-            { emitEvent: false }
-          );
-        }
-      })
-    );
-
-    this.subscriptions.push(
-      this.form.controls.noRecordsReason.valueChanges.subscribe(() => {
-        while (recordsControl.length > 1) {
-          recordsControl.removeAt(1);
-        }
-
-        recordsControl.reset([], { emitEvent: false });
-        this.total = 0;
-      })
-    );
-
-    this.subscriptions.push(
-      this.form.valueChanges.subscribe(() => {
-        this.messageService.clearAll();
-      })
+  protected updateEstablishment(props: UpdateJobsRequest): void {
+    this.subscriptions.add(
+      this.establishmentService
+        .updateJobs(this.establishment.uid, props)
+        .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-    this.messageService.clearAll();
+  protected onSuccess(): void {
+    if (this.establishment.starters && Array.isArray(this.establishment.starters)) {
+      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-starters']);
+      this.submitAction.action = null;
+    } else {
+      this.next = ['/workplace', `${this.establishment.uid}`, 'leavers'];
+    }
+  }
+
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private clearValidators(index: number) {
+    this.starterRecords.controls[index].get('jobId').clearValidators();
+    this.starterRecords.controls[index].get('total').clearValidators();
   }
 }

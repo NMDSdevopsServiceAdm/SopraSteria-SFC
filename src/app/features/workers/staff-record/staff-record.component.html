@@ -1,119 +1,46 @@
-<div class="sub-page-container col-12">
-  <div id="back" class="back-link">
-    <a [routerLink]="['/dashboard']" fragment="staff-records"> <span class="arrow"></span>Back </a>
+<ng-container *ngIf="worker">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl">Staff record</span>
+        {{ worker.nameOrId }}
+      </h1>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <button class="govuk-button govuk-button--link" (click)="deleteWorker($event)">
+        <img src="/assets/images/bin.svg" alt="" />
+        <span class="govuk-!-margin-left-1">
+          Delete staff record <span class="govuk-visually-hidden">{{ worker.nameOrId }}</span>
+        </span>
+      </button>
+      <a
+        *ngIf="!worker.completed"
+        class="govuk-button"
+        role="button"
+        draggable="false"
+        [routerLink]="['../main-job-start-date']"
+      >
+        Complete Full Record
+      </a>
+    </div>
   </div>
 
-  <ng-container *ngIf="worker">
-    <ng-container *ngIf="trainingRecordCreated">
-      <app-inset-text color="success" class="fs-19">
-        Training has been added <a href="#" (click)="closeTrainingCreatedAlert($event)" class="close-link">Close</a>
-      </app-inset-text>
-    </ng-container>
-    <ng-container *ngIf="trainingRecordEdited">
-      <app-inset-text color="success" class="fs-19">
-        Training has been saved <a href="#" (click)="closeTrainingEditedAlert($event)" class="close-link">Close</a>
-      </app-inset-text>
-    </ng-container>
-    <ng-container *ngIf="trainingRecordDeleted">
-      <app-inset-text color="success" class="fs-19">
-        Training has been deleted <a href="#" (click)="closeTrainingDeletedAlert($event)" class="close-link">Close</a>
-      </app-inset-text>
-    </ng-container>
-
-    <ng-container *ngIf="qualificationCreated">
-      <app-inset-text color="success" class="fs-19">
-        Qualification has been added
-        <a href="#" (click)="closeQualificationCreatedAlert($event)" class="close-link">Close</a>
-      </app-inset-text>
-    </ng-container>
-    <ng-container *ngIf="qualificationEdited">
-      <app-inset-text color="success" class="fs-19">
-        Qualification has been saved
-        <a href="#" (click)="closeQualificationEditedAlert($event)" class="close-link">Close</a>
-      </app-inset-text>
-    </ng-container>
-    <ng-container *ngIf="qualificationDeleted">
-      <app-inset-text color="success" class="fs-19">
-        Qualification has been deleted
-        <a href="#" (click)="closeQualificationDeletedAlert($event)" class="close-link">Close</a>
-      </app-inset-text>
-    </ng-container>
-    <div class="row">
-      <div class="col-md-12">
-        <h2 class="heading-caption text-weight-normal">Staff record
-          <span *ngIf="reportDetails?.displayWDFReport">summary</span>
-        </h2>
-      </div>
-      <div class="col-md-8">
-        <h1 class="h1">{{ worker.nameOrId }}</h1>
-      </div>
-      <div class="col-md-4 text-right">
-        <ng-container *ngIf="!reportDetails?.displayWDFReport">
-        <a  href="#" (click)="deleteWorker($event)" class="delete">
-          <img src="/assets/img/bin.svg" />Delete staff record
-        </a>
-          <a
-                      *ngIf="!worker.completed"
-                      [routerLink]="[
-                        '/worker',
-                        worker.uid,
-                        worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
-                      ]"
-                      role="button"
-                      class="btn btn-primary mt-5"
-                      >Complete Full Record</a
-                    >
-        </ng-container>
-        <p *ngIf="reportDetails?.displayWDFReport" class="mt-5">Last updated on {{ updatedDate }}</p>
-      </div>
-    </div>
-    <div class="row m-0" *ngIf="reportDetails?.displayWDFReport">
-        <p class="main-body-text col-12 m-0 p-0 tick-icon" *ngIf="worker.wdf.isEligible">
-          <img src="/assets/img/tick-icon.svg" /> Meeting criteria
-        </p>
-        <p class="main-body-text col-12 m-0 p-0 cross-icon" *ngIf="!worker.wdf.isEligible">
-          <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
-        </p>
-    </div>
-    <div class="row m-0" *ngIf="reportDetails?.displayWDFReport">
-      <div class="govuk-warning-text col-6 mt-5 mb-5">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        <span class="govuk-warning-text__text">
-            You must update your ASC-WDS data before the 31 March {{ reportDetails.effectiveFromDateNextYear }} to qualify for WDF.
-        </span>
-      </div>
-      <p>Check the information provided on this staff record is correct.</p>
-    </div>
-
-    <app-tabs>
-      <app-tab title="Staff Record">
-        <app-basic-record [worker]="worker" [reportDetails]="reportDetails"></app-basic-record>
-        <app-personal-details [worker]="worker" [reportDetails]="reportDetails"></app-personal-details>
-        <app-employment [worker]="worker" [reportDetails]="reportDetails"></app-employment>
-      </app-tab>
-      <app-tab title="Qualifications and training">
-        <app-qualifications-and-training [worker]="worker" [reportDetails]="reportDetails">
-        </app-qualifications-and-training>
-        <a
-          [routerLink]="['/worker', worker.uid, 'add-qualification']"
-          role="button"
-          draggable="false"
-          class="govuk-button govuk-button--secondary mr-5"
-          >Add a qualification</a
-        >
-        <a
-          [routerLink]="['/worker', worker.uid, 'add-training']"
-          role="button"
-          draggable="false"
-          class="govuk-button govuk-button--secondary"
-          >Add training</a
-        >
-        <p class="mb-5">
-          <img src="/assets/img/icon-information.svg" /> Adding additional qualifications or training is optional.
-        </p>
-        <app-qualifications [worker]="worker"></app-qualifications>
-        <app-training [worker]="worker"></app-training>
-      </app-tab>
-    </app-tabs>
-  </ng-container>
-</div>
+  <app-tabs>
+    <app-tab [title]="'Staff Record'">
+      <app-basic-record [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-basic-record>
+      <app-personal-details [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-personal-details>
+      <app-employment [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-employment>
+    </app-tab>
+    <app-tab [title]="'Qualifications and training'">
+      <app-qualifications-and-training
+        [workplace]="workplace"
+        [worker]="worker"
+        [return]="returnToQuals"
+        [showAddButtons]="true"
+      ></app-qualifications-and-training>
+      <app-qualifications [workplace]="workplace" [worker]="worker"></app-qualifications>
+      <app-training [workplace]="workplace" [worker]="worker"></app-training>
+    </app-tab>
+  </app-tabs>
+</ng-container>

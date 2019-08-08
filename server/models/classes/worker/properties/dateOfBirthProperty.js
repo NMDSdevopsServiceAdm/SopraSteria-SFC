@@ -53,7 +53,11 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
     }
 
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
 
@@ -61,7 +65,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
                 dateOfBirth: this.property
             };
         }
-        
+
         return {
             dateOfBirth : {
                 currentValue: this.property ? this.property : null,

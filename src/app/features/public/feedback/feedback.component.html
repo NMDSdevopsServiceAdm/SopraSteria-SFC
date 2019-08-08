@@ -1,0 +1,147 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <ng-container *ngIf="pendingFeedback; else feedbackSubmitted">
+      <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              Feedback
+            </h1>
+          </legend>
+
+          <div class="govuk-character-count">
+            <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('doingWhat').errors">
+              <label class="govuk-label govuk-label--m" for="doingWhat">
+                What were you trying to do?
+              </label>
+              <span *ngIf="submitted" id="doingWhat-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>
+                <ng-container *ngIf="form.get('doingWhat').hasError('required')">
+                  {{ getFormErrorMessage('doingWhat', 'required') }}
+                </ng-container>
+                <ng-container *ngIf="form.get('doingWhat').hasError('maxlength')">
+                  {{ getFormErrorMessage('doingWhat', 'maxlength') }}
+                </ng-container>
+              </span>
+              <textarea
+                class="govuk-textarea"
+                [class.govuk-textarea--error]="submitted && form.get('doingWhat').errors"
+                id="doingWhat"
+                name="doingWhat"
+                rows="6"
+                [formControlName]="'doingWhat'"
+              ></textarea>
+            </div>
+            <app-character-count
+              [max]="doingWhatCharacterLimit"
+              [control]="form.get('doingWhat')"
+            ></app-character-count>
+          </div>
+
+          <div class="govuk-character-count">
+            <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('tellUs').errors">
+              <label class="govuk-label govuk-label--m" for="tellUs">
+                What would you like to tell us about?
+              </label>
+              <span *ngIf="submitted" id="tellUs-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>
+                <ng-container *ngIf="form.get('tellUs').hasError('required')">
+                  {{ getFormErrorMessage('tellUs', 'required') }}
+                </ng-container>
+                <ng-container *ngIf="form.get('tellUs').hasError('maxlength')">
+                  {{ getFormErrorMessage('tellUs', 'maxlength') }}
+                </ng-container>
+              </span>
+              <textarea
+                class="govuk-textarea"
+                [class.govuk-textarea--error]="submitted && form.get('tellUs').errors"
+                id="tellUs"
+                name="tellUs"
+                rows="6"
+                [formControlName]="'tellUs'"
+              ></textarea>
+            </div>
+            <app-character-count [max]="tellUsCharactersLimit" [control]="form.get('tellUs')"></app-character-count>
+          </div>
+
+          <h3 class="govuk-heading-m">If you would like us to respond to your feedback, enter your details below.</h3>
+
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('fullname').errors">
+            <label class="govuk-label" for="fullname">
+              Full name
+            </label>
+            <span id="fullname-hint" class="govuk-hint">
+              Optional
+            </span>
+            <span *ngIf="submitted" id="fullname-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              <ng-container *ngIf="form.get('fullname').hasError('maxlength')">
+                {{ getFormErrorMessage('fullname', 'maxlength') }}
+              </ng-container>
+            </span>
+            <input
+              class="govuk-input govuk-input--width-20"
+              [class.govuk-input--error]="submitted && form.get('fullname').errors"
+              id="fullname"
+              name="fullname"
+              type="text"
+              aria-describedby="fullname-hint"
+              [formControlName]="'fullname'"
+            />
+          </div>
+
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('email').errors">
+            <label class="govuk-label" for="email">
+              Email address
+            </label>
+            <span id="email-hint" class="govuk-hint">
+              Optional
+            </span>
+            <span *ngIf="submitted" id="email-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              <ng-container *ngIf="form.get('email').hasError('email')">
+                {{ getFormErrorMessage('email', 'email') }}
+              </ng-container>
+              <ng-container *ngIf="form.get('email').hasError('maxlength')">
+                {{ getFormErrorMessage('email', 'maxlength') }}
+              </ng-container>
+            </span>
+            <input
+              class="govuk-input"
+              [class.govuk-input--error]="submitted && form.get('email').errors"
+              id="email"
+              name="email"
+              type="email"
+              aria-describedby="email-hint"
+              autocomplete="email"
+              spellcheck="false"
+              [formControlName]="'email'"
+            />
+          </div>
+        </fieldset>
+
+        <button type="submit" class="govuk-button">
+          Send
+        </button>
+      </form>
+    </ng-container>
+
+    <ng-template #feedbackSubmitted>
+      <h1 class="govuk-heading-xl">Thank You</h1>
+
+      <p>Your feedback has been submitted</p>
+
+      <button type="button" class="govuk-button" (click)="closeWindow()">
+        Close
+      </button>
+    </ng-template>
+  </div>
+</div>

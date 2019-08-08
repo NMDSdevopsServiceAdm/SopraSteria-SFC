@@ -1,26 +1,38 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a [routerLink]="['/worker', worker.uid, backLink]">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-  <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="form">
-
-    <header>
-      <h1 class="h1 col-12 col-lg-8">What is their National Insurance Number?</h1>
-    </header>
-
-    <app-messages></app-messages>
-
-    <div class="form-group mt-5">
-      <div class="field-group col-12 col-md-8 col-lg-6">
-        <input type="text" formControlName="nin" maxlength="13" class="form-control col-12" [ngClass]="{'is-invalid': (form.get('nin').touched || form.get('nin').dirty) && !form.get('nin').valid}" />
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="submitted && form.get('nationalInsuranceNumber').invalid"
+      >
+        <h1 class="govuk-label-wrapper">
+          <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="nationalInsuranceNumber">
+            What is their National Insurance Number?
+          </label>
+        </h1>
+        <span
+          *ngIf="submitted && form.get('nationalInsuranceNumber').errors"
+          id="nationalInsuranceNumber-error"
+          class="govuk-error-message"
+        >
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFormErrorMessage('nationalInsuranceNumber', 'validNin') }}
+        </span>
+        <input
+          class="govuk-input govuk-input--width-10"
+          [class.govuk-input--error]="submitted && form.get('nationalInsuranceNumber').invalid"
+          [formControlName]="'nationalInsuranceNumber'"
+          id="nationalInsuranceNumber"
+          name="nationalInsuranceNumber"
+          type="text"
+          aria-describedby="nationalInsuranceNumber-hint"
+          spellcheck="false"
+        />
       </div>
     </div>
+  </div>
 
-    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
-  </form>
-</div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

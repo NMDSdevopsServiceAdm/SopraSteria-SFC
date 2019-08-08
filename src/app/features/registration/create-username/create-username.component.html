@@ -1,0 +1,91 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form novalidate (ngSubmit)="checkUsernameDoesntExist()" [formGroup]="form" id="server-error">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">User account</span>
+          <h1 class="govuk-fieldset__heading">
+            Create a username
+          </h1>
+        </legend>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUsername.errors">
+          <label class="govuk-label" for="username">
+            Username
+          </label>
+          <span id="username-hint" class="govuk-hint">
+            You will use this to sign in. It should be unique to you
+          </span>
+          <span *ngIf="submitted && getUsername.errors" id="username-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFirstErrorMessage('username') }}
+          </span>
+          <input
+            class="govuk-input govuk-input--width-10"
+            [formControlName]="'username'"
+            id="username"
+            name="username"
+            [class.govuk-input--error]="submitted && getUsername.errors"
+            type="text"
+          />
+        </div>
+
+        <div [formGroupName]="'passwordGroup'">
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPassword.errors">
+            <label class="govuk-label" for="createPasswordInput">
+              Password
+            </label>
+            <span id="createPasswordInput-hint" class="govuk-hint">
+              This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
+            </span>
+            <span *ngIf="submitted && getPassword.errors" id="createPasswordInput-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFirstErrorMessage('passwordGroup.createPasswordInput') }}
+            </span>
+            <input
+              aria-describedby="createPasswordInput-hint"
+              class="govuk-input govuk-input--width-10"
+              [formControlName]="'createPasswordInput'"
+              id="createPasswordInput"
+              name="createPasswordInput"
+              [class.govuk-input--error]="submitted && getPassword.errors"
+              type="password"
+            />
+          </div>
+
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getConfirmPassword.errors">
+            <label class="govuk-label" for="confirmPasswordInput">
+              Confirm password
+            </label>
+            <span
+              *ngIf="submitted && getConfirmPassword.errors"
+              id="confirmPasswordInput-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFirstErrorMessage('passwordGroup.confirmPasswordInput') }}
+            </span>
+            <input
+              class="govuk-input govuk-input--width-10"
+              [formControlName]="'confirmPasswordInput'"
+              id="confirmPasswordInput"
+              name="confirmPasswordInput"
+              [class.govuk-input--error]="submitted && getConfirmPassword.errors"
+              type="password"
+            />
+          </div>
+        </div>
+      </fieldset>
+
+      <button type="submit" class="govuk-button">{{ callToActionLabel }}</button>
+    </form>
+  </div>
+</div>

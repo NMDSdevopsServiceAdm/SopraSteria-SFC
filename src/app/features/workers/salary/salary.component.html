@@ -1,74 +1,152 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a [routerLink]="['/worker', worker.uid, backLink]">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-  <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="form">
-
-    <header>
-      <h1 class="h1">Are they paid hourly or annually?</h1>
-    </header>
-
-    <app-messages></app-messages>
-
-    <div class="form-group mt-5">
-      <div class="col-12 p-0">
-        <div class="row">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" formControlName="terms" class="form-control" value="Hourly" id="terms_hourly">
-              <label for="terms_hourly">Hourly</label>
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              Are they paid hourly or annually?
+            </h1>
+          </legend>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'terms'"
+                id="terms-conditional-1"
+                name="terms"
+                type="radio"
+                value="Hourly"
+                aria-controls="conditional-terms-conditional-1"
+              />
+              <label class="govuk-label govuk-radios__label" for="terms-conditional-1">
+                Hourly
+              </label>
             </div>
-          </div>
-        </div>
-
-        <div *ngIf="form.get('terms').value === 'Hourly'" class="panel panel-border-narrow ml-0 mt-5 mb-5 mt-md-0">
-          <div class="form-field">
-            <label class="form-label">Standard hourly rate
-              <span class="example">For example 10.40</span>
-              <div class="form-control__currency">
-                <input type="number" formControlName="rate" class="form-control" min="0" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('rate').touched || form.get('rate').dirty) && !form.get('rate').valid}">
+            <div
+              class="govuk-radios__conditional "
+              [class.govuk-radios__conditional--hidden]="form.get('terms').value !== 'Hourly'"
+              id="conditional-terms-conditional-1"
+            >
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="hourlyRate">
+                  Standard hourly rate
+                </label>
+                <span id="hourlyRate-hint" class="govuk-hint">
+                  For example 10.40
+                </span>
+                <span
+                  *ngIf="submitted && form.get('hourlyRate').errors"
+                  id="hourlyRate-error"
+                  class="govuk-error-message"
+                >
+                  <ng-container *ngIf="form.get('hourlyRate').hasError('required')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    <span [innerHTML]="getFormErrorMessage('hourlyRate', 'required')"></span>
+                  </ng-container>
+                  <ng-container *ngIf="form.get('hourlyRate').hasError('min')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    <span [innerHTML]="getFormErrorMessage('hourlyRate', 'min')"></span>
+                  </ng-container>
+                  <ng-container *ngIf="form.get('hourlyRate').hasError('max')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    <span [innerHTML]="getFormErrorMessage('hourlyRate', 'max')"></span>
+                  </ng-container>
+                </span>
+                <span class="govuk-input__currency">
+                  <input
+                    class="govuk-input govuk-date-input__input govuk-input--width-4"
+                    [class.govuk-input--error]="submitted && form.get('hourlyRate').invalid"
+                    [formControlName]="'hourlyRate'"
+                    id="hourlyRate"
+                    name="hourlyRate"
+                    type="number"
+                    [pattern]="floatPattern"
+                    aria-describedby="hourlyRate-hint"
+                  />
+                </span>
               </div>
-            </label>
-          </div>
-        </div>
-
-        <div class="row mt-5 mt-md-0">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" formControlName="terms" class="form-control" value="Annually" id="terms_annually">
-              <label for="terms_annually">Annually</label>
             </div>
-          </div>
-        </div>
 
-        <div *ngIf="form.get('terms').value === 'Annually'" class="panel panel-border-narrow ml-0 mt-5 mb-5 mt-md-0">
-          <div class="form-field">
-            <label class="form-label">Standard annual rate
-              <span class="example">For example 30000</span>
-              <div class="form-control__currency">
-                <input type="number" formControlName="rate" class="form-control" min="0" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('rate').touched || form.get('rate').dirty) && !form.get('rate').valid}">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'terms'"
+                id="terms-conditional-2"
+                name="terms"
+                type="radio"
+                value="Annually"
+                aria-controls="conditional-terms-conditional-2"
+              />
+              <label class="govuk-label govuk-radios__label" for="terms-conditional-2">
+                Annually
+              </label>
+            </div>
+            <div
+              class="govuk-radios__conditional "
+              [class.govuk-radios__conditional--hidden]="form.get('terms').value !== 'Annually'"
+              id="conditional-terms-conditional-2"
+            >
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="annualRate">
+                  Standard annual rate
+                </label>
+                <span id="annualRate-hint" class="govuk-hint">
+                  For example 30000
+                </span>
+                <span
+                  *ngIf="submitted && form.get('annualRate').errors"
+                  id="annualRate-error"
+                  class="govuk-error-message"
+                >
+                  <ng-container *ngIf="form.get('annualRate').hasError('required')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    <span [innerHTML]="getFormErrorMessage('annualRate', 'required')"></span>
+                  </ng-container>
+                  <ng-container *ngIf="form.get('annualRate').hasError('min')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    <span [innerHTML]="getFormErrorMessage('annualRate', 'min')"></span>
+                  </ng-container>
+                  <ng-container *ngIf="form.get('annualRate').hasError('max')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    <span [innerHTML]="getFormErrorMessage('annualRate', 'max')"></span>
+                  </ng-container>
+                </span>
+                <span class="govuk-input__currency">
+                  <input
+                    class="govuk-input govuk-date-input__input govuk-input--width-5"
+                    [class.govuk-input--error]="submitted && form.get('annualRate').invalid"
+                    [formControlName]="'annualRate'"
+                    id="annualRate"
+                    name="annualRate"
+                    type="number"
+                    [pattern]="intPattern"
+                    aria-describedby="annualRate-hint"
+                  />
+                </span>
               </div>
-            </label>
-          </div>
-        </div>
+            </div>
 
-        <div class="row mt-5 mt-md-0">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" formControlName="terms" class="form-control" value="Don't know" id="terms_unknown">
-              <label for="terms_unknown">Don't know</label>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'terms'"
+                id="terms-3"
+                name="terms"
+                type="radio"
+                value="Don't know"
+              />
+              <label class="govuk-label govuk-radios__label" for="terms-3">
+                Don't know
+              </label>
             </div>
           </div>
-        </div>
-
+        </fieldset>
       </div>
     </div>
+  </div>
 
-    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
-  </form>
-</div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

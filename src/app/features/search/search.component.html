@@ -1,0 +1,179 @@
+<div class="govuk-grid-row">
+  <div class="govuk-tabs govuk-!-padding-top-0">
+    <div class="govuk-grid-column-full">
+      <ul class="govuk-tabs__list">
+        <li class="govuk-tabs__list-item">
+          <a
+            class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'users'"
+            [routerLink]="['/search-users']"
+          >
+            Search Users
+          </a>
+        </li>
+        <li class="govuk-tabs__list-item">
+          <a
+            class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'establishments'"
+            [routerLink]="['/search-establishments']"
+          >
+            Search Establishments
+          </a>
+        </li>
+      </ul>
+
+      <section class="govuk-tabs__panel has-border">
+        <form (ngSubmit)="onSubmit()" novalidate id="server-error">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <span class="govuk-caption-l">{{ form.subTitle }}</span>
+              <h1 class="govuk-fieldset__heading">
+                {{ form.title }}
+              </h1>
+            </legend>
+
+            <div
+              class="govuk-error-summary"
+              aria-labelledby="error-summary-title"
+              role="alert"
+              tabindex="-1"
+              data-module="error-summary"
+              *ngIf="form.errors.length"
+            >
+              <h2 class="govuk-error-summary__title" id="error-summary-title">
+                There is a problem
+              </h2>
+              <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list">
+                  <li *ngFor="let item of form.errors">
+                    {{ item.error }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-half">
+                <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
+                  <label class="govuk-label" for="username">
+                    {{ form.usernameLabel }}
+                  </label>
+                  <input
+                    class="govuk-input govuk-input--width-20"
+                    [(ngModel)]="form.username"
+                    [ngModelOptions]="{ standalone: true }"
+                    id="username"
+                    name="username"
+                    [class.govuk-input--error]="form.errors.length"
+                    type="text"
+                  />
+                </div>
+              </div>
+
+              <div class="govuk-grid-column-one-half">
+                <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
+                  <label class="govuk-label" for="name">
+                    {{ form.nameLabel }}
+                  </label>
+                  <input
+                    class="govuk-input govuk-input--width-20"
+                    [(ngModel)]="form.name"
+                    [ngModelOptions]="{ standalone: true }"
+                    id="name"
+                    name="name"
+                    [class.govuk-input--error]="form.errors && form.errors.length"
+                    type="text"
+                  />
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <button class="govuk-button" type="submit">{{ form.buttonText }}</button>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-top-4">
+  <div class="govuk-grid-column-full">
+    <div *ngIf="form.submitted && !results.length && !form.errors.length">
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Information</span>
+          Your search returned no results. Please refine your search criteria.
+        </strong>
+      </div>
+    </div>
+
+    <div *ngIf="form.type === 'users'">
+      <table class="govuk-table" *ngIf="results && results.length">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">Username</th>
+            <th class="govuk-table__header" scope="col">Name</th>
+            <th class="govuk-table__header" scope="col">Establishment</th>
+            <th class="govuk-table__header" scope="col">NMDS ID</th>
+            <th class="govuk-table__header" scope="col">Postcode</th>
+            <th class="govuk-table__header" scope="col">Security Question</th>
+            <th class="govuk-table__header" scope="col">Security Answer</th>
+            <th class="govuk-table__header" scope="col">Parent ID</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row" *ngFor="let item of results">
+            <td class="govuk-table__cell">{{ item.username }}</td>
+            <td class="govuk-table__cell">{{ item.name }}</td>
+            <td class="govuk-table__cell">
+              <a (click)="setEsblishmentId(item.establishment.uid, $event)" href="#">{{ item.establishment.name }}</a>
+            </td>
+            <td class="govuk-table__cell">{{ item.establishment.nmdsId }}</td>
+            <td class="govuk-table__cell">{{ item.establishment.postcode }}</td>
+            <td class="govuk-table__cell">{{ item.securityQuestion }}</td>
+            <td class="govuk-table__cell">{{ item.securityQuestionAnswer }}</td>
+            <td class="govuk-table__cell">
+              {{
+                item.establishment.parent && item.establishment.parent.nmdsId ? item.establishment.parent.nmdsId : ''
+              }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="form.type === 'establishments'">
+      <table class="govuk-table" *ngIf="results && results.length">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">Name</th>
+            <th class="govuk-table__header" scope="col">NMDS ID</th>
+            <th class="govuk-table__header" scope="col">Postcode</th>
+            <th class="govuk-table__header" scope="col">Location ID</th>
+            <th class="govuk-table__header" scope="col">Regulated</th>
+            <th class="govuk-table__header" scope="col">Parent</th>
+            <th class="govuk-table__header" scope="col">Parent ID</th>
+            <th class="govuk-table__header" scope="col">Address</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row" *ngFor="let item of results">
+            <td class="govuk-table__cell">
+              <a (click)="setEsblishmentId(item.uid, $event)" href="#">{{ item.name }}</a>
+            </td>
+            <td class="govuk-table__cell">{{ item.nmdsId }}</td>
+            <td class="govuk-table__cell">{{ item.postcode }}</td>
+            <td class="govuk-table__cell">{{ item.locationId }}</td>
+            <td class="govuk-table__cell">{{ item.isRegulated ? 'Yes' : 'No' }}</td>
+            <td class="govuk-table__cell">{{ item.isParent ? 'Yes' : 'No' }}</td>
+            <td class="govuk-table__cell">
+              {{ item.parent && item.parent.nmdsId ? item.parent.nmdsId : '' }}
+            </td>
+            <td class="govuk-table__cell">{{ item.address }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -75,7 +75,7 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
         if (document.AnnualHourlyPayValue !== "Don't know") {
             payDocument.rate = parseFloat(document.AnnualHourlyPayRate);
         }
-        
+
         return payDocument;
     }
     savePropertyToSequelize() {
@@ -83,7 +83,7 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
             AnnualHourlyPayValue: this.property.value,
             AnnualHourlyPayRate: this.property.value !== "Don't know" ? this.property.rate : null
         };
-        
+
         return payDocument;
     }
 
@@ -99,14 +99,18 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
         return currentValue && newValue && currentValue.value === newValue.value && rateEqual;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 annualHourlyPay: this.property
             };
         }
-        
+
         return {
             annualHourlyPay : {
                 currentValue: this.property,

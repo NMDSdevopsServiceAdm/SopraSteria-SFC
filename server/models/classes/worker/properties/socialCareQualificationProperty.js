@@ -44,14 +44,18 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
         return currentValue && newValue && currentValue.qualificationId === newValue.qualificationId;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 socialCareQualification: this.property
             };
         }
-        
+
         return {
             socialCareQualification : {
                 currentValue: this.property,

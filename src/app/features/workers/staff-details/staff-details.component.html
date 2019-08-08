@@ -1,48 +1,115 @@
-<div class="main-page-container col-12">
-    <div id="back" class="back-link">
-      <a [routerLink]="backLink">
-        <span class="arrow"></span>Back
-      </a>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">{{ worker ? 'Edit' : 'Create' }} Staff Details</h1>
+        </legend>
+        <div
+          class="govuk-form-group"
+          [class.govuk-form-group--error]="submitted && (form.get('nameOrId').invalid || serverError)"
+        >
+          <label class="govuk-label" for="nameOrId">
+            Full name or ID number
+          </label>
+          <span *ngIf="submitted && form.get('nameOrId').errors" id="nameOrId-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('nameOrId', 'required') }}
+          </span>
+          <input
+            class="govuk-input govuk-!-width-two-thirds"
+            [class.govuk-input--error]="submitted && form.get('nameOrId').invalid"
+            [formControlName]="'nameOrId'"
+            id="nameOrId"
+            name="nameOrId"
+            type="text"
+          />
+        </div>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('mainJob').invalid">
+          <label class="govuk-label" for="mainJob">
+            What is their main job role
+          </label>
+          <span *ngIf="submitted && form.get('mainJob').errors" id="mainJob-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('mainJob', 'required') }}
+          </span>
+          <select
+            class="govuk-select"
+            [class.govuk-select--error]="submitted && form.get('mainJob').invalid"
+            [formControlName]="'mainJob'"
+            id="mainJob"
+            name="mainJob"
+            (change)="selectedJobRole($event.target.value)"
+          >
+            <option [ngValue]="null">Select Main Job Role</option>
+            <option *ngFor="let job of jobsAvailable" [value]="job.id">
+              {{ job.title }}
+            </option>
+          </select>
+        </div>
+
+        <div
+          class="govuk-form-group"
+          [class.govuk-form-group--error]="submitted && form.get('otherJobRole').invalid"
+          [class.govuk-select__conditional--hidden]="!showInputTextforOtherRole"
+        >
+          <label class="govuk-label" for="otherJobRole">
+            Enter your job role
+          </label>
+          <span
+            *ngIf="submitted && form.get('otherJobRole').invalid"
+            id="otherJobRole-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('otherJobRole', 'maxlength') }}
+          </span>
+          <span id="otherJobRole-hint" class="govuk-hint">
+            Optional
+          </span>
+          <input
+            class="govuk-input govuk-!-width-two-thirds"
+            [formControlName]="'otherJobRole'"
+            id="otherJobRole-conditional"
+            name="otherJobRole"
+            type="text"
+            aria-describedby="otherJobRole-hint"
+          />
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('contract').invalid">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend">
+              <h1 class="govuk-fieldset__heading">
+                What type of contract do they have?
+              </h1>
+            </legend>
+            <span *ngIf="submitted && form.get('contract').errors" id="contract-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('contract', 'required') }}
+            </span>
+            <div class="govuk-radios">
+              <div *ngFor="let contract of contractsAvailable; let idx = index" class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [class.govuk-input--error]="submitted && form.get('contract').invalid"
+                  [formControlName]="'contract'"
+                  id="contract-{{ idx }}"
+                  name="contract"
+                  type="radio"
+                  [value]="contract"
+                />
+                <label class="govuk-label govuk-radios__label" for="contract-{{ idx }}">
+                  {{ contract }}
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </fieldset>
     </div>
-
-    <form novalidate
-      (ngSubmit)="submitHandler()"
-      [formGroup]="form">
-
-      <header>
-        <h1 class="h1">{{ worker ? 'Edit' : 'Create' }} Staff Details</h1>
-      </header>
-
-      <app-messages></app-messages>
-
-      <div class="form-group">
-        <div class="field-group mb-5">
-          <label class="col-12 col-md-11 col-lg-8">Full name or ID number
-            <input type="text" formControlName="nameOrId" maxlength="50"
-              class="form-control col-12" [ngClass]="{'is-invalid': (form.get('nameOrId').touched || form.get('nameOrId').dirty) && !form.get('nameOrId').valid}" />
-          </label>
-        </div>
-
-        <div class="field-group mb-5">
-          <label>What is their main job role
-            <select formControlName="mainJob" class="form-control">
-              <option [ngValue]="null">Select Main Job Role</option>
-              <option *ngFor="let job of jobsAvailable" [value]="job.id">
-                {{job.title}}
-              </option>
-            </select>
-          </label>
-        </div>
-
-        <div class="field-group mb-5">
-          <label class="d-block">What type of contract do they have?</label>
-          <div *ngFor="let contract of contractsAvailable; let idx = index" class="multiple-choice">
-            <input type="radio" formControlName="contract" class="form-control" [value]="contract" id="contract-type-{{idx}}">
-            <label for="contract-type-{{idx}}">{{contract}}</label>
-          </div>
-        </div>
-      </div>
-
-      <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
-    </form>
   </div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

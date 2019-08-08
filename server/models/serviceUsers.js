@@ -23,6 +23,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"Service"'
+    },
+    other: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      default: false,
+      field: '"Other"'
     }
   }, {
     tableName: 'ServiceUsers',
@@ -30,6 +36,6 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
-
+  
   return ServiceUsers;
 };

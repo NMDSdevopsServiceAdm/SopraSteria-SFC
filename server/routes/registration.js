@@ -5,8 +5,11 @@ const uuid = require('uuid');
 const isLocal = require('../utils/security/isLocalTest').isLocal;
 const bcrypt = require('bcrypt-nodejs');
 const slack = require('../utils/slack/slack-logger');
+const sns = require('../aws/sns');
 
 const models = require('../models');
+
+const OTHER_MAX_LENGTH=120;
 
 // extended change properties
 const EstablishmentModel = require('../models/classes/establishment').Establishment;
@@ -17,7 +20,7 @@ const UserSaveException = require('../models/classes/user/userExceptions').UserS
 
 const generateJWT = require('../utils/security/generateJWT');
 const passwordCheck = require('../utils/security/passwordValidation').isPasswordValid;
-
+const usernameCheck = require('../utils/security/usernameValidation').isUsernameValid;
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
 class RegistrationException {
@@ -54,7 +57,7 @@ router.get('/service/:name', async (req, res) => {
         message: `Service name '${requestedServiceName}' not found`,
       });
     }
-  
+
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('registration GET service/:name - failed', err);
@@ -237,9 +240,9 @@ const responseErrors = {
     errMessage: 'Duplicate Username',
     db_constraint: 'uc_Login_Username'
   },
-  unexpectedMainServiceId: {
+  unexpectedMainService: {
     errCode: -300,
-    errMessage: 'Unexpected main service id'
+    errMessage: 'Unexpected main service'
   },
   unknownLocation: {
     errCode: -400,
@@ -261,6 +264,10 @@ const responseErrors = {
   invalidUser: {
     errCode: -800,
     errMessage: 'User data is invalid'
+  },
+  invalidUsername: {
+    errCode: -210,
+    errMessage: 'Invalid Username'
   }
 };
 
@@ -293,6 +300,13 @@ router.route('/')
       }
     }
 
+    // Username validation check
+    if (req.body[0] && req.body[0].user && req.body[0].user.username) {
+      if (!usernameCheck(req.body[0].user.username)) {
+        console.error(`Registration:  ${responseErrors.invalidUsername.message} - ${req.body[0].user.username}`);
+        return res.status(400).json(responseErrors.invalidUsername);
+      }
+    }
 
     let defaultError = responseErrors.default;
     try {
@@ -305,19 +319,24 @@ router.route('/')
       const Estblistmentdata = {
         Name : req.body[0].locationName,
         Address : concatenateAddress(req.body[0].addressLine1, req.body[0].addressLine2, req.body[0].townCity, req.body[0].county),
+        Address1 : req.body[0].addressLine1,
+        Address2 : req.body[0].addressLine2,
+        Town: req.body[0].townCity,
+        County: req.body[0].county,
         LocationID: req.body[0].locationId,
         PostCode: req.body[0].postalCode,
         MainService: req.body[0].mainService,
         MainServiceId : null,
+        MainServiceOther: req.body[0].mainServiceOther,
         IsRegulated: req.body[0].isRegulated
       };
       const Userdata = {
         FullName : req.body[0].user.fullname,
         JobTitle : req.body[0].user.jobTitle,
-        Email    : req.body[0].user.emailAddress,
-        Phone    : req.body[0].user.contactNumber,
+        Email    : req.body[0].user.email,
+        Phone    : req.body[0].user.phone,
         SecurityQuestion: req.body[0].user.securityQuestion,
-        SecurityQuestionAnswer: req.body[0].user.securityAnswer,
+        SecurityQuestionAnswer: req.body[0].user.securityQuestionAnswer,
         DateCreated: new Date(),
         EstablishmentID:0,
         AdminUser: true
@@ -360,93 +379,49 @@ router.route('/')
           }
 
           if (serviceResults && serviceResults.id && (Estblistmentdata.MainService === serviceResults.name)) {
-            Estblistmentdata.MainServiceId = serviceResults.id
+            Estblistmentdata.MainServiceId = serviceResults.id;
           } else {
             throw new RegistrationException(
               `Lookup on services for '${Estblistmentdata.MainService}' being cqc registered (${Estblistmentdata.IsRegulated}) resulted with zero records`,
-              responseErrors.unexpectedMainServiceId.errCode,
-              responseErrors.unexpectedMainServiceId.errMessage
+              responseErrors.unexpectedMainService.errCode,
+              responseErrors.unexpectedMainService.errMessage
             );
           }
 
-          // need to create an NMDS ID - which is a combination of the CSSR nmds letter and a unique sequence number
-          // first find the associated CSSR NMDS letter using the postcode given for this establishment. Note - there
-          //  might not be an associated pcodedata record
-          const cssrResults = await models.pcodedata.findOne({
-            where: {
-              postcode: Estblistmentdata.PostCode,
-            },
-            include: [{
-              model: models.cssr,
-              as: 'theAuthority',
-              attributes: ['id', 'name', 'nmdsIdLetter']
-            }]
-          });
-
-          let nmdsLetter = null;
-          if (cssrResults && cssrResults.postcode === Estblistmentdata.PostCode &&
-              cssrResults.theAuthority && cssrResults.theAuthority.id &&
-              Number.isInteger(cssrResults.theAuthority.id)) {
-            nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
-          } else {
-            // if, there is no direct match on pcodedata using the Establishment's postcode, then a more fuzzy match is done
-            //  using just the first half of the postcode
-            const [firstHalfOfPostcode] = Estblistmentdata.PostCode.split(' '); 
-            
-            // must escape the string to prevent SQL injection
-            const fuzzyCssrNmdsIdMatch = await models.sequelize.query(
-                `select "Cssr"."NmdsIDLetter" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`,
-                {
-                  type: models.sequelize.QueryTypes.SELECT
-                }
-              );
-            if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
-              nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
-            }
-          }
-
-          let nextNmdsIdSeqNumber = 0;
-          const nextNmdsIdSeqNumberResults = await models.sequelize.query(
-              'SELECT nextval(\'cqc."NmdsID_seq"\')',
-              {
-                type: models.sequelize.QueryTypes.SELECT
-              });
-          if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
-            nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
-          } else {
-            // no sequence number
-            console.error("Failed to get next sequence number for Establishment: ", nextNmdsIdSeqNumberResults);
+          if (serviceResults.other && Estblistmentdata.MainServiceOther && Estblistmentdata.MainServiceOther.length > OTHER_MAX_LENGTH){
             throw new RegistrationException(
-              'Failed to get next sequence number for Establishment',
-              responseErrors.unknownNMDSsequence.errCode,
-              responseErrors.unknownNMDSsequence.errMessage
+              `Other field value of '${Estblistmentdata.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
+              responseErrors.unexpectedMainService.errCode,
+              responseErrors.unexpectedMainService.errMessage
             );
-          }
-
-          if (nmdsLetter) {
-            Estblistmentdata.NmdsId = `${nmdsLetter}${nextNmdsIdSeqNumber}`;
           }
 
           // now create establishment - using the extended property encapsulation
           defaultError = responseErrors.establishment;
           const newEstablishment = new EstablishmentModel(Logindata.UserName);
           newEstablishment.initialise(
-            Estblistmentdata.Address,
+            Estblistmentdata.Address1,
+            Estblistmentdata.Address2,
+            null,
+            Estblistmentdata.Town,
+            Estblistmentdata.County,
             Estblistmentdata.LocationID,
+            null,                               // PROV ID is not captured yet on registration
             Estblistmentdata.PostCode,
-            Estblistmentdata.IsRegulated,
-            Estblistmentdata.NmdsId
+            Estblistmentdata.IsRegulated
           );
           await newEstablishment.load({
             name: Estblistmentdata.Name,
             mainService: {
-              id: Estblistmentdata.MainServiceId
+              id: Estblistmentdata.MainServiceId,
+              other : Estblistmentdata.MainServiceOther
             }
           });    // no Establishment properties on registration
           if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
-            await newEstablishment.save(Logindata.UserName, 0, t);
+            await newEstablishment.save(Logindata.UserName, false, 0, t);
             Estblistmentdata.id = newEstablishment.id;
             Estblistmentdata.eUID = newEstablishment.uid;
+            Estblistmentdata.NmdsId = newEstablishment.nmdsId;
           } else {
             // Establishment properties not valid
             throw new RegistrationException(
@@ -487,9 +462,12 @@ router.route('/')
           const slackMsg = req.body[0];
           delete slackMsg.user.password;
           delete slackMsg.user.securityQuestion;
-          delete slackMsg.user.securityAnswer;
-          slackMsg.NmdsId = Estblistmentdata.NmdsId;
+          delete slackMsg.user.securityQuestionAnswer;
+          slackMsg.nmdsId = Estblistmentdata.NmdsId;
+          slackMsg.establishmentUid = Estblistmentdata.eUID;
           slack.info("Registration", JSON.stringify(slackMsg, null, 2));
+          // post through feedback topic - async method but don't wait for a responseThe
+          sns.postToRegistrations(slackMsg);
 
           // gets here on success
           res.status(200);
@@ -500,7 +478,7 @@ router.route('/')
             "establishmentUid" : Estblistmentdata.eUID,
             "primaryUser" : Logindata.UserName,
             "nmdsId": Estblistmentdata.NmdsId ? Estblistmentdata.NmdsId : 'undefined'
-          }); 
+          });
         });
 
       } catch (err) {
@@ -510,6 +488,8 @@ router.route('/')
         if (err instanceof RegistrationException) throw err;
 
         if (!defaultError) defaultError = responseErrors.default;
+
+        console.log("WA DEBUG - exception: ", err)
 
         if (err instanceof EstablishmentSaveException) {
           if (err.message === 'Duplicate Establishment') {
@@ -526,7 +506,7 @@ router.route('/')
             defaultError = responseErrors.duplicateUsername;
           }
         }
-      
+
         throw new RegistrationException(
           err,
           defaultError.errCode,
@@ -643,7 +623,7 @@ router.post('/requestPasswordReset', async (req, res) => {
       } else {
         return res.status(200).send();
       }
- 
+
     } else {
       // non-disclosure - if account is not found, return 200 anyway - suggesting that an email has been found
       return res.status(200).send();
@@ -669,7 +649,7 @@ router.post('/validateResetPassword', async (req, res) => {
     console.error('Invalid UUID');
     return res.status(400).send();
   }
-  
+
   try {
     // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
     const passTokenResults = await models.passwordTracking.findOne({
@@ -723,8 +703,8 @@ router.post('/validateResetPassword', async (req, res) => {
         throw new Error(`Failed to find user matching reset token (${givenUuid})`);
       }
 
-      
- 
+
+
     } else {
       // token not found
       console.error(`registration POST /validateResetPassword - reset token (${givenUuid}) not found`);

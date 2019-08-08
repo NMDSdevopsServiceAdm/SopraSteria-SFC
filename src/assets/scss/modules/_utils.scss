@@ -1,0 +1,81 @@
+@import '../partials/colors';
+
+.govuk-util__float-right {
+  float: right;
+}
+
+.govuk-util__align-right {
+  text-align: right;
+}
+
+.govuk-util__align-center {
+  text-align: center;
+}
+
+.govuk-util__light-bg {
+  background: $mercury;
+}
+
+.govuk-util__relative-top-1 {
+  position: relative;
+  top: 5px;
+}
+
+.govuk-util__bold {
+  font-weight: bold;
+  .govuk-list {
+    font-weight: bold;
+  }
+}
+
+.govuk-util__normal {
+  font-weight: normal;
+}
+
+.govuk-util__font-style-normal {
+  font-style: normal;
+}
+
+.govuk-util__inline-block {
+  display: inline-block;
+}
+
+.govuk-util__block {
+  display: block;
+}
+
+.govuk-util__list-record {
+  border-bottom: solid 1px $alto;
+  padding: govuk-spacing(4) 0;
+
+  &:first-child {
+    border-top: solid 1px $alto;
+  }
+}
+
+.govuk-util__no-focus {
+  outline: 0;
+}
+
+.govuk__flex {
+  display: flex;
+}
+
+.govuk__align-items-center {
+  align-items: center;
+}
+
+.govuk__align-items-flex-end {
+  align-items: flex-end;
+}
+
+.govuk__justify-content-space-between {
+  justify-content: space-between;
+}
+
+.govuk__nowrap {
+  white-space: nowrap;
+}
+.govuk-util__vertical-align-top {
+  vertical-align: top;
+}

@@ -53,7 +53,17 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       field: '"LastLoggedIn"'
-    }
+    },
+    tribalHash: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: "TribalHash"
+    },
+    tribalSalt: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: "TribalSalt"
+    },
   }, {
     tableName: '"Login"',
     schema: 'cqc',
@@ -66,15 +76,28 @@ module.exports = function(sequelize, DataTypes) {
     return bcrypt.hashSync(this.password, bcrypt.genSaltSync(10), null);
   };
 
-  Login.prototype.comparePassword = function (passw, cb) {
+  Login.prototype.comparePassword = function (passw, err, tribalHashValidated, cb) {
+    // not comfortable doing this, but owing to the
+    //  existing login callback approach and the need to reuse the
+    //  callback but to be able to intercept a tribal hash, need
+    //  to be able to pass in any err to shortcut the calling of callback (cb)
+    if (err) {
+      return cb(err, false, false);
 
-    bcrypt.compare(passw, this.Hash, function (err, isMatch) {
-     // console.log("inside")
+    } else if (tribalHashValidated) {
+      // then we used the tribal has to validate - and no err means successfully
+      // so we need to rehash
+      return cb(err, true, true);
+    }
+    else {
+        bcrypt.compare(passw, this.Hash, function (err, isMatch) {
         if (err) {
-            return cb(err);
+            return cb(err, false, false);
         }
-        cb(null, isMatch);
-    });
+        cb(null, isMatch, false);
+      });
+    }
+
   };
   Login.associate = (models) => {
     Login.belongsTo(models.user, {

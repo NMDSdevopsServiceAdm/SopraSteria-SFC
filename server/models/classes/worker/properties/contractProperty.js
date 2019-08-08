@@ -36,14 +36,18 @@ exports.WorkerContractProperty = class WorkerContractProperty extends ChangeProp
         return currentValue && newValue && currentValue === newValue;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 contract: this.property
             };
         }
-        
+
         return {
             contract : {
                 currentValue: this.property,

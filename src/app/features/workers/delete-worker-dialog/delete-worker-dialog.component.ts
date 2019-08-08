@@ -1,97 +1,120 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { DialogComponent } from '@core/components/dialog.component';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MessageService } from '@core/services/message.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Reason, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-delete-worker-dialog',
   templateUrl: './delete-worker-dialog.component.html',
-  styleUrls: ['./delete-worker-dialog.component.scss'],
 })
-export class DeleteWorkerDialogComponent implements OnInit {
+export class DeleteWorkerDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public reasons: Reason[];
-  private totalStaff: number;
-  private form: FormGroup;
+  public maxLength = 500;
+  public form: FormGroup;
+  public submitted = false;
+  private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    @Inject(DIALOG_DATA) public worker: Worker,
+    @Inject(DIALOG_DATA) public data: { worker: Worker; workplace: Establishment; primaryWorkplaceUid: string },
     public dialog: Dialog<DeleteWorkerDialogComponent>,
+    private router: Router,
     private formBuilder: FormBuilder,
-    private messageService: MessageService,
-    private establishmentService: EstablishmentService,
+    private alertService: AlertService,
+    private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService
   ) {
+    super(data, dialog);
+
     this.form = this.formBuilder.group({
       reason: null,
-      details: [null, [Validators.maxLength(500)]],
+      details: [null, [Validators.maxLength(this.maxLength)]],
     });
   }
 
   ngOnInit() {
     this.subscriptions.add(
-      this.establishmentService.getStaff().subscribe(totalStaff => {
-        this.totalStaff = totalStaff;
-      })
-    );
-
-    this.subscriptions.add(
       this.workerService.getLeaveReasons().subscribe(reasons => {
         this.reasons = reasons;
       })
     );
+
+    this.setupFormErrors();
   }
 
-  close() {
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  public close() {
     this.dialog.close();
   }
 
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-      this.dialog.close(this.worker.nameOrId);
-    } catch (err) {
-      // keep typescript transpiler silent
+  public onSubmit() {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (!this.form.valid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
     }
+
+    const { reason, details } = this.form.controls;
+    const deleteReason = reason.value
+      ? {
+          reason: {
+            id: parseInt(reason.value, 10),
+            ...(details.value && {
+              other: details.value,
+            }),
+          },
+        }
+      : null;
+
+    this.subscriptions.add(
+      this.workerService
+        .deleteWorker(this.data.workplace.uid, this.data.worker.uid, deleteReason)
+        .subscribe(() => this.onSuccess(), error => this.onError(error))
+    );
   }
 
-  saveHandler(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const { reason, details } = this.form.controls;
-      this.messageService.clearError();
+  private onSuccess(): void {
+    const url =
+      this.data.workplace.uid === this.data.primaryWorkplaceUid
+        ? ['/dashboard']
+        : ['/workplace', this.data.workplace.uid];
+    this.router.navigate(url, { fragment: 'staff-records' });
+    this.alertService.addAlert({ type: 'success', message: `${this.data.worker.nameOrId} has been deleted` });
+    this.close();
+  }
 
-      if (this.form.valid) {
-        const deleteReason = reason.value
-          ? {
-              reason: {
-                id: parseInt(reason.value, 10),
-                ...(details.value && {
-                  other: details.value,
-                }),
-              },
-            }
-          : null;
+  private onError(error): void {
+    console.log(error);
+  }
 
-        this.subscriptions.add(
-          this.workerService.deleteWorker(this.worker.uid, deleteReason).subscribe(() => {
-            this.subscriptions.add(
-              this.establishmentService.postStaff(this.totalStaff - 1).subscribe(null, null, resolve)
-            );
-          }, reject)
-        );
-      } else {
-        if (details.errors.maxLength) {
-          this.messageService.show(
-            'error',
-            `Other Details can not be longer than ${details.errors.maxLength.requiredLength} characters`
-          );
-        }
-        reject();
-      }
-    });
+  private setupFormErrors(): void {
+    this.formErrorsMap = [
+      {
+        item: 'details',
+        type: [
+          {
+            name: 'maxLength',
+            message: `Details must be ${this.maxLength} characters or less`,
+          },
+        ],
+      },
+    ];
   }
 }

@@ -1,92 +1,55 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Worker } from '@core/model/worker.model';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-british-citizenship',
   templateUrl: './british-citizenship.component.html',
 })
-export class BritishCitizenshipComponent implements OnInit, OnDestroy {
+export class BritishCitizenshipComponent extends QuestionComponent {
   public answersAvailable = ['Yes', 'No', `Don't know`];
-  public form: FormGroup;
-  public backLink: string;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
-
   constructor(
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private workerService: WorkerService,
-    private messageService: MessageService
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-  }
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
-  ngOnInit() {
     this.form = this.formBuilder.group({
-      citizenship: null,
+      britishCitizenship: null,
     });
+  }
 
-    if (this.workerService.returnToSummary) {
-      this.backLink = 'summary';
-    } else {
-      this.backLink = 'nationality';
+  init() {
+    if (this.worker.nationality && this.worker.nationality.value === 'British') {
+      this.router.navigate(this.getRoutePath('nationality'), { replaceUrl: true });
     }
 
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
-
-      if (this.worker.nationality && this.worker.nationality.value === 'British') {
-        this.router.navigate(['/worker', this.worker.uid, 'nationality'], { replaceUrl: true });
-      }
-
-      if (this.worker.britishCitizenship) {
-        this.form.patchValue({
-          citizenship: this.worker.britishCitizenship,
-        });
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
-  }
-
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-      this.router.navigate(['/worker', this.worker.uid, 'country-of-birth']);
-    } catch (err) {
-      // keep typescript transpiler silent
+    if (this.worker.britishCitizenship) {
+      this.form.patchValue({
+        britishCitizenship: this.worker.britishCitizenship,
+      });
     }
+
+    this.next = this.getRoutePath('country-of-birth');
+    this.previous = this.getRoutePath('nationality');
   }
 
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { citizenship } = this.form.value;
-      this.messageService.clearError();
+  generateUpdateProps() {
+    const { britishCitizenship } = this.form.value;
 
-      if (this.form.valid) {
-        const props = {
-          britishCitizenship: citizenship,
-        };
-
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        this.messageService.show('error', 'Please fill the required fields.');
-        reject();
-      }
-    });
+    return britishCitizenship
+      ? {
+          britishCitizenship,
+        }
+      : null;
   }
 }

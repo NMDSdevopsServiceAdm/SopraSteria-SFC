@@ -1,21 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { LocationSearchResponse } from '@core/model/location.model';
 
 @Injectable()
 export class LocationService {
   constructor(private http: HttpClient) {}
 
-  getAllLocations(): Observable<Location[]> {
-    return this.http.get<Location[]>('/api/locations').pipe(map(res => res));
+  public getLocationByPostCode(id: string): Observable<LocationSearchResponse> {
+    return this.http.get<LocationSearchResponse>(`/api/locations/pc/${id}`);
   }
 
-  getLocationByid(id: string): Observable<Location> {
-    return this.http.get<Location>(`/api/locations/${id}`);
+  public getLocationByLocationId(id: string): Observable<LocationSearchResponse> {
+    return this.http.get<LocationSearchResponse>(`/api/locations/lid/${id}`);
   }
 
-  getLocationByPostCode(id: string): Observable<Location[]> {
-    return this.http.get<Location[]>(`/api/locations/pc/${id}`);
+  public getAddressesByPostCode(postcode: string): Observable<LocationSearchResponse> {
+    return this.http.get<LocationSearchResponse>(`/api/postcodes/${postcode}`);
   }
 }

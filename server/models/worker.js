@@ -13,6 +13,32 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"WorkerUID"'
     },
+    LocalIdentifierValue: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      unique: true,
+      field: '"LocalIdentifierValue"'
+    },
+    LocalIdentifierSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocalIdentifierSavedAt"'
+    },
+    LocalIdentifierChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocalIdentifierChangedAt"'
+    },
+    LocalIdentifierSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocalIdentifierSavedBy"'
+    },
+    LocalIdentifierChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocalIdentifierChangedBy"'
+    },
     establishmentFk : {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -840,6 +866,68 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"CompletedChangedBy"'
     },
+    NurseSpecialismFKValue : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"NurseSpecialismFKValue"'
+    },
+    NurseSpecialismFKOther : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NurseSpecialismFKOther"'
+    },
+    NurseSpecialismFKSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NurseSpecialismFKSavedAt"'
+    },
+    NurseSpecialismFKChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NurseSpecialismFKChangedAt"'
+    },
+    NurseSpecialismFKSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NurseSpecialismFKSavedBy"'
+    },
+    NurseSpecialismFKChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NurseSpecialismFKChangedBy"'
+    },
+
+    RegisteredNurseValue: {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Adult nurse', 'Mental health nurse', 'Learning disabiliies', `Children's nurse`, 'Enrolled nurse'],
+      field: '"RegisteredNurseValue"'
+    },
+    RegisteredNurseSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"RegisteredNurseSavedAt"'
+    },
+    RegisteredNurseChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"RegisteredNurseChangedAt"'
+    },
+    RegisteredNurseSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"RegisteredNurseSavedBy"'
+    },
+    RegisteredNurseChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"RegisteredNurseChangedBy"'
+    },
+
+///////////////////////////////////////////////////
+
+
+
     created: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -870,6 +958,18 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: 'LeaveReasonOther'
     },
+    MainJobFkOther: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: 'MainJobFkOther'
+    },
+    source: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ["Online","Bulk"],
+      default: 'Online',
+      field: '"DataSource"'
+    },
   }, {
     tableName: '"Worker"',
     schema: 'cqc',
@@ -878,7 +978,7 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Worker.associate = (models) => {
-    Worker.belongsTo(models.establishment, {
+    Worker.belongsTo(models.establishment, {  
       foreignKey: 'establishmentFk',
       targetKey: 'id',
       as: 'establishment'
@@ -897,6 +997,11 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'EthnicityFkValue',
       targetKey: 'id',
       as: 'ethnicity'
+    });
+    Worker.belongsTo(models.workerNurseSpecialism, {
+      foreignKey: 'NurseSpecialismFKValue',
+      targetKey: 'id',
+      as: 'nurseSpecialism'
     });
     Worker.belongsTo(models.nationality, {
       foreignKey: 'NationalityOtherFK',

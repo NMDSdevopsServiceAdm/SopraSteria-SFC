@@ -10,7 +10,7 @@
 */node_modules
 
 # IDEs and editors
-*/.idea
+.idea
 .project
 .classpath
 .c9/
@@ -23,8 +23,8 @@
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json
-!.vscode/tasks.json
 !.vscode/launch.json
+!.vscode/tasks.json
 !.vscode/extensions.json
 .vs/*
 
@@ -45,4 +45,12 @@ Thumbs.db
 # node v10+ c8 coverage reporting
 /coverage
 
-package-lock.json
+./package-lock.json
+*/package-lock.json
+
+# localhost config variations
+/server/config/localhost.*.yaml
+/server/config/localhost-*.yaml
+
+// nodemon localisations
+nodemon.json

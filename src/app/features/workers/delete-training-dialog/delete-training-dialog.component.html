@@ -1,15 +1,14 @@
-<h1 class="pb-5">You are about to delete the following training record.</h1>
+<h1 id="dialogHeading" class="govuk-heading-l">You are about to delete the following training record.</h1>
 
-{{ trainingRecord | json }}
 <dl class="govuk-summary-list govuk-summary-list--no-border">
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Staff Record
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ data.nameOrId }}
-        </dd>
-      </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Staff Record
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.nameOrId }}
+    </dd>
+  </div>
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       Training name
@@ -28,9 +27,7 @@
   </div>
 </dl>
 
-<div class="btn-container container">
-  <div class="row">
-    <button type="button" class="btn btn-primary" (click)="close(true)">Delete training record</button>
-    <button type="button" class="btn btn-link btn-link-no-underline" (click)="close(false)">Cancel</button>
-  </div>
-</div>
+<button type="submit" class="govuk-button" (click)="close(true)">Delete training record</button>
+<button type="button" class="govuk-button govuk-button--link govuk-util__float-right" (click)="close(false)">
+  Cancel
+</button>

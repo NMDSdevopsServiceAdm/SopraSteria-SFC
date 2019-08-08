@@ -1,37 +1,30 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
+import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-leavers',
   templateUrl: './confirm-leavers.component.html',
 })
 export class ConfirmLeaversComponent implements OnInit, OnDestroy {
-  private subscriptions = [];
+  public establishment: Establishment;
+  public next: URLStructure;
+  public return: URLStructure;
+  private subscriptions: Subscription = new Subscription();
 
-  total: number;
-
-  constructor(private router: Router, private establishmentService: EstablishmentService) {}
+  constructor(private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
-    this.subscriptions.push(
-      this.establishmentService
-        .getJobs()
-        .pipe(map(jobs => jobs.TotalLeavers))
-        .subscribe(total => (this.total = total))
-    );
+    this.establishment = this.establishmentService.establishment;
+
+    this.return = this.establishmentService.returnTo;
+
+    this.next = this.return ? this.return : { url: ['/workplace', this.establishment.uid, 'check-answers'] };
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-  }
-
-  makeChangeHandler() {
-    this.router.navigate(['/workplace', 'leavers']);
-  }
-
-  submitHandler() {
-    this.router.navigate(['/dashboard']);
+    this.subscriptions.unsubscribe();
   }
 }

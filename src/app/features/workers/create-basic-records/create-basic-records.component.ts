@@ -1,40 +1,48 @@
-import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Contracts } from '@core/constants/contracts.enum';
+import { Contracts } from '@core/model/contracts.enum';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { Worker } from '@core/model/worker.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { isNull } from 'util';
 
 @Component({
   selector: 'app-create-basic-records',
   templateUrl: './create-basic-records.component.html',
-  styleUrls: ['./create-basic-records.component.scss'],
 })
 export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
-  public contractsAvailable: Array<string> = [];
-  public jobsAvailable: Job[] = [];
+  public workplace: Establishment;
+  public contracts: Array<string> = [];
+  public jobs: Job[] = [];
   public totalStaff: number;
   public totalWorkers = 0;
   public form: FormGroup;
   public submitted = false;
   private subscriptions: Subscription = new Subscription();
+  private otherJobRoleCharacterLimit = 120;
 
   constructor(
-    private establishmentService: EstablishmentService,
-    private workerService: WorkerService,
-    private jobService: JobService,
-    private messageService: MessageService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private elementRef: ElementRef
+    private backService: BackService,
+    private establishmentService: EstablishmentService,
+    private jobService: JobService,
+    private workerService: WorkerService,
+    private errorSummaryService: ErrorSummaryService
   ) {
     this.addStaffRecord = this.addStaffRecord.bind(this);
+
+    this.form = this.formBuilder.group({
+      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()]),
+    });
   }
 
   get displayAddMore() {
@@ -53,68 +61,55 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     );
   }
 
+  showOtherField(id: number): boolean {
+    const selectedjob = this.jobs.find(job => job.id === +id);
+    return selectedjob && selectedjob.other;
+  }
+
   ngOnInit() {
+    this.workplace = this.establishmentService.establishment;
     this.subscriptions.add(
-      this.establishmentService.getStaff().subscribe(establishmentStaff => {
+      this.establishmentService.getStaff(this.workplace.uid).subscribe(establishmentStaff => {
         this.totalStaff = establishmentStaff ? establishmentStaff : 0;
       })
     );
 
     this.subscriptions.add(
-      this.workerService.getAllWorkers().subscribe(workers => {
+      this.workerService.getAllWorkers(this.workplace.uid).subscribe(workers => {
         this.totalWorkers = workers ? workers.length : 0;
       })
     );
 
-    this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
-    this.contractsAvailable = Object.values(Contracts);
+    this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobs = jobs)));
+    this.contracts = Object.values(Contracts);
 
-    this.form = this.formBuilder.group({
-      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()]),
+    this.backService.setBackLink({
+      url: ['/workplace', this.workplace.uid, 'staff-record', 'basic-records-start-screen'],
     });
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
   }
 
-  createStaffRecordsItem(): FormGroup {
-    return this.formBuilder.group({
-      nameOrId: [null, Validators.required],
-      mainJob: [null, Validators.required],
-      contract: [null, Validators.required],
-      uid: null,
-      active: true,
-    });
+  public openStaffRecord(event: Event, index: number) {
+    event.preventDefault();
+    this._openStaffRecord(index);
   }
 
-  openStaffRecord(index: number) {
-    this.closeStaffRecords();
-    this.staffRecordsControl.controls[index].patchValue({ active: true });
-    setTimeout(() => {
-      this.elementRef.nativeElement.querySelector(`.staff-record:nth-of-type(${index + 1})`).scrollIntoView(true);
-    });
-  }
-
-  closeStaffRecords() {
-    this.staffRecordsControl.controls.forEach(control => {
-      control.patchValue({ active: false });
-    });
-  }
-
-  addStaffRecord() {
+  public addStaffRecord() {
     this.closeStaffRecords();
     this.staffRecordsControl.push(this.createStaffRecordsItem());
   }
 
-  deleteStaffRecord(index: number) {
+  public deleteStaffRecord(event: Event, index: number) {
+    event.preventDefault();
     const staffRecord = <FormGroup>this.staffRecordsControl.controls[index];
-    const uid = staffRecord.controls.uid.value;
+    const { uid } = staffRecord.value;
 
     if (uid) {
       this.subscriptions.add(
-        this.workerService.deleteWorker(staffRecord.controls.uid.value).subscribe(() => {
+        this.workerService.deleteWorker(this.workplace.uid, uid).subscribe(() => {
           this.staffRecordsControl.controls.splice(index, 1);
         })
       );
@@ -123,63 +118,127 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     }
   }
 
-  submitHandler() {
-    this.submitted = true;
+  private createStaffRecordsItem(): FormGroup {
+    return this.formBuilder.group({
+      nameOrId: [null, Validators.required],
+      mainJobRole: [null, Validators.required],
+      otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
+      contract: [null, Validators.required],
+      uid: null,
+      active: true,
+    });
+  }
 
+  private _openStaffRecord(index: number) {
+    this.closeStaffRecords();
+    this.staffRecordsControl.controls[index].patchValue({ active: true });
+  }
+
+  private closeStaffRecords() {
+    this.staffRecordsControl.controls.forEach(control => {
+      control.patchValue({ active: false });
+    });
+    this.submitted = false;
+  }
+
+  submitHandler() {
     if (this.form.valid || this.staffRecordsControl.length === 0) {
-      this.workerService.setCreateStaffResponse(this.staffRecordsControl.length);
-      this.router.navigate(['/worker', 'basic-records-save-success']);
+      this.workerService.setCreateStaffResponse(
+        this.staffRecordsControl.controls.filter(record => record.get('uid').value).length
+      );
+      this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'basic-records-save-success']);
     } else {
       const unsavedIndex = this.staffRecordsControl.controls.findIndex(control => {
         return isNull(control.get('uid').value);
       });
 
       if (unsavedIndex >= 0) {
-        this.openStaffRecord(unsavedIndex);
+        this._openStaffRecord(unsavedIndex);
         this.saveStaffRecord(unsavedIndex);
-      } else {
-        this.elementRef.nativeElement.querySelector('form').scrollIntoView(true);
       }
     }
   }
 
-  async saveStaffRecord(index: number) {
+  public saveStaffRecord(index: number) {
+    this.submitted = true;
+
     const staffRecord = <FormGroup>this.staffRecordsControl.controls[index];
 
     Object.keys(staffRecord.controls).forEach(key => {
       staffRecord.get(key).markAsTouched();
     });
 
-    try {
-      if (staffRecord.valid) {
-        await this.saveHandler(staffRecord);
-        this.closeStaffRecords();
-      }
-    } catch (err) {}
-  }
+    if (staffRecord.invalid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
 
-  saveHandler(staffRecord): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { nameOrId, contract, mainJob, uid } = staffRecord.controls;
+    if (staffRecord.valid) {
+      const { nameOrId, contract, mainJobRole, otherJobRole, uid } = staffRecord.controls;
 
       const props = {
         nameOrId: nameOrId.value,
         contract: contract.value,
         mainJob: {
-          jobId: parseInt(mainJob.value, 10),
+          jobId: parseInt(mainJobRole.value, 10),
+          ...(otherJobRole.value && { other: otherJobRole.value }),
         },
       };
 
       if (!isNull(uid.value)) {
-        this.subscriptions.add(this.workerService.updateWorker(uid.value, props).subscribe(resolve, reject));
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.workplace.uid, uid.value, props).subscribe(
+            () => this.closeStaffRecords(),
+            error => {
+              console.log(error);
+            }
+          )
+        );
       } else {
         this.subscriptions.add(
-          this.workerService.createWorker(props as Worker).subscribe(data => {
-            staffRecord.patchValue({ uid: data.uid });
-            resolve();
-          }, reject)
+          this.workerService.createWorker(this.workplace.uid, props as Worker).subscribe(
+            data => {
+              staffRecord.patchValue({ uid: data.uid });
+              this.closeStaffRecords();
+            },
+            error => {
+              console.log(error);
+            }
+          )
         );
       }
-    });
+    }
+  }
+
+  get formErrorsMap(): Array<ErrorDetails> {
+    return [
+      {
+        item: 'staffRecords.nameOrId',
+        type: [
+          {
+            name: 'required',
+            message: 'Full name or ID number is required.',
+          },
+        ],
+      },
+      {
+        item: 'staffRecords.mainJobRole',
+        type: [
+          {
+            name: 'required',
+            message: 'Main job role is required.',
+          },
+        ],
+      },
+      {
+        item: 'staffRecords.contract',
+        type: [
+          {
+            name: 'required',
+            message: 'Type of contract is required.',
+          },
+        ],
+      },
+    ];
   }
 }

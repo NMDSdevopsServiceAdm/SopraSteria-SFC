@@ -2,7 +2,6 @@ const config = require('../../config/config');
 const uuid = require('uuid');
 
 const GovNotifyClient = require('notifications-node-client').NotifyClient;
-const notifyClient = new GovNotifyClient(config.get('notify.key'));
 
 const REPLY_TO_ID = config.get('notify.replyTo');
 
@@ -19,6 +18,7 @@ exports.sendPasswordReset = async (emailAddress, name, resetUuid) => {
   }
 
   try {
+    const notifyClient = new GovNotifyClient(config.get('notify.key'));
     const response = await notifyClient.sendEmail(
       config.get('notify.templates.resetPassword'),
       emailAddress,
@@ -54,6 +54,7 @@ exports.sendAddUser = async (emailAddress, name, addUserUuid) => {
   }
 
   try {
+    const notifyClient = new GovNotifyClient(config.get('notify.key'));
     const response = await notifyClient.sendEmail(
       config.get('notify.templates.addUser'),
       emailAddress,

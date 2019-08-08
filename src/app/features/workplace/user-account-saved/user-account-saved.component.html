@@ -1,0 +1,19 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-l">User account saved</h1>
+    <p>
+      An email has been sent to the address provided containing a link to complete the set up of the account.
+    </p>
+    <div class="govuk-button-group">
+      <a
+        role="button"
+        draggable="false"
+        class="govuk-button"
+        [routerLink]="(returnUrl$ | async)?.url"
+        [fragment]="'user-accounts'"
+      >
+        Return to user accounts
+      </a>
+    </div>
+  </div>
+</div>

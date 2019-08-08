@@ -1,17 +1,23 @@
-<div class="sub-page-container col-8">
-  <app-panel title="&#10003; Success">
-    The staff record has<br />
-    been saved
-  </app-panel>
-  <h4 class="h4">What you can do next?</h4>
-  <p>You can add more staff records, or return to your homepage</p>
-  <div class="btn-container container">
-    <div class="row">
-      <a routerLink="/worker/create-staff-record" role="button" class="btn btn-primary">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <app-panel [title]="'&#10003; Success'">
+      The staff record has<br />
+      been saved
+    </app-panel>
+    <h2 class="govuk-heading-m">What you can do next?</h2>
+    <p>You can add more staff records, or return to your homepage</p>
+    <div class="govuk-button-group">
+      <a class="govuk-button" role="button" draggable="false" [routerLink]="['../../create-staff-record']">
         Add another staff record
       </a>
-      <a routerLink="/dashboard" fragment="staff-records" role="button" class="text-link ml-4">
-        Return to dashboard
+      <a
+        class="govuk-button govuk-button--link govuk-!-margin-left-8"
+        role="button"
+        draggable="false"
+        [routerLink]="return.url"
+        [fragment]="'staff-records'"
+      >
+        Return to {{ return.label }}
       </a>
     </div>
   </div>

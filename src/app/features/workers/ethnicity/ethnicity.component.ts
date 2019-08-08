@@ -1,61 +1,59 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Worker } from '@core/model/worker.model';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EthnicityService } from '@core/services/ethnicity.service';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-ethnicity',
   templateUrl: './ethnicity.component.html',
 })
-export class EthnicityComponent implements OnInit, OnDestroy {
+export class EthnicityComponent extends QuestionComponent {
   public ethnicities: any = {};
-  public form: FormGroup;
-  public backLink: string;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private workerService: WorkerService,
-    private ethnicityService: EthnicityService,
-    private messageService: MessageService,
-    private formBuilder: FormBuilder,
-    private router: Router
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService,
+    private ethnicityService: EthnicityService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-  }
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
-  ngOnInit() {
+    this.subscriptions.add(this.ethnicityService.getEthnicities().subscribe(res => (this.ethnicities = res.byGroup)));
+
     this.form = this.formBuilder.group({
       ethnicity: null,
     });
-
-    if (this.workerService.returnToSummary) {
-      this.backLink = 'summary';
-    } else {
-      this.backLink = 'disability';
-    }
-
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
-
-      if (this.worker.ethnicity) {
-        this.form.patchValue({
-          ethnicity: this.worker.ethnicity.ethnicityId,
-        });
-      }
-    });
-
-    this.subscriptions.add(this.ethnicityService.getEthnicities().subscribe(res => (this.ethnicities = res.byGroup)));
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
+  init() {
+    if (this.worker.ethnicity) {
+      this.form.patchValue({
+        ethnicity: this.worker.ethnicity.ethnicityId,
+      });
+    }
+
+    this.next = this.getRoutePath('nationality');
+    this.previous = this.getRoutePath('disability');
+  }
+
+  generateUpdateProps() {
+    const { ethnicity } = this.form.value;
+
+    return ethnicity
+      ? {
+          ethnicity: {
+            ethnicityId: parseInt(ethnicity, 10),
+          },
+        }
+      : null;
   }
 
   ethnicitiesUngrouped() {
@@ -64,41 +62,5 @@ export class EthnicityComponent implements OnInit, OnDestroy {
 
   ethnicityGroups() {
     return Object.keys(this.ethnicities).filter(e => e.length);
-  }
-
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-      this.router.navigate(['/worker', this.worker.uid, 'nationality']);
-    } catch (err) {
-      // keep typescript transpiler silent
-    }
-  }
-
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { ethnicity } = this.form.value;
-      this.messageService.clearError();
-
-      if (this.form.valid) {
-        const props = {
-          ...(ethnicity && {
-            ethnicity: {
-              ethnicityId: parseInt(ethnicity, 10),
-            },
-          }),
-        };
-
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        this.messageService.show('error', 'Please fill the required fields.');
-        reject();
-      }
-    });
   }
 }

@@ -6,9 +6,8 @@ describe('MentalHealthProfessionalComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MentalHealthProfessionalComponent ]
-    })
-    .compileComponents();
+      declarations: [MentalHealthProfessionalComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

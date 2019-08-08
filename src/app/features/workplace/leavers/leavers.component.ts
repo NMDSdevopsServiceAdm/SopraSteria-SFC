@@ -1,184 +1,222 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import { MessageService } from '@core/services/message.service';
+import { take } from 'rxjs/operators';
+
+import { Question } from '../question/question.component';
 
 @Component({
   selector: 'app-leavers',
   templateUrl: './leavers.component.html',
-  styleUrls: ['./leavers.component.scss'],
 })
-export class LeaversComponent implements OnInit, OnDestroy {
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private jobService: JobService,
-    private establishmentService: EstablishmentService,
-    private messageService: MessageService
-  ) {
-    this.validatorRecordTotal = this.validatorRecordTotal.bind(this);
-    this.validatorRecordJobId = this.validatorRecordJobId.bind(this);
-  }
-
-  form: FormGroup;
-  total = 0;
-  jobsAvailable: Job[] = [];
-
-  private subscriptions = [];
-
-  noRecordsReasons = [
+export class LeaversComponent extends Question implements OnInit, OnDestroy {
+  public total = 0;
+  public jobs: Job[] = [];
+  public leaversKnownOptions = [
     {
       label: 'There have been no new leavers.',
-      value: 'no-new',
+      value: jobOptionsEnum.NONE,
     },
     {
       label: `I don't know how many new leavers there have been.`,
-      value: 'dont-know',
+      value: jobOptionsEnum.DONT_KNOW,
     },
   ];
+  private minTotal = 0;
+  private maxTotal = 999;
 
-  submitHandler(): void {
-    const { recordsControl, noRecordsReason } = this.form.controls;
-    if (this.form.valid || noRecordsReason.value === 'no-new' || noRecordsReason.value === 'dont-know') {
-      // regardless of which option is chosen, must always submit to backend
-      let leaversToSubmit = null;
-      let nextStepNavigation = null;
+  constructor(
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    private jobService: JobService
+  ) {
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
-      if (noRecordsReason.value === 'dont-know') {
-        leaversToSubmit = `Don't know`;
-        nextStepNavigation = '/dashboard';
-      } else if (noRecordsReason.value === 'no-new') {
-        leaversToSubmit = 'None';
-        nextStepNavigation = '/dashboard';
-      } else {
-        // default being to send the set of all the current jobs which then need to be confirmed.
-        leaversToSubmit = recordsControl.value.map(v => ({ jobId: parseInt(v.jobId, 10), total: v.total }));
-        nextStepNavigation = '/workplace/confirm-leavers';
-      }
+    this.setupForm();
+  }
 
-      this.subscriptions.push(
-        this.establishmentService.postLeavers(leaversToSubmit).subscribe(() => {
-          this.router.navigate([nextStepNavigation]);
-        })
+  get leavers(): FormArray {
+    return <FormArray>this.form.get('leavers');
+  }
+
+  get allJobsSelected(): boolean {
+    return this.leavers.length >= this.jobs.length;
+  }
+
+  get totalLeavers(): number {
+    return this.leavers.value.reduce((total, current) => (total += current.total ? current.total : 0), 0);
+  }
+
+  protected init(): void {
+    this.getJobs();
+    this.setPreviousRoute();
+    this.prefill();
+
+    this.subscriptions.add(
+      this.form.get('leaversKnown').valueChanges.subscribe(value => {
+        while (this.leavers.length > 1) {
+          this.leavers.removeAt(1);
+        }
+
+        this.clearValidators(0);
+        this.leavers.reset([], { emitEvent: false });
+
+        this.form.get('leaversKnown').setValue(value, { emitEvent: false });
+      })
+    );
+
+    this.subscriptions.add(
+      this.leavers.valueChanges.subscribe(() => {
+        this.leavers.controls[0].get('jobRole').setValidators([Validators.required]);
+        this.leavers.controls[0]
+          .get('total')
+          .setValidators([Validators.required, Validators.min(this.minTotal), Validators.max(this.maxTotal)]);
+
+        this.form.get('leaversKnown').setValue(null, { emitEvent: false });
+      })
+    );
+  }
+
+  private setupForm(): void {
+    this.form = this.formBuilder.group({
+      leavers: this.formBuilder.array([]),
+      leaversKnown: null,
+    });
+  }
+
+  private setPreviousRoute(): void {
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'starters'];
+  }
+
+  private getJobs(): void {
+    this.subscriptions.add(
+      this.jobService
+        .getJobs()
+        .pipe(take(1))
+        .subscribe(jobs => (this.jobs = jobs))
+    );
+  }
+
+  private prefill(): void {
+    if (Array.isArray(this.establishment.leavers) && this.establishment.leavers.length) {
+      this.establishment.leavers.forEach(leaver =>
+        this.leavers.push(this.createLeaverControl(leaver.jobId, leaver.total))
       );
     } else {
-      this.messageService.clearError();
-      this.messageService.show('error', 'Please fill the required fields.');
+      this.leavers.push(this.createLeaverControl());
+      if (
+        this.establishment.leavers === jobOptionsEnum.NONE ||
+        this.establishment.leavers === jobOptionsEnum.DONT_KNOW
+      ) {
+        this.form.get('leaversKnown').setValue(this.establishment.leavers);
+        this.clearValidators(0);
+      }
     }
   }
 
-  jobsLeft(idx) {
-    const recordsControl = <FormArray>this.form.controls.recordsControl;
-    const thisRecord = recordsControl.controls[idx];
-    return this.jobsAvailable.filter(
-      j => !recordsControl.controls.some(v => v !== thisRecord && parseFloat(v.value.jobId) === j.id)
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'leavers.jobRole',
+        type: [
+          {
+            name: 'required',
+            message: 'Job Role is required',
+          },
+        ],
+      },
+      {
+        item: 'leavers.total',
+        type: [
+          {
+            name: 'required',
+            message: 'Total is required',
+          },
+          {
+            name: 'min',
+            message: `Total must be ${this.minTotal} or above`,
+          },
+          {
+            name: 'max',
+            message: `Total must be ${this.maxTotal} or lower`,
+          },
+        ],
+      },
+    ];
+  }
+
+  public selectableJobs(index): Job[] {
+    return this.jobs.filter(
+      job =>
+        !this.leavers.controls.some(
+          leaver => leaver !== this.leavers.controls[index] && parseInt(leaver.get('jobRole').value, 10) === job.id
+        )
     );
   }
 
-  addRecord(): void {
-    const recordsControl = <FormArray>this.form.controls.recordsControl;
-
-    recordsControl.push(this.createRecordItem());
+  public addLeaver(): void {
+    this.leavers.push(this.createLeaverControl());
   }
 
-  isJobsNotTakenLeft() {
-    return this.jobsAvailable.length !== this.form.controls.recordsControl.value.length;
+  public removeLeaver(event: Event, index): void {
+    event.preventDefault();
+    this.leavers.removeAt(index);
   }
 
-  removeRecord(index): void {
-    (<FormArray>this.form.controls.recordsControl).removeAt(index);
-  }
-
-  validatorRecordTotal(control) {
-    return control.value !== null || this.form.controls.noRecordsReason.value.length ? {} : { total: true };
-  }
-
-  validatorRecordJobId(control) {
-    return control.value !== null || this.form.controls.noRecordsReason.value.length ? {} : { jobId: true };
-  }
-
-  createRecordItem(jobId = null, total = null): FormGroup {
-    return this.fb.group({
-      jobId: [jobId, this.validatorRecordJobId],
-      total: [total, this.validatorRecordTotal],
+  private createLeaverControl(jobId = null, total = null): FormGroup {
+    return this.formBuilder.group({
+      jobRole: [jobId, [Validators.required]],
+      total: [total, [Validators.required, Validators.min(this.minTotal), Validators.max(this.maxTotal)]],
     });
   }
 
-  calculateTotal(records) {
-    return records.reduce((acc, i) => (acc += parseInt(i.total, 10) || 0), 0) || 0;
+  protected generateUpdateProps(): UpdateJobsRequest {
+    const { leaversKnown } = this.form.value;
+
+    if (leaversKnown === jobOptionsEnum.NONE || leaversKnown === jobOptionsEnum.DONT_KNOW) {
+      return { leavers: leaversKnown };
+    }
+
+    if (this.leavers.length) {
+      return {
+        leavers: this.leavers.value.map(leaver => ({
+          jobId: parseInt(leaver.jobRole, 10),
+          total: leaver.total,
+        })),
+      };
+    }
+
+    return null;
   }
 
-  ngOnInit() {
-    this.subscriptions.push(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
-
-    this.form = this.fb.group({
-      recordsControl: this.fb.array([]),
-      noRecordsReason: '',
-    });
-
-    const recordsControl = <FormArray>this.form.controls.recordsControl;
-
-    this.subscriptions.push(
-      this.establishmentService.getLeavers().subscribe(leavers => {
-        if (leavers === 'None') {
-          // Even if "None" option, want a single job role shown
-          recordsControl.push(this.createRecordItem());
-
-          this.form.patchValue({ noRecordsReason: 'no-new' }, { emitEvent: true });
-        } else if (leavers === `Don't know`) {
-          // Even if "Don'#t know" option on restore, want a single job role shown
-          recordsControl.push(this.createRecordItem());
-
-          this.form.patchValue({ noRecordsReason: 'dont-know' }, { emitEvent: true });
-        } else if (Array.isArray(leavers) && leavers.length) {
-          leavers.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)));
-        } else {
-          // If no options and no leavers (the value has never been set) - just the default (select job) drop down
-          recordsControl.push(this.createRecordItem());
-        }
-      })
-    );
-
-    this.total = this.calculateTotal(recordsControl.value);
-
-    this.subscriptions.push(
-      recordsControl.valueChanges.subscribe(value => {
-        this.total = this.calculateTotal(value);
-
-        if (document.activeElement && document.activeElement.getAttribute('type') !== 'radio') {
-          this.form.patchValue(
-            {
-              noRecordsReason: '',
-            },
-            { emitEvent: false }
-          );
-        }
-      })
-    );
-
-    this.subscriptions.push(
-      this.form.controls.noRecordsReason.valueChanges.subscribe(() => {
-        while (recordsControl.length > 1) {
-          recordsControl.removeAt(1);
-        }
-
-        recordsControl.reset([], { emitEvent: false });
-        this.total = 0;
-      })
-    );
-
-    this.subscriptions.push(
-      this.form.valueChanges.subscribe(() => {
-        this.messageService.clearAll();
-      })
+  protected updateEstablishment(props: UpdateJobsRequest): void {
+    this.subscriptions.add(
+      this.establishmentService
+        .updateJobs(this.establishment.uid, props)
+        .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-    this.messageService.clearAll();
+  protected onSuccess(): void {
+    if (this.establishment.leavers && Array.isArray(this.establishment.leavers)) {
+      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-leavers']);
+      this.submitAction.action = null;
+    } else {
+      this.next = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
+    }
+  }
+
+  private clearValidators(index: number) {
+    this.leavers.controls[index].get('jobRole').clearValidators();
+    this.leavers.controls[index].get('total').clearValidators();
   }
 }

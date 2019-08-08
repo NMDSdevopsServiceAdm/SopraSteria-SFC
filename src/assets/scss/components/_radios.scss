@@ -1,0 +1,4 @@
+.govuk-radios__item,
+.govuk-radios__divider {
+  @include govuk-responsive-margin(4, "bottom");
+}

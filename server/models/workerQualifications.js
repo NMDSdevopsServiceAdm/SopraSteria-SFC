@@ -25,6 +25,13 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"QualificationsFK"'
     },
+    source: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ["Online","Bulk"],
+      default: 'Online',
+      field: '"DataSource"'
+    },
     year : {
       type: DataTypes.INTEGER,
       allowNull: true,

@@ -1,11 +1,24 @@
-<div class="panel panel-border-narrow ml-0 col-10 col-lg-6">
-  <div class="form-group" [formGroup]="group">
-    <div class="field-group">
-      <label for="name">{{ type.value }} name</label>
-      <div *ngIf="group.get('qualification').hasError('required')" class="alert alert-danger">
-        <p>Select a qualification</p>
-      </div>
-      <select formControlName="qualification" class="form-control">
+<ng-container [formGroup]="group">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-visually-hidden">
+      <h2 class="govuk-fieldset__heading">Qualification Type: {{ type.value }}</h2>
+    </legend>
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('qualification').invalid">
+      <label class="govuk-label" for="{{ type.key }}-qualification"> {{ type.value }} name </label>
+      <span
+        *ngIf="submitted && group.get('qualification').invalid"
+        id="{{ type.key }}-qualification-error"
+        class="govuk-error-message"
+      >
+        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('qualification') }}
+      </span>
+      <select
+        class="govuk-select"
+        [class.govuk-select--error]="submitted && group.get('qualification').invalid"
+        [formControlName]="'qualification'"
+        id="{{ type.key }}-qualification"
+        name="qualification"
+      >
         <option [ngValue]="null">Select</option>
         <option *ngIf="preselectedQualification" [value]="preselectedQualification.id"
           >{{ preselectedQualification.title }} {{ preselectedQualification?.level }}</option
@@ -16,27 +29,46 @@
       </select>
     </div>
 
-    <div class="field-group">
-      <label for="year">
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('year').invalid">
+      <label class="govuk-label" for="{{ type.key }}-year">
         Year achieved
       </label>
-      <div *ngIf="group.get('year').hasError('min')" class="alert alert-danger">
-        <p>Year achieved can not be before {{ group.get('year').getError('min').min }}</p>
-      </div>
-      <div *ngIf="group.get('year').hasError('max')" class="alert alert-danger">
-        <p>Year achieved can not be after {{ group.get('year').getError('max').max }}</p>
-      </div>
-      <input type="number" formControlName="year" class="form-control col-3" maxlength="4" />
+      <span *ngIf="submitted && group.get('year').invalid" id="{{ type.key }}-year-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('year') }}
+      </span>
+      <input
+        class="govuk-input govuk-date-input__input govuk-input--width-4"
+        [class.govuk-input--error]="submitted && group.get('year').invalid"
+        [formControlName]="'year'"
+        id="{{ type.key }}-year"
+        name="year"
+        type="number"
+        [pattern]="intPattern"
+      />
     </div>
 
-    <div class="field-group mb-5">
-      <label for="notes" class="d-block">
-        Notes
-      </label>
-      <div *ngIf="group.get('notes').hasError('maxlength')" class="alert alert-danger">
-        <p>Notes must be no longer than {{ group.get('notes').getError('maxlength').requiredLength }} characters.</p>
+    <div class="govuk-character-count">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('notes').invalid">
+        <label class="govuk-label" for="{{ type.key }}-notes">
+          Notes
+        </label>
+        <span
+          *ngIf="submitted && group.get('notes').invalid"
+          id="{{ type.key }}-notes-error"
+          class="govuk-error-message"
+        >
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
+        </span>
+        <textarea
+          class="govuk-textarea govuk-grid-column-two-thirds-from-desktop"
+          [class.govuk-textarea--error]="submitted && group.get('notes').invalid"
+          [formControlName]="'notes'"
+          id="{{ type.key }}-notes"
+          name="notes"
+          rows="5"
+        ></textarea>
       </div>
-      <textarea maxlength="500" rows="5" class="textarea main-body-text col-12" formControlName="notes" id="notes"></textarea>
+      <app-character-count [control]="group.get('notes')" [max]="notesMaxLength"></app-character-count>
     </div>
-  </div>
-</div>
+  </fieldset>
+</ng-container>

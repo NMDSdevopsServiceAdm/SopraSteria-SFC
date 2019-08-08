@@ -1,88 +1,54 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Worker } from '@core/model/worker.model';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-apprenticeship-training',
   templateUrl: './apprenticeship-training.component.html',
 })
-export class ApprenticeshipTrainingComponent implements OnInit, OnDestroy {
+export class ApprenticeshipTrainingComponent extends QuestionComponent {
   public answersAvailable = ['Yes', 'No', `Don't know`];
-  public form: FormGroup;
-  public backLink: string;
-  private subscriptions: Subscription = new Subscription();
-  private worker: Worker;
 
   constructor(
-    private workerService: WorkerService,
-    private messageService: MessageService,
-    private formBuilder: FormBuilder,
-    private router: Router
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-  }
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
-  ngOnInit() {
     this.form = this.formBuilder.group({
       apprenticeshipTraining: null,
     });
+  }
 
-    if (this.workerService.returnToSummary) {
-      this.backLink = 'summary';
-    } else {
-      this.backLink = 'care-certificate';
+  init() {
+    if (this.worker.apprenticeshipTraining) {
+      this.form.patchValue({
+        apprenticeshipTraining: this.worker.apprenticeshipTraining,
+      });
     }
 
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
-
-      if (this.worker.apprenticeshipTraining) {
-        this.form.patchValue({
-          apprenticeshipTraining: this.worker.apprenticeshipTraining,
-        });
-      }
-    });
+    this.next = this.getRoutePath('social-care-qualification');
+    this.previous = this.getRoutePath('care-certificate');
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
-  }
+  generateUpdateProps() {
+    const { apprenticeshipTraining } = this.form.value;
 
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-
-      this.router.navigate(['/worker', this.worker.uid, 'social-care-qualification']);
-    } catch (err) {
-      // keep typescript transpiler silent
+    if (!apprenticeshipTraining) {
+      return null;
     }
-  }
 
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { apprenticeshipTraining } = this.form.controls;
-      this.messageService.clearError();
-
-      if (this.form.valid) {
-        const props = {
-          apprenticeshipTraining: apprenticeshipTraining.value,
-        };
-
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        reject();
-      }
-    });
+    return {
+      apprenticeshipTraining: apprenticeshipTraining,
+    };
   }
 }

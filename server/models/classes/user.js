@@ -3,16 +3,18 @@
  *
  * The encapsulation of a User, including all properties, all specific validation (not API, but object validation),
  * saving & restoring of data to database (via sequelize model), construction and deletion.
- * 
+ *
  * Also includes representation as JSON, in one or more presentations.
  */
 const uuid = require('uuid');
 
 // database models
 const models = require('../index');
+const Sequelize = require('sequelize');
 
 // notifications
 const sendAddUserEmail = require('../../utils/email/notify-email').sendAddUser;
+const AWSKinesis = require('../../aws/kinesis');
 
 const UserExceptions = require('./user/userExceptions');
 
@@ -23,6 +25,9 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUM
 
 const bcrypt = require('bcrypt-nodejs');
 const passwordValidator = require('../../utils/security/passwordValidation').isPasswordValid;
+
+// establishment entity
+const Establishment = require('./establishment').Establishment;
 
 class User {
     constructor(establishmentId, trackingUUID=null) {
@@ -39,6 +44,9 @@ class User {
         this._username = null;
         this._password = null;
         this._isPrimary - null;
+        this._tribalId = null;
+        this._lastLogin = null;
+        this._establishmentUid = null;
 
         // abstracted properties
         const thisUserManager = new UserProperties();
@@ -46,7 +54,7 @@ class User {
 
         // change properties
         this._isNew = false;
-        
+
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
         this._logLevel = User.LOG_INFO;
@@ -72,6 +80,12 @@ class User {
     static get LOG_INFO() { return 300; }
     static get LOG_TRACE() { return 400; }
     static get LOG_DEBUG() { return 500; }
+
+    // Maximum user types
+    static get MAX_EDIT_PARENT_USERS() { return 3 }
+    static get MAX_READ_PARENT_USERS() { return 20 }
+    static get MAX_EDIT_SINGLE_USERS() { return 3 }
+    static get MAX_READ_SINGLE_USERS() { return 3 }
 
     set logLevel(logLevel) {
         this._logLevel = logLevel;
@@ -115,7 +129,7 @@ class User {
         const prop = this._properties.get('SecurityQuestion');
         return prop ? prop.property : null;
     };
-    get securityAnswer() {
+    get securityQuestionAnswer() {
         const prop = this._properties.get('SecurityQuestionAnswer');
         return prop ? prop.property : null;
     };
@@ -136,12 +150,33 @@ class User {
         return this._trackingUUID;
     }
 
+    get userRole() {
+        const prop = this._properties.get('UserRole');
+        return prop ? prop.property : null;
+    };
+
+    get lastLogin() {
+      return this._lastLogin;
+    }
+
+    get tribalId() {
+      return this._tribalId;
+    }
+
+    get establishmentUid() {
+      return this._establishmentUid;
+    }
+
+    set establishmentUid(uid) {
+      this._establishmentUid = uid;
+    }
+
     // used by save to initialise a new User; returns true if having initialised this user
     _initialise() {
         if (this._uid === null) {
             this._isNew = true;
             this._uid = uuid.v4();
-            
+
             if (!this._isEstablishmentIdValid)
                 throw new UserExceptions.UserSaveException(null,
                                                            this._uid,
@@ -272,11 +307,13 @@ class User {
 
         // now send the email
         await sendAddUserEmail(emailProperty, fullnameProperty, this._trackingUUID);
+
+        return this._trackingUUID;
     }
 
     // saves the User to DB. Returns true if saved; false if not.
     // Throws "UserSaveException" on error
-    async save(savedBy, ttl=0, externalTransaction=null) {
+    async save(savedBy, ttl=0, externalTransaction=null, firstSave=false) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -296,14 +333,11 @@ class User {
                     this._isPrimary = false;        // isPrimary is only explicitly declared on registration and it is true
                 }
 
-                console.log("WA DEBUG - saving User - isPrimary: ", this._isPrimary)
-
                 const creationDocument = {
                     establishmentId: this._establishmentId,
                     uid: this.uid,
                     updatedBy: savedBy.toLowerCase(),
                     isPrimary: this._isPrimary,
-                    isAdmin: false,
                     archived: false,
                     attributes: ['id', 'created', 'updated'],
                 };
@@ -350,7 +384,7 @@ class User {
                             },
                             {transaction: thisTransaction}
                         );
-                        
+
                         // also need to complete on the originating add user tracking record
                         const trackingResponse = await models.addUserTracking.update(
                             {
@@ -401,9 +435,13 @@ class User {
                         // need to send an email having added an "Add User" tracking record
                         await this.trackNewUser(savedBy.toLowerCase(), t, ttl);
                     }
+
+                    // this is an async method - don't wait for it to return
+                    AWSKinesis.userPump(AWSKinesis.CREATED, this.toJSON());
+
                     this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
                 });
-                
+
             } catch (err) {
                 // need to handle duplicate username
                 if (err.name && err.name === 'SequelizeUniqueConstraintError') {
@@ -422,15 +460,74 @@ class User {
                 // need to update the existing User record and add an
                 //  updated audit event within a single transaction
                 await models.sequelize.transaction(async t => {
+
                     // the saving of an User can be initiated within
                     //  an external transaction
                     const thisTransaction = externalTransaction ? externalTransaction : t;
+
+                    // Is this the intial update setup
+                    if(firstSave){
+
+                        const passwordHash = await bcrypt.hashSync(this._password, bcrypt.genSaltSync(10), null);
+                        await models.login.create(
+                            {
+                                registrationId: this._id,
+                                username: this._username,
+                                Hash: passwordHash,
+                                isActive: true,
+                                invalidAttempt: 0,
+                            },
+                            {transaction: thisTransaction}
+                        );
+
+                        // also need to complete on the originating add user tracking record
+                        const trackingResponse = await models.addUserTracking.update(
+                            {
+                                completed: this.created,        // use the very same timestamp as that which the User record was created!
+                            },
+                            {
+                                transaction: thisTransaction,
+                                where: {
+                                    uuid: this._trackingUUID,
+                                },
+                                returning: true,
+                                plain: false
+                            }
+                        );
+
+                        const allAuditEvents = [{
+                            userFk: this._id,
+                            username: savedBy.toLowerCase(),
+                            type: 'created'}];
+                        await models.userAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
+                    }
+
+                    if(this._isPrimary){
+                        // Set the existing primary to not primary
+                        await models.user.update({
+                                isPrimary: false,
+                                updated: new Date(),
+                                updatedBy: savedBy.toLowerCase()
+                            },{
+                            where: {
+                                uid: { $not: this.uid},
+                                establishmentId: this._establishmentId,
+                                archived: false,
+                                isPrimary: true
+                            },
+                            transaction: thisTransaction,
+                            returning: true,
+                            raw: true,
+                            attributes: ['id', 'updated'],
+                        });
+                    }
 
                     // now append the extendable properties
                     const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
 
                     const updateDocument = {
                         ...modifedUpdateDocument,
+                        isPrimary: this._isPrimary,
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
@@ -510,6 +607,9 @@ class User {
                         });
                         await Promise.all(createModelPromises);
 
+                        // this is an async method - don't wait for it to return
+                        AWSKinesis.userPump(AWSKinesis.UPDATED, this.toJSON());
+
                         this._log(User.LOG_INFO, `Updated User with uid (${this.uid}) and name (${this.fullname})`);
 
                     } else {
@@ -517,7 +617,7 @@ class User {
                     }
 
                 });
-                
+
             } catch (err) {
                 throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, err, `Failed to update user record with id: ${this._id}`);
             }
@@ -546,18 +646,17 @@ class User {
             //  User records associated to the given
             //   establishment
             let fetchQuery = null;
-            
+
             if (uname) {
                 // fetch by username
                 fetchQuery = {
                     where: {
-                        establishmentId: this._establishmentId,
                         archived: false,
                     },
                     include: [
                         {
                             model: models.login,
-                            attributes: ['username'],
+                            attributes: ['username', 'lastLogin'],
                             where: {
                                 username: uname
                             }
@@ -568,14 +667,13 @@ class User {
                 // fetch by username
                 fetchQuery = {
                     where: {
-                        establishmentId: this._establishmentId,
                         uid: uid,
                         archived: false,
                     },
                     include: [
                         {
                             model: models.login,
-                            attributes: ['username']
+                            attributes: ['username', 'lastLogin']
                         }
                     ]
                 };
@@ -591,10 +689,11 @@ class User {
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
+                this._tribalId = fetchResults.tribalId;
+                this._lastLogin = fetchResults.login && fetchResults.login.username  ? fetchResults.login.lastLogin : null;
 
                 // TODO: change to amanaged property
-                this._isPrimary - fetchResults.isPrimary;
-
+                this._isPrimary = fetchResults.isPrimary;
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
                 //  because ID is primay key and hence indexed
@@ -629,17 +728,128 @@ class User {
         }
     };
 
-    // deletes this User from DB
-    // Can throw "UserDeleteException"
-    async delete() {
-        throw new Error('Not implemented');
+    async delete(deletedBy, externalTransaction=null, associatedEntities=false) {
+
+        try {
+            const updatedTimestamp = new Date();
+
+            await models.sequelize.transaction(async t => {
+
+                const thisTransaction = externalTransaction ? externalTransaction : t;
+                let randomNewUsername = uuid.v4();
+                let oldUsername = this._username;
+
+                const updateDocument = {
+                    updated: updatedTimestamp,
+                    updatedBy: deletedBy,
+                    archived: true,
+                    FullNameValue: false,
+                    isPrimary: false,
+                    Username: randomNewUsername,
+                    EmailValue: '',
+                    PhoneValue: '',
+                    JobTitle: '',
+                    SecurityQuestionValue: '',
+                    SecurityQuestionAnswerValue: ''
+                };
+
+                let [updatedRecordCount, updatedRows] = await models.user.update(updateDocument,
+                                            {
+                                                returning: true,
+                                                where: {
+                                                    uid: this.uid
+                                                },
+                                                attributes: ['id', 'updated'],
+                                                transaction: thisTransaction,
+                                            });
+
+                if (updatedRecordCount === 1) {
+
+                    await models.login.update({
+                        isActive: false
+                    },{
+                    where: {
+                        registrationId: this._id
+                    },
+                    transaction: thisTransaction
+                    });
+
+                    await models.addUserTracking.update(
+                        {
+                            completed: new Date(),
+                        },
+                        {
+                            transaction: thisTransaction,
+                            where : {
+                                userFk: this._id
+                            },
+                        }
+                    );
+
+                    const auditEvent = {
+                        userFk: this._id,
+                        username: deletedBy,
+                        type: 'delete',
+                        property: 'isActive',
+                        event: {}
+                    };
+                    await models.userAudit.create(auditEvent, {transaction: thisTransaction});
+
+                    await models.sequelize.query('UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: oldUsername, usernameNew: randomNewUsername },type: models.sequelize.QueryTypes.UPDATE, transaction: thisTransaction });
+                    await models.sequelize.query('UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: oldUsername, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: thisTransaction });
+                    await models.sequelize.query('UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: oldUsername, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: thisTransaction });
+
+                    AWSKinesis.userPump(AWSKinesis.DELETED, this.toJSON());
+
+                    this._log(User.LOG_INFO, `Archived User with uid (${this._uid}) and id (${this._id})`);
+
+                } else {
+                    const nameId = this._properties.get('NameOrId');
+                    throw new UserExceptions.UserDeleteException(null,
+                                                                        this.uid,
+                                                                        null,
+                                                                        err,
+                                                                        `Failed to update (archive) user record with uid: ${this._uid}`);
+                }
+
+            });
+        } catch (err) {
+            console.log('throwing error');
+            console.log(err);
+            throw new UserExceptions.UserDeleteException(null,
+                this.uid,
+                null,
+                err,
+                `Failed to update (archive) user record with uid: ${this._uid}`);
+        }
     };
+
+
+    static async fetchUserTypeCounts(establishmentId){
+        const results = await models.user.findAll({
+            attributes: ['UserRoleValue', [Sequelize.fn('count', Sequelize.col('UserRoleValue')), 'roleCount']],
+            group: ['UserRoleValue'],
+            where: {
+                establishmentId: establishmentId,
+                archived: false
+            },
+            raw: true
+        });
+
+        const returnData = { 'Read': 0, 'Edit': 0};
+
+        results.forEach((element) => {
+            returnData[element.UserRoleValue] = Number.parseInt(element.roleCount);
+        });
+
+        return returnData;
+    }
 
     // returns a set of User based on given filter criteria (all if no filters defined) - restricted to the given Establishment
     static async fetch(establishmentId, filters=null) {
         if (filters) throw new Error("Filters not implemented");
 
-        const allUsers = [];
+        let allUsers = [];
         const fetchResults = await models.user.findAll({
             where: {
                 establishmentId: establishmentId,
@@ -649,12 +859,12 @@ class User {
                 {
                     model: models.login,
                     attributes: ['username', 'lastLogin']
-                  }
+                }
             ],
-            attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy'],
+            attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy','isPrimary'],
             order: [
                 ['updated', 'DESC']
-            ]           
+            ]
         });
 
         if (fetchResults) {
@@ -668,8 +878,18 @@ class User {
                     username: thisUser.login && thisUser.login.username ? thisUser.login.username : null,
                     created:  thisUser.created.toJSON(),
                     updated: thisUser.updated.toJSON(),
-                    updatedBy: thisUser.updatedBy
+                    updatedBy: thisUser.updatedBy,
+                    isPrimary: thisUser.isPrimary ? true : false
                 })
+            });
+
+            allUsers = allUsers.map((user) => {
+                return Object.assign(user, { status: user.username == null ? 'Pending' : 'Active'});
+            });
+
+            allUsers.sort((a, b) => {
+                if((a.status > b.status)) return -1;
+                return (new Date(b.updated) - new Date(a.updated))
             });
         }
 
@@ -731,6 +951,15 @@ class User {
             myDefaultJSON.created = this.created.toJSON();
             myDefaultJSON.updated = this.updated.toJSON();
             myDefaultJSON.updatedBy = this.updatedBy;
+            myDefaultJSON.isPrimary = (this._isPrimary) ? true : false;
+            myDefaultJSON.lastLoggedIn = this._lastLogin;
+            myDefaultJSON.establishmentId = this._establishmentId;
+            myDefaultJSON.establishmentUid = this._establishmentUid ? this._establishmentUid : undefined;
+
+            // migrated user first logged in
+            const migratedUserFirstLogin = this._tribalId !== null && this._lastLogin === null ? true : false;
+            myDefaultJSON.migratedUserFirstLogon = migratedUserFirstLogin;
+            myDefaultJSON.migratedUser = this._tribalId !== null ? true : false;
 
             // TODO: JSON schema validation
             if (showHistory && !showPropertyHistoryOnly) {
@@ -777,7 +1006,7 @@ class User {
                 attributes: ['id'],
             });
             if (referenceEstablishment && referenceEstablishment.id && referenceEstablishment.id === establishmentId) return true;
-    
+
         } catch (err) {
             console.error(err);
         }
@@ -794,7 +1023,7 @@ class User {
                 allExistAndValid = false;
                 this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid fullname');
             }
-    
+
             const jobTitle = this._properties.get('JobTitle');
             if (!(jobTitle && jobTitle.isInitialised && jobTitle.valid)) {
                 allExistAndValid = false;
@@ -852,7 +1081,7 @@ class User {
                 allExistAndValid = false;
                 this._log(User.LOG_ERROR, 'User::hasDefaultNewUserProperties - missing or invalid Username');
             }
-    
+
             // password must exist
             if (!(this._password !== null && this.isPasswordValid)) {
                 allExistAndValid = false;
@@ -864,7 +1093,18 @@ class User {
         }
 
         return allExistAndValid;
-    }
+    };
+
+    // returns the set Establishments associated to this user
+    //   the primary establishment is identified within the JWT
+    // returns false if primary establishment is not found
+    async myEstablishments(isParent, filters=null) {
+        if (filters) throw new Error("Filters not implemented");
+
+        const primaryEstablishmentId = this._establishmentId;
+
+        return await Establishment.fetchMyEstablishments(isParent, primaryEstablishmentId);
+    };
 
 };
 

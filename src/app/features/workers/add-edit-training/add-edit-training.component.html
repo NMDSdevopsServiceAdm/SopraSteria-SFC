@@ -1,144 +1,154 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a [routerLink]="['/worker', worker.uid]" fragment="qualifications-and-training">
-      <span class="arrow"></span>Back
-    </a>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            {{ trainingRecordId ? 'Edit training details' : 'Add training details' }}
+          </h1>
+        </legend>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
+          <label class="govuk-label" for="category">
+            Training Category
+          </label>
+          <span *ngIf="submitted && form.get('category').invalid" id="category-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('category') }}
+          </span>
+          <select
+            class="govuk-select"
+            [class.govuk-select--error]="submitted && form.get('category').invalid"
+            [formControlName]="'category'"
+            id="category"
+            name="category"
+          >
+            <option [ngValue]="null">Select a training category</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{ category.category }}
+            </option>
+          </select>
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
+          <label class="govuk-label" for="title">
+            Training name
+          </label>
+          <span *ngIf="submitted && form.get('title').invalid" id="title-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('title') }}
+          </span>
+          <input
+            class="govuk-input govuk-date-input__input"
+            [class.govuk-input--error]="submitted && form.get('title').invalid"
+            [formControlName]="'title'"
+            id="title"
+            name="title"
+            type="text"
+          />
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('accredited').invalid">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend">
+              Is this training accredited?
+            </legend>
+            <span *ngIf="submitted && form.get('accredited').invalid" id="accredited-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('accredited') }}
+            </span>
+            <div class="govuk-radios">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="accredited-yes" name="accredited" type="radio" value="Yes" />
+                <label class="govuk-label govuk-radios__label" for="accredited-yes">
+                  Yes
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="accredited-no" name="accredited" type="radio" value="No" />
+                <label class="govuk-label govuk-radios__label" for="accredited-no">
+                  No
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  id="accredited-dont-know"
+                  name="accredited"
+                  type="radio"
+                  value="Don't know"
+                />
+                <label class="govuk-label govuk-radios__label" for="accredited-dont-know">
+                  Don't know
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('completed').invalid">
+          <fieldset class="govuk-fieldset" aria-describedby="completed-hint" role="group">
+            <legend class="govuk-fieldset__legend">
+              Date completed
+            </legend>
+            <span id="completed-hint" class="govuk-hint">
+              For example, 31 3 1980
+            </span>
+            <span *ngIf="submitted && form.get('completed').invalid" id="completed-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('completed') }}
+            </span>
+            <app-date-picker [formGroup]="form" [formGroupName]="'completed'" [submitted]="submitted"></app-date-picker>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('expires').invalid">
+          <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
+            <legend class="govuk-fieldset__legend">
+              Expiry date
+            </legend>
+            <span id="expires-hint" class="govuk-hint">
+              For example, 31 3 1980
+            </span>
+            <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
+            </span>
+            <app-date-picker [formGroup]="form" [formGroupName]="'expires'" [submitted]="submitted"></app-date-picker>
+          </fieldset>
+        </div>
+
+        <div class="govuk-character-count">
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
+            <label class="govuk-label" for="notes">
+              Add notes
+            </label>
+            <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
+            </span>
+            <textarea
+              class="govuk-textarea"
+              [class.govuk-textarea--error]="submitted && form.get('notes').invalid"
+              [formControlName]="'notes'"
+              id="notes"
+              name="notes"
+              rows="5"
+            ></textarea>
+          </div>
+          <app-character-count [control]="form.get('notes')" [max]="notesMaxLength"></app-character-count>
+        </div>
+      </fieldset>
+    </div>
   </div>
 
-  <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
-    <header>
-      <h1 class="h1 col-12 col-lg-8">{{ trainingRecordId ? 'Edit training details' : 'Add training details' }}</h1>
-    </header>
-
-    <div class="form-group">
-      <div class="field-group mb-5">
-        <label for="category">
-          Training category
-        </label>
-        <div *ngIf="submitted && form.get('category').hasError('required')" class="alert alert-danger">
-          <p>Select a training category</p>
-        </div>
-        <select formControlName="category" class="form-control col-md-6">
-          <option [ngValue]="null">Select a training category</option>
-          <option *ngFor="let category of categories" [value]="category.id">
-            {{ category.category }}
-          </option>
-        </select>
-      </div>
-
-      <div class="field-group mb-5">
-        <label for="title">
-          Training name
-        </label>
-        <div *ngIf="submitted && form.get('title').hasError('required')" class="alert alert-danger">
-          <p>Enter a training name</p>
-        </div>
-        <div *ngIf="submitted && form.get('title').hasError('maxlength')" class="alert alert-danger">
-          <p>Training name must be no longer than {{ form.get('title').getError('maxlength').requiredLength }} characters.</p>
-        </div>
-        <input type="text" formControlName="title" class="form-control col-md-6" maxlength="120" />
-      </div>
-
-      <div class="field-group mb-5">
-        <label for="accredited" class="d-block">
-          Is this training accredited?
-        </label>
-        <div *ngIf="submitted && form.get('accredited').hasError('required')" class="alert alert-danger">
-          <p>Select if training is accredited</p>
-        </div>
-        <div class="multiple-choice">
-          <input type="radio" formControlName="accredited" class="form-control" value="Yes" id="accredited-yes" />
-          <label for="accredited-yes">Yes</label>
-        </div>
-        <div class="multiple-choice mb-5">
-          <input type="radio" formControlName="accredited" class="form-control" value="No" id="accredited-no" />
-          <label for="accredited-no">No</label>
-        </div>
-        <div class="multiple-choice mb-5">
-          <input
-            type="radio"
-            formControlName="accredited"
-            class="form-control"
-            value="Don't know"
-            id="accredited-dont-know"
-          />
-          <label for="accredited-dont-know">Don't Know</label>
-        </div>
-      </div>
-
-      <div class="field-group mb-5">
-        <label class="d-block">
-          Date completed
-        </label>
-        <div *ngIf="submitted && form.get('completed').hasError('required')" class="alert alert-danger">
-          <p>Enter the date when the training was completed</p>
-        </div>
-        <div *ngIf="submitted && form.get('completed').hasError('dateValid')" class="alert alert-danger">
-          <p>Date completed is not a valid date</p>
-        </div>
-        <div *ngIf="submitted && form.get('completed').hasError('pastDate')" class="alert alert-danger">
-          <p>Date completed can not be a date in the future</p>
-        </div>
-        <div *ngIf="submitted && form.get('completed').hasError('minDate')" class="alert alert-danger">
-          <p>Date completed can not be more that 100 years in the past</p>
-        </div>
-        <div *ngIf="submitted && form.hasError('completedRequired')" class="alert alert-danger">
-          <p>Date completed is required if expiry date is entered</p>
-        </div>
-        <p class="page-input-info">For example, 31 3 1980</p>
-        <app-date-picker [formGroup]="form.get('completed')"></app-date-picker>
-      </div>
-
-      <div class="field-group mb-5">
-        <label class="d-block">
-          Expiry date
-        </label>
-        <div *ngIf="submitted && form.get('expires').hasError('dateValid')" class="alert alert-danger">
-          <p>Expiry date is not a valid date</p>
-        </div>
-        <div *ngIf="submitted && form.get('expires').hasError('pastDate')" class="alert alert-danger">
-          <p>Expiry date can not be a date in the future</p>
-        </div>
-        <div *ngIf="submitted && form.get('expires').hasError('minDate')" class="alert alert-danger">
-          <p>Expiry date can not be more that 100 years in the past</p>
-        </div>
-        <div *ngIf="submitted && form.hasError('expiresBeforeCompleted')" class="alert alert-danger">
-          <p>Expiry date must be after date completed</p>
-        </div>
-        <p class="page-input-info">For example, 31 3 1980</p>
-        <app-date-picker [formGroup]="form.get('expires')"></app-date-picker>
-      </div>
-
-      <div class="field-group mb-5">
-        <label for="notes" class="d-block">
-          Add notes
-        </label>
-        <div *ngIf="submitted && form.get('notes').hasError('maxlength')" class="alert alert-danger">
-          <p>Notes must be no longer than {{ form.get('notes').getError('maxlength').requiredLength }} characters.</p>
-        </div>
-        <textarea
-          maxlength="1000"
-          rows="5"
-          class="textarea main-body-text col-md-8 col-lg-6"
-          formControlName="notes"
-          id="notes"
-        ></textarea>
-      </div>
-    </div>
-
-    <div class="btn-container container">
-      <div class="row">
-        <button type="submit" class="btn btn-primary">
-          {{ trainingRecordId ? 'Update training' : 'Add training' }}
-        </button>
-        <a
-          [routerLink]="['/worker', worker.uid]"
-          fragment="qualifications-and-training"
-          class="btn btn-link btn-link-no-underline col-md-3"
-        >
-          Cancel
-        </a>
-      </div>
-    </div>
-  </form>
-</div>
+  <div class="govuk-button-group">
+    <button type="submit" class="govuk-button">
+      {{ trainingRecordId ? 'Update training' : 'Add training' }}
+    </button>
+    <a
+      class="govuk-button govuk-button__link govuk-util__float-right"
+      role="button"
+      draggable="false"
+      [routerLink]="['../']"
+      [fragment]="'qualifications-and-training'"
+    >
+      Cancel
+    </a>
+  </div>
+</form>

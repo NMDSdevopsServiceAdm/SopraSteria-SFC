@@ -8,9 +8,8 @@ describe('TotalStaffPanelComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TotalStaffPanelComponent ]
-    })
-    .compileComponents();
+      declarations: [TotalStaffPanelComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

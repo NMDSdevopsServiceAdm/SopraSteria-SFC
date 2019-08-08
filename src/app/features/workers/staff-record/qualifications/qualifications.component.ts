@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import { Qualification } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
@@ -15,6 +16,7 @@ import { take } from 'rxjs/operators';
 })
 export class QualificationsComponent implements OnInit {
   @Input() worker: Worker;
+  @Input() workplace: Establishment;
   public lastUpdated: moment.Moment;
   public qualifications: Qualification[];
 
@@ -32,8 +34,8 @@ export class QualificationsComponent implements OnInit {
     });
     dialog.afterClosed.pipe(take(1)).subscribe(confirm => {
       if (confirm) {
-        this.workerService.deleteQualification(this.worker.uid, record.uid).subscribe(() => {
-          this.workerService.setQualificationDeleted(true);
+        this.workerService.deleteQualification(this.workplace.uid, this.worker.uid, record.uid).subscribe(() => {
+          this.workerService.alert = { type: 'success', message: 'Qualification has been deleted' };
           this.fetchAllRecords();
         });
       }
@@ -41,7 +43,7 @@ export class QualificationsComponent implements OnInit {
   }
 
   fetchAllRecords() {
-    this.workerService.getQualifications(this.worker.uid).subscribe(data => {
+    this.workerService.getQualifications(this.workplace.uid, this.worker.uid).subscribe(data => {
       this.lastUpdated = moment(data.lastUpdated);
       this.qualifications = data.qualifications;
     });

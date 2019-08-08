@@ -1,42 +1,46 @@
-<div class="sub-page-container col-12">
-  <div class="row">
-    <div class="col-md-6">
-      <h3 class="fs-16"><strong>User dashboard</strong></h3>
-    </div>
-
-    <div class="col-md-6 fs-16">
-      <div class="float-right">
-        <p><strong>Contact Skills for Care</strong></p>
-        <p>0113 241 0969</p>
-        <p><a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support@skillsforcare.org.uk</a></p>
-      </div>
-    </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">
+      <span *ngIf="workplace?.parentName" class="govuk-caption-xl">{{ workplace.parentName }}: Parent</span>
+      {{ workplace?.name }}
+    </h1>
   </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <h2 class="h2 fs-36 mb-4">{{ establishment?.name }}</h2>
-    </div>
-    <div class="col-md-6">
-      <p>Workplace ID: {{ establishment?.nmdsId }}</p>
-    </div>
-    <div class="col-md-6">
-      <p class="text-right" *ngIf="lastLoggedIn">Last signed in {{ lastLoggedIn | date : 'd MMMM y' }}</p>
-    </div>
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">Contact Skills for Care</h2>
+    <p class="govuk-!-font-size-16">
+      0113 241 0969<br />
+      <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support@skillsforcare.org.uk</a>
+    </p>
   </div>
+</div>
 
-  <div class="row">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p>Workplace ID: {{ workplace?.nmdsId }}</p>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16">Last signed in {{ lastLoggedIn | date: 'd MMMM y' }}</p>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
     <app-tabs>
-      <app-tab title="Home">
-        <app-home-tab></app-home-tab>
+      <app-tab [title]="'Home'">
+        <app-home-tab [workplace]="workplace"></app-home-tab>
       </app-tab>
 
-      <app-tab title="Workplace">
-        <app-workplace-tab></app-workplace-tab>
+      <app-tab *ngIf="workplace" [title]="'Workplace'">
+        <app-workplace-tab [workplace]="workplace"></app-workplace-tab>
       </app-tab>
 
-      <app-tab title="Staff records">
-        <app-staff-records-tab></app-staff-records-tab>
+      <app-tab *ngIf="canViewStaffRecords && workplace" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
+        <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
+      </app-tab>
+
+      <app-tab *ngIf="workplace" [title]="'User accounts'">
+        <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
       </app-tab>
     </app-tabs>
   </div>

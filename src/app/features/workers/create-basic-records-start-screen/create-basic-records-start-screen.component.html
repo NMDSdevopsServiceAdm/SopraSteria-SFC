@@ -1,20 +1,18 @@
-<div class="sub-page-container col-12">
-  <div id="back" class="back-link">
-    <a routerLink="/dashboard"> <span class="arrow"></span>Back </a>
-  </div>
-  <h1 class="h1">Staff records</h1>
-  <p>To create staff records for your workplace, for each record you will need to add their:</p>
-  <ul class="list list--bullet">
-    <li>full name or ID number</li>
-    <li>main job role</li>
-    <li>type of contract</li>
-  </ul>
-  <p>Once you have added these you will be able to continue with each record.</p>
-  <p>
-    We will use this information to work out your total number of staff. You will be able to change the number later by
-    adding or removing records.
-  </p>
-  <div class="btn-container mt-5">
-    <app-start-button link="/worker/total-staff"></app-start-button>
-  </div>
-</div>
+<h1 class="govuk-heading-xl">Staff records</h1>
+<p>To create staff records for your workplace, for each record you will need to add their:</p>
+
+<ul class="govuk-list govuk-list--bullet">
+  <li>full name or ID number</li>
+  <li>main job role</li>
+  <li>type of contract</li>
+</ul>
+
+<p>Once you have added these you will be able to continue with each record.</p>
+<p>
+  We will use this information to work out your total number of staff. You will be able to change the number later by
+  adding or removing records.
+</p>
+
+<a [routerLink]="['../total-staff']" role="button" draggable="false" class="govuk-button govuk-button--start">
+  Start now
+</a>

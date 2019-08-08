@@ -1,132 +1,113 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Contracts } from '@core/constants/contracts.enum';
-import { Worker } from '@core/model/worker.model';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { isNull } from 'util';
+import { Component } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FLOAT_PATTERN } from '@core/constants/constants';
+import { Contracts } from '@core/model/contracts.enum';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-weekly-contracted-hours',
   templateUrl: './weekly-contracted-hours.component.html',
 })
-export class WeeklyContractedHoursComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
-  public backLink: string;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
+export class WeeklyContractedHoursComponent extends QuestionComponent {
+  public floatPattern = FLOAT_PATTERN.toString();
+  public contractedMaxHours = 75;
 
   constructor(
-    private workerService: WorkerService,
-    private messageService: MessageService,
-    private formBuilder: FormBuilder,
-    private router: Router
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-    this.hoursRequiredValidator = this.hoursRequiredValidator.bind(this);
-  }
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
-  ngOnInit() {
+    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
+
     this.form = this.formBuilder.group({
-      weeklyHoursContractedKnown: null,
-      weeklyHoursContracted: [null, [Validators.min(0), Validators.max(65), this.hoursRequiredValidator]],
-    });
-
-    if (this.workerService.returnToSummary) {
-      this.backLink = 'summary';
-    } else {
-      this.backLink = 'contract-with-zero-hours';
-    }
-
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
-
-      if (
-        this.worker.zeroHoursContract === 'Yes' ||
-        [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-      ) {
-        this.router.navigate(['/worker', this.worker.uid, 'average-weekly-hours'], { replaceUrl: true });
-      }
-
-      if (this.worker.weeklyHoursContracted) {
-        this.form.patchValue({
-          weeklyHoursContractedKnown: this.worker.weeklyHoursContracted.value,
-          weeklyHoursContracted: this.worker.weeklyHoursContracted.hours,
-        });
-      }
-
-      this.subscriptions.add(
-        this.form.controls.weeklyHoursContractedKnown.valueChanges.subscribe(() => {
-          this.form.controls.weeklyHoursContracted.reset();
-          this.form.controls.weeklyHoursContracted.updateValueAndValidity();
-        })
-      );
+      hoursKnown: null,
+      hours: null,
     });
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
-  }
-
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-
-      this.router.navigate(['/worker', this.worker.uid, 'salary']);
-    } catch (err) {
-      // keep typescript transpiler silent
+  init() {
+    if (
+      this.worker.zeroHoursContract === 'Yes' ||
+      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
+    ) {
+      this.router.navigate(this.getRoutePath('average-weekly-hours'), { replaceUrl: true });
     }
-  }
 
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { weeklyHoursContractedKnown, weeklyHoursContracted } = this.form.controls;
-      this.messageService.clearError();
+    this.subscriptions.add(
+      this.form.get('hoursKnown').valueChanges.subscribe(value => {
+        this.form.get('hours').clearValidators();
 
-      if (this.form.valid) {
-        const props = {
-          ...(weeklyHoursContractedKnown.value && {
-            weeklyHoursContracted: {
-              value: weeklyHoursContractedKnown.value,
-              ...(weeklyHoursContracted.value && {
-                hours: weeklyHoursContracted.value,
-              }),
-            },
-          }),
-        };
-
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        if (weeklyHoursContracted.errors.required) {
-          this.messageService.show('error', 'Contracted weekly hours is required');
-        }
-        if (weeklyHoursContracted.errors.min || weeklyHoursContracted.errors.max) {
-          this.messageService.show('error', 'Contracted weekly hours must be between 0 and 65.');
+        if (value === 'Yes') {
+          this.form
+            .get('hours')
+            .setValidators([Validators.required, Validators.min(0), Validators.max(this.contractedMaxHours)]);
         }
 
-        reject();
-      }
-    });
-  }
+        this.form.get('hours').updateValueAndValidity();
+      })
+    );
 
-  hoursRequiredValidator() {
-    if (this.form) {
-      const { weeklyHoursContractedKnown, weeklyHoursContracted } = this.form.value;
-
-      if (weeklyHoursContractedKnown === 'Yes' && isNull(weeklyHoursContracted)) {
-        return { required: true };
-      }
+    if (this.worker.weeklyHoursContracted) {
+      this.form.patchValue({
+        hoursKnown: this.worker.weeklyHoursContracted.value,
+        hours: this.worker.weeklyHoursContracted.hours,
+      });
     }
 
-    return null;
+    this.next = this.getRoutePath('salary');
+    this.previous = this.getRoutePath('contract-with-zero-hours');
+  }
+
+  setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'hours',
+        type: [
+          {
+            name: 'required',
+            message: 'Contracted weekly hours is required.',
+          },
+          {
+            name: 'min',
+            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}.`,
+          },
+          {
+            name: 'max',
+            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}.`,
+          },
+          {
+            name: 'pattern',
+            message: 'Contracted weekly hours must contain only numbers.',
+          },
+        ],
+      },
+    ];
+  }
+
+  generateUpdateProps() {
+    const { hoursKnown, hours } = this.form.value;
+
+    if (!hoursKnown) {
+      return null;
+    }
+
+    return {
+      weeklyHoursContracted: {
+        value: hoursKnown,
+        ...(hoursKnown === 'Yes' && {
+          hours: hours,
+        }),
+      },
+    };
   }
 }

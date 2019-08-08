@@ -14,11 +14,11 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.jobs && document.jobs.starters) {
+        if (document.starters) {
             const jobDeclaration = ["None", "Don't know"];
             // can be an empty array
-            if (Array.isArray(document.jobs.starters)) {
-                const validatedJobs = await JobHelpers.validateJobs(document.jobs.starters);
+            if (Array.isArray(document.starters)) {
+                const validatedJobs = await JobHelpers.validateJobs(document.starters);
 
                 if (validatedJobs) {
                     this.property = validatedJobs;
@@ -26,8 +26,8 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
                 } else {
                     this.property = null;
                 }
-            } else if (jobDeclaration.includes(document.jobs.starters)) {
-                this.property = document.jobs.starters;
+            } else if (jobDeclaration.includes(document.starters)) {
+                this.property = document.starters;
             } else {
                 // but it must at least be an array, or one of the known enums
                 this.property = null;
@@ -113,19 +113,23 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
         }
     }
 
-    toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
         const jsonPresentation = JobHelpers.formatJSON(this.property, 'Starters', 'TotalStarters');
 
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
-            // simple form - includes 
+            // simple form - includes
             return {
-                Starters: jsonPresentation.Starters,
-                TotalStarters: jsonPresentation.TotalStarters
+                starters: jsonPresentation.Starters,
+                totalStarters: jsonPresentation.TotalStarters
             };
         }
 
         return {
-            Starters: {
+            starters: {
                 currentValue: jsonPresentation.Starters,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }

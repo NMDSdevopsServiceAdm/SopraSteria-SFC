@@ -1,105 +1,30 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-
-import { RegistrationModel } from '../model/registration.model';
-
-const initialRegistration: RegistrationModel = {
-  // Example initial dummy data
-  success: 1,
-  message: 'Successful',
-  detailsChanged: false,
-  userRoute: {
-    currentPage: 1,
-    route: [],
-  },
-  locationdata: [
-    {
-      addressLine1: '',
-      addressLine2: '',
-      county: '',
-      locationId: '',
-      locationName: '',
-      mainService: '',
-      postalCode: '',
-      townCity: '',
-      isRegulated: null,
-      user: {
-        fullname: '',
-        jobTitle: '',
-        emailAddress: '',
-        contactNumber: '',
-        username: '',
-        password: '',
-        securityQuestion: '',
-        securityAnswer: '',
-      },
-    },
-  ],
-  postcodedata: [
-    {
-      locationName: '',
-      addressLine1: '',
-      addressLine2: '',
-      townCity: '',
-      county: '',
-      postalCode: '',
-    },
-  ],
-};
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { LocationAddress } from '@core/model/location.model';
+import { LoginCredentials } from '@core/model/login-credentials.model';
+import { RegistrationPayload } from '@core/model/registration.model';
+import { SecurityDetails } from '@core/model/security-details.model';
+import { Service } from '@core/model/services.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RegistrationService {
-  // Observable registration source
-  private _registration$: BehaviorSubject<RegistrationModel> = new BehaviorSubject<RegistrationModel>(
-    initialRegistration
-  );
+  public registrationInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
+  public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
+  public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
+  public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
+  public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
 
-  // Observable registration stream
-  public registration$: Observable<RegistrationModel> = this._registration$.asObservable();
-  // registrationModel: RegistrationModel[];
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient, private router: Router) {}
-
-  postRegistration(id: any) {
-    this.http.post<RegistrationModel>('/api/registration/', id.locationdata).subscribe(
-      data => console.log(data),
-      error => console.log(error),
-      () => {
-        this.router.navigate(['/registration-complete']);
-      }
-    );
+  public postRegistration(registrationPayload: Array<RegistrationPayload>): Observable<any> {
+    return this.http.post<any>('/api/registration/', registrationPayload);
   }
 
-  getLocationByPostCode(id: string) {
-    return this.http.get<RegistrationModel>(`/api/locations/pc/${id}`);
-  }
-
-  getLocationByLocationId(id: string) {
-    return this.http.get<RegistrationModel>(`/api/locations/lid/${id}`);
-  }
-
-  getAddressByPostCode(id: string) {
-    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`);
-  }
-
-  getUpdatedAddressByPostCode(id: string) {
-    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`);
-  }
-
-  getMainServices(id: boolean) {
-    return this.http.get(`/api/services/byCategory?cqc=${id}`);
-  }
-
-  getUsernameDuplicate(id: string) {
+  public getUsernameDuplicate(id: string): Observable<any> {
     return this.http.get(`/api/registration/username/${id}`);
   }
-
-  updateState(data) {
-    this._registration$.next(data);
-  }
-
 }

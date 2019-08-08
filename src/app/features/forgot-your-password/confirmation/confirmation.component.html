@@ -1,9 +1,14 @@
-<h1 class="h1">Reset link sent</h1>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-xl">Reset link sent</h1>
+    <p>An email has been sent to the address provided containing a reset password link.</p>
 
-<p class="main-body-text col-7 p-0 mb-5">An email has been sent to the address provided containing a reset password link.</p>
+    <div *ngIf="resetPasswordLink" class="govuk-!-margin-bottom-6">
+      <a href="{{ resetPasswordLink }}">{{ resetPasswordLink }}</a>
+    </div>
 
-<a href="{{ this.resetPasswordLink }}" class="d-block mb-5">{{ this.resetPasswordLink }}</a>
-
-<div class="btn-container">
-  <button class="btn btn-primary" routerLink="/login" type="submit">Return to sign in</button>
+    <a [routerLink]="['/login']" role="button" draggable="false" class="govuk-button">
+      Return to sign in
+    </a>
+  </div>
 </div>

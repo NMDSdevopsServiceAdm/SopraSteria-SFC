@@ -1,0 +1,27 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+app-root > div {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    width: 100%
+  }
+
+  #content {
+    flex: 1 0 auto;
+  }
+
+  header,
+  footer {
+    flex-shrink: 0;
+  }
+}

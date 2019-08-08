@@ -1,29 +1,34 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a [routerLink]="['/worker', worker.uid, backLink]">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-  <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="form">
-
-    <header>
-      <h1 class="h1 col-12 col-lg-8">Do they identify as having a disability?</h1>
-    </header>
-
-    <app-messages></app-messages>
-
-    <div class="form-group mt-5">
-      <div class="field-group mb-5">
-        <div *ngFor="let answer of answersAvailable; let idx = index" class="multiple-choice">
-          <input type="radio" formControlName="disability" class="form-control" [value]="answer" id="answer_{{idx}}">
-          <label for="answer_{{idx}}">{{answer}}</label>
-        </div>
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('disability').invalid">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              Do they identify as having a disability?
+            </h1>
+          </legend>
+          <div class="govuk-radios">
+            <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'disability'"
+                id="disability-{{ idx }}"
+                name="disability"
+                type="radio"
+                [value]="answer"
+              />
+              <label class="govuk-label govuk-radios__label" for="disability-{{ idx }}">
+                {{ answer }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
       </div>
     </div>
+  </div>
 
-    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
-  </form>
-</div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

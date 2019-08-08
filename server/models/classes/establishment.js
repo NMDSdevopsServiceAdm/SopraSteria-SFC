@@ -3,7 +3,7 @@
  *
  * The encapsulation of a Establishment, including all properties, all specific validation (not API, but object validation),
  * saving & restoring of data to database (via sequelize model), construction and deletion.
- * 
+ *
  * Also includes representation as JSON, in one or more presentations.
  */
 const uuid = require('uuid');
@@ -11,7 +11,14 @@ const uuid = require('uuid');
 // database models
 const models = require('../index');
 
+const EntityValidator = require('./validations/entityValidator').EntityValidator;
+const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
+
+// associations
+const Worker = require('./worker').Worker;
+
 // notifications
+const AWSKinesis = require('../../aws/kinesis');
 
 // temp formatters
 const ServiceFormatters = require('../api/services');
@@ -27,8 +34,40 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUM
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
-class Establishment {
+// service cache
+const ServiceCache = require('../cache/singletons/services').ServiceCache;
+const CapacitiesCache = require('../cache/singletons/capacities').CapacitiesCache;
+
+// Errors for initialise and registration error - this needs to be refactored out DB
+class RegistrationException {
+    constructor(originalError, errCode, errMessage) {
+      this.err = originalError;
+      this.errCode = errCode;
+      this.errMessage = errMessage;
+    };
+
+    toString() {
+      return `${this.errCode}: ${this.errMessage}`;
+    };
+};
+
+const responseErrors = {
+    unknownNMDSsequence: {
+      errCode: -500,
+      errMessage: 'Unknown NMDS Sequence'
+    },
+    unknownNMDSLetter: {
+      errCode: -600,
+      errMessage: 'Unknown NMDS Letter/CSSR Region'
+    }
+};
+
+const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
+
+class Establishment extends EntityValidator {
     constructor(username) {
+        super();
+
         this._username = username;
         this._id = null;
         this._uid = null;
@@ -39,14 +78,27 @@ class Establishment {
 
         // localised attributes
         this._name = null;
-        this._address = null;
+        this._address1 = null;
+        this._address2 = null;
+        this._address3 = null;
+        this._town = null;
+        this._county = null;
         this._locationId = null;
+        this._provId = null;
         this._postcode = null;
         this._isRegulated = null;
         this._mainService = null;
         this._nmdsId = null;
         this._lastWdfEligibility = null;
         this._overallWdfEligibility = null;
+        this._isParent = false;
+        this._parentUid = null;
+        this._parentId = null;
+        this._dataOwner = null;
+        this._parentPermissions = null;
+
+        // interim reasons for leaving - https://trello.com/c/vNHbfdms
+        this._reasonsForLeaving = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -54,7 +106,14 @@ class Establishment {
 
         // change properties
         this._isNew = false;
-        
+
+        // all known workers for this establishment - an associative object (property key is the worker's key)
+        this._workerEntities = {};
+        this._readyForDeletionWorkers = null;
+
+        // bulk upload status - this is never stored in database
+        this._status = null;
+
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
         this._logLevel = Establishment.LOG_INFO;
@@ -93,11 +152,39 @@ class Establishment {
         return this._properties.get('Name') ? this._properties.get('Name').property : null;
     };
     get address() {
-        return this._address;
+      // returns concatenated address
+      const addressParts = [];
+      this._address1 ? addressParts.push(this._address1) : true;
+      this._address2 ? addressParts.push(this._address2) : true;
+      this._address3 ?  addressParts.push(this._address3) : true;
+      this._town ? addressParts.push(this._town) : true;
+      this._county ? addressParts.push(this._county) : true;
+      return addressParts.join(', ');
+    }
+    get address1() {
+        return this._address1;
     };
+    get address1() {
+        return this._address1;
+    };
+    get address2() {
+      return this._address2;
+    };
+    get address3() {
+      return this._address3;
+    };
+    get town() {
+      return this._town;
+    }
+    get county() {
+      return this._county;
+    }
     get locationId() {
-        return this._locationId;
+      return this._locationId;
     };
+    get provId() {
+      return this._provId;
+    }
     get postcode() {
         return this._postcode;
     };
@@ -107,6 +194,40 @@ class Establishment {
     get mainService() {
         return this._properties.get('MainServiceFK') ? this._properties.get('MainServiceFK').property : null;
     };
+    get employerType() {
+        return this._properties.get('EmployerType') ? this._properties.get('EmployerType').property : null;
+    };
+    get localIdentifier() {
+      return this._properties.get('LocalIdentifier') ? this._properties.get('LocalIdentifier').property : null;
+    };
+    get shareWith() {
+      return this._properties.get('ShareData') ? this._properties.get('ShareData').property : null;
+    };
+    get shareWithLA() {
+      return this._properties.get('ShareWithLA') ? this._properties.get('ShareWithLA').property : null;
+    }
+    get otherServices() {
+      return this._properties.get('OtherServices') ? this._properties.get('OtherServices').property : null;
+    }
+    get capacities() {
+      return this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').property : null;
+    }
+    get serviceUsers() {
+      return this._properties.get('ServiceUsers') ? this._properties.get('ServiceUsers').property : null;
+    }
+    get starters() {
+      return this._properties.get('Starters') ? this._properties.get('Starters').property : null;
+    }
+    get leavers() {
+      return this._properties.get('Leavers') ? this._properties.get('Leavers').property : null;
+    }
+    get vacancies() {
+      return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
+    }
+    get reasonsForLeaving() {
+      return this._reasonsForLeaving;
+    }
+
     get nmdsId() {
         return this._nmdsId;
     }
@@ -120,8 +241,30 @@ class Establishment {
         return this._updatedBy;
     }
 
+    get isParent() {
+        return this._isParent;
+    }
+    get parentUid() {
+        return this._parentUid;
+    }
+
+    get dataOwner() {
+        return this._dataOwner;
+    }
+
+    get parentPermissions() {
+        return this._parentPermissions;
+    }
+
     get numberOfStaff() {
         return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
+    }
+
+    get key() {
+        return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, "") : this.name).replace(/\s/g, "");
+    }
+    get status() {
+      return this._status;
     }
 
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -129,7 +272,7 @@ class Establishment {
         if (this._uid === null) {
             this._isNew = true;
             this._uid = uuid.v4();
-            
+
             // note, do not initialise the id as this will be returned by database
             return true;
         } else {
@@ -138,19 +281,176 @@ class Establishment {
     }
 
     // external method to initialise the mandatory non-extendable properties
-    initialise(address, locationId, postcode, isRegulated, nmdsId) {
-        this._address = address;
+    initialise(address1, address2, address3, town, county, locationId, provId, postcode, isRegulated) {
+
+        // NMDS ID will be calculated when saving this establishment for the very first time - on creation only
+        this._nmdsId = null;
+
+        this._address1 = address1;
+        this._address2 = address2;
+        this._address3 = address3;
+        this._town = town;
+        this._county = county;
         this._postcode = postcode;
         this._isRegulated = isRegulated;
         this._locationId = locationId;
-        this._nmdsId = nmdsId;
+        this._provId = provId;
     }
+
+    initialiseSub(parentID, parentUid){
+        this._parentUid = parentUid;
+        this._parentId = parentID;
+        this._dataOwner = 'Parent';
+        this._parentPermissions = null;     // if the owner is parent, then parent permissions are irrelevant
+    }
+
+    // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
+    associateWorker(key, worker) {
+        if (key && worker) {
+            // worker not yet associated; take as is
+            this._workerEntities[key] = worker;
+        }
+    };
+
+    // returns just the set of keys of the associated workers
+    get associatedWorkers() {
+        if (this._workerEntities) {
+            return Object.keys(this._workerEntities);
+        } else {
+            return [];
+        }
+    }
+
+    get workers() {
+        if (this._workerEntities) {
+            return Object.values(this._workerEntities);
+        } else {
+            return [];
+        }
+    }
+
+    theWorker(key) {
+        return this._workerEntities && key ? this._workerEntities[key] : null;
+    }
+
 
     // takes the given JSON document and creates an Establishment's set of extendable properties
     // Returns true if the resulting Establishment is valid; otherwise false
-    async load(document) {
+    async load(document, associatedEntities=false, bulkUploadCompletion=false) {
         try {
-            await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+            // bulk upload status
+            if (document.status) {
+              this._status = document.status;
+            }
+
+            if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
+              this.resetValidations();
+
+              // inject all services against this establishment
+              const isRegulated = document.IsCQCRegulated || document.isRegulated;
+              document.allMyServices = ServiceCache.allMyServices(isRegulated);
+
+              // inject all capacities against this establishment - note, "other services" can be represented by the JSON document attribute "services" or "otherServices"
+              const allAssociatedServiceIndices = [];
+              if (document.mainService) {
+                  allAssociatedServiceIndices.push(document.mainService.id);
+              }
+              if (document && document.otherServices && Array.isArray(document.otherServices)) {
+                  document.otherServices.forEach(thisService => {
+                    if (thisService.id) {
+                      allAssociatedServiceIndices.push(thisService.id);
+                    } else if (thisService.services && Array.isArray(thisService.services)) {
+                      thisService.services.forEach(innerService => {
+                        allAssociatedServiceIndices.push(innerService.id)
+                      });
+                    }
+                  });
+              }
+              if (document && document.services && Array.isArray(document.services)) {
+                  document.services.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+              }
+              document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
+
+              await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+
+              // CQC reugulated/location ID
+              if (document.hasOwnProperty('isRegulated')) {
+                  this._isRegulated = document.isRegulated;
+              }
+              if (document.locationId) {
+                  // Note - there is more validation to do on location ID - so this really should be a managed property
+                  this._locationId = document.locationId;
+              }
+              if (document.provId) {
+                // Note - there is more validation to do on location ID - so this really should be a managed property
+                this._provId = document.provId;
+              }
+              if (document.address1) {
+                // if address is given, allow reset on all address components
+                this._address1 = document.address1;
+                this._address2 = document.address2 ? document.address2 : '';
+                this._address3 = document.address3 ? document.address3 : '';
+                this._town = document.town ? document.town : '';
+                this._county = document.county ? document.county : '';
+              }
+              if (document.postcode) {
+                this._postcode = document.postcode;
+              }
+              if (document.name) {
+                  this._name = document.name;
+              }
+
+              if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
+                this._reasonsForLeaving = document.reasonsForLeaving;
+              }
+            }
+
+            // allow for deep restoration of entities (associations - namely Worker here)
+            if (associatedEntities) {
+                const promises = [];
+                if (document.workers && Array.isArray(document.workers)) {
+                    this._readyForDeletionWorkers = [];
+
+                    document.workers.forEach(thisWorker => {
+                      // we're loading from JSON, not entity, so there is no key property; so add it
+                      thisWorker.key = thisWorker.localIdentifier ? thisWorker.localIdentifier.replace(/\s/g, "") : thisWorker.nameOrId.replace(/\s/g, "");
+
+                      // check if we already have the Worker associated, before associating a new worker
+                      if (this._workerEntities[thisWorker.key]) {
+                        // this worker exists; if could be marked for deletion
+                        if (thisWorker.status === 'DELETE') {
+                          this._readyForDeletionWorkers.push(this._workerEntities[thisWorker.key]);
+                        } else {
+                          // the local identifier is required during bulk upload for reasoning; but against the worker itself, it's immutable.
+                          delete thisWorker.localIdentifier;
+
+                          // else we already have this worker, load changes against it
+                          promises.push(this._workerEntities[thisWorker.key].load(thisWorker, true, bulkUploadCompletion));
+                        }
+
+                      } else {
+                            const newWorker = new Worker(null);
+
+                            // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+                            this.associateWorker(thisWorker.key, newWorker);
+                            promises.push(newWorker.load(thisWorker, true));
+                      }
+
+                    });
+
+                    // this has updated existing Worker associations and/or added new Worker associations
+                    // however, how do we mark for deletion those no longer required
+                    Object.values(this._workerEntities).forEach(thisWorker => {
+                        const foundWorker = document.workers.find(givenWorker => {
+                          return givenWorker.key === thisWorker.key
+                        });
+                        if (!foundWorker) {
+                            this._readyForDeletionWorkers.push(thisWorker);
+                        }
+                    });
+                }
+                await Promise.all(promises);
+            }
 
         } catch (err) {
             this._log(Establishment.LOG_ERROR, `Establishment::load - failed: ${err}`);
@@ -165,18 +465,62 @@ class Establishment {
 
     // returns true if Establishment is valid, otherwise false
     isValid() {
+      // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
+      if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
         const thisEstablishmentIsValid = this._properties.isValid;
         if (this._properties.isValid === true) {
             return true;
         } else {
+            // only add validations if not already existing
+            if (thisEstablishmentIsValid && Array.isArray(thisEstablishmentIsValid) && this._validations.length == 0) {
+                const propertySuffixLength = 'Property'.length * -1;
+                thisEstablishmentIsValid.forEach(thisInvalidProp => {
+                    this._validations.push(new ValidationMessage(
+                        ValidationMessage.WARNING,
+                        111111111,
+                        'Invalid',
+                        [thisInvalidProp.slice(0,propertySuffixLength)],
+                    ));
+                });
+            }
+
             this._log(Establishment.LOG_ERROR, `Establishment invalid properties: ${thisEstablishmentIsValid.toString()}`);
             return false;
+        }
+      } else {
+        return true;
+      }
+    }
+
+    async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
+        if (this._workerEntities) {
+            const log = result => result=null;
+
+            try {
+                const workersAsArray = Object.values(this._workerEntities).map(thisWorker => {
+                    thisWorker.establishmentId = this._id;
+                    return thisWorker;
+                });
+
+                // new and updated Workers
+                const starterSavePromise = Promise.resolve(null);
+                await workersAsArray.reduce((p, thisWorkerToSave) => p.then(() => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true).then(log)), starterSavePromise);
+
+                // now deleted workers
+                const starterDeletedPromise = Promise.resolve(null);
+                await this._readyForDeletionWorkers.reduce((p, thisWorkerToDelete) => p.then(() => thisWorkerToDelete.archive(savedBy, externalTransaction, true).then(log)), starterDeletedPromise);
+
+            } catch (err) {
+                console.error('Establishment::saveAssociatedEntities error: ', err);
+                // rethrow error to ensure the transaction is rolled back
+                throw err;
+            }
         }
     }
 
     // saves the Establishment to DB. Returns true if saved; false is not.
     // Throws "EstablishmentSaveException" on error
-    async save(savedBy, ttl=0, externalTransaction=null) {
+    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null, associatedEntities=false) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -188,22 +532,89 @@ class Establishment {
                 'Establishment does not exist');
         }
 
+        // with bulk upload, if this entity's status is "UNCHECKED", do not save it
+        if (this._status === 'UNCHECKED') {
+          // if requested, propagate the saving of this establishment down to each of the associated entities
+          if (associatedEntities) {
+            await models.sequelize.transaction(async t => {
+              const thisTransaction = externalTransaction ? externalTransaction : t;
+              await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
+            });
+          }
+
+          return;
+        }
+
         if (mustSave && this._isNew) {
-            // create new User
+            // create new Establishment
             try {
+                // when creating an establishment, need to calculate it's NMDS ID, which is combination of postcode area and sequence.
+                const cssrResults = await models.pcodedata.findOne({
+                    where: {
+                        postcode: this._postcode,
+                    },
+                    include: [{
+                        model: models.cssr,
+                        as: 'theAuthority',
+                        attributes: ['id', 'name', 'nmdsIdLetter']
+                    }]
+                });
+
+                let nmdsLetter = null;
+                if (cssrResults && cssrResults.postcode === this._postcode && cssrResults.theAuthority && cssrResults.theAuthority.id && Number.isInteger(cssrResults.theAuthority.id)) {
+                    nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
+                } else {
+                    // No direct match so do the fuzzy match
+                    const [firstHalfOfPostcode] = `postcode`.split(' ');
+                    const fuzzyCssrNmdsIdMatch = await models.sequelize.query(`select "Cssr"."NmdsIDLetter" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`, { type: models.sequelize.QueryTypes.SELECT });
+
+                    if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
+                        nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
+                    }
+                }
+
+                // catch all - because we don't want new establishments failing just because of old postcode data
+                if (nmdsLetter === null) {
+                    nmdsLetter = 'W';
+                }
+
+                let nextNmdsIdSeqNumber = 0;
+                const nextNmdsIdSeqNumberResults = await models.sequelize.query('SELECT nextval(\'cqc."NmdsID_seq"\')', { type: models.sequelize.QueryTypes.SELECT });
+
+                if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
+                    nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
+                } else {
+                    // no sequence number
+                    console.error("Failed to get next sequence number for Establishment: ", nextNmdsIdSeqNumberResults);
+                    throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Failed to generate NMDS ID', 'Failed to generate NMDS ID');
+                }
+
+                this._nmdsId = `${nmdsLetter}${nextNmdsIdSeqNumber}`;
+
                 const creationDocument = {
                     uid: this.uid,
                     NameValue: this.name,
-                    address: this._address,
+                    address1: this._address1,
+                    address2: this._address2,
+                    address3: this._address3,
+                    town: this._town,
+                    county: this._county,
                     postcode: this._postcode,
+                    isParent: this._isParent,
+                    parentUid: this._parentUid,
+                    parentId: this._parentId,
+                    dataOwner: this._dataOwner ? this._dataOwner : 'Workplace',
+                    parentPermissions: this._parentPermissions,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
+                    provId: this._provId,
                     MainServiceFKValue: this.mainService.id,
                     nmdsId: this._nmdsId,
                     updatedBy: savedBy.toLowerCase(),
                     ShareDataValue: false,
                     shareWithCQC: false,
                     shareWithLA: false,
+                    source: bulkUploaded ? 'Bulk' : 'Online',
                     attributes: ['id', 'created', 'updated'],
                 };
 
@@ -248,14 +659,60 @@ class Establishment {
                         }));
                     await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
+                    // now - work through any additional models having processed all properties (first delete and then re-create)
+                    const additionalModels = this._properties.additionalModels;
+                    const additionalModelsByname = Object.keys(additionalModels);
+                    const deleteModelPromises = [];
+                    additionalModelsByname.forEach(async thisModelByName => {
+                        deleteModelPromises.push(
+                            models[thisModelByName].destroy({
+                                where: {
+                                    establishmentId: this._id
+                                },
+                                transaction: thisTransaction,
+                                })
+                        );
+                    });
+                    await Promise.all(deleteModelPromises);
+                    const createModelPromises = [];
+                    additionalModelsByname.forEach(async thisModelByName => {
+                        const thisModelData = additionalModels[thisModelByName];
+                        createModelPromises.push(
+                            models[thisModelByName].bulkCreate(
+                                thisModelData.map(thisRecord => {
+                                    return {
+                                        ...thisRecord,
+                                        establishmentId: this._id
+                                    };
+                                }),
+                                { transaction: thisTransaction },
+                            )
+                        );
+                    });
+                    await Promise.all(createModelPromises);
+
+                    // this is an async method - don't wait for it to return
+                    AWSKinesis.establishmentPump(AWSKinesis.CREATED, this.toJSON());
+
+                    // if requested, propagate the saving of this establishment down to each of the associated entities
+                    if (associatedEntities) {
+                        await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
+                    }
+
                     this._log(Establishment.LOG_INFO, `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`);
                 });
-                
+
             } catch (err) {
                 // need to handle duplicate Establishment
                 if (err.name && err.name === 'SequelizeUniqueConstraintError') {
                     if (err.parent.constraint && ( err.parent.constraint === 'Establishment_unique_registration_with_locationid' || err.parent.constraint === 'Establishment_unique_registration')) {
                         throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Duplicate Establishment', 'Duplicate Establishment');
+                    }
+                }
+
+                if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+                    if(err.parent.constraint && ( err.parent.constraint === 'establishment_LocalIdentifier_unq')){
+                        throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Duplicate LocalIdentifier', 'Duplicate LocalIdentifier');
                     }
                 }
 
@@ -286,8 +743,21 @@ class Establishment {
                     // now append the extendable properties
                     const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
 
+                    // note - if the establishment was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         ...modifedUpdateDocument,
+                        source: bulkUploaded ? 'Bulk' : 'Online',
+                        isRegulated: this._isRegulated,                         // to remove when a change managed property
+                        locationId: this._locationId,                           // to remove when a change managed property
+                        provId: this._provId,                                   // to remove when a change managed property
+                        address1: this._address1,
+                        address2: this._address2,
+                        address3: this._address3,
+                        name: this._name,
+                        town: this._town,
+                        county: this._county,
+                        postcode: this._postcode,
+                        reasonsForLeaving: this._reasonsForLeaving,
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
@@ -296,9 +766,12 @@ class Establishment {
                     //  it's current WDF Eligibility, and if it is eligible, update
                     //  the last WDF Eligibility status
                     const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
+                    const effectiveDateTime = WdfCalculator.effectiveTime;
+
                     let wdfAudit = null;
-                    if (currentWdfEligibiity.currentEligibility) {
-                        console.log("WA DEBUG - updating this establishment's last WDF Eligible timestamp")
+                    let localWdfUpdated = false;
+                    if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
+                        localWdfUpdated = true;
                         updateDocument.lastWdfEligibility = updatedTimestamp;
                         wdfAudit = {
                             username: savedBy.toLowerCase(),
@@ -340,7 +813,7 @@ class Establishment {
                         if (wdfAudit) {
                             wdfAudit.establishmentFk = this._id;
                             allAuditEvents.push(wdfAudit);
-                        }    
+                        }
                         await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
@@ -375,29 +848,42 @@ class Establishment {
                         });
                         await Promise.all(createModelPromises);
 
+                        /* https://trello.com/c/5V5sAa4w
                         // TODO: ideally I'd like to publish this to pub/sub topic and process async - but do not have pub/sub to hand here
                         // having updated the Establishment, check to see whether it is necessary to recalculate
                         //  the overall WDF eligibility for this establishment and all its workers
                         //  This decision is done based on if the Establishment is being marked as Completed.
                         // There does not yet exist a Completed property for establishment.
                         // For now, we'll recalculate on every update!
-                        const completedProperty = this._properties.get('Completed');
-                        if (this._properties.get('Completed') && this._properties.get('Completed').modified) {
-                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        } else {
-                            // TODO - include Completed logic.
+                        */
+
+                        if(localWdfUpdated){
                             await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
                         }
+
+                        // if requested, propagate the saving of this establishment down to each of the associated entities
+                        if (associatedEntities) {
+                            await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
+                        }
+
+                        // this is an async method - don't wait for it to return
+                        AWSKinesis.establishmentPump(AWSKinesis.UPDATED, this.toJSON());
 
                         this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
 
 
                     } else {
-                        throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, `Failed to update resulting establishment record with id: ${this._id}`);
+                        throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, `Failed to update resulting establishment record with id: ${this._id}`, `Failed to update resulting establishment record with id: ${this._id}`);
                     }
                 });
-                
+
             } catch (err) {
+                if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+                    if(err.parent.constraint && ( err.parent.constraint === 'establishment_LocalIdentifier_unq')){
+                        throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Duplicate LocalIdentifier', 'Duplicate LocalIdentifier');
+                    }
+                }
+
                 throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, `Failed to update establishment record with id: ${this._id}`);
             }
 
@@ -409,8 +895,8 @@ class Establishment {
     // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
     // returns true on success; false if no User
     // Can throw EstablishmentRestoreException exception.
-    async restore(id, uid, showHistory=false) {
-        if (!id && !uid) {
+    async restore(id, showHistory=false, associatedEntities=false, associatedLevel=1) {
+        if (!id) {
             throw new EstablishmentExceptions.EstablishmentRestoreException(null,
                 null,
                 null,
@@ -420,124 +906,26 @@ class Establishment {
         }
 
         try {
-            // by including the user id in the
-            //  fetch, we are sure to only fetch those
-            //  Establishment records associated to the known
-            //   user
-            let fetchQuery = null;
-            
-            if (uid) {
-                // fetch by uid
+            // restore establishment based on id as an integer (primary key or uid)
+            let fetchQuery = {
+                // attributes: ['id', 'uid'],
+                where: {
+                    id: id
+                },
+            };
+
+            if (!Number.isInteger(id)) {
                 fetchQuery = {
                     // attributes: ['id', 'uid'],
                     where: {
-                        uid,
+                        uid: id,
+                        archived: false
                     },
-                    include: [
-                        {
-                            model: models.user,
-                            as: 'users',
-                            attributes: ['id'],
-                            where: {
-                                archived: false,
-                            },
-                            include: [
-                                {
-                                    model: models.login,
-                                    attributes: ['username'],
-                                    where: {
-                                        username: this._username,
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                };
-            } else {
-                // fetch by id
-                fetchQuery = {
-                    // attributes: ['id', 'uid'],
-                    where: {
-                        id,
-                    },
-                    include: [
-                        {
-                            model: models.user,
-                            as: 'users',
-                            attributes: ['id'],
-                            where: {
-                                archived: false,
-                            },
-                            include: [
-                                {
-                                    model: models.login,
-                                    attributes: ['username'],
-                                    where: {
-                                        username: this._username,
-                                    }
-                                }
-                            ]
-                        }
-                    ]
                 };
             }
 
-            // now join across the other dependent tables
-            fetchQuery.include = fetchQuery.include.concat([
-                {
-                  model: models.services,
-                  as: 'otherServices',
-                  attributes: ['id', 'name', 'category'],
-                  order: [
-                    ['category', 'ASC'],
-                    ['name', 'ASC']
-                  ]
-                },{
-                  model: models.serviceUsers,
-                  as: 'serviceUsers',
-                  attributes: ['id', 'service', 'group', 'seq'],
-                  order: [
-                    ['seq', 'ASC']
-                  ]
-                },{
-                  model: models.services,
-                  as: 'mainService',
-                  attributes: ['id', 'name']
-                },{
-                  model: models.establishmentCapacity,
-                  as: 'capacity',
-                  attributes: ['id', 'answer'],
-                  include: [{
-                    model: models.serviceCapacity,
-                    as: 'reference',
-                    attributes: ['id', 'question']
-                  }]
-                },
-                {
-                  model: models.establishmentJobs,
-                  as: 'jobs',
-                  attributes: ['id', 'type', 'total'],
-                  order: [
-                    ['type', 'ASC']
-                  ],
-                  include: [{
-                    model: models.job,
-                    as: 'reference',
-                    attributes: ['id', 'title'],
-                    order: [
-                      ['title', 'ASC']
-                    ]
-                  }]
-                },
-                {
-                  model: models.establishmentLocalAuthority,
-                  as: 'localAuthorities',
-                  attributes: ['id', 'cssrId', 'cssr'],
-                }
-              ]
-            );
-
             const fetchResults = await models.establishment.findOne(fetchQuery);
+
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
@@ -548,17 +936,28 @@ class Establishment {
                 this._updatedBy = fetchResults.updatedBy;
 
                 this._name = fetchResults.NameValue;
-                this._address = fetchResults.address;
+                this._address1 = fetchResults.address1;
+                this._address2 = fetchResults.address2;
+                this._address3 = fetchResults.address3;
+                this._town = fetchResults.town;
+                this._county = fetchResults.county;
+
                 this._locationId = fetchResults.locationId;
+                this._provId = fetchResults.provId;
                 this._postcode = fetchResults.postcode;
                 this._isRegulated = fetchResults.isRegulated;
-                this._mainService = {
-                    id: fetchResults.mainService.id,
-                    name: fetchResults.mainService.name
-                };
+
                 this._nmdsId = fetchResults.nmdsId;
                 this._lastWdfEligibility = fetchResults.lastWdfEligibility;
                 this._overallWdfEligibility = fetchResults.overallWdfEligibility;
+                this._isParent = fetchResults.isParent;
+                this._parentId = fetchResults.parentId;
+                this._parentUid = fetchResults.parentUid;
+                this._dataOwner = fetchResults.dataOwner;
+                this._parentPermissions = fetchResults.parentPermissions;
+
+                // interim solution for reason for leaving
+                this._reasonsForLeaving = fetchResults.reasonsForLeaving;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -578,27 +977,116 @@ class Establishment {
                     });
                 }
 
-                // other services output requires a list of ALL services available to
-                //  the Establishment
-                if (fetchResults.isRegulated) {
-                    // other services for CQC regulated is ALL including non-CQC
-                    fetchResults.allMyServices = await models.services.findAll({
-                        order: [
-                            ['category', 'ASC'],
-                            ['name', 'ASC']
-                        ]
-                    });
-                } else {
-                    fetchResults.allMyServices = await models.services.findAll({
+                // Individual fetches for extended information in associations
+                const establishmentServiceUserResults = await models.establishmentServiceUsers.findAll({
+                    where: {
+                        EstablishmentID : this._id
+                    },
+                    raw: true
+                });
+
+                const establishmentServices = await models.establishmentServices.findAll({
+                    where: {
+                        EstablishmentID : this._id
+                    },
+                    raw: true
+                });
+
+                const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([
+                    ServiceCache.allMyOtherServices(establishmentServices.map(x => x)),
+                    models.services.findOne({
                         where: {
-                            iscqcregistered: false
+                            id : fetchResults.MainServiceFKValue
                         },
+                        attributes: ['id', 'name'],
+                        raw: true
+                    }),
+                    models.serviceUsers.findAll({
+                        where: {
+                            id: establishmentServiceUserResults.map(su => su.serviceUserId)
+                        },
+                        attributes: ['id', 'service', 'group', 'seq'],
                         order: [
-                            ['category', 'ASC'],
-                            ['name', 'ASC']
+                            ['seq', 'ASC']
+                        ],
+                        raw: true
+                    }),
+                    models.establishmentCapacity.findAll({
+                        where: {
+                            EstablishmentID: this._id
+                        },
+                        include: [{
+                            model: models.serviceCapacity,
+                            as: 'reference',
+                            attributes: ['id', 'question']
+                        }],
+                        attributes: ['id', 'answer']
+                    }),
+                    models.establishmentJobs.findAll({
+                        where: {
+                            EstablishmentID: this._id
+                        },
+                        include: [{
+                            model: models.job,
+                            as: 'reference',
+                            attributes: ['id', 'title'],
+                            order: [
+                              ['title', 'ASC']
+                            ]
+                        }],
+                        attributes: ['id', 'type', 'total'],
+                        order: [
+                          ['type', 'ASC']
                         ]
-                    });  
-                }
+                    }),
+                    models.establishmentLocalAuthority.findAll({
+                        where: {
+                            EstablishmentID: this._id
+                        },
+                        attributes: ['id', 'cssrId', 'cssr']
+                    })
+                ]);
+
+                // For services merge any other data into resultset
+                fetchResults.serviceUsers = establishmentServiceUserResults.map((suResult)=>{
+                    const serviceUser = serviceUsers.find(element => { return suResult.serviceUserId === element.id});
+                    if(suResult.other) {
+                        return {
+                            ...serviceUser,
+                            other: suResult.other
+                        }
+                    } else {
+                        return serviceUser;
+                    }
+                });
+
+                fetchResults.otherServices = establishmentServices.map((suResult)=>{
+                    const otherService = otherServices.find(element => { return suResult.serviceId === element.id});
+                    if(suResult.other) {
+                        return {
+                            ...otherService,
+                            other: suResult.other
+                        }
+                    } else {
+                        return otherService;
+                    }
+                });
+
+                fetchResults.capacity = capacity;
+                fetchResults.jobs = jobs;
+                fetchResults.localAuthorities = localAuthorities;
+
+                fetchResults.mainService = { ...mainService, other: fetchResults.MainServiceFkOther };
+
+                // Moved this code from the section after the findOne, to here, now that mainService is pulled in seperately
+                this._mainService = {
+                    id: fetchResults.mainService.id,
+                    name: fetchResults.mainService.name
+                };
+
+                // other services output requires a list of ALL services available to
+                // the Establishment
+                fetchResults.allMyServices = ServiceCache.allMyServices(fetchResults.isRegulated);
 
                 // service capacities output requires a list of ALL service capacities available to
                 //  the Establishment
@@ -621,8 +1109,13 @@ class Establishment {
                         }
                     ]
                 });
-        
+
                 const allAssociatedServiceIndices = [];
+
+                // console.log('allCapacitiesResults.mainService', allCapacitiesResults.mainService)
+                // console.log('allCapacitiesResults.otherServices', allCapacitiesResults.otherServices)
+
+
                 if (allCapacitiesResults && allCapacitiesResults.id) {
                     // merge tha main and other service ids
                     if (allCapacitiesResults.mainService.id) {
@@ -634,29 +1127,10 @@ class Establishment {
                         allCapacitiesResults.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
                     }
                 }
-        
+
                 // now fetch all the questions for the given set of combined services
                 if (allAssociatedServiceIndices.length > 0) {
-                    fetchResults.allServiceCapacityQuestions = await models.serviceCapacity.findAll({
-                        where: {
-                            serviceId: allAssociatedServiceIndices
-                        },
-                        attributes: ['id', 'seq', 'question'],
-                        order: [
-                            ['seq', 'ASC']
-                        ],
-                        include: [
-                            {
-                                model: models.services,
-                                as: 'service',
-                                attributes: ['id', 'category', 'name'],
-                                order: [
-                                    ['category', 'ASC'],
-                                    ['name', 'ASC']
-                                ]
-                            }
-                        ]
-                    });
+                    fetchResults.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices)
                 } else {
                     fetchResults.allServiceCapacityQuestions = null;
                 }
@@ -679,11 +1153,11 @@ class Establishment {
                         }
                     ]
                 });
-                
+
                 if (cssrResults && cssrResults.postcode === fetchResults.postcode &&
                     cssrResults.theAuthority && cssrResults.theAuthority.id &&
                     Number.isInteger(cssrResults.theAuthority.id)) {
-                    
+
                     fetchResults.primaryAuthorityCssr = {
                         id: cssrResults.theAuthority.id,
                         name: cssrResults.theAuthority.name
@@ -691,8 +1165,8 @@ class Establishment {
 
                 } else {
                     //  using just the first half of the postcode
-                    const [firstHalfOfPostcode] = fetchResults.postcode.split(' '); 
-                    
+                    const [firstHalfOfPostcode] = fetchResults.postcode.split(' ');
+
                     // must escape the string to prevent SQL injection
                     const fuzzyCssrIdMatch = await models.sequelize.query(
                         `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
@@ -707,13 +1181,40 @@ class Establishment {
                         }
                     }
                 }
- 
+
                 if (fetchResults.auditEvents) {
                     this._auditEvents = fetchResults.auditEvents;
                 }
 
                 // load extendable properties
                 await this._properties.restore(fetchResults, SEQUELIZE_DOCUMENT_TYPE);
+
+                // certainly for bulk upload, but also expected for cross-entity validations, restore all associated entities (workers)
+                if (associatedEntities) {
+                    // restoring associated entities can be resource expensive, especially if doing deep restore of associated entities
+                    //  - that is especially true if restoring the training and qualification records for each of the Workers.
+                    //  Only pass down the restoration of Worker's associated entities if the association level is more than one level
+                    const myWorkerSet = await models.worker.findAll({
+                        attributes: ['uid'],
+                        where: {
+                            establishmentFk: this._id,
+                            archived: false
+                        },
+                    });
+
+                    if (myWorkerSet && Array.isArray(myWorkerSet)) {
+                        await Promise.all(myWorkerSet.map(async thisWorker => {
+                            const newWorker = new Worker(this._id);
+                            await newWorker.restore(thisWorker.uid, false, associatedLevel > 1 ? associatedEntities : false, associatedLevel);
+
+                            // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
+                            // without whitespace
+                            this.associateWorker(newWorker.key, newWorker);
+
+                            return {};
+                        }));
+                    }
+                }
 
                 return true;
             }
@@ -728,10 +1229,80 @@ class Establishment {
         }
     };
 
-    // deletes this User from DB
-    // Can throw "UserDeleteException"
-    async delete() {
-        throw new EstablishmentExceptions.EstablishmentDeleteException(null, null, null, 'Not implemented', 'Not implemented');
+    async delete(deletedBy, externalTransaction=null, associatedEntities=false) {
+        try {
+            const updatedTimestamp = new Date();
+
+            await models.sequelize.transaction(async t => {
+                // the saving of an Establishment can be initiated within
+                //  an external transaction
+                const thisTransaction = externalTransaction ? externalTransaction : t;
+
+                const updateDocument = {
+                    archived: true,
+                    updated: updatedTimestamp,
+                    updatedBy: deletedBy,
+                    LocalIdentifierValue: null,
+                };
+
+                let [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument,
+                                            {
+                                                returning: true,
+                                                where: {
+                                                    uid: this.uid
+                                                },
+                                                attributes: ['id', 'updated'],
+                                                transaction: thisTransaction,
+                                            });
+
+                if (updatedRecordCount === 1) {
+
+                    const updatedRecord = updatedRows[0].get({plain: true});
+
+                    this._updated = updatedRecord.updated;
+                    this._updatedBy = deletedBy;
+
+                    const allAuditEvents = [{
+                        establishmentFk: this._id,
+                        username: deletedBy,
+                        type: 'deleted'}];
+
+                    await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
+
+                    // if deleting this establishment, and if requested, then delete all the associated entities (workers) too
+                    if (associatedEntities) {
+                        if (this._workerEntities) {
+                            const associatedWorkersArray = Object.values(this._workerEntities);
+                            await Promise.all(associatedWorkersArray.map(thisWorker => {
+                                return thisWorker.archive(deletedBy, thisTransaction);
+                            }));
+                        }
+                    }
+
+                    // this is an async method - don't wait for it to return
+                    AWSKinesis.establishmentPump(AWSKinesis.DELETED, this.toJSON());
+
+                    this._log(Establishment.LOG_INFO, `Archived Establishment with uid (${this._uid}) and id (${this._id})`);
+
+                } else {
+                    const nameId = this._properties.get('NameOrId');
+                    throw new EstablishmentExceptions.EstablishmentDeleteException(null,
+                                                                        this.uid,
+                                                                        nameId ? nameId.property : null,
+                                                                        err,
+                                                                        `Failed to update (archive) estabalishment record with uid: ${this._uid}`);
+                }
+
+            });
+        } catch (err) {
+            console.log('throwing error');
+            console.log(err);
+            throw new EstablishmentExceptions.EstablishmentDeleteException(null,
+                this.uid,
+                nameId ? nameId.property : null,
+                err,
+                `Failed to update (archive) estabalishment record with uid: ${this._uid}`);
+        }
     };
 
     // helper returns a set 'json ready' objects for representing an Establishments's overall
@@ -772,17 +1343,21 @@ class Establishment {
     };
 
 
+    async getTotalWorkers(){
+        return await models.worker.count({ where: { establishmentFk: this._id, archived: false }});
+    }
+
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at User and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given User
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false, wdf = false) {
         if (!showHistoryTimeline) {
             if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
                 throw new Error('Establishment::toJSON filteredPropertiesByName must be a simple Array of names');
             }
 
             // JSON representation of extendable properties - with optional filter
-            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName);
+            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName, false);
 
             // add Establishment default properties
             //  using the default formatters
@@ -794,15 +1369,31 @@ class Establishment {
 
             if (fullDescription) {
                 myDefaultJSON.address = this.address;
+                myDefaultJSON.address1 = this.address1;
+                myDefaultJSON.address2 = this.address2;
+                myDefaultJSON.address3 = this.address3;
+                myDefaultJSON.town = this.town;
+                myDefaultJSON.county = this.county;
                 myDefaultJSON.postcode = this.postcode;
-                myDefaultJSON.locationRef = this.locationId;
+                myDefaultJSON.locationId = this.locationId;
+                myDefaultJSON.provId = this.provId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
+                myDefaultJSON.isParent = this.isParent;
+                myDefaultJSON.parentUid = this.parentUid;
+                myDefaultJSON.dataOwner = this.dataOwner;
+                myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
+                myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
             }
 
-            myDefaultJSON.created = this.created.toJSON();
-            myDefaultJSON.updated = this.updated.toJSON();
-            myDefaultJSON.updatedBy = this.updatedBy;
+            // bulk upload status
+            if (this._status) {
+              myDefaultJSON.status = this._status;
+            }
+
+            myDefaultJSON.created = this.created ? this.created.toJSON() : null;
+            myDefaultJSON.updated = this.updated ? this.updated.toJSON() : null;
+            myDefaultJSON.updatedBy = this.updatedBy ? this.updatedBy : null;
 
             // TODO: JSON schema validation
             if (showHistory && !showPropertyHistoryOnly) {
@@ -814,8 +1405,8 @@ class Establishment {
             } else {
                 return {
                     ...myDefaultJSON,
-                    ...myJSON
-            
+                    ...myJSON,
+                    workers: includeAssociatedEntities ? Object.values(this._workerEntities).map(thisWorker => thisWorker.toJSON(false, false, false, false, true)): undefined,
                };
             }
         } else {
@@ -836,50 +1427,107 @@ class Establishment {
 
     // returns true if all mandatory properties for an Establishment exist and are valid
     get hasMandatoryProperties() {
-        let allExistAndValid = true;    // assume all exist until proven otherwise
+      let allExistAndValid = true;    // assume all exist until proven otherwise
+
+      // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
+      if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
         try {
-            const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i; 
-            if (!(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
-                allExistAndValid = false;
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
-            }
+          const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i;
+          if (this._uid !== null && !(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
+              allExistAndValid = false;
+              this._validations.push(new ValidationMessage(
+                  ValidationMessage.ERROR,
+                  101,
+                  this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
+                  ['NMDSID']
+              ));
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
+          }
 
-            if (!(this.name)) {
-                allExistAndValid = false;
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
-            }
+          if (!(this.name)) {
+              allExistAndValid = false;
+              this._validations.push(new ValidationMessage(
+                  ValidationMessage.ERROR,
+                  102,
+                  this.name ? `Invalid: ${this.name}` : 'Missing',
+                  ['Name']
+              ));
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
+          }
 
-            if (!(this.mainService)) {
-                allExistAndValid = false;
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid main service');
-            }
+          if (!(this.mainService)) {
+              allExistAndValid = false;
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid main service');
+          }
 
-            if (!(this._address)) {
-                allExistAndValid = false;
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid address');
-            }
+          // must at least have the first line of address
+          if (!(this._address1)) {
+              allExistAndValid = false;
+              this._validations.push(new ValidationMessage(
+                  ValidationMessage.ERROR,
+                  103,
+                  this._address ? `Invalid: ${this._address}` : 'Missing',
+                  ['Address']
+              ));
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid first line of address');
+          }
 
-            if (!(this._postcode)) {
-                allExistAndValid = false;
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid postcode');
-            }
+          if (!(this._postcode)) {
+              allExistAndValid = false;
+              this._validations.push(new ValidationMessage(
+                  ValidationMessage.ERROR,
+                  104,
+                  this._postcode ? `Invalid: ${_postcode}` : 'Missing',
+                  ['Postcode']
+              ));
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid postcode');
+          }
 
-            if (this._isRegulated === null) {
-                allExistAndValid = false;
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing regulated flag');
-            }
+          if (this._isRegulated === null) {
+              allExistAndValid = false;
+              this._validations.push(new ValidationMessage(
+                  ValidationMessage.ERROR,
+                  105,
+                  'Missing',
+                  ['CQCRegistered']
+              ));
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing regulated flag');
+          }
 
-            // location id can be null for a Non-CQC site
-            if (this._isRegulated && this._locationId === null) {
-                allExistAndValid = false;
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
-            }
+          // location id can be null for a Non-CQC site
+          // if a CQC site, and main service is head office (ID=16)
+          const MAIN_SERVICE_HEAD_OFFICE_ID=16;
+          if (this._isRegulated) {
+              if (this.mainService.id !== MAIN_SERVICE_HEAD_OFFICE_ID && this._locationId === null)  {
+                  allExistAndValid = false;
+                  this._validations.push(new ValidationMessage(
+                      ValidationMessage.ERROR,
+                      106,
+                      'Missing (mandatory) for a CQC Registered site',
+                      ['LocationID']
+                  ));
+                  this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
+              }
+          }
+
+          // prov id can be null for a Non-CQC site - CANNOT IMPOSE THIS PROPERTY AS IT IS NOT YET COMING FROM REGISTRATION
+          // if (this._isRegulated && this._provId === null) {
+          //   allExistAndValid = false;
+          //   this._validations.push(new ValidationMessage(
+          //       ValidationMessage.ERROR,
+          //       106,
+          //       'Missing (mandatory) for a CQC Registered site',
+          //       ['ProvID']
+          //   ));
+          //   this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Prov ID for a (CQC) Regulated workspace');
+          // }
 
         } catch (err) {
             console.error(err)
         }
+      }
 
-        return allExistAndValid;
+      return allExistAndValid;
     }
 
     // returns true if this establishment is WDF eligible as referenced from the
@@ -892,8 +1540,8 @@ class Establishment {
         //  the WDF by property will show the current eligibility of each property
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-            isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
-            currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty !== 'No'),
+            isEligible: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No' && thisWdfProperty.isEligible === 'Yes' ? thisWdfProperty.updatedSinceEffectiveDate === true : true),
+            currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
             ... wdfByProperty
         };
     }
@@ -922,8 +1570,7 @@ class Establishment {
         return property &&
                (property.property !== null && property.property !== undefined) &&
                property.valid &&
-               referenceTime !== null &&
-               referenceTime > refEpoch;
+               referenceTime !== null;
     }
 
     // returns the WDF eligibility of each WDF relevant property as referenced from
@@ -933,20 +1580,22 @@ class Establishment {
         const effectiveFromEpoch = effectiveFrom.getTime();
 
         // employer type
-        myWdf['employerType'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType')) ? 'Yes' : 'No';
+        myWdf['employerType'] = {
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('EmployerType').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         // main service & Other Service & Service Capacities & Service Users
-        myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
-        
-        
-        console.log("WA DEBUG - other services check: ", this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')))
-        myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
+        myWdf['mainService'] = {
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('MainServiceFK').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)
         //   are capacities. Otherwise, it (capacities eligibility) is not relevant.
         // All Known Capacities is available from the CapacityServices property JSON
         const hasCapacities = this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').toJSON(false, false).allServiceCapacities.length > 0 : false;
-
+        let capacitiesEligible;
         if (hasCapacities) {
             // first validate whether any of the capacities are eligible - this is simply a check that capacities are valid.
             const capacitiesProperty = this._properties.get('CapacityServices');
@@ -963,24 +1612,49 @@ class Establishment {
             });
 
             if (mainServiceCapacities.length === 0) {
-                myWdf['capacities'] = capacitiesEligibility ? 'Yes' : 'No';
+                capacitiesEligible = 'Not relevant';
             } else {
                 // ensure all all main service's capacities have been answered - note, the can only be one Main Service capacity set
-                myWdf['capacities'] = mainServiceCapacities[0].questions.every(thisQuestion => thisQuestion.hasOwnProperty('answer')) ? 'Yes' : 'No';
+                capacitiesEligible = mainServiceCapacities[0].questions.every(thisQuestion => thisQuestion.hasOwnProperty('answer')) ? 'Yes' : 'No';
             }
 
-
-            myWdf['capacities'] = capacitiesEligibility ? 'Yes' : 'No';
         } else {
-            myWdf['capacities'] = 'Not relevant';
+            capacitiesEligible = 'Not relevant';
         }
-        myWdf['serviceUsers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? 'Yes' : 'No';
+
+        myWdf['capacities'] = {
+            isEligible: capacitiesEligible,
+            updatedSinceEffectiveDate: this._properties.get('CapacityServices').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['serviceUsers'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('ServiceUsers').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
 
         // vacancies, starters and leavers
-        myWdf['vacancies'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No';
-        myWdf['starters'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No';
-        myWdf['leavers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No';
-        
+        myWdf['vacancies'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('Vacancies').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['starters'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('Starters').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        myWdf['leavers'] = {
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('Leavers').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
+        let totalWorkerCount = await this.getTotalWorkers();
+
+        myWdf['numberOfStaff'] = {
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No',
+            updatedSinceEffectiveDate: this._properties.get('NumberOfStaff').toJSON(false, true, WdfCalculator.effectiveDate)
+        }
+
         return myWdf;
     }
 
@@ -993,6 +1667,348 @@ class Establishment {
             ... await this.isWdfEligible(effectiveFrom)
         };
         return myWDF;
+    }
+
+    // for the given establishment, updates the last bulk uploaded timestamp
+    static async bulkUploadSuccess(establishmentId) {
+      try {
+        await models.establishment.update(
+          {
+            lastBulkUploaded: new Date()
+          },
+          {
+            where: {
+              id: establishmentId
+            }
+          }
+        );
+      } catch (err) {
+        this._log(Establishment.LOG_ERROR, `bulkUploadSuccess - failed: ${err}`);
+      }
+    }
+
+
+    // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
+    static async fetchMyEstablishments(isParent, primaryEstablishmentId) {
+        // for each establishment, need:
+        //  1. Name
+        //  2. Main Service (by title)
+        //  3. Data Owner
+        //  4. Data Owner Permissions
+        //  5. Updated
+        //  6. UID (significantly to be able to navigate to the specific establishment)
+        //  7. ParentUID
+        let allSubResults = null;
+        let primaryEstablishmentRecord = null;
+
+        // first - get the user's primary establishment (every user will have a primary establishment)
+        const fetchResults = await models.establishment.findOne({
+            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
+            include: [
+                {
+                    model: models.services,
+                    as: 'mainService',
+                    attributes: ['id', 'name']
+                }
+            ],
+            where: {
+                "id": primaryEstablishmentId
+            }
+        });
+
+        if (fetchResults) {
+            // this is the primary establishemnt
+            primaryEstablishmentRecord = fetchResults;
+
+            // now, if the primary establishment is a parent
+            //  and if the user's role against their primary parent is Edit
+            //  fetch all other establishments associated with this parent
+            if (isParent) {
+                // get all subsidaries associated with this parent
+                allSubResults = await models.establishment.findAll({
+                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
+                    include: [
+                        {
+                            model: models.services,
+                            as: 'mainService',
+                            attributes: ['id', 'name']
+                        }
+                    ],
+                    where: {
+                        "parentUid": primaryEstablishmentRecord.uid
+                    },
+                    order: [
+                        ['updated','DESC']
+                    ]
+                });
+
+                // note - there is no error is there are no subs; an establishment can exist as a parent but with no subs
+            }
+            // else - do nothing - there is no error
+
+            // before returning, need to format the response
+            // explicit casting of local identifier to null if not yet set
+            const myEstablishments = {
+              primary: {
+                  uid: primaryEstablishmentRecord.uid,
+                  updated: primaryEstablishmentRecord.updated,
+                  isParent: primaryEstablishmentRecord.isParent,
+                  parentUid: primaryEstablishmentRecord.parentUid,
+                  name: primaryEstablishmentRecord.NameValue,
+                  localIdentifier: primaryEstablishmentRecord.LocalIdentifierValue ? primaryEstablishmentRecord.LocalIdentifierValue : null,
+                  mainService: primaryEstablishmentRecord.mainService.name,
+                  dataOwner: primaryEstablishmentRecord.dataOwner,
+                  parentPermissions: isParent ? undefined : primaryEstablishmentRecord.parentPermissions,
+              }
+            };
+
+            if (allSubResults && allSubResults.length > 0) {
+              myEstablishments.subsidaries = {
+                count: allSubResults.length,
+                establishments: allSubResults.map(thisSub => {
+                  return {
+                      uid: thisSub.uid,
+                      updated: thisSub.updated,
+                      parentUid: thisSub.parentUid,
+                      name: thisSub.NameValue,
+                      localIdentifier: thisSub.LocalIdentifierValue ? thisSub.LocalIdentifierValue : null,
+                      mainService: thisSub.mainService.name,
+                      dataOwner: thisSub.dataOwner,
+                      parentPermissions: thisSub.parentPermissions,
+                  };
+                })
+              };
+            }
+
+            return myEstablishments;
+
+
+        } else {
+            return false;
+        }
+    }
+
+    // a helper function that updates the establishment and adds the necessary audit events
+    //  https://trello.com/c/Z93EZqyB - requires that when updating local identifier, the
+    //                                  establishment's own `updated` timestamp is not is to
+    //                                  be updated
+    async _updateLocalIdOnEstablishment(thisGivenEstablishment, transaction, updatedTimestamp, username, allAuditEvents) {
+
+      const updatedEstablishment = await models.establishment.update(
+        {
+          LocalIdentifierValue: thisGivenEstablishment.value,
+          LocalIdentifierSavedBy: username,
+          LocalIdentifierChangedBy: username,
+          LocalIdentifierSavedAt: updatedTimestamp,
+          LocalIdentifierChangedAt: updatedTimestamp,
+        },
+        {
+          returning: true,
+          where: {
+              uid: thisGivenEstablishment.uid
+          },
+          attributes: ['id', 'updated'],
+          transaction,
+        }
+      );
+
+      if (updatedEstablishment[0] === 1) {
+        const updatedRecord = updatedEstablishment[1][0].get({plain: true});
+
+        // two for the LocalIdentifier property (saved and changed)
+        allAuditEvents.push({
+          establishmentFk: updatedRecord.EstablishmentID,
+          username,
+          type: 'saved',
+          property: 'LocalIdentifier',
+        });
+        allAuditEvents.push({
+          establishmentFk: updatedRecord.EstablishmentID,
+          username,
+          type: 'changed',
+          property: 'LocalIdentifier',
+          event: {
+            new: thisGivenEstablishment.value
+          }
+        });
+      }
+    };
+
+
+    // update the local identifiers across multiple establishments; this establishment being the primary with 0 or more subs
+    //   - can only update the local identifier on subs "owned" by this given primary establishment
+    //  - When updating the local identifier, the local identifier property itself is audited, but the establishment's own
+    //    "updated" status is not updated
+    async bulkUpdateLocalIdentifiers(username, givenLocalIdentifiers) {
+      try {
+
+        const myEstablishments = await Establishment.fetchMyEstablishments(this.isParent, this.id);
+
+        // create a list of those establishment UIDs - the user will only be able to update the local identifier for which they own
+        const myEstablishmentUIDs = [];
+        myEstablishmentUIDs.push({
+          uid: myEstablishments.primary.uid,
+          localIdentifier: myEstablishments.primary.localIdentifier,
+        });
+
+        if (myEstablishments.subsidaries) {
+          myEstablishments.subsidaries.establishments.forEach(thisEst => {
+            // only those subs "owned" by this parent
+            thisEst.dataOwner === 'Parent' ? myEstablishmentUIDs.push({
+              uid: thisEst.uid,
+              localIdentifier: thisEst.localIdentifier,
+            }) : true;
+          });
+        }
+
+
+        // within one transaction
+        const updatedTimestamp = new Date();
+        const updatedUids = [];
+
+        // now note - there is no such thing as a bulk update (except when joing data between two tables on the database)
+        //   so when iterating through the local identifiers, check if the local identifier has changed before issuing
+        //   any update!
+
+        await models.sequelize.transaction(async t => {
+          const dbUpdatePromises = [];
+          const allAuditEvents = [];
+          givenLocalIdentifiers.forEach(thisGivenEstablishment => {
+            if (thisGivenEstablishment && thisGivenEstablishment.uid) {
+              const foundEstablishment = myEstablishmentUIDs.find(thisEst => thisEst.uid === thisGivenEstablishment.uid);
+
+              // only if the found and given local identifiers are not equal, then update the record
+              if (foundEstablishment && foundEstablishment.localIdentifier !== thisGivenEstablishment.value) {
+                const updateThisEstablishment = this._updateLocalIdOnEstablishment(thisGivenEstablishment, t, updatedTimestamp, username, allAuditEvents);
+                dbUpdatePromises.push(updateThisEstablishment);
+                updatedUids.push(thisGivenEstablishment);
+              } else if (foundEstablishment) {
+                updatedUids.push(thisGivenEstablishment);
+              } else {
+                // no found - just silently ignore
+              }
+            }
+          });
+
+          // wait for all updates to finish
+          await Promise.all(dbUpdatePromises);
+          await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: t});
+        });
+
+        return updatedUids;
+
+      } catch (err) {
+        console.error('Establishment::bulkUpdateLocalIdentifiers error: ', err);
+        throw err;
+      }
+
+    };
+
+    // returns all true if establishments (subs only owned by this parent) and workers associated to them
+    //  local identifier is not null (has been set), otherwise returns false
+    async missingLocalIdentifiers() {
+      try {
+        // NOTE - req.establishmentId is an assured integer from authorisation middleware
+        //        and consequently the value is assured and thus the queries below not at risk
+        //        from SQL injection
+
+        const missingEstablishmentsQuery = `
+          select "EstablishmentID", "EstablishmentUID", "NameValue", "LocalIdentifierValue"
+          from cqc."Establishment"
+          where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+            and "Archived" = false
+            and "LocalIdentifierValue" is null"
+          order by "EstablishmentID"`;
+
+        const missingWorkersQuery = `
+            select
+                "EstablishmentID",
+                "EstablishmentUID",
+                "NameValue",
+                "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
+                "Worker"."ID" AS "WorkerID",
+                "WorkerUID",
+                "NameOrIdValue",
+                "Worker"."LocalIdentifierValue" AS "WorkerLocal"
+              from cqc."Establishment"
+                inner join cqc."Worker" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
+              where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+                and "Establishment"."Archived" = false
+                and "Worker"."Archived" = false
+                and "Worker"."LocalIdentifierValue" is null
+              order by "EstablishmentID", "NameOrIdValue"`;
+
+        const query = `
+          select count(0) as "Total"
+          from cqc."Establishment"
+            inner join cqc."Worker" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
+          where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+            and "Establishment"."Archived" = false
+            and "Worker"."Archived" = false
+            and ("Establishment"."LocalIdentifierValue" is null OR "Worker"."LocalIdentifierValue" is null)`;
+
+        const missingEstablishmentsWithWorkerCountQuery = `
+            select
+            "Establishment"."EstablishmentID",
+            "EstablishmentUID",
+            "NameValue",
+            "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
+            CASE WHEN "WorkerTotals"."TotalWorkers" IS NULL THEN 0 ELSE "WorkerTotals"."TotalWorkers" END AS "TotalWorkers"
+          from cqc."Establishment"
+            left join
+            (
+              select
+                "EstablishmentID",
+                count(0) AS "TotalWorkers"
+              from cqc."Worker"
+                inner join cqc."Establishment" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
+              where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+              and "Worker"."Archived" = false
+              and "Worker"."LocalIdentifierValue" is null
+              group by "EstablishmentID"
+            ) "WorkerTotals" on "WorkerTotals"."EstablishmentID" = "Establishment"."EstablishmentID"
+          where (("Establishment"."EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+            and "Establishment"."Archived" = false
+            and ("Establishment"."LocalIdentifierValue" is null)`;
+
+        const results = await models.sequelize.query(
+            missingEstablishmentsWithWorkerCountQuery,
+            {
+              type: models.sequelize.QueryTypes.SELECT
+            }
+          );
+
+        // note - postgres returns the Total as a string not an integer
+        // eg.:
+        // [ { EstablishmentID: 30,
+        //     EstablishmentUID: '2d3fcc78-c9e8-4723-8927-a9c11988ba51',
+        //     NameValue: 'WOZiTech Rest Home for IT Professionals',
+        //     EstablishmentLocal: null,
+        //     TotalWorkers: '0' },
+        //   { EstablishmentID: 104,
+        //     EstablishmentUID: 'defefda6-9730-4c72-a505-6807ded10c21',
+        //     NameValue: 'WOZiTech Cares Sub 2',
+        //     EstablishmentLocal: 'BOB2',
+        //     TotalWorkers: '1' } ]
+        //
+        const missingEstablishments = [];
+        if (results && Array.isArray(results)) {
+            results.forEach(thisEstablishment => {
+                const totalWorkers = parseInt(thisEstablishment.TotalWorkers);
+                missingEstablishments.push({
+                    uid: thisEstablishment.EstablishmentUID,
+                    name: thisEstablishment.NameValue,
+                    missing: thisEstablishment.EstablishmentLocal === null ? true : undefined,
+                    workers: totalWorkers,
+                });
+            })
+        }
+
+        return missingEstablishments;
+      } catch (err) {
+        console.error('Establishment::missingLocalIdentifiers error: ', err);
+        throw err;
+      }
     }
 };
 

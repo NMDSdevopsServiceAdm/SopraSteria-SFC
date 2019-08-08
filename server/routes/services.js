@@ -132,6 +132,7 @@ function createServicesJSON(results){
       serviceId: data.id,
       category: data.category,
       name: data.name,
+      other: data.other ? true : undefined      
       // cqcRegistered: data.iscqcregistered,
       // capacityQuestion: data.capacityquestion,
       // currentUptakeQuestion: data.currentuptakequestion

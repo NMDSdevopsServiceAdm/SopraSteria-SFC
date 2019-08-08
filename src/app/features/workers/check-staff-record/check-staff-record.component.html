@@ -1,20 +1,14 @@
-<div class="sub-page-container col-12">
-  <div id="back" class="back-link">
-    <a href="#" (click)="goBack($event)"> <span class="arrow"></span>Back </a>
-  </div>
+<ng-container *ngIf="worker">
+  <h1 class="govuk-heading-xl">
+    <span class="govuk-caption-xl">Staff record summary</span>
+    {{ worker.nameOrId }}
+  </h1>
 
-  <ng-container *ngIf="worker">
-    <h2 class="heading-caption text-weight-normal">Staff record summary</h2>
-    <h1 class="h1">{{ worker.nameOrId }}</h1>
+  <p class="govuk-!-margin-bottom-8">
+    Before saving this staff record, check the information you have provided is correct.
+  </p>
 
-    <p class="mb-5">Before saving this staff record, check the information you have provided is correct.</p>
+  <app-staff-record-summary [workplace]="workplace" [worker]="worker"></app-staff-record-summary>
 
-    <app-staff-record-summary [worker]="worker"></app-staff-record-summary>
-
-    <div class="btn-container container">
-      <div class="row">
-        <button type="button" (click)="saveAndComplete()" class="btn btn-primary">Save and complete</button>
-      </div>
-    </div>
-  </ng-container>
-</div>
+  <button type="button" class="govuk-button" (click)="saveAndComplete()">Save and complete</button>
+</ng-container>

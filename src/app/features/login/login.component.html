@@ -1,64 +1,66 @@
+<app-error-summary
+  *ngIf="(form.invalid || serverError) && submitted"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+>
+</app-error-summary>
 
-<div class="main-page-container col-12">
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">
+        Sign In
+      </h1>
+    </legend>
 
-  <form novalidate
-        (ngSubmit)="onSubmit()"
-        [formGroup]="loginForm">
-
-    <h1 class="h1">Sign in</h1>
-
-    <app-messages></app-messages>
-
-    <div class="form-group mb-5">
-      <div class="field-group mb-5">
-        <label for="username" class="d-block">Username</label>
-        <input type="text"
-               placeholder=""
-               id="username"
-               formControlName="username"
-               class="form-control col-12 col-lg-6"
-               [ngClass]="{'is-invalid': (loginForm.get('username').touched ||
-                                            loginForm.get('username').dirty) &&
-                                            !loginForm.get('username').valid }" />
-        <span class="invalid-feedback">
-          <span *ngIf="loginForm.get('username').errors?.required" class="main-body-text">
-            Please enter your Username.
-          </span>
-          <span *ngIf="loginForm.get('username').errors?.maxlength" class="main-body-text">
-            The Username must be no longer than 3 characters.
-          </span>
-        </span>
-      </div>
-      <div class="field-group">
-        <label for="password" class="d-block">Password</label>
-        <input type="password"
-               placeholder=""
-               id="password"
-               formControlName="password"
-               class="form-control col-12 col-lg-6"
-               [ngClass]="{'is-invalid': (loginForm.get('password').touched ||
-                                            loginForm.get('password').dirty) &&
-                                            !loginForm.get('password').valid }" />
-        <span class="invalid-feedback">
-          <span *ngIf="loginForm.get('password').errors?.required" class="main-body-text">
-            Please enter your Password.
-          </span>
-          <span *ngIf="loginForm.get('password').errors?.maxlength" class="main-body-text">
-            The Password must be no longer than 3 characters.
-          </span>
-        </span>
-      </div>
+    <div
+      class="govuk-form-group"
+      [class.govuk-form-group--error]="(form.get('username').errors || serverError) && submitted"
+    >
+      <label class="govuk-label" for="username">
+        Username
+      </label>
+      <span id="username-error" class="govuk-error-message" *ngIf="form.get('username').errors && submitted">
+        <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('username', 'required') }}
+      </span>
+      <input
+        class="govuk-input govuk-input--width-20"
+        [class.govuk-input--error]="(form.get('username').errors || serverError) && submitted"
+        id="username"
+        name="username"
+        type="text"
+        [formControlName]="'username'"
+      />
     </div>
 
-    <div class="btn-container">
-      <button class="btn btn-primary">Sign In</button>
+    <div
+      class="govuk-form-group"
+      [class.govuk-form-group--error]="(form.get('password').errors || serverError) && submitted"
+    >
+      <label class="govuk-label" for="password">
+        Password
+      </label>
+      <span id="password-error" class="govuk-error-message" *ngIf="form.get('password').errors && submitted">
+        <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('password', 'required') }}
+      </span>
+      <input
+        class="govuk-input govuk-input--width-20"
+        [class.govuk-input--error]="(form.get('password').errors || serverError) && submitted"
+        id="password"
+        name="password"
+        type="password"
+        [formControlName]="'password'"
+      />
     </div>
+  </fieldset>
 
-  </form>
+  <button type="submit" class="govuk-button">
+    Sign In
+  </button>
+</form>
 
-  <ul class="login-nav-list">
-    <li><a routerLink="/forgot-your-password">Forgot your password?</a></li>
-    <li><a routerLink="/registered-question" title="Create an account">Create an account</a></li>
-  </ul>
-
-</div>
+<ul class="govuk-list">
+  <li><a [routerLink]="['/forgot-your-password']">Forgot your password?</a></li>
+  <!--<li><a [routerLink]="['/registration', 'start']">Create an account</a></li>-->
+</ul>

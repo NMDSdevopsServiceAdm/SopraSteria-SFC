@@ -1,0 +1,19 @@
+<ng-container *ngIf="wdfView && wdfValue.isEligible === ELIGIBILITY.NO; else answer">
+  <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
+</ng-container>
+
+<ng-template #answer>
+  <div
+    [class.govuk-util__bold]="
+      wdfView && !wdfValue?.updatedSinceEffectiveDate && wdfValue.isEligible === ELIGIBILITY.YES
+    "
+  >
+    <ng-content></ng-content>
+    <div
+      *ngIf="wdfView && !wdfValue?.updatedSinceEffectiveDate && wdfValue.isEligible === ELIGIBILITY.YES"
+      class="govuk-!-margin-top-2"
+    >
+      <app-eligibility-icon [eligible]="false" [check]="true"></app-eligibility-icon>
+    </div>
+  </div>
+</ng-template>

@@ -1,63 +1,96 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MessageService } from '@core/services/message.service';
+
+import { Question } from '../question/question.component';
 
 @Component({
   selector: 'app-type-of-employer',
   templateUrl: './type-of-employer.component.html',
-  styleUrls: ['./type-of-employer.component.scss'],
 })
-export class TypeOfEmployerComponent implements OnInit, OnDestroy {
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private establishmentService: EstablishmentService,
-    private messageService: MessageService
-  ) {}
-
-  form: FormGroup;
-  employerName: string;
-
-  options = [
+export class TypeOfEmployerComponent extends Question {
+  public options = [
     'Local Authority (adult services)',
     'Local Authority (generic/other)',
     'Private Sector',
     'Voluntary / Charity',
     'Other',
   ];
+  public maxLength = 120;
 
-  private subscriptions = [];
+  constructor(
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService
+  ) {
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
-  submitHandler() {
-    if (this.form.valid) {
-      this.subscriptions.push(
-        this.establishmentService
-          .postEmployerType(this.form.value)
-          .subscribe(() => this.router.navigate(['/workplace', 'select-other-services']))
-      );
-    } else {
-      this.messageService.clearError();
-      this.messageService.show('error', 'Please fill the required fields.');
-    }
-  }
-
-  ngOnInit() {
-    this.form = this.fb.group({
+    this.form = this.formBuilder.group({
       employerType: ['', Validators.required],
+      other: [null, Validators.maxLength(this.maxLength)],
     });
-
-    this.subscriptions.push(
-      this.establishmentService.getEmployerType().subscribe(d => {
-        this.employerName = d.name;
-        this.form.patchValue(d);
-      })
-    );
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-    this.messageService.clearAll();
+  protected init(): void {
+    if (this.establishment.employerType) {
+      this.form.patchValue({
+        employerType: this.establishment.employerType.value,
+        other: this.establishment.employerType.other,
+      });
+    }
+
+    this.next = ['/workplace', `${this.establishment.uid}`, 'other-services'];
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'start'];
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'employerType',
+        type: [
+          {
+            name: 'required',
+            message: 'Please select an Employer type',
+          },
+        ],
+      },
+      {
+        item: 'other',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Other Employer type must be ${this.maxLength} characters or less`,
+          },
+        ],
+      },
+    ];
+  }
+
+  generateUpdateProps() {
+    const { employerType, other } = this.form.value;
+
+    return employerType
+      ? {
+          employerType: {
+            value: employerType,
+            ...(employerType === 'Other' && {
+              other,
+            }),
+          },
+        }
+      : null;
+  }
+
+  updateEstablishment(props) {
+    this.subscriptions.add(
+      this.establishmentService
+        .updateTypeOfEmployer(this.establishment.uid, props)
+        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+    );
   }
 }

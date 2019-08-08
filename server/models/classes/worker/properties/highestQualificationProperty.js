@@ -44,14 +44,18 @@ exports.WorkerHighestQualificationProperty = class WorkerHighestQualificationPro
         return currentValue && newValue && currentValue.qualificationId === newValue.qualificationId;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 highestQualification: this.property
             };
         }
-        
+
         return {
             highestQualification : {
                 currentValue: this.property,

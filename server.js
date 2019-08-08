@@ -4,8 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var proxy = require('express-http-proxy');          // for service public/download content
 
 // app config
+var AppConfig = require('./server/config/appConfig');
 var config = require('./server/config/config');
 
 // caching middleware - ref and transactional
@@ -39,19 +41,48 @@ var user = require('./server/routes/accounts/user');
 var workerLeaveReasons = require('./server/routes/workerReason');
 var serviceUsers = require('./server/routes/serviceUsers');
 var workingTrainingCategories = require('./server/routes/workerTrainingCategories');
+var nurseSpecialism = require('./server/routes/nurseSpecialism');
+var availableQualifications = require('./server/routes/availableQualifications');
+
+// admin route
+var admin = require('./server/routes/admin');
 
 // reports
 var ReportsRoute = require('./server/routes/reports/index');
 
 var errors = require('./server/routes/errors');
 
+// Kinesis and SNS
+const AWSKinesis = require('./server/aws/kinesis');
+const AWSsns = require('./server/aws/sns');
+AWSKinesis.initialise(config.get('aws.region'));
+AWSsns.initialise(config.get('aws.region'));
+
 // test only routes - helpers to setup and execute automated tests
 var testOnly = require('./server/routes/testOnly');
 
-
 var app = express();
 
-/*  
+
+/* public/download - proxy interception */
+const publicDownloadBaseUrl = config.get('public.download.baseurl');
+app.use('/public/download', proxy(
+    publicDownloadBaseUrl,
+    {
+        proxyReqPathResolver: function (req) {
+          const updatedPath = publicDownloadBaseUrl + req.url;
+          //console.log("public/download proxy API request to: ", `${updatedPath}`)
+          return updatedPath;
+        }
+    }
+));
+
+// redirect the admin application
+app.use('/admin', (req, res) => {
+  res.redirect(301, config.get('admin.url'));
+});
+
+/*
  * security - incorproate helmet & xss-clean (de facto/good practice headers) across all endpoints
  */
 
@@ -92,7 +123,7 @@ app.use('/api', helmet({
 // encodes all URL parameters
 app.use(unless('/api', 'test', xssClean()));
 
-/*  
+/*
  * end security
  */
 
@@ -105,13 +136,13 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-/*  
+/*
  * security - removes unwanted HTML from data
  */
 
 app.use('/api/test', sanitizer());       // used as demonstration on test routes only
 
-/*  
+/*
  * end security
  */
 
@@ -146,6 +177,8 @@ app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveReasons]);
 app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
 app.use('/api/trainingCategories', [refCacheMiddleware.refcache, workingTrainingCategories]);
+app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
+app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
@@ -159,6 +192,7 @@ app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 
+app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
@@ -195,11 +229,19 @@ app.use(function(err, req, res, next) {
     });
 });
 
-var debug = require('debug')('server');
-const listenPort = parseInt(config.get('listen.port'), 10);
-app.set('port', listenPort);
-app.listen(app.get('port'));
+const startApp = () => {
+    const listenPort = parseInt(config.get('listen.port'), 10);
+    app.set('port', listenPort);
+    app.listen(app.get('port'));
+    console.log('Listening on port: ' + app.get('port'));
+};
 
-console.log('Listening on port: ' + app.get('port'));
+if (AppConfig.ready) {
+    startApp();
+} else {
+    AppConfig.on(AppConfig.READY_EVENT, () => {
+        startApp();
+    });
+}
 
 module.exports = app;

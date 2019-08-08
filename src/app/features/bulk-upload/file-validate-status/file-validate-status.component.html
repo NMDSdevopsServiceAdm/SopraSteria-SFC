@@ -1,0 +1,20 @@
+<p
+  class="govuk-!-margin-0 govuk-!-padding-top-1 govuk-!-padding-right-2 govuk-!-padding-bottom-1 govuk-!-padding-left-2"
+  [class.govuk-file-validate-status--validating]="status === statusEnum.Validating"
+  [class.govuk-file-validate-status--pass]="status === statusEnum.Pass"
+  [class.govuk-file-validate-status--fail]="status === statusEnum.Fail"
+  [class.govuk-util__align-center]="status === statusEnum.Pass || statusEnum.Fail"
+>
+  <ng-container *ngIf="status; else idle">
+    <img
+      *ngIf="status !== statusEnum.Validating"
+      [attr.src]="'/assets/images/' + getIconByStatus(status) + '-icon-white.svg'"
+      alt=""
+      class="govuk-!-padding-right-1"
+    />
+    {{ status }}
+  </ng-container>
+  <ng-template #idle>
+    -
+  </ng-template>
+</p>

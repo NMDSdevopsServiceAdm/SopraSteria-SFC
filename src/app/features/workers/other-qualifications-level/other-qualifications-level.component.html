@@ -1,40 +1,52 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a [routerLink]="['/worker', worker.uid, backLink]">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-  <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="form">
-
-    <header>
-      <h1 class="h1">What is the highest level of their other qualifications?</h1>
-    </header>
-
-    <app-details title="Help with qualification levels">
-      <p class="main-body-text">
-        You can find more information about qualification levels here:<br />
-        <a target="_blank" href="https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels">
-          https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels
-        </a>
-      </p>
-    </app-details>
-
-    <app-messages></app-messages>
-
-    <div class="field-group mb-5">
-      <label>Qualification level
-        <select formControlName="qualification" class="form-control">
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('qualification').invalid">
+        <h1 class="govuk-label-wrapper">
+          <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="qualification">
+            What is the highest level of their other qualifications?
+          </label>
+        </h1>
+        <app-details [title]="'Help with qualification levels'">
+          <p>You can find more information about qualification levels here:</p>
+          <p>
+            <a
+              target="_blank"
+              href="https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels"
+            >
+              https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels
+              <span class="govuk-visually-hidden">, (opens in a new window)</span>
+            </a>
+          </p>
+        </app-details>
+        <label class="govuk-label" for="qualification">
+          Qualification level
+        </label>
+        <span
+          *ngIf="submitted && form.get('qualification').errors"
+          id="qualification-error"
+          class="govuk-error-message"
+        >
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFormErrorMessage('qualification', 'required') }}
+        </span>
+        <select
+          class="govuk-select"
+          [class.govuk-select--error]="submitted && form.get('qualification').invalid"
+          [formControlName]="'qualification'"
+          id="qualification"
+          name="qualification"
+        >
           <option [ngValue]="null">Select Qualification Level</option>
           <option *ngFor="let qualification of qualifications" [value]="qualification.id">
-            {{qualification.level}}
+            {{ qualification.level }}
           </option>
         </select>
-      </label>
+      </div>
     </div>
+  </div>
 
-    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
-  </form>
-</div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

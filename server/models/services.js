@@ -24,6 +24,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: true,
       field: 'ismain'
+    },
+    other: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      default: false,
+      field: '"other"'
     }
   }, {
     tableName: 'services',

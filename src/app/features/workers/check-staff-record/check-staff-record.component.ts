@@ -1,8 +1,9 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -11,40 +12,40 @@ import { take } from 'rxjs/operators';
   templateUrl: './check-staff-record.component.html',
 })
 export class CheckStaffRecordComponent implements OnInit {
-  private worker: Worker;
+  public worker: Worker;
+  public workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private router: Router, private location: Location, private workerService: WorkerService) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private location: Location,
+    private workerService: WorkerService
+  ) {}
 
   ngOnInit() {
+    this.workplace = this.route.parent.snapshot.data.establishment;
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
     });
   }
 
-  async saveAndComplete() {
-    try {
-      await this.setWorkerCompleted();
+  saveAndComplete() {
+    const props = {
+      completed: true,
+    };
 
-      this.router.navigate(['/worker/save-success']);
-    } catch (err) {
-      // keep typescript transpiler silent
-    }
-  }
-
-  setWorkerCompleted(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const props = {
-        completed: true,
-      };
-
-      this.subscriptions.add(
-        this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+    this.subscriptions.add(
+      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
+        data => {
           this.workerService.setState({ ...this.worker, ...data });
-          resolve();
-        }, reject)
-      );
-    });
+          this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'save-success']);
+        },
+        error => {
+          console.log(error);
+        }
+      )
+    );
   }
 
   goBack(event) {

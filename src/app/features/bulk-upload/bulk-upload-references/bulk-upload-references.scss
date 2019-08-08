@@ -1,0 +1,11 @@
+@import '~src/assets/scss/partials/colors';
+
+.govuk__reference-grid-error {
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+
+.govuk__reference-subsidiary-name {
+  grid-column-start: 1;
+  grid-column-end: 3;
+}

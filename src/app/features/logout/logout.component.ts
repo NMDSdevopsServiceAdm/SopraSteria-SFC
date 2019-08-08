@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '@core/services/auth-service';
+import { AuthService } from '@core/services/auth.service';
 import { IdleService } from '@core/services/idle.service';
 
 @Component({
@@ -8,12 +7,8 @@ import { IdleService } from '@core/services/idle.service';
   templateUrl: './logout.component.html',
 })
 export class LogoutComponent {
-  constructor(private router: Router, private idleService: IdleService, private authService: AuthService) {
+  constructor(private idleService: IdleService, private authService: AuthService) {
     this.authService.logoutWithoutRouting();
     this.idleService.clear();
-  }
-
-  login() {
-    this.router.navigate(['/login']);
   }
 }

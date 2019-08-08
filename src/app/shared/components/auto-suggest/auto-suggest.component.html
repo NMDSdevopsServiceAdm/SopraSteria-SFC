@@ -1,8 +1,8 @@
-<div [formGroup]="formGroup">
-  <input type="text" [formControlName]="formControlName" placeholder="{{placeholder}}" class="form-control" />
-  <ul class="pl-0 pr-0 col-12" (click)="suggestClickHandler($event)">
-    <li *ngFor="let item of dataProvider()">
-      <span>{{item}}</span>
+<div [formGroup]="formGroup" class="govuk-auto-suggest">
+  <input class="govuk-input" [formControlName]="formControlName" [attr.id]="formControlName" [attr.name]="formControlName" type="text" />
+  <ul *ngIf="dataProvider().length > 0">
+    <li *ngFor="let item of dataProvider()" (click)="onClick(item)">
+      {{ item }}
     </li>
   </ul>
 </div>

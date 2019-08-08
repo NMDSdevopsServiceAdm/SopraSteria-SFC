@@ -14,11 +14,11 @@ exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype 
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.jobs && document.jobs.leavers) {
+        if (document.leavers) {
             const jobDeclaration = ["None", "Don't know"];
             // can be an empty array
-            if (Array.isArray(document.jobs.leavers)) {
-                const validatedJobs = await JobHelpers.validateJobs(document.jobs.leavers);
+            if (Array.isArray(document.leavers)) {
+                const validatedJobs = await JobHelpers.validateJobs(document.leavers);
 
                 if (validatedJobs) {
                     this.property = validatedJobs;
@@ -26,8 +26,8 @@ exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype 
                 } else {
                     this.property = null;
                 }
-            } else if (jobDeclaration.includes(document.jobs.leavers)) {
-                this.property = document.jobs.leavers;
+            } else if (jobDeclaration.includes(document.leavers)) {
+                this.property = document.leavers;
             } else {
                 // but it must at least be an array, or one of the known enums
                 this.property = null;
@@ -113,19 +113,23 @@ exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype 
         }
     }
 
-    toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {
         const jsonPresentation = JobHelpers.formatJSON(this.property, 'Leavers', 'TotalLeavers');
 
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
-            // simple form - includes 
+            // simple form - includes
             return {
-                Leavers: jsonPresentation.Leavers,
-                TotalLeavers: jsonPresentation.TotalLeavers
+                leavers: jsonPresentation.Leavers,
+                totalLeavers: jsonPresentation.TotalLeavers
             };
         }
 
         return {
-            Leavers: {
+            leavers: {
                 currentValue: jsonPresentation.Leavers,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }

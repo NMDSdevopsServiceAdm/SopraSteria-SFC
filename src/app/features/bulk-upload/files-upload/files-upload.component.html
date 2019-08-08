@@ -1,0 +1,46 @@
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="form.invalid && submitted">
+    <label class="govuk-label govuk-visually-hidden" for="fileUpload">
+      Choose files
+    </label>
+    <span *ngIf="form.invalid && submitted" id="fileUpload-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('fileUpload') }}
+    </span>
+    <input
+      class="govuk-file-upload"
+      [class.govuk-file-upload--error]="form.invalid && submitted"
+      id="fileUpload"
+      name="fileUpload"
+      type="file"
+      [formControlName]="'fileUpload'"
+      (change)="onFilesSelection($event)"
+      multiple
+    />
+  </div>
+
+  <app-selected-files-list *ngIf="!filesUploaded"></app-selected-files-list>
+
+  <div class="govuk-!-margin-top-6" *ngIf="!filesUploading && !filesUploaded">
+    <button type="submit" class="govuk-button">
+      Upload files
+    </button>
+
+    <button
+      *ngIf="selectedFiles?.length"
+      type="button"
+      class="govuk-button govuk-button--link govuk-!-margin-left-8"
+      (click)="removeFiles()"
+    >
+      Remove files
+    </button>
+  </div>
+</form>
+
+<div class="govuk-grid-row" *ngIf="filesUploading">
+  <div class="govuk-grid-column-full">
+    <div role="status" class="govuk-util__normal govuk-!-font-size-19 govuk-util__inline-block">Files uploading</div>
+    <app-progress [value]="progress" max="100" class="govuk-!-margin-right-8 govuk-!-margin-left-8"></app-progress>
+  </div>
+</div>
+
+<app-uploaded-files-list *ngIf="filesUploaded"></app-uploaded-files-list>

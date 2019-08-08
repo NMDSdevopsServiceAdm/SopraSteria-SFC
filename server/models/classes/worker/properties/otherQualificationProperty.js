@@ -35,14 +35,18 @@ exports.WorkerOtherQualificationProperty = class WorkerOtherQualificationPropert
         return currentValue && newValue && currentValue === newValue;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 otherQualification: this.property
             };
         }
-        
+
         return {
             otherQualification : {
                 currentValue: this.property,

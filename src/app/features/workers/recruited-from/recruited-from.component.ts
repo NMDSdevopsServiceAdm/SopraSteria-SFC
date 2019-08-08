@@ -1,133 +1,99 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Worker } from '@core/model/worker.model';
-import { MessageService } from '@core/services/message.service';
+import { Component } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RecruitmentResponse, RecruitmentService } from '@core/services/recruitment.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { isNull } from 'util';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-recruited-from',
   templateUrl: './recruited-from.component.html',
 })
-export class RecruitedFromComponent implements OnInit, OnDestroy {
+export class RecruitedFromComponent extends QuestionComponent {
   public availableRecruitments: RecruitmentResponse[];
-  public backLink: string;
-  public form: FormGroup;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private workerService: WorkerService,
-    private recruitmentService: RecruitmentService,
-    private messageService: MessageService
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService,
+    private recruitmentService: RecruitmentService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-    this.recruitedFromIdValidator = this.recruitedFromIdValidator.bind(this);
-  }
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
-  ngOnInit() {
     this.form = this.formBuilder.group({
       recruitmentKnown: null,
-      recruitedFromId: [null, this.recruitedFromIdValidator],
+      recruitedFromId: null,
     });
+  }
 
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
+  init() {
+    this.subscriptions.add(
+      this.form.get('recruitmentKnown').valueChanges.subscribe(val => {
+        this.form.get('recruitedFromId').clearValidators();
 
-      if (this.workerService.returnToSummary) {
-        this.backLink = 'summary';
-      } else {
-        this.backLink =
-          this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
-            ? 'country-of-birth'
-            : 'year-arrived-uk';
-      }
+        if (val === 'Yes') {
+          this.form.get('recruitedFromId').setValidators(Validators.required);
+        }
 
-      if (this.worker.recruitedFrom) {
-        const { value, from } = this.worker.recruitedFrom;
-        this.form.patchValue({
-          recruitmentKnown: value,
-          recruitedFromId: from ? from.recruitedFromId : null,
-        });
-      }
-    });
+        this.form.get('recruitedFromId').updateValueAndValidity();
+      })
+    );
 
     this.subscriptions.add(
       this.recruitmentService.getRecruitedFrom().subscribe(res => (this.availableRecruitments = res))
     );
 
-    this.subscriptions.add(
-      this.form.controls.recruitmentKnown.valueChanges.subscribe(val => {
-        this.form.controls.recruitedFromId.reset();
-        this.form.controls.recruitedFromId.updateValueAndValidity();
-      })
-    );
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
-  }
-
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-      this.router.navigate(['/worker', this.worker.uid, 'adult-social-care-started']);
-    } catch (err) {
-      // keep typescript transpiler silent
-    }
-  }
-
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { recruitedFromId, recruitmentKnown } = this.form.controls;
-      this.messageService.clearError();
-
-      if (this.form.valid) {
-        const props = {
-          ...(recruitmentKnown.value && {
-            recruitedFrom: {
-              value: recruitmentKnown.value,
-              ...(recruitedFromId.value && {
-                from: {
-                  recruitedFromId: parseInt(recruitedFromId.value, 10),
-                },
-              }),
-            },
-          }),
-        };
-
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        if (recruitedFromId.errors.required) {
-          this.messageService.show('error', `'Recruitment from' has to be provided.`);
-        }
-
-        reject();
-      }
-    });
-  }
-
-  recruitedFromIdValidator() {
-    if (this.form) {
-      const { recruitmentKnown, recruitedFromId } = this.form.controls;
-
-      if (recruitmentKnown.value === 'Yes' && isNull(recruitedFromId.value)) {
-        return { required: true };
-      }
+    if (this.worker.recruitedFrom) {
+      const { value, from } = this.worker.recruitedFrom;
+      this.form.patchValue({
+        recruitmentKnown: value,
+        recruitedFromId: from ? from.recruitedFromId : null,
+      });
     }
 
-    return null;
+    this.next = this.getRoutePath('adult-social-care-started');
+    this.previous =
+      this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
+        ? this.getRoutePath('country-of-birth')
+        : this.getRoutePath('year-arrived-uk');
+  }
+
+  setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'recruitedFromId',
+        type: [
+          {
+            name: 'required',
+            message: 'Recruitment from has to be provided.',
+          },
+        ],
+      },
+    ];
+  }
+
+  generateUpdateProps() {
+    const { recruitedFromId, recruitmentKnown } = this.form.value;
+
+    if (!recruitmentKnown) {
+      return null;
+    }
+
+    return {
+      recruitedFrom: {
+        value: recruitmentKnown,
+        ...(recruitedFromId && {
+          from: {
+            recruitedFromId: parseInt(recruitedFromId, 10),
+          },
+        }),
+      },
+    };
   }
 }

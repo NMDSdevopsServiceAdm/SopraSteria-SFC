@@ -1,0 +1,16 @@
+<ng-container *ngIf="establishment">
+  <h1 class="govuk-heading-xl">
+    <span class="govuk-caption-xl">Workplace summary</span>
+    {{ establishment.name }}
+  </h1>
+
+  <p class="govuk-!-margin-bottom-8">
+    Before saving this workplace record, check the information you have provided is correct.
+  </p>
+
+  <app-workplace-summary [workplace]="establishment" [return]="summaryReturnUrl"></app-workplace-summary>
+
+  <a class="govuk-button" role="button" draggable="false" [routerLink]="['/workplace', establishment.uid, 'success']">
+    Save and complete
+  </a>
+</ng-container>

@@ -1,141 +1,118 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Worker } from '@core/model/worker.model';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
 import { CountryResponse, CountryService } from '@core/services/country.service';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-country-of-birth',
   templateUrl: './country-of-birth.component.html',
 })
-export class CountryOfBirthComponent implements OnInit, OnDestroy {
-  public availableOtherCountries: CountryResponse[];
-  public backLink: string;
-  public form: FormGroup;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
+export class CountryOfBirthComponent extends QuestionComponent {
+  public availableCountries: CountryResponse[];
 
   constructor(
-    private workerService: WorkerService,
-    private countryService: CountryService,
-    private messageService: MessageService,
-    private formBuilder: FormBuilder,
-    private router: Router
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService,
+    private countryService: CountryService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-    this.cobNameValidator = this.cobNameValidator.bind(this);
-    this.cobNameFilter = this.cobNameFilter.bind(this);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+
+    this.countryOfBirthNameValidator = this.countryOfBirthNameValidator.bind(this);
+    this.countryOfBirthNameFilter = this.countryOfBirthNameFilter.bind(this);
+
+    this.form = this.formBuilder.group({
+      countryOfBirthKnown: null,
+      countryOfBirthName: null,
+    });
   }
 
-  ngOnInit() {
-    this.form = this.formBuilder.group({
-      cobKnown: null,
-      cobName: [null, this.cobNameValidator],
-    });
-
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
-
-      if (this.workerService.returnToSummary) {
-        this.backLink = 'summary';
-      } else {
-        this.backLink =
-          this.worker.nationality && this.worker.nationality.value === 'British'
-            ? 'nationality'
-            : 'british-citizenship';
-      }
-
-      if (this.worker.countryOfBirth) {
-        const { value, other } = this.worker.countryOfBirth;
-
-        this.form.patchValue({
-          cobKnown: value,
-          cobName: other ? other.country : null,
-        });
-      }
-    });
-
-    this.subscriptions.add(this.countryService.getCountries().subscribe(res => (this.availableOtherCountries = res)));
+  init() {
+    this.subscriptions.add(this.countryService.getCountries().subscribe(res => (this.availableCountries = res)));
 
     this.subscriptions.add(
-      this.form.controls.cobKnown.valueChanges.subscribe(() => {
-        this.form.controls.cobName.reset();
-        this.form.controls.cobName.updateValueAndValidity();
-      })
-    );
-  }
+      this.form.get('countryOfBirthKnown').valueChanges.subscribe(value => {
+        this.form.get('countryOfBirthName').clearValidators();
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
-  }
-
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-
-      const { cobKnown } = this.form.value;
-
-      if (cobKnown === 'United Kingdom') {
-        this.router.navigate(['/worker', this.worker.uid, 'recruited-from']);
-      } else {
-        this.router.navigate(['/worker', this.worker.uid, 'year-arrived-uk']);
-      }
-    } catch (err) {
-      // keep typescript transpiler silent
-    }
-  }
-
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { cobName, cobKnown } = this.form.controls;
-      this.messageService.clearError();
-
-      if (this.form.valid) {
-        const props = {
-          ...(cobKnown.value && {
-            countryOfBirth: {
-              value: cobKnown.value,
-              ...(cobName.value && {
-                other: {
-                  country: cobName.value,
-                },
-              }),
-            },
-          }),
-        };
-
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        if (cobName.errors.validCob) {
-          this.messageService.show('error', 'Invalid country of birth.');
+        if (value === 'Other') {
+          this.form.get('countryOfBirthName').setValidators([this.countryOfBirthNameValidator]);
         }
 
-        reject();
-      }
-    });
+        this.form.get('countryOfBirthName').updateValueAndValidity();
+      })
+    );
+
+    if (this.worker.countryOfBirth) {
+      const { value, other } = this.worker.countryOfBirth;
+
+      this.form.patchValue({
+        countryOfBirthKnown: value,
+        countryOfBirthName: other ? other.country : null,
+      });
+    }
+
+    this.previous =
+      this.worker.nationality && this.worker.nationality.value === 'British'
+        ? this.getRoutePath('nationality')
+        : this.getRoutePath('british-citizenship');
   }
 
-  cobNameValidator() {
-    if (this.form && this.availableOtherCountries) {
-      const { cobKnown } = this.form.value;
-      const cobName = this.form.controls.cobName.value;
+  setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'countryOfBirthName',
+        type: [
+          {
+            name: 'validCountryOfBirth',
+            message: 'Invalid country of birth.',
+          },
+        ],
+      },
+    ];
+  }
 
-      if (cobKnown === 'Other') {
-        if (cobName) {
-          const cobNameLowerCase = cobName.toLowerCase();
-          return this.availableOtherCountries.some(c => c.country.toLowerCase() === cobNameLowerCase)
+  generateUpdateProps() {
+    const { countryOfBirthName, countryOfBirthKnown } = this.form.value;
+
+    return countryOfBirthKnown
+      ? {
+          countryOfBirth: {
+            value: countryOfBirthKnown,
+            ...(countryOfBirthName && {
+              other: {
+                country: countryOfBirthName,
+              },
+            }),
+          },
+        }
+      : null;
+  }
+
+  onSuccess() {
+    this.next =
+      this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
+        ? this.getRoutePath('recruited-from')
+        : this.getRoutePath('year-arrived-uk');
+  }
+
+  countryOfBirthNameValidator() {
+    if (this.form && this.availableCountries) {
+      const { countryOfBirthKnown, countryOfBirthName } = this.form.controls;
+
+      if (countryOfBirthKnown.value === 'Other') {
+        if (countryOfBirthName.value) {
+          const countryOfBirthNameLowerCase = countryOfBirthName.value.toLowerCase();
+          return this.availableCountries.some(c => c.country.toLowerCase() === countryOfBirthNameLowerCase)
             ? null
-            : { validCob: true };
+            : { validCountryOfBirth: true };
         }
       }
     }
@@ -143,14 +120,14 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  cobNameFilter(): string[] {
-    const { cobName } = this.form.value;
+  countryOfBirthNameFilter(): string[] {
+    const { countryOfBirthName } = this.form.controls;
 
-    if (this.availableOtherCountries && cobName && cobName.length) {
-      const cobNameLowerCase = cobName.toLowerCase();
-      return this.availableOtherCountries
-        .filter(c => c.country.toLowerCase().startsWith(cobNameLowerCase))
-        .filter(c => c.country.toLowerCase() !== cobNameLowerCase)
+    if (this.availableCountries && countryOfBirthName.value && countryOfBirthName.value.length) {
+      const countryOfBirthNameLowerCase = countryOfBirthName.value.toLowerCase();
+      return this.availableCountries
+        .filter(c => c.country.toLowerCase().startsWith(countryOfBirthNameLowerCase))
+        .filter(c => c.country.toLowerCase() !== countryOfBirthNameLowerCase)
         .map(c => c.country);
     }
 

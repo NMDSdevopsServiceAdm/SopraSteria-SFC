@@ -1,88 +1,52 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Worker } from '@core/model/worker.model';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-gender',
   templateUrl: './gender.component.html',
 })
-export class GenderComponent implements OnInit, OnDestroy {
+export class GenderComponent extends QuestionComponent {
   public answersAvailable = ['Female', 'Male', 'Other', `Don't know`];
-  public form: FormGroup;
-  public backLink: string;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private workerService: WorkerService,
-    private messageService: MessageService
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-  }
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
-  ngOnInit() {
     this.form = this.formBuilder.group({
       gender: null,
     });
+  }
 
-    if (this.workerService.returnToSummary) {
-      this.backLink = 'summary';
-    } else {
-      this.backLink = 'home-postcode';
+  init() {
+    if (this.worker.gender) {
+      this.form.patchValue({
+        gender: this.worker.gender,
+      });
     }
 
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
-
-      if (this.worker.gender) {
-        this.form.patchValue({
-          gender: this.worker.gender,
-        });
-      }
-    });
+    this.next = this.getRoutePath('disability');
+    this.previous = this.getRoutePath('home-postcode');
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
-  }
+  generateUpdateProps() {
+    const { gender } = this.form.controls;
 
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-      this.router.navigate(['/worker', this.worker.uid, 'disability']);
-    } catch (err) {
-      // keep typescript transpiler silent
-    }
-  }
-
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { gender } = this.form.value;
-      this.messageService.clearError();
-
-      if (this.form.valid) {
-        const props = {
-          gender,
-        };
-
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        this.messageService.show('error', 'Please fill required fields.');
-        reject();
-      }
-    });
+    return gender.value
+      ? {
+          gender: gender.value,
+        }
+      : null;
   }
 }

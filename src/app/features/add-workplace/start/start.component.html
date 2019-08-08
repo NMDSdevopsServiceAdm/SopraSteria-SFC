@@ -1,0 +1,33 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-xl">Add a new workplace</h1>
+
+    <p>To add a new workplace you will need to tell us:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>whether it is regulated by the Care Quality Commission (CQC)</li>
+      <li>the name and address</li>
+      <li>the main service it provides</li>
+    </ul>
+
+    <p>
+      If the new workplace is CQC regulated, you will be able to create a user account to allow them to access their
+      dashboard.
+    </p>
+
+    <p>
+      We will try to approve this immediately. In some cases we might need to do more checks. This can take up to 24
+      hours.
+    </p>
+
+    <div class="govuk-button-group">
+      <a
+        [routerLink]="['/add-workplace/regulated-by-cqc']"
+        role="button"
+        draggable="false"
+        class="govuk-button govuk-button--start"
+      >
+        Start now
+      </a>
+    </div>
+  </div>
+</div>

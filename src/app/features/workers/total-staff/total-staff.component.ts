@@ -1,8 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MessageService } from '@core/services/message.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
@@ -13,66 +16,130 @@ import { Subscription } from 'rxjs';
 export class TotalStaffComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public returnToDash = false;
+  public submitted = false;
+  public workplace: Establishment;
+  public return: { url: any[] };
+  private totalStaffConstraints = { min: 0, max: 999 };
+  private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private messageService: MessageService,
+    private backService: BackService,
+    private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
     private workerService: WorkerService
-  ) {}
+  ) {
+    this.form = this.formBuilder.group({
+      totalStaff: [
+        null,
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]+$'),
+          Validators.min(this.totalStaffConstraints.min),
+          Validators.max(this.totalStaffConstraints.max),
+        ],
+      ],
+    });
+  }
 
   ngOnInit() {
-    this.returnToDash = this.workerService.totalStaffReturn;
+    this.workplace = this.route.parent.snapshot.data.establishment;
+    const primaryWorkplaceUid = this.route.snapshot.data.primaryWorkplace
+      ? this.route.snapshot.data.primaryWorkplace.uid
+      : null;
 
-    this.form = this.formBuilder.group({
-      totalStaff: [null, [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(0), Validators.max(999)]],
-    });
+    this.return =
+      this.workplace.uid === primaryWorkplaceUid
+        ? { url: ['/dashboard'] }
+        : { url: ['/workplace', this.workplace.uid] };
 
     this.subscriptions.add(
-      this.establishmentService.getStaff().subscribe(staff => {
+      this.establishmentService.getStaff(this.workplace.uid).subscribe(staff => {
         this.form.patchValue({ totalStaff: staff });
       })
     );
+
+    this.returnToDash = this.workerService.totalStaffReturn;
+
+    if (this.returnToDash) {
+      this.backService.setBackLink({ url: this.return.url, fragment: 'staff-records' });
+    } else if (this.workerService.returnTo) {
+      this.backService.setBackLink(this.workerService.returnTo);
+    } else {
+      this.backService.setBackLink({
+        url: ['/workplace', this.workplace.uid, 'staff-record', 'basic-records-start-screen'],
+      });
+    }
+
+    this.setupFormErrors();
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-    this.messageService.clearError();
     this.workerService.setTotalStaffReturn(false);
   }
 
-  onSubmit() {
-    const { totalStaff } = this.form.controls;
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
 
-    this.messageService.clearError();
+  public onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    if (this.form.valid) {
-      this.subscriptions.add(
-        this.establishmentService.postStaff(totalStaff.value).subscribe(
-          () => {
-            if (this.returnToDash) {
-              this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
-            } else {
-              this.router.navigate(['/worker', 'create-basic-records']);
-            }
-          },
-          error => {
-            this.messageService.show('error', 'Server Error');
-          }
-        )
-      );
-    } else {
-      if (totalStaff.errors.required) {
-        this.messageService.show('error', 'Total Staff is required');
-      } else if (totalStaff.errors.pattern) {
-        this.messageService.show('error', 'Total Staff must be a number');
-      } else if (totalStaff.errors.min) {
-        this.messageService.show('error', `Total Staff must be greater than or equal to ${totalStaff.errors.min.min}`);
-      } else if (totalStaff.errors.max) {
-        this.messageService.show('error', `Total Staff must be lower than or equal to ${totalStaff.errors.max.max}`);
-      }
+    if (!this.form.valid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
     }
+
+    const { totalStaff } = this.form.value;
+
+    this.subscriptions.add(
+      this.establishmentService
+        .postStaff(this.workplace.uid, totalStaff)
+        .subscribe(() => this.onSuccess(), error => this.onError(error))
+    );
+  }
+
+  private onSuccess() {
+    if (this.returnToDash) {
+      this.router.navigate(this.return.url, { fragment: 'staff-records' });
+    } else if (this.workerService.returnTo) {
+      this.router.navigate(this.workerService.returnTo.url);
+    } else {
+      this.router.navigate(['create-basic-records'], { relativeTo: this.route.parent });
+    }
+  }
+
+  private onError(error) {}
+
+  private setupFormErrors(): void {
+    this.formErrorsMap = [
+      {
+        item: 'totalStaff',
+        type: [
+          {
+            name: 'required',
+            message: 'Total Staff is required.',
+          },
+          {
+            name: 'min',
+            message: `Total Staff must be greater than or equal to ${this.totalStaffConstraints.min}`,
+          },
+          {
+            name: 'max',
+            message: `Total Staff must be lower than or equal to ${this.totalStaffConstraints.max}`,
+          },
+          {
+            name: 'pattern',
+            message: 'Total Staff must be a number.',
+          },
+        ],
+      },
+    ];
   }
 }

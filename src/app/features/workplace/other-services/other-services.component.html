@@ -1,0 +1,80 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [form]="form"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<form (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="renderForm">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Your services</h1>
+        </legend>
+
+        <p>You told us your main service is {{ establishment.mainService.name }}. Do you provide any other services?</p>
+        <div class="govuk-form-group" *ngFor="let serviceGroup of serviceGroups">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">
+                {{ serviceGroup.category }}
+              </h2>
+            </legend>
+            <div class="govuk-checkboxes">
+              <ng-container *ngFor="let service of serviceGroup.services; let i = index">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    [attr.aria-controls]="'otherServices-conditional-' + i"
+                    class="govuk-checkboxes__input"
+                    id="otherServices-{{ service.id }}"
+                    name="otherServices"
+                    type="checkbox"
+                    [value]="service.id"
+                    [checked]="form.get('otherServices').value.includes(service.id)"
+                    (change)="toggle($event.target)"
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" for="otherServices-{{ service.id }}">
+                    {{ service.name }}
+                  </label>
+                </div>
+                <div
+                  *ngIf="service.other"
+                  class="govuk-checkboxes__conditional"
+                  [class.govuk-checkboxes__conditional--hidden]="!form.value['otherServices'].includes(service.id)"
+                  id="otherServices-conditional-{{ i }}"
+                >
+                  <div class="govuk-form-group govuk-!-margin-bottom-2">
+                    <label class="govuk-label" for="additionalOtherService-{{ service.id }}">
+                      Enter your other service
+                    </label>
+                    <span
+                      id="additionalOtherService-error"
+                      class="govuk-error-message"
+                      *ngIf="submitted && form.get('additionalOtherService' + service.id).errors"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ getFormErrorMessage('additionalOtherService' + service.id, 'maxlength') }}
+                    </span>
+                    <input
+                      class="govuk-input govuk-!-width-one-third"
+                      id="additionalOtherService-{{ service.id }}"
+                      name="additionalOtherService"
+                      type="text"
+                      [formControlName]="'additionalOtherService' + service.id"
+                      [class.govuk-input--error]="submitted && form.get('additionalOtherService' + service.id).errors"
+                      spellcheck="false"
+                    />
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </fieldset>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"> </app-submit-button>
+</form>

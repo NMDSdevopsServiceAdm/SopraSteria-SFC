@@ -1,32 +1,48 @@
-<h1 class="pb-5">You are about to delete this staff record.</h1>
+<h1 id="dialogHeading" class="govuk-heading-l">You are about to delete this staff record.</h1>
 <p>Once deleted you will not be able to access it again.</p>
-<h3 class="fs-24 mt-5 text-weight-bold">Why are you removing this staff record?</h3>
-<form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
-  <app-messages></app-messages>
-
-  <div class="form-group mt-5">
-    <div class="field-group mb-5">
-      <label class="col-12">
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+      <h1 class="govuk-fieldset__heading">
+        Why are you removing this staff record?
+      </h1>
+    </legend>
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="reason">
         Select a reason
-        <select formControlName="reason" class="form-control">
-          <option [ngValue]="null">Select Reason</option>
-          <option *ngFor="let reason of reasons" [value]="reason.id">
-            {{ reason.reason }}
-          </option>
-        </select>
       </label>
-
-      <label class="col-12" *ngIf="form.controls.reason.value == 8">
-        Provide details
-        <textarea formControlName="details" maxlength="500" rows="4" class="form-control" name="details"></textarea>
-      </label>
+      <select class="govuk-select" [formControlName]="'reason'" id="reason" name="reason">
+        <option [ngValue]="null">Select Reason</option>
+        <option *ngFor="let reason of reasons" [value]="reason.id">
+          {{ reason.reason }}
+        </option>
+      </select>
     </div>
-  </div>
 
-  <div class="btn-container container">
-    <div class="row">
-      <button type="submit" class="btn btn-primary">Delete record</button>
-      <button type="button" class="btn btn-link btn-link-no-underline" (click)="close()">Cancel</button>
+    <div *ngIf="form.controls.reason.value == 8" class="govuk-character-count">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('details').invalid">
+        <label class="govuk-label" for="details">
+          Provide details
+        </label>
+        <span *ngIf="submitted && form.get('details').errors" id="details-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFormErrorMessage('details', 'maxLength') }}
+        </span>
+        <textarea
+          class="govuk-textarea"
+          [class.govuk-textarea--error]="submitted && form.get('details').invalid"
+          [formControlName]="'details'"
+          id="details"
+          name="details"
+          rows="5"
+        ></textarea>
+        <app-character-count [control]="form.get('details')" [max]="maxLength"></app-character-count>
+      </div>
     </div>
-  </div>
+  </fieldset>
+
+  <button type="submit" class="govuk-button">Delete record</button>
+  <button type="button" class="govuk-button govuk-button--link govuk-util__float-right" (click)="close()">
+    Cancel
+  </button>
 </form>

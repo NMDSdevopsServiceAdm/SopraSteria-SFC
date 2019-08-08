@@ -1,6 +1,8 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
 
+// TODO: Update Auto Suggest to use CDK Overlay and scroll results
+
 @Component({
   selector: 'app-auto-suggest',
   templateUrl: './auto-suggest.component.html',
@@ -13,34 +15,21 @@ import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/for
   ],
 })
 export class AutoSuggestComponent implements ControlValueAccessor {
+  onChange: Function;
+  onTouched: Function;
   @Input() formControlName: string;
   @Input() formGroup: FormGroup;
-  @Input() placeholder = '';
   @Input() dataProvider: Function;
 
   constructor() {}
 
-  suggestClickHandler(event) {
-    const { target } = event;
-
-    let newValue = null;
-
-    if (target.nodeName === 'SPAN') {
-      newValue = target.innerText;
-    } else if (target.nodeName === 'LI') {
-      newValue = target.children[0].innerText;
-    }
-
-    if (newValue) {
+  onClick(value: string) {
+    if (value) {
       this.formGroup.patchValue({
-        [this.formControlName]: newValue,
+        [this.formControlName]: value,
       });
     }
   }
-
-  // do nothing with these so far
-  onChange: Function;
-  onTouched: Function;
 
   writeValue(value: any): void {
     // let's do nothing here and delegate model binding in input field

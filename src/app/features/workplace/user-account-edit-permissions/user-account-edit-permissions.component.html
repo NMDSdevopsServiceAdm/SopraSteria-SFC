@@ -1,0 +1,60 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [form]="form"
+  [serverError]="serverError"
+></app-error-summary>
+
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l">User Account</span>
+            <h1 class="govuk-fieldset__heading">Change Permissions</h1>
+          </legend>
+          <div class="govuk-radios">
+            <ng-container *ngFor="let item of roleRadios; let i = index">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [formControlName]="'role'"
+                  id="role-{{ i }}"
+                  name="role"
+                  value="{{ item.value }}"
+                  type="radio"
+                />
+                <label class="govuk-label govuk-radios__label" for="role-{{ i }}">
+                  {{ item.label }}
+                </label>
+              </div>
+              <div
+                *ngIf="item.value === 'Edit'"
+                class="govuk-radios__conditional"
+                [class.govuk-radios__conditional--hidden]="form.get('role').value !== 'Edit'"
+                id="role-conditional-{{ i }}"
+              >
+                <div class="govuk-checkboxes">
+                  <div class="govuk-checkboxes__item">
+                    <input
+                      class="govuk-checkboxes__input"
+                      id="primary"
+                      name="primary"
+                      type="checkbox"
+                      [formControlName]="'primary'"
+                    />
+                    <label class="govuk-label govuk-checkboxes__label" for="primary">
+                      Make this user a Primary User
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <app-submit-button [return]="true" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

@@ -91,14 +91,18 @@ exports.WorkerRecruitedFromProperty = class WorkerRecruitedFromProperty extends 
         return currentValue && newValue && currentValue.value === newValue.value && originEqual;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 recruitedFrom: this.property
             };
         }
-        
+
         return {
             recruitedFrom : {
                 currentValue: this.property,

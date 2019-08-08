@@ -8,9 +8,8 @@ describe('DateOfBirthComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DateOfBirthComponent ]
-    })
-    .compileComponents();
+      declarations: [DateOfBirthComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

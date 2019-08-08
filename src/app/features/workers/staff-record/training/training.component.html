@@ -1,10 +1,10 @@
 <ng-container *ngIf="trainingRecords.length">
-  <div class="row">
-    <div class="col-lg-6">
-      <h3 class="fs-24 mb-4 text-weight-bold">Training</h3>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h2 class="govuk-heading-m">Training</h2>
     </div>
-    <div class="col-lg-6 text-align-right">
-      <p>Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
+    <div class="govuk-grid-column-one-half">
+      <p class="govuk-util__float-right">Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
     </div>
   </div>
 
@@ -18,10 +18,12 @@
           {{ trainingRecord.title }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link mr-5" href="#" (click)="deleteTrainingRecord(trainingRecord, $event)"
+          <a class="govuk-link--no-visited-state" href="#" (click)="deleteTrainingRecord(trainingRecord, $event)"
             >Delete<span class="govuk-visually-hidden"> {{ trainingRecord.title }} training record</span></a
           >
-          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'training', trainingRecord.uid]"
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['../training', trainingRecord.uid]"
             >Change<span class="govuk-visually-hidden"> {{ trainingRecord.title }} training record</span></a
           >
         </dd>
@@ -35,6 +37,7 @@
           {{ trainingRecord.trainingCategory.category }}
         </dd>
         <dd class="govuk-summary-list__actions"></dd>
+        <dd class="govuk-summary-list__actions"></dd>
       </div>
 
       <div class="govuk-summary-list__row">
@@ -44,6 +47,7 @@
         <dd class="govuk-summary-list__value">
           {{ trainingRecord.accredited ? trainingRecord.accredited : '-' }}
         </dd>
+        <dd class="govuk-summary-list__actions"></dd>
         <dd class="govuk-summary-list__actions"></dd>
       </div>
 
@@ -55,6 +59,7 @@
           {{ trainingRecord.completed ? (trainingRecord.completed | date: 'dd/MM/y') : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions"></dd>
+        <dd class="govuk-summary-list__actions"></dd>
       </div>
 
       <div class="govuk-summary-list__row">
@@ -65,6 +70,7 @@
           {{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd/MM/y') : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions"></dd>
+        <dd class="govuk-summary-list__actions"></dd>
       </div>
 
       <div class="govuk-summary-list__row govuk-summary-list--bottom-border">
@@ -74,6 +80,7 @@
         <dd class="govuk-summary-list__value">
           {{ trainingRecord.notes ? trainingRecord.notes : '-' }}
         </dd>
+        <dd class="govuk-summary-list__actions"></dd>
         <dd class="govuk-summary-list__actions"></dd>
       </div>
     </ng-container>

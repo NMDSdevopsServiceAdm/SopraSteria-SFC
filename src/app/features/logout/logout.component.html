@@ -1,12 +1,9 @@
-<div class="main-page-container col-12">
-  <p>You have been signed out.</p>
-  <!-- <p>We have saved any changes you made.</p> -->
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <p>You have been signed out.</p>
 
-  <div class="btn-container">
-    <button type="button" (click)="login()" class="btn btn-primary">Sign in</button>
-  </div>
-
-  <div class="btn-container">
-    <a href="https://asc-wds.skillsforcare.org.uk/login" target="_blank" rel="noopener">Go to https://asc-wds.skillsforcare.org.uk/login</a>
+    <a [routerLink]="['/login']" role="button" draggable="false" class="govuk-button">
+      Sign in
+    </a>
   </div>
 </div>

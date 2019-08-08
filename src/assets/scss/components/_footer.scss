@@ -1,0 +1,55 @@
+footer {
+  background: govuk-colour('white');
+  border-top: 3px solid $govuk-brand-colour;
+
+  a.govuk-footer__link {
+    @include govuk-focusable-fill;
+
+    &:link,
+    &:visited {
+      color: $govuk-link-colour;
+    }
+
+    &:hover,
+    &:active {
+      color: $govuk-link-colour;
+    }
+
+    // When focussed, the text colour needs to be darker to ensure that colour
+    // contrast is still acceptable
+    &:focus {
+      color: $govuk-focus-text-colour;
+    }
+  }
+
+  .govuk-width-container {
+    position: relative;
+    padding-top: govuk-spacing(6);
+  }
+
+  .footer-tagline {
+    background: $govuk-brand-colour;
+    color: govuk-colour('white');
+    position: absolute;
+    top: govuk-px-to-rem(-17);
+    padding: govuk-px-to-rem(6);
+    line-height: 1em;
+  }
+
+  .govuk-footer__meta {
+    align-items: center;
+  }
+
+  @include govuk-media-query($from: tablet) {
+    .govuk-list {
+      text-align: right;
+      margin-bottom: 0;
+
+      > li {
+        margin-top: govuk-spacing(2);
+        margin-bottom: govuk-spacing(2);
+        margin-right: govuk-spacing(7);
+      }
+    }
+  }
+}

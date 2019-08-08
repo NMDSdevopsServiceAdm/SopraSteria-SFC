@@ -36,14 +36,18 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangeProperty
         return currentValue && newValue && currentValue === newValue;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 gender: this.property
             };
         }
-        
+
         return {
             gender : {
                 currentValue: this.property,

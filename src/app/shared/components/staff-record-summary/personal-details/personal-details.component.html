@@ -1,0 +1,206 @@
+<h2 class="govuk-heading-m">Personal details</h2>
+<dl class="govuk-summary-list govuk-summary-list--top-border">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      National Insurance Number
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.nationalInsuranceNumber || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('national-insurance-number')" (click)="setReturn()">
+        <ng-container *ngIf="!worker.nationalInsuranceNumber">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.nationalInsuranceNumber">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> national insurance number</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Date of birth
+    </dt>
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.dateOfBirth">
+        {{ worker.dateOfBirth ? dob : '-' }}
+      </app-summary-record-value>
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('date-of-birth')" (click)="setReturn()">
+        <ng-container *ngIf="!worker.dateOfBirth">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.dateOfBirth">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> date of birth</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Home postcode
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.postcode || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('home-postcode')" (click)="setReturn()">
+        <ng-container *ngIf="!worker.postcode">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.postcode">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> home postcode</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Gender
+    </dt>
+
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.gender">
+        {{ worker.gender | closedEndedAnswer }}
+      </app-summary-record-value>
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('gender')" (click)="setReturn()">
+        <ng-container *ngIf="!worker.gender">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.gender">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> gender</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Disability
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.disability | closedEndedAnswer }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('disability')" (click)="setReturn()">
+        <ng-container *ngIf="!worker.disability">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.disability">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> disability</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Ethnicity
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.ethnicity?.ethnicity | closedEndedAnswer }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('ethnicity')" (click)="setReturn()">
+        <ng-container *ngIf="!worker.ethnicity">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.ethnicity">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> ethnicity</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Nationality
+    </dt>
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.nationality">
+        {{
+          worker.nationality?.other?.nationality !== null
+            ? worker.nationality?.other?.nationality
+            : (worker.nationality?.value | closedEndedAnswer)
+        }}
+      </app-summary-record-value>
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('nationality')" (click)="setReturn()">
+        <ng-container *ngIf="!worker.nationality">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.nationality">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> nationality</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displayBritishCitizenship">
+    <dt class="govuk-summary-list__key">
+      British citizenship
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.britishCitizenship | closedEndedAnswer }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('british-citizenship')" (click)="setReturn()">
+        <ng-container *ngIf="!worker.britishCitizenship">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.britishCitizenship">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> british citizenship</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Country of birth
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{
+        worker.countryOfBirth?.other?.country !== null
+          ? worker.countryOfBirth?.other?.country
+          : (worker.countryOfBirth?.value | closedEndedAnswer)
+      }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('country-of-birth')" (click)="setReturn()">
+        <ng-container *ngIf="!worker.countryOfBirth">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.countryOfBirth">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> country of birth</span>
+      </a>
+    </dd>
+  </div>
+</dl>

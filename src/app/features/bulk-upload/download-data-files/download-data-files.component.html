@@ -1,0 +1,39 @@
+<h2 class="govuk-heading-m">Download latest data files</h2>
+<ul class="govuk-list govuk-list--download">
+  <li>
+    <a href="#" (click)="downloadFile($event, BulkUploadFileType.Establishment)">Workplace information</a><br />
+    <a href="/public/download/BUDI_Workplace_Codes_and_Guidance_ACSWDS.pdf" target="_blank">
+      Workplace codes and guidance<span class="govuk-visually-hidden">, (opens in a new window)</span>
+    </a>
+  </li>
+  <li>
+    <a href="#" (click)="downloadFile($event, BulkUploadFileType.Worker)">Staff records</a><br />
+    <a href="/public/download/BUDI_Staff_Records_Codes_and_Guidance_ACSWDS.pdf" target="_blank">
+      Staff records codes and guidance<span class="govuk-visually-hidden">, (opens in a new window)</span>
+    </a>
+  </li>
+  <li>
+    <a href="#" (click)="downloadFile($event, BulkUploadFileType.Training)">Training records</a><br />
+    <a href="/public/download/BUDI_Training_Records_Codes_and_Guidance_ACSWDS.pdf" target="_blank">
+      Training records codes and guidance<span class="govuk-visually-hidden">, (opens in a new window)</span>
+    </a>
+  </li>
+</ul>
+<app-details [title]="'How to use the codes'">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <p>
+        You must use the codes to fill in your data in the files. The codes represent information you can enter or edit
+        about your staff and workplace.
+      </p>
+      <p>
+        Download your files and the latest version of the codes. You can then fill in your files by entering the correct
+        code into each field. The field headings are listed next to the relevant codes.
+      </p>
+      <p class="govuk-!-margin-bottom-0">
+        <strong>For example</strong> To add the contract type 'Permanent' to a staff record you can enter '1' for that
+        row under the 'EMPLSTATUS' heading.
+      </p>
+    </div>
+  </div>
+</app-details>

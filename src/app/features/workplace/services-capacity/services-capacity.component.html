@@ -1,43 +1,73 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a [routerLink]="['/workplace', 'select-other-services']">
-      <span class="arrow"></span>Back
-    </a>
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [form]="form"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+></app-error-summary>
+
+<form (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="ready">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Capacity of your services</h1>
+        </legend>
+        <p>
+          You've told us about the services your workplace provides. We need to know what the capacity of these services
+          is.
+        </p>
+        <div
+          class="govuk-form-group"
+          *ngFor="let capacity of capacities; let i = index"
+          [class.govuk-form-group--error]="submitted && form.get(generateId(capacity.service)).invalid"
+          [formGroupName]="generateId(capacity.service)"
+        >
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">{{ capacity.service }}</h2>
+            </legend>
+            <span
+              *ngIf="submitted && form.get(generateId(capacity.service)).errors"
+              id="{{ generateId(capacity.service) }}-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFirstErrorMessage(generateId(capacity.service)) }}
+            </span>
+            <div
+              *ngFor="let question of capacity.questions; let idx = index"
+              class="govuk-form-group"
+              [class.govuk-form-group--error]="
+                submitted && form.get(generateId(capacity.service) + '.' + question.questionId).invalid
+              "
+            >
+              <label class="govuk-label" for="question-{{ question.questionId }}">
+                {{ question.question }}
+              </label>
+              <span
+                *ngIf="submitted && form.get(generateId(capacity.service) + '.' + question.questionId).invalid"
+                id="question-{{ question.questionId }}-error"
+                class="govuk-error-message"
+              >
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ getFirstErrorMessage(generateId(capacity.service) + '.' + question.questionId) }}
+              </span>
+              <input
+                class="govuk-input govuk-input--width-4"
+                [class.govuk-input--error]="
+                  submitted && form.get(generateId(capacity.service) + '.' + question.questionId).invalid
+                "
+                [formControlName]="question.questionId"
+                id="question-{{ question.questionId }}"
+                name="question-{{ question.questionId }}"
+                type="number"
+              />
+            </div>
+          </fieldset>
+        </div>
+      </fieldset>
+    </div>
   </div>
 
-  <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="form">
-
-    <header>
-      <h1 class="h1">Capacity of your services</h1>
-      <p class="page-description">You've told us about the services your workplace provides. We need to know what the capacity of these services is.</p>
-    </header>
-
-    <div class="form-group mb-5">
-      <div class="col-12 p-0">
-        <div>
-          <div *ngFor="let capacity of capacitiesAvailable" class="row">
-            <div class="col-12">
-              <h2>{{capacity.service}}</h2>
-            </div>
-
-            <div *ngFor="let question of capacity.questions; let idx = index" class="col-12"  >
-              <label>{{question.question}}
-                <input type="number" [formControlName]="question.questionId"
-                  class="form-control" appNumberMax="999999999" appNumberPositiveOnly
-                  appNumberIntOnly min="0" step="1" [appNumberMax]="idx === 1 ? form.get(capacity.questions[0].questionId.toString()).value : null"
-                  [ngClass]="{'is-invalid': (form.get(question.questionId.toString()).touched || form.get(question.questionId.toString()).dirty) && !form.get(question.questionId.toString()).valid }" />
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="btn-container">
-      <button type="submit" class="btn btn-primary">Save and continue</button>
-    </div>
-  </form>
-  <app-messages></app-messages>
-</div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

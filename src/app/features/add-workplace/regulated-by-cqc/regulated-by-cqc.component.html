@@ -1,0 +1,150 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            Are you regulated by the Care Quality Commission (CQC)?
+          </h1>
+        </legend>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
+          <span *ngIf="submitted && regulatedByCQC.errors" id="regulatedByCQC-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('regulatedByCQC') }}
+          </span>
+          <div class="govuk-radios govuk-radios--conditional">
+            <!-- regulated -->
+            <div class="govuk-radios__item" (click)="onRegulatedByCQCTruthy()">
+              <input
+                aria-controls="regulatedByCQC-conditional-1"
+                class="govuk-radios__input"
+                id="regulatedByCQC-1"
+                name="regulatedByCQC"
+                type="radio"
+                value="yes"
+                [formControlName]="'regulatedByCQC'"
+              />
+              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
+                Yes
+              </label>
+            </div>
+
+            <!-- group & conditional content -->
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="regulatedByCQC.value !== 'yes'"
+              id="regulatedByCQC-conditional-1"
+              [formGroupName]="'group'"
+            >
+              <div id="group-error">
+                <!-- regulated postcode -->
+                <div class="govuk-form-group govuk-!-margin-bottom-2">
+                  <label class="govuk-label" for="regulatedPostcode">
+                    Enter your postcode
+                  </label>
+                  <span
+                    id="group-regulatedPostcode-error"
+                    class="govuk-error-message"
+                    *ngIf="submitted && regulatedPostcode.errors"
+                  >
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFirstErrorMessage('group.regulatedPostcode') }}
+                  </span>
+                  <input
+                    class="govuk-input govuk-!-width-one-third"
+                    id="regulatedPostcode"
+                    name="regulatedPostcode"
+                    type="text"
+                    [formControlName]="'regulatedPostcode'"
+                    [class.govuk-input--error]="submitted && (regulatedPostcode.errors || group.errors)"
+                    spellcheck="false"
+                  />
+                </div>
+
+                <!-- divider -->
+                <div class="govuk-radios__divider govuk-!-margin-top-4">or</div>
+
+                <!-- location Id -->
+                <div class="govuk-form-group">
+                  <label class="govuk-label" for="locationId">
+                    Enter your location ID number
+                  </label>
+                  <span id="group-locationId-error" class="govuk-error-message" *ngIf="submitted && locationId.errors">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFirstErrorMessage('group.locationId') }}
+                  </span>
+                  <input
+                    class="govuk-input govuk-!-width-one-third"
+                    id="locationId"
+                    name="locationId"
+                    type="text"
+                    [formControlName]="'locationId'"
+                    [class.govuk-input--error]="submitted && (locationId.errors || group.errors)"
+                    spellcheck="false"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Non regulated -->
+            <div class="govuk-radios__item" (click)="onRegulatedByCQCFalsy()">
+              <input
+                aria-controls="regulatedByCQC-conditional-2"
+                class="govuk-radios__input"
+                id="regulatedByCQC-2"
+                name="regulatedByCQC"
+                type="radio"
+                value="no"
+                [formControlName]="'regulatedByCQC'"
+              />
+              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-2">
+                No
+              </label>
+            </div>
+
+            <!-- conditional content -->
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="regulatedByCQC.value !== 'no'"
+              id="regulatedByCQC-conditional-2"
+            >
+              <!-- non regulated postcode -->
+              <div class="govuk-form-group govuk-!-margin-bottom-2">
+                <label class="govuk-label" for="nonRegulatedPostcode">
+                  What is your postcode
+                </label>
+                <span
+                  id="nonRegulatedPostcode-error"
+                  class="govuk-error-message"
+                  *ngIf="submitted && nonRegulatedPostcode.errors"
+                >
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFirstErrorMessage('nonRegulatedPostcode') }}
+                </span>
+                <input
+                  class="govuk-input govuk-!-width-one-third"
+                  id="nonRegulatedPostcode"
+                  name="nonRegulatedPostcode"
+                  type="text"
+                  [formControlName]="'nonRegulatedPostcode'"
+                  [class.govuk-input--error]="submitted && nonRegulatedPostcode.errors"
+                  spellcheck="false"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <button class="govuk-button" type="submit">Continue</button>
+    </form>
+  </div>
+</div>

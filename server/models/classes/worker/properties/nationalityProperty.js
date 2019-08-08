@@ -101,14 +101,18 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
         return currentValue && newValue && currentValue.value === newValue.value && nationalityEqual;
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 nationality: this.property
             };
         }
-        
+
         return {
             nationality : {
                 currentValue: this.property,

@@ -1,0 +1,18 @@
+@import '~src/assets/scss/partials/colors';
+
+.govuk-file-validate-status--validating {
+  background: $jaffa;
+}
+
+.govuk-file-validate-status--pass,
+.govuk-file-validate-status--fail {
+  color: $white;
+}
+
+.govuk-file-validate-status--pass {
+  background: $funGreen;
+}
+
+.govuk-file-validate-status--fail {
+  background: $shiraz;
+}

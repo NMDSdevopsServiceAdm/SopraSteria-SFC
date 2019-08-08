@@ -1,50 +1,83 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a [routerLink]="['/worker', worker.uid, backLink]">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-  <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="form">
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('hours').invalid">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              Do you know how many hours they work on average per week?
+            </h1>
+          </legend>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'hoursKnown'"
+                id="hoursKnown-conditional-1"
+                name="hoursKnown"
+                type="radio"
+                value="Yes"
+                aria-controls="conditional-hoursKnown-conditional-1"
+              />
+              <label class="govuk-label govuk-radios__label" for="hoursKnown-conditional-1">
+                Yes
+              </label>
+            </div>
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="form.get('hoursKnown').value !== 'Yes'"
+              id="conditional-hoursKnown-conditional-1"
+            >
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="hours">
+                  Average weekly hours
+                </label>
+                <span *ngIf="submitted && form.get('hours').errors" id="hours-error" class="govuk-error-message">
+                  <ng-container *ngIf="form.get('hours').hasError('required')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('hours', 'required') }}
+                  </ng-container>
+                  <ng-container *ngIf="form.get('hours').hasError('min')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('hours', 'min') }}
+                  </ng-container>
+                  <ng-container *ngIf="form.get('hours').hasError('max')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('hours', 'max') }}
+                  </ng-container>
+                </span>
+                <input
+                  class="govuk-input govuk-date-input__input govuk-input--width-4"
+                  [class.govuk-input--error]="submitted && form.get('hours').invalid"
+                  [formControlName]="'hours'"
+                  id="hours"
+                  name="hours"
+                  type="number"
+                  [pattern]="floatPattern"
+                />
+              </div>
+            </div>
 
-    <header>
-      <h1 class="h1 col-12 col-lg-8">Do you know how many hours they work on average per week?</h1>
-    </header>
-
-    <app-messages></app-messages>
-
-    <div class="form-group mt-5">
-      <div class="col-12 p-0">
-        <div class="row">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" formControlName="weeklyHoursAverageKnown" class="form-control" value="Yes" id="weeklyHoursAverageKnown_yes">
-              <label for="weeklyHoursAverageKnown_yes">Yes</label>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'hoursKnown'"
+                id="hoursKnown-2"
+                name="hoursKnown"
+                type="radio"
+                value="No"
+              />
+              <label class="govuk-label govuk-radios__label" for="hoursKnown-2">
+                No
+              </label>
             </div>
           </div>
-        </div>
-
-        <div *ngIf="form.get('weeklyHoursAverageKnown').value === 'Yes'" class="panel panel-border-narrow ml-0 mt-5 mb-5 mt-md-0">
-          <div class="form-field">
-            <label class="form-label">Average weekly hours
-              <input type="number" formControlName="weeklyHoursAverage" class="form-control" min="0" max="65" step="0.5" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('weeklyHoursAverage').touched || form.get('weeklyHoursAverage').dirty) && !form.get('weeklyHoursAverage').valid}">
-            </label>
-          </div>
-        </div>
-
-        <div class="row mt-5 mt-md-0">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" formControlName="weeklyHoursAverageKnown" class="form-control" value="No" id="weeklyHoursAverageKnown_no">
-              <label for="weeklyHoursAverageKnown_no">No</label>
-            </div>
-          </div>
-        </div>
+        </fieldset>
       </div>
     </div>
+  </div>
 
-    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
-  </form>
-</div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

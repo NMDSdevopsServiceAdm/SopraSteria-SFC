@@ -1,12 +1,55 @@
-<fieldset [formGroup]="formGroup">
-  <legend *ngIf="label">{{label}}</legend>
-  <label class="day">Day
-    <input type="number" formControlName="day" class="form-control" min="1" step="1" [appNumberMax]="31" appNumberPositiveOnly [appNumberDigitsMax]="2" [ngClass]="{'is-invalid': (formGroup.get('day').touched || formGroup.get('day').dirty) && !formGroup.get('day').valid}">
-  </label>
-  <label class="month">Month
-    <input type="number" formControlName="month" class="form-control" min="1" step="1" [appNumberMax]="12" appNumberPositiveOnly [appNumberDigitsMax]="2" [ngClass]="{'is-invalid': (formGroup.get('month').touched || formGroup.get('month').dirty) && !formGroup.get('month').valid}">
-  </label>
-  <label class="year">Year
-    <input type="number" formControlName="year" class="form-control" min="0" step="1" [appNumberMax]="9999" appNumberPositiveOnly [appNumberDigitsMax]="4" [ngClass]="{'is-invalid': (formGroup.get('year').touched || formGroup.get('year').dirty) && !formGroup.get('year').valid}">
-  </label>
-</fieldset>
+<ng-container [formGroup]="formGroup">
+  <div class="govuk-date-input" [formGroupName]="formGroupName">
+    <div class="govuk-date-input__item">
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-day">
+          Day
+        </label>
+        <input
+          class="govuk-input govuk-date-input__input govuk-input--width-2"
+          [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
+          [formControlName]="'day'"
+          id="{{ formGroupName }}-day"
+          name="{{ formGroupName }}-day"
+          type="number"
+          [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-day' : null"
+          pattern="[0-9]*"
+        />
+      </div>
+    </div>
+    <div class="govuk-date-input__item">
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-month">
+          Month
+        </label>
+        <input
+          class="govuk-input govuk-date-input__input govuk-input--width-2"
+          [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
+          [formControlName]="'month'"
+          id="{{ formGroupName }}-month"
+          name="{{ formGroupName }}-month"
+          type="number"
+          [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-month' : null"
+          pattern="[0-9]*"
+        />
+      </div>
+    </div>
+    <div class="govuk-date-input__item">
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-year">
+          Year
+        </label>
+        <input
+          class="govuk-input govuk-date-input__input govuk-input--width-4"
+          [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
+          [formControlName]="'year'"
+          id="{{ formGroupName }}-year"
+          name="{{ formGroupName }}-year"
+          type="number"
+          [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-year' : null"
+          pattern="[0-9]*"
+        />
+      </div>
+    </div>
+  </div>
+</ng-container>

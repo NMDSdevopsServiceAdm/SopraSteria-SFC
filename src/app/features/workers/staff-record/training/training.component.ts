@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecord } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
@@ -13,6 +14,7 @@ import { take } from 'rxjs/operators';
 })
 export class TrainingComponent implements OnInit {
   @Input() worker: Worker;
+  @Input() workplace: Establishment;
   public lastUpdated: moment.Moment;
   public trainingRecords: TrainingRecord[] = [];
 
@@ -30,17 +32,19 @@ export class TrainingComponent implements OnInit {
     });
     dialog.afterClosed.pipe(take(1)).subscribe(confirm => {
       if (confirm) {
-        this.workerService.deleteTrainingRecord(this.worker.uid, trainingRecord.uid).subscribe(() => {
-          this.workerService.setTrainingRecordDeleted(true);
-          this.fetchAllRecords();
-        });
+        this.workerService
+          .deleteTrainingRecord(this.workplace.uid, this.worker.uid, trainingRecord.uid)
+          .subscribe(() => {
+            this.workerService.alert = { type: 'success', message: 'Training has been deleted' };
+            this.fetchAllRecords();
+          });
       }
     });
   }
 
   fetchAllRecords() {
     this.workerService
-      .getTrainingRecords(this.worker.uid)
+      .getTrainingRecords(this.workplace.uid, this.worker.uid)
       .pipe(take(1))
       .subscribe(training => {
         this.lastUpdated = moment(training.lastUpdated);

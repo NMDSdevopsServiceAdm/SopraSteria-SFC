@@ -15,6 +15,10 @@
             "type" : "integer",
             "minimum" : 0
         },
+        "total" : {
+            "type" : "integer",
+            "minimum" : 0
+        },
         "Username" : {
             "type" : "string",
             "minLength": 3,
@@ -79,6 +83,16 @@
             "type" : "string",
             "minLength": 8,
             "maxLength": 12
+        },
+        "DataOwner" : {
+            "description" : "Associated with an Establishment, this represents the entity that owns the establishment - be it the workplace itself or it's parent",
+            "type" : "string",
+            "enum" : ["Workplace", "Parent"]
+        },
+        "ParentPermissions" : {
+            "description" : "Associated with an Establishment, this represents permissions granted to the parent. If Workplace, then only workplace no worker access. If Workplace and Staff, then parent has access to both workplace and staff. If null/not present, parent has no access.",
+            "type" : "string",
+            "enum" : ["Workplace", "Workplace and Staff"]
         },
         "EstablishmentName" : {
             "description": "the name of the Establishment",
@@ -173,6 +187,24 @@
             },
             "required" : ["id"]
         },
+        "ServiceUser" : {
+            "description" : "A User of the Services at an Establishment",
+            "properties" : {
+                "id" : {
+                    "description" : "the unique reference of the service user type",
+                    "$ref" : "#/definitions/ID"
+                },
+                "name" : {
+                    "description" : "the display name of the service user type",
+                    "$ref" : "#/definitions/ServiceName"
+                },
+                "group" : {
+                    "description"  : "the group of this service user",
+                    "$ref" : "#/definitions/ServiceCategory"
+                }
+            },
+            "required" : ["id"]
+        },
         "ServiceGroup" : {
             "description" : "A collection of services having the same cateogory",
             "type" : "object",
@@ -185,6 +217,23 @@
                     "type" : "array",
                     "items" : {
                         "$ref" : "#/definitions/Service"
+                    },
+                    "minItems": 1
+                }
+            }
+        },
+        "ServiceUsersGroup" : {
+            "description" : "A collection of service users having the same group",
+            "type" : "object",
+            "properties" : {
+                "group" : {
+                    "$ref" : "#/definitions/ServiceCategory"
+                },
+                "services" : {
+                    "description" : "All the service users attributed to this service user group",
+                    "type" : "array",
+                    "items" : {
+                        "$ref" : "#/definitions/ServiceUser"
                     },
                     "minItems": 1
                 }
@@ -1269,6 +1318,10 @@
                     "description" : "The unique reference for this estasblishment",
                     "$ref" : "#/definitions/ID"
                 },
+                "uid" : {
+                    "description" : "The unique reference for this estasblishment - to replace (establishment::id)",
+                    "$ref" : "#/definitions/Uid"
+                },
                 "name" : {
                     "description" : "The given name ofthis establishment",
                     "$ref" : "#/definitions/EstablishmentName"
@@ -1289,6 +1342,21 @@
                     "description": "True if this establishment is regulated by CQC",
                     "type": "boolean"
                 },
+                "isParent" : {
+                    "description": "Flag (true/false) indicating whether this Establishment is a parent of others",
+                    "type" : "boolean",
+                    "default" : false
+                },
+                "parentUID" : {
+                    "description": "Optional - if this Establishment (sub) belongs to another, this is the reference (UUID) to that parent Establishment",
+                    "$ref" : "#/definitions/Uid"
+                },
+                "dataOnwer" : {
+                    "$ref" : "#/definitions/DataOwner"
+                },
+                "parentPermissions" : {
+                    "$ref" : "#/definitions/DataOwnerPermissions"
+                },
                 "mainService" : {
                     "description" : "(Optionally), the primary service associated with this Establishment",
                     "$ref" : "#/definitions/Service"
@@ -1301,8 +1369,18 @@
                     "description": "Optionally, the establishment can be associated with more than just the main service",
                     "type" : "array",
                     "items" : {
-                        "$ref" : "#/definitions/ServiceGroup"
+                        "$ref" : "#/definitions/Service"
                     }
+                },
+                "serviceUsers" : {
+                    "description": "Optionally, the establishment can be associated with one or more service user types",
+                    "type" : "array",
+                    "items" : {
+                        "$ref" : "#/definitions/ServiceUser"
+                    }
+                },
+                "capacities" : {
+                    "description" : "TBC"
                 },
                 "allOtherServices" : {
                     "description": "Optionally, the list of all services available to this Establishment based on CQC (isRegistered), with those services already associated to this Establishment highlighted",
@@ -1315,11 +1393,41 @@
                     "description" : "Whether to share, and if so, the share options (LA/CQC)",
                     "$ref" : "#/definitions/ShareOptions"
                 },
+                "localAuthorities" : {
+                    "description" : "TBC"
+                },
+                "primaryAuthority" : {
+                    "description" : "TBC"
+                },
                 "numberOfStaff" : {
                     "description" : "The number of staff reported at this Establishment",
                     "type" : "integer",
                     "minimum": 0,
                     "maximum": 999
+                },
+                "TotalVacencies" : {
+                    "description" : "The total number of Vacancies",
+                    "type" : "#/definitions/total"
+                },
+                "Vacancies" : {
+                    "description" : "TBC"
+                },
+                "TotalStarters" : {
+                    "description" : "The total number of Starters",
+                    "type" : "#/definitions/total"
+                },
+                "Starters" : {
+                    "description" : "TBC"
+                },
+                "TotalLeavers" : {
+                    "description" : "The total number of Leavers",
+                    "type" : "#/definitions/total"
+                },
+                "Leavers" : {
+                    "description" : "TBC"
+                },
+                "wdf" : {
+                    "description" : "TBC"
                 },
                 "workers" : {
                     "description": "An Establishment has zero or more Workers",
@@ -1327,6 +1435,21 @@
                     "items" : [
                         { "$ref" : "#/definitions/Worker" }
                     ]
+                },
+                "createdAt" : {
+                    "description" : "When the worker record was created",
+                    "type" : "date-time"
+                },
+                "updatedAt" : {
+                    "description": "When the worker record was last updated",
+                    "type" : "date-time"
+                },
+                "updatedBy" : {
+                    "description" : "The username of the last person to update the Worker",
+                    "type" : "string"
+                },
+                "history" : {
+                    "$ref" : "#/definitions/ChangeHistory"
                 }
             },
             "required" : ["id", "name"]

@@ -1,0 +1,133 @@
+@import '../partials/colors';
+
+.govuk-width-container {
+  max-width: 960px;
+  outline: 0 !important;
+}
+
+@include govuk-media-query($until: desktop) {
+  .has-divider {
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.16) !important;
+    padding-bottom: 20px;
+  }
+
+  html body .govuk-button {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .govuk-header {
+    padding-top: 0;
+
+    .govuk-header__navigation {
+      height: 0;
+      display: block;
+      overflow: hidden;
+      position: absolute;
+      top: 112px;
+      left: 0;
+      right: 0;
+      z-index: 300;
+      background: darken($govuk-brand-colour, 10%);
+      color: #fff;
+      -webkit-transition: height 0.5s linear;
+      -moz-transition: height 0.5s linear;
+      -ms-transition: height 0.5s linear;
+      -o-transition: height 0.5s linear;
+      transition: height 0.5s linear;
+      box-shadow: 0 10px 10px 0px rgba(0, 0, 0, 0.3);
+
+      li.govuk-header__navigation-item {
+        display: block;
+        border: 0;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 0;
+
+        a.govuk-header__link {
+          display: block;
+          text-align: left;
+          border: 0;
+          color: #fff !important;
+          padding: 20px 20px;
+          outline: 0 !important;
+          font-size: 17px;
+
+          &:hover,
+          &:active {
+            background: $govuk-brand-colour;
+          }
+        }
+      }
+    }
+
+    &.open-dropdown {
+      .govuk-header__navigation {
+        height: auto;
+      }
+
+      .govuk-header__menu-button::after {
+        -ms-transform: rotate(180deg);
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .govuk-header__menu-button {
+    color: $govuk-brand-colour !important;
+    margin-right: 20px;
+    font-size: 17px;
+  }
+
+  .govuk-width-container {
+    margin: 0;
+    width: 100%;
+    position: relative !important;
+
+    .govuk-header__strapline {
+      margin: 0 !important;
+      padding: 5px 0;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -5px;
+      text-align: center;
+      display: block;
+    }
+
+    .govuk-main-wrapper {
+      padding: 20px;
+
+      select {
+        width: 100% !important;
+      }
+    }
+
+    .govuk-footer__meta-item--grow {
+      flex-basis: inherit;
+    }
+  }
+
+  footer .govuk-footer__meta {
+    padding: 0;
+    margin: 0;
+  }
+
+  .govuk-back-link {
+    margin-left: 20px;
+  }
+
+  .govuk-phase-banner {
+    padding: 10px 20px;
+  }
+
+  .govuk-header .govuk-header__container {
+    padding: 10px 0 !important;
+
+    img {
+      margin: 0 0 25px 20px;
+      max-width: 130px;
+    }
+  }
+}

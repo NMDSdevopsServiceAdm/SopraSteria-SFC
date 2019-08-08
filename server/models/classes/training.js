@@ -14,10 +14,16 @@ const moment = require('moment');
 // database models
 const models = require('../index');
 
-class Training {
+const EntityValidator = require('./validations/entityValidator').EntityValidator;
+const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
+
+class Training extends EntityValidator {
     constructor(establishmentId, workerUid) {
+        super();
+        
         this._establishmentId = establishmentId;
         this._workerUid = workerUid;
+        this._workerId = null;
         this._id = null;
         this._uid = null;
         this._created = null;
@@ -70,6 +76,25 @@ class Training {
         if (this._logLevel >= level) {
             console.log(`TODO: (${level}) - Training class: `, msg);
         }
+    }
+
+    get workerId() {
+        return this._workerId;
+    }
+    get workerUid() {
+        return this._workerUid;
+    }
+    get establishmentId() {
+        return this._establishmentId;
+    }
+    set workerId(newID) {
+        this._workerId = newID;
+    }
+    set workerUid(newUid) {
+        this._workerUid = newUid;
+    }
+    set establishmentId(newId) {
+        this._establishmentId = newId;
     }
 
     //
@@ -159,6 +184,10 @@ class Training {
         }
     }
 
+    async preValidateTrainingRecord(){
+        
+    }
+
     // validates a given training record; returns the training record if valid
     async validateTrainingRecord(document) {
         // to validate a training record, need the list of available training categories
@@ -169,22 +198,45 @@ class Training {
         });
 
         if (!trainingCategories || !Array.isArray(trainingCategories)) {
+            this._validations.push(new ValidationMessage(
+                ValidationMessage.ERROR,
+                100,
+                'Failed to get all training categories',
+                ['TrainingCategory']
+            ));
+
             this._log(Training.LOG_ERROR, 'Failed to get all training categories');
             return false;
         }
 
+        let returnStatus = true;
+
         // training category
         const validatedTrainingRecord = {};
         if (document.trainingCategory) {
+
             // validate category
             if (!(document.trainingCategory.id || document.trainingCategory.category)) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    101,
+                    'trainingCategory.id or trainingCategory.category must exist',
+                    ['TrainingCategory']
+                ));
+    
                 this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
-                return false;
+                returnStatus = false;
             }
 
             if (document.trainingCategory.id && !Number.isInteger(document.trainingCategory.id)) {
-                this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id must be an integer');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    102,
+                    `trainingCategory.id (${document.trainingCategory.id}) must be an integer`,
+                    ['TrainingCategory']
+                ));
+                this._log(Training.LOG_ERROR, `category failed validation: trainingCategory.id (${document.trainingCategory.id}) must be an integer`);
+                returnStatus = false;
             }
 
             let foundCategory = null;
@@ -195,9 +247,16 @@ class Training {
                     return thisCategory.category === document.trainingCategory.category
                 });
             }
-            if (foundCategory === null) {
-                this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
-                return false;
+
+            if (foundCategory === null || foundCategory === undefined) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    103,
+                    `trainingCategory.id (${document.trainingCategory.id}) or trainingCategory.category (${document.trainingCategory.category}) must exist`,
+                    ['TrainingCategory']
+                ));
+                this._log(Training.LOG_ERROR, `category failed validation: trainingCategory.id (${document.trainingCategory.id}) or trainingCategory.category (${document.trainingCategory.category}) must exist`);
+                returnStatus = false;
             } else {
                 validatedTrainingRecord.trainingCategory = {
                     id: foundCategory.id,
@@ -213,8 +272,14 @@ class Training {
             const MIN_LENGTH=3;
             if (document.title.length < MIN_LENGTH ||
                 document.title.length > MAX_LENGTH) {
-                this._log(Training.LOG_ERROR, 'title failed validation: MIN/MAX length');
-                return false;
+                    this._validations.push(new ValidationMessage(
+                        ValidationMessage.ERROR,
+                        110,
+                        `validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`,
+                        ['Title']
+                    ));
+                    this._log(Training.LOG_ERROR, `title failed validation: title failed validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`);
+                returnStatus = false;
             }
 
             validatedTrainingRecord.title = document.title;
@@ -227,8 +292,14 @@ class Training {
             // validate accredited - JSON only allows true/false
             const ALLOWED_VALUES = ['Yes', 'No', 'Don\'t know'];
             if (!(ALLOWED_VALUES.includes(document.accredited))) {
-                this._log(Training.LOG_ERROR, 'accredited failed validation: wrong type');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.WARNING,
+                    120,
+                    `unexpected value - ${document.accredited}`,
+                    ['Accredited']
+                ));
+                this._log(Training.LOG_ERROR, `accredited failed validation: accredited failed validation: unexpected value - ${document.accredited}`);
+                returnStatus = false;
             }
 
             validatedTrainingRecord.accredited = document.accredited;
@@ -242,12 +313,24 @@ class Training {
             // validate completed - must be a valid date
             const expectedDate = moment.utc(document.completed);
             if (!expectedDate.isValid()) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    130,
+                    `unexpected date - ${document.completed}`,
+                    ['Completed']
+                ));
                 this._log(Training.LOG_ERROR, 'completed failed validation: incorrect date');
-                return false;
+                returnStatus = false;
             }
             if (!expectedDate.isBefore(moment(), 'day')) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    131,
+                    `must be in the past - ${document.completed}`,
+                    ['Completed']
+                ));
                 this._log(Training.LOG_ERROR, 'completed failed validation: must be before today');
-                return false;
+                returnStatus = false;
             }
 
             validatedTrainingRecord.completed = expectedDate;
@@ -259,14 +342,28 @@ class Training {
         if (document.expires) {
             const expectedDate = moment.utc(document.expires);
             if (!expectedDate.isValid()) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    140,
+                    `unexpected date - ${document.expires}`,
+                    ['Expires']
+                ));
+
                 this._log(Training.LOG_ERROR, 'expires failed validation: incorrect date');
-                return false;
+                returnStatus = false;
             }
 
             // validation against completed is only relevant if completed has been given
             if (validatedTrainingRecord.completed && !expectedDate.isAfter(validatedTrainingRecord.completed, 'day')) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    141,
+                    `must be in the past - ${document.expires}`,
+                    ['Expires']
+                ));
+
                 this._log(Training.LOG_ERROR, 'expires failed validation: must expire after completed');
-                return false;
+                returnStatus = false;
             }
 
             validatedTrainingRecord.expires = expectedDate;
@@ -280,8 +377,15 @@ class Training {
             // validate title
             const MAX_LENGTH=1000;
             if (document.notes.length > MAX_LENGTH) {
-                this._log(Training.LOG_ERROR, 'notes failed validation: MAX length');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.WARNING,
+                    150,
+                    `validation: MAX (${MAX_LENGTH}) length`,
+                    ['Notes']
+                ));
+
+                this._log(Training.LOG_ERROR, `notes failed validation: MAX (${MAX_LENGTH}) length`);
+                returnStatus = false;
             }
 
             validatedTrainingRecord.notes = document.notes;
@@ -290,13 +394,19 @@ class Training {
             validatedTrainingRecord.notes = null;
         }
 
-        return validatedTrainingRecord;
+        if (returnStatus === false) {
+            return false;
+        } else {
+            return validatedTrainingRecord;
+        }
     }
 
     // takes the given JSON document and updates self (internal properties)
     // Thows "Error" on error.
     async load(document) {
         try {
+            this.resetValidations();
+
             const validatedTrainingRecord = await this.validateTrainingRecord(document);
 
             if (validatedTrainingRecord !== false) {
@@ -308,10 +418,10 @@ class Training {
                 this.notes = validatedTrainingRecord.notes;
             } else {
                 this._log(Training.LOG_ERROR, `Training::load - failed`);
-                throw new Error('Failed Validation');
+                return false
             }
         } catch (err) {
-            this._log(Training.LOG_ERROR, `Training::load - failed: ${err}`);
+            this._log(Training.LOG_ERROR, `Training::load - error: ${err}`);
             throw new Error('Failed Validation');
         }
         return this.isValid();
@@ -329,7 +439,7 @@ class Training {
 
     // saves the Training record to DB. Returns true if saved; false is not.
     // Throws "Error" on error
-    async save(savedBy, ttl=0, externalTransaction=null) {
+    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -341,15 +451,24 @@ class Training {
             // create new Training Record
             try {
                 // must validate the Worker record
-                const workerRecord = await models.worker.findOne({
-                    where: {
-                        establishmentFk: this._establishmentId,
-                        uid: this._workerUid,
-                        archived: false
-                    },
-                    attributes: ['id']
-                });
-
+                let workerRecord = null;
+                
+                
+                if (!this._workerId) {
+                    workerRecord = await models.worker.findOne({
+                        where: {
+                            establishmentFk: this._establishmentId,
+                            uid: this._workerUid,
+                            archived: false
+                        },
+                        attributes: ['id']
+                    });    
+                } else {
+                    workerRecord = {
+                        id: this._workerId
+                    };
+                }
+                
                 if (workerRecord && workerRecord.id) {
                     const now = new Date();
                     const creationDocument = {
@@ -358,6 +477,7 @@ class Training {
                         created: now,
                         updated: now,
                         updatedBy: savedBy.toLowerCase(),
+                        source: bulkUploaded ? 'Bulk' : 'Online',
                         categoryFk: this._category.id,
                         title: this._title,
                         accredited: this._accredited,
@@ -408,6 +528,7 @@ class Training {
                     //  an external transaction
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
+                    // note - if the training was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         categoryFk: this._category.id,
                         title: this._title,
@@ -415,6 +536,7 @@ class Training {
                         completed: this._completed,
                         expires: this._expires,
                         notes: this._notes,
+                        source: bulkUploaded ? 'Bulk' : 'Online',
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
@@ -661,8 +783,8 @@ class Training {
         const myDefaultJSON = {
             uid:  this.uid,
             workerUid: this._workerUid,
-            created: this.created.toJSON(),
-            updated: this.updated.toJSON(),
+            created: this.created ? this.created.toJSON() : undefined,
+            updated: this.updated ? this.updated.toJSON() : undefined,
             updatedBy: this.updatedBy,
             trainingCategory: this.category,
             title: this.title ? this.title : undefined,
@@ -680,9 +802,9 @@ class Training {
     // returns true if all mandatory properties for a Training Record exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
-        
+
         // category must exist
-        if (this.category === null) allExistAndValid = true
+        if (this.category === null) allExistAndValid = false
 
         return allExistAndValid;
     }

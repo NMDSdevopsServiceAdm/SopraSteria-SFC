@@ -1,0 +1,80 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">User account</span>
+          <h1 class="govuk-fieldset__heading">
+            Add user account
+          </h1>
+        </legend>
+
+        <ng-container *ngFor="let item of formControlsMap">
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
+            <label class="govuk-label" for="{{ item.name }}">
+              {{ item.label }}
+            </label>
+            <span
+              *ngIf="submitted && form.get(item.name).errors"
+              id="{{ item.name }}-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
+            </span>
+            <input
+              class="govuk-input govuk-input--width-20"
+              [formControlName]="item.name"
+              id="{{ item.name }}"
+              name="{{ item.name }}"
+              [class.govuk-input--error]="submitted && form.get(item.name).errors"
+              type="text"
+            />
+          </div>
+        </ng-container>
+      </fieldset>
+
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('role').errors">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">
+              Permissions
+            </h2>
+          </legend>
+
+          <span *ngIf="submitted && form.get('role').errors" id="role-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('role') }}
+          </span>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let item of roleRadios; let i = index">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'role'"
+                id="role-{{ i }}"
+                name="role"
+                value="{{ item.value }}"
+                type="radio"
+              />
+              <label class="govuk-label govuk-radios__label" for="role-{{ i }}">
+                {{ item.label }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button" type="submit">
+          {{ callToActionLabel }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

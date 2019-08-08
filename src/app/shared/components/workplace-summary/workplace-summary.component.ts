@@ -1,5 +1,10 @@
 import { I18nPluralPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { Roles } from '@core/model/roles.enum';
+import { URLStructure } from '@core/model/url.model';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { UserService } from '@core/services/user.service';
+import { WorkerService } from '@core/services/worker.service';
 import { isArray } from 'util';
 
 @Component({
@@ -10,11 +15,17 @@ import { isArray } from 'util';
 export class WorkplaceSummaryComponent {
   public capacityMessages = [];
   public pluralMap = [];
+  public canEdit: boolean;
   private _workplace: any;
-  @Input() displayWDFReport: boolean;
+  @Input() wdfView = false;
+  @Input() workerCount?: number;
 
   @Input()
   set workplace(workplace: any) {
+    if (!workplace.employerType) {
+      return;
+    }
+
     this._workplace = workplace;
     this.capacityMessages = [];
 
@@ -26,25 +37,37 @@ export class WorkplaceSummaryComponent {
 
       if (Object.keys(temp).length) {
         Object.keys(temp).forEach(key => {
-          const message = this.i18nPluralPipe.transform(temp[key], this.pluralMap[key]);
-          this.capacityMessages.push(message);
+          if (this.pluralMap[key]) {
+            const message = this.i18nPluralPipe.transform(temp[key], this.pluralMap[key]);
+            this.capacityMessages.push(message);
+          }
         });
       }
     }
   }
+  @Input() return: URLStructure = null;
 
   get workplace(): any {
     return this._workplace;
   }
 
-  constructor(private i18nPluralPipe: I18nPluralPipe) {
+  get totalStaffWarning() {
+    return this.workplace.numberOfStaff !== this.workplace.totalWorkers;
+  }
+
+  constructor(
+    private i18nPluralPipe: I18nPluralPipe,
+    private establishmentService: EstablishmentService,
+    private userService: UserService,
+    private workerService: WorkerService
+  ) {
     this.pluralMap['How many beds do you currently have?'] = {
-      '=1': '# bed',
-      other: '# beds',
-    };
-    this.pluralMap['How many of those beds are currently used?'] = {
       '=1': '# bed available',
       other: '# beds available',
+    };
+    this.pluralMap['How many of those beds are currently used?'] = {
+      '=1': '# bed used',
+      other: '# beds used',
     };
     this.pluralMap['How many places do you currently have?'] = {
       '=1': '# place',
@@ -58,9 +81,16 @@ export class WorkplaceSummaryComponent {
       '=1': '# person using the service',
       other: '# people using the service',
     };
+
+    this.canEdit = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
   }
 
-  isArray(variable) {
+  public isArray(variable): boolean {
     return isArray(variable);
+  }
+
+  public setReturn(): void {
+    this.establishmentService.setReturnTo(this.return);
+    this.workerService.setReturnTo(this.return);
   }
 }

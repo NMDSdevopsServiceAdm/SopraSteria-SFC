@@ -3,6 +3,7 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 
 // database models
 const models = require('../../../index');
+const OTHER_MAX_LENGTH=120;
 
 exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangePropertyPrototype {
     constructor() {
@@ -17,6 +18,8 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
     async restoreFromJson(document) {
         // TODO: it's a little more than assuming the JSON representation
         if (document.mainJob) {
+
+
             const validatedJob = await this._validateJob(document.mainJob);
             if (validatedJob) {
                 this.property = validatedJob;
@@ -29,29 +32,37 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
         if (document.mainJob) {
             return {
                 jobId: document.mainJob.id,
-                title: document.mainJob.title
+                title: document.mainJob.title,
+                other: document.MainJobFkOther ? document.MainJobFkOther : undefined
             };
         }
     }
     savePropertyToSequelize() {
         return {
-            MainJobFkValue: this.property.jobId
+            MainJobFkValue: this.property.jobId,
+            MainJobFkOther: this.property.other ? this.property.other : null
         };
     }
 
     isEqual(currentValue, newValue) {
         // main job is an object where jobId is the primary key
-        return currentValue && newValue && currentValue.jobId === newValue.jobId;
+        return currentValue && newValue && currentValue.jobId === newValue.jobId && (
+            (currentValue.other && newValue.other && currentValue.other === newValue.other) ||
+            (!currentValue.other && !newValue.other));
     }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
+        if (wdfEffectiveDate) {
+            return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+        }
+
         if (!withHistory) {
             // simple form
             return {
                 mainJob: this.property
             };
         }
-        
+
         return {
             mainJob : {
                 currentValue: this.property,
@@ -86,22 +97,27 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
                 where: {
                     id: jobDef.jobId
                 },
-                attributes: ['id', 'title'],
+                attributes: ['id', 'title', 'other'],
             });
         } else {
             referenceJob = await models.job.findOne({
                 where: {
                     title: jobDef.title
                 },
-                attributes: ['id', 'title'],
+                attributes: ['id', 'title', 'other'],
             });
         }
 
         if (referenceJob && referenceJob.id) {
             // found a job match
-            return {
-                jobId: referenceJob.id,
-                title: referenceJob.title
+            if (referenceJob.other && jobDef.other && jobDef.other.length && jobDef.other.length > OTHER_MAX_LENGTH) {
+                return false;
+            } else {
+                return {
+                    jobId: referenceJob.id,
+                    title: referenceJob.title,
+                    other: (referenceJob.other && jobDef.other) ? jobDef.other : undefined
+                };
             };
         } else {
             return false;

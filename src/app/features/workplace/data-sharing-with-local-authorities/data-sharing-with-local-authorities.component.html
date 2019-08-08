@@ -1,0 +1,74 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [form]="form"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+></app-error-summary>
+
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Sharing data with local authorities</h1>
+        </legend>
+
+        <p>Select which local authorities you would like to share your data with.</p>
+
+        <div class="govuk-form-group" *ngIf="primaryAuthority">
+          <div class="govuk-checkboxes__item">
+            <input
+              class="govuk-checkboxes__input"
+              [formControlName]="'primaryAuthority'"
+              id="primaryAuthority"
+              type="checkbox"
+              aria-describedby="primaryAuthority-hint"
+            />
+            <label class="govuk-label govuk-checkboxes__label" for="primaryAuthority">
+              {{ primaryAuthority.name }}
+            </label>
+            <span id="primaryAuthority-hint" class="govuk-hint govuk-checkboxes__hint">
+              This is the local authority you are located in
+            </span>
+          </div>
+        </div>
+        <p>Add more local authorities to share your data with.</p>
+        <h2 class="govuk-heading-m">Local Authorities</h2>
+        <ng-container formArrayName="localAuthorities">
+          <div
+            class="govuk-form-group"
+            *ngFor="let localAuthorities of localAuthoritiesArray.controls; let i = index"
+            [formGroupName]="i"
+          >
+            <select
+              class="govuk-select"
+              [formControlName]="'custodianCode'"
+              id="localAuthorities-{{ i }}"
+              name="custodianCode"
+            >
+              <option [ngValue]="null">Select Local Authority</option>
+              <option *ngFor="let authority of selectableAuthorities(i)" [value]="authority.custodianCode">
+                {{ authority.name }}
+              </option>
+            </select>
+            <button
+              class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+              type="button"
+              (click)="deleteLocalAuthority($event, i)"
+            >
+              Remove
+              <span class="govuk-visually-hidden">
+                local authority {{ localAuthorities.get('custodianCode').value }}</span
+              >
+            </button>
+          </div>
+        </ng-container>
+        <button class="govuk-button govuk-button--secondary" type="button" (click)="addLocalAuthority()">
+          Add another local authority
+        </button>
+      </fieldset>
+    </div>
+  </div>
+
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+</form>

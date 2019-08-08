@@ -1,8 +1,8 @@
-
 export interface PostServicesModel {
-  services: [{
-    id: number;
-    name?: string;
-  }];
+  services: [
+    {
+      id: number;
+      name?: string;
+    }
+  ];
 }
-

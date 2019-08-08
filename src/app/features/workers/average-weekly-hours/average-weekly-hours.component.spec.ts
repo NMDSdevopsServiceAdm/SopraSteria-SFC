@@ -1,16 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours.component';
 
-
 describe('AverageWeeklyHoursComponent', () => {
   let component: AverageWeeklyHoursComponent;
   let fixture: ComponentFixture<AverageWeeklyHoursComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AverageWeeklyHoursComponent ]
-    })
-    .compileComponents();
+      declarations: [AverageWeeklyHoursComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
