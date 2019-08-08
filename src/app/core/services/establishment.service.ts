@@ -39,6 +39,14 @@ interface EmployerTypeRequest {
   };
 }
 
+interface MainServiceRequest {
+  mainService: {
+    id: number;
+    name: string;
+    other?: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -176,6 +184,10 @@ export class EstablishmentService {
 
   updateOtherServices(establishmentId, data: PostServicesModel) {
     return this.http.post<PostServicesModel>(`/api/establishment/${establishmentId}/services`, data);
+  }
+
+  updateMainService(establishmentId: string, data: MainServiceRequest) {
+    return this.http.post<MainServiceRequest>(`/api/establishment/${establishmentId}/mainService`, data);
   }
 
   updateDataSharing(establishmentId, data: DataSharingRequest): Observable<any> {
