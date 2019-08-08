@@ -17,6 +17,7 @@ export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
     this.total = this.workerService.getCreateStaffResponse();
 
     this.returnUrl =
+      this.route.snapshot.data.primaryWorkplace &&
       this.route.snapshot.data.establishment.uid === this.route.snapshot.data.primaryWorkplace.uid
         ? ['/dashboard']
         : ['/workplace', this.route.snapshot.data.establishment.uid];
