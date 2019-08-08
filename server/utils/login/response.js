@@ -1,5 +1,5 @@
 // TODO: enforce JSON schema
-module.exports = (uid, fullname, isPrimary, lastLoggedDate, role, establishment, username, expiryDate) => {
+module.exports = (uid, fullname, isPrimary, lastLoggedDate, role, establishment, username, expiryDate, migratedUser) => {
   // note - the mainService can be null
   return {
     username,
@@ -8,6 +8,8 @@ module.exports = (uid, fullname, isPrimary, lastLoggedDate, role, establishment,
     isPrimary,
     lastLoggedIn: lastLoggedDate ? lastLoggedDate.toISOString() : null,
     role,
+    migratedUserFirstLogon: migratedUser ? migratedUser.migratedUserFirstLogon : undefined,
+    migratedUser: migratedUser ? migratedUser.migratedUser : undefined,
     establishment: establishment ? {
       id: establishment.id,
       uid: establishment.uid,
