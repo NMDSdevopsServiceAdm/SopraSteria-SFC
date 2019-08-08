@@ -9,7 +9,9 @@ export class WorkerSaveSuccessComponent {
 
   constructor(private route: ActivatedRoute) {
     const workplaceUid = this.route.snapshot.paramMap.get('establishmentuid');
-    const primaryWorkplaceUid = this.route.parent.snapshot.data.primaryWorkplace.uid;
+    const primaryWorkplaceUid = this.route.parent.snapshot.data.primaryWorkplace
+      ? this.route.parent.snapshot.data.primaryWorkplace.uid
+      : null;
 
     this.return =
       workplaceUid === primaryWorkplaceUid

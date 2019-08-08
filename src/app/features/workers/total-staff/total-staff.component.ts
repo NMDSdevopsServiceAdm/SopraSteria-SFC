@@ -47,7 +47,9 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    const primaryWorkplaceUid = this.route.snapshot.data.primaryWorkplace.uid;
+    const primaryWorkplaceUid = this.route.snapshot.data.primaryWorkplace
+      ? this.route.snapshot.data.primaryWorkplace.uid
+      : null;
 
     this.return =
       this.workplace.uid === primaryWorkplaceUid

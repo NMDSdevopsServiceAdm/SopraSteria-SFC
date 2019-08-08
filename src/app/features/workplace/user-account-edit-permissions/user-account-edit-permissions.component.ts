@@ -57,6 +57,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
 
     this.return = {
       url:
+        this.route.snapshot.data.primaryWorkplace &&
         this.workplace.uid === this.route.snapshot.data.primaryWorkplace.uid
           ? ['/dashboard']
           : ['/workplace', this.workplace.uid],
