@@ -38,7 +38,10 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
   ngOnInit() {
     this.subscriptions.add(
       this.userService.getAllUsersForEstablishment(this.data.workplaceUid).subscribe(users => {
-        this.users = filter(users, user => user.role === Roles.Edit && user.uid !== this.data.currentUserUid);
+        this.users = filter(
+          users,
+          user => user.role === (Roles.Edit || Roles.Admin) && user.uid !== this.data.currentUserUid
+        );
       })
     );
 

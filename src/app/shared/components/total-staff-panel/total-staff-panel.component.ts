@@ -16,7 +16,7 @@ export class TotalStaffPanelComponent {
   public canEdit: boolean;
 
   constructor(private userService: UserService, private workerService: WorkerService) {
-    this.canEdit = this.userService.loggedInUser.role !== Roles.Read;
+    this.canEdit = this.userService.loggedInUser.role === (Roles.Edit || Roles.Admin);
   }
 
   setReturn() {
