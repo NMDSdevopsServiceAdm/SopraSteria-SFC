@@ -46,6 +46,7 @@ class User {
         this._isPrimary - null;
         this._tribalId = null;
         this._lastLogin = null;
+        this._establishmentUid = null;
 
         // abstracted properties
         const thisUserManager = new UserProperties();
@@ -160,6 +161,14 @@ class User {
 
     get tribalId() {
       return this._tribalId;
+    }
+
+    get establishmentUid() {
+      return this._establishmentUid;
+    }
+
+    set establishmentUid(uid) {
+      this._establishmentUid = uid;
     }
 
     // used by save to initialise a new User; returns true if having initialised this user
@@ -946,6 +955,7 @@ class User {
             myDefaultJSON.isPrimary = (this._isPrimary) ? true : false;
             myDefaultJSON.lastLoggedIn = this._lastLogin;
             myDefaultJSON.establishmentId = this._establishmentId;
+            myDefaultJSON.establishmentUid = this._establishmentUid ? this._establishmentUid : undefined;
 
             // migrated user first logged in
             const migratedUserFirstLogin = this._tribalId !== null && this._lastLogin === null ? true : false;
