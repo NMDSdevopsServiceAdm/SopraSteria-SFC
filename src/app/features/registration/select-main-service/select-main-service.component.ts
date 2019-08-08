@@ -11,7 +11,7 @@ import { SelectMainService } from '@features/workplace-find-and-select/select-ma
 
 @Component({
   selector: 'app-select-main-service',
-  templateUrl: './select-main-service.component.html',
+  templateUrl: '../../workplace-find-and-select/select-main-service/select-main-service.component.html',
 })
 export class SelectMainServiceComponent extends SelectMainService {
   constructor(
@@ -32,16 +32,16 @@ export class SelectMainServiceComponent extends SelectMainService {
   protected getSelectedLocation(): void {
     this.subscriptions.add(
       this.registrationService.selectedLocationAddress$.subscribe((location: LocationAddress) =>
-        this.getServicesByCategory(location)
+        this.getServicesByCategory(this.workplaceService.isRegulated(location))
       )
     );
   }
 
-  protected getSelectedWorkplace(): void {
+  protected setSelectedWorkplaceService(): void {
     this.subscriptions.add(
-      this.registrationService.selectedWorkplaceService$.subscribe((workplace: Service) => {
-        if (workplace) {
-          this.selectedWorkplace = workplace;
+      this.registrationService.selectedWorkplaceService$.subscribe((service: Service) => {
+        if (service) {
+          this.selectedMainService = service;
         }
       })
     );
@@ -49,5 +49,6 @@ export class SelectMainServiceComponent extends SelectMainService {
 
   protected onSuccess(): void {
     this.registrationService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
+    this.navigateToNextPage();
   }
 }
