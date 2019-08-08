@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -27,12 +26,8 @@ export class SelectMainServiceComponent extends SelectMainService {
     this.flow = '/add-workplace';
   }
 
-  protected getSelectedLocation(): void {
-    this.subscriptions.add(
-      this.workplaceService.selectedLocationAddress$.subscribe((location: LocationAddress) =>
-        this.getServicesByCategory(location)
-      )
-    );
+  protected getServiceCategories(): void {
+    this.getServicesByCategory(this.workplaceService.isRegulated());
   }
 
   protected getSelectedWorkplace(): void {

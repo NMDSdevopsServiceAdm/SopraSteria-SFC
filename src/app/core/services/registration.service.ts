@@ -1,4 +1,3 @@
-import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
@@ -6,6 +5,7 @@ import { LoginCredentials } from '@core/model/login-credentials.model';
 import { RegistrationPayload } from '@core/model/registration.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -17,8 +17,13 @@ export class RegistrationService {
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
+  public isRegulated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient) {}
+
+  public isRegulated(): boolean {
+    return this.isRegulated$.value;
+  }
 
   public postRegistration(registrationPayload: Array<RegistrationPayload>): Observable<any> {
     return this.http.post<any>('/api/registration/', registrationPayload);

@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { AddWorkplaceRequest, AddWorkplaceResponse } from '@core/model/workplace.model';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ErrorDefinition } from '@core/model/errorSummary.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +14,7 @@ export class WorkplaceService {
   public addWorkplaceFlow$: BehaviorSubject<string> = new BehaviorSubject(null);
   public addWorkplaceInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
+  public isRegulated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public newWorkplaceUid: string;
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
@@ -24,8 +25,8 @@ export class WorkplaceService {
     },
   ];
 
-  public isRegulated(location: LocationAddress): boolean {
-    return location.isRegulated === true || location.locationId ? true : false;
+  public isRegulated(): boolean {
+    return this.isRegulated$.value;
   }
 
   public getServicesByCategory(isRegulated: boolean): Observable<Array<ServiceGroup>> {
