@@ -681,7 +681,6 @@ class User {
 
             const fetchResults = await models.user.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
-              console.log("WA DEBUG - login: ", fetchResults.login.lastLogin)
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
                 this._id = fetchResults.id;
