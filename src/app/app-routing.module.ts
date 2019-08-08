@@ -6,6 +6,7 @@ import {
 } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
+import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
@@ -15,6 +16,7 @@ import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
+import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 
 const routes: Routes = [
@@ -73,6 +75,12 @@ const routes: Routes = [
     canActivateChild: [AuthGuard],
     resolve: { loggedInUser: LoggedInUserResolver, primaryWorkplace: PrimaryWorkplaceResolver },
     children: [
+      {
+        path: 'migrated-user-terms-and-conditions',
+        canActivate: [MigratedUserGuard],
+        component: MigratedUserTermsConditionsComponent,
+        data: { title: 'Migrated User Terms And Conditions' },
+      },
       {
         path: 'workplace',
         loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
