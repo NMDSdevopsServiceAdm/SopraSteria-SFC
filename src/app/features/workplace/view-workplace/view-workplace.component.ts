@@ -54,9 +54,9 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       url: ['/workplace', this.workplace.uid],
     });
 
+    this.canViewStaffRecords = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
     this.canDelete =
-      this.primaryEstablishment.isParent && this.userService.loggedInUser.role === (Roles.Edit || Roles.Admin);
-    this.canViewStaffRecords = this.userService.loggedInUser.role === (Roles.Edit || Roles.Admin);
+      this.primaryEstablishment.isParent && [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
   }
 
   public checkPermission(permission: ParentPermissions) {

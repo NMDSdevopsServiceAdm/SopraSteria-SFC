@@ -51,7 +51,7 @@ export class WdfComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show();
     const workplaceUid = this.route.snapshot.params.establishmentuid;
 
-    this.canViewStaffRecords = this.userService.loggedInUser.role === (Roles.Edit || Roles.Admin);
+    this.canViewStaffRecords = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
     this.returnUrl = { url: ['/workplace', workplaceUid, 'reports', 'wdf'] };
     this.exitUrl = { url: ['/workplace', workplaceUid, 'reports'] };
     this.workerService.setReturnTo(null);
