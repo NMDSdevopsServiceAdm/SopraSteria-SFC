@@ -19,6 +19,7 @@ export class UserService {
   private _loggedInUser$: BehaviorSubject<UserDetails> = new BehaviorSubject<UserDetails>(null);
   public userDetails$: Observable<UserDetails> = this._userDetails$.asObservable();
   public returnUrl$: Observable<URLStructure> = this._returnUrl$.asObservable();
+  public migratedUserTermsAccepted$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
 
