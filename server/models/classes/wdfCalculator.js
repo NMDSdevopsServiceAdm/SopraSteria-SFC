@@ -10,15 +10,18 @@ class WdfCalculator {
   }
 
   get effectiveDate() {
+    //return new Date('07 Aug 2019 12:20:00 GMT');
     return this._effectiveDate;
   }
 
   get effectiveTime() {
-    return this._effectiveDate.getTime();
+    return this.effectiveDate.getTime();
   }
 
   // overrides the effective date
   set effectiveDate(effectiveFrom) {
+
+
     if (effectiveFrom === null) {
       // resettting the effective date to calculated date from fiscal year
       this._effectiveDate = WdfUtils.wdfEligibilityDate();
@@ -35,7 +38,7 @@ class WdfCalculator {
 
     try {
       let thisEstablishment = null;
-      
+
       if (establishmentUID) {
         thisEstablishment = await models.establishment.findOne({
           attributes: ['id', 'uid', 'lastWdfEligibility', 'overallWdfEligibility', 'NumberOfStaffValue', 'NumberOfStaffSavedAt'],
@@ -151,7 +154,7 @@ class WdfCalculator {
         console.error('WdfCalculator::calculate - Failed to find establishment having id/uid: ', establishmentID, establishmentUID);
         return false;
       }
-      
+
     } catch (err) {
       console.error('WdfCalculator::calculate - Failed to fetch establishment/workers: ', err);
       return false;
@@ -174,7 +177,7 @@ class WdfCalculator {
 
     try {
       let thisEstablishment = null;
-      
+
       if (establishmentUID) {
         thisEstablishment = await models.establishment.findOne({
           attributes: ['id', 'uid', 'lastWdfEligibility', 'overallWdfEligibility', 'NumberOfStaffValue', 'NumberOfStaffSavedAt'],
@@ -220,14 +223,14 @@ class WdfCalculator {
         });
 
         // the number of active worker records must be the same as the declared Establishment staff
-        console.log(`WA DEBUG - Establishment has #${theseWorkers.length} workers`)
         if (!(theseWorkers && Array.isArray(theseWorkers) && theseWorkers.length === thisEstablishment.NumberOfStaffValue)) {
-          wdfReport.staff = false;
-          return wdfReport;
+          wdfReport.workplace = false;
         }
 
         // at least 90% of all current workers must be eligible
-        const allEligibleWorkers = theseWorkers.filter(thisWorker => thisWorker.lastWdfEligibility ? thisWorker.lastWdfEligibility.getTime() > this.effectiveTime : false);
+        const allEligibleWorkers = theseWorkers.filter(thisWorker => {
+          return thisWorker.lastWdfEligibility ? thisWorker.lastWdfEligibility.getTime() > this.effectiveTime : false
+        });
         console.log(`WA DEBUG - establishment has #${allEligibleWorkers.length} eligible workers`)
         const weightedStaffEligibility = (allEligibleWorkers.length / theseWorkers.length);
         console.log(`WA DEBUG - establishment has ${weightedStaffEligibility*100}% eligible workers`)
