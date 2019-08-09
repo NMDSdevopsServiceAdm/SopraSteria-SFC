@@ -1396,7 +1396,7 @@ class Worker extends EntityValidator {
         let socialCareQualificationEligible;
         let highestQualificationEligible;
 
-        if (this._properties.get('QualificationInSocialCare').property === null || this._properties.get('QualificationInSocialCare').property === 'No') {
+        if (this._properties.get('QualificationInSocialCare').property === null || this._properties.get('QualificationInSocialCare').property !== 'Yes') {
             // if not having defined 'having a qualification in social care' or 'have said no'
             socialCareQualificationEligible = 'Not relevant';
         } else {
@@ -1413,7 +1413,8 @@ class Worker extends EntityValidator {
             updatedSinceEffectiveDate: this._properties.get('OtherQualifications').toJSON(false, true, WdfCalculator.effectiveDate)
         }
 
-        if (this._properties.get('OtherQualifications').property === null || this._properties.get('OtherQualifications').property === 'No') {
+        console.log("WA DEBUG - other qualification: ", this._properties.get('OtherQualifications').property)
+        if (this._properties.get('OtherQualifications').property === null || this._properties.get('OtherQualifications').property !== 'Yes') {
             // if not having defined 'having another qualification' or 'have said no'
             highestQualificationEligible = 'Not relevant';
         } else {
@@ -1424,6 +1425,8 @@ class Worker extends EntityValidator {
             isEligible: highestQualificationEligible,
             updatedSinceEffectiveDate: this._properties.get('HighestQualification').toJSON(false, true, WdfCalculator.effectiveDate)
         }
+
+        console.log("WA DEBUG - highest qualification: ", myWdf['highestQualification'])
 
         return myWdf;
     }
