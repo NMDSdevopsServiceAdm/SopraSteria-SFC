@@ -115,7 +115,7 @@ router.post('/', async (req, res) => {
     let tribalHashValidated = false;
     if (establishmentUser.user.tribalId !== null && establishmentUser.Hash === null) {
       tribalHashValidated = true;
-      const tribalHashCompareReset = tribalHashCompare(givenPassword, login.tribalSalt, login.tribalHash);
+      const tribalHashCompareReset = tribalHashCompare(givenPassword, establishmentUser.tribalSalt, establishmentUser.tribalHash);
 
       if (tribalHashCompareReset === false) {
         tribalErr = 'Failed to authenticate using tribal hash';
