@@ -3,10 +3,15 @@ aws:
     secrets:
         use: true
         wallet: demo/api
-  kinesis:
-    enabled: false
-  sns:
-    enabled: false
+    kinesis:
+      enabled: true
+      establishments: establishments.staging
+      workers: workers.staging
+      users: users.staging
+    sns:
+      enabled: true
+      registrations: arn:aws:sns:eu-west-1:364648107127:registrations-staging
+      feedback: arn:aws:sns:eu-west-1:364648107127:feedback-staging
 
 db:
     pool: 15
