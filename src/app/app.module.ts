@@ -34,7 +34,6 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
-import { WorkplaceTabComponent } from '@features/dashboard/workplace-tab/workplace-tab.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
 import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/edit/edit.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
@@ -49,6 +48,9 @@ import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import {
+  MigratedUserTermsConditionsComponent
+} from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 
 @NgModule({
   declarations: [
@@ -62,13 +64,13 @@ import { AppComponent } from './app.component';
     HomeTabComponent,
     LoginComponent,
     LogoutComponent,
+    MigratedUserTermsConditionsComponent,
     PageNotFoundComponent,
     ProblemWithTheServiceComponent,
     ResetPasswordComponent,
     ResetPasswordConfirmationComponent,
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
-    WorkplaceTabComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

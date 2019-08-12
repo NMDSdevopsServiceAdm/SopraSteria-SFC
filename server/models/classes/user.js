@@ -44,6 +44,9 @@ class User {
         this._username = null;
         this._password = null;
         this._isPrimary - null;
+        this._tribalId = null;
+        this._lastLogin = null;
+        this._establishmentUid = null;
 
         // abstracted properties
         const thisUserManager = new UserProperties();
@@ -151,6 +154,22 @@ class User {
         const prop = this._properties.get('UserRole');
         return prop ? prop.property : null;
     };
+
+    get lastLogin() {
+      return this._lastLogin;
+    }
+
+    get tribalId() {
+      return this._tribalId;
+    }
+
+    get establishmentUid() {
+      return this._establishmentUid;
+    }
+
+    set establishmentUid(uid) {
+      this._establishmentUid = uid;
+    }
 
     // used by save to initialise a new User; returns true if having initialised this user
     _initialise() {
@@ -637,7 +656,7 @@ class User {
                     include: [
                         {
                             model: models.login,
-                            attributes: ['username'],
+                            attributes: ['username', 'lastLogin'],
                             where: {
                                 username: uname
                             }
@@ -654,7 +673,7 @@ class User {
                     include: [
                         {
                             model: models.login,
-                            attributes: ['username']
+                            attributes: ['username', 'lastLogin']
                         }
                     ]
                 };
@@ -670,6 +689,8 @@ class User {
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
+                this._tribalId = fetchResults.tribalId;
+                this._lastLogin = fetchResults.login && fetchResults.login.username  ? fetchResults.login.lastLogin : null;
 
                 // TODO: change to amanaged property
                 this._isPrimary = fetchResults.isPrimary;
@@ -931,8 +952,14 @@ class User {
             myDefaultJSON.updated = this.updated.toJSON();
             myDefaultJSON.updatedBy = this.updatedBy;
             myDefaultJSON.isPrimary = (this._isPrimary) ? true : false;
-            myDefaultJSON.lastLoggedIn = this.login && this.login.username ? this.login.lastLogin : null;
+            myDefaultJSON.lastLoggedIn = this._lastLogin;
             myDefaultJSON.establishmentId = this._establishmentId;
+            myDefaultJSON.establishmentUid = this._establishmentUid ? this._establishmentUid : undefined;
+
+            // migrated user first logged in
+            const migratedUserFirstLogin = this._tribalId !== null && this._lastLogin === null ? true : false;
+            myDefaultJSON.migratedUserFirstLogon = migratedUserFirstLogin;
+            myDefaultJSON.migratedUser = this._tribalId !== null ? true : false;
 
             // TODO: JSON schema validation
             if (showHistory && !showPropertyHistoryOnly) {

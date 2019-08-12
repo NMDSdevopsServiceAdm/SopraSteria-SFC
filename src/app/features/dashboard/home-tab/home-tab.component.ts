@@ -32,7 +32,7 @@ export class HomeTabComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.userService.loggedInUser;
-    this.canEdit = this.user.role === (Roles.Edit || Roles.Admin);
+    this.canEdit = [Roles.Edit, Roles.Admin].includes(this.user.role);
 
     if (this.workplace && this.canEdit) {
       this.subscriptions.add(

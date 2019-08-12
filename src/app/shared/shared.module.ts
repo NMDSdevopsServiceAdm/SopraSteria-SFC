@@ -6,6 +6,7 @@ import { AlertComponent } from '@shared/components/alert/alert.component';
 import {
   SummaryRecordValueComponent,
 } from '@shared/components/summary-record-value/summary-record-value.component';
+import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
@@ -89,6 +90,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
     WdfConfirmationPanelComponent,
     StaffRecordsTabComponent,
     NumericAnswerPipe,
+    WorkplaceTabComponent
   ],
   exports: [
     AlertComponent,
@@ -128,6 +130,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
     WdfConfirmationPanelComponent,
     StaffRecordsTabComponent,
     NumericAnswerPipe,
+    WorkplaceTabComponent
   ],
 })
 export class SharedModule {}

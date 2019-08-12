@@ -13,6 +13,7 @@ export class CreateBasicRecordsStartScreenComponent implements OnInit {
 
   ngOnInit() {
     const url =
+      this.route.snapshot.data.primaryWorkplace &&
       this.route.snapshot.data.establishment.uid === this.route.snapshot.data.primaryWorkplace.uid
         ? ['/dashboard']
         : ['/workplace', this.route.snapshot.data.establishment.uid];

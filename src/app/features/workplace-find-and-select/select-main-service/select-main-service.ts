@@ -37,8 +37,9 @@ export class SelectMainService implements OnInit, OnDestroy {
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.getSelectedLocation();
     this.setSelectedWorkplaceService();
+    this.getServiceCategories();
+    this.init();
     this.setBackLink();
   }
 
@@ -77,7 +78,7 @@ export class SelectMainService implements OnInit, OnDestroy {
 
   protected init(): void {}
 
-  protected getSelectedLocation(): void {}
+  protected getServiceCategories(): void {}
 
   protected setSelectedWorkplaceService(): void {}
 

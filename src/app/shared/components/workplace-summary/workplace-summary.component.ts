@@ -82,7 +82,7 @@ export class WorkplaceSummaryComponent {
       other: '# people using the service',
     };
 
-    this.canEdit = this.userService.loggedInUser.role !== Roles.Read;
+    this.canEdit = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
   }
 
   public isArray(variable): boolean {

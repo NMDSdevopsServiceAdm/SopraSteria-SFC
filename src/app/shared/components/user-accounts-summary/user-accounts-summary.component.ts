@@ -31,7 +31,7 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
             ['status', 'isPrimary', 'role', (user: UserDetails) => user.fullname.toLowerCase()],
             ['desc', 'desc', 'asc', 'asc']
           );
-          this.canAddUser = loggedInUser.role === Roles.Edit && this.userSlotsAvailable(users);
+          this.canAddUser = [Roles.Edit, Roles.Admin].includes(loggedInUser.role) && this.userSlotsAvailable(users);
         })
     );
   }

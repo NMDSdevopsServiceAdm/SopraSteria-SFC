@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.canViewStaffRecords = this.userService.loggedInUser.role !== Roles.Read;
+    this.canViewStaffRecords = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
     this.workplace = this.establishmentService.primaryWorkplace;
 
     this.subscriptions.add(

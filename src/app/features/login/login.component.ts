@@ -8,10 +8,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
-
-const PING_INTERVAL = 240;
-const TIMEOUT_INTERVAL = 1800;
 
 @Component({
   selector: 'app-login',
@@ -114,21 +110,6 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.establishmentService.establishmentId = response.body.establishment.uid;
           }
 
-          this.idleService.init(PING_INTERVAL, TIMEOUT_INTERVAL);
-          this.idleService.start();
-
-          this.idleService.ping$.subscribe(() => {
-            this.authService
-              .refreshToken()
-              .pipe(take(1))
-              .subscribe();
-          });
-
-          this.idleService.onTimeout().subscribe(() => {
-            this.authService.storeRedirectLocation();
-            this.authService.logout();
-          });
-
           if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
             this.router.navigateByUrl(this.authService.redirectLocation);
           } else {
@@ -136,9 +117,12 @@ export class LoginComponent implements OnInit, OnDestroy {
           }
 
           this.authService.clearPreviousUser();
+
+          if (response.body.migratedUserFirstLogon) {
+            this.router.navigate(['/migrated-user-terms-and-conditions']);
+          }
         },
         (error: HttpErrorResponse) => {
-          this.form.setErrors({ serverError: true });
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         }
       )

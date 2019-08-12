@@ -35,6 +35,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
+    this.registrationService.isRegulated$.next(this.regulatedByCQC.value === 'yes');
     this.registrationService.registrationInProgress$.next(true);
 
     if (data.success === 1) {
@@ -44,6 +45,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
   }
 
   protected onLocationFailure() {
+    this.registrationService.isRegulated$.next(this.regulatedByCQC.value === 'yes');
     this.registrationService.registrationInProgress$.next(true);
     this.navigateToWorkplaceNotFoundRoute();
   }
