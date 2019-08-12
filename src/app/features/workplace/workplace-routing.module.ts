@@ -23,6 +23,7 @@ import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
+import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StartComponent } from './start/start.component';
@@ -72,6 +73,15 @@ const routes: Routes = [
         data: {
           roles: [Roles.Admin, Roles.Edit],
           title: 'Type of Employer',
+        },
+      },
+      {
+        path: 'main-service',
+        component: SelectMainServiceComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Main Service',
         },
       },
       {

@@ -23,6 +23,7 @@ import { DeleteWorkplaceDialogComponent } from './delete-workplace-dialog/delete
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
+import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StartersComponent } from './starters/starters.component';
@@ -74,6 +75,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
     WdfWorkplaceConfirmationDialogComponent,
+    SelectMainServiceComponent,
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [

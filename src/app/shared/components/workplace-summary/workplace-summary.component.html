@@ -52,11 +52,12 @@
     </dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.mainService">
-        {{ workplace.mainService?.name || '-' }}
+        {{ workplace.mainService?.name }}
+        <ng-container *ngIf="workplace.mainService?.other"> - {{ workplace.mainService?.other }}</ng-container>
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEdit" class="govuk-summary-list__actions">
-      <!-- <a [routerLink]="['/workplace', workplace.uid]" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.uid, 'main-service']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.mainService">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -65,7 +66,7 @@
           Change
         </ng-container>
         <span class="govuk-visually-hidden"> main service</span>
-      </a> -->
+      </a>
     </dd>
   </div>
 
@@ -81,8 +82,7 @@
         <ul class="govuk-list govuk-!-margin-bottom-0">
           <ng-container *ngFor="let categories of workplace.otherServices">
             <li *ngFor="let service of categories.services">
-              <ng-container *ngIf="service.other">{{ service.other }}</ng-container>
-              <ng-container *ngIf="!service.other">{{ service.name }}</ng-container>
+              {{ service.name }}<ng-container *ngIf="service.other"> - {{ service.other }}</ng-container>
             </li>
           </ng-container>
         </ul>
