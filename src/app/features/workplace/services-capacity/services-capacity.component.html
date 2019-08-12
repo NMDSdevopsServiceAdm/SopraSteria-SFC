@@ -38,28 +38,35 @@
               *ngFor="let question of capacity.questions; let idx = index"
               class="govuk-form-group"
               [class.govuk-form-group--error]="
-                submitted && form.get(generateId(capacity.service) + '.' + question.questionId).invalid
+                submitted &&
+                form.get(generateId(capacity.service) + '.' + question.seq + '_' + question.questionId).invalid
               "
             >
-              <label class="govuk-label" for="question-{{ question.questionId }}">
+              <label class="govuk-label" for="question-{{ question.seq }}_{{ question.questionId }}">
                 {{ question.question }}
               </label>
               <span
-                *ngIf="submitted && form.get(generateId(capacity.service) + '.' + question.questionId).invalid"
-                id="question-{{ question.questionId }}-error"
+                *ngIf="
+                  submitted &&
+                  form.get(generateId(capacity.service) + '.' + question.seq + '_' + question.questionId).invalid
+                "
+                id="question-{{ question.seq }}_{{ question.questionId }}-error"
                 class="govuk-error-message"
               >
                 <span class="govuk-visually-hidden">Error:</span>
-                {{ getFirstErrorMessage(generateId(capacity.service) + '.' + question.questionId) }}
+                {{
+                  getFirstErrorMessage(generateId(capacity.service) + '.' + question.seq + '_' + question.questionId)
+                }}
               </span>
               <input
                 class="govuk-input govuk-input--width-4"
                 [class.govuk-input--error]="
-                  submitted && form.get(generateId(capacity.service) + '.' + question.questionId).invalid
+                  submitted &&
+                  form.get(generateId(capacity.service) + '.' + question.seq + '_' + question.questionId).invalid
                 "
-                [formControlName]="question.questionId"
-                id="question-{{ question.questionId }}"
-                name="question-{{ question.questionId }}"
+                [formControlName]="question.seq + '_' + question.questionId"
+                id="question-{{ question.seq }}_{{ question.questionId }}"
+                name="question-{{ question.seq }}_{{ question.questionId }}"
                 type="number"
               />
             </div>
