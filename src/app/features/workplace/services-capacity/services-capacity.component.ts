@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { sortBy } from 'lodash';
 
 import { Question } from '../question/question.component';
 
@@ -43,12 +42,15 @@ export class ServicesCapacityComponent extends Question {
 
         capacities.allServiceCapacities.forEach((service, i) => {
           const group = this.formBuilder.group({});
-          const questions = sortBy(service.questions, question => question.seq);
+          const questions = service.questions;
 
           const id = this.generateId(service.service);
 
           questions.forEach(question => {
-            group.addControl(question.questionId.toString(), new FormControl(question.answer, [Validators.min(0)]));
+            group.addControl(
+              question.seq + '_' + question.questionId.toString(),
+              new FormControl(question.answer, [Validators.min(0)])
+            );
             this.formErrorsMap.push({
               item: `${id}.${question.questionId}`,
               type: [
@@ -99,7 +101,7 @@ export class ServicesCapacityComponent extends Question {
       Object.entries(this.form.get(groupKey).value).reduce((res, [key, value]) => {
         if (value) {
           const parsedValue = typeof value === 'string' ? parseInt(value, 10) : value;
-          capacities.push({ questionId: parseInt(key, 10), answer: parsedValue });
+          capacities.push({ questionId: parseInt(key.split('_')[1], 10), answer: parsedValue });
         }
         return res;
       }, []);
