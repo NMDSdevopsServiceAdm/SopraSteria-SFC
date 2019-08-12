@@ -29,7 +29,7 @@ export class SelectMainServiceComponent extends SelectMainService {
   }
 
   protected getServiceCategories(): void {
-    this.getServicesByCategory(this.registrationService.isRegulated());
+    this.subscriptions.add(this.getServicesByCategory(this.registrationService.isRegulated()));
   }
 
   protected getSelectedWorkplace(): void {
