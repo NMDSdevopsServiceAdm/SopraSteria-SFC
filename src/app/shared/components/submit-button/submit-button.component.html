@@ -8,18 +8,26 @@
     >
       View record summary
     </button>
+    <span class="govuk-visually-hidden">or</span>
+    <button
+      type="button"
+      class="govuk-button govuk-button--link govuk-util__float-right"
+      (click)="onClick('exit', false)"
+    >
+      Exit
+    </button>
   </ng-container>
   <ng-template #summary>
     <button type="button" class="govuk-button" (click)="onClick('return', true)">
       Save and return
     </button>
+    <span class="govuk-visually-hidden">or</span>
+    <button
+      type="button"
+      class="govuk-button govuk-button--link govuk-util__float-right"
+      (click)="onClick('return', false)"
+    >
+      Exit
+    </button>
   </ng-template>
-  <span class="govuk-visually-hidden">or</span>
-  <button
-    type="button"
-    class="govuk-button govuk-button--link govuk-util__float-right"
-    (click)="onClick('exit', false)"
-  >
-    Exit
-  </button>
 </div>
