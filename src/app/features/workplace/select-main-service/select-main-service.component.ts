@@ -32,8 +32,8 @@ export class SelectMainServiceComponent extends SelectMainService {
     this.selectedMainService = this.workplace.mainService;
   }
 
-  protected getSelectedLocation() {
-    this.getServicesByCategory(this.workplace.isRegulated);
+  protected getServiceCategories() {
+    this.subscriptions.add(this.getServicesByCategory(this.workplace.isRegulated));
   }
 
   protected onSuccess() {
