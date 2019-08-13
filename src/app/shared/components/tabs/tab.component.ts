@@ -7,9 +7,9 @@ import * as slugify from 'slugify';
     <section
       id="{{ slug }}"
       class="govuk-tabs__panel"
+      [class.govuk-tabs__panel--hidden]="!active"
       [attr.aria-labelledby]="'tab_' + slug"
       role="tabpanel"
-      [hidden]="!active"
     >
       <ng-content></ng-content>
     </section>
