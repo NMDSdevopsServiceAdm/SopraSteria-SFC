@@ -29,7 +29,7 @@ const validateWorker = async (req, res, next) => {
     if (req.establishmentId !== req.establishment.id) {
       // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
       if (!req.parentIsOwner  &&
-          (req.parentPermissions === null || req.parentPermissions !== "Workplace and Staff")) {
+          (req.dataPermissions === null || req.dataPermissions !== "Workplace and Staff")) {
         console.error(`Parent not permitted to access Worker with id: ${workerId}`);
         return res.status(403).send({ message: `Parent not permitted to access Worker with id: ${workerId ? workerId : 'not applicable'}` });
       }
@@ -83,7 +83,6 @@ router.route('/total').get(async (req, res) => {
         return res.status(503).send('Failed to get total workers for establishment having id: '+establishmentId);
     }
 });
-
 
 router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);

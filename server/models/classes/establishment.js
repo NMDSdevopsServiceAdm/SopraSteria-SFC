@@ -95,7 +95,7 @@ class Establishment extends EntityValidator {
         this._parentUid = null;
         this._parentId = null;
         this._dataOwner = null;
-        this._parentPermissions = null;
+        this._dataPermissions = null;
 
         // interim reasons for leaving - https://trello.com/c/vNHbfdms
         this._reasonsForLeaving = null;
@@ -252,8 +252,8 @@ class Establishment extends EntityValidator {
         return this._dataOwner;
     }
 
-    get parentPermissions() {
-        return this._parentPermissions;
+    get dataPermissions() {
+        return this._dataPermissions;
     }
 
     get numberOfStaff() {
@@ -301,7 +301,7 @@ class Establishment extends EntityValidator {
         this._parentUid = parentUid;
         this._parentId = parentID;
         this._dataOwner = 'Parent';
-        this._parentPermissions = null;     // if the owner is parent, then parent permissions are irrelevant
+        this._dataPermissions = null;   
     }
 
     // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
@@ -604,7 +604,7 @@ class Establishment extends EntityValidator {
                     parentUid: this._parentUid,
                     parentId: this._parentId,
                     dataOwner: this._dataOwner ? this._dataOwner : 'Workplace',
-                    parentPermissions: this._parentPermissions,
+                    dataPermissions: this._dataPermissions,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
                     provId: this._provId,
@@ -954,7 +954,7 @@ class Establishment extends EntityValidator {
                 this._parentId = fetchResults.parentId;
                 this._parentUid = fetchResults.parentUid;
                 this._dataOwner = fetchResults.dataOwner;
-                this._parentPermissions = fetchResults.parentPermissions;
+                this._dataPermissions = fetchResults.dataPermissions;
 
                 // interim solution for reason for leaving
                 this._reasonsForLeaving = fetchResults.reasonsForLeaving;
@@ -1382,7 +1382,7 @@ class Establishment extends EntityValidator {
                 myDefaultJSON.isParent = this.isParent;
                 myDefaultJSON.parentUid = this.parentUid;
                 myDefaultJSON.dataOwner = this.dataOwner;
-                myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
+                myDefaultJSON.dataPermissions = this.isParent ? undefined : this.dataPermissions;
                 myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
             }
 
@@ -1703,7 +1703,7 @@ class Establishment extends EntityValidator {
 
         // first - get the user's primary establishment (every user will have a primary establishment)
         const fetchResults = await models.establishment.findOne({
-            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
+            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated'],
             include: [
                 {
                     model: models.services,
@@ -1726,7 +1726,7 @@ class Establishment extends EntityValidator {
             if (isParent) {
                 // get all subsidaries associated with this parent
                 allSubResults = await models.establishment.findAll({
-                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
+                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated'],
                     include: [
                         {
                             model: models.services,
@@ -1758,7 +1758,7 @@ class Establishment extends EntityValidator {
                   localIdentifier: primaryEstablishmentRecord.LocalIdentifierValue ? primaryEstablishmentRecord.LocalIdentifierValue : null,
                   mainService: primaryEstablishmentRecord.mainService.name,
                   dataOwner: primaryEstablishmentRecord.dataOwner,
-                  parentPermissions: isParent ? undefined : primaryEstablishmentRecord.parentPermissions,
+                  dataPermissions: isParent ? undefined : primaryEstablishmentRecord.dataPermissions,
               }
             };
 
@@ -1774,7 +1774,7 @@ class Establishment extends EntityValidator {
                       localIdentifier: thisSub.LocalIdentifierValue ? thisSub.LocalIdentifierValue : null,
                       mainService: thisSub.mainService.name,
                       dataOwner: thisSub.dataOwner,
-                      parentPermissions: thisSub.parentPermissions,
+                      dataPermissions: thisSub.dataPermissions,
                   };
                 })
               };
@@ -1915,7 +1915,7 @@ class Establishment extends EntityValidator {
         const missingEstablishmentsQuery = `
           select "EstablishmentID", "EstablishmentUID", "NameValue", "LocalIdentifierValue"
           from cqc."Establishment"
-          where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+          where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "DataOwner" = 'Parent'))
             and "Archived" = false
             and "LocalIdentifierValue" is null"
           order by "EstablishmentID"`;
@@ -1932,7 +1932,7 @@ class Establishment extends EntityValidator {
                 "Worker"."LocalIdentifierValue" AS "WorkerLocal"
               from cqc."Establishment"
                 inner join cqc."Worker" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
-              where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+              where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "DataOwner" = 'Parent'))
                 and "Establishment"."Archived" = false
                 and "Worker"."Archived" = false
                 and "Worker"."LocalIdentifierValue" is null
@@ -1942,7 +1942,7 @@ class Establishment extends EntityValidator {
           select count(0) as "Total"
           from cqc."Establishment"
             inner join cqc."Worker" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
-          where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+          where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "DataOwner" = 'Parent'))
             and "Establishment"."Archived" = false
             and "Worker"."Archived" = false
             and ("Establishment"."LocalIdentifierValue" is null OR "Worker"."LocalIdentifierValue" is null)`;
@@ -1962,12 +1962,12 @@ class Establishment extends EntityValidator {
                 count(0) AS "TotalWorkers"
               from cqc."Worker"
                 inner join cqc."Establishment" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
-              where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+              where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "DataOwner" = 'Parent'))
               and "Worker"."Archived" = false
               and "Worker"."LocalIdentifierValue" is null
               group by "EstablishmentID"
             ) "WorkerTotals" on "WorkerTotals"."EstablishmentID" = "Establishment"."EstablishmentID"
-          where (("Establishment"."EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+          where (("Establishment"."EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "DataOwner" = 'Parent'))
             and "Establishment"."Archived" = false
             and ("Establishment"."LocalIdentifierValue" is null)`;
 

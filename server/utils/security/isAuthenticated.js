@@ -101,14 +101,14 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             }
 
             const referencedEstablishment = await models.establishment.findOne({
-              attributes: ['id', 'parentPermissions', 'dataOwner'],
+              attributes: ['id', 'dataPermissions', 'dataOwner'],
               where: findEstablishmentWhereClause
             });
             // this is a known subsidairy of this given parent establishment
 
             // but, to be able to access the subsidary, then the permissions must not be null
             if (referencedEstablishment.dataOwner === 'Workplace') {
-              if (referencedEstablishment.parentPermissions === null) {
+              if (referencedEstablishment.dataPermissions === null) {
                 console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);
                 // failed to find establishment by UUID - being a subsidairy of this known parent
                 return res.status(403).send({message: `Parent not permitted to access Establishment with id: ${req.params.id}`});
@@ -127,7 +127,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
 
             req.establishmentId = referencedEstablishment.id;
             req.parentIsOwner = referencedEstablishment.dataOwner === 'Parent' ? true : false;
-            req.parentPermissions = referencedEstablishment.parentPermissions;    // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
+            req.dataPermissions = referencedEstablishment.dataPermissions;    // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
 
             // we now know the
             establishmentIdIsUID = false;
