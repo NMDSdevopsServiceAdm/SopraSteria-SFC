@@ -248,7 +248,7 @@ const routes: Routes = [
             },
           },
           {
-            path: 'edit',
+            path: 'edit-details',
             component: UserAccountEditDetailsComponent,
             canActivate: [RoleGuard, EditUserPermissionsGuard],
             resolve: { user: UserAccountResolver },
