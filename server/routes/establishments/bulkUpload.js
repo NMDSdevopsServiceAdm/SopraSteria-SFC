@@ -1708,6 +1708,7 @@ const completeNewEstablishment = async (thisNewEstablishment, theLoggedInUser, t
       // as this new establishment is created from a parent, it automatically becomes a sub
       foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
       await foundOnloadEstablishment.save(theLoggedInUser, true, 0, transaction, true);
+      await foundOnloadEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
     }
 
     const endTime = new Date();
@@ -1739,6 +1740,7 @@ const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedIn
 
       await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
       await foundCurrentEstablishment.save(theLoggedInUser, true, 0, transaction, true)
+      await foundCurrentEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
 
       const endTime = new Date();
       const numberOfWorkers = foundCurrentEstablishment.workers.length;

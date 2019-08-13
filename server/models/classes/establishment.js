@@ -2016,6 +2016,11 @@ class Establishment extends EntityValidator {
         throw err;
       }
     }
+
+    async bulkUploadWdf(savedby, externalTransaction) {
+      // recalculate WDF - if not bulk upload (this._status)
+      return await WdfCalculator.calculate(savedby, this._id, null, externalTransaction, WdfCalculator.BULK_UPLOAD, false);
+    }
 };
 
 module.exports.Establishment = Establishment;
