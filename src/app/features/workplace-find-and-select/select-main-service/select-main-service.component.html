@@ -7,7 +7,7 @@
 </app-error-summary>
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
+  <div class="govuk-grid-column-full">
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error" *ngIf="renderForm">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
@@ -91,8 +91,7 @@
           </fieldset>
         </fieldset>
       </div>
-
-      <button class="govuk-button govuk-!-margin-top-2" type="submit">{{ callToActionLabel }}</button>
+      <app-submit-exit-buttons [cta]="callToActionLabel" [return]="return"></app-submit-exit-buttons>
     </form>
   </div>
 </div>
