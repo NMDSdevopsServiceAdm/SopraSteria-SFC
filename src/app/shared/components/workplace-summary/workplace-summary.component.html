@@ -81,7 +81,7 @@
       <ng-template #otherServices>
         <ul class="govuk-list govuk-!-margin-bottom-0">
           <ng-container *ngFor="let categories of workplace.otherServices">
-            <li *ngFor="let service of categories.services">
+            <li *ngFor="let service of filterAndSortOtherServices(categories.services)">
               {{ service.name }}<ng-container *ngIf="service.other"> - {{ service.other }}</ng-container>
             </li>
           </ng-container>
