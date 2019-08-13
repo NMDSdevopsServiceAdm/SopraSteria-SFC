@@ -14,7 +14,7 @@ export class WdfEligibilityComponent implements OnInit {
     this.criteria = [
       {
         label: 'Overall',
-        truthy: this.report.wdf.isEligible,
+        truthy: this.report.wdf.overall,
       },
       {
         label: 'Workplace information',
