@@ -45,7 +45,7 @@
           Training accredited
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ trainingRecord.accredited ? trainingRecord.accredited : '-' }}
+          {{ trainingRecord.accredited | closedEndedAnswer }}
         </dd>
         <dd class="govuk-summary-list__actions"></dd>
         <dd class="govuk-summary-list__actions"></dd>

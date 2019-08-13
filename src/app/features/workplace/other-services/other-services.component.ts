@@ -122,18 +122,20 @@ export class OtherServicesComponent extends Question {
 
   protected generateUpdateProps() {
     const { otherServices } = this.form.value;
+    const allServicesKeys = this.allServices.map(service => service.id);
 
     return {
-      services: otherServices.map(id => {
-        const service = { id };
-        const otherService: Service = filter(this.allServices, { id: id })[0];
+      services: otherServices
+        .filter(id => allServicesKeys.includes(id))
+        .map(id => {
+          const service = { id };
+          const otherService: Service = filter(this.allServices, { id: id })[0];
 
-        if (otherService.other) {
-          service['other'] = this.form.get(`additionalOtherService${id}`).value;
-        }
-
-        return service;
-      }),
+          if (otherService.other) {
+            service['other'] = this.form.get(`additionalOtherService${id}`).value;
+          }
+          return service;
+        }),
     };
   }
 

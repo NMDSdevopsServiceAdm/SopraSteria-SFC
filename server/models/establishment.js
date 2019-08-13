@@ -65,6 +65,16 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"OverallWdfEligibility"'
     },
+    establishmentWdfEligibility: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EstablishmentWdfEligibility"'
+    },
+    staffWdfEligibility: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"StaffWdfEligibility"'
+    },
     lastWdfEligibility: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -90,14 +100,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM,
       allowNull: false,
       values: ['Workplace','Parent'],
-      field: '"Owner"',
+      field: '"DataOwner"',
       default: 'Workplace',
     },
-    parentPermissions: {
+    dataPermissions: {
       type: DataTypes.ENUM,
       allowNull: true,
-      values: ['Workplace','Worker'],
-      field: '"ParentAccess"',
+      values: ['Workplace','Workplace and Staff', 'None'],
+      field: '"DataPermissions"',
     },
     NameValue: {
       type: DataTypes.TEXT,

@@ -1,7 +1,7 @@
 export interface Service {
   id: number;
   isMyService?: boolean;
-  isCQC: boolean;
+  isCQC?: boolean;
   name: string;
   other?: boolean;
   otherName?: string;

@@ -2,9 +2,9 @@
   <div class="govuk-grid-column-one-third">
     <p>
       <ng-container *ngIf="canAccessWorkplace; else noPermission">
-        <!--<a [routerLink]="['/workplace', workplace.uid]">-->
-        {{ workplace.name }}
-        <!--</a>-->
+        <a [routerLink]="['/workplace', workplace.uid]">
+          {{ workplace.name }}
+        </a>
       </ng-container>
       <ng-template #noPermission>
         {{ workplace.name }}

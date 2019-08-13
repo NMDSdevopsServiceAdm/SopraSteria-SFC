@@ -123,7 +123,6 @@ export class LoginComponent implements OnInit, OnDestroy {
           }
         },
         (error: HttpErrorResponse) => {
-          this.form.setErrors({ serverError: true });
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         }
       )

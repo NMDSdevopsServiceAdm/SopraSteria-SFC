@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
     type: {
       type: DataTypes.ENUM,
       allowNull: false,
-      values: ['created', 'updated', 'saved', 'changed', 'delete', 'overalWdfEligible', 'wdfEligible'],
+      values: ['created', 'updated', 'saved', 'changed', 'delete', 'overalWdfEligible', 'wdfEligible', 'staffWdfEligible', 'establishmentWdfEligible'],
       field: '"EventType"'
     },
     property : {

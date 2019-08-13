@@ -3,6 +3,9 @@ import { WDFValue } from './wdf.model';
 export interface MainService {
   id: number;
   name: string;
+  isCQC: boolean;
+  other?: boolean;
+  otherName?: string;
 }
 
 export interface ServiceUser {

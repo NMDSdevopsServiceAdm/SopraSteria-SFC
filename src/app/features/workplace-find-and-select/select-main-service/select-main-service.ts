@@ -3,7 +3,6 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { LocationAddress } from '@core/model/location.model';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -15,7 +14,7 @@ export class SelectMainService implements OnInit, OnDestroy {
   protected allServices: Array<Service> = [];
   protected flow: string;
   protected otherServiceMaxLength = 120;
-  protected selectedWorkplace: Service;
+  protected selectedMainService: Service;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   public categories: Array<ServiceGroup>;
@@ -34,11 +33,12 @@ export class SelectMainService implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.init();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.getSelectedLocation();
-    this.getSelectedWorkplace();
+    this.setSelectedWorkplaceService();
+    this.getServiceCategories();
     this.init();
     this.setBackLink();
   }
@@ -78,13 +78,13 @@ export class SelectMainService implements OnInit, OnDestroy {
 
   protected init(): void {}
 
-  protected getSelectedLocation(): void {}
+  protected getServiceCategories(): void {}
 
-  protected getSelectedWorkplace(): void {}
+  protected setSelectedWorkplaceService(): void {}
 
-  protected getServicesByCategory(location: LocationAddress): void {
+  protected getServicesByCategory(isRegulated: boolean): void {
     this.subscriptions.add(
-      this.workplaceService.getServicesByCategory(this.workplaceService.isRegulated(location)).subscribe(
+      this.workplaceService.getServicesByCategory(isRegulated).subscribe(
         (categories: Array<ServiceGroup>) => {
           this.categories = categories;
           this.categories.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
@@ -130,11 +130,11 @@ export class SelectMainService implements OnInit, OnDestroy {
    * Then set boolean flag for ui to render the form
    */
   protected preFillForm(): void {
-    if (this.selectedWorkplace) {
-      this.form.get('workplaceService').patchValue(this.selectedWorkplace.id);
+    if (this.selectedMainService) {
+      this.form.get('workplaceService').patchValue(this.selectedMainService.id);
 
-      if (this.selectedWorkplace.other) {
-        this.form.get(`otherWorkplaceService${this.selectedWorkplace.id}`).patchValue(this.selectedWorkplace.otherName);
+      if (this.selectedMainService.other) {
+        this.form.get(`otherWorkplaceService${this.selectedMainService.id}`).patchValue(this.selectedMainService.other);
       }
     }
 
@@ -158,7 +158,6 @@ export class SelectMainService implements OnInit, OnDestroy {
 
     if (this.form.valid) {
       this.onSuccess();
-      this.router.navigate([`${this.flow}/confirm-workplace-details`]);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
@@ -171,8 +170,20 @@ export class SelectMainService implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
+  protected navigateToNextPage(): void {
+    this.router.navigate([`${this.flow}/confirm-workplace-details`]);
+  }
+
   protected setBackLink(): void {
     this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
+  }
+
+  get displayIntro() {
+    return true;
+  }
+
+  get callToActionLabel() {
+    return 'Continue';
   }
 
   ngOnDestroy() {
