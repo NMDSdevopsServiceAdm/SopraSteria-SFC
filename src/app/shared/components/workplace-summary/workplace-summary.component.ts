@@ -1,10 +1,12 @@
 import { I18nPluralPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Roles } from '@core/model/roles.enum';
+import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { sortBy } from 'lodash';
 import { isArray } from 'util';
 
 @Component({
@@ -83,6 +85,10 @@ export class WorkplaceSummaryComponent {
     };
 
     this.canEdit = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
+  }
+
+  public filterAndSortOtherServices(services: Service[]) {
+    return sortBy(services.filter(service => service.name !== this.workplace.mainService.name), 'id');
   }
 
   public isArray(variable): boolean {
