@@ -366,7 +366,7 @@ class WdfCalculator {
           wdf.staffEligibility = thisEstablishment.staffWdfEligibility ? thisEstablishment.staffWdfEligibility : undefined;
           wdf.workplace = thisEstablishment.establishmentWdfEligibility && (thisEstablishment.establishmentWdfEligibility.getTime() > this.effectiveTime) ? true : false;
           wdf.establishmentElibigility = thisEstablishment.establishmentWdfEligibility ? thisEstablishment.establishmentWdfEligibility : undefined;
-          wdf.isEligible = thisEstablishment.overallWdfEligibility && (thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) ? true : false;
+          wdf.overall = thisEstablishment.overallWdfEligibility && (thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) ? true : false;
           wdf.overallWdfEligibility = thisEstablishment.overallWdfEligibility ? thisEstablishment.overallWdfEligibility : undefined;
           wdf.reasons = reasons.length > 0 ? reasons : undefined;
 
