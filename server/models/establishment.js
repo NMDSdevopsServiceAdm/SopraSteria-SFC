@@ -100,14 +100,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM,
       allowNull: false,
       values: ['Workplace','Parent'],
-      field: '"Owner"',
+      field: '"DataOwner"',
       default: 'Workplace',
     },
-    parentPermissions: {
+    dataPermissions: {
       type: DataTypes.ENUM,
       allowNull: true,
-      values: ['Workplace','Worker'],
-      field: '"ParentAccess"',
+      values: ['Workplace','Workplace and Staff', 'None'],
+      field: '"DataPermissions"',
     },
     NameValue: {
       type: DataTypes.TEXT,
