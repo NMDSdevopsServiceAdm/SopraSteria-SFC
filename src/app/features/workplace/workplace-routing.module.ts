@@ -7,6 +7,7 @@ import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
+import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
@@ -244,6 +245,16 @@ const routes: Routes = [
             data: {
               roles: [Roles.Admin, Roles.Edit],
               title: 'Edit Permissions',
+            },
+          },
+          {
+            path: 'edit',
+            component: UserAccountEditDetailsComponent,
+            canActivate: [RoleGuard, EditUserPermissionsGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              roles: [Roles.Admin, Roles.Edit],
+              title: 'Edit User Details',
             },
           },
         ],

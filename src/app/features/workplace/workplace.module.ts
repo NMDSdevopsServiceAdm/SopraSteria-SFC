@@ -44,6 +44,7 @@ import {
 } from './wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { UserAccountEditDetailsComponent } from './user-account-edit-details/user-account-edit-details.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
@@ -76,6 +77,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     WorkplaceInfoPanelComponent,
     WdfWorkplaceConfirmationDialogComponent,
     SelectMainServiceComponent,
+    UserAccountEditDetailsComponent,
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [
