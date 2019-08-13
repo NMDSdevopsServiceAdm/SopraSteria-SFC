@@ -57,13 +57,25 @@
             </span>
             <div class="govuk-radios">
               <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="accredited-yes" name="accredited" type="radio" value="Yes" />
+                <input
+                  class="govuk-radios__input"
+                  id="accredited-yes"
+                  [formControlName]="'accredited'"
+                  type="radio"
+                  value="Yes"
+                />
                 <label class="govuk-label govuk-radios__label" for="accredited-yes">
                   Yes
                 </label>
               </div>
               <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="accredited-no" name="accredited" type="radio" value="No" />
+                <input
+                  class="govuk-radios__input"
+                  id="accredited-no"
+                  [formControlName]="'accredited'"
+                  type="radio"
+                  value="No"
+                />
                 <label class="govuk-label govuk-radios__label" for="accredited-no">
                   No
                 </label>
@@ -72,7 +84,7 @@
                 <input
                   class="govuk-radios__input"
                   id="accredited-dont-know"
-                  name="accredited"
+                  [formControlName]="'accredited'"
                   type="radio"
                   value="Don't know"
                 />
