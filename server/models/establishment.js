@@ -96,7 +96,7 @@ module.exports = function(sequelize, DataTypes) {
     dataPermissions: {
       type: DataTypes.ENUM,
       allowNull: true,
-      values: ['Workplace','Worker', 'None'],
+      values: ['Workplace','Workplace and Staff', 'None'],
       field: '"DataPermissions"',
     },
     NameValue: {
