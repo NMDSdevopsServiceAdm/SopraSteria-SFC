@@ -69,9 +69,8 @@
             *ngIf="referenceType === referenceTypeEnum.Establishment && reference.localIdentifier"
           >
             <a [routerLink]="['/bulk-upload/staff-references', reference.uid]" (click)="setReturn()">
-              Staff references<span class="govuk-visually-hidden">
-                {{ reference.name ? reference.name : reference.nameOrId }}</span
-              >
+              <span class="govuk-visually-hidden">{{ reference.name ? reference.name : reference.nameOrId }}</span>
+              Staff references
             </a>
           </p>
         </div>
@@ -87,8 +86,10 @@
         <h3 class="govuk-heading-m">What you can do next?</h3>
         <ul class="govuk-list govuk-list--bullet">
           <li>
-            <a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">Add staff records<span class="govuk-visually-hidden">
-                {{ reference.name ? reference.name : reference.nameOrId }}</span</a>.
+            <a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">
+              <span class="govuk-visually-hidden">{{ reference.name ? reference.name : reference.nameOrId }}</span>
+              Add staff records </a
+            >.
           </li>
           <li>Continue without adding staff records.</li>
         </ul>
