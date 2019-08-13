@@ -7,24 +7,22 @@ class WdfCalculator {
   constructor() {
     // initialises with the calculated effective date being this fiscal year
     this._effectiveDate = WdfUtils.wdfEligibilityDate();
-
-    this.auditEvents = null;
   }
 
-  static get WORKER_ADD() { return 1000; }
-  static get WORKER_UPDATE() { return 1001; }
-  static get WORKER_DELETE() { return 1002; }
+  get WORKER_ADD() { return 1000; }
+  get WORKER_UPDATE() { return 1001; }
+  get WORKER_DELETE() { return 1002; }
 
-  static get ESTABLISHMENT_ADD() { return 2000; }
-  static get ESTABLISHMENT_UPDATE() { return 2001; }
-  static get ESTABLISHMENT_DELETE() { return 2002; }
+  get ESTABLISHMENT_ADD() { return 2000; }
+  get ESTABLISHMENT_UPDATE() { return 2001; }
+  get ESTABLISHMENT_DELETE() { return 2002; }
 
-  static get BULK_UPLOAD() { return 3000; }
-  static get REPORT() { return 4000; }
+  get BULK_UPLOAD() { return 3000; }
+  get REPORT() { return 4000; }
 
-  static get ALREADY_ELIGIBLE() { return 5000; }
-  static get NOW_ELIGIBLE() { return 5001; }
-  static get NOT_ELIGIBLE() { return 5002; }
+  get ALREADY_ELIGIBLE() { return 5000; }
+  get NOW_ELIGIBLE() { return 5001; }
+  get NOT_ELIGIBLE() { return 5002; }
 
   wdfImpactToString(wdfImpact) {
     let toString = null;
@@ -69,10 +67,12 @@ class WdfCalculator {
         toString = 'Not Eligible';
         break;
     }
+
+    return toString;
   }
 
   get effectiveDate() {
-    //return new Date('07 Aug 2019 12:20:00 GMT');
+    //return new Date('13 Aug 2019 07:30:00 GMT');
     return this._effectiveDate;
   }
 
@@ -82,8 +82,6 @@ class WdfCalculator {
 
   // overrides the effective date
   set effectiveDate(effectiveFrom) {
-
-
     if (effectiveFrom === null) {
       // resettting the effective date to calculated date from fiscal year
       this._effectiveDate = WdfUtils.wdfEligibilityDate();
@@ -92,10 +90,11 @@ class WdfCalculator {
     }
   }
 
-  async overallWdfEligibility(savedBy, establishment, externalTransaction, readonly, reasons) {
-    if (establishment.overallWdfEligibility && thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) {
+  async _overallWdfEligibility(savedBy, establishment, externalTransaction, readonly, reasons) {
+    //console.log(`WA DEBUG - recalculating overal WDF eligibility for establishment (${establishment.id})`);
+    if (establishment.overallWdfEligibility && establishment.overallWdfEligibility.getTime() > this.effectiveTime) {
       // already eligibile
-      return WdfCalculator.ALREADY_ELIGIBLE;
+      return this.ALREADY_ELIGIBLE;
     }
 
     if (!(establishment.staffWdfEligibility && establishment.staffWdfEligibility.getTime() >= this.effectiveTime &&
@@ -107,7 +106,7 @@ class WdfCalculator {
         }
       });
 
-      return WdfCalculator.NOT_ELIGIBLE;
+      return this.NOT_ELIGIBLE;
     }
 
     // get this far is now eligible
@@ -121,18 +120,29 @@ class WdfCalculator {
         }
       );
 
-      // TBC - create an audit record????
+      // audit this activity
+      await models.establishmentAudit.create(
+        {
+          establishmentFk: establishment.id,
+          username: savedBy,
+          type: 'overalWdfEligible'
+        },
+        {transaction: externalTransaction}
+      );
     }
+
+    return this.NOW_ELIGIBLE;
   }
 
-  async establishmentWdfEligibility(savedBy, establishment, workers, externalTransaction, readonly, reasons) {
-    if (establishment.establishmentWdfEligibility && thisEstablishment.establishmentWdfEligibility.getTime() > this.effectiveTime) {
+  async _establishmentWdfEligibility(savedBy, establishment, workers, externalTransaction, readonly, reasons) {
+    // console.log(`WA DEBUG - recalculating establishment WDF eligibility for establishment (${establishment.id})`);
+    if (establishment.establishmentWdfEligibility && establishment.establishmentWdfEligibility.getTime() > this.effectiveTime) {
       // already eligibile
-      return WdfCalculator.ALREADY_ELIGIBLE;
+      return this.ALREADY_ELIGIBLE;
     }
 
     // the number of active worker records must be the same as the declared Establishment staff
-    console.log(`WA DEBUG - Establishment has #${workers.length} workers`)
+    // console.log(`WA DEBUG - Establishment has #${workers.length} workers`)
     if (!(workers && Array.isArray(workers) && workers.length === establishment.NumberOfStaffValue)) {
       reasons.push({
         establishment: {
@@ -141,7 +151,19 @@ class WdfCalculator {
         }
       });
 
-      return WdfCalculator.NOT_ELIGIBLE;
+      return this.NOT_ELIGIBLE;
+    }
+
+    // with number of staff/#workers matching, the establishment itself must be eligible
+    if (!(establishment.lastWdfEligibility && establishment.lastWdfEligibility.getTime() > this.effectiveTime)) {
+      reasons.push({
+        establishment: {
+          message: 'Workplace properties not all eligible',
+          code: 11
+        }
+      });
+
+      return this.NOT_ELIGIBLE;
     }
 
     // gets this far if now eligble
@@ -155,20 +177,28 @@ class WdfCalculator {
         }
       );
 
-      // TBC - create an audit record????
+      // audit this activity
+      await models.establishmentAudit.create(
+        {
+          establishmentFk: establishment.id,
+          username: savedBy,
+          type: 'establishmentWdfEligible'
+        },
+        {transaction: externalTransaction}
+      );
     }
 
-    return WdfCalculator.NOW_ELIGIBLE;
+    return this.NOW_ELIGIBLE;
   }
 
-  async staffWdfEligibility(savedBy, establishment, workers, externalTransaction, readonly, reasons) {
-    if (establishment.staffWdfEligibility && thisEstablishment.staffWdfEligibility.getTime() > this.effectiveTime) {
+  async _staffWdfEligibility(savedBy, establishment, workers, externalTransaction, readonly, reasons) {
+    //console.log(`WA DEBUG - recalculating staff WDF eligibility for establishment (${establishment.id})`);
+    if (establishment.staffWdfEligibility && establishment.staffWdfEligibility.getTime() > this.effectiveTime) {
       // already eligibile
-      return WdfCalculator.ALREADY_ELIGIBLE;
+      return this.ALREADY_ELIGIBLE;
     }
 
     if (!(workers && Array.isArray(workers) && workers.length > 1)) {
-      console.log("WA DEBUG - TBC - establishment has at least one worker")
       reasons.push({
         staff: {
           message: 'Must have at least one worker',
@@ -176,7 +206,7 @@ class WdfCalculator {
         }
       });
 
-      return WdfCalculator.NOT_ELIGIBLE;
+      return this.NOT_ELIGIBLE;
     }
 
     // at least 90% of all current workers must be eligible
@@ -184,7 +214,7 @@ class WdfCalculator {
             workers.filter(thisWorker => thisWorker.lastWdfEligibility ? thisWorker.lastWdfEligibility.getTime() > this.effectiveTime : false) :
             false;
     const weightedStaffEligibility = (allEligibleWorkers.length / workers.length);
-    console.log(`WA DEBUG - establishment has #${workers.length} workers having #${allEligibleWorkers.length} eligible workers: ${weightedStaffEligibility*100}%`)
+    // console.log(`WA DEBUG - establishment has #${workers.length} workers having #${allEligibleWorkers.length} eligible workers: ${weightedStaffEligibility*100}%`)
     if (weightedStaffEligibility < 0.9) {
       reasons.push({
         staff: {
@@ -193,7 +223,7 @@ class WdfCalculator {
         }
       });
 
-      return WdfCalculator.NOT_ELIGIBLE;
+      return this.NOT_ELIGIBLE;
     }
 
     // gets this far if now eligble
@@ -207,19 +237,26 @@ class WdfCalculator {
         }
       );
 
-      // TBC - create an audit record????
+      // audit this activity
+      await models.establishmentAudit.create(
+        {
+          establishmentFk: establishment.id,
+          username: savedBy,
+          type: 'staffWdfEligible'
+        },
+        {transaction: externalTransaction}
+      );
     }
 
-    return WdfCalculator.NOW_ELIGIBLE;
+    return this.NOW_ELIGIBLE;
   }
 
   // recalculates an establishment's WDF eligibility
   //   - this method is called internally - not direct from API
   // returns true on success and false on error
   async calculate(savedBy, establishmentID, establishmentUID=null, externalTransaction=null, wdfImpact, readonly) {
-    console.log("WA DEBUG - recalculating Overall WDF Eligbility for establishment having id/uid: ", establishmentID, establishmentUID, this.wdfImpactToString(wdfImpact));
 
-    const calculateOverall = false, calculateStaff = false, calculateEstablishment = false;
+    let calculateOverall = false, calculateStaff = false, calculateEstablishment = false;
     const wdf = {};
 
     switch (wdfImpact) {
@@ -265,10 +302,12 @@ class WdfCalculator {
         break;
     }
 
+    console.log("WA DEBUG - recalculating Overall WDF Eligbility for establishment having id/uid/wdf impact and triggers (staff/establishment/overal): ", establishmentID, establishmentUID, this.wdfImpactToString(wdfImpact), calculateStaff, calculateEstablishment, calculateOverall);
+
     try {
       let thisEstablishment = null;
 
-      const foundEstablishment = false;
+      let foundEstablishment = false;
       await models.sequelize.transaction(async t => {
         const thisTransaction = externalTransaction ? externalTransaction : t;
 
@@ -310,28 +349,24 @@ class WdfCalculator {
 
           // staff and establishment eligibility must be calculated/recalculated prior to overall, because any changes to the former, affects the latter
           if (calculateStaff) {
-            const calculatedStaffEligible = await this.calculateStaff(savedBy, thisEstablishment, workers, thisTransaction, readonly, reasons);
-            console.log("WA DEBUG - calcualted staff returned: ", this.wdfEligibleReponseToString(calculatedStaffEligible));
+            const calculatedStaffEligible = await this._staffWdfEligibility(savedBy, thisEstablishment, workers, thisTransaction, readonly, reasons);
           }
           if (calculateEstablishment) {
-            const calculatedEstablishmentEligible = await this.calculateEstablishment(savedBy, thisEstablishment, workers, thisTransaction, readonly, reasons);
-            console.log("WA DEBUG - calcualted establishment returned: ", this.wdfEligibleReponseToString(calculatedEstablishmentEligible));
+            const calculatedEstablishmentEligible = await this._establishmentWdfEligibility(savedBy, thisEstablishment, workers, thisTransaction, readonly, reasons);
           }
 
           // note - in each of the above calculate stages (staff/establishment), the "thisEstablishment" is updated
           //         to reflect the latest staff/establishment values
           if (calculateOverall) {
-            const calculatedOverallEigible = await this.calculateOverall(savedBy, thisEstablishment, thisTransaction, readonly, reasons);
-            console.log("WA DEBUG - calcualted overall returned: ", this.wdfEligibleReponseToString(calculatedOverallEigible));
+            const calculatedOverallEigible = await this._overallWdfEligibility(savedBy, thisEstablishment, thisTransaction, readonly, reasons);
           }
 
-
           // now prep the return object - predominantly will be used by the report
-          wdf.staff = thisEstablishment.staffWdfEligibility && thisEstablishment.staffWdfEligibility.getTime() > this.effectiveTime;
+          wdf.staff = thisEstablishment.staffWdfEligibility && (thisEstablishment.staffWdfEligibility.getTime() > this.effectiveTime) ? true : false;
           wdf.staffEligibility = thisEstablishment.staffWdfEligibility ? thisEstablishment.staffWdfEligibility : undefined;
-          wdf.workplace = thisEstablishment.establishmentWdfEligibility && thisEstablishment.establishmentWdfEligibility.getTime() > this.effectiveTime;
+          wdf.workplace = thisEstablishment.establishmentWdfEligibility && (thisEstablishment.establishmentWdfEligibility.getTime() > this.effectiveTime) ? true : false;
           wdf.establishmentElibigility = thisEstablishment.establishmentWdfEligibility ? thisEstablishment.establishmentWdfEligibility : undefined;
-          wdf.isEligible = thisEstablishment.overallWdfEligibility && thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime;
+          wdf.isEligible = thisEstablishment.overallWdfEligibility && (thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) ? true : false;
           wdf.overallWdfEligibility = thisEstablishment.overallWdfEligibility ? thisEstablishment.overallWdfEligibility : undefined;
           wdf.reasons = reasons.length > 0 ? reasons : undefined;
 
@@ -344,6 +379,7 @@ class WdfCalculator {
         console.error('WdfCalculator::calculate - Failed to find establishment having id/uid: ', establishmentID, establishmentUID);
         return false;
       } else {
+        console.log("WA DEBUG - WDF: ", wdf);
         return wdf;
       }
     } catch (err) {
@@ -356,11 +392,9 @@ class WdfCalculator {
   // reports on WDF Eligibility for the given Establishment
   // returns the WDF for reporting on success and false on error
   async report(establishmentID, establishmentUID) {
-    console.log("WA DEBUG - reporting on Overall WDF Eligbility for establishment having id/uid: ", establishmentID, establishmentUID);
-
     try {
       // run calculation - effectively as a simulation
-      const wdfReport = WdfCalculator.calculate('', establishmentID, establishmentUID, null, WdfCalculator.REPORT, true);
+      const wdfReport = this.calculate('', establishmentID, establishmentUID, null, this.REPORT, false);
       return wdfReport;
 
     } catch (err) {
