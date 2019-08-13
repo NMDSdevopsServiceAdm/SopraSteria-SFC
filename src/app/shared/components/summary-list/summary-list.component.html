@@ -12,11 +12,13 @@
     <dd class="govuk-summary-list__value">
       {{ item.data }}
     </dd>
-    <dd *ngIf="item.route" class="govuk-summary-list__actions">
-      <a [routerLink]="item.route.url" (click)="emitSetReturn()">
-        Change
-        <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>
-      </a>
-    </dd>
+    <ng-container *ngIf="item.route">
+      <dd *ngIf="canNavigate === undefined ? true: canNavigate" class="govuk-summary-list__actions">
+        <a [routerLink]="item.route.url" (click)="emitSetReturn()">
+          Change
+          <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>
+        </a>
+      </dd>
+    </ng-container>
   </div>
 </dl>

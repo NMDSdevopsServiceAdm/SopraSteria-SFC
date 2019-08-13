@@ -4,6 +4,8 @@ import { Roles } from './roles.enum';
 export interface UserDetails {
   created?: string;
   email: string;
+  establishmentId?: number;
+  establishmentUid?: string;
   fullname: string;
   isPrimary?: boolean;
   jobTitle: string;
