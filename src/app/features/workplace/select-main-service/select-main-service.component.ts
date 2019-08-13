@@ -60,6 +60,10 @@ export class SelectMainServiceComponent extends SelectMainService {
     this.backService.setBackLink(this.establishmentService.returnTo);
   }
 
+  get return() {
+    return this.establishmentService.returnTo;
+  }
+
   get displayIntro() {
     return false;
   }
