@@ -9,6 +9,7 @@ export class SummaryListComponent {
   @Input() public summaryList: SummaryList[];
   @Input() public topBorder?: boolean;
   @Input() public wrapBorder?: boolean;
+  @Input() public canNavigate?: boolean;
   @Output() public setReturn = new EventEmitter();
 
   public emitSetReturn(): void {

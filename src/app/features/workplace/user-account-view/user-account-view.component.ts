@@ -134,6 +134,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
       {
         label: 'Full name',
         data: this.user.fullname,
+        route: { url: ['edit'] },
       },
       {
         label: 'Job title',
