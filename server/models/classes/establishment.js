@@ -1277,7 +1277,7 @@ class Establishment extends EntityValidator {
                     }
 
                     // always recalculate WDF - if not bulk upload (this._status)
-                    this._status === null ? await WdfCalculator.calculate(savedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_DELETE, false) : true;
+                    this._status === null ? await WdfCalculator.calculate(deletedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_DELETE, false) : true;
 
                     // this is an async method - don't wait for it to return
                     AWSKinesis.establishmentPump(AWSKinesis.DELETED, this.toJSON());
