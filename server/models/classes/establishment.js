@@ -1628,7 +1628,9 @@ class Establishment extends EntityValidator {
         }
 
         myWdf['serviceUsers'] = {
-            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? 'Yes' : 'No',
+            // for service users, it is not enough that the property itself is valid, to be WDF eligible it
+            //   there must be at least one service user
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? this._properties.get('ServiceUsers').property.length > 0 ? 'Yes'  : 'No' : 'No',
             updatedSinceEffectiveDate: this._properties.get('ServiceUsers').toJSON(false, true, WdfCalculator.effectiveDate)
         }
 
