@@ -1277,7 +1277,7 @@ class Establishment extends EntityValidator {
                     }
 
                     // always recalculate WDF - if not bulk upload (this._status)
-                    this._status === null ? await WdfCalculator.calculate(savedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_DELETE, false) : true;
+                    this._status === null ? await WdfCalculator.calculate(deletedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_DELETE, false) : true;
 
                     // this is an async method - don't wait for it to return
                     AWSKinesis.establishmentPump(AWSKinesis.DELETED, this.toJSON());
@@ -1628,7 +1628,9 @@ class Establishment extends EntityValidator {
         }
 
         myWdf['serviceUsers'] = {
-            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? 'Yes' : 'No',
+            // for service users, it is not enough that the property itself is valid, to be WDF eligible it
+            //   there must be at least one service user
+            isEligible:  this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? this._properties.get('ServiceUsers').property.length > 0 ? 'Yes'  : 'No' : 'No',
             updatedSinceEffectiveDate: this._properties.get('ServiceUsers').toJSON(false, true, WdfCalculator.effectiveDate)
         }
 
@@ -2013,6 +2015,11 @@ class Establishment extends EntityValidator {
         console.error('Establishment::missingLocalIdentifiers error: ', err);
         throw err;
       }
+    }
+
+    async bulkUploadWdf(savedby, externalTransaction) {
+      // recalculate WDF - if not bulk upload (this._status)
+      return await WdfCalculator.calculate(savedby, this._id, null, externalTransaction, WdfCalculator.BULK_UPLOAD, false);
     }
 };
 
