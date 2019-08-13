@@ -498,6 +498,9 @@ class Worker extends EntityValidator {
                         await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
                     }
 
+                    // always recalculate WDF - if not bulk upload (this._status)
+                    this._status === null ?  await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_ADD, false) : true;
+
                     // this is an async method - don't wait for it to return
                     AWSKinesis.workerPump(AWSKinesis.CREATED, this.toJSON());
 
@@ -632,9 +635,8 @@ class Worker extends EntityValidator {
                         });
                         await Promise.all(createMmodelPromises);
 
-                        if (localWdfUpdated) {
-                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._establishmentId, null, thisTransaction);
-                        }
+                        // always recalculate WDF - if not bulk upload (this._status)
+                        this._status === null ?  await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_UPDATE, false) : true;
 
                         if (associatedEntities) {
                             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
@@ -911,6 +913,9 @@ class Worker extends EntityValidator {
                     if (associatedEntities) {
                         // TODO - to be confirmed
                     }
+
+                    // always recalculate WDF - if not bulk upload (this._status)
+                    this._status === null ?  await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_DELETE, false) : true;
 
                     // this is an async method - don't wait for it to return
                     AWSKinesis.workerPump(AWSKinesis.DELETED, this.toJSON());
@@ -1413,7 +1418,6 @@ class Worker extends EntityValidator {
             updatedSinceEffectiveDate: this._properties.get('OtherQualifications').toJSON(false, true, WdfCalculator.effectiveDate)
         }
 
-        console.log("WA DEBUG - other qualification: ", this._properties.get('OtherQualifications').property)
         if (this._properties.get('OtherQualifications').property === null || this._properties.get('OtherQualifications').property !== 'Yes') {
             // if not having defined 'having another qualification' or 'have said no'
             highestQualificationEligible = 'Not relevant';
@@ -1425,8 +1429,6 @@ class Worker extends EntityValidator {
             isEligible: highestQualificationEligible,
             updatedSinceEffectiveDate: this._properties.get('HighestQualification').toJSON(false, true, WdfCalculator.effectiveDate)
         }
-
-        console.log("WA DEBUG - highest qualification: ", myWdf['highestQualification'])
 
         return myWdf;
     }

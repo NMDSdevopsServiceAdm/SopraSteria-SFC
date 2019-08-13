@@ -65,6 +65,16 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"OverallWdfEligibility"'
     },
+    establishmentWdfEligibility: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EstablishmentWdfEligibility"'
+    },
+    staffWdfEligibility: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"StaffWdfEligibility"'
+    },
     lastWdfEligibility: {
       type: DataTypes.DATE,
       allowNull: true,

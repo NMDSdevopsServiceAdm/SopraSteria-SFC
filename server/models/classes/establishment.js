@@ -91,6 +91,8 @@ class Establishment extends EntityValidator {
         this._nmdsId = null;
         this._lastWdfEligibility = null;
         this._overallWdfEligibility = null;
+        this._establishmentWdfEligibility = null;
+        this._staffWdfEligibility = null;
         this._isParent = false;
         this._parentUid = null;
         this._parentId = null;
@@ -691,6 +693,9 @@ class Establishment extends EntityValidator {
                     });
                     await Promise.all(createModelPromises);
 
+                    // always recalculate WDF - if not bulk upload (this._status)
+                    this._status === null ? await WdfCalculator.calculate(savedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_ADD, false) : true;
+
                     // this is an async method - don't wait for it to return
                     AWSKinesis.establishmentPump(AWSKinesis.CREATED, this.toJSON());
 
@@ -848,18 +853,8 @@ class Establishment extends EntityValidator {
                         });
                         await Promise.all(createModelPromises);
 
-                        /* https://trello.com/c/5V5sAa4w
-                        // TODO: ideally I'd like to publish this to pub/sub topic and process async - but do not have pub/sub to hand here
-                        // having updated the Establishment, check to see whether it is necessary to recalculate
-                        //  the overall WDF eligibility for this establishment and all its workers
-                        //  This decision is done based on if the Establishment is being marked as Completed.
-                        // There does not yet exist a Completed property for establishment.
-                        // For now, we'll recalculate on every update!
-                        */
-
-                        if(localWdfUpdated){
-                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        }
+                        // always recalculate WDF - if not bulk upload (this._status)
+                        this._status === null ? await WdfCalculator.calculate(savedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_UPDATE, false) : true;
 
                         // if requested, propagate the saving of this establishment down to each of the associated entities
                         if (associatedEntities) {
@@ -950,6 +945,8 @@ class Establishment extends EntityValidator {
                 this._nmdsId = fetchResults.nmdsId;
                 this._lastWdfEligibility = fetchResults.lastWdfEligibility;
                 this._overallWdfEligibility = fetchResults.overallWdfEligibility;
+                this._establishmentWdfEligibility = fetchResults.establishmentWdfEligibility;
+                this._staffWdfEligibility = fetchResults.staffWdfEligibility;
                 this._isParent = fetchResults.isParent;
                 this._parentId = fetchResults.parentId;
                 this._parentUid = fetchResults.parentUid;
@@ -1279,6 +1276,9 @@ class Establishment extends EntityValidator {
                         }
                     }
 
+                    // always recalculate WDF - if not bulk upload (this._status)
+                    this._status === null ? await WdfCalculator.calculate(savedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_DELETE, false) : true;
+
                     // this is an async method - don't wait for it to return
                     AWSKinesis.establishmentPump(AWSKinesis.DELETED, this.toJSON());
 
@@ -1350,7 +1350,7 @@ class Establishment extends EntityValidator {
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at User and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given User
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false, wdf = false) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false) {
         if (!showHistoryTimeline) {
             if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
                 throw new Error('Establishment::toJSON filteredPropertiesByName must be a simple Array of names');
@@ -1648,10 +1648,12 @@ class Establishment extends EntityValidator {
             updatedSinceEffectiveDate: this._properties.get('Leavers').toJSON(false, true, WdfCalculator.effectiveDate)
         }
 
-        let totalWorkerCount = await this.getTotalWorkers();
+        // removing the cross-check on #workers from establishment's own (self) WDF Eligibility
+        //let totalWorkerCount = await this.getTotalWorkers();
 
         myWdf['numberOfStaff'] = {
-            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No',
+            //isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No',
+            isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) ? 'Yes' : 'No',
             updatedSinceEffectiveDate: this._properties.get('NumberOfStaff').toJSON(false, true, WdfCalculator.effectiveDate)
         }
 
@@ -1664,6 +1666,8 @@ class Establishment extends EntityValidator {
         const myWDF = {
             effectiveFrom: effectiveFrom.toISOString(),
             overalWdfEligible: this._overallWdfEligibility ? this._overallWdfEligibility.toISOString() : false,
+            establishmentWdfEligible: this._establishmentWdfEligibility ? this._establishmentWdfEligibility.toISOString() : false,
+            staffWdfEligible: this._staffWdfEligibility ? this._staffWdfEligibility.toISOString() : false,
             ... await this.isWdfEligible(effectiveFrom)
         };
         return myWDF;

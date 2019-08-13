@@ -212,7 +212,7 @@ router.route('/:id').get(async (req, res) => {
             //  direct GET endpoints "establishment/:eid/service" and
             //  establishment/:eid/service respectively
 
-            const jsonResponse = thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, true, null, false, req.query.wdf)
+            const jsonResponse = thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, true, null, false)
             delete jsonResponse.allOtherServices;
             delete jsonResponse.allServiceCapacities;
 
