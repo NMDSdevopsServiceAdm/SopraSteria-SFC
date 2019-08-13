@@ -379,7 +379,7 @@ class WdfCalculator {
         console.error('WdfCalculator::calculate - Failed to find establishment having id/uid: ', establishmentID, establishmentUID);
         return false;
       } else {
-        console.log("WA DEBUG - WDF: ", wdf);
+        console.log("WA DEBUG - WDF: ", wdf, wdf.reasons ? wdf.reasons : null);
         return wdf;
       }
     } catch (err) {
