@@ -19,7 +19,7 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <app-summary-list [canNavigate]="canEdit" [topBorder]="true" [summaryList]="userInfo"></app-summary-list>
+    <app-summary-list [canNavigate]="canNavigate" [topBorder]="true" [summaryList]="userInfo"></app-summary-list>
     <app-summary-list *ngIf="canEdit" [topBorder]="true" [summaryList]="loginInfo"></app-summary-list>
     <dl
       class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wrap-border govuk-!-margin-bottom-0"

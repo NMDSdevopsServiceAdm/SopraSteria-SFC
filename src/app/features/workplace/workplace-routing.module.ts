@@ -250,10 +250,10 @@ const routes: Routes = [
           {
             path: 'edit-details',
             component: UserAccountEditDetailsComponent,
-            canActivate: [RoleGuard, EditUserPermissionsGuard],
+            canActivate: [RoleGuard],
             resolve: { user: UserAccountResolver },
             data: {
-              roles: [Roles.Admin, Roles.Edit],
+              roles: [Roles.Admin],
               title: 'Edit User Details',
             },
           },

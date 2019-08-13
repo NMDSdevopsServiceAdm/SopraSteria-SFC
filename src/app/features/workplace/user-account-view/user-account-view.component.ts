@@ -21,16 +21,16 @@ import { take, withLatestFrom } from 'rxjs/operators';
 })
 export class UserAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public loginInfo: SummaryList[];
-  public loggedInUser: UserDetails;
-  public securityInfo: SummaryList[];
+  public canDeleteUser: boolean;
+  public canEdit: boolean;
+  public canNavigate: boolean;
+  public canResendActivationLink: boolean;
   public establishment: Establishment;
+  public loggedInUser: UserDetails;
+  public loginInfo: SummaryList[];
+  public return: URLStructure;
   public user: UserDetails;
   public userInfo: SummaryList[];
-  public canDeleteUser: boolean;
-  public canResendActivationLink: boolean;
-  public canEdit: boolean;
-  public return: URLStructure;
 
   constructor(
     private route: ActivatedRoute,
@@ -170,5 +170,6 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
       loggedInUser.uid !== this.user.uid;
     this.canResendActivationLink = canEdit && isPending;
     this.canEdit = canEdit && users.length > 1;
+    this.canNavigate = Roles.Admin === loggedInUser.role;
   }
 }
