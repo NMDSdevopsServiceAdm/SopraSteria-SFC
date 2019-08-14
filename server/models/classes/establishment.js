@@ -1668,8 +1668,8 @@ class Establishment extends EntityValidator {
         const myWDF = {
             effectiveFrom: effectiveFrom.toISOString(),
             overalWdfEligible: this._overallWdfEligibility ? this._overallWdfEligibility.toISOString() : false,
-            establishmentWdfEligible: this._establishmentWdfEligibility ? this._establishmentWdfEligibility.toISOString() : false,
-            staffWdfEligible: this._staffWdfEligibility ? this._staffWdfEligibility.toISOString() : false,
+            // establishmentWdfEligible: this._establishmentWdfEligibility ? this._establishmentWdfEligibility.toISOString() : false,
+            // staffWdfEligible: this._staffWdfEligibility ? this._staffWdfEligibility.toISOString() : false,
             ... await this.isWdfEligible(effectiveFrom)
         };
         return myWDF;
