@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ParentPermissions, Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
+import { DataPermissions, Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 
 @Component({
   selector: 'app-workplace-info-panel',
@@ -7,20 +7,14 @@ import { ParentPermissions, Workplace, WorkplaceDataOwner } from '@core/model/my
 })
 export class WorkplaceInfoPanelComponent {
   @Input() public workplace: Workplace;
+  public dataOwner = WorkplaceDataOwner;
 
-  get canAccessWorkplace() {
+  public get canAccessWorkplace() {
     return (
       this.workplace.dataOwner === WorkplaceDataOwner.Parent ||
-      this.workplace.dataOwner === WorkplaceDataOwner.Workplace ||
-      this.workplace.parentPermissions === ParentPermissions.Workplace ||
-      this.workplace.parentPermissions === ParentPermissions.WorkplaceAndStaff
-    );
-  }
-
-  get canAccessWorkplaceAndStaffRecords() {
-    return (
-      this.workplace.dataOwner === WorkplaceDataOwner.Parent ||
-      this.workplace.parentPermissions === ParentPermissions.WorkplaceAndStaff
+      (this.workplace.dataOwner === WorkplaceDataOwner.Workplace &&
+        (this.workplace.dataPermissions === DataPermissions.Workplace ||
+          this.workplace.dataPermissions === DataPermissions.WorkplaceAndStaff))
     );
   }
 }
