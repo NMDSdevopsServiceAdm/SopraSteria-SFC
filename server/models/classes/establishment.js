@@ -354,8 +354,11 @@ class Establishment extends EntityValidator {
 
               // inject all capacities against this establishment - note, "other services" can be represented by the JSON document attribute "services" or "otherServices"
               const allAssociatedServiceIndices = [];
+              let mainServiceAdded = false;
+              let servicesAdded = false;
               if (document.mainService) {
                   allAssociatedServiceIndices.push(document.mainService.id);
+                  mainServiceAdded = true;
               }
               if (document && document.otherServices && Array.isArray(document.otherServices)) {
                   document.otherServices.forEach(thisService => {
@@ -367,10 +370,22 @@ class Establishment extends EntityValidator {
                       });
                     }
                   });
+                  servicesAdded=true;
               }
               if (document && document.services && Array.isArray(document.services)) {
                   document.services.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+
+                  // if no main service given in document, then use the current known main service property
+                  if (!mainServiceAdded && this.mainService) {
+                      allAssociatedServiceIndices.push(this.mainService.id)
+                  }
+
+                  servicesAdded = true;
               }
+              if (mainServiceAdded && !servicesAdded) {
+                this.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+              }
+
               document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
 
               await this._properties.restore(document, JSON_DOCUMENT_TYPE);
