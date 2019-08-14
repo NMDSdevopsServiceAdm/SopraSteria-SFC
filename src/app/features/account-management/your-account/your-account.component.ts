@@ -24,8 +24,10 @@ export class YourAccountComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.userService.loggedInUser$.subscribe(user => {
-        this.user = user;
-        this.setAccountDetails();
+        if (user) {
+          this.user = user;
+          this.setAccountDetails();
+        }
       })
     );
   }
