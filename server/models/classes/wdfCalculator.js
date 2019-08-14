@@ -72,7 +72,7 @@ class WdfCalculator {
   }
 
   get effectiveDate() {
-    //return new Date('13 Aug 2019 07:30:00 GMT');
+    //return new Date('14 Aug 2019 13:47:00 GMT');
     return this._effectiveDate;
   }
 
@@ -97,7 +97,7 @@ class WdfCalculator {
       return this.ALREADY_ELIGIBLE;
     }
 
-    if (!(calculatedStaffEligible && calculatedEstablishmentEligible)) {
+    if (!(calculatedStaffEligible != this.NOT_ELIGIBLE && calculatedEstablishmentEligible != this.NOT_ELIGIBLE)) {
       reasons.push({
         overall: {
           message: 'Establishment and/or Staff not eligible',
@@ -363,7 +363,6 @@ class WdfCalculator {
           if (calculateOverall) {
             const calculatedOverallEigible = await this._overallWdfEligibility(savedBy, thisEstablishment, thisTransaction, readonly, reasons, calculatedStaffEligible, calculatedEstablishmentEligible);
           }
-
 
           // now prep the return object - predominantly will be used by the report
           const overallIsEligbile = thisEstablishment.overallWdfEligibility && (thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) ? true : false;
