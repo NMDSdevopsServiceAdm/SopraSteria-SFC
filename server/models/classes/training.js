@@ -3,7 +3,7 @@
  *
  * The encapsulation of a Worker's Training record, including all properties, all specific validation (not API, but object validation),
  * saving & restoring of data to database (via sequelize model), construction and deletion.
- * 
+ *
  * Also includes representation as JSON, in one or more presentations.
  *
  * TO NOTE - Training is a simplified representation of User, Worker and Establishment; it does not have any managed properties or auditing.
@@ -20,7 +20,7 @@ const ValidationMessage = require('./validations/validationMessage').ValidationM
 class Training extends EntityValidator {
     constructor(establishmentId, workerUid) {
         super();
-        
+
         this._establishmentId = establishmentId;
         this._workerUid = workerUid;
         this._workerId = null;
@@ -43,7 +43,7 @@ class Training extends EntityValidator {
 
         // UUID validator
         this.uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
-        
+
         // default logging level - errors only
         // TODO: INFO logging on Training; change to LOG_ERROR only
         this._logLevel = Training.LOG_INFO;
@@ -173,7 +173,7 @@ class Training extends EntityValidator {
         if (this._uid === null) {
             this._isNew = true;
             this._uid = uuid.v4();
-            
+
             if (!this._isWorkerUidValid)
                 throw new Error('Training initialisation error');
 
@@ -185,7 +185,7 @@ class Training extends EntityValidator {
     }
 
     async preValidateTrainingRecord(){
-        
+
     }
 
     // validates a given training record; returns the training record if valid
@@ -223,7 +223,7 @@ class Training extends EntityValidator {
                     'trainingCategory.id or trainingCategory.category must exist',
                     ['TrainingCategory']
                 ));
-    
+
                 this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
                 returnStatus = false;
             }
@@ -311,7 +311,7 @@ class Training extends EntityValidator {
         // completed
         if (document.completed) {
             // validate completed - must be a valid date
-            const expectedDate = moment.utc(document.completed);
+            const expectedDate = moment.utc(document.completed, 'YYYY-MM-DD');
             if (!expectedDate.isValid()) {
                 this._validations.push(new ValidationMessage(
                     ValidationMessage.ERROR,
@@ -322,7 +322,7 @@ class Training extends EntityValidator {
                 this._log(Training.LOG_ERROR, 'completed failed validation: incorrect date');
                 returnStatus = false;
             }
-            if (!expectedDate.isBefore(moment(), 'day')) {
+            if (!expectedDate.isSameOrBefore(moment(), 'day')) {
                 this._validations.push(new ValidationMessage(
                     ValidationMessage.ERROR,
                     131,
@@ -340,7 +340,7 @@ class Training extends EntityValidator {
 
         // expires
         if (document.expires) {
-            const expectedDate = moment.utc(document.expires);
+            const expectedDate = moment.utc(document.expires, 'YYYY-MM-DD');
             if (!expectedDate.isValid()) {
                 this._validations.push(new ValidationMessage(
                     ValidationMessage.ERROR,
@@ -413,8 +413,8 @@ class Training extends EntityValidator {
                 this.category = validatedTrainingRecord.trainingCategory;
                 this.title = validatedTrainingRecord.title;
                 this.accredited = validatedTrainingRecord.accredited;
-                this.completed = validatedTrainingRecord.completed ? validatedTrainingRecord.completed.toDate() : null;
-                this.expires = validatedTrainingRecord.expires ? validatedTrainingRecord.expires.toDate() : null;
+                this.completed = validatedTrainingRecord.completed ? validatedTrainingRecord.completed.toJSON().slice(0,10) : null;
+                this.expires = validatedTrainingRecord.expires ? validatedTrainingRecord.expires.toJSON().slice(0,10) : null;
                 this.notes = validatedTrainingRecord.notes;
             } else {
                 this._log(Training.LOG_ERROR, `Training::load - failed`);
@@ -452,8 +452,8 @@ class Training extends EntityValidator {
             try {
                 // must validate the Worker record
                 let workerRecord = null;
-                
-                
+
+
                 if (!this._workerId) {
                     workerRecord = await models.worker.findOne({
                         where: {
@@ -462,13 +462,13 @@ class Training extends EntityValidator {
                             archived: false
                         },
                         attributes: ['id']
-                    });    
+                    });
                 } else {
                     workerRecord = {
                         id: this._workerId
                     };
                 }
-                
+
                 if (workerRecord && workerRecord.id) {
                     const now = new Date();
                     const creationDocument = {
@@ -488,31 +488,31 @@ class Training extends EntityValidator {
                     };
 
                     //console.log("WA DEBUG creation document: ", creationDocument)
-    
+
                     // need to create the Training record only
                     //  in one transaction
                     await models.sequelize.transaction(async t => {
                         // the saving of an Training record can be initiated within
                         //  an external transaction
                         const thisTransaction = externalTransaction ? externalTransaction : t;
-    
+
                         // now save the document
                         let creation = await models.workerTraining.create(creationDocument, {transaction: thisTransaction});
-    
+
                         const sanitisedResults = creation.get({plain: true});
-    
+
                         this._id = sanitisedResults.ID;
                         this._created = sanitisedResults.created;
                         this._updated = sanitisedResults.updated;
                         this._updatedBy = savedBy.toLowerCase();
                         this._isNew = false;
-    
+
                         this._log(Training.LOG_INFO, `Created Training Record with uid (${this.uid})`);
                     });
                 } else {
                     throw new Error('Worker record not found');
                 }
-                
+
             } catch (err) {
                 this._log(Training.LOG_ERROR, `Failed to save new training record: ${err}`);
                 throw new Error('Failed to save new Training record');
@@ -569,7 +569,7 @@ class Training extends EntityValidator {
                     }
 
                 });
-                
+
             } catch (err) {
                 this._log(Training.LOG_ERROR, `Failed to update Training record with id (${this._id})`);
                 throw new Error('Failed to update Training record');
@@ -598,7 +598,7 @@ class Training extends EntityValidator {
 
         try {
             // by including the worker id in the fetch, we are sure to only fetch those
-            //  Training records associated to the given Worker   
+            //  Training records associated to the given Worker
             const fetchQuery = {
                 where: {
                     uid: uid,
@@ -632,8 +632,8 @@ class Training extends EntityValidator {
                 };
                 this._title = fetchResults.title;
                 this._accredited = fetchResults.accredited;
-                this._completed = fetchResults.completed ? new Date(fetchResults.completed) : null;
-                this._expires = fetchResults.expires !== null ? new Date(fetchResults.expires) : null;
+                this._completed = fetchResults.completed ? new Date(fetchResults.completed).toISOString().slice(0, 10) : null;
+                this._expires = fetchResults.expires !== null ? new Date(fetchResults.expires).toISOString().slice(0, 10) : null;
                 this._notes = fetchResults.notes;
 
                 this._created = fetchResults.created;
@@ -737,7 +737,7 @@ class Training extends EntityValidator {
             order: [
                 //['completed', 'DESC'],
                 ['updated', 'DESC']
-            ]           
+            ]
         });
 
         if (fetchResults) {
@@ -750,8 +750,8 @@ class Training extends EntityValidator {
                     },
                     title: thisRecord.title ? unescape(thisRecord.title) : undefined,
                     accredited: thisRecord.accredited ? thisRecord.accredited : undefined,
-                    completed: thisRecord.completed ? new Date(thisRecord.completed) : undefined,
-                    expires: thisRecord.expires !== null ? new Date(thisRecord.expires) : undefined,
+                    completed: thisRecord.completed ? new Date(thisRecord.completed).toISOString().slice(0, 10) : undefined,
+                    expires: thisRecord.expires !== null ? new Date(thisRecord.expires).toISOString().slice(0, 10) : undefined,
                     notes: thisRecord.notes !== null ? unescape(thisRecord.notes) : undefined,
                     created:  thisRecord.created.toISOString(),
                     updated: thisRecord.updated.toISOString(),
@@ -766,7 +766,7 @@ class Training extends EntityValidator {
         } else if (fetchResults && fetchResults.length > 1) {
             lastUpdated = fetchResults.reduce((a, b) => { return a.updated > b.updated ? a : b; });;
         }
-        
+
         const response = {
             workerUid: workerId,
             count: allTrainingRecords.length,
