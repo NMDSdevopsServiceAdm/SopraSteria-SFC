@@ -46,7 +46,11 @@
             <span id="createPasswordInput-hint" class="govuk-hint">
               This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
             </span>
-            <span *ngIf="submitted && getPassword.errors" id="createPasswordInput-error" class="govuk-error-message">
+            <span
+              *ngIf="submitted && getPassword.errors"
+              id="passwordGroup-createPasswordInput-error"
+              class="govuk-error-message"
+            >
               <span class="govuk-visually-hidden">Error:</span>
               {{ getFirstErrorMessage('passwordGroup.createPasswordInput') }}
             </span>
@@ -67,7 +71,7 @@
             </label>
             <span
               *ngIf="submitted && getConfirmPassword.errors"
-              id="confirmPasswordInput-error"
+              id="passwordGroup-confirmPasswordInput-error"
               class="govuk-error-message"
             >
               <span class="govuk-visually-hidden">Error:</span>
