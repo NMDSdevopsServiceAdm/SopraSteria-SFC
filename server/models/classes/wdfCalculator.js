@@ -100,7 +100,7 @@ class WdfCalculator {
     if (!(establishment.staffWdfEligibility && establishment.staffWdfEligibility.getTime() >= this.effectiveTime &&
           establishment.establishmentWdfEligibility && establishment.establishmentWdfEligibility.getTime() >= this.effectiveTime)) {
       reasons.push({
-        establishment: {
+        overall: {
           message: 'Establishment and/or Staff not eligible',
           code: 1
         }
@@ -136,7 +136,7 @@ class WdfCalculator {
 
   async _establishmentWdfEligibility(savedBy, establishment, workers, externalTransaction, readonly, reasons) {
     // console.log(`WA DEBUG - recalculating establishment WDF eligibility for establishment (${establishment.id})`);
-    if (establishment.establishmentWdfEligibility && establishment.establishmentWdfEligibility.getTime() > this.effectiveTime) {
+    if (establishment.overallWdfEligibility && establishment.overallWdfEligibility.getTime() > this.effectiveTime) {
       // already eligibile
       return this.ALREADY_ELIGIBLE;
     }
@@ -166,8 +166,8 @@ class WdfCalculator {
       return this.NOT_ELIGIBLE;
     }
 
-    // gets this far if now eligble
-    if (!readonly) {
+    // gets this far if now eligble - but do not update establishment WDF eligibility  - no tracking
+    if (false) {
       await establishment.update(
         {
           establishmentWdfEligibility: new Date()
@@ -188,12 +188,14 @@ class WdfCalculator {
       );
     }
 
+    console.log("WA DEBUG - WDF est - got here")
+
     return this.NOW_ELIGIBLE;
   }
 
   async _staffWdfEligibility(savedBy, establishment, workers, externalTransaction, readonly, reasons) {
     //console.log(`WA DEBUG - recalculating staff WDF eligibility for establishment (${establishment.id})`);
-    if (establishment.staffWdfEligibility && establishment.staffWdfEligibility.getTime() > this.effectiveTime) {
+    if (establishment.overallWdfEligibility && establishment.overallWdfEligibility.getTime() > this.effectiveTime) {
       // already eligibile
       return this.ALREADY_ELIGIBLE;
     }
@@ -226,8 +228,8 @@ class WdfCalculator {
       return this.NOT_ELIGIBLE;
     }
 
-    // gets this far if now eligble
-    if (!readonly) {
+    // gets this far if now eligble - but do not update establishment WDF eligibility  - no tracking
+    if (false) {
       await establishment.update(
         {
           staffWdfEligibility: new Date()
@@ -256,7 +258,8 @@ class WdfCalculator {
   // returns true on success and false on error
   async calculate(savedBy, establishmentID, establishmentUID=null, externalTransaction=null, wdfImpact, readonly) {
 
-    let calculateOverall = false, calculateStaff = false, calculateEstablishment = false;
+    // we now always calculate the staff and establishment eligibility
+    let calculateOverall = false, calculateStaff = true, calculateEstablishment = true;
     const wdf = {};
 
     switch (wdfImpact) {
@@ -348,11 +351,12 @@ class WdfCalculator {
           const reasons = [];
 
           // staff and establishment eligibility must be calculated/recalculated prior to overall, because any changes to the former, affects the latter
+          let calculatedStaffEligible = null, calculatedEstablishmentEligible=null;
           if (calculateStaff) {
-            const calculatedStaffEligible = await this._staffWdfEligibility(savedBy, thisEstablishment, workers, thisTransaction, readonly, reasons);
+            calculatedStaffEligible = await this._staffWdfEligibility(savedBy, thisEstablishment, workers, thisTransaction, readonly, reasons);
           }
           if (calculateEstablishment) {
-            const calculatedEstablishmentEligible = await this._establishmentWdfEligibility(savedBy, thisEstablishment, workers, thisTransaction, readonly, reasons);
+            calculatedEstablishmentEligible = await this._establishmentWdfEligibility(savedBy, thisEstablishment, workers, thisTransaction, readonly, reasons);
           }
 
           // note - in each of the above calculate stages (staff/establishment), the "thisEstablishment" is updated
@@ -361,11 +365,14 @@ class WdfCalculator {
             const calculatedOverallEigible = await this._overallWdfEligibility(savedBy, thisEstablishment, thisTransaction, readonly, reasons);
           }
 
+
           // now prep the return object - predominantly will be used by the report
-          wdf.staff = thisEstablishment.staffWdfEligibility && (thisEstablishment.staffWdfEligibility.getTime() > this.effectiveTime) ? true : false;
-          wdf.staffEligibility = thisEstablishment.staffWdfEligibility ? thisEstablishment.staffWdfEligibility : undefined;
-          wdf.workplace = thisEstablishment.establishmentWdfEligibility && (thisEstablishment.establishmentWdfEligibility.getTime() > this.effectiveTime) ? true : false;
-          wdf.establishmentElibigility = thisEstablishment.establishmentWdfEligibility ? thisEstablishment.establishmentWdfEligibility : undefined;
+          const overallIsEligbile = thisEstablishment.overallWdfEligibility && (thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) ? true : false;
+
+          wdf.staff = overallIsEligbile ? true : calculatedStaffEligible && calculatedStaffEligible !== this.NOT_ELIGIBLE ? true : false;
+          // wdf.staffEligibility = thisEstablishment.staffWdfEligibility ? thisEstablishment.staffWdfEligibility : undefined;
+          wdf.workplace = overallIsEligbile ? true : calculatedEstablishmentEligible && calculatedEstablishmentEligible !== this.NOT_ELIGIBLE ? true : false;
+          // wdf.establishmentElibigility = thisEstablishment.establishmentWdfEligibility ? thisEstablishment.establishmentWdfEligibility : undefined;
           wdf.overall = thisEstablishment.overallWdfEligibility && (thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) ? true : false;
           wdf.overallWdfEligibility = thisEstablishment.overallWdfEligibility ? thisEstablishment.overallWdfEligibility : undefined;
           wdf.reasons = reasons.length > 0 ? reasons : undefined;

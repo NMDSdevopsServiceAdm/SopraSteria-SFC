@@ -303,7 +303,7 @@ class Establishment extends EntityValidator {
         this._parentUid = parentUid;
         this._parentId = parentID;
         this._dataOwner = 'Parent';
-        this._dataPermissions = null;   
+        this._dataPermissions = null;
     }
 
     // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
@@ -1668,8 +1668,8 @@ class Establishment extends EntityValidator {
         const myWDF = {
             effectiveFrom: effectiveFrom.toISOString(),
             overalWdfEligible: this._overallWdfEligibility ? this._overallWdfEligibility.toISOString() : false,
-            establishmentWdfEligible: this._establishmentWdfEligibility ? this._establishmentWdfEligibility.toISOString() : false,
-            staffWdfEligible: this._staffWdfEligibility ? this._staffWdfEligibility.toISOString() : false,
+            // establishmentWdfEligible: this._establishmentWdfEligibility ? this._establishmentWdfEligibility.toISOString() : false,
+            // staffWdfEligible: this._staffWdfEligibility ? this._staffWdfEligibility.toISOString() : false,
             ... await this.isWdfEligible(effectiveFrom)
         };
         return myWDF;
