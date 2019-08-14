@@ -198,7 +198,7 @@ class WdfCalculator {
       return this.ALREADY_ELIGIBLE;
     }
 
-    if (!(workers && Array.isArray(workers) && workers.length > 1)) {
+    if (!(workers && Array.isArray(workers) && workers.length >= 1)) {
       reasons.push({
         staff: {
           message: 'Must have at least one worker',
