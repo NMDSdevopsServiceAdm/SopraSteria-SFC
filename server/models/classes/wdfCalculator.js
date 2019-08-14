@@ -90,15 +90,14 @@ class WdfCalculator {
     }
   }
 
-  async _overallWdfEligibility(savedBy, establishment, externalTransaction, readonly, reasons) {
+  async _overallWdfEligibility(savedBy, establishment, externalTransaction, readonly, reasons, calculatedStaffEligible, calculatedEstablishmentEligible) {
     //console.log(`WA DEBUG - recalculating overal WDF eligibility for establishment (${establishment.id})`);
     if (establishment.overallWdfEligibility && establishment.overallWdfEligibility.getTime() > this.effectiveTime) {
       // already eligibile
       return this.ALREADY_ELIGIBLE;
     }
 
-    if (!(establishment.staffWdfEligibility && establishment.staffWdfEligibility.getTime() >= this.effectiveTime &&
-          establishment.establishmentWdfEligibility && establishment.establishmentWdfEligibility.getTime() >= this.effectiveTime)) {
+    if (!(calculatedStaffEligible && calculatedEstablishmentEligible)) {
       reasons.push({
         overall: {
           message: 'Establishment and/or Staff not eligible',
@@ -362,7 +361,7 @@ class WdfCalculator {
           // note - in each of the above calculate stages (staff/establishment), the "thisEstablishment" is updated
           //         to reflect the latest staff/establishment values
           if (calculateOverall) {
-            const calculatedOverallEigible = await this._overallWdfEligibility(savedBy, thisEstablishment, thisTransaction, readonly, reasons);
+            const calculatedOverallEigible = await this._overallWdfEligibility(savedBy, thisEstablishment, thisTransaction, readonly, reasons, calculatedStaffEligible, calculatedEstablishmentEligible);
           }
 
 
