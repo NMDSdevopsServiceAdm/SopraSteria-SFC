@@ -8,12 +8,12 @@ export interface GetWorkplacesResponse {
 
 export interface Workplace {
   dataOwner: WorkplaceDataOwner;
+  dataPermissions: DataPermissions;
   dataOwnerPermissions: string;
   isParent: boolean;
   localIdentifier: string;
   mainService: string;
   name: string;
-  parentPermissions: ParentPermissions;
   parentUid: string;
   uid: string;
   updated: string;
@@ -24,9 +24,10 @@ export enum WorkplaceDataOwner {
   Workplace = 'Workplace',
 }
 
-export enum ParentPermissions {
+export enum DataPermissions {
   Workplace = 'Workplace',
   WorkplaceAndStaff = 'Workplace and Staff',
+  None = 'None',
 }
 
 export interface WorkPlaceReference {
