@@ -303,7 +303,7 @@ class Establishment extends EntityValidator {
         this._parentUid = parentUid;
         this._parentId = parentID;
         this._dataOwner = 'Parent';
-        this._dataPermissions = null;   
+        this._dataPermissions = 'None';
     }
 
     // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
