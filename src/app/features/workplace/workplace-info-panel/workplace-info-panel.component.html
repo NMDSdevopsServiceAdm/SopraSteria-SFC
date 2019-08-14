@@ -13,36 +13,33 @@
     <p class="govuk-!-margin-bottom-1"><strong>Last updated</strong></p>
     <p class="govuk-!-margin-bottom-0">{{ workplace.updated | date: 'd MMMM y' }}</p>
   </div>
+
   <div class="govuk-grid-column-two-thirds">
     <p>{{ workplace.mainService }}</p>
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-half">
+      <div class="govuk-grid-column-one-quarter">
         <p class="govuk-!-margin-bottom-1">
-          <strong>
-            <ng-container *ngIf="canAccessWorkplaceAndStaffRecords">
-              Workplace and staff records
-            </ng-container>
-            <ng-container *ngIf="!canAccessWorkplaceAndStaffRecords">
-              Workplace
-            </ng-container>
-          </strong>
+          <strong>Data Owner</strong>
         </p>
-        <p class="govuk-!-margin-bottom-0">
-          <ng-container *ngIf="canAccessWorkplace">
-            <img class="govuk-util__relative-top-1 govuk-!-margin-right-1" src="/assets/images/tick-icon.svg" alt="" />
-            Available
-          </ng-container>
-          <ng-container *ngIf="!canAccessWorkplace">
-            <img class="govuk-util__relative-top-1 govuk-!-margin-right-1" src="/assets/images/cross-icon.svg" alt="" />
-            Not available
-          </ng-container>
-        </p>
-      </div>
-      <div class="govuk-grid-column-one-half">
-        <p class="govuk-!-margin-bottom-1"><strong>Data owner</strong></p>
         <p class="govuk-!-margin-bottom-0">
           {{ workplace.dataOwner }}
-          <span class="govuk-util__float-right">Change data owner</span>
+        </p>
+      </div>
+
+      <div class="govuk-grid-column-three-quarters">
+        <p class="govuk-!-margin-bottom-1">
+          <strong>{{ workplace.dataOwner | workplacePermissionsBearer }} view only permissions</strong>
+        </p>
+        <p class="govuk-!-margin-bottom-0">
+          {{ workplace.dataPermissions | dataViewPermissions }}
+          <span class="govuk-util__float-right">
+            <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else changeOwner">
+              <a href="#">Data permissions</a>
+            </ng-container>
+            <ng-template #changeOwner>
+              <a href="#">Change data owner</a>
+            </ng-template>
+          </span>
         </p>
       </div>
     </div>
