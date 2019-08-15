@@ -91,7 +91,7 @@ let ALL_PERMISSIONS = [
       dataOwner : 'parent',
       dataPermissions: ['Workplace', 'Workplace and staff'],
       role: ['Read', 'Edit']
-    }
+    },
     {
       code: 'canViewEstablishment',
       description: '',
