@@ -51,8 +51,14 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
           this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
           this.references = data.references;
           this.workPlaceReferences = data.workplaceReferences;
-          this.establishmentName = _filter(this.workPlaceReferences, ['uid', this.establishmentUid])[0].name;
+          const establishment = _filter(this.workPlaceReferences, ['uid', this.establishmentUid])[0];
+          this.establishmentName = establishment.name;
           this.remainingEstablishments = this.workPlaceReferences.length - (this.getWorkplacePosition() + 1);
+
+          this.addStaffRoute =
+            establishment.uid === this.establishmentService.primaryWorkplace.uid
+              ? { url: ['/dashboard'], fragment: 'staff-records' }
+              : { url: ['/workplace/', establishment.uid], fragment: 'staff-records' };
 
           this.setupForm();
           if (this.bulkUploadService.returnTo) {

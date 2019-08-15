@@ -89,7 +89,7 @@
         <h3 class="govuk-heading-m">What you can do next?</h3>
         <ul class="govuk-list govuk-list--bullet">
           <li>
-            <a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">
+            <a [routerLink]="addStaffRoute.url" [fragment]="addStaffRoute.fragment">
               Add staff records <span class="govuk-visually-hidden">for {{ establishmentName }}</span>
             </a>
           </li>

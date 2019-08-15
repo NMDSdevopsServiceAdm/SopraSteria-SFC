@@ -29,6 +29,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
+  public addStaffRoute: URLStructure;
 
   constructor(
     protected establishmentService: EstablishmentService,
