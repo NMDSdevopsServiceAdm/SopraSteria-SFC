@@ -154,7 +154,7 @@ class PermissionCache {
     return ALL_PERMISSIONS
         .filter(x => 
             (!x.dataOwner.length || dataOwner.toLowerCase() == x.dataOwner.toLowerCase()) ||
-            (!x.dataPermissions.length || x.dataPermissions.includes(dataPermissions)) ||
+            ( dataOwner.toLowerCase() !== 'parent' && x.dataPermissions.includes(dataPermissions)) ||
             (!x.role.length || x.role.includes(role))   
         )
         .map(thisPerm => {
