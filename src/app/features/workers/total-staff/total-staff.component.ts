@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,7 +19,8 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   public returnToDash = false;
   public submitted = false;
   public workplace: Establishment;
-  public return: { url: any[] };
+  public return: URLStructure;
+  public returnCopy: boolean;
   private totalStaffConstraints = { min: 0, max: 999 };
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
@@ -53,8 +55,8 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
     this.return =
       this.workplace.uid === primaryWorkplaceUid
-        ? { url: ['/dashboard'] }
-        : { url: ['/workplace', this.workplace.uid] };
+        ? { url: ['/dashboard'], fragment: 'staff-records' }
+        : { url: ['/workplace', this.workplace.uid], fragment: 'staff-records' };
 
     this.subscriptions.add(
       this.establishmentService.getStaff(this.workplace.uid).subscribe(staff => {
@@ -64,10 +66,15 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
     this.returnToDash = this.workerService.totalStaffReturn;
 
+    if (this.returnToDash || this.workerService.returnTo) {
+      this.returnCopy = true;
+    }
+
     if (this.returnToDash) {
-      this.backService.setBackLink({ url: this.return.url, fragment: 'staff-records' });
+      this.backService.setBackLink(this.return);
     } else if (this.workerService.returnTo) {
       this.backService.setBackLink(this.workerService.returnTo);
+      this.return = this.workerService.returnTo;
     } else {
       this.backService.setBackLink({
         url: ['/workplace', this.workplace.uid, 'staff-record', 'basic-records-start-screen'],
@@ -107,7 +114,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
   private onSuccess() {
     if (this.returnToDash) {
-      this.router.navigate(this.return.url, { fragment: 'staff-records' });
+      this.router.navigate(this.return.url, { fragment: this.return.fragment });
     } else if (this.workerService.returnTo) {
       this.router.navigate(this.workerService.returnTo.url);
     } else {

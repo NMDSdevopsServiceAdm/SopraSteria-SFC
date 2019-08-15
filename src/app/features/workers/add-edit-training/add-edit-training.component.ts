@@ -88,8 +88,10 @@ export class AddEditTrainingComponent implements OnInit {
           .subscribe(trainingRecord => {
             this.trainingRecord = trainingRecord;
 
-            const completed = this.trainingRecord.completed ? moment(this.trainingRecord.completed) : null;
-            const expires = this.trainingRecord.expires ? moment(this.trainingRecord.expires) : null;
+            const completed = this.trainingRecord.completed
+              ? moment(this.trainingRecord.completed, DATE_PARSE_FORMAT)
+              : null;
+            const expires = this.trainingRecord.expires ? moment(this.trainingRecord.expires, DATE_PARSE_FORMAT) : null;
 
             this.form.patchValue({
               title: this.trainingRecord.title,
@@ -98,14 +100,14 @@ export class AddEditTrainingComponent implements OnInit {
               ...(completed && {
                 completed: {
                   day: completed.date(),
-                  month: completed.month() + 1,
+                  month: completed.format('M'),
                   year: completed.year(),
                 },
               }),
               ...(expires && {
                 expires: {
                   day: expires.date(),
-                  month: expires.month() + 1,
+                  month: expires.format('M'),
                   year: expires.year(),
                 },
               }),
@@ -226,8 +228,8 @@ export class AddEditTrainingComponent implements OnInit {
       },
       title: title.value,
       accredited: accredited.value,
-      completed: completedDate ? completedDate.toISOString() : null,
-      expires: expiresDate ? expiresDate.toISOString() : null,
+      completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
+      expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
       notes: notes.value,
     };
 

@@ -303,7 +303,7 @@ class Establishment extends EntityValidator {
         this._parentUid = parentUid;
         this._parentId = parentID;
         this._dataOwner = 'Parent';
-        this._dataPermissions = null;   
+        this._dataPermissions = 'None';
     }
 
     // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
@@ -354,8 +354,11 @@ class Establishment extends EntityValidator {
 
               // inject all capacities against this establishment - note, "other services" can be represented by the JSON document attribute "services" or "otherServices"
               const allAssociatedServiceIndices = [];
+              let mainServiceAdded = false;
+              let servicesAdded = false;
               if (document.mainService) {
                   allAssociatedServiceIndices.push(document.mainService.id);
+                  mainServiceAdded = true;
               }
               if (document && document.otherServices && Array.isArray(document.otherServices)) {
                   document.otherServices.forEach(thisService => {
@@ -367,10 +370,22 @@ class Establishment extends EntityValidator {
                       });
                     }
                   });
+                  servicesAdded=true;
               }
               if (document && document.services && Array.isArray(document.services)) {
                   document.services.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+
+                  // if no main service given in document, then use the current known main service property
+                  if (!mainServiceAdded && this.mainService) {
+                      allAssociatedServiceIndices.push(this.mainService.id)
+                  }
+
+                  servicesAdded = true;
               }
+              if (mainServiceAdded && !servicesAdded) {
+                this.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+              }
+
               document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
 
               await this._properties.restore(document, JSON_DOCUMENT_TYPE);
@@ -1540,7 +1555,14 @@ class Establishment extends EntityValidator {
         //  the WDF by property will show the current eligibility of each property
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-            isEligible: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No' && thisWdfProperty.isEligible === 'Yes' ? thisWdfProperty.updatedSinceEffectiveDate === true : true),
+            isEligible: wdfPropertyValues.every(thisWdfProperty => {
+                if ((thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
+                    (thisWdfProperty.isEligible === 'Not relevant') ) {
+                       return true;
+                   } else {
+                       return false;
+                   }
+            }),
             currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
             ... wdfByProperty
         };
@@ -1668,8 +1690,8 @@ class Establishment extends EntityValidator {
         const myWDF = {
             effectiveFrom: effectiveFrom.toISOString(),
             overalWdfEligible: this._overallWdfEligibility ? this._overallWdfEligibility.toISOString() : false,
-            establishmentWdfEligible: this._establishmentWdfEligibility ? this._establishmentWdfEligibility.toISOString() : false,
-            staffWdfEligible: this._staffWdfEligibility ? this._staffWdfEligibility.toISOString() : false,
+            // establishmentWdfEligible: this._establishmentWdfEligibility ? this._establishmentWdfEligibility.toISOString() : false,
+            // staffWdfEligible: this._staffWdfEligibility ? this._staffWdfEligibility.toISOString() : false,
             ... await this.isWdfEligible(effectiveFrom)
         };
         return myWDF;

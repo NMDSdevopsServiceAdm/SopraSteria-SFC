@@ -54,7 +54,10 @@ export class WorkplaceSummaryComponent {
   }
 
   get totalStaffWarning() {
-    return this.workplace.numberOfStaff !== this.workplace.totalWorkers;
+    return (
+      (this.workplace.numberOfStaff > 0 || this.workplace.totalWorkers > 0) &&
+      this.workplace.numberOfStaff !== this.workplace.totalWorkers
+    );
   }
 
   constructor(

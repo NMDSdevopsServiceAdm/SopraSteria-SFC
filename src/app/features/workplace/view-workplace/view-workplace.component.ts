@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { ParentPermissions } from '@core/model/my-workplaces.model';
+import { DataPermissions } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
@@ -22,7 +22,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public primaryEstablishment: Establishment;
   public workplace: Establishment;
   public summaryReturnUrl: URLStructure;
-  public staffPermission = ParentPermissions.WorkplaceAndStaff;
+  public staffPermission = DataPermissions.WorkplaceAndStaff;
   public canDelete: boolean;
   public canViewStaffRecords: boolean;
   public totalStaffRecords: number;
@@ -59,7 +59,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       this.primaryEstablishment.isParent && [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
   }
 
-  public checkPermission(permission: ParentPermissions) {
+  public checkPermission(permission: DataPermissions) {
     return this.workplace.parentPermissions === permission;
   }
 

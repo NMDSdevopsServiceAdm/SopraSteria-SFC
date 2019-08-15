@@ -48,6 +48,7 @@ export class ErrorSummaryService {
    * @param errorDefinitions
    */
   public getServerErrorMessage(errorCode: number, serverErrorsMap: Array<ErrorDefinition>): string {
-    return filter(serverErrorsMap, ['name', errorCode])[0].message || `Server Error. code ${errorCode}`;
+    const error: ErrorDefinition = filter(serverErrorsMap, ['name', errorCode])[0];
+    return error ? error.message : `Server Error. code ${errorCode}`;
   }
 }

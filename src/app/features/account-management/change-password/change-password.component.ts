@@ -13,13 +13,11 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   public userDetails: UserDetails;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private userService: UserService, private breadcrumbService: BreadcrumbService) {}
+  constructor(private breadcrumbService: BreadcrumbService, private userService: UserService) {}
 
   ngOnInit() {
     this.breadcrumbService.show();
-
     this.submitted = false;
-
     this.subscriptions.add(this.userService.loggedInUser$.subscribe(user => (this.userDetails = user)));
   }
 

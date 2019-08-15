@@ -555,6 +555,8 @@ class Worker extends EntityValidator {
                     //  it's current WDF Eligibility, and if it is eligible, update
                     //  the last WDF Eligibility status
                     const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
+                    console.log("WA DEBUG - currentWdfEligibiity", currentWdfEligibiity);
+
                     const effectiveDateTime = WdfCalculator.effectiveTime;
 
                     let wdfAudit = null;
@@ -1235,10 +1237,16 @@ class Worker extends EntityValidator {
         const wdfPropertyValues = Object.values(wdfByProperty);
 
         // NOTE - the worker does not have to be completed before it can be eligible for WDF
-
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-            isEligible: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No' && thisWdfProperty.isEligible === 'Yes' ? thisWdfProperty.updatedSinceEffectiveDate === true : true),
+            isEligible: wdfPropertyValues.every(thisWdfProperty => {
+                if ((thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
+                    (thisWdfProperty.isEligible === 'Not relevant') ) {
+                       return true;
+                   } else {
+                       return false;
+                   }
+            }),
             currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
             ... wdfByProperty
         };
