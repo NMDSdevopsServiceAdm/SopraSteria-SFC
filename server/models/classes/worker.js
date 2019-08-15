@@ -1539,6 +1539,36 @@ class Worker extends EntityValidator {
 
     }
 
+    static async recalcWdf(username, establishmentId, workerUid, externalTransaction) {
+        try {
+            const thisWorker = new Worker(establishmentId);
+            await thisWorker.restore(workerUid);
+
+            // only try to update if not yet eligible
+            if (thisWorker._lastWdfEligibility === null) {
+                const wdfEligibility = await thisWorker.wdfToJson();
+                if (wdfEligibility.isEligible) {
+                    models.worker.update(
+                        {
+                            lastWdfEligibility: new Date(),
+                        },
+                        {
+                            where: {
+                                uid: workerUid
+                            },
+                            transaction: externalTransaction,
+                        }
+                    );
+                }
+            } // end if _lastWdfEligibility
+
+            return true;
+        } catch (err) {
+            console.error('Worker::recalcWdf error: ', err);
+            return false;
+        }
+    };
+
 };
 
 module.exports.Worker = Worker;
