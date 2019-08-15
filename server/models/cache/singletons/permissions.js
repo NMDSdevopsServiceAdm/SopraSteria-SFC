@@ -14,6 +14,132 @@ let ALL_PERMISSIONS = [
       dataOwner : 'parent',
       dataPermissions: [],
       role: ['Edit']
+    },
+    {
+      code: 'canAddWorker',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canBulkUpload',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canChangePermissionsForSubsidiary',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canDeleteEstablishment',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canDeleteUser',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canDeleteWorker',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canEditUser',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canEditWorker',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canMoveWorker',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canOrderEstablishment',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canOrderWorker',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    }
+    {
+      code: 'canViewEstablishment',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canViewKeyFacts',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canViewLastUpdatedTime',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canViewNotifications',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canViewWdfReport',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canViewWorker',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace and staff'],
+      role: ['Read', 'Edit']
+    },
+    {
+      code: 'canViewWorkerStatus',
+      description: '',
+      dataOwner : 'parent',
+      dataPermissions: ['Workplace', 'Workplace and staff'],
+      role: ['Read', 'Edit']
     }
 ];
 
@@ -24,11 +150,11 @@ class PermissionCache {
 
   }
 
-  static myPermission(dataOwner, dataPermissions, role){
+  static myPermissions(dataOwner, dataPermissions, role){
     return ALL_PERMISSIONS
         .filter(x => 
-            (!x.dataOwner.length || dataOwner.toLowerCase() == x.dataOwner.toLowerCase()) && 
-            (!x.dataPermissions.length || x.dataPermissions.includes(dataPermissions)) &&
+            (!x.dataOwner.length || dataOwner.toLowerCase() == x.dataOwner.toLowerCase()) ||
+            (!x.dataPermissions.length || x.dataPermissions.includes(dataPermissions)) ||
             (!x.role.length || x.role.includes(role))   
         )
         .map(thisPerm => {

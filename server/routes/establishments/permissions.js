@@ -12,7 +12,7 @@ router.route('/').get(async (req, res) => {
     if (await thisEstablishment.restore(establishmentId)) {
         return res.status(200).json({
             uid: thisEstablishment.uid,
-            permissions: Object.assign({}, ...PermissionCache.myPermission(thisEstablishment.dataOwner, thisEstablishment.dataPermissions, req.role).map((item) => {
+            permissions: Object.assign({}, ...PermissionCache.myPermissions(thisEstablishment.dataOwner, thisEstablishment.dataPermissions, req.role).map((item) => {
                 return { [item.code]: true }
             }))
         });
