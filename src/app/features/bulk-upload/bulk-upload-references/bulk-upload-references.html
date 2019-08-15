@@ -16,7 +16,7 @@
 </div>
 
 <div class="govuk-grid-row" *ngIf="renderForm">
-  <ng-container *ngIf="referenceType === referenceTypeEnum.Worker && establishmentName">
+  <ng-container *ngIf="referenceType === referenceTypeEnum.Worker && establishmentName && primaryWorkplace.isParent">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <h2 class="govuk-heading-m govuk__reference-subsidiary-name govuk-!-margin-0">{{ establishmentName }}</h2>
     </div>
