@@ -1555,7 +1555,14 @@ class Establishment extends EntityValidator {
         //  the WDF by property will show the current eligibility of each property
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-            isEligible: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No' && thisWdfProperty.isEligible === 'Yes' ? thisWdfProperty.updatedSinceEffectiveDate === true : true),
+            isEligible: wdfPropertyValues.every(thisWdfProperty => {
+                if ((thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
+                    (thisWdfProperty.isEligible === 'Not relevant') ) {
+                       return true;
+                   } else {
+                       return false;
+                   }
+            }),
             currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
             ... wdfByProperty
         };
