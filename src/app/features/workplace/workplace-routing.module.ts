@@ -7,7 +7,9 @@ import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
-import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
+import {
+  UserAccountEditDetailsComponent,
+} from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
@@ -38,7 +40,7 @@ import { VacanciesComponent } from './vacancies/vacancies.component';
 
 const routes: Routes = [
   {
-    path: 'view-my-workplaces',
+    path: 'view-all-workplaces',
     component: ViewMyWorkplacesComponent,
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },

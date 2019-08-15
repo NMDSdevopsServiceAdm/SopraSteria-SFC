@@ -3,7 +3,7 @@ import { JourneyRoute } from './breadcrumb.model';
 enum Path {
   DASHBOARD = '/dashboard',
   WORKPLACE = '/workplace/:workplaceUid',
-  ALL_WORKPLACES = '/workplace/view-my-workplaces',
+  ALL_WORKPLACES = '/workplace/view-all-workplaces',
   STAFF_RECORD = '/workplace/:workplaceUid/staff-record/:workerUid',
   USER_ACCOUNT = '/workplace/:workplaceUid/user/:workerUid',
   USER_PERMISSIONS = '/workplace/:workerUid/user/:workerUid/permissions',

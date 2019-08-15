@@ -33,6 +33,7 @@ import {
   UserAccountChangePrimaryDialogComponent,
 } from './user-account-change-primary-dialog/user-account-change-primary-dialog.component';
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
+import { UserAccountEditDetailsComponent } from './user-account-edit-details/user-account-edit-details.component';
 import {
   UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
@@ -44,7 +45,6 @@ import {
 } from './wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
-import { UserAccountEditDetailsComponent } from './user-account-edit-details/user-account-edit-details.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
