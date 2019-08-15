@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
 import { Roles } from '@core/model/roles.enum';
@@ -48,7 +49,7 @@ export class WdfComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.breadcrumbService.show();
+    this.breadcrumbService.show(JourneyType.REPORTS);
     const workplaceUid = this.route.snapshot.params.establishmentuid;
 
     this.canViewStaffRecords = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);

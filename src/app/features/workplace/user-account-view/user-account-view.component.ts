@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
@@ -8,6 +9,7 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import {
   UserAccountDeleteDialogComponent,
@@ -38,7 +40,8 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
     private dialogService: DialogService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private establishmentService: EstablishmentService
   ) {
     this.user = this.route.snapshot.data.user;
     this.establishment = this.route.parent.snapshot.data.establishment;
@@ -46,7 +49,8 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.breadcrumbService.show();
+    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
+    this.breadcrumbService.show(journey);
 
     this.subscriptions.add(
       this.userService

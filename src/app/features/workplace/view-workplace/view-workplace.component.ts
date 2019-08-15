@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { DataPermissions } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -34,10 +36,12 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private establishmentService: EstablishmentService,
     private userService: UserService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit() {
+    this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     this.workplace = this.establishmentService.establishment;
 

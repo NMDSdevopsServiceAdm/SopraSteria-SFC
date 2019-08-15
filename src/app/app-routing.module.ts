@@ -16,7 +16,9 @@ import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import {
+  MigratedUserTermsConditionsComponent,
+} from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 
 const routes: Routes = [
@@ -95,7 +97,7 @@ const routes: Routes = [
       {
         path: 'account-management',
         loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
-        data: { title: 'User Account' },
+        data: { title: 'Account details' },
       },
       {
         path: 'dashboard',

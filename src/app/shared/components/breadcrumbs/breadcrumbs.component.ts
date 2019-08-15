@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { JourneyRoute } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { NestedRoutesService } from '@core/services/nested-routes.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -8,27 +8,45 @@ import { Subscription } from 'rxjs';
   templateUrl: './breadcrumbs.component.html',
 })
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
-  public breadcrumbs: any[] = [];
-  public display = false;
+  public breadcrumbs: JourneyRoute[];
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private breadcrumbService: BreadcrumbService, private nestedRoutesService: NestedRoutesService) {}
+  constructor(private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit() {
     this.subscriptions.add(
-      this.nestedRoutesService.routes$.subscribe(routes => {
-        this.breadcrumbs = routes;
-      })
-    );
-
-    this.subscriptions.add(
-      this.breadcrumbService.display$.subscribe(display => {
-        this.display = display;
+      this.breadcrumbService.routes$.subscribe(routes => {
+        this.breadcrumbs = routes ? this.getBreadcrumbs(routes) : null;
       })
     );
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  private getBreadcrumbs(routes: JourneyRoute[]) {
+    const currentPath = routes[routes.length - 1];
+
+    routes = [
+      {
+        title: 'Home',
+        url: '/dashboard',
+      },
+      ...routes,
+    ];
+
+    if (currentPath.referrer) {
+      routes = routes.map(route => {
+        if (route.url === currentPath.referrer.url) {
+          return {
+            ...route,
+            fragment: currentPath.referrer.fragment,
+          };
+        }
+        return route;
+      });
+    }
+    return routes;
   }
 }

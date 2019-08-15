@@ -1,10 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -28,11 +31,16 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private dialogService: DialogService,
     private workerService: WorkerService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private establishmentService: EstablishmentService,
+    private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
+    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
+    this.breadcrumbService.show(journey);
+
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe(worker => {
         this.worker = worker;

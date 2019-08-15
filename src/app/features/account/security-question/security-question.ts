@@ -3,13 +3,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SecurityDetails } from '@core/model/security-details.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
-import { URLStructure } from '@core/model/url.model';
 
 export class SecurityQuestion implements OnInit, OnDestroy {
-  private formErrorsMap: Array<ErrorDetails>;
+  public formErrorsMap: Array<ErrorDetails>;
   private securityDetailsMaxLength = 255;
   protected back: URLStructure;
   protected return: URLStructure;

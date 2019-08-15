@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
@@ -16,7 +17,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   constructor(private breadcrumbService: BreadcrumbService, private userService: UserService) {}
 
   ngOnInit() {
-    this.breadcrumbService.show();
+    this.breadcrumbService.show(JourneyType.ACCOUNT);
     this.submitted = false;
     this.subscriptions.add(this.userService.loggedInUser$.subscribe(user => (this.userDetails = user)));
   }
