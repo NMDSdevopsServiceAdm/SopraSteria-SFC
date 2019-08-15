@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
@@ -14,11 +13,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   public userDetails: UserDetails;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private breadcrumbService: BreadcrumbService,
-    private router: Router,
-    private userService: UserService,
-  ) {}
+  constructor(private breadcrumbService: BreadcrumbService, private userService: UserService) {}
 
   ngOnInit() {
     this.breadcrumbService.show();
@@ -28,7 +23,6 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
 
   public onResetPasswordSuccess(): void {
     this.submitted = true;
-    this.router.navigate(['/account-management']);
   }
 
   ngOnDestroy() {
