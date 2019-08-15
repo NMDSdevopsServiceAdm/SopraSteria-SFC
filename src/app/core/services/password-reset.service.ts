@@ -31,7 +31,7 @@ export class PasswordResetService {
   }
 
   changePassword(data) {
-    return this.http.post<any>('/api/user/changePassword', data);
+    return this.http.post<any>('/api/user/changePassword', data, { responseType: 'text' as 'json' });
   }
 
   updateState(data) {
