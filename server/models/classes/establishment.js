@@ -382,7 +382,7 @@ class Establishment extends EntityValidator {
 
                   servicesAdded = true;
               }
-              if (mainServiceAdded && !servicesAdded) {
+              if (mainServiceAdded && !servicesAdded && this.otherServices) {
                 this.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
               }
 
