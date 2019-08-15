@@ -12,10 +12,14 @@ router.route('/').post(async function (req, res) {
   const recalculatedEstablishments = [];
 
   try {
+    const establishmentPromises = [];
     listOfEstablishments.forEach(thisEstablishmentId => {
       console.log(`WA - admin recalcWdf establishment - (${thisEstablishmentId})`);
+      establishmentPromises.push(Establishment.recalcWdf(req.username, thisEstablishmentId));
       recalculatedEstablishments.push(thisEstablishmentId)
     });
+
+    await Promise.all(establishmentPromises);
 
     return res.status(200).json({
       establishments: recalculatedEstablishments

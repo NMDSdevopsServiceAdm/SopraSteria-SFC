@@ -2043,6 +2043,56 @@ class Establishment extends EntityValidator {
       // recalculate WDF - if not bulk upload (this._status)
       return await WdfCalculator.calculate(savedby, this._id, null, externalTransaction, WdfCalculator.BULK_UPLOAD, false);
     }
+
+    // recalcs the establishment known by given establishment
+    static async recalcWdf(username, establishmentId) {
+        try {
+            const thisEstablishment = new Establishment(username);
+
+            await models.sequelize.transaction(async t => {
+
+                if (await thisEstablishment.restore(establishmentId)) {
+                    // only try to update if not yet eligible
+                    if (thisEstablishment._lastWdfEligibility === null) {
+                        const wdfEligibility = await thisEstablishment.wdfToJson();
+                       if (wdfEligibility.isEligible) {
+                            models.establishment.update(
+                                {
+                                    lastWdfEligibility: new Date(),
+                                },
+                                {
+                                    where: {
+                                        id: establishmentId
+                                    },
+                                    transaction: t,
+                                }
+                            );
+                        }
+                    } // end if _lastWdfEligibility
+
+                    // checking checked/updated establihsment, now iterate through the workers
+                    const workers = await Worker.fetch(establishmentId);
+                    const workerPromises = [];
+                    workers.forEach(thisWorker => {
+                        const thisWorkerUID = thisWorker.uid;
+                        workerPromises.push(Worker.recalcWdf(username, establishmentId, thisWorkerUID, t));
+                    });
+
+                    await Promise.all(workerPromises);
+
+                } else {
+                    // not found
+                }
+
+            }); // end transaction
+
+
+            return true;
+        } catch (err) {
+            console.error('Establishment::recalcWdf error: ', err);
+            return false;
+        }
+    };
 };
 
 module.exports.Establishment = Establishment;
