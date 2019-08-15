@@ -30,14 +30,14 @@
 
   <div class="govuk-button-group">
     <button type="submit" class="govuk-button">
-      {{ returnToDash ? 'Save and return' : 'Save and continue' }}
+      {{ returnCopy ? 'Save and return' : 'Save and continue' }}
     </button>
     <a
       class="govuk-button govuk-button--link govuk-util__float-right"
       role="button"
       draggable="false"
       [routerLink]="return.url"
-      [fragment]="'staff-records'"
+      [fragment]="return.fragment"
     >
       Cancel
     </a>
