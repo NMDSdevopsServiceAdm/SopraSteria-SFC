@@ -356,7 +356,7 @@ const config = convict({
     },
     overrideWdfEffectiveDate: {
       doc: 'Allows for overridding the effective date - false is default (calculated) effective date',
-      format: 'Boolean',
+      format: '*',
       default: false
     }
   }
