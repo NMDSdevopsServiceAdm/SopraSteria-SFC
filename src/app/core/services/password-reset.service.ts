@@ -31,10 +31,7 @@ export class PasswordResetService {
   }
 
   changePassword(data) {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({ Authorization: token });
-
-    return this.http.post<any>('/api/user/changePassword', data, { headers, responseType: 'text' as 'json' });
+    return this.http.post<any>('/api/user/changePassword', data, { responseType: 'text' as 'json' });
   }
 
   updateState(data) {
