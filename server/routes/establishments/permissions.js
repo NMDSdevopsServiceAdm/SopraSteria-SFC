@@ -28,7 +28,7 @@ router.route('/').get(async (req, res) => {
       null,
       `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
 
-    console.error('establishment::localIdentifier GET/:eID - failed', thisError.message);
+    console.error('establishment::permissions GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
 });
