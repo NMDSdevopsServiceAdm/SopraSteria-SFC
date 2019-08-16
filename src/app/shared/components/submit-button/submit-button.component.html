@@ -1,10 +1,10 @@
 <div class="govuk-button-group">
   <ng-container *ngIf="!return; else summary">
-    <button type="button" class="govuk-button" (click)="onClick('continue', true)">Save and continue</button>
+    <button type="submit" class="govuk-button" (click)="onClick($event, 'continue', true)">Save and continue</button>
     <button
       type="button"
       class="govuk-button govuk-button--link govuk-!-margin-left-8"
-      (click)="onClick('summary', false)"
+      (click)="onClick($event, 'summary', false)"
     >
       View record summary
     </button>
@@ -12,20 +12,20 @@
     <button
       type="button"
       class="govuk-button govuk-button--link govuk-util__float-right"
-      (click)="onClick('exit', false)"
+      (click)="onClick($event, 'exit', false)"
     >
       Exit
     </button>
   </ng-container>
   <ng-template #summary>
-    <button type="button" class="govuk-button" (click)="onClick('return', true)">
+    <button type="submit" class="govuk-button" (click)="onClick($event, 'return', true)">
       Save and return
     </button>
     <span class="govuk-visually-hidden">or</span>
     <button
       type="button"
       class="govuk-button govuk-button--link govuk-util__float-right"
-      (click)="onClick('return', false)"
+      (click)="onClick($event, 'return', false)"
     >
       Exit
     </button>
