@@ -2047,54 +2047,49 @@ class Establishment extends EntityValidator {
     // recalcs the establishment known by given establishment
     static async recalcWdf(username, establishmentId) {
         try {
-            const thisEstablishment = new Establishment(username);
+          const log = result => result=null;
+          const thisEstablishment = new Establishment(username);
 
-            await models.sequelize.transaction(async t => {
-
-                if (await thisEstablishment.restore(establishmentId)) {
-                    // only try to update if not yet eligible
-                    if (thisEstablishment._lastWdfEligibility === null) {
-                        const wdfEligibility = await thisEstablishment.wdfToJson();
-                       if (wdfEligibility.isEligible) {
-                            await models.establishment.update(
-                                {
-                                    lastWdfEligibility: new Date(),
-                                },
-                                {
-                                    where: {
-                                        id: establishmentId
-                                    },
-                                    transaction: t,
-                                }
-                            );
-
-                            await models.establishmentAudit.create(
+          await models.sequelize.transaction(async t => {
+              if (await thisEstablishment.restore(establishmentId)) {
+                  // only try to update if not yet eligible
+                  if (thisEstablishment._lastWdfEligibility === null) {
+                      const wdfEligibility = await thisEstablishment.wdfToJson();
+                      if (wdfEligibility.isEligible) {
+                          await models.establishment.update(
                               {
-                                establishmentFk: establishmentId,
-                                username,
-                                type: 'wdfEligible'
+                                  lastWdfEligibility: new Date(),
                               },
-                              {transaction: t}
-                            );
-                        }
-                    } // end if _lastWdfEligibility
+                              {
+                                  where: {
+                                      id: establishmentId
+                                  },
+                                  transaction: t,
+                              }
+                          );
 
-                    // checking checked/updated establihsment, now iterate through the workers
-                    const workers = await Worker.fetch(establishmentId);
-                    const workerPromises = [];
-                    workers.forEach(thisWorker => {
-                        const thisWorkerUID = thisWorker.uid;
-                        workerPromises.push(Worker.recalcWdf(username, establishmentId, thisWorkerUID, t));
-                    });
+                          await models.establishmentAudit.create(
+                            {
+                              establishmentFk: establishmentId,
+                              username,
+                              type: 'wdfEligible'
+                            },
+                            {transaction: t}
+                          );
+                      }
+                  } // end if _lastWdfEligibility
 
-                    await Promise.all(workerPromises);
+                  // checking checked/updated establihsment, now iterate through the workers
+                  const workers = await Worker.fetch(establishmentId);
+                  const workerPromise = Promise.resolve(null);
+                  await workers.reduce((p, thisWorker) => p.then(() => Worker.recalcWdf(username, establishmentId, thisWorker.uid, t).then(log)), workerPromise);
 
-                    // having updated establishment and all workers, recalculate the overall WDF eligibility
-                    await WdfCalculator.calculate(username, establishmentId, null, t, WdfCalculator.RECALC, false);
+                  // having updated establishment and all workers, recalculate the overall WDF eligibility
+                  await WdfCalculator.calculate(username, establishmentId, null, t, WdfCalculator.RECALC, false);
 
-                } else {
-                    // not found
-                }
+              } else {
+                  // not found
+              }
 
             }); // end transaction
 
