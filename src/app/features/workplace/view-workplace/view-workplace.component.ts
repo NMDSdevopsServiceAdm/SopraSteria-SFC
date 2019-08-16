@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { DataPermissions } from '@core/model/my-workplaces.model';
+import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
@@ -58,7 +58,13 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       url: ['/workplace', this.workplace.uid],
     });
 
-    this.canViewStaffRecords = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
+    this.canViewStaffRecords =
+      [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role) &&
+      ((this.workplace.dataOwner === WorkplaceDataOwner.Parent && this.primaryEstablishment.isParent) ||
+        (this.workplace.dataOwner === WorkplaceDataOwner.Workplace && !this.primaryEstablishment.isParent) ||
+        (this.workplace.dataOwner === WorkplaceDataOwner.Workplace &&
+          this.primaryEstablishment.isParent &&
+          this.workplace.dataPermissions === DataPermissions.WorkplaceAndStaff));
     this.canDelete =
       this.primaryEstablishment.isParent && [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
   }
