@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -18,7 +19,7 @@ import { SecurityQuestion } from '@features/account/security-question/security-q
 })
 export class ChangeUserSecurityComponent extends SecurityQuestion {
   private serverErrorsMap: Array<ErrorDefinition>;
-  private userDetails: UserDetails;
+  public userDetails: UserDetails;
   private primaryWorkplace: Establishment;
   public serverError: string;
 
@@ -36,7 +37,7 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
 
   protected init(): void {
     this.return = { url: ['/account-management'] };
-    this.breadcrumbService.show();
+    this.breadcrumbService.show(JourneyType.ACCOUNT);
     this.setupSubscription();
     this.setupServerErrorsMap();
 

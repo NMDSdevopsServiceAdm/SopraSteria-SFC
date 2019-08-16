@@ -26,7 +26,7 @@
           <a [routerLink]="['/bulk-upload']" (click)="setReturn()">Bulk upload</a>
         </li>
         <li *ngIf="workplace.isParent">
-          <a [routerLink]="['/workplace', 'view-my-workplaces']">View my workplaces</a>
+          <a [routerLink]="['/workplace', 'view-all-workplaces']">View all workplaces</a>
         </li>
         <li><a [routerLink]="['/workplace', workplace.uid, 'reports']">View reports</a></li>
       </ng-container>

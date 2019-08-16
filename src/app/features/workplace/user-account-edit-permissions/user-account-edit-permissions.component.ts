@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { RadioFieldData } from '@core/model/form-controls.model';
@@ -11,6 +12,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
@@ -50,7 +52,8 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private dialogService: DialogService,
     private userService: UserService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private establishmentService: EstablishmentService
   ) {
     this.user = this.route.snapshot.data.user;
     this.workplace = this.route.parent.snapshot.data.establishment;
@@ -67,7 +70,8 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setupServerErrorsMap();
-    this.breadcrumbService.show();
+    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
+    this.breadcrumbService.show(journey);
 
     this.form = this.formBuilder.group({
       role: [this.user.role, Validators.required],

@@ -2,11 +2,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { AccountDetails } from '@features/account/account-details/account-details';
 
@@ -20,7 +20,6 @@ export class UserAccountEditDetailsComponent extends AccountDetails {
 
   constructor(
     private breadcrumbService: BreadcrumbService,
-    private establishmentService: EstablishmentService,
     private route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -32,7 +31,7 @@ export class UserAccountEditDetailsComponent extends AccountDetails {
   }
 
   protected init() {
-    this.breadcrumbService.show();
+    this.breadcrumbService.show(JourneyType.ACCOUNT);
     this.prefillForm(this.userDetails);
     this.return = { url: ['/dashboard'], fragment: 'user-accounts' };
   }

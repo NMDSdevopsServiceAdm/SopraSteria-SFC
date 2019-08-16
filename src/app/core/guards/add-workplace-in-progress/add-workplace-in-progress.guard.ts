@@ -12,7 +12,7 @@ export class AddWorkplaceInProgressGuard implements CanActivate {
     if (this.workplaceService.addWorkplaceInProgress$.value) {
       return true;
     } else {
-      this.router.navigate(['/workplace/view-my-workplaces']);
+      this.router.navigate(['/workplace/view-all-workplaces']);
       return false;
     }
   }

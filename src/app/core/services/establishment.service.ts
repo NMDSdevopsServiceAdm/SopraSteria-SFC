@@ -212,4 +212,8 @@ export class EstablishmentService {
   public deleteWorkplace(workplaceUid: string): Observable<any> {
     return this.http.delete<any>(`/api/establishment/${workplaceUid}`);
   }
+
+  public isOwnWorkplace() {
+    return !this.primaryWorkplace.isParent || this.primaryWorkplace.uid === this.establishment.uid;
+  }
 }

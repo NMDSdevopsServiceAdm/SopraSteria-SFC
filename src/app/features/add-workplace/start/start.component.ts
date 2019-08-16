@@ -15,6 +15,6 @@ export class StartComponent implements OnInit {
   }
 
   private setBackLink(): void {
-    this.backService.setBackLink({ url: ['/workplace/view-my-workplaces'] });
+    this.backService.setBackLink({ url: ['/workplace/view-all-workplaces'] });
   }
 }

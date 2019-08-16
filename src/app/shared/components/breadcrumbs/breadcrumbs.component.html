@@ -1,17 +1,16 @@
-<ng-container *ngIf="display">
+<ng-container *ngIf="breadcrumbs">
   <div class="govuk-breadcrumbs">
     Go back to:
     <ol class="govuk-breadcrumbs__list">
-      <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" [routerLink]="['/dashboard']">Home</a>
-      </li>
       <li
         class="govuk-breadcrumbs__list-item"
         *ngFor="let breadcrumb of breadcrumbs; let i = index"
         [attr.aria-current]="i + 1 === breadcrumbs.length ? 'page' : null"
       >
         <ng-container *ngIf="i + 1 !== breadcrumbs.length; else final">
-          <a class="govuk-breadcrumbs__link" [routerLink]="breadcrumb.url">{{ breadcrumb.title }}</a>
+          <a class="govuk-breadcrumbs__link" [routerLink]="breadcrumb.path" [fragment]="breadcrumb.fragment">{{
+            breadcrumb.title
+          }}</a>
         </ng-container>
         <ng-template #final>
           {{ breadcrumb.title }}

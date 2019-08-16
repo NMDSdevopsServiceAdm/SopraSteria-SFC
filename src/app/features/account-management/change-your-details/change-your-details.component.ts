@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
@@ -33,15 +34,11 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   }
 
   protected init() {
-    this.breadcrumbService.show();
+    this.breadcrumbService.show(JourneyType.ACCOUNT);
     this.setupSubscriptions();
     this.return = { url: ['/account-management'] };
 
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-  }
-
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/account-management'] });
   }
 
   private setupSubscriptions(): void {

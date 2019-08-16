@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Eligibility } from '@core/model/wdf.model';
@@ -39,7 +40,7 @@ export class WdfStaffSummaryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.breadcrumbService.show();
+    this.breadcrumbService.show(JourneyType.REPORTS);
 
     this.workplace = this.establishmentService.establishment;
 

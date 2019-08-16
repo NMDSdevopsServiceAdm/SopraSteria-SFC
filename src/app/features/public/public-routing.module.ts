@@ -11,32 +11,32 @@ const routes: Routes = [
   {
     path: 'contact-us',
     component: ContactUsComponent,
-    data: { title: 'Contact Us' },
+    data: { title: 'Contact us' },
   },
   {
     path: 'feedback',
     component: FeedbackComponent,
-    data: { title: 'Give us Feedback' },
+    data: { title: 'Feedback' },
   },
   {
     path: 'terms-and-conditions',
     component: TermsConditionsComponent,
-    data: { title: 'Terms and Conditions' },
+    data: { title: 'Terms and conditions' },
   },
   {
     path: 'cookie-policy',
     component: CookiePolicyComponent,
-    data: { title: 'Cookie Policy' },
+    data: { title: 'Cookie policy' },
   },
   {
     path: 'accessibility-statement',
     component: AccessibilityStatementComponent,
-    data: { title: 'Accessibility Statement' },
+    data: { title: 'Accessibility statement' },
   },
   {
     path: 'privacy-notice',
     component: PrivacyNoticeComponent,
-    data: { title: 'Privacy Notice' },
+    data: { title: 'Privacy notice' },
   },
 ];
 

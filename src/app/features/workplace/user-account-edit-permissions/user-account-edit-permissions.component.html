@@ -10,8 +10,8 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <span class="govuk-caption-l">User Account</span>
-            <h1 class="govuk-fieldset__heading">Change Permissions</h1>
+            <span class="govuk-caption-l">{{ user?.fullname }}</span>
+            <h1 class="govuk-fieldset__heading">Permissions</h1>
           </legend>
           <div class="govuk-radios">
             <ng-container *ngFor="let item of roleRadios; let i = index">

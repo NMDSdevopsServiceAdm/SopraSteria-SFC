@@ -1,9 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -25,10 +27,12 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   constructor(
     private establishmentService: EstablishmentService,
     private userService: UserService,
-    private errorSummaryService: ErrorSummaryService
+    private errorSummaryService: ErrorSummaryService,
+    private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit() {
+    this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.canAddWorkplace = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.getEstablishments();
