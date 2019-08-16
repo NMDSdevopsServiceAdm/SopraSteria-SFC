@@ -1,4 +1,4 @@
-export interface Permissions {
+export interface PermissionsResponse {
   uid: string;
   permissions: {
     canAddEstablishment?: boolean;

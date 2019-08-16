@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Permissions } from '@core/model/permissions.model';
+import { PermissionsResponse } from '@core/model/permissions.model';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -8,14 +8,14 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class PermissionsService {
-  public permissions: Permissions;
+  public permissions: { [key: string]: boolean };
 
   constructor(private http: HttpClient) {}
 
-  public getPermissions(workplaceUid: string): Observable<Permissions> {
-    return this.http.get<Permissions>(`/api/establishment/${workplaceUid}/permissions`).pipe(
-      tap(permissions => {
-        this.permissions = permissions;
+  public getPermissions(workplaceUid: string): Observable<PermissionsResponse> {
+    return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`).pipe(
+      tap(response => {
+        this.permissions = response.permissions;
       })
     );
   }
