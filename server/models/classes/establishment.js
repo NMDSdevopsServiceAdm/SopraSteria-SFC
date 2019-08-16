@@ -2056,7 +2056,7 @@ class Establishment extends EntityValidator {
                     if (thisEstablishment._lastWdfEligibility === null) {
                         const wdfEligibility = await thisEstablishment.wdfToJson();
                        if (wdfEligibility.isEligible) {
-                            models.establishment.update(
+                            await models.establishment.update(
                                 {
                                     lastWdfEligibility: new Date(),
                                 },
@@ -2066,6 +2066,15 @@ class Establishment extends EntityValidator {
                                     },
                                     transaction: t,
                                 }
+                            );
+
+                            await models.establishmentAudit.create(
+                              {
+                                establishmentFk: establishmentId,
+                                username,
+                                type: 'wdfEligible'
+                              },
+                              {transaction: t}
                             );
                         }
                     } // end if _lastWdfEligibility

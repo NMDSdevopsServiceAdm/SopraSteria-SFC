@@ -1548,7 +1548,7 @@ class Worker extends EntityValidator {
             if (thisWorker._lastWdfEligibility === null) {
                 const wdfEligibility = await thisWorker.wdfToJson();
                 if (wdfEligibility.isEligible) {
-                    models.worker.update(
+                    const updatedWorker = await models.worker.update(
                         {
                             lastWdfEligibility: new Date(),
                         },
@@ -1556,8 +1556,19 @@ class Worker extends EntityValidator {
                             where: {
                                 uid: workerUid
                             },
+                            returning: true,
+                            plain: true,
                             transaction: externalTransaction,
                         }
+                    );
+
+                    await models.workerAudit.create(
+                      {
+                        workerFk: updatedWorker[1].dataValues.ID,
+                        username,
+                        type: 'wdfEligible'
+                      },
+                      {transaction: externalTransaction}
                     );
                 }
             } // end if _lastWdfEligibility
