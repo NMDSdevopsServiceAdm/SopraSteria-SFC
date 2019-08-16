@@ -10,17 +10,17 @@ export const reportJourney: JourneyRoute = {
   children: [
     {
       title: 'Reports',
-      url: Path.REPORTS_LANDING_URL,
+      path: Path.REPORTS_LANDING_URL,
       children: [
         {
           title: 'Workforce Development Fund',
-          url: Path.WDF,
+          path: Path.WDF,
           children: [
             {
               title: 'Staff record summary',
-              url: Path.WDF_STAFF_RECORD,
+              path: Path.WDF_STAFF_RECORD,
               referrer: {
-                url: Path.WDF,
+                path: Path.WDF,
                 fragment: 'staff-records',
               },
             },

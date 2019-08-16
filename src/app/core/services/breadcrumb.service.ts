@@ -58,14 +58,14 @@ export class BreadcrumbService {
         return routes;
       }
 
-      const { title, url, referrer } = child;
+      const { title, path: url, referrer } = child;
 
       const isCurrentRoute = this.isCurrentRoute(url, segments);
 
       if (isCurrentRoute || index === children.length - 1) {
         routes.push({
           title,
-          url: this.getPath(url, segments),
+          path: this.getPath(url, segments),
           ...(referrer && { referrer: this.getReferrer(referrer, segments) }),
         });
       }
@@ -93,7 +93,7 @@ export class BreadcrumbService {
 
   private getReferrer(referrer: JourneyRoute, segments: UrlSegment[]) {
     return {
-      url: this.getPath(referrer.url, segments),
+      url: this.getPath(referrer.path, segments),
       fragment: referrer.fragment,
     };
   }

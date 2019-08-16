@@ -31,14 +31,14 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
     routes = [
       {
         title: 'Home',
-        url: '/dashboard',
+        path: '/dashboard',
       },
       ...routes,
     ];
 
     if (currentPath.referrer) {
       routes = routes.map(route => {
-        if (route.url === currentPath.referrer.url) {
+        if (route.path === currentPath.referrer.path) {
           return {
             ...route,
             fragment: currentPath.referrer.fragment,

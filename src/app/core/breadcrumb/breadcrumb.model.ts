@@ -9,7 +9,7 @@ export enum JourneyType {
 
 export interface JourneyRoute {
   title?: string;
-  url?: string;
+  path?: string;
   children?: JourneyRoute[];
   referrer?: JourneyRoute;
   fragment?: string;

@@ -14,29 +14,29 @@ export const myWorkplaceJourney: JourneyRoute = {
   children: [
     {
       title: 'Staff record summary',
-      url: Path.STAFF_RECORD,
+      path: Path.STAFF_RECORD,
       referrer: {
-        url: Path.DASHBOARD,
+        path: Path.DASHBOARD,
         fragment: 'staff-records',
       },
     },
     {
       title: 'New user account',
-      url: Path.CREATE_ACCOUNT,
+      path: Path.CREATE_ACCOUNT,
     },
     {
       title: 'Account details',
-      url: Path.USER_ACCOUNT,
+      path: Path.USER_ACCOUNT,
       referrer: {
-        url: Path.DASHBOARD,
+        path: Path.DASHBOARD,
         fragment: 'user-accounts',
       },
       children: [
         {
           title: 'Permissions',
-          url: Path.USER_PERMISSIONS,
+          path: Path.USER_PERMISSIONS,
           referrer: {
-            url: Path.DASHBOARD,
+            path: Path.DASHBOARD,
             fragment: 'user-accounts',
           },
         },
@@ -49,37 +49,37 @@ export const allWorkplacesJourney: JourneyRoute = {
   children: [
     {
       title: 'All workplaces',
-      url: Path.ALL_WORKPLACES,
+      path: Path.ALL_WORKPLACES,
       children: [
         {
           title: 'Workplace',
-          url: Path.WORKPLACE,
+          path: Path.WORKPLACE,
           children: [
             {
               title: 'Staff record summary',
-              url: Path.STAFF_RECORD,
+              path: Path.STAFF_RECORD,
               referrer: {
-                url: Path.WORKPLACE,
+                path: Path.WORKPLACE,
                 fragment: 'staff-records',
               },
             },
             {
               title: 'New user account',
-              url: Path.CREATE_ACCOUNT,
+              path: Path.CREATE_ACCOUNT,
             },
             {
               title: 'Account details',
-              url: Path.USER_ACCOUNT,
+              path: Path.USER_ACCOUNT,
               referrer: {
-                url: Path.WORKPLACE,
+                path: Path.WORKPLACE,
                 fragment: 'user-accounts',
               },
               children: [
                 {
                   title: 'Permissions',
-                  url: Path.USER_PERMISSIONS,
+                  path: Path.USER_PERMISSIONS,
                   referrer: {
-                    url: Path.WORKPLACE,
+                    path: Path.WORKPLACE,
                     fragment: 'user-accounts',
                   },
                 },

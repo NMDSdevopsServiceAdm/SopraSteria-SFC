@@ -11,19 +11,19 @@ export const accountJourney: JourneyRoute = {
   children: [
     {
       title: 'Account details',
-      url: Path.ACCOUNT_DETAILS,
+      path: Path.ACCOUNT_DETAILS,
       children: [
         {
           title: 'Your details',
-          url: Path.YOUR_DETAILS,
+          path: Path.YOUR_DETAILS,
         },
         {
           title: 'Your password',
-          url: Path.YOUR_PASSWORD,
+          path: Path.YOUR_PASSWORD,
         },
         {
           title: 'Your security question',
-          url: Path.YOUR_SECURITY_QUESTION,
+          path: Path.YOUR_SECURITY_QUESTION,
         },
       ],
     },

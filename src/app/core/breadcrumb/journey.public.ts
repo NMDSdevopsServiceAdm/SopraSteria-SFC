@@ -13,27 +13,27 @@ export const publicJourney: JourneyRoute = {
   children: [
     {
       title: 'Feedback',
-      url: Path.FEEDBACK,
+      path: Path.FEEDBACK,
     },
     {
       title: 'Cookie policy',
-      url: Path.COOKIE_POLICY,
+      path: Path.COOKIE_POLICY,
     },
     {
       title: 'Contact us',
-      url: Path.CONTACT_US,
+      path: Path.CONTACT_US,
     },
     {
       title: 'Accessibility statement',
-      url: Path.ACCESSIBILITY_STATEMENT,
+      path: Path.ACCESSIBILITY_STATEMENT,
     },
     {
       title: 'Terms and conditions',
-      url: Path.TERMS_AND_CONDITIONS,
+      path: Path.TERMS_AND_CONDITIONS,
     },
     {
       title: 'Privacy notice',
-      url: Path.PRIVACY_NOTICE,
+      path: Path.PRIVACY_NOTICE,
     },
   ],
 };

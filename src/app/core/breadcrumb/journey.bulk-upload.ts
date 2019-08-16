@@ -8,7 +8,7 @@ export const bulkUploadJourney: JourneyRoute = {
   children: [
     {
       title: 'Bulk upload',
-      url: Path.BULK_UPLOAD,
+      path: Path.BULK_UPLOAD,
     },
   ],
 };
