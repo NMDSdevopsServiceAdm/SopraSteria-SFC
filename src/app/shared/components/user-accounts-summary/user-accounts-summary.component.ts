@@ -2,10 +2,10 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails, UserStatus } from '@core/model/userDetails.model';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
-import { withLatestFrom } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-accounts-summary',
@@ -18,20 +18,19 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
   public users: Array<UserDetails> = [];
   public canAddUser: boolean;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private permissionsService: PermissionsService) {}
 
   ngOnInit() {
     this.subscriptions.add(
       this.userService
         .getAllUsersForEstablishment(this.workplace.uid)
-        .pipe(withLatestFrom(this.userService.loggedInUser$))
-        .subscribe(([users, loggedInUser]) => {
+        .subscribe(users => {
           this.users = orderBy(
             users,
             ['status', 'isPrimary', 'role', (user: UserDetails) => user.fullname.toLowerCase()],
             ['desc', 'desc', 'asc', 'asc']
           );
-          this.canAddUser = [Roles.Edit, Roles.Admin].includes(loggedInUser.role) && this.userSlotsAvailable(users);
+          this.canAddUser = this.permissionsService.permissions.canAddUser && this.userSlotsAvailable(users);
         })
     );
   }
