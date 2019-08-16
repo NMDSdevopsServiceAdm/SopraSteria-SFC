@@ -158,7 +158,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
           if(roleCheck && (req.method !== 'GET' && claim.role == 'Read')){
             return res.status(403).send({message: `Not permitted`});
           }
-        
+
           req.username= claim.sub;
           req.isParent = claim.isParent;
           req.role = claim.role;
@@ -343,3 +343,25 @@ exports.isAuthorisedRegistrationApproval = (req, res, next) => {
     res.status(401).send('Requires authorisation');
   }
 }
+
+exports.isAdminOrOnDemandReporting = (req, res , next) => {
+  const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
+
+  if (token) {
+    jwt.verify(token, Token_Secret, function (err, claim) {
+      const isAdmin = claim.aud === config.get('jwt.aud.login') && claim.role === 'Admin' ? true : false;
+      const isOnDemandReport = claim.aud === 'ADS-WDS-on-demand-reporting' ? true : false;
+
+      if (err || !(isAdmin || isOnDemandReport) || claim.iss !== thisIss) {
+        return res.status(403).send('Invalid Token');
+      } else {
+        req.username = claim.sub;
+        next();
+      }
+    });
+  } else {
+    // not authenticated
+    res.status(401).send('isAdminOrOnDemandReporting - Requires authorisation');
+  }
+};
