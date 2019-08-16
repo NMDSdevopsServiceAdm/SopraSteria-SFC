@@ -21,6 +21,7 @@ class WdfCalculator {
 
   get BULK_UPLOAD() { return 3000; }
   get REPORT() { return 4000; }
+  get RECALC() { return 5000; }
 
   get ALREADY_ELIGIBLE() { return 5000; }
   get NOW_ELIGIBLE() { return 5001; }
@@ -50,6 +51,12 @@ class WdfCalculator {
         break;
       case 3000:
         toString = 'Bulk Upload WDF Impact'
+        break;
+      case 4000:
+        toString = 'Report'
+        break;
+      case 5000:
+        toString = 'Recalc'
         break;
     }
 
@@ -304,6 +311,12 @@ class WdfCalculator {
         break;
       case 4000:
         // report
+        calculateOverall = true;
+        calculateEstablishment = true;
+        calculateStaff = true;
+        break;
+      case 5000:
+        // recalc
         calculateOverall = true;
         calculateEstablishment = true;
         calculateStaff = true;
