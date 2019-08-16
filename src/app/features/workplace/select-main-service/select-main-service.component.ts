@@ -27,7 +27,6 @@ export class SelectMainServiceComponent extends SelectMainService {
   }
 
   protected init() {
-    this.establishmentService.setState(this.route.snapshot.data.establishment);
     this.workplace = this.establishmentService.establishment;
     this.selectedMainService = this.workplace.mainService;
   }
