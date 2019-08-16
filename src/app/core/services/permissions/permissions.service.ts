@@ -8,15 +8,21 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class PermissionsService {
-  public permissions$ = new BehaviorSubject<{ [key: string]: boolean }>(null);
+  private _permissions$ = new BehaviorSubject<{ [key: string]: boolean }>(null);
 
   constructor(private http: HttpClient) {}
 
+  public get permissions(): { [key: string]: boolean } {
+    return this._permissions$.value;
+  }
+
+  public set permissions(permissions: { [key: string]: boolean }) {
+    this._permissions$.next(permissions);
+  }
+
   public getPermissions(workplaceUid: string): Observable<PermissionsResponse> {
-    return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`).pipe(
-      tap(response => {
-        this.permissions$.next(response.permissions);
-      })
-    );
+    return this.http
+      .get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`)
+      .pipe(tap(response => (this.permissions = response.permissions)));
   }
 }
