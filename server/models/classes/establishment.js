@@ -2089,6 +2089,9 @@ class Establishment extends EntityValidator {
 
                     await Promise.all(workerPromises);
 
+                    // having updated establishment and all workers, recalculate the overall WDF eligibility
+                    await WdfCalculator.calculate(username, establishmentId, null, t, WdfCalculator.RECALC, false);
+
                 } else {
                     // not found
                 }
