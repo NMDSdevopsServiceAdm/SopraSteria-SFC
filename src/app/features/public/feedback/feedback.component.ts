@@ -7,7 +7,6 @@ import { FeedbackModel } from '@core/model/feedback.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FeedbackService } from '@core/services/feedback.service';
-import { WindowRef } from '@core/services/window.ref';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -31,7 +30,6 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private feedbackService: FeedbackService,
     private formBuilder: FormBuilder,
-    private windowRef: WindowRef,
     private breadcrumbSerivce: BreadcrumbService
   ) {}
 
@@ -119,10 +117,6 @@ export class FeedbackComponent implements OnInit, OnDestroy {
 
   resetPendingFeedback() {
     this._pendingFeedback = false;
-  }
-
-  closeWindow() {
-    this.windowRef.nativeWindow.close();
   }
 
   private onSubmit(): void {
