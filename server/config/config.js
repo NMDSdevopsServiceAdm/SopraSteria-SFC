@@ -353,6 +353,11 @@ const config = convict({
       format: 'url',
       default: 'https://unknown.com',
       env: 'ADMIN_URL',
+    },
+    overrideWdfEffectiveDate: {
+      doc: 'Allows for overridding the effective date - false is default (calculated) effective date',
+      format: '*',
+      default: false
     }
   }
 });

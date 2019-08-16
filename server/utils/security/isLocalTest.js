@@ -1,5 +1,5 @@
 const isLocal = (req) => {
-  const testOnlyHostRestrictionRegex = /^(localhost|sfcdev\.cloudapps\.digital)/;
+  const testOnlyHostRestrictionRegex = /^(localhost|sfcdev\.cloudapps\.digital|sfcstaging\.cloudapps\.digital)/;
   return req.get('host').match(testOnlyHostRestrictionRegex);
 };
 

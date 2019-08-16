@@ -3,6 +3,8 @@
 const WdfUtils = require('../../utils/wdfEligibilityDate');
 const models = require('../../models');
 
+const config = require('../../config/config');
+
 class WdfCalculator {
   constructor() {
     // initialises with the calculated effective date being this fiscal year
@@ -73,7 +75,11 @@ class WdfCalculator {
 
   get effectiveDate() {
     //return new Date('14 Aug 2019 13:47:00 GMT');
-    return this._effectiveDate;
+    if (config.get('admin.overrideWdfEffectiveDate') === false) {
+      return WdfUtils.wdfEligibilityDate();
+    } else {
+      return config.get('admin.overrideWdfEffectiveDate');
+    }
   }
 
   get effectiveTime() {
@@ -84,9 +90,9 @@ class WdfCalculator {
   set effectiveDate(effectiveFrom) {
     if (effectiveFrom === null) {
       // resettting the effective date to calculated date from fiscal year
-      this._effectiveDate = WdfUtils.wdfEligibilityDate();
+      config.set('admin.overrideWdfEffectiveDate', false);
     } else {
-      this._effectiveDate = effectiveFrom;
+      config.set('admin.overrideWdfEffectiveDate', effectiveFrom);
     }
   }
 
