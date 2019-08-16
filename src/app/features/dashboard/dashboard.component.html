@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">
-      <span *ngIf="workplace?.parentName" class="govuk-caption-xl">{{ workplace.parentName }}: Parent</span>
+      <span *ngIf="workplace?.isParent" class="govuk-caption-xl">Parent</span>
       {{ workplace?.name }}
     </h1>
   </div>

@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { LocalIdentifiersRequest } from '@core/model/establishment.model';
+import { Establishment, LocalIdentifiersRequest } from '@core/model/establishment.model';
 import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
@@ -20,6 +20,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public form: FormGroup;
   public formErrorsMap: ErrorDetails[] = [];
   public primaryEstablishmentName: string;
+  public primaryWorkplace: Establishment;
   public references: Array<Workplace | Worker> = [];
   public referenceType: string;
   public referenceTypeEnum = BulkUploadFileType;
@@ -29,6 +30,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
+  public addStaffRoute: URLStructure;
 
   constructor(
     protected establishmentService: EstablishmentService,
@@ -47,7 +49,8 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   protected init() {}
 
   private setPrimaryEstablishmentName(): void {
-    this.primaryEstablishmentName = this.establishmentService.primaryWorkplace.name;
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.primaryEstablishmentName = this.primaryWorkplace.name;
   }
 
   protected setupForm(): void {

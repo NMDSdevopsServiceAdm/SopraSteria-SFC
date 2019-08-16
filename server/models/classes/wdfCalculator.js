@@ -3,6 +3,8 @@
 const WdfUtils = require('../../utils/wdfEligibilityDate');
 const models = require('../../models');
 
+const config = require('../../config/config');
+
 class WdfCalculator {
   constructor() {
     // initialises with the calculated effective date being this fiscal year
@@ -19,6 +21,7 @@ class WdfCalculator {
 
   get BULK_UPLOAD() { return 3000; }
   get REPORT() { return 4000; }
+  get RECALC() { return 5000; }
 
   get ALREADY_ELIGIBLE() { return 5000; }
   get NOW_ELIGIBLE() { return 5001; }
@@ -49,6 +52,12 @@ class WdfCalculator {
       case 3000:
         toString = 'Bulk Upload WDF Impact'
         break;
+      case 4000:
+        toString = 'Report'
+        break;
+      case 5000:
+        toString = 'Recalc'
+        break;
     }
 
     return toString;
@@ -73,7 +82,11 @@ class WdfCalculator {
 
   get effectiveDate() {
     //return new Date('14 Aug 2019 13:47:00 GMT');
-    return this._effectiveDate;
+    if (config.get('admin.overrideWdfEffectiveDate') === false) {
+      return WdfUtils.wdfEligibilityDate();
+    } else {
+      return config.get('admin.overrideWdfEffectiveDate');
+    }
   }
 
   get effectiveTime() {
@@ -84,9 +97,9 @@ class WdfCalculator {
   set effectiveDate(effectiveFrom) {
     if (effectiveFrom === null) {
       // resettting the effective date to calculated date from fiscal year
-      this._effectiveDate = WdfUtils.wdfEligibilityDate();
+      config.set('admin.overrideWdfEffectiveDate', false);
     } else {
-      this._effectiveDate = effectiveFrom;
+      config.set('admin.overrideWdfEffectiveDate', effectiveFrom);
     }
   }
 
@@ -298,6 +311,12 @@ class WdfCalculator {
         break;
       case 4000:
         // report
+        calculateOverall = true;
+        calculateEstablishment = true;
+        calculateStaff = true;
+        break;
+      case 5000:
+        // recalc
         calculateOverall = true;
         calculateEstablishment = true;
         calculateStaff = true;

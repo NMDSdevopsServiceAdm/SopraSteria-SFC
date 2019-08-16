@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -20,7 +21,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
   constructor(private userService: UserService, private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit() {
-    this.breadcrumbService.show();
+    this.breadcrumbService.show(JourneyType.ACCOUNT);
 
     this.subscriptions.add(
       this.userService.loggedInUser$.subscribe(user => {

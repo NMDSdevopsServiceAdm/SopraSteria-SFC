@@ -382,7 +382,7 @@ class Establishment extends EntityValidator {
 
                   servicesAdded = true;
               }
-              if (mainServiceAdded && !servicesAdded) {
+              if (mainServiceAdded && !servicesAdded && this.otherServices) {
                 this.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
               }
 
@@ -2043,6 +2043,63 @@ class Establishment extends EntityValidator {
       // recalculate WDF - if not bulk upload (this._status)
       return await WdfCalculator.calculate(savedby, this._id, null, externalTransaction, WdfCalculator.BULK_UPLOAD, false);
     }
+
+    // recalcs the establishment known by given establishment
+    static async recalcWdf(username, establishmentId) {
+        try {
+          const log = result => result=null;
+          const thisEstablishment = new Establishment(username);
+
+          await models.sequelize.transaction(async t => {
+              if (await thisEstablishment.restore(establishmentId)) {
+                  // only try to update if not yet eligible
+                  if (thisEstablishment._lastWdfEligibility === null) {
+                      const wdfEligibility = await thisEstablishment.wdfToJson();
+                      if (wdfEligibility.isEligible) {
+                          await models.establishment.update(
+                              {
+                                  lastWdfEligibility: new Date(),
+                              },
+                              {
+                                  where: {
+                                      id: establishmentId
+                                  },
+                                  transaction: t,
+                              }
+                          );
+
+                          await models.establishmentAudit.create(
+                            {
+                              establishmentFk: establishmentId,
+                              username,
+                              type: 'wdfEligible'
+                            },
+                            {transaction: t}
+                          );
+                      }
+                  } // end if _lastWdfEligibility
+
+                  // checking checked/updated establihsment, now iterate through the workers
+                  const workers = await Worker.fetch(establishmentId);
+                  const workerPromise = Promise.resolve(null);
+                  await workers.reduce((p, thisWorker) => p.then(() => Worker.recalcWdf(username, establishmentId, thisWorker.uid, t).then(log)), workerPromise);
+
+                  // having updated establishment and all workers, recalculate the overall WDF eligibility
+                  await WdfCalculator.calculate(username, establishmentId, null, t, WdfCalculator.RECALC, false);
+
+              } else {
+                  // not found
+              }
+
+            }); // end transaction
+
+
+            return true;
+        } catch (err) {
+            console.error('Establishment::recalcWdf error: ', err);
+            return false;
+        }
+    };
 };
 
 module.exports.Establishment = Establishment;

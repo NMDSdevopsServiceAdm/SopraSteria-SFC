@@ -1,8 +1,10 @@
 import { I18nPluralPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -25,10 +27,12 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
   constructor(
     private establishmentService: EstablishmentService,
     private bulkUploadService: BulkUploadService,
-    private errorSummaryService: ErrorSummaryService
+    private errorSummaryService: ErrorSummaryService,
+    private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit() {
+    this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
     this.establishment = this.establishmentService.primaryWorkplace;
     this.setupFormErrorsMap();
     this.setupUploadValidationErrors();

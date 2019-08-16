@@ -16,7 +16,7 @@
 </div>
 
 <div class="govuk-grid-row" *ngIf="renderForm">
-  <ng-container *ngIf="referenceType === referenceTypeEnum.Worker && establishmentName">
+  <ng-container *ngIf="referenceType === referenceTypeEnum.Worker && establishmentName && primaryWorkplace.isParent">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <h2 class="govuk-heading-m govuk__reference-subsidiary-name govuk-!-margin-0">{{ establishmentName }}</h2>
     </div>
@@ -89,7 +89,7 @@
         <h3 class="govuk-heading-m">What you can do next?</h3>
         <ul class="govuk-list govuk-list--bullet">
           <li>
-            <a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">
+            <a [routerLink]="addStaffRoute.url" [fragment]="addStaffRoute.fragment">
               Add staff records <span class="govuk-visually-hidden">for {{ establishmentName }}</span>
             </a>
           </li>

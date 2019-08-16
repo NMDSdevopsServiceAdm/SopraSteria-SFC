@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -15,7 +16,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   constructor(private establishmentService: EstablishmentService, private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit() {
-    this.breadcrumbService.show();
+    this.breadcrumbService.show(JourneyType.REPORTS);
 
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(workplace => (this.workplace = workplace))

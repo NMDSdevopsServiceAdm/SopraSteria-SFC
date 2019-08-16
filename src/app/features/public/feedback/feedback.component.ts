@@ -1,8 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { FeedbackModel } from '@core/model/feedback.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FeedbackService } from '@core/services/feedback.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -29,10 +31,12 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private feedbackService: FeedbackService,
     private formBuilder: FormBuilder,
-    private windowRef: WindowRef
+    private windowRef: WindowRef,
+    private breadcrumbSerivce: BreadcrumbService
   ) {}
 
   ngOnInit() {
+    this.breadcrumbSerivce.show(JourneyType.PUBLIC);
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
