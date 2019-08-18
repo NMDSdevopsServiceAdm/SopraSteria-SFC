@@ -350,8 +350,8 @@ exports.isAdminOrOnDemandReporting = (req, res , next) => {
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
-      const isAdmin = claim.aud === config.get('jwt.aud.login') && claim.role === 'Admin' ? true : false;
-      const isOnDemandReport = claim.aud === 'ADS-WDS-on-demand-reporting' ? true : false;
+      const isAdmin = !err ? claim.aud === config.get('jwt.aud.login') && claim.role === 'Admin' ? true : false : false;
+      const isOnDemandReport = !err ? claim.aud === 'ADS-WDS-on-demand-reporting' ? true : false : false;
 
       if (err || !(isAdmin || isOnDemandReport) || claim.iss !== thisIss) {
         return res.status(403).send('Invalid Token');
