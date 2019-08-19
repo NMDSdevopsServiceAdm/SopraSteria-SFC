@@ -9,7 +9,7 @@ export class PrimaryWorkplaceResolver implements Resolve<any> {
   constructor(private establishmentService: EstablishmentService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    const workplaceUid = localStorage.getItem('establishmentId');
+    const workplaceUid = this.establishmentService.establishmentId;
     if (workplaceUid) {
       return this.establishmentService
         .getEstablishment(workplaceUid)

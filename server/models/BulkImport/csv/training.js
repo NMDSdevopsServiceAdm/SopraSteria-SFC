@@ -605,11 +605,10 @@ class Training {
     }
   }
 
-  // input is date in ISO format YYYY-MM-DDYhh:mm:ss.000
+  // input is a string date in format "YYYY-MM-DD"
   _fromDateToCsv(convertThis) {
     if (convertThis) {
-      const datePart = convertThis.toISOString().substring(0,10);
-      const dateParts = datePart.split('-');
+      const dateParts = convertThis.split('-');
 
       return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
     } else {

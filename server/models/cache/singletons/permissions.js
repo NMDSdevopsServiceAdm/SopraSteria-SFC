@@ -5,8 +5,8 @@ let ALL_PERMISSIONS = [
       code: 'canAddUser',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: [],
+      role: ['Edit']
     },
     {
       code: 'canAddEstablishment',
@@ -19,127 +19,85 @@ let ALL_PERMISSIONS = [
       code: 'canAddWorker',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: [],
+      role: ['Edit']
     },
     {
       code: 'canBulkUpload',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: [],
+      role: ['Edit']
     },
     {
       code: 'canChangePermissionsForSubsidiary',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: [],
+      role: ['Edit']
     },
     {
       code: 'canDeleteEstablishment',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: [],
+      role: ['Edit']
     },
     {
       code: 'canDeleteUser',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: [],
+      role: ['Edit']
     },
     {
       code: 'canDeleteWorker',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: [],
+      role: ['Edit']
     },
     {
       code: 'canEditUser',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: [],
+      role: ['Edit']
     },
     {
       code: 'canEditWorker',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
-    },
-    {
-      code: 'canMoveWorker',
-      description: '',
-      dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
-    },
-    {
-      code: 'canOrderEstablishment',
-      description: '',
-      dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
-    },
-    {
-      code: 'canOrderWorker',
-      description: '',
-      dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: [],
+      role: ['Edit']
     },
     {
       code: 'canViewEstablishment',
       description: '',
       dataOwner : 'parent',
       dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
-    },
-    {
-      code: 'canViewKeyFacts',
-      description: '',
-      dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
-    },
-    {
-      code: 'canViewLastUpdatedTime',
-      description: '',
-      dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
-    },
-    {
-      code: 'canViewNotifications',
-      description: '',
-      dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      role: ['Read']
     },
     {
       code: 'canViewWdfReport',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: ['Workplace', 'Workplace and staff', 'None'],
+      role: ['Read']
     },
     {
       code: 'canViewWorker',
       description: '',
       dataOwner : 'parent',
       dataPermissions: ['Workplace and staff'],
-      role: ['Read', 'Edit']
+      role: ['Read']
     },
     {
       code: 'canViewWorkerStatus',
       description: '',
       dataOwner : 'parent',
-      dataPermissions: ['Workplace', 'Workplace and staff'],
-      role: ['Read', 'Edit']
+      dataPermissions: ['Workplace and staff'],
+      role: ['Read']
     }
 ];
 

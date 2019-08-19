@@ -9,7 +9,8 @@ export class SubmitButtonComponent {
   @Input() saveCallback: any;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
-  onClick(action: string, save: boolean) {
+  onClick(event: Event, action: string, save: boolean) {
+    event.preventDefault();
     this.clicked.emit({ action, save });
   }
 }

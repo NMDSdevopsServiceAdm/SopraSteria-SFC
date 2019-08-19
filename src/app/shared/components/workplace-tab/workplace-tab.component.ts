@@ -10,15 +10,14 @@ import { UserService } from '@core/services/user.service';
 })
 export class WorkplaceTabComponent implements OnInit {
   @Input() workplace: Establishment;
+  @Input() summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
 
   public updateWorkplace: boolean;
-  public summaryReturnUrl: URLStructure;
 
   constructor(private userService: UserService) {}
 
   ngOnInit() {
     const user = this.userService.loggedInUser;
-    this.summaryReturnUrl = { url: ['/dashboard'], fragment: 'workplace' };
     this.updateWorkplace = !this.workplace.employerType && [Roles.Edit, Roles.Admin].includes(user.role);
   }
 }

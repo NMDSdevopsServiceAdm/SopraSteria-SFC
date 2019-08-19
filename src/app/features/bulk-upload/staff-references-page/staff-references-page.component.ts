@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
-import { WorkPlaceReference } from '@core/model/my-workplaces.model';
+import { WorkplaceDataOwner, WorkPlaceReference } from '@core/model/my-workplaces.model';
 import { BackService } from '@core/services/back.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -50,7 +50,10 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
         .subscribe(data => {
           this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
           this.references = data.references;
-          this.workPlaceReferences = data.workplaceReferences;
+          this.workPlaceReferences = _filter(
+            data.workplaceReferences,
+            reference => reference.dataOwner === WorkplaceDataOwner.Parent
+          );
           const establishment = _filter(this.workPlaceReferences, ['uid', this.establishmentUid])[0];
           this.establishmentName = establishment.name;
           this.remainingEstablishments = this.workPlaceReferences.length - (this.getWorkplacePosition() + 1);
