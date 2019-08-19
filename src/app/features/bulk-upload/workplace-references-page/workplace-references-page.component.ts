@@ -4,13 +4,13 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
-import { Workplace } from '@core/model/my-workplaces.model';
+import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { BackService } from '@core/services/back.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
-import { find } from 'lodash';
+import { filter, find } from 'lodash';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -45,7 +45,11 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     }
 
     this.backService.setBackLink({ url: this.exit });
-    this.references = this.activatedRoute.snapshot.data.workplaceReferences;
+    this.references = filter(
+      this.activatedRoute.snapshot.data.workplaceReferences,
+      reference => reference.dataOwner === WorkplaceDataOwner.Parent
+    );
+    console.log(this.references);
     this.setupForm();
   }
 
