@@ -49,7 +49,6 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
       this.activatedRoute.snapshot.data.workplaceReferences,
       reference => reference.dataOwner === WorkplaceDataOwner.Parent
     );
-    console.log(this.references);
     this.setupForm();
   }
 
