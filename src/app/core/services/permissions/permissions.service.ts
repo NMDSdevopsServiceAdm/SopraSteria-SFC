@@ -12,6 +12,10 @@ export class PermissionsService {
 
   constructor(private http: HttpClient) {}
 
+  public get permissions$(): Observable<{ [key: string]: boolean }> {
+    return this._permissions$.asObservable();
+  }
+
   public get permissions(): { [key: string]: boolean } {
     return this._permissions$.value;
   }
