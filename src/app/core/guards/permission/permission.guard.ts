@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { Permissions } from '@core/model/permissions.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -22,7 +23,7 @@ export class PermissionGuard implements CanActivate {
     );
   }
 
-  private hasValidPermissions(requiredPermissions: string[], userPermissions: { [key: string]: boolean }): boolean {
+  private hasValidPermissions(requiredPermissions: string[], userPermissions: Permissions) {
     return requiredPermissions.every(item => Object.keys(userPermissions).includes(item));
   }
 }
