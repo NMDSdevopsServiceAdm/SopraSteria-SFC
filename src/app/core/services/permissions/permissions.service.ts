@@ -8,6 +8,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class PermissionsService {
   private _permissions$ = new BehaviorSubject<Permissions>(null);
+  private _subsidiaryPermissions$ = new BehaviorSubject<PermissionsResponse[]>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -25,5 +26,15 @@ export class PermissionsService {
 
   public getPermissions(workplaceUid: string): Observable<PermissionsResponse> {
     return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`);
+  }
+
+  public getSubsidiaryPermissions(workplaceUid: string): PermissionsResponse | null {
+   return this._subsidiaryPermissions$.value.filter((item => item.uid === workplaceUid))[0] || null;
+  }
+
+  public setSubsidiaryPermissions(permissions: PermissionsResponse) {
+    const subsidiaryPermissions: PermissionsResponse[] = this._subsidiaryPermissions$.value;
+    subsidiaryPermissions.push(permissions);
+    this._subsidiaryPermissions$.next(subsidiaryPermissions);
   }
 }
