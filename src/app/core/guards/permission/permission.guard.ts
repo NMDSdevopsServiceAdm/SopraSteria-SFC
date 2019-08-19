@@ -14,7 +14,7 @@ export class PermissionGuard implements CanActivate {
     const requiredPermissions = route.data['permissions'] as Array<string>;
 
     return this.permissionsService.permissions$.pipe(
-      map(userPermissions => this.hasInvalidPermissions(requiredPermissions, userPermissions)),
+      map(userPermissions => this.hasValidPermissions(requiredPermissions, userPermissions)),
       catchError(() => {
         this.router.navigate(['/dashboard']);
         return of(false);
@@ -22,13 +22,7 @@ export class PermissionGuard implements CanActivate {
     );
   }
 
-  private hasInvalidPermissions(requiredPermissions: string[], userPermissions: { [key: string]: boolean }): boolean {
-    const permissions = [];
-    Object.entries(userPermissions).forEach(item => {
-      if (item[1]) {
-        permissions.push(item[0]);
-      }
-    });
-    return requiredPermissions.every(item => permissions.includes(item));
+  private hasValidPermissions(requiredPermissions: string[], userPermissions: { [key: string]: boolean }): boolean {
+    return requiredPermissions.every(item => Object.keys(userPermissions).includes(item));
   }
 }
