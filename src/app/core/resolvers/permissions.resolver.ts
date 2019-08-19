@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 @Injectable()
 export class PermissionsResolver implements Resolve<any> {
@@ -12,11 +12,14 @@ export class PermissionsResolver implements Resolve<any> {
   resolve(route: ActivatedRouteSnapshot) {
     const workplaceUid = this.establishmentService.establishmentId;
     if (workplaceUid) {
-      return this.permissionsService.getPermissions(workplaceUid).pipe(
-        catchError(() => {
-          return of(null);
-        })
-      );
+      return this.permissionsService
+        .getPermissions(workplaceUid)
+        .pipe(tap(response => (this.permissionsService.permissions = response.permissions)))
+        .pipe(
+          catchError(() => {
+            return of(null);
+          })
+        );
     }
   }
 }
