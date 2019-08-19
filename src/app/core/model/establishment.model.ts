@@ -1,3 +1,4 @@
+import { DataPermissions, WorkplaceDataOwner } from './my-workplaces.model';
 import { WDFValue } from './wdf.model';
 
 export interface MainService {
@@ -108,6 +109,8 @@ export interface Establishment {
   wdf?: WDF;
   isParent?: boolean;
   parentName?: string;
+  dataOwner: WorkplaceDataOwner;
+  dataPermissions: DataPermissions;
 }
 
 export interface UpdateJobsRequest {
