@@ -60,9 +60,7 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
         .subscribe(
           data => {
             const updatedReferences = this.references.map(workplace => {
-              console.log(data.localIdentifiers);
               const updated = find(data.localIdentifiers, ['uid', workplace.uid]);
-              console.log(updated);
               return {
                 ...workplace,
                 ...{ localIdentifier: updated.value },
