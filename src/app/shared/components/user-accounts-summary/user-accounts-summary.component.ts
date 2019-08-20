@@ -22,16 +22,15 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.userService
-        .getAllUsersForEstablishment(this.workplace.uid)
-        .subscribe(users => {
-          this.users = orderBy(
-            users,
-            ['status', 'isPrimary', 'role', (user: UserDetails) => user.fullname.toLowerCase()],
-            ['desc', 'desc', 'asc', 'asc']
-          );
-          this.canAddUser = this.permissionsService.permissions.canAddUser && this.userSlotsAvailable(users);
-        })
+      this.userService.getAllUsersForEstablishment(this.workplace.uid).subscribe(users => {
+        this.users = orderBy(
+          users,
+          ['status', 'isPrimary', 'role', (user: UserDetails) => user.fullname.toLowerCase()],
+          ['desc', 'desc', 'asc', 'asc']
+        );
+        this.canAddUser =
+          this.permissionsService.can(this.workplace.uid, 'canAddUser') && this.userSlotsAvailable(users);
+      })
     );
   }
 
