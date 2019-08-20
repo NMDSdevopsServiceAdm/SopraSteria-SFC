@@ -29,7 +29,8 @@ export class PermissionGuard implements CanActivate {
     );
   }
 
-  private hasValidPermissions(requiredPermissions: string[], userPermissions: PermissionsResponse) {
-    return requiredPermissions.every(item => Object.keys(userPermissions.permissions).includes(item));
+  private hasValidPermissions(requiredPermissions: string[], permissionsResponse: PermissionsResponse): boolean {
+    const userPermissions: string[] = Object.keys(permissionsResponse.permissions);
+    return requiredPermissions.every(item =>  userPermissions.includes(item));
   }
 }
