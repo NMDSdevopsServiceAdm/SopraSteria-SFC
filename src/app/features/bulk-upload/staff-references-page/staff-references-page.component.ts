@@ -50,9 +50,10 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
         .subscribe(data => {
           this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
           this.references = data.references;
-          this.workPlaceReferences = _filter(
-            data.workplaceReferences,
-            reference => reference.dataOwner === WorkplaceDataOwner.Parent
+          this.workPlaceReferences = _filter(data.workplaceReferences, reference =>
+            reference.dataOwner === this.primaryWorkplace.isParent
+              ? WorkplaceDataOwner.Parent
+              : WorkplaceDataOwner.Workplace
           );
           const establishment = _filter(this.workPlaceReferences, ['uid', this.establishmentUid])[0];
           this.establishmentName = establishment.name;

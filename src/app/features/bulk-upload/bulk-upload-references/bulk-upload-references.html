@@ -82,19 +82,26 @@
 
     <div class="govuk-grid-row" *ngIf="!references.length">
       <div class="govuk-grid-column-two-thirds-from-desktop">
-        <p class="govuk-!-margin-top-4">
-          {{ referenceType }} records need to be added for this workplace before you can create
-          {{ referenceType.toLowerCase() }} references.
-        </p>
-        <h3 class="govuk-heading-m">What you can do next?</h3>
-        <ul class="govuk-list govuk-list--bullet">
-          <li>
-            <a [routerLink]="addStaffRoute.url" [fragment]="addStaffRoute.fragment">
-              Add staff records <span class="govuk-visually-hidden">for {{ establishmentName }}</span>
-            </a>
-          </li>
-          <li>Continue without adding staff records</li>
-        </ul>
+        <ng-container *ngIf="referenceType === referenceTypeEnum.Establishment; else staffRecordsNextSteps">
+          <p class="govuk-!-margin-top-4">
+            There are no Workplaces editable
+          </p>
+        </ng-container>
+        <ng-template #staffRecordsNextSteps>
+          <p class="govuk-!-margin-top-4">
+            {{ referenceType }} records need to be added for this workplace before you can create
+            {{ referenceType.toLowerCase() }} references.
+          </p>
+          <h3 class="govuk-heading-m">What you can do next?</h3>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>
+              <a [routerLink]="addStaffRoute.url" [fragment]="addStaffRoute.fragment">
+                Add staff records <span class="govuk-visually-hidden">for {{ establishmentName }}</span>
+              </a>
+            </li>
+            <li>Continue without adding staff records</li>
+          </ul>
+        </ng-template>
         <div class="govuk-button-group">
           <a
             role="button"
