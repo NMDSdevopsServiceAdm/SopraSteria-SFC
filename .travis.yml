@@ -82,6 +82,6 @@ deploy:
     space: sandbox
     manifest: manifest.featureGDS.yml
     on:
-        branch: develop_accessibility_demo
+        branch: live
 notifications:
     slack: skills-for-care:Co9S4WS4ZitevGOyBrEb6yEL
