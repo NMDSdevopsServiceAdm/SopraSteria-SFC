@@ -1731,7 +1731,7 @@ class Establishment extends EntityValidator {
 
         // first - get the user's primary establishment (every user will have a primary establishment)
         const fetchResults = await models.establishment.findOne({
-            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated'],
+            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated', 'dataOwnershipRequested'],
             include: [
                 {
                     model: models.services,
@@ -1754,7 +1754,7 @@ class Establishment extends EntityValidator {
             if (isParent) {
                 // get all subsidaries associated with this parent
                 allSubResults = await models.establishment.findAll({
-                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated'],
+                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated','dataOwnershipRequested'],
                     include: [
                         {
                             model: models.services,
@@ -1787,6 +1787,7 @@ class Establishment extends EntityValidator {
                   mainService: primaryEstablishmentRecord.mainService.name,
                   dataOwner: primaryEstablishmentRecord.dataOwner,
                   dataPermissions: isParent ? undefined : primaryEstablishmentRecord.dataPermissions,
+                  dataOwnershipRequested: primaryEstablishmentRecord.dataOwnershipRequested
               }
             };
 
@@ -1803,6 +1804,7 @@ class Establishment extends EntityValidator {
                       mainService: thisSub.mainService.name,
                       dataOwner: thisSub.dataOwner,
                       dataPermissions: thisSub.dataPermissions,
+                      dataOwnershipRequested: thisSub.dataOwnershipRequested
                   };
                 })
               };
