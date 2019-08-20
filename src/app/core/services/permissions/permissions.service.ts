@@ -1,36 +1,36 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PermissionsResponse, PermissionType } from '@core/model/permissions.model';
+import { Permissions, PermissionsList, PermissionsResponse, PermissionType } from '@core/model/permissions.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PermissionsService {
-  private _permissions$ = new BehaviorSubject<PermissionsResponse[]>([]);
+  private _permissions$ = new BehaviorSubject<Permissions>({});
 
   constructor(private http: HttpClient) {}
 
-  public get permissions$(): Observable<PermissionsResponse[]> {
+  public get permissions$(): Observable<Permissions> {
     return this._permissions$.asObservable();
   }
 
-  public getPermissions(workplaceUid: string): Observable<PermissionsResponse> {
+  public fetchPermissions(workplaceUid: string): Observable<PermissionsResponse> {
     return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`);
   }
 
-  public filterPermissions(workplaceUid: string): PermissionsResponse | null {
-   return this._permissions$.value.filter((item => item.uid === workplaceUid))[0] || null;
+  public getPermissions(workplaceUid: string): PermissionsList {
+    return this._permissions$.value[workplaceUid];
   }
 
-  public setPermissions(permissions: PermissionsResponse) {
-    const subsidiaryPermissions: PermissionsResponse[] = this._permissions$.value;
-    subsidiaryPermissions.push(permissions);
+  public setPermissions(workplaceUid: string, permissions: PermissionsList) {
+    const subsidiaryPermissions: Permissions = this._permissions$.value;
+    subsidiaryPermissions[workplaceUid] = permissions;
     this._permissions$.next(subsidiaryPermissions);
   }
 
-  public can(workplaceUid: string, permission: PermissionType): boolean {
-    const permissionsResponse: PermissionsResponse | null = this.filterPermissions(workplaceUid);
-    return permissionsResponse ? permissionsResponse.permissions.hasOwnProperty(permission) : false;
+  public can(workplaceUid: string, permissionType: PermissionType): boolean {
+    const permissions: PermissionsList = this.getPermissions(workplaceUid);
+    return permissions ? permissions.hasOwnProperty(permissionType) : false;
   }
 }

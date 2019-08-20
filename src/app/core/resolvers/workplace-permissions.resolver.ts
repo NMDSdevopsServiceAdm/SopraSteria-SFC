@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
-import { PermissionsResponse } from '@core/model/permissions.model';
+import { PermissionsList } from '@core/model/permissions.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -10,15 +10,15 @@ export class WorkplacePermissionsResolver implements Resolve<any> {
   constructor(private permissionsService: PermissionsService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    const establishmentUid: string = route.paramMap.get('establishmentuid');
-    const cachedPermissions: PermissionsResponse | null = this.permissionsService.filterPermissions(establishmentUid);
+    const workplaceUid: string = route.paramMap.get('establishmentuid');
+    const cachedPermissions: PermissionsList = this.permissionsService.getPermissions(workplaceUid);
 
     if (cachedPermissions) {
       return cachedPermissions;
     } else {
       return this.permissionsService
-        .getPermissions(establishmentUid)
-        .pipe(tap(response => this.permissionsService.setPermissions(response)))
+        .fetchPermissions(workplaceUid)
+        .pipe(tap(response => this.permissionsService.setPermissions(workplaceUid, response.permissions)))
         .pipe(
           catchError(() => {
             return of(null);
