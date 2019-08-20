@@ -45,9 +45,10 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     }
 
     this.backService.setBackLink({ url: this.exit });
-    this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, reference =>
-      reference.dataOwner === this.primaryWorkplace.isParent ? WorkplaceDataOwner.Parent : WorkplaceDataOwner.Workplace
-    );
+    this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, reference => {
+      const toMatch = this.primaryWorkplace.isParent ? WorkplaceDataOwner.Parent : WorkplaceDataOwner.Workplace;
+      return reference.dataOwner === toMatch;
+    });
     this.setupForm();
   }
 
@@ -59,7 +60,9 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
         .subscribe(
           data => {
             const updatedReferences = this.references.map(workplace => {
+              console.log(data.localIdentifiers);
               const updated = find(data.localIdentifiers, ['uid', workplace.uid]);
+              console.log(updated);
               return {
                 ...workplace,
                 ...{ localIdentifier: updated.value },
