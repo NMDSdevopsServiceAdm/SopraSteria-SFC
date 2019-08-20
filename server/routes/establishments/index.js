@@ -249,9 +249,9 @@ router.route('/:id').delete(async (req, res) => {
     const establishmentInstance = new Establishment.Establishment(req.username);
 
     try {
-        if (await establishmentInstance.restore(establishmentId)) {
+        if (await establishmentInstance.restore(establishmentId, false, true, 1)) {
             console.log('restored about to delete');
-            await establishmentInstance.delete(req.username);
+            await establishmentInstance.delete(req.username, null, true);
             return res.status(204).send();
         } else {
             console.log('404 not found that establishment')
