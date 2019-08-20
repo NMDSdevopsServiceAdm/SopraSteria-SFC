@@ -18,13 +18,13 @@ const establishmentPump = async (action, establishment)  => {
   if (!ACTIONS.includes(action)) return;
   if (!config.get('aws.kinesis.enabled')) return;
 
-  establishment.action = action;
-
-  // remove sensitive/unnecessary data
-  delete establishment.id;    // the ASCWDS database primary key
+  const pumpData = {
+    action,
+    establishment,
+  };
 
   const params = {
-    Data: JSON.stringify(establishment),
+    Data: JSON.stringify(pumpData),
     PartitionKey: establishment.uid,    // establishment's primary key
     StreamName: config.get('aws.kinesis.establishments'),
     // ExplicitHashKey: 'STRING_VALUE',
@@ -46,7 +46,10 @@ const workerPump = async (action, worker)  => {
   if (!ACTIONS.includes(action)) return;
   if (!config.get('aws.kinesis.enabled')) return;
 
-  worker.action = action;
+  const pumpData = {
+    action,
+    worker,
+  };
 
   // remove sensitive/unnecessary data
   worker.age = years = moment().diff(worker.dateOfBirth, 'years');
@@ -56,8 +59,8 @@ const workerPump = async (action, worker)  => {
   delete worker.postcode;
 
   const params = {
-    Data: JSON.stringify(worker),
-    PartitionKey: worker.uid,    // establishment's primary key
+    Data: JSON.stringify(pumpData),
+    PartitionKey: worker.uid,    // workers's primary key
     StreamName: config.get('aws.kinesis.workers'),
   };
 
@@ -76,14 +79,17 @@ const userPump = async (action, user)  => {
   if (!ACTIONS.includes(action)) return;
   if (!config.get('aws.kinesis.enabled')) return;
 
-  user.action = action;
+  const pumpData = {
+    action,
+    user,
+  }
 
   // remove sensitive/unnecessary data
   //delete worker.id;    // there is no id on user
   // security question and answer is required by SFC Admins to identify the inbound callers
   const params = {
-    Data: JSON.stringify(user),
-    PartitionKey: user.uid,    // establishment's primary key
+    Data: JSON.stringify(pumpData),
+    PartitionKey: user.uid,    // user's primary key
     StreamName: config.get('aws.kinesis.users'),
   };
 
