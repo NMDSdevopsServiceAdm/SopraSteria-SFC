@@ -111,6 +111,7 @@ export interface Establishment {
   parentName?: string;
   dataOwner: WorkplaceDataOwner;
   dataPermissions: DataPermissions;
+  dataOwnershipRequested: string;
 }
 
 export interface UpdateJobsRequest {

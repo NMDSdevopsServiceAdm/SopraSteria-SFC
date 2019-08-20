@@ -33,11 +33,16 @@
         <p class="govuk-!-margin-bottom-0">
           {{ workplace.dataPermissions | dataViewPermissions }}
           <span class="govuk-util__float-right">
-            <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else changeOwner">
-              <a href="#">Data permissions</a>
+            <ng-container *ngIf="workplace.dataOwnershipRequested; else dataPermissions">
+              <a href="#">Data request pending</a>
             </ng-container>
-            <ng-template #changeOwner>
-              <a href="#">Change data owner</a>
+            <ng-template #dataPermissions>
+              <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else changeOwner">
+                <a href="#">Data permissions</a>
+              </ng-container>
+              <ng-template #changeOwner>
+                <a href="#">Change data owner</a>
+              </ng-template>
             </ng-template>
           </span>
         </p>
