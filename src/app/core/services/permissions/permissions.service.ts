@@ -31,6 +31,6 @@ export class PermissionsService {
 
   public can(workplaceUid: string, permissionType: PermissionType): boolean {
     const permissions = this.getPermissions(workplaceUid);
-    return permissions ? permissions.hasOwnProperty(permissionType) : false;
+    return permissions.hasOwnProperty(permissionType) && permissions.permissionType ? true : false;
   }
 }
