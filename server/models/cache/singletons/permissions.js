@@ -110,10 +110,12 @@ class PermissionCache {
 
   static myPermissions(dataOwner, dataPermissions, role){
     return ALL_PERMISSIONS
-        .filter(x => 
+        .filter((x) => {
+          return (
             (!x.dataOwner.length || dataOwner.toLowerCase() == x.dataOwner.toLowerCase()) ||
             ( dataOwner.toLowerCase() !== 'parent' && x.dataPermissions.includes(dataPermissions)) ||
-            (!x.role.length || x.role.includes(role))   
+            ( (role == 'Edit' && (x.role.includes('Edit') || x.role.includes('Read'))) || x.role.includes(role))) 
+          }
         )
         .map(thisPerm => {
             return {
