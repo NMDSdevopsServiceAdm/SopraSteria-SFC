@@ -9,7 +9,7 @@ import { PermissionGuard } from '@core/guards/permission/permission.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
-import { PermissionsResolver } from '@core/resolvers/permissions.resolver';
+import { PrimaryPermissionsResolver } from '@core/resolvers/primary-permissions.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
@@ -77,7 +77,7 @@ const routes: Routes = [
     resolve: {
       loggedInUser: LoggedInUserResolver,
       primaryWorkplace: PrimaryWorkplaceResolver,
-      permissions: PermissionsResolver,
+      primaryPermissions: PrimaryPermissionsResolver,
     },
     children: [
       {

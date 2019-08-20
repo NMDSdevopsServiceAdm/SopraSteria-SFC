@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 @Injectable()
-export class PermissionsResolver implements Resolve<any> {
+export class PrimaryPermissionsResolver implements Resolve<any> {
   constructor(private permissionsService: PermissionsService, private establishmentService: EstablishmentService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
