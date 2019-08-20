@@ -14,7 +14,7 @@ export class PermissionsResolver implements Resolve<any> {
     if (workplaceUid) {
       return this.permissionsService
         .getPermissions(workplaceUid)
-        .pipe(tap(response => (this.permissionsService.permissions = response.permissions)))
+        .pipe(tap(response => this.permissionsService.setPermissions(response)))
         .pipe(
           catchError(() => {
             return of(null);

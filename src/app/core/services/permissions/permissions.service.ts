@@ -1,40 +1,44 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Permissions, PermissionsResponse } from '@core/model/permissions.model';
+import { PermissionsResponse, PermissionType } from '@core/model/permissions.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PermissionsService {
-  private _permissions$ = new BehaviorSubject<Permissions>(null);
-  private _subsidiaryPermissions$ = new BehaviorSubject<PermissionsResponse[]>(null);
+  private _permissions$ = new BehaviorSubject<PermissionsResponse[]>([]);
+  // private _subsidiaryPermissions$ = new BehaviorSubject<PermissionsResponse[]>(null);
 
   constructor(private http: HttpClient) {}
 
-  public get permissions$(): Observable<Permissions> {
+  public get permissions$(): Observable<PermissionsResponse[]> {
     return this._permissions$.asObservable();
   }
 
-  public get permissions(): Permissions {
-    return this._permissions$.value;
-  }
+  // public get permissions(): PermissionsResponse {
+  //   return this._permissions$.value;
+  // }
 
-  public set permissions(permissions: Permissions) {
-    this._permissions$.next(permissions);
-  }
+  // public set permissions(permissions: PermissionsResponse) {
+  //   this._permissions$.next(permissions);
+  // }
 
   public getPermissions(workplaceUid: string): Observable<PermissionsResponse> {
     return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`);
   }
 
-  public getSubsidiaryPermissions(workplaceUid: string): PermissionsResponse | null {
-   return this._subsidiaryPermissions$.value.filter((item => item.uid === workplaceUid))[0] || null;
+  public filterPermissions(workplaceUid: string): PermissionsResponse | null {
+   return this._permissions$.value.filter((item => item.uid === workplaceUid))[0] || null;
   }
 
-  public setSubsidiaryPermissions(permissions: PermissionsResponse) {
-    const subsidiaryPermissions: PermissionsResponse[] = this._subsidiaryPermissions$.value;
+  public setPermissions(permissions: PermissionsResponse) {
+    const subsidiaryPermissions: PermissionsResponse[] = this._permissions$.value;
     subsidiaryPermissions.push(permissions);
-    this._subsidiaryPermissions$.next(subsidiaryPermissions);
+    this._permissions$.next(subsidiaryPermissions);
+  }
+
+  public can(workplaceUid: string, permission: PermissionType): boolean {
+    return this.filterPermissions(workplaceUid).permissions.hasOwnProperty(permission);
   }
 }
