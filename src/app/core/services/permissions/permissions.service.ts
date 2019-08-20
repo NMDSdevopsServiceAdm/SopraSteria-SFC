@@ -30,6 +30,7 @@ export class PermissionsService {
   }
 
   public can(workplaceUid: string, permission: PermissionType): boolean {
-    return this.filterPermissions(workplaceUid).permissions.hasOwnProperty(permission);
+    const permissionsResponse: PermissionsResponse | null = this.filterPermissions(workplaceUid);
+    return permissionsResponse ? permissionsResponse.permissions.hasOwnProperty(permission) : false;
   }
 }
