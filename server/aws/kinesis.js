@@ -60,7 +60,7 @@ const workerPump = async (action, worker)  => {
 
   const params = {
     Data: JSON.stringify(pumpData),
-    PartitionKey: worker.uid,    // establishment's primary key
+    PartitionKey: worker.uid,    // workers's primary key
     StreamName: config.get('aws.kinesis.workers'),
   };
 
@@ -89,7 +89,7 @@ const userPump = async (action, user)  => {
   // security question and answer is required by SFC Admins to identify the inbound callers
   const params = {
     Data: JSON.stringify(pumpData),
-    PartitionKey: user.uid,    // establishment's primary key
+    PartitionKey: user.uid,    // user's primary key
     StreamName: config.get('aws.kinesis.users'),
   };
 
