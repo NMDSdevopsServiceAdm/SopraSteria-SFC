@@ -6,15 +6,6 @@
       <span *ngIf="primaryWorkplace.name" class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
       All workplaces ({{ workplacesCount }})
     </h1>
-    <a
-      *ngIf="canAddWorkplace"
-      class="govuk-button govuk-!-margin-bottom-0"
-      [routerLink]="['/add-workplace/start']"
-      role="button"
-      draggable="false"
-    >
-      Add a new workplace
-    </a>
   </div>
 </div>
 
