@@ -2,7 +2,12 @@
 
 <div class="govuk-grid-row govuk-!-margin-bottom-3">
   <div class="govuk-grid-column-full">
-    <a class="govuk-body-m" [routerLink]="['../wdf']">Workforce Development Fund</a>
+    <ul class="govuk-list">
+      <li *ngIf="isAdmin">
+        <a class="govuk-body-m" (click)="downloadWdfSummaryReport($event)" href="#">WDF Summary Report</a>
+      </li>
+      <li><a class="govuk-body-m" [routerLink]="['../wdf']">Workforce Development Fund</a></li>
+    </ul>
   </div>
 </div>
 <div class="govuk-grid-row">
