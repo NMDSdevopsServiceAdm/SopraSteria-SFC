@@ -20,8 +20,8 @@ export class PermissionGuard implements CanActivate {
     const requiredPermissions = route.data['permissions'] as Array<string>;
     const workplaceUid = this.establishmentService.establishmentId;
 
-    return this.permissionsService.getPermissions$().pipe(
-      map(response => this.hasValidPermissions(requiredPermissions, this.permissionsService.filterPermissions(workplaceUid))),
+    return this.permissionsService.permissions$.pipe(
+      map(() => this.hasValidPermissions(requiredPermissions, this.permissionsService.filterPermissions(workplaceUid))),
       catchError(() => {
         this.router.navigate(['/dashboard']);
         return of(false);
