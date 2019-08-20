@@ -196,7 +196,7 @@
       Local Authorities shared with
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="workplace.localAuthorities.length === 0; else localAuthorities">
+      <ng-container *ngIf="workplace.localAuthorities?.length === 0; else localAuthorities">
         -
       </ng-container>
       <ng-template #localAuthorities>
