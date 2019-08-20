@@ -38,11 +38,12 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService
-  ) {}
+  ) {
+    this.setPrimaryEstablishmentName();
+  }
 
   ngOnInit() {
     this.init();
-    this.setPrimaryEstablishmentName();
     this.setServerErrors();
   }
 

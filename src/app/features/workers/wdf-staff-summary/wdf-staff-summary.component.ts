@@ -52,13 +52,17 @@ export class WdfStaffSummaryComponent implements OnInit {
   }
 
   public onConfirmAndSubmit() {
-    if (
-      !this.worker.wdf.daysSick.updatedSinceEffectiveDate ||
-      !this.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate
-    ) {
+    const daysSickConfirm =
+      this.worker.wdf.daysSick.isEligible !== Eligibility.NOT_RELEVANT &&
+      !this.worker.wdf.daysSick.updatedSinceEffectiveDate;
+    const annualHourlyPayConfirm =
+      this.worker.wdf.annualHourlyPay.isEligible !== Eligibility.NOT_RELEVANT &&
+      !this.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate;
+
+    if (daysSickConfirm || annualHourlyPayConfirm) {
       const dialog = this.dialogService.open(WdfWorkerConfirmationDialogComponent, {
-        daysSick: !this.worker.wdf.daysSick.updatedSinceEffectiveDate ? this.worker.daysSick : null,
-        pay: !this.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate ? this.worker.annualHourlyPay : null,
+        daysSick: daysSickConfirm ? this.worker.daysSick : null,
+        pay: annualHourlyPayConfirm ? this.worker.annualHourlyPay : null,
       });
       dialog.afterClosed.subscribe(confirmed => {
         if (confirmed) {

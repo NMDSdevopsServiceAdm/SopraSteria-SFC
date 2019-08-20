@@ -465,6 +465,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"LastBulkUploaded"'
     },
+    dataOwnershipRequested: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DataOwnershipRequested"'
+    },
     reasonsForLeaving: {
       type: DataTypes.TEXT,
       allowNull: true,

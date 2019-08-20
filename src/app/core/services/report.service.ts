@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { WDFReport } from '@core/model/reports.model';
 import { Observable } from 'rxjs';
@@ -18,6 +18,13 @@ export class ReportService {
 
     return this.http.get<WDFReport>(`/api/reports/wdf/establishment/${establishmentId}`, {
       params,
+    });
+  }
+
+  public getWdfSummaryReport(): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/reports/wdfSummary`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
     });
   }
 }
