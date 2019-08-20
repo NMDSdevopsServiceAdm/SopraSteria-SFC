@@ -8,21 +8,12 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class PermissionsService {
   private _permissions$ = new BehaviorSubject<PermissionsResponse[]>([]);
-  // private _subsidiaryPermissions$ = new BehaviorSubject<PermissionsResponse[]>(null);
 
   constructor(private http: HttpClient) {}
 
   public get permissions$(): Observable<PermissionsResponse[]> {
     return this._permissions$.asObservable();
   }
-
-  // public get permissions(): PermissionsResponse {
-  //   return this._permissions$.value;
-  // }
-
-  // public set permissions(permissions: PermissionsResponse) {
-  //   this._permissions$.next(permissions);
-  // }
 
   public getPermissions(workplaceUid: string): Observable<PermissionsResponse> {
     return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`);
