@@ -30,7 +30,7 @@ export class PermissionsService {
   }
 
   public can(workplaceUid: string, permissionType: PermissionType): boolean {
-    const permissions: PermissionsList = this.getPermissions(workplaceUid);
+    const permissions = this.getPermissions(workplaceUid);
     return permissions ? permissions.hasOwnProperty(permissionType) : false;
   }
 }
