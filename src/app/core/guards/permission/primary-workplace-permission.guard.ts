@@ -7,7 +7,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 @Injectable({
   providedIn: 'root',
 })
-export class PermissionGuard implements CanActivate {
+export class PrimaryWorkplacePermissionGuard implements CanActivate {
   constructor(
     private permissionsService: PermissionsService,
     private establishmentService: EstablishmentService,
