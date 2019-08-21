@@ -95,6 +95,10 @@ export class SalaryComponent extends QuestionComponent {
             message: 'Annual salary is required.',
           },
           {
+            name: 'pattern',
+            message: 'Annual salary must be rounded to the nearest £.',
+          },
+          {
             name: 'min',
             message: `Annual salary must be between &pound;${this.decimalPipe.transform(
               this.annually.min,
