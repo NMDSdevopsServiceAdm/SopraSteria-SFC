@@ -13,7 +13,7 @@ export class PrimaryWorkplacePermissionsResolver implements Resolve<any> {
     const workplaceUid = this.establishmentService.establishmentId;
     if (workplaceUid) {
       return this.permissionsService
-        .fetchPermissions(workplaceUid)
+        .getPermissions(workplaceUid)
         .pipe(tap(response => this.permissionsService.setPermissions(workplaceUid, response.permissions)))
         .pipe(
           catchError(() => {

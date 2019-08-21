@@ -11,7 +11,7 @@ export class PermissionsService {
 
   constructor(private http: HttpClient) {}
 
-  public fetchPermissions(workplaceUid: string): Observable<PermissionsResponse> {
+  public getPermissions(workplaceUid: string): Observable<PermissionsResponse> {
     return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`);
   }
 
