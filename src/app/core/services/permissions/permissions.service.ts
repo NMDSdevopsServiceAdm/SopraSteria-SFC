@@ -11,15 +11,11 @@ export class PermissionsService {
 
   constructor(private http: HttpClient) {}
 
-  public get permissions$(): Observable<Permissions> {
-    return this._permissions$.asObservable();
-  }
-
   public fetchPermissions(workplaceUid: string): Observable<PermissionsResponse> {
     return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`);
   }
 
-  public getPermissions(workplaceUid: string): PermissionsList {
+  public permissions(workplaceUid: string): PermissionsList {
     return this._permissions$.value[workplaceUid];
   }
 
@@ -30,7 +26,7 @@ export class PermissionsService {
   }
 
   public can(workplaceUid: string, permissionType: PermissionType): boolean {
-    const permissions = this.getPermissions(workplaceUid);
+    const permissions = this.permissions(workplaceUid);
     return permissions.hasOwnProperty(permissionType) && permissions.permissionType ? true : false;
   }
 }

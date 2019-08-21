@@ -11,7 +11,7 @@ export class WorkplacePermissionsResolver implements Resolve<any> {
 
   resolve(route: ActivatedRouteSnapshot) {
     const workplaceUid: string = route.paramMap.get('establishmentuid');
-    const cachedPermissions: PermissionsList = this.permissionsService.getPermissions(workplaceUid);
+    const cachedPermissions: PermissionsList = this.permissionsService.permissions(workplaceUid);
 
     if (cachedPermissions) {
       return cachedPermissions;
