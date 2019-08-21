@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { PermissionsList } from '@core/model/permissions.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 
@@ -20,20 +19,11 @@ export class PrimaryWorkplacePermissionGuard implements CanActivate {
     const permissions = this.permissionsService.permissions(workplaceUid);
 
     // TODO move to service
-    if (!this.hasValidPermissions(requiredPermissions, permissions)) {
+    if (!this.permissionsService.hasValidPermissions(requiredPermissions, permissions)) {
       this.router.navigate(['/dashboard']);
       return false;
     }
 
     return true;
-  }
-
-  // TODO move to service
-  private hasValidPermissions(requiredPermissions: string[], permissionsList: PermissionsList): boolean {
-    if (!permissionsList) {
-      return false;
-    }
-    const userPermissions: string[] = Object.keys(permissionsList);
-    return requiredPermissions.every(item =>  userPermissions.includes(item));
   }
 }

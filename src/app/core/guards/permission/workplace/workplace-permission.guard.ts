@@ -32,20 +32,11 @@ export class WorkplacePermissionGuard implements CanActivate {
   }
 
   private handlePermissionsCheck(requiredPermissions: string[], cachedPermissions: PermissionsList): boolean {
-    if (!this.hasValidPermissions(requiredPermissions, cachedPermissions)) {
+    if (!this.permissionsService.hasValidPermissions(requiredPermissions, cachedPermissions)) {
       this.router.navigate(['/dashboard']);
       return false;
     }
 
     return true;
-  }
-
-  // TODO move to service
-  private hasValidPermissions(requiredPermissions: string[], permissionsList: PermissionsList): boolean {
-    if (!permissionsList) {
-      return false;
-    }
-    const userPermissions: string[] = Object.keys(permissionsList);
-    return requiredPermissions.every(item => userPermissions.includes(item));
   }
 }

@@ -29,4 +29,12 @@ export class PermissionsService {
     const permissions = this.permissions(workplaceUid);
     return permissions.hasOwnProperty(permissionType) && permissions.permissionType ? true : false;
   }
+
+  public hasValidPermissions(requiredPermissions: string[], permissionsList: PermissionsList): boolean {
+    if (!permissionsList) {
+      return false;
+    }
+    const userPermissions: string[] = Object.keys(permissionsList);
+    return requiredPermissions.every(item => userPermissions.includes(item));
+  }
 }
