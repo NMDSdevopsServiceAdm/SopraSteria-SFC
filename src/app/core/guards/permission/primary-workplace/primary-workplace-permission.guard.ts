@@ -19,6 +19,7 @@ export class PrimaryWorkplacePermissionGuard implements CanActivate {
     const workplaceUid = this.establishmentService.establishmentId;
     const permissions = this.permissionsService.permissions(workplaceUid);
 
+    // TODO move to service
     if (!this.hasValidPermissions(requiredPermissions, permissions)) {
       this.router.navigate(['/dashboard']);
       return false;
@@ -27,6 +28,7 @@ export class PrimaryWorkplacePermissionGuard implements CanActivate {
     return true;
   }
 
+  // TODO move to service
   private hasValidPermissions(requiredPermissions: string[], permissionsList: PermissionsList): boolean {
     if (!permissionsList) {
       return false;

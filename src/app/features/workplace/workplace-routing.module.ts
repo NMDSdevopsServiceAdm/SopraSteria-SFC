@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edit-user-permissions.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
+import { WorkplacePermissionGuard } from '@core/guards/permission/workplace/workplace-permission.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
@@ -53,16 +54,17 @@ const routes: Routes = [
   {
     path: ':establishmentuid',
     component: EditWorkplaceComponent,
-    resolve: {
-      establishment: WorkplaceResolver,
-      workplacePermissions: WorkplacePermissionsResolver
-    },
+    resolve: { establishment: WorkplaceResolver },
     data: { title: 'Workplace' },
     children: [
       {
         path: '',
+        canActivate: [WorkplacePermissionGuard],
         component: ViewWorkplaceComponent,
-        data: { title: 'View Workplace' },
+        data: {
+          permissions: ['canViewEstablishment'],
+          title: 'View Workplace'
+        },
       },
       {
         path: 'start',
