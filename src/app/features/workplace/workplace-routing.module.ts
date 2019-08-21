@@ -5,6 +5,7 @@ import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
+import { WorkplacePermissionsResolver } from '@core/resolvers/workplace-permissions.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import {
@@ -52,7 +53,10 @@ const routes: Routes = [
   {
     path: ':establishmentuid',
     component: EditWorkplaceComponent,
-    resolve: { establishment: WorkplaceResolver },
+    resolve: {
+      establishment: WorkplaceResolver,
+      workplacePermissions: WorkplacePermissionsResolver
+    },
     data: { title: 'Workplace' },
     children: [
       {
