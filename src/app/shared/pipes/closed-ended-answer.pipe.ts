@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { isNull } from 'lodash';
 
 /**
  * This pipe transforms an unknown state of a 'closed-ended' question
@@ -9,6 +10,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class ClosedEndedAnswerPipe implements PipeTransform {
   transform(value: string): any {
-    return value ? (value === `Don't know` ? 'Not known' : value) : '-';
+    return !isNull(value) ? (value === `Don't know` ? 'Not known' : value) : '-';
   }
 }
