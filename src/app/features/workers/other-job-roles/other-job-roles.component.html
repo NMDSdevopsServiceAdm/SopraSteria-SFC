@@ -46,7 +46,7 @@
                     Enter your job role
                   </label>
                   <span
-                    id="otherSelectedJobRole-error"
+                    id="otherSelectedJobRole{{ job.value.jobId }}-error"
                     class="govuk-error-message"
                     *ngIf="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid"
                   >
