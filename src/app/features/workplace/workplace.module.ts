@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
-import { WorkplacePermissionsResolver } from '@core/resolvers/workplace-permissions.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
@@ -80,7 +79,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     SelectMainServiceComponent,
     UserAccountEditDetailsComponent,
   ],
-  providers: [DialogService, WorkplaceResolver, WorkplacePermissionsResolver, UserAccountResolver],
+  providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [
     DeleteWorkplaceDialogComponent,
     UserAccountChangePrimaryDialogComponent,

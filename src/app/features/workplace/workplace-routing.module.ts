@@ -6,7 +6,6 @@ import { WorkplacePermissionGuard } from '@core/guards/permission/workplace/work
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
-import { WorkplacePermissionsResolver } from '@core/resolvers/workplace-permissions.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import {

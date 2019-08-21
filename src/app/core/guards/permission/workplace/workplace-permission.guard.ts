@@ -15,23 +15,18 @@ export class WorkplacePermissionGuard implements CanActivate {
     const requiredPermissions: string[] = route.data['permissions'] as Array<string>;
     const workplaceUid: string = route.paramMap.get('establishmentuid');
     const cachedPermissions: PermissionsList = this.permissionsService.permissions(workplaceUid);
-    // console.log('requiredPermissions', requiredPermissions);
-    // console.log('workplaceUid', workplaceUid);
-    if (cachedPermissions) {
-      console.log('cachedPermissions', cachedPermissions);
-    } else {
-      console.warn('NO cachedPermissions');
-    }
 
     if (cachedPermissions) {
       return of(this.handlePermissionsCheck(requiredPermissions, cachedPermissions));
     } else {
-      // TODO make api call
-      console.warn('make api call');
-
       return this.permissionsService
         .getPermissions(workplaceUid)
         .pipe(tap(response => this.permissionsService.setPermissions(workplaceUid, response.permissions)))
+        .pipe(
+          catchError(() => {
+            return of(null);
+          })
+        )
         .pipe(map(response => this.handlePermissionsCheck(requiredPermissions, response.permissions)));
     }
   }
