@@ -23,7 +23,7 @@
               </h2>
             </legend>
             <div class="govuk-checkboxes">
-              <ng-container *ngFor="let service of serviceGroup.services; let i = index">
+              <ng-container *ngFor="let service of serviceGroup.services | orderOther; let i = index">
                 <div class="govuk-checkboxes__item">
                   <input
                     [attr.aria-controls]="'otherServices-conditional-' + i"
