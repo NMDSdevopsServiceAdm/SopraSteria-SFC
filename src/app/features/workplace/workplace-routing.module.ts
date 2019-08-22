@@ -2,10 +2,11 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edit-user-permissions.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
+import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
-import { WorkplacePermissionsResolver } from '@core/resolvers/workplace-permissions.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import {
@@ -53,16 +54,18 @@ const routes: Routes = [
   {
     path: ':establishmentuid',
     component: EditWorkplaceComponent,
-    resolve: {
-      establishment: WorkplaceResolver,
-      workplacePermissions: WorkplacePermissionsResolver
-    },
+    resolve: { establishment: WorkplaceResolver },
+    canActivate: [HasPermissionsGuard],
     data: { title: 'Workplace' },
     children: [
       {
         path: '',
+        canActivate: [CheckPermissionsGuard],
         component: ViewWorkplaceComponent,
-        data: { title: 'View Workplace' },
+        data: {
+          permissions: ['canViewEstablishment'],
+          title: 'View Workplace'
+        },
       },
       {
         path: 'start',

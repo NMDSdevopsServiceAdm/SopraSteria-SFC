@@ -12,7 +12,6 @@ import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
-import { PrimaryWorkplacePermissionsResolver } from '@core/resolvers/primary-workplace-permissions.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
 import { BackService } from '@core/services/back.service';
@@ -118,7 +117,6 @@ import {
     },
     LoggedInUserResolver,
     PrimaryWorkplaceResolver,
-    PrimaryWorkplacePermissionsResolver
   ],
   bootstrap: [AppComponent],
 })
