@@ -37,7 +37,6 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
    * needs to gain keyboard focus upon initialisation
    */
   private setKeyboardFocus(): void {
-    console.log('keyboard', this.errorSummaryElement);
     this.errorSummaryElement.nativeElement.focus();
   }
 
