@@ -17,8 +17,8 @@ enableProdMode();
 })
 export class AppComponent implements OnInit {
   private baseTitle = 'Skills for Care';
-  @ViewChild('top') top: ElementRef;
-  @ViewChild('content') content: ElementRef;
+  @ViewChild('top', { static: false }) top: ElementRef;
+  @ViewChild('content', { static: false }) content: ElementRef;
 
   constructor(
     private router: Router,

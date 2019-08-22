@@ -13,7 +13,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public formErrorsMap: Array<ErrorDetails>;
   @Input() public serverError?: string;
   @Input() public customErrors?: Array<ErrorDefinition>;
-  @ViewChild('errorSummary') private errorSummaryElement: ElementRef;
+  @ViewChild('errorSummary', { static: false }) private errorSummaryElement: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public errors: Array<ErrorSummary>;
 
