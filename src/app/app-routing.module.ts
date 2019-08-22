@@ -5,6 +5,7 @@ import { ProblemWithTheServiceComponent } from '@core/components/error/problem-w
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
+import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
@@ -91,6 +92,7 @@ const routes: Routes = [
       {
         path: 'add-workplace',
         loadChildren: '@features/add-workplace/add-workplace.module#AddWorkplaceModule',
+        canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canAddEstablishment'],
           title: 'Add Workplace'
