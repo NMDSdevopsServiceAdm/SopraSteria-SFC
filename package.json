@@ -53,7 +53,7 @@
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
-    "ngx-moment": "^3.3.0",
+    "ngx-moment": "^3.4.0",
     "notifications-node-client": "^4.6.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
