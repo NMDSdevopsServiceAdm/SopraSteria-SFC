@@ -12,12 +12,11 @@ export class WorkplacePermissionGuard implements CanActivate {
   constructor(private permissionsService: PermissionsService) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    const requiredPermissions: string[] = route.data['permissions'] as Array<string>;
     const workplaceUid: string = route.paramMap.get('establishmentuid');
     const cachedPermissions: PermissionsList = this.permissionsService.permissions(workplaceUid);
 
     if (cachedPermissions) {
-      return of(this.permissionsService.handlePermissionsCheck(requiredPermissions, cachedPermissions));
+      return of(true);
     } else {
       return this.permissionsService
         .getPermissions(workplaceUid)
@@ -27,9 +26,7 @@ export class WorkplacePermissionGuard implements CanActivate {
             return of(null);
           })
         )
-        .pipe(
-          map(response => this.permissionsService.handlePermissionsCheck(requiredPermissions, response.permissions))
-        );
+        .pipe(map(() => true));
     }
   }
 }
