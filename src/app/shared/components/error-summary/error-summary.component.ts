@@ -13,7 +13,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public formErrorsMap: Array<ErrorDetails>;
   @Input() public serverError?: string;
   @Input() public customErrors?: Array<ErrorDefinition>;
-  @ViewChild('errorSummary', { static: false }) private errorSummaryElement: ElementRef;
+  @ViewChild('errorSummary', { static: true }) private errorSummaryElement: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public errors: Array<ErrorSummary>;
 
@@ -37,6 +37,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
    * needs to gain keyboard focus upon initialisation
    */
   private setKeyboardFocus(): void {
+    console.log('keyboard', this.errorSummaryElement);
     this.errorSummaryElement.nativeElement.focus();
   }
 
