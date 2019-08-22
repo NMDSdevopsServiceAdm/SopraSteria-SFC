@@ -8,7 +8,6 @@ import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guar
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
-import { PrimaryWorkplacePermissionsResolver } from '@core/resolvers/primary-workplace-permissions.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
@@ -75,8 +74,7 @@ const routes: Routes = [
     canActivateChild: [AuthGuard],
     resolve: {
       loggedInUser: LoggedInUserResolver,
-      primaryWorkplace: PrimaryWorkplaceResolver,
-      primaryWorkplacePermissions: PrimaryWorkplacePermissionsResolver,
+      primaryWorkplace: PrimaryWorkplaceResolver
     },
     children: [
       {
