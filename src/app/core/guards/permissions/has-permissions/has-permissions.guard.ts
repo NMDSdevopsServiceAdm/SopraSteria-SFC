@@ -8,7 +8,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
-export class WorkplacePermissionGuard implements CanActivate {
+export class HasPermissionsGuard implements CanActivate {
   constructor(private permissionsService: PermissionsService) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {

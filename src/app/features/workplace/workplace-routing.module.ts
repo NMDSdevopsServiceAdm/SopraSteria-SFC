@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edit-user-permissions.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
-import { WorkplacePermissionGuard } from '@core/guards/permission/workplace/workplace-permission.guard';
+import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
@@ -58,7 +58,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        canActivate: [WorkplacePermissionGuard],
+        canActivate: [HasPermissionsGuard],
         component: ViewWorkplaceComponent,
         data: {
           permissions: ['canViewEstablishment'],

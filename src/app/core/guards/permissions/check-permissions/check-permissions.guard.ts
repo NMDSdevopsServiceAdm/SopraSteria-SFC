@@ -6,7 +6,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 @Injectable({
   providedIn: 'root',
 })
-export class PermissionGuard implements CanActivate {
+export class CheckPermissionsGuard implements CanActivate {
   constructor(private permissionsService: PermissionsService, private establishmentService: EstablishmentService) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
