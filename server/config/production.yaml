@@ -22,11 +22,11 @@ jwt:
         login: 5
 
 db:
-    pool: 15
+    pool: 10
     ssl: true
     username: sfcapp
     client_ssl:
-        status: true
+        status: false
         usingFiles: false
 
 notify:
