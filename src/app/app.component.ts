@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       window.scrollTo(0, 0);
-      if (document.activeElement !== document.body) {
+      if (document.activeElement && document.activeElement !== document.body) {
         (document.activeElement as HTMLElement).blur();
       }
       this.top.nativeElement.focus();
