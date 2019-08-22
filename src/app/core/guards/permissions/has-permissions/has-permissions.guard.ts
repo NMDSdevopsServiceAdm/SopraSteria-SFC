@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
 import { PermissionsList } from '@core/model/permissions.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -9,10 +10,11 @@ import { catchError, map, tap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class HasPermissionsGuard implements CanActivate {
-  constructor(private permissionsService: PermissionsService) {}
+  constructor(private permissionsService: PermissionsService, private establishmentService: EstablishmentService) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    const workplaceUid: string = route.paramMap.get('establishmentuid');
+    const notPrimaryWorkplace: string = route.paramMap.get('establishmentuid');
+    const workplaceUid: string = notPrimaryWorkplace ? notPrimaryWorkplace : this.establishmentService.establishmentId;
     const cachedPermissions: PermissionsList = this.permissionsService.permissions(workplaceUid);
 
     if (cachedPermissions) {
