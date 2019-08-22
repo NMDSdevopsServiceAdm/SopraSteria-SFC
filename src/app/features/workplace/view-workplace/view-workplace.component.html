@@ -27,7 +27,7 @@
         <app-workplace-tab [workplace]="workplace" [summaryReturnUrl]="summaryReturnUrl"></app-workplace-tab>
       </app-tab>
 
-      <app-tab *ngIf="canViewStaffRecords" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
+      <app-tab *ngIf="canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
         <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
       </app-tab>
 
