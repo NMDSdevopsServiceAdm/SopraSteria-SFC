@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -21,7 +20,6 @@ export class DashboardComponent implements OnInit {
   constructor(
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private router: Router,
     private userService: UserService,
     private workerService: WorkerService,
   ) {}
