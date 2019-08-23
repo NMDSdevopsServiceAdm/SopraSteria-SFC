@@ -88,8 +88,6 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
         //  then follow up by checking against any of the known subsidaries of this parent establishment
         //  including that of the given establishment (only known by it's UID)
 
-
-
         if (isAuthorised === false && claim.isParent) {
 
           try {
@@ -190,7 +188,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
           }
 
           const foundEstablishment = await models.establishment.findOne({
-            attributes: ['id','parentId','dataPermissions'],
+            attributes: ['id','parentId','dataPermissions', 'dataOwner'],
             where: lookupClause
           });
 
@@ -198,6 +196,8 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             // having settled all claims, it is necessary to normalise req.establishmentId so it is always the establishment primary key
             req.establishmentId = foundEstablishment.id;
             req.dataPermissions = foundEstablishment.dataPermissions;
+            req.parentIsOwner = foundEstablishment.dataOwner === 'Parent' ? true : false;
+
 
             if(foundEstablishment.parentId !== null ){
               // Its a sub
