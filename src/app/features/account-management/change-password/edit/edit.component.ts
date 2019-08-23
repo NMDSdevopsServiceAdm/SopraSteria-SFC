@@ -121,7 +121,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private resetPassword(data: Object): void {
+  private resetPassword(data: object): void {
     this.subscriptions.add(
       this.passwordResetService.changePassword(data).subscribe(
         () => this.resetPasswordEvent.emit(),

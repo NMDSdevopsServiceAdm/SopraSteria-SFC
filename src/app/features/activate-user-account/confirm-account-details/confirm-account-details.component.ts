@@ -36,11 +36,11 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
 
   protected setupSubscriptions(): void {
     this.subscriptions.add(
-      combineLatest(
+      combineLatest([
         this.createAccountService.userDetails$,
         this.createAccountService.loginCredentials$,
-        this.createAccountService.securityDetails$
-      ).subscribe(([userDetails, loginCredentials, securityDetails]) => {
+        this.createAccountService.securityDetails$,
+      ]).subscribe(([userDetails, loginCredentials, securityDetails]) => {
         this.userDetails = userDetails;
         this.loginCredentials = loginCredentials;
         this.securityDetails = securityDetails;

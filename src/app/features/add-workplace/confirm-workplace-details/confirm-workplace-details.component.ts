@@ -7,7 +7,9 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { ConfirmWorkplaceDetails } from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
+import {
+  ConfirmWorkplaceDetails,
+} from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
 import { combineLatest } from 'rxjs';
 
 @Component({
@@ -35,10 +37,10 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
 
   protected getWorkplaceData(): void {
     this.subscriptions.add(
-      combineLatest(
+      combineLatest([
         this.workplaceService.selectedLocationAddress$,
-        this.workplaceService.selectedWorkplaceService$
-      ).subscribe(([locationAddress, workplace]) => {
+        this.workplaceService.selectedWorkplaceService$,
+      ]).subscribe(([locationAddress, workplace]) => {
         this.locationAddress = locationAddress;
         this.workplace = workplace;
       })

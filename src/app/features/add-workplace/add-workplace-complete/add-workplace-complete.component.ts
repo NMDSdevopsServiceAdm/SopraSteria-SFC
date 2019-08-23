@@ -8,7 +8,7 @@ import { WorkplaceService } from '@core/services/workplace.service';
 })
 export class AddWorkplaceCompleteComponent implements OnInit {
   public addWorkplaceFlow: string;
-  public CQCNoUser: string = AddWorkplaceFlow.CQC_NO_USER;
+  public cqcNoUser: string = AddWorkplaceFlow.CQC_NO_USER;
   public cqcWithUser: string = AddWorkplaceFlow.CQC_WITH_USER;
   public newWorkplaceUid: string;
   public nonCQC: string = AddWorkplaceFlow.NON_CQC;

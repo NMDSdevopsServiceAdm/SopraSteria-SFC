@@ -29,6 +29,7 @@ export class RegistrationService {
     return this.http.post<any>('/api/registration/', registrationPayload);
   }
 
+  /* TODO: Give proper return */
   public getUsernameDuplicate(id: string): Observable<any> {
     return this.http.get(`/api/registration/username/${id}`);
   }
