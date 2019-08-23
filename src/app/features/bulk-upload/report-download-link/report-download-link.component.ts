@@ -11,7 +11,6 @@ import { take } from 'rxjs/operators';
 })
 export class ReportDownloadLinkComponent {
   @Input() fileType: ValidatedFileType;
-  public now: Date = new Date();
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 
