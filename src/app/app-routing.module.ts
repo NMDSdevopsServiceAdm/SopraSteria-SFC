@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
@@ -77,7 +79,7 @@ const routes: Routes = [
     canActivateChild: [AuthGuard],
     resolve: {
       loggedInUser: LoggedInUserResolver,
-      primaryWorkplace: PrimaryWorkplaceResolver
+      primaryWorkplace: PrimaryWorkplaceResolver,
     },
     children: [
       {
@@ -97,7 +99,7 @@ const routes: Routes = [
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canAddEstablishment'],
-          title: 'Add Workplace'
+          title: 'Add Workplace',
         },
       },
       {

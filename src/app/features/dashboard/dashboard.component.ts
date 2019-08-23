@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -21,24 +20,12 @@ export class DashboardComponent implements OnInit {
   constructor(
     private establishmentService: EstablishmentService,
     private userService: UserService,
-    private workerService: WorkerService,
-    private router: Router
+    private workerService: WorkerService
   ) {}
 
   ngOnInit() {
     this.canViewStaffRecords = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
     this.workplace = this.establishmentService.primaryWorkplace;
-
-    this.subscriptions.add(
-      this.userService.loggedInUser$.subscribe(user => {
-        if (user && user.role === 'Admin') {
-          if (!this.workplace) {
-            this.router.navigate(['/search-users']);
-            return false;
-          }
-        }
-      })
-    );
 
     if (this.workplace) {
       this.subscriptions.add(
