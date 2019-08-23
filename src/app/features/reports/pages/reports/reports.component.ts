@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 export class ReportsComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public isAdmin: boolean;
+  public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
 
   constructor(

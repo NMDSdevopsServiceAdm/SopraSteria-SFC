@@ -4,7 +4,13 @@
   <div class="govuk-grid-column-full">
     <ul class="govuk-list">
       <li *ngIf="isAdmin">
-        <a href="#" class="govuk-body-m" (click)="downloadWdfSummaryReport($event)">WDF Summary Report</a>
+        <a
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-summary-report.csv"
+          class="govuk-body-m"
+          (click)="downloadWdfSummaryReport($event)"
+        >
+          WDF Summary Report
+        </a>
       </li>
       <li><a class="govuk-body-m" [routerLink]="['../wdf']">Workforce Development Fund</a></li>
     </ul>

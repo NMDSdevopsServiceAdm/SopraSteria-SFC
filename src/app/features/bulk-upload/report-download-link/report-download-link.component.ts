@@ -11,6 +11,7 @@ import { take } from 'rxjs/operators';
 })
 export class ReportDownloadLinkComponent {
   @Input() fileType: ValidatedFileType;
+  public now: Date = new Date();
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 
@@ -34,7 +35,7 @@ export class ReportDownloadLinkComponent {
       );
   }
 
-  get reportType() {
+  public get reportType() {
     const reportRequestTypeMap: { [key in ValidatedFileType]: ReportTypeRequestItem } = {
       Establishment: 'establishments',
       Training: 'training',
@@ -43,12 +44,21 @@ export class ReportDownloadLinkComponent {
     return reportRequestTypeMap[this.fileType];
   }
 
-  get label() {
+  public get label() {
     const labelMap: { [key in ValidatedFileType]: string } = {
       Establishment: 'Workplace summary report',
       Training: 'Training records summary report',
-      Worker: ' Staff records summary report',
+      Worker: 'Staff records summary report',
     };
     return labelMap[this.fileType];
+  }
+
+  public get filename() {
+    const filenameMap: { [key in ValidatedFileType]: string } = {
+      Establishment: 'WorkplaceResults.txt',
+      Training: 'TrainingResults.txt',
+      Worker: 'StaffrecordsResults.txt',
+    };
+    return filenameMap[this.fileType];
   }
 }
