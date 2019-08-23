@@ -2,13 +2,13 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import {
@@ -24,20 +24,20 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public primaryEstablishment: Establishment;
   public workplace: Establishment;
   public summaryReturnUrl: URLStructure;
-  public staffPermission = DataPermissions.WorkplaceAndStaff;
   public canDelete: boolean;
-  public canViewStaffRecords: boolean;
+  public canViewListOfWorkers: boolean;
   public totalStaffRecords: number;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private router: Router,
     private alertService: AlertService,
+    private breadcrumbService: BreadcrumbService,
     private dialogService: DialogService,
     private establishmentService: EstablishmentService,
+    private permissionsService: PermissionsService,
+    private router: Router,
     private userService: UserService,
     private workerService: WorkerService,
-    private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit() {
@@ -58,19 +58,9 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       url: ['/workplace', this.workplace.uid],
     });
 
-    this.canViewStaffRecords =
-      [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role) &&
-      ((this.workplace.dataOwner === WorkplaceDataOwner.Parent && this.primaryEstablishment.isParent) ||
-        (this.workplace.dataOwner === WorkplaceDataOwner.Workplace && !this.primaryEstablishment.isParent) ||
-        (this.workplace.dataOwner === WorkplaceDataOwner.Workplace &&
-          this.primaryEstablishment.isParent &&
-          this.workplace.dataPermissions === DataPermissions.WorkplaceAndStaff));
+    this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.canDelete =
       this.primaryEstablishment.isParent && [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
-  }
-
-  public checkPermission(permission: DataPermissions) {
-    return this.workplace.parentPermissions === permission;
   }
 
   public onDeleteWorkplace(event: Event): void {

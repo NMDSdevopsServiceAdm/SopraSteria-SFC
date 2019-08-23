@@ -10,7 +10,7 @@ export class CheckPermissionsGuard implements CanActivate {
   constructor(private permissionsService: PermissionsService, private establishmentService: EstablishmentService) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    const requiredPermissions = route.data['permissions'] as Array<string>;
+    const requiredPermissions = route.data.permissions as Array<string>;
     const notPrimaryWorkplace: string = route.paramMap.get('establishmentuid');
     const workplaceUid: string = notPrimaryWorkplace ? notPrimaryWorkplace : this.establishmentService.establishmentId;
     const permissions = this.permissionsService.permissions(workplaceUid);

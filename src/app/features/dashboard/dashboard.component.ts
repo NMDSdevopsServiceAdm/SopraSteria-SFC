@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
-import { Roles } from '@core/model/roles.enum';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -12,20 +12,21 @@ import { Subscription } from 'rxjs';
 })
 export class DashboardComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
-  public canViewStaffRecords: boolean;
+  public canViewListOfWorkers: boolean;
   public workplace: Establishment;
   public lastLoggedIn: string;
   public totalStaffRecords: number;
 
   constructor(
     private establishmentService: EstablishmentService,
+    private permissionsService: PermissionsService,
     private userService: UserService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
   ) {}
 
   ngOnInit() {
-    this.canViewStaffRecords = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
 
     if (this.workplace) {
       this.subscriptions.add(

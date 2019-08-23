@@ -22,7 +22,7 @@
     <h3 class="govuk-heading-s govuk-!-margin-top-6">Other things you can do</h3>
     <ul class="govuk-list">
       <ng-container *ngIf="workplace">
-        <li *ngIf="[editRole, adminRole].includes(user?.role)">
+        <li *ngIf="canBulkUpload">
           <a [routerLink]="['/bulk-upload']" (click)="setReturn()">Bulk upload</a>
         </li>
         <li *ngIf="workplace.isParent">

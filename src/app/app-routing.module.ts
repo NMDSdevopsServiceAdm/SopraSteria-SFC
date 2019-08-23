@@ -115,9 +115,9 @@ const routes: Routes = [
       {
         path: 'bulk-upload',
         loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
-        canActivate: [RoleGuard],
+        canActivate: [CheckPermissionsGuard],
         data: {
-          roles: [Roles.Edit, Roles.Admin],
+          permissions: ['canBulkUpload'],
           title: 'Bulk Upload',
         },
       },
