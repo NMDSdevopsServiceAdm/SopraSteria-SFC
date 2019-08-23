@@ -159,7 +159,7 @@ class PermissionCache {
 
   static myPermissions(requestData){
 
-    let estabType = this.getEstablishmentType(requestData);
+    let estabType = this.getEstablishmentType(requestData.establishment);
     let permissions = [];
 
     if(estabType == "Standalone") {
