@@ -11,6 +11,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 export class WorkplaceInfoPanelComponent implements OnInit {
   @Input() public workplace: Workplace;
   public canViewEstablishment: boolean;
+  public canChangePermissionsForSubsidiary: boolean;
   public primaryWorkplace: Establishment;
   public dataOwner = WorkplaceDataOwner;
 
@@ -19,5 +20,6 @@ export class WorkplaceInfoPanelComponent implements OnInit {
   ngOnInit() {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.canViewEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canViewEstablishment');
+    this.canChangePermissionsForSubsidiary = this.permissionsService.can(this.primaryWorkplace.uid, 'canChangePermissionsForSubsidiary');
   }
 }
