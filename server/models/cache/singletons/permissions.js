@@ -163,13 +163,13 @@ class PermissionCache {
     let permissions = [];
 
     if(estabType == "Standalone") {
-      permissions = this.filterByRole(requestData.role);
+      permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     }else if(estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Workplace') {
-      permissions = this.filterByRole(requestData.role);
+      permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     }else if(estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Parent') {
       permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
     }else if(estabType == "Parent" && this.getEstablishmentStatus(requestData.establishment, requestData.param.id) == 'Primary') { 
-      permissions = this.filterByRole(requestData.role);
+      permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     } else if(estabType == "Parent" && this.getEstablishmentStatus(requestData.establishment, requestData.param.id) == 'Subsidiary') {
       permissions = this.filterBySubOwnedByParent(requestData.dataPermissions);
     }
