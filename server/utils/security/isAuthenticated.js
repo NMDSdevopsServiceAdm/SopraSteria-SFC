@@ -88,8 +88,6 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
         //  then follow up by checking against any of the known subsidaries of this parent establishment
         //  including that of the given establishment (only known by it's UID)
 
-        console.log("WA DEBUG - authorisedEstablishmentPermissionCheck:;isAuthorised", isAuthorised)
-
         if (isAuthorised === false && claim.isParent) {
 
           try {
