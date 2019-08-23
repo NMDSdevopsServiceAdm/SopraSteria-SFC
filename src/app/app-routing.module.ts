@@ -75,7 +75,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    canActivate: [AuthGuard, HasPermissionsGuard],
+    canActivate: [HasPermissionsGuard],
     canActivateChild: [AuthGuard],
     resolve: {
       loggedInUser: LoggedInUserResolver,
