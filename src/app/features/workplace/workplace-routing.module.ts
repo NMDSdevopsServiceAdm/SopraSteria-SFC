@@ -221,19 +221,19 @@ const routes: Routes = [
       },
       {
         path: 'user/create',
+        canActivate: [CheckPermissionsGuard],
         component: CreateUserAccountComponent,
-        canActivate: [RoleGuard],
         data: {
-          roles: [Roles.Admin, Roles.Edit],
+          permissions: ['canAddUser'],
           title: 'Create User Account',
         },
       },
       {
         path: 'user/saved',
+        canActivate: [CheckPermissionsGuard],
         component: UserAccountSavedComponent,
-        canActivate: [RoleGuard],
         data: {
-          roles: [Roles.Admin, Roles.Edit],
+          permissions: ['canAddUser'],
           title: 'User Account Saved',
         },
       },
