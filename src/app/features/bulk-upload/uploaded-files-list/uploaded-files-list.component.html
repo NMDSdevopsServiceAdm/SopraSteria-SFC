@@ -32,7 +32,9 @@
           [class.govuk-!-padding-left-6]="file.errors"
         >
           <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-2">
-            <a href="#" (click)="downloadFile($event, file.key)">{{ file.filename }}</a>
+            <a href="/bulk-upload/download/{{ file.filename }}" (click)="downloadFile($event, file.key)">
+              {{ file.filename }}
+            </a>
           </p>
           <p *ngIf="file.warnings" class="govuk-!-margin-bottom-1 govuk-!-margin-top-2">
             <strong class="govuk__flex">
