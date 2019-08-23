@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -24,7 +23,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public primaryEstablishment: Establishment;
   public workplace: Establishment;
   public summaryReturnUrl: URLStructure;
-  public canDelete: boolean;
+  public canDeleteEstablishment: boolean;
   public canViewListOfWorkers: boolean;
   public totalStaffRecords: number;
   private subscriptions: Subscription = new Subscription();
@@ -59,13 +58,12 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     });
 
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
-    this.canDelete =
-      this.primaryEstablishment.isParent && [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
+    this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
   }
 
   public onDeleteWorkplace(event: Event): void {
     event.preventDefault();
-    if (!this.canDelete) {
+    if (!this.canDeleteEstablishment) {
       return;
     }
 
@@ -79,7 +77,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   private deleteWorkplace(): void {
-    if (!this.canDelete) {
+    if (!this.canDeleteEstablishment) {
       return;
     }
 

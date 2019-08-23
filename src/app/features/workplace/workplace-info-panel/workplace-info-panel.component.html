@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-third">
     <p>
-      <ng-container *ngIf="canAccessWorkplace; else noPermission">
+      <ng-container *ngIf="canViewEstablishment; else noPermission">
         <a [routerLink]="['/workplace', workplace.uid]">
           {{ workplace.name }}
         </a>

@@ -171,7 +171,11 @@ class PermissionCache {
       permissions = this.filterByRole(requestData.role);
     } else if (!isLoggedInAsParent && estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) === 'Parent') {
       // console.log("3")
-      permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
+       if(requestData.role === 'Read'){
+        permissions = this.filterByRole(requestData.role);
+      }else{
+        permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
+      }
     } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Primary') {
       // console.log("4")
       permissions = this.filterByRole(requestData.role);
