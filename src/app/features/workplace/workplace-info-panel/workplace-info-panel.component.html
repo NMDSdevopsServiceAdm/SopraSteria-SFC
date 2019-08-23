@@ -37,7 +37,7 @@
               <a href="#">Data request pending</a>
             </ng-container>
             <ng-template #dataPermissions>
-              <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else changeOwner">
+              <ng-container *ngIf="canChangePermissionsForSubsidiary; else changeOwner">
                 <a href="#">Data permissions</a>
               </ng-container>
               <ng-template #changeOwner>

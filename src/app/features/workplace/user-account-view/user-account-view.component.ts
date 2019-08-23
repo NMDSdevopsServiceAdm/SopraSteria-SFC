@@ -10,6 +10,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import {
   UserAccountDeleteDialogComponent,
@@ -35,13 +36,14 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   public userInfo: SummaryList[];
 
   constructor(
+    private alertService: AlertService,
+    private breadcrumbService: BreadcrumbService,
+    private dialogService: DialogService,
+    private establishmentService: EstablishmentService,
+    private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private router: Router,
-    private breadcrumbService: BreadcrumbService,
-    private userService: UserService,
-    private dialogService: DialogService,
-    private alertService: AlertService,
-    private establishmentService: EstablishmentService
+    private userService: UserService
   ) {
     this.user = this.route.snapshot.data.user;
     this.establishment = this.route.parent.snapshot.data.establishment;
@@ -168,7 +170,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     const editUsersList = users.filter(user => user.role === Roles.Edit);
 
     this.canDeleteUser =
-      canEdit &&
+      this.permissionsService.can(this.establishment.uid, 'canDeleteUser') &&
       (editUsersList.length > 1 || this.user.role === Roles.Read) &&
       !this.user.isPrimary &&
       loggedInUser.uid !== this.user.uid;
