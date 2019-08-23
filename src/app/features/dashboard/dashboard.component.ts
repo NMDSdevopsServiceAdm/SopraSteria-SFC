@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -29,17 +28,6 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
-
-    this.subscriptions.add(
-      this.userService.loggedInUser$.subscribe(user => {
-        if (user && user.role === 'Admin') {
-          if (!this.workplace) {
-            this.router.navigate(['/search-users']);
-            return false;
-          }
-        }
-      })
-    );
 
     if (this.workplace) {
       this.subscriptions.add(
