@@ -174,7 +174,7 @@ class PermissionCache {
        if(requestData.role === 'Read'){
         permissions = this.filterByRole(requestData.role);
       }else{
-        permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
+        permissions = this.filterBySubOwnedByParent(requestData.dataPermissions);
       }
     } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Primary') {
       // console.log("4")
@@ -184,7 +184,7 @@ class PermissionCache {
       permissions = this.filterByRole(requestData.role);
     } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Subsidiary' && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Workplace') {
       // console.log("6")
-      permissions = this.filterBySubOwnedByParent(requestData.dataPermissions);
+      permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
     }
 
     return permissions.map(thisPerm => {
@@ -206,7 +206,10 @@ class PermissionCache {
 
   static filterBysubOwnedByWorkplace(dataPermissions){
     return ALL_PERMISSIONS
-    .filter(x => x.subOwnedByWorkplaceAccessByParent.includes(dataPermissions));
+    .filter(x => {
+      console.log(`WA DEBUG TBC - (${dataPermissions}): `, x);
+      return x.subOwnedByWorkplaceAccessByParent.includes(dataPermissions);
+    });
   }
 
   static filterBySubOwnedByParent(dataPermissions){
