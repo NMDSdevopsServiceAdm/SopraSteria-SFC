@@ -46,7 +46,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   get vacanciesArray(): FormArray {
-    return <FormArray>this.form.get('vacancies');
+    return this.form.get('vacancies') as FormArray;
   }
 
   get allJobsSelected(): boolean {

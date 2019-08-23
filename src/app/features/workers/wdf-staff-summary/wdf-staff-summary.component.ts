@@ -77,7 +77,7 @@ export class WdfStaffSummaryComponent implements OnInit {
   private confirmAndSubmit() {
     const wdfProperties = pickBy(this.worker.wdf, isObject);
     const keys = Object.keys(
-      pickBy(wdfProperties, function(wdfProperty, key) {
+      pickBy(wdfProperties, (wdfProperty, key) => {
         if (wdfProperty.hasOwnProperty('updatedSinceEffectiveDate')) {
           return wdfProperty.isEligible === Eligibility.YES && !wdfProperty.updatedSinceEffectiveDate;
         }

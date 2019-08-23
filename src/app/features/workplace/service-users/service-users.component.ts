@@ -121,9 +121,9 @@ export class ServiceUsersComponent extends Question {
 
     return {
       serviceUsers: serviceUsers.map(id => {
-        const otherAllowed = !!find(this.allUserServices, { id: id, other: true });
+        const otherAllowed = !!find(this.allUserServices, { id, other: true });
         return {
-          id: id,
+          id
           ...(otherAllowed && {
             other: this.form.get(`serviceUsers-${id}-otherService`).value,
           }),

@@ -48,7 +48,7 @@ export class ApprenticeshipTrainingComponent extends QuestionComponent {
     }
 
     return {
-      apprenticeshipTraining: apprenticeshipTraining,
+      apprenticeshipTraining,
     };
   }
 }

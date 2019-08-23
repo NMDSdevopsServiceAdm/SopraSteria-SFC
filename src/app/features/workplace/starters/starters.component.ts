@@ -44,11 +44,11 @@ export class StartersComponent extends Question {
   }
 
   get starterRecords(): FormArray {
-    return <FormArray>this.form.get('starterRecords');
+    return this.form.get('starterRecords') as FormArray;
   }
 
   get noRecordsReason(): AbstractControl {
-    return <FormControl>this.form.get('noRecordsReason');
+    return this.form.get('noRecordsReason') as FormControl;
   }
 
   get allJobsSelected(): boolean {

@@ -206,12 +206,12 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     const { qualification, year, notes } = group.value;
 
     const record: QualificationRequest = {
-      type: type,
+      type,
       qualification: {
         id: parseInt(qualification, 10),
       },
-      year: year,
-      notes: notes,
+      year,
+      notes,
     };
 
     if (this.qualificationId) {
