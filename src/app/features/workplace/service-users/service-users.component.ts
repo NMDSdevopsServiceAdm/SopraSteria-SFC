@@ -123,7 +123,7 @@ export class ServiceUsersComponent extends Question {
       serviceUsers: serviceUsers.map(id => {
         const otherAllowed = !!find(this.allUserServices, { id, other: true });
         return {
-          id
+          id,
           ...(otherAllowed && {
             other: this.form.get(`serviceUsers-${id}-otherService`).value,
           }),
