@@ -87,6 +87,9 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
         // if still not authorised - and only if this user is attributed to a parent establishment
         //  then follow up by checking against any of the known subsidaries of this parent establishment
         //  including that of the given establishment (only known by it's UID)
+
+
+
         if (isAuthorised === false && claim.isParent) {
 
           try {
@@ -101,7 +104,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             }
 
             const referencedEstablishment = await models.establishment.findOne({
-              attributes: ['id', 'dataPermissions', 'dataOwner'],
+              attributes: ['id', 'dataPermissions', 'dataOwner', 'parentId'],
               where: findEstablishmentWhereClause
             });
             // this is a known subsidairy of this given parent establishment
@@ -138,8 +141,18 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             req.role = claim.role;
             req.establishment = {
               id: claim.EstblishmentId,
-              uid: claim.EstablishmentUID
+              uid: claim.EstablishmentUID,
+              isSubsidiary: false,
+              isParent: false
             };
+
+            if(referencedEstablishment.parentId !== null ){
+              // Its a sub
+              req.establishment.isSubsidiary = true;
+            } else if(referencedEstablishment.parentId == null && referencedEstablishment.isParent){
+              // It's a parent
+              req.establishment.isParent = true;
+            }
 
             return next();
 
@@ -164,22 +177,37 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
           req.role = claim.role;
           req.establishment = {
             id: claim.EstblishmentId,
-            uid: claim.EstablishmentUID
+            uid: claim.EstablishmentUID,
+            isSubsidiary: false,
+            isParent: false
           };
 
-          // having settled all claims, it is necessary to normalise req.establishmentId so it is always the establishment primary key
+          let lookupClause = {}
           if (establishmentIdIsUID) {
-            const foundEstablishment = await models.establishment.findOne({
-              attributes: ['id'],
-              where: {
-                uid: req.establishment.uid
-              }
-            });
+            lookupClause.uid = req.params.id;
+          } else {
+            lookupClause.id = req.params.id;
+          }
 
-            if (foundEstablishment && foundEstablishment.id) {
-              req.establishmentId = foundEstablishment.id;
+          const foundEstablishment = await models.establishment.findOne({
+            attributes: ['id','parentId','dataPermissions'],
+            where: lookupClause
+          });
+
+          if (foundEstablishment && foundEstablishment.id) {
+            // having settled all claims, it is necessary to normalise req.establishmentId so it is always the establishment primary key
+            req.establishmentId = foundEstablishment.id;
+            req.dataPermissions = foundEstablishment.dataPermissions;
+
+            if(foundEstablishment.parentId !== null ){
+              // Its a sub
+              req.establishment.isSubsidiary = true;
+            } else if(foundEstablishment.parentId == null && foundEstablishment.isParent){
+              // It's a parent
+              req.establishment.isParent = true;
             }
           }
+
           next();
         }
       }
