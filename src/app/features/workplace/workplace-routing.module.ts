@@ -271,9 +271,9 @@ const routes: Routes = [
       {
         path: 'staff-record',
         loadChildren: '@features/workers/workers.module#WorkersModule',
-        canActivate: [RoleGuard],
+        canActivate: [CheckPermissionsGuard],
         data: {
-          roles: [Roles.Admin, Roles.Edit],
+          permissions: ['canViewWorker'],
           title: 'Staff Records',
         },
       },

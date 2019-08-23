@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 
@@ -53,33 +54,57 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
 const routes: Routes = [
   {
     path: 'start-screen',
+    canActivate: [CheckPermissionsGuard],
     component: CreateStaffRecordStartScreenComponent,
-    data: { title: 'Create Staff Record Start' },
+    data: {
+      permissions: ['canAddWorker'],
+      title: 'Create Staff Record Start'
+    },
   },
   {
     path: 'total-staff',
+    canActivate: [CheckPermissionsGuard],
     component: TotalStaffComponent,
-    data: { title: 'Total Staff' },
+    data: {
+      permissions: ['canAddWorker'],
+      title: 'Total Staff'
+    },
   },
   {
     path: 'basic-records-start-screen',
+    canActivate: [CheckPermissionsGuard],
     component: CreateBasicRecordsStartScreenComponent,
-    data: { title: 'Create Basic Records Start' },
+    data: {
+      permissions: ['canAddWorker'],
+      title: 'Create Basic Records Start'
+    },
   },
   {
     path: 'create-basic-records',
+    canActivate: [CheckPermissionsGuard],
     component: CreateBasicRecordsComponent,
-    data: { title: 'Create Basic Records' },
+    data: {
+      permissions: ['canAddWorker'],
+      title: 'Create Basic Records'
+    },
   },
   {
     path: 'basic-records-save-success',
+    canActivate: [CheckPermissionsGuard],
     component: BasicRecordsSaveSuccessComponent,
-    data: { title: 'Basic Records Save Success' },
+    data: {
+      permissions: ['canAddWorker'],
+      title: 'Basic Records Save Success'
+    },
   },
   {
     path: 'create-staff-record',
+    canActivate: [CheckPermissionsGuard],
     component: StaffDetailsComponent,
-    data: { title: 'Create Staff Records' },
+    data: {
+      permissions: ['canAddWorker'],
+      title: 'Create Staff Records'
+    },
   },
   {
     path: ':id',
