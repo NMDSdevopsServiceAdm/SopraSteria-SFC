@@ -167,7 +167,11 @@ class PermissionCache {
     }else if(estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Workplace') {
       permissions = this.filterByRole(requestData.role);
     }else if(estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Parent') {
-      permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
+      if(requestData.role === 'Read'){
+        permissions = this.filterByRole(requestData.role);
+      }else{
+        permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
+      }
     }else if(estabType == "Parent" && this.getEstablishmentStatus(requestData.establishment, requestData.param.id) == 'Primary') { 
       permissions = this.filterByRole(requestData.role);
     } else if(estabType == "Parent" && this.getEstablishmentStatus(requestData.establishment, requestData.param.id) == 'Subsidiary') {
