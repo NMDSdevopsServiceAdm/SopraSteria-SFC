@@ -54,12 +54,14 @@ export class SalaryComponent extends QuestionComponent {
             Validators.required,
             Validators.min(this.hourly.min),
             Validators.max(this.hourly.max),
+            Validators.pattern(this.floatPattern),
           ]);
         } else if (value === 'Annually') {
           annualRate.setValidators([
             Validators.required,
             Validators.min(this.annually.min),
             Validators.max(this.annually.max),
+            Validators.pattern(this.intPattern),
           ]);
         }
 
