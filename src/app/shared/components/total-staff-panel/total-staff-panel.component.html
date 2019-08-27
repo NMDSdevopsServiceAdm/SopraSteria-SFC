@@ -3,7 +3,7 @@
   <dd>
     {{ totalStaff }}
     <a
-      *ngIf="canEdit"
+      *ngIf="canEditEstablishment"
       [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']"
       class="govuk-util__float-right govuk-!-font-size-19 govuk-!-font-weight-regular"
       (click)="setReturn()"

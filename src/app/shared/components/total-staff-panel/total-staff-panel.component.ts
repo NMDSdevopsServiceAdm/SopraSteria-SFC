@@ -12,12 +12,12 @@ export class TotalStaffPanelComponent implements OnInit {
   @Input() totalStaff = 0;
   @Input() totalWorkers = 0;
   @Input() returnToDash = false;
-  public canEdit: boolean;
+  public canEditEstablishment: boolean;
 
   constructor(private permissionsService: PermissionsService, private workerService: WorkerService) {}
 
   ngOnInit() {
-    this.canEdit = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
   }
 
   setReturn() {
