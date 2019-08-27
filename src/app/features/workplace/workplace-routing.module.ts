@@ -249,10 +249,10 @@ const routes: Routes = [
           {
             path: 'permissions',
             component: UserAccountEditPermissionsComponent,
-            canActivate: [RoleGuard, EditUserPermissionsGuard],
+            canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
             resolve: { user: UserAccountResolver },
             data: {
-              roles: [Roles.Admin, Roles.Edit],
+              permissions: ['canEditUser'],
               title: 'Edit Permissions',
             },
           },
