@@ -7,7 +7,7 @@
     <dd class="govuk-summary-list__value">
       {{ worker.nationalInsuranceNumber || '-' }}
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('national-insurance-number')" (click)="setReturn()">
         <ng-container *ngIf="!worker.nationalInsuranceNumber">
           Provide information
@@ -30,7 +30,7 @@
         {{ worker.dateOfBirth ? dob : '-' }}
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('date-of-birth')" (click)="setReturn()">
         <ng-container *ngIf="!worker.dateOfBirth">
           Provide information
@@ -51,7 +51,7 @@
     <dd class="govuk-summary-list__value">
       {{ worker.postcode || '-' }}
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('home-postcode')" (click)="setReturn()">
         <ng-container *ngIf="!worker.postcode">
           Provide information
@@ -75,7 +75,7 @@
         {{ worker.gender | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('gender')" (click)="setReturn()">
         <ng-container *ngIf="!worker.gender">
           Provide information
@@ -96,7 +96,7 @@
     <dd class="govuk-summary-list__value">
       {{ worker.disability | closedEndedAnswer }}
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('disability')" (click)="setReturn()">
         <ng-container *ngIf="!worker.disability">
           Provide information
@@ -117,7 +117,7 @@
     <dd class="govuk-summary-list__value">
       {{ worker.ethnicity?.ethnicity | closedEndedAnswer }}
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('ethnicity')" (click)="setReturn()">
         <ng-container *ngIf="!worker.ethnicity">
           Provide information
@@ -144,7 +144,7 @@
         }}
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('nationality')" (click)="setReturn()">
         <ng-container *ngIf="!worker.nationality">
           Provide information
@@ -165,7 +165,7 @@
     <dd class="govuk-summary-list__value">
       {{ worker.britishCitizenship | closedEndedAnswer }}
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('british-citizenship')" (click)="setReturn()">
         <ng-container *ngIf="!worker.britishCitizenship">
           Provide information
@@ -190,7 +190,7 @@
           : (worker.countryOfBirth?.value | closedEndedAnswer)
       }}
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('country-of-birth')" (click)="setReturn()">
         <ng-container *ngIf="!worker.countryOfBirth">
           Provide information
