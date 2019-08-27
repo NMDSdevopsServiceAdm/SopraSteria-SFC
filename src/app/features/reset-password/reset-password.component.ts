@@ -21,7 +21,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     this.submitted = false;
 
     this.route.queryParams.subscribe(params => {
-      this.resetUuidfromUrl = params['reset'];
+      this.resetUuidfromUrl = params.reset;
     });
 
     this._passwordResetService.resetPasswordUUID$.subscribe(resetLinkResponse => {

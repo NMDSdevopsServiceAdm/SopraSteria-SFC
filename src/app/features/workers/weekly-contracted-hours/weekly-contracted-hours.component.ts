@@ -105,7 +105,7 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
       weeklyHoursContracted: {
         value: hoursKnown,
         ...(hoursKnown === 'Yes' && {
-          hours: hours,
+          hours,
         }),
       },
     };

@@ -23,7 +23,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   private workPlaceReferences: WorkPlaceReference[];
   public columnOneLabel = 'Name';
   public columnTwoLabel = 'Staff reference';
-  public nextRoute: String[] = [];
+  public nextRoute: string[] = [];
   public referenceType = BulkUploadFileType.Worker;
   public referenceTypeInfo = 'You must create unique references for each member of staff.';
 

@@ -46,11 +46,11 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
 
   public setupUploadValidationErrors(): void {
     this.subscriptions.add(
-      combineLatest(
+      combineLatest([
         this.bulkUploadService.preValidationError$,
         this.bulkUploadService.validationErrors$,
-        this.bulkUploadService.serverError$
-      ).subscribe(([preValidationErrors, uploadValidationErrors, serverError]) => {
+        this.bulkUploadService.serverError$,
+      ]).subscribe(([preValidationErrors, uploadValidationErrors, serverError]) => {
         this.uploadValidationErrors = uploadValidationErrors;
         this.serverError = serverError;
         this.showErrorSummary =

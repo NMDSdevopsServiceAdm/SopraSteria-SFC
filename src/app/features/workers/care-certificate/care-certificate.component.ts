@@ -48,7 +48,7 @@ export class CareCertificateComponent extends QuestionComponent {
     }
 
     return {
-      careCertificate: careCertificate,
+      careCertificate,
     };
   }
 }

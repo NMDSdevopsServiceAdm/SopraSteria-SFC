@@ -107,7 +107,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
     return {
       daysSick: {
         value: daysKnown,
-        days: days,
+        days,
       },
     };
   }

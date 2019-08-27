@@ -25,8 +25,8 @@ export class CustomValidators extends Validators {
 
   static bothControlsHaveValues(group: AbstractControl): { [key: string]: boolean } | null {
     const errors: ValidationErrors = {};
-    const control1Name: string = Object.keys(group['controls'])[0];
-    const control2Name: string = Object.keys(group['controls'])[1];
+    const control1Name: string = Object.keys(group[`controls`])[0];
+    const control2Name: string = Object.keys(group[`controls`])[1];
     const control1: AbstractControl = group.get(control1Name);
     const control2: AbstractControl = group.get(control2Name);
 
@@ -72,7 +72,7 @@ export class CustomValidators extends Validators {
 
     files.forEach((file: File) => {
       if (file.size > maxFileSize) {
-        errors['filesize'] = true;
+        errors[`filesize`] = true;
         return;
       }
     });
@@ -82,7 +82,7 @@ export class CustomValidators extends Validators {
       const fileExtension: string = parts[parts.length - 1].toUpperCase();
 
       if (!FILE_UPLOAD_TYPES.includes(fileExtension)) {
-        errors['filetype'] = true;
+        errors[`filetype`] = true;
         return;
       }
     });

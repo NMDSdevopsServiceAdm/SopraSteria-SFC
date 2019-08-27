@@ -11,7 +11,7 @@ import { take } from 'rxjs/operators';
   templateUrl: './search.component.html',
 })
 export class SearchComponent implements OnInit {
-  public results = <any>[];
+  public results = [];
   public form = {
     type: '',
     title: '',

@@ -80,7 +80,7 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
 
   private createLocalAuthorityItem(custodianCode: number = null): FormGroup {
     return this.formBuilder.group({
-      custodianCode: custodianCode,
+      custodianCode,
     });
   }
 

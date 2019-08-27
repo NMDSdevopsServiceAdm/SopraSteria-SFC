@@ -58,11 +58,11 @@ export class WdfComponent implements OnInit, OnDestroy {
     this.workerService.setReturnTo(null);
 
     this.subscriptions.add(
-      combineLatest(
+      combineLatest([
         this.establishmentService.getEstablishment(workplaceUid, true),
         this.reportService.getWDFReport(workplaceUid),
-        this.workerService.getTotalStaffRecords(workplaceUid)
-      )
+        this.workerService.getTotalStaffRecords(workplaceUid),
+      ])
         .pipe(take(1))
         .subscribe(([workplace, report, totalStaffRecords]) => {
           this.report = report;
@@ -108,7 +108,7 @@ export class WdfComponent implements OnInit, OnDestroy {
   private confirmAndSubmit() {
     const wdfProperties = pickBy(this.workplace.wdf, isObject);
     const keys = Object.keys(
-      pickBy(wdfProperties, function(wdfProperty, key) {
+      pickBy(wdfProperties, (wdfProperty, key) => {
         if (wdfProperty.hasOwnProperty('updatedSinceEffectiveDate')) {
           return wdfProperty.isEligible === Eligibility.YES && !wdfProperty.updatedSinceEffectiveDate;
         }

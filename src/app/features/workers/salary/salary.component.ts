@@ -152,7 +152,7 @@ export class SalaryComponent extends QuestionComponent {
     return {
       annualHourlyPay: {
         value: terms,
-        rate: rate,
+        rate,
       },
     };
   }

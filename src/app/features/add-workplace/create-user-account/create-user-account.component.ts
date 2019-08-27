@@ -34,7 +34,7 @@ export class CreateUserAccountComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private workplaceService: WorkplaceService,
+    private workplaceService: WorkplaceService
   ) {}
 
   ngOnInit() {
@@ -71,10 +71,10 @@ export class CreateUserAccountComponent implements OnInit, OnDestroy {
 
   private getWorkplaceData(): void {
     this.subscriptions.add(
-      combineLatest(
+      combineLatest([
         this.workplaceService.selectedLocationAddress$,
-        this.workplaceService.selectedWorkplaceService$
-      ).subscribe(([locationAddress, workplace]) => {
+        this.workplaceService.selectedWorkplaceService$,
+      ]).subscribe(([locationAddress, workplace]) => {
         this.locationAddress = locationAddress;
         this.workplace = workplace;
       })
