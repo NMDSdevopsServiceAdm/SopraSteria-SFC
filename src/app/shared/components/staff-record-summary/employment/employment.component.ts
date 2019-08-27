@@ -2,6 +2,7 @@ import { DecimalPipe, Location } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import { isNumber } from 'lodash';
 import * as moment from 'moment';
@@ -18,12 +19,10 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
 
   constructor(
     location: Location,
-
+    permissionsService: PermissionsService,
     workerService: WorkerService,
-
-    private decimalPipe: DecimalPipe
   ) {
-    super(location, workerService);
+    super(location, permissionsService, workerService);
   }
 
   isNumber(number: number) {
