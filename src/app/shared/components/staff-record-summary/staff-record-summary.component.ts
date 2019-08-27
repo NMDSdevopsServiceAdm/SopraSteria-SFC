@@ -13,6 +13,11 @@ export class StaffRecordSummaryComponent implements OnInit {
   @Input() set worker(value: Worker) {
     this._worker = value;
   }
+
+  get worker(): Worker {
+    return this._worker;
+  }
+
   @Input() workplace: Establishment;
   @Input() return: URLStructure;
   @Input() wdfView = false;
@@ -40,9 +45,5 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   public getRoutePath(name: string) {
     return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
-  }
-
-  get worker(): Worker {
-    return this._worker;
   }
 }

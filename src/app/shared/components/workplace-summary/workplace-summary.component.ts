@@ -47,11 +47,12 @@ export class WorkplaceSummaryComponent {
       }
     }
   }
-  @Input() return: URLStructure = null;
 
   get workplace(): any {
     return this._workplace;
   }
+
+  @Input() return: URLStructure = null;
 
   get totalStaffWarning() {
     return (
