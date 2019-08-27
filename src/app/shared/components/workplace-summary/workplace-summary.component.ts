@@ -16,7 +16,7 @@ import { isArray } from 'util';
 export class WorkplaceSummaryComponent implements OnInit {
   public capacityMessages = [];
   public pluralMap = [];
-  public canEdit: boolean;
+  public canEditEstablishment: boolean;
   private _workplace: any;
   @Input() wdfView = false;
   @Input() workerCount?: number;
@@ -89,7 +89,7 @@ export class WorkplaceSummaryComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.canEdit = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
   }
 
   public filterAndSortOtherServices(services: Service[]) {
