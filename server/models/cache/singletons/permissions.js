@@ -19,7 +19,7 @@ let ALL_PERMISSIONS = [
     code: 'canAddWorker',
     description: 'add a worker',
     role: ['Edit'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff'],
+    subOwnedByWorkplaceAccessByParent: [''],
     subOwnedByParentAccessBySub: [],
   },
   {
@@ -54,7 +54,7 @@ let ALL_PERMISSIONS = [
     code: 'canDeleteWorker',
     description: 'delete a worker',
     role: ['Edit'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff'],
+    subOwnedByWorkplaceAccessByParent: [''],
     subOwnedByParentAccessBySub: [],
   },
   {
@@ -68,7 +68,7 @@ let ALL_PERMISSIONS = [
     code: 'canEditWorker',
     description: 'edit a worker',
     role: ['Edit'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff'],
+    subOwnedByWorkplaceAccessByParent: [''],
     subOwnedByParentAccessBySub: [],
   },
   {
@@ -168,12 +168,12 @@ class PermissionCache {
       permissions = this.filterByRole(requestData.role);
     } else if (!isLoggedInAsParent && estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) === 'Workplace') {
       // console.log("2")
-      permissions = this.filterByRole(requestData.role);
+      permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     } else if (!isLoggedInAsParent && estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) === 'Parent') {
       // console.log("3")
-       if(requestData.role === 'Read'){
+      if (requestData.dataPermissions !== 'None' && requestData.role === 'Read'){
         permissions = this.filterByRole(requestData.role);
-      }else{
+      } else{
         permissions = this.filterBySubOwnedByParent(requestData.dataPermissions);
       }
     } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Primary') {
@@ -184,7 +184,11 @@ class PermissionCache {
       permissions = this.filterByRole(requestData.role);
     } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Subsidiary' && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Workplace') {
       // console.log("6")
-      permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
+      if (requestData.dataPermissions !== 'None' && requestData.role === 'Read'){
+        permissions = this.filterByRole(requestData.role);
+      } else{
+        permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
+      }
     }
 
     return permissions.map(thisPerm => {
@@ -206,10 +210,7 @@ class PermissionCache {
 
   static filterBysubOwnedByWorkplace(dataPermissions){
     return ALL_PERMISSIONS
-    .filter(x => {
-      console.log(`WA DEBUG TBC - (${dataPermissions}): `, x);
-      return x.subOwnedByWorkplaceAccessByParent.includes(dataPermissions);
-    });
+    .filter(x => x.subOwnedByWorkplaceAccessByParent.includes(dataPermissions));
   }
 
   static filterBySubOwnedByParent(dataPermissions){
