@@ -25,7 +25,7 @@ import { take, withLatestFrom } from 'rxjs/operators';
 export class UserAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public canDeleteUser: boolean;
-  public canEdit: boolean;
+  public canEditUser: boolean;
   public canNavigate: boolean;
   public canResendActivationLink: boolean;
   public establishment: Establishment;
@@ -165,7 +165,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   }
 
   private setPermissions(users: Array<UserDetails>, loggedInUser: UserDetails) {
-    const canEdit = [Roles.Edit, Roles.Admin].includes(loggedInUser.role);
+    const canEditUser = this.permissionsService.can(this.establishment.uid, 'canEditUser');
     const isPending = this.user.username === null;
     const editUsersList = users.filter(user => user.role === Roles.Edit);
 
@@ -174,8 +174,8 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
       (editUsersList.length > 1 || this.user.role === Roles.Read) &&
       !this.user.isPrimary &&
       loggedInUser.uid !== this.user.uid;
-    this.canResendActivationLink = canEdit && isPending;
-    this.canEdit = canEdit && users.length > 1;
+    this.canResendActivationLink = canEditUser && isPending;
+    this.canEditUser = canEditUser && users.length > 1;
     this.canNavigate = Roles.Admin === loggedInUser.role;
   }
 }
