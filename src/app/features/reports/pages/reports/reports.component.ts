@@ -8,6 +8,7 @@ import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-reports',
@@ -16,6 +17,8 @@ import { Subscription } from 'rxjs';
 export class ReportsComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public isAdmin: boolean;
+  public isParent: boolean;
+  public isLocalAuthority: boolean;
   public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
 
@@ -30,7 +33,11 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.REPORTS);
     this.isAdmin = [Roles.Admin].includes(this.userService.loggedInUser.role);
     this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe(workplace => (this.workplace = workplace))
+      this.establishmentService.establishment$.pipe(take(1)).subscribe(workplace => {
+        this.workplace = workplace;
+        this.isParent = workplace.isParent;
+        this.isLocalAuthority = workplace.employerType && workplace.employerType.value.startsWith('Local Authority');
+      })
     );
   }
 

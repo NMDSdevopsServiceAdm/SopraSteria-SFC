@@ -2,6 +2,7 @@
 
 <div class="govuk-grid-row govuk-!-margin-bottom-3">
   <div class="govuk-grid-column-full">
+    <h2 *ngIf="isParent" class="govuk-body-l">Workforce Development Fund</h2>
     <ul class="govuk-list">
       <li *ngIf="isAdmin">
         <a
@@ -12,12 +13,15 @@
           WDF Summary Report
         </a>
       </li>
-      <li><a class="govuk-body-m" [routerLink]="['../wdf']">Workforce Development Fund</a></li>
+      <li>
+        <a
+          class="govuk-body-m"
+          [routerLink]="['../wdf']"
+          [innerText]="isParent ? 'My workplace' : 'Workforce Development Fund'"
+        ></a>
+      </li>
     </ul>
-  </div>
-</div>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
+
     <app-details [title]="'What is the Workforce Development Fund'">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -35,5 +39,19 @@
         </div>
       </div>
     </app-details>
+    <ng-container *ngIf="isParent && isLocalAuthority">
+      <h2 class="govuk-body-l">Local Authority Progress</h2>
+      <ul class="govuk-list govuk-list--inline govuk-list--download">
+        <li>
+          <a
+            href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-summary-report.csv"
+            class="govuk-body-m"
+            (click)="downloadWdfSummaryReport($event)"
+            >Download <ng-container *ngIf="isAdmin">user </ng-container>report</a
+          >
+        </li>
+        <li *ngIf="isAdmin"><a>Download admin report</a></li>
+      </ul>
+    </ng-container>
   </div>
 </div>
