@@ -20,6 +20,7 @@ export type PermissionType =
   | 'canDeleteEstablishment'
   | 'canDeleteUser'
   | 'canDeleteWorker'
+  | 'canEditEstablishment'
   | 'canEditUser'
   | 'canEditWorker'
   | 'canSortEstablishments'
