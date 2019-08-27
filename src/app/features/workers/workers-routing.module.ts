@@ -58,7 +58,7 @@ const routes: Routes = [
     component: CreateStaffRecordStartScreenComponent,
     data: {
       permissions: ['canAddWorker'],
-      title: 'Create Staff Record Start'
+      title: 'Create Staff Record Start',
     },
   },
   {
@@ -67,7 +67,7 @@ const routes: Routes = [
     component: TotalStaffComponent,
     data: {
       permissions: ['canAddWorker'],
-      title: 'Total Staff'
+      title: 'Total Staff',
     },
   },
   {
@@ -76,7 +76,7 @@ const routes: Routes = [
     component: CreateBasicRecordsStartScreenComponent,
     data: {
       permissions: ['canAddWorker'],
-      title: 'Create Basic Records Start'
+      title: 'Create Basic Records Start',
     },
   },
   {
@@ -85,7 +85,7 @@ const routes: Routes = [
     component: CreateBasicRecordsComponent,
     data: {
       permissions: ['canAddWorker'],
-      title: 'Create Basic Records'
+      title: 'Create Basic Records',
     },
   },
   {
@@ -94,7 +94,7 @@ const routes: Routes = [
     component: BasicRecordsSaveSuccessComponent,
     data: {
       permissions: ['canAddWorker'],
-      title: 'Basic Records Save Success'
+      title: 'Basic Records Save Success',
     },
   },
   {
@@ -103,7 +103,7 @@ const routes: Routes = [
     component: StaffDetailsComponent,
     data: {
       permissions: ['canAddWorker'],
-      title: 'Create Staff Records'
+      title: 'Create Staff Records',
     },
   },
   {
@@ -122,8 +122,9 @@ const routes: Routes = [
       },
       {
         path: 'wdf-summary',
+        canActivate: [CheckPermissionsGuard],
         component: WdfStaffSummaryComponent,
-        data: { title: 'Staff Record' },
+        data: { permissions: ['canViewWdfReport'], title: 'Staff Record' },
       },
       {
         path: 'staff-details',
