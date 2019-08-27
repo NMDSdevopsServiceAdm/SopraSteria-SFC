@@ -108,8 +108,12 @@ const routes: Routes = [
   },
   {
     path: ':id',
+    canActivate: [CheckPermissionsGuard],
     component: EditWorkerComponent,
     resolve: { worker: WorkerResolver },
+    data: {
+      permissions: ['canEditWorker'],
+    },
     children: [
       {
         path: '',
