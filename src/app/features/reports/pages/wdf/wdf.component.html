@@ -21,7 +21,7 @@
       [exitUrl]="exitUrl"
     ></app-wdf-confirmation-panel>
   </app-tab>
-  <app-tab *ngIf="canViewStaffRecords" [title]="'Staff records'">
+  <app-tab *ngIf="canViewWorker" [title]="'Staff records'">
     <app-staff-summary
       *ngIf="workers && workplace"
       [workplace]="workplace"
