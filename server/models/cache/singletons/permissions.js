@@ -148,6 +148,27 @@ let ALL_PERMISSIONS = [
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff'],
     subOwnedByParentAccessBySub: ['Workplace and Staff'],
   },
+  {
+    code: 'canEditEstablishment',
+    description: 'Edit establishment',
+    role: ['Edit'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
+  },
+  {
+    code: 'canViewUser',
+    description: 'View user',
+    role: ['Edit','Read'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
+  },
+  {
+    code: 'canViewListOfUsers',
+    description: 'View list of users',
+    role: ['Edit', 'Read'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
+  },
 ];
 
 class PermissionCache {
