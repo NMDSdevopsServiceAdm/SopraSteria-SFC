@@ -19,7 +19,7 @@ export class HomeTabComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public adminRole: Roles = Roles.Admin;
   public canBulkUpload: boolean;
-  public canEdit: boolean;
+  public canEditEstablishment: boolean;
   public isParent: boolean;
   public updateStaffRecords: boolean;
   public user: UserDetails;
@@ -33,10 +33,10 @@ export class HomeTabComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.userService.loggedInUser;
-    this.canEdit = [Roles.Edit, Roles.Admin].includes(this.user.role);
+    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canBulkUpload = this.permissionsService.can(this.workplace.uid, 'canBulkUpload');
 
-    if (this.workplace && this.canEdit) {
+    if (this.workplace && this.canEditEstablishment) {
       this.subscriptions.add(
         this.workerService
           .getAllWorkers(this.workplace.uid)
