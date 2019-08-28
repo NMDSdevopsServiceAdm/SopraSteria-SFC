@@ -44,7 +44,7 @@ router.route('/').get(async (req, res) => {
   try {
 
     const date = new Date().toISOString().split('T')[0];
-    res.setHeader('Content-disposition', 'attachment; filename=' + `${date}-sfc-wdf-summary-report.csv`);
+    res.setHeader('Content-disposition', 'attachment; filename=' + `${date}-SFC-Local-Authority-Admin-Report.csv`);
     res.setHeader('Content-Type', 'text/csv');
 
     // write dummy data

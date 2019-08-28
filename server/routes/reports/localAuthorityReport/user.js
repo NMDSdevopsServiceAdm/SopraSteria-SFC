@@ -28,7 +28,7 @@ router.route('/').get(async (req, res) => {
 
       if (theEmployerType && (theEmployerType.value).startsWith('Local Authority')) {
         const date = new Date().toISOString().split('T')[0];
-        res.setHeader('Content-disposition', 'attachment; filename=' + `${date}-sfc-wdf-summary-report.csv`);
+        res.setHeader('Content-disposition', 'attachment; filename=' + `${date}-SFC-Local-Authority-Report.csv`);
         res.setHeader('Content-Type', 'application/vnd.ms-excel');
         res.setHeader('Content-Length', EXAMPLE_XLS_FILE.length);
 
