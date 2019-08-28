@@ -7,6 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
 
 import { EstablishmentService } from './establishment.service';
+import { PermissionsService } from './permissions/permissions.service';
 import { UserService } from './user.service';
 
 @Injectable({
@@ -22,7 +23,8 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     private establishmentService: EstablishmentService,
-    private userService: UserService
+    private userService: UserService,
+    private permissionsService: PermissionsService
   ) {}
 
   public get isAutheticated$(): Observable<boolean> {
@@ -89,6 +91,7 @@ export class AuthService {
     this._isAuthenticated$.next(false);
     this.userService.loggedInUser = null;
     this.establishmentService.resetState();
+    this.permissionsService.clearPermissions();
   }
 
   private setPreviousUser(): void {

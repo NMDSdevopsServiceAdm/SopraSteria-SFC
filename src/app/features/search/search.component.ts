@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -31,7 +32,8 @@ export class SearchComponent implements OnInit {
     protected backService: BackService,
     private http: HttpClient,
     private establishmentService: EstablishmentService,
-    private authService: AuthService
+    private authService: AuthService,
+    private permissionsService: PermissionsService
   ) {}
 
   ngOnInit() {
@@ -64,7 +66,13 @@ export class SearchComponent implements OnInit {
 
   public setEsblishmentId(id, e): void {
     e.preventDefault();
-    this.getNewEstablishmentId(id).subscribe(data => this.onSwapSuccess(data), error => this.onError(error));
+    this.getNewEstablishmentId(id).subscribe(
+      data => {
+        this.permissionsService.clearPermissions();
+        this.onSwapSuccess(data);
+      },
+      error => this.onError(error)
+    );
   }
 
   public onSubmit(): void {
