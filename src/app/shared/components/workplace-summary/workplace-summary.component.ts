@@ -1,10 +1,9 @@
 import { I18nPluralPipe } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { Roles } from '@core/model/roles.enum';
+import { Component, Input, OnInit } from '@angular/core';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UserService } from '@core/services/user.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import { sortBy } from 'lodash';
 import { isArray } from 'util';
@@ -14,10 +13,10 @@ import { isArray } from 'util';
   templateUrl: './workplace-summary.component.html',
   providers: [I18nPluralPipe],
 })
-export class WorkplaceSummaryComponent {
+export class WorkplaceSummaryComponent implements OnInit {
   public capacityMessages = [];
   public pluralMap = [];
-  public canEdit: boolean;
+  public canEditEstablishment: boolean;
   private _workplace: any;
   @Input() wdfView = false;
   @Input() workerCount?: number;
@@ -64,7 +63,7 @@ export class WorkplaceSummaryComponent {
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
     private establishmentService: EstablishmentService,
-    private userService: UserService,
+    private permissionsService: PermissionsService,
     private workerService: WorkerService
   ) {
     this.pluralMap['How many beds do you currently have?'] = {
@@ -87,8 +86,10 @@ export class WorkplaceSummaryComponent {
       '=1': '# person using the service',
       other: '# people using the service',
     };
+  }
 
-    this.canEdit = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
+  ngOnInit() {
+    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
   }
 
   public filterAndSortOtherServices(services: Service[]) {
