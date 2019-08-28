@@ -16,6 +16,10 @@ export class PermissionsService {
     return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`);
   }
 
+  public clearPermissions() {
+    this._permissions$.next(null);
+  }
+
   public permissions(workplaceUid: string): PermissionsList {
     return this._permissions$.value[workplaceUid];
   }
