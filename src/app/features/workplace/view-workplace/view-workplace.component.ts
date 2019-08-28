@@ -24,6 +24,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public summaryReturnUrl: URLStructure;
   public canDeleteEstablishment: boolean;
+  public canViewListOfUsers: boolean;
   public canViewListOfWorkers: boolean;
   public totalStaffRecords: number;
   private subscriptions: Subscription = new Subscription();
@@ -36,7 +37,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private router: Router,
     private userService: UserService,
-    private workerService: WorkerService,
+    private workerService: WorkerService
   ) {}
 
   ngOnInit() {
@@ -57,6 +58,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       url: ['/workplace', this.workplace.uid],
     });
 
+    this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
   }

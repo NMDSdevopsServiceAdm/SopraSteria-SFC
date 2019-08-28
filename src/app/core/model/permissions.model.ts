@@ -27,6 +27,7 @@ export type PermissionType =
   | 'canTransferWorker'
   | 'canViewEstablishment'
   | 'canViewLastUpdateTime'
+  | 'canViewListOfUsers'
   | 'canViewListOfWorkers'
   | 'canViewNotifications'
   | 'canViewVisuals'

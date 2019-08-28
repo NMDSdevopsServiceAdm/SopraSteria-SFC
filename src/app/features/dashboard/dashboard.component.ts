@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 export class DashboardComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public canViewListOfWorkers: boolean;
+  public canViewListOfUsers: boolean;
   public workplace: Establishment;
   public lastLoggedIn: string;
   public totalStaffRecords: number;
@@ -21,11 +22,12 @@ export class DashboardComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private userService: UserService,
-    private workerService: WorkerService,
+    private workerService: WorkerService
   ) {}
 
   ngOnInit() {
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
 
     if (this.workplace) {
