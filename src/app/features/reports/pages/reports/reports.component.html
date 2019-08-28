@@ -3,7 +3,7 @@
 <div class="govuk-grid-row govuk-!-margin-bottom-3">
   <div class="govuk-grid-column-full">
     <h2 *ngIf="isParent" class="govuk-body-l">Workforce Development Fund</h2>
-    <ul class="govuk-list">
+    <ul class="govuk-list govuk-list--inline">
       <li *ngIf="isAdmin">
         <a
           href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-summary-report.csv"
@@ -14,28 +14,25 @@
         </a>
       </li>
       <li>
-        <a
-          class="govuk-body-m"
-          [routerLink]="['../wdf']"
-          [innerText]="isParent ? 'My workplace' : 'Workforce Development Fund'"
-        ></a>
+        <a class="govuk-body-m" [routerLink]="['../wdf']">
+          {{ isParent ? 'My workplace' : 'Workforce Development Fund' }}
+        </a>
+      </li>
+      <li *ngIf="isParent">
+        <a class="govuk-body-m" [routerLink]="['workplaces']">All workplaces</a>
       </li>
     </ul>
 
     <app-details [title]="'What is the Workforce Development Fund'">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds-from-desktop">
-          <p>
-            Find out more about the Workforce Development Fund and how to claim it on
-            <a
-              class="govuk-!-margin-right-2"
-              href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx"
-              target="_blank"
-            >
-              Skills for Care<span class="govuk-visually-hidden">, (opens in a new window)</span>
-            </a>
-            website.
-          </p>
+          Find out more about the Workforce Development Fund and how to claim it on
+          <a
+            href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx"
+            target="_blank"
+            >Skills for Care<span class="govuk-visually-hidden">, (opens in a new window)</span>
+          </a>
+          website.
         </div>
       </div>
     </app-details>
