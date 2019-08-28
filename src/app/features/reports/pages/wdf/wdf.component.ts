@@ -31,7 +31,7 @@ export class WdfComponent implements OnInit, OnDestroy {
   public report: WDFReport;
   public returnUrl: URLStructure;
   public exitUrl: URLStructure;
-  public canViewStaffRecords: boolean;
+  public canViewWorker: boolean;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -51,7 +51,7 @@ export class WdfComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.REPORTS);
     const workplaceUid = this.route.snapshot.params.establishmentuid;
 
-    this.canViewStaffRecords = this.permissionsService.can(workplaceUid, 'canViewWorker');
+    this.canViewWorker = this.permissionsService.can(workplaceUid, 'canViewWorker');
     this.returnUrl = { url: ['/workplace', workplaceUid, 'reports', 'wdf'] };
     this.exitUrl = { url: ['/workplace', workplaceUid, 'reports'] };
     this.workerService.setReturnTo(null);
@@ -70,7 +70,7 @@ export class WdfComponent implements OnInit, OnDestroy {
         })
     );
 
-    if (this.canViewStaffRecords) {
+    if (this.canViewWorker) {
       this.subscriptions.add(
         this.workerService
           .getAllWorkers(workplaceUid)
