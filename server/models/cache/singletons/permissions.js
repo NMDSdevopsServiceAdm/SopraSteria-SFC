@@ -186,23 +186,23 @@ class PermissionCache {
 
     if(estabType == "Standalone") {
       // console.log("1")
-      permissions = this.filterByRole(requestData.role);
+      permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     } else if (!isLoggedInAsParent && estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) === 'Workplace') {
       // console.log("2")
       permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     } else if (!isLoggedInAsParent && estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) === 'Parent') {
       // console.log("3")
       if (requestData.dataPermissions !== 'None' && requestData.role === 'Read'){
-        permissions = this.filterByRole(requestData.role);
+        permissions = this.filterByRole(this.getRoleEnum(requestData.role));
       } else{
         permissions = this.filterBySubOwnedByParent(requestData.dataPermissions);
       }
     } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Primary') {
       // console.log("4")
-      permissions = this.filterByRole(requestData.role);
+      permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Subsidiary' && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Parent') {
       // console.log("5")
-      permissions = this.filterByRole(requestData.role);
+      permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Subsidiary' && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Workplace') {
       // console.log("6")
       if (requestData.dataPermissions !== 'None' && requestData.role === 'Read'){
