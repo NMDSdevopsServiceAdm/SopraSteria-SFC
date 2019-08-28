@@ -17,7 +17,7 @@ export class PermissionsService {
   }
 
   public clearPermissions() {
-    this._permissions$.next(null);
+    this._permissions$.next({});
   }
 
   public permissions(workplaceUid: string): PermissionsList {
