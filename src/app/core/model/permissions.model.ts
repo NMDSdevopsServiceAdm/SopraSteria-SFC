@@ -23,6 +23,7 @@ export type PermissionType =
   | 'canEditEstablishment'
   | 'canEditUser'
   | 'canEditWorker'
+  | 'canRunLocalAuthorityReport'
   | 'canSortEstablishments'
   | 'canSortWorkers'
   | 'canTransferWorker'
