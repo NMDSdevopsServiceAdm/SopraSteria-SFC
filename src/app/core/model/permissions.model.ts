@@ -30,5 +30,6 @@ export type PermissionType =
   | 'canViewListOfWorkers'
   | 'canViewNotifications'
   | 'canViewVisuals'
+  | 'canViewUser'
   | 'canViewWdfReport'
   | 'canViewWorker';
