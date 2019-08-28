@@ -4,11 +4,16 @@ import { CheckPermissionsGuard } from '@core/guards/permissions/check-permission
 
 import { ReportsComponent } from './pages/reports/reports.component';
 import { WdfComponent } from './pages/wdf/wdf.component';
+import { WorkplacesComponent } from './pages/workplaces/workplaces.component';
 
 const routes: Routes = [
   {
     path: '',
     component: ReportsComponent,
+  },
+  {
+    path: 'workplaces',
+    component: WorkplacesComponent,
   },
   {
     path: 'wdf',
