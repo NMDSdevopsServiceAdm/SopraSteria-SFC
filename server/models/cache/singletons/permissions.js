@@ -153,21 +153,21 @@ let ALL_PERMISSIONS = [
     description: 'Edit establishment',
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
-    subOwnedByParentAccessBySub: [],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
   },
   {
     code: 'canViewUser',
     description: 'View user',
     role: ['Edit','Read'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
-    subOwnedByParentAccessBySub: [],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
   },
   {
     code: 'canViewListOfUsers',
     description: 'View list of users',
     role: ['Edit', 'Read'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
-    subOwnedByParentAccessBySub: [],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
   },
 ];
 
