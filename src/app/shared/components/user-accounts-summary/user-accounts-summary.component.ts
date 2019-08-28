@@ -17,10 +17,13 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public users: Array<UserDetails> = [];
   public canAddUser: boolean;
+  public canViewUser: boolean;
 
   constructor(private userService: UserService, private permissionsService: PermissionsService) {}
 
   ngOnInit() {
+    this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
+
     this.subscriptions.add(
       this.userService.getAllUsersForEstablishment(this.workplace.uid).subscribe(users => {
         this.users = orderBy(
