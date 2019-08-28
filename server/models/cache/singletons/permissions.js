@@ -7,6 +7,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canAddEstablishment',
@@ -14,6 +15,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canAddWorker',
@@ -21,6 +23,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: [''],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canBulkUpload',
@@ -28,6 +31,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canChangePermissionsForSubsidiary',
@@ -35,6 +39,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canDeleteEstablishment',
@@ -42,6 +47,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canDeleteUser',
@@ -49,6 +55,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canDeleteWorker',
@@ -56,6 +63,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: [''],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canEditUser',
@@ -63,6 +71,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canEditWorker',
@@ -70,6 +79,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: [''],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canViewEstablishment',
@@ -77,6 +87,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit', 'Read'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    isAdmin: false,
   },
   {
     code: 'canViewWdfReport',
@@ -84,6 +95,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit', 'Read'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    isAdmin: false,
   },
   {
     code: 'canViewWorker',
@@ -91,6 +103,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff'],
     subOwnedByParentAccessBySub: ['Workplace and Staff'],
+    isAdmin: false,
   },
   {
     code: 'canCountWorkers',
@@ -98,6 +111,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit', 'Read'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    isAdmin: false,
   },
   {
     code: 'canViewVisuals',
@@ -105,6 +119,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit', 'Read'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    isAdmin: false,
   },
   {
     code: 'canViewLastUpdateTime',
@@ -112,6 +127,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit', 'Read'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    isAdmin: false,
   },
   {
     code: 'canViewNotifications',
@@ -119,6 +135,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canSortEstablishments',
@@ -126,6 +143,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canSortWorkers',
@@ -133,6 +151,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff'],
     subOwnedByParentAccessBySub: ['Workplace and Staff'],
+    isAdmin: false,
   },
   {
     code: 'canTransferWorker',
@@ -140,6 +159,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   },
   {
     code: 'canViewListOfWorkers',
@@ -147,6 +167,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff'],
     subOwnedByParentAccessBySub: ['Workplace and Staff'],
+    isAdmin: false,
   },
   {
     code: 'canEditEstablishment',
@@ -154,6 +175,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
+    isAdmin: false,
   },
   {
     code: 'canViewUser',
@@ -161,6 +183,7 @@ let ALL_PERMISSIONS = [
     role: ['Edit','Read'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
+    isAdmin: false,
   },
   {
     code: 'canViewListOfUsers',
@@ -168,6 +191,47 @@ let ALL_PERMISSIONS = [
     role: ['Edit', 'Read'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
+    isAdmin: false,
+  },
+  {
+    code: 'canRunLocalAuthorityReport',
+    description: 'Run the Local Authority Report',
+    role: ['Edit'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: false,
+  },
+  {
+    code: 'canRunLocalAuthorityAdminReport',
+    description: 'Run the Admin Local Authority Report (across all Local Authorities)',
+    role: [],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: true,
+  },
+  {
+    code: 'canViewWdfSummaryReport',
+    description: 'Run the WDF Summary Report',
+    role: [],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: true,
+  },
+  {
+    code: 'canSearchUsers',
+    description: 'Search across all users',
+    role: [],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: true,
+  },
+  {
+    code: 'canSearchEstablishment',
+    description: 'Search across all establishments',
+    role: [],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: true,
   },
 ];
 
@@ -178,7 +242,7 @@ class PermissionCache {
 
   }
 
-  static myPermissions(requestData){
+  static myPermissions(requestData) {
 
     const estabType = this.getEstablishmentType(requestData.establishment);
     let permissions = [];
@@ -212,31 +276,49 @@ class PermissionCache {
       }
     }
 
-    return permissions.map(thisPerm => {
+    const theirPermissions = permissions.map(thisPerm => {
             return {
                 code: thisPerm.code,
                 description: thisPerm.description,
                 role: thisPerm.role
         };
     });
+
+    if (requestData.role === 'Admin') {
+      const adminPermissions = this.filterByAdminOnly();
+      adminPermissions.forEach(thisPerm => {
+        theirPermissions.push({
+          code: thisPerm.code,
+          description: thisPerm.description,
+          role: thisPerm.role
+        })
+      });
+    }
+
+    return theirPermissions;
   }
 
   static filterByRole(role){
     return ALL_PERMISSIONS
-    .filter(x =>
+    .filter(x => x.isAdmin === false && (
         (role == "Edit" && x.role.includes("Edit") || x.role.includes("Read")) ||
-        x.role.includes(role)
+        x.role.includes(role))
     );
   }
 
   static filterBysubOwnedByWorkplace(dataPermissions){
     return ALL_PERMISSIONS
-    .filter(x => x.subOwnedByWorkplaceAccessByParent.includes(dataPermissions));
+    .filter(x => x.isAdmin === false && x.subOwnedByWorkplaceAccessByParent.includes(dataPermissions));
   }
 
   static filterBySubOwnedByParent(dataPermissions){
     return ALL_PERMISSIONS
-    .filter(x => x.subOwnedByParentAccessBySub.includes(dataPermissions));
+    .filter(x => x.isAdmin === false && x.subOwnedByParentAccessBySub.includes(dataPermissions));
+  }
+
+  static filterByAdminOnly(){
+    return ALL_PERMISSIONS
+    .filter(x => x.isAdmin === true);
   }
 
   static getRoleEnum(role){
