@@ -17,12 +17,12 @@
         <dd class="govuk-summary-list__value">
           {{ trainingRecord.title }}
         </dd>
-        <dd class="govuk-summary-list__actions">
+        <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
           <a class="govuk-link--no-visited-state" href="#" (click)="deleteTrainingRecord(trainingRecord, $event)"
             >Delete<span class="govuk-visually-hidden"> {{ trainingRecord.title }} training record</span></a
           >
         </dd>
-        <dd class="govuk-summary-list__actions">
+        <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
           <a [routerLink]="['../training', trainingRecord.uid]"
             >Change<span class="govuk-visually-hidden"> {{ trainingRecord.title }} training record</span></a
           >
