@@ -56,6 +56,12 @@ export class PermissionsService {
     if (cachedPermissions) {
       return of(true);
     }
+
+    // TODO remove once user resolver is replaced by extra check in has permissions guard
+    if (!workplaceUid) {
+      return of(true);
+    }
+
     return this.getPermissions(workplaceUid)
       .pipe(tap(response => this.setPermissions(workplaceUid, response.permissions)))
       .pipe(
