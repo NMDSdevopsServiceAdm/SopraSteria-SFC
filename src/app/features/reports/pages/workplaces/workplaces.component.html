@@ -28,8 +28,7 @@
     <tr *ngFor="let workplace of workplaces" class="govuk-table__row">
       <td class="govuk-table__cell">{{ workplace.name }}</td>
       <td class="govuk-table__cell">
-        <!-- <app-eligibility-icon [eligible]="workplace.wdf.overall"></app-eligibility-icon> -->
-        <app-eligibility-icon [eligible]="true"></app-eligibility-icon>
+        <app-eligibility-icon [eligible]="workplace.wdf.overall"></app-eligibility-icon>
       </td>
       <td class="govuk-table__cell">
         <a [routerLink]="['/workplace', workplace.uid, 'reports', 'wdf']">View report</a>
