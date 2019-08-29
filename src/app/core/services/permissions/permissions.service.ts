@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Permissions, PermissionsList, PermissionsResponse, PermissionType } from '@core/model/permissions.model';
+import { Roles } from '@core/model/roles.enum';
+import { UserService } from '@core/services/user.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
@@ -11,7 +13,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 export class PermissionsService {
   private _permissions$ = new BehaviorSubject<Permissions>({});
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private userService: UserService) {}
 
   public getPermissions(workplaceUid: string): Observable<PermissionsResponse> {
     return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`);
@@ -32,7 +34,7 @@ export class PermissionsService {
   }
 
   public can(workplaceUid: string, permissionType: PermissionType): boolean {
-    if (!workplaceUid) {
+    if (this.userService.loggedInUser.role === Roles.Admin) {
       return true;
     }
 
