@@ -5,7 +5,7 @@ import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney } from '@core/breadcrumb/journey.accounts';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { publicJourney } from '@core/breadcrumb/journey.public';
-import { reportJourney } from '@core/breadcrumb/journey.report';
+import { reportJourney, subsidiaryReportJourney } from '@core/breadcrumb/journey.report';
 import { allWorkplacesJourney, myWorkplaceJourney } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
@@ -126,6 +126,10 @@ export class BreadcrumbService {
     switch (journey) {
       case JourneyType.REPORTS: {
         routes = reportJourney;
+        break;
+      }
+      case JourneyType.SUBSIDIARY_REPORTS: {
+        routes = subsidiaryReportJourney;
         break;
       }
       case JourneyType.MY_WORKPLACE: {

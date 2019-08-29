@@ -48,8 +48,14 @@ export class WdfComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.breadcrumbService.show(JourneyType.REPORTS);
     const workplaceUid = this.route.snapshot.params.establishmentuid;
+
+    const breadcrumbConfig =
+      workplaceUid === this.establishmentService.primaryWorkplace.uid
+        ? JourneyType.REPORTS
+        : JourneyType.SUBSIDIARY_REPORTS;
+
+    this.breadcrumbService.show(breadcrumbConfig);
 
     this.canViewWorker = this.permissionsService.can(workplaceUid, 'canViewWorker');
     this.returnUrl = { url: ['/workplace', workplaceUid, 'reports', 'wdf'] };
