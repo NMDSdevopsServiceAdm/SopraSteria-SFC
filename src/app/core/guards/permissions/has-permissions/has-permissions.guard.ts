@@ -17,7 +17,7 @@ export class HasPermissionsGuard implements CanActivate {
     const workplaceUid: string = notPrimaryWorkplace ? notPrimaryWorkplace : this.establishmentService.establishmentId;
 
     if (!workplaceUid) {
-      return of(false);
+      return of(true);
     }
 
     const cachedPermissions: PermissionsList = this.permissionsService.permissions(workplaceUid);
