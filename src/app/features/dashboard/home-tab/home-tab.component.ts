@@ -33,8 +33,9 @@ export class HomeTabComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.userService.loggedInUser;
-    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
-    this.canBulkUpload = this.permissionsService.can(this.workplace.uid, 'canBulkUpload');
+    const workplaceUid: string = this.workplace ? this.workplace.uid : null;
+    this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
+    this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
 
     if (this.workplace && this.canEditEstablishment) {
       this.subscriptions.add(

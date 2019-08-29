@@ -28,9 +28,10 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
-    this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
-    this.canViewEstablishment = this.permissionsService.can(this.workplace.uid, 'canViewEstablishment');
+    const workplaceUid: string = this.workplace ? this.workplace.uid : null;
+    this.canViewListOfUsers = this.permissionsService.can(workplaceUid, 'canViewListOfUsers');
+    this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
+    this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
 
     if (this.workplace) {
       this.subscriptions.add(
