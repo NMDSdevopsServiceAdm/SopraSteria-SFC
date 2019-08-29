@@ -12,11 +12,12 @@ import { Subscription } from 'rxjs';
 })
 export class DashboardComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
-  public canViewListOfWorkers: boolean;
+  public canViewEstablishment: boolean;
   public canViewListOfUsers: boolean;
-  public workplace: Establishment;
+  public canViewListOfWorkers: boolean;
   public lastLoggedIn: string;
   public totalStaffRecords: number;
+  public workplace: Establishment;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -29,6 +30,7 @@ export class DashboardComponent implements OnInit {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
+    this.canViewEstablishment = this.permissionsService.can(this.workplace.uid, 'canViewEstablishment');
 
     if (this.workplace) {
       this.subscriptions.add(
