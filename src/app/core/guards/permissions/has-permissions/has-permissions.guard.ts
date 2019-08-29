@@ -20,7 +20,7 @@ export class HasPermissionsGuard implements CanActivate {
     const notPrimaryWorkplace: string = route.paramMap.get('establishmentuid');
     const workplaceUid: string = notPrimaryWorkplace ? notPrimaryWorkplace : this.establishmentService.establishmentId;
 
-    if (this.userService.loggedInUser.role === Roles.Admin) {
+    if (this.userService.loggedInUser && this.userService.loggedInUser.role === Roles.Admin) {
       return of(true);
     }
 

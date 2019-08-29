@@ -16,7 +16,7 @@ export class CheckPermissionsGuard implements CanActivate {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.userService.loggedInUser.role === Roles.Admin) {
+    if (this.userService.loggedInUser && this.userService.loggedInUser.role === Roles.Admin) {
       return true;
     }
 
