@@ -15,6 +15,11 @@ export class HasPermissionsGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     const notPrimaryWorkplace: string = route.paramMap.get('establishmentuid');
     const workplaceUid: string = notPrimaryWorkplace ? notPrimaryWorkplace : this.establishmentService.establishmentId;
+
+    if (!workplaceUid) {
+      return of(false);
+    }
+
     const cachedPermissions: PermissionsList = this.permissionsService.permissions(workplaceUid);
 
     if (cachedPermissions) {
