@@ -23,6 +23,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"EstablishmentFK"'
     },
+    workplaceFk: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: '"WorkplaceFK"'
+    },
     workplaceName: {
       type: DataTypes.TEXT,
       allowNull: false,
