@@ -40,9 +40,14 @@ export class WdfStaffSummaryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.breadcrumbService.show(JourneyType.REPORTS);
-
     this.workplace = this.establishmentService.establishment;
+
+    const breadcrumbConfig =
+      this.workplace.uid === this.establishmentService.primaryWorkplace.uid
+        ? JourneyType.REPORTS
+        : JourneyType.SUBSIDIARY_REPORTS;
+
+    this.breadcrumbService.show(breadcrumbConfig);
 
     this.workerService.getWorker(this.workplace.uid, this.route.snapshot.params.id, true).subscribe(worker => {
       this.worker = worker;
