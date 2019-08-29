@@ -31,7 +31,7 @@
         <app-home-tab [workplace]="workplace"></app-home-tab>
       </app-tab>
 
-      <app-tab *ngIf="workplace" [title]="'Workplace'">
+      <app-tab *ngIf="workplace && canViewEstablishment" [title]="'Workplace'">
         <app-workplace-tab [workplace]="workplace"></app-workplace-tab>
       </app-tab>
 
