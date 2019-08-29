@@ -11,11 +11,12 @@ export class WorkplaceTabComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
 
-  public canEditEstablishment: boolean;
+  public updateWorkplaceAlert: boolean;
 
   constructor(private permissionsService: PermissionsService) {}
 
   ngOnInit() {
-    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+    this.updateWorkplaceAlert =
+      !this.workplace.employerType && this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
   }
 }
