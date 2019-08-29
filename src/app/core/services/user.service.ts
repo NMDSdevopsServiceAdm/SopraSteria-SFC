@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
@@ -94,8 +94,9 @@ export class UserService {
   /*
    * GET /api/user/my/establishments
    */
-  public getEstablishments(): Observable<GetWorkplacesResponse> {
-    return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`);
+  public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
+    const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
+    return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`, { params });
   }
 
   /*
