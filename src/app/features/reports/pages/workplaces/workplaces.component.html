@@ -10,7 +10,7 @@
 <dl class="govuk-list--definition">
   <dt><app-eligibility-icon [num]="totalEligible" [eligible]="true"></app-eligibility-icon></dt>
   <dd class="govuk-!-font-size-19 govuk-!-padding-bottom-3">Overall</dd>
-  <ng-container *ngIf="true">
+  <ng-container *ngIf="totalIneligible > 0">
     <dt><app-eligibility-icon [num]="totalIneligible" [eligible]="false"></app-eligibility-icon></dt>
     <dd></dd>
   </ng-container>
