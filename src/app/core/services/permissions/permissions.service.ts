@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Permissions, PermissionsList, PermissionsResponse, PermissionType } from '@core/model/permissions.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +43,21 @@ export class PermissionsService {
     }
 
     return true;
+  }
+
+  public hasWorkplacePermissions(workplaceUid: string) {
+    const cachedPermissions: PermissionsList = this.permissions(workplaceUid);
+    if (cachedPermissions) {
+      return of(true);
+    }
+    return this.getPermissions(workplaceUid)
+      .pipe(tap(response => this.setPermissions(workplaceUid, response.permissions)))
+      .pipe(
+        catchError(() => {
+          return of(null);
+        })
+      )
+      .pipe(map(() => true));
   }
 
   private hasValidPermissions(requiredPermissions: string[], permissionsList: PermissionsList): boolean {
