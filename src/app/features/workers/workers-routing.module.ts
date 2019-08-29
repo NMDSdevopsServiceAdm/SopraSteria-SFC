@@ -112,7 +112,7 @@ const routes: Routes = [
     component: EditWorkerComponent,
     resolve: { worker: WorkerResolver },
     data: {
-      permissions: ['canEditWorker'],
+      permissions: ['canViewWorker'],
     },
     children: [
       {
