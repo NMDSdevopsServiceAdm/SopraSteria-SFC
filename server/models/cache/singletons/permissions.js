@@ -174,7 +174,7 @@ let ALL_PERMISSIONS = [
     description: 'Edit establishment',
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
-    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
+    subOwnedByParentAccessBySub: [],
     isAdmin: false,
   },
   {
