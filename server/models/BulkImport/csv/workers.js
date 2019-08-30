@@ -72,7 +72,7 @@ class Worker {
     this._qualifications = null;
     this._amhp = null;
   };
-
+   
   static get UNCHECKED_ESTABLISHMENT_ERROR() { return 997; }
   static get DUPLICATE_ERROR() { return 998; }
   static get HEADERS_ERROR() { return 999; }
@@ -2427,6 +2427,20 @@ class Worker {
     };
   }
 
+  // Exceeds national insurance maximum
+  exceedsNationalInsuranceMaximum(originalLineNumber) {
+    return {
+      origin: 'Workers',
+      lineNumber: this._lineNumber,
+      errCode: Worker.DUPLICATE_ERROR,
+      errType: `DUPLICATE_ERROR`,
+      error: `NINUMBER is already associated with another full time worker record`,
+      source: this._currentLine.UNIQUEWORKERID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+    };
+  }
+  
   // add unchecked establishment reference validation error
   uncheckedEstablishment() {
     return {
