@@ -171,11 +171,11 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
 
     this.canDeleteUser =
       this.permissionsService.can(this.establishment.uid, 'canDeleteUser') &&
-      (editUsersList.length > 1 || this.user.role === Roles.Read) &&
+      users.length > 1 &&
       !this.user.isPrimary &&
       loggedInUser.uid !== this.user.uid;
     this.canResendActivationLink = canEditUser && isPending;
-    this.canEditUser = canEditUser && users.length > 1;
+    this.canEditUser = canEditUser && (!this.user.isPrimary || (this.user.isPrimary && editUsersList.length > 1));
     this.canNavigate = Roles.Admin === loggedInUser.role;
   }
 }
