@@ -179,6 +179,8 @@ class Worker {
   static get QUAL_ACH03_WARNING() { return 5550; }
   static get QUAL_ACH03_NOTES_WARNING() { return 5560; }
 
+  static get NI_WORKER_DUPLICATE_ERROR() { return 5570 }
+
   get headers() {
     return this._headers_v1_without_chgUnique.join(",");
   }
@@ -2432,12 +2434,12 @@ class Worker {
     return {
       origin: 'Workers',
       lineNumber: this._lineNumber,
-      errCode: Worker.DUPLICATE_ERROR,
-      errType: `DUPLICATE_ERROR`,
+      errCode: Worker.NI_WORKER_DUPLICATE_ERROR,
+      errType: `NI_WORKER_DUPLICATE_ERROR`,
       error: `NINUMBER is already associated with another full time worker record`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
+      name: this._currentLine.NINUMBER,
     };
   }
   
