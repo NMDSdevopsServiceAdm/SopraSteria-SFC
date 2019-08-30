@@ -29,6 +29,7 @@ export class SelectMainServiceComponent extends SelectMainService {
   protected init() {
     this.workplace = this.establishmentService.establishment;
     this.selectedMainService = this.workplace.mainService;
+    this.setBackLink();
   }
 
   protected getServiceCategories() {
