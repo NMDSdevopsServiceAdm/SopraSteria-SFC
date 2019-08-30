@@ -93,13 +93,14 @@ const workplaceTab = async (establishmentName, establishmentNmdsId, reportDate, 
     const ourEstablishmentsorkers = establishments.map(thisEstablishment => {
 
       // main service capacity/utilisation can be null - implying "n/a"
+      //console.log("WA DEBUG - thisEstablishment: ", thisEstablishment)
 
       return {
-        workplaceName: thisEstablishment.localID,
-        mainServiceCapacity: thisEstablishment.CapacityOfMainService ? `${thisEstablishment.CapacityOfMainService}` : 'n/a',
+        workplaceName: thisEstablishment.workplaceName,
+        mainServiceCapacity: thisEstablishment.capacityOfMainService ? `${thisEstablishment.capacityOfMainService}` : 'n/a',
       };
     });
-    console.log("WA DEBUG - report/localAuthority/user::workplaceTab - establishments: ", ourEstablishmentsorkers)
+    console.log("WA DEBUG - report/localAuthority/user::workplaceTab - establishments:\n", ourEstablishmentsorkers)
   }
 
   return '';
