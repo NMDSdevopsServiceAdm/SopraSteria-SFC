@@ -9,6 +9,8 @@ import { WorkplacesComponent } from './pages/workplaces/workplaces.component';
 const routes: Routes = [
   {
     path: '',
+    canActivate: [CheckPermissionsGuard],
+    data: { permissions: ['canViewWdfReport', 'canRunLocalAuthorityReport'] },
     component: ReportsComponent,
   },
   {
