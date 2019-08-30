@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public canViewEstablishment: boolean;
   public canViewListOfUsers: boolean;
@@ -37,6 +37,11 @@ export class DashboardComponent implements OnInit {
       this.subscriptions.add(
         this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(total => (this.totalStaffRecords = total))
       );
+      this.subscriptions.add(
+        this.workerService
+          .getAllWorkers(this.workplace.uid)
+          .subscribe(workers => this.workerService.setWorkers(workers))
+      );
     }
 
     // TODO: Use user object to get last logged in date
@@ -46,5 +51,9 @@ export class DashboardComponent implements OnInit {
       url: ['/dashboard'],
       fragment: 'user-accounts',
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
