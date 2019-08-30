@@ -49,7 +49,14 @@ export class SelectMainServiceComponent extends SelectMainService {
   }
 
   protected setBackLink(): void {
-    const route = this.registrationService.isRegulated() ? 'select-workplace' : 'enter-workplace-address';
+    let route: string;
+
+    if (this.registrationService.manuallyEnteredWorkplace$.value) {
+      route = 'enter-workplace-address';
+    } else {
+      route = this.registrationService.isRegulated() ? 'select-workplace' : 'enter-workplace-address';
+    }
+
     this.backService.setBackLink({ url: [`${this.flow}/${route}`] });
   }
 }
