@@ -40,7 +40,6 @@ export class SelectMainService implements OnInit, OnDestroy {
     this.setSelectedWorkplaceService();
     this.getServiceCategories();
     this.init();
-    this.setBackLink();
   }
 
   protected setupForm(): void {
@@ -172,10 +171,6 @@ export class SelectMainService implements OnInit, OnDestroy {
 
   protected navigateToNextPage(): void {
     this.router.navigate([`${this.flow}/confirm-workplace-details`]);
-  }
-
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
   }
 
   get displayIntro() {
