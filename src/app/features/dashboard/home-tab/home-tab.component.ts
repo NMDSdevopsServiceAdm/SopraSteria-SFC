@@ -20,6 +20,8 @@ export class HomeTabComponent implements OnInit {
   public adminRole: Roles = Roles.Admin;
   public canBulkUpload: boolean;
   public canEditEstablishment: boolean;
+  public canViewWorkplaces: boolean;
+  public canViewReports: boolean;
   public isParent: boolean;
   public updateStaffRecords: boolean;
   public user: UserDetails;
@@ -36,6 +38,10 @@ export class HomeTabComponent implements OnInit {
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
+    this.canViewWorkplaces = this.workplace && this.workplace.isParent;
+    this.canViewReports =
+      this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
+      this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
 
     if (this.workplace && this.canEditEstablishment) {
       this.subscriptions.add(
