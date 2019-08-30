@@ -359,6 +359,22 @@ const config = convict({
       format: '*',
       default: false
     }
+  },
+  app: {
+    reports: {
+      localAuthority: {
+        fromDate: {
+          doc: 'A fixed from reporting date; in the format YYYY-MM-DD',
+          format: String,
+          default: '2019-06-01'
+        },
+        toDate: {
+          doc: 'A fixed to reporting date; in the format YYYY-MM-DD',
+          format: String,
+          default: '2019-10-31'
+        },
+      }
+    }
   }
 });
 
