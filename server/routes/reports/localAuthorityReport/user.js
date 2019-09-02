@@ -77,7 +77,7 @@ const staffTab = async (establishmentName, localAuhtority, workers) => {
   if (workers && Array.isArray(workers)) {
     const ourWorkers = workers.map(thisWorker => {
       return {
-        localId: thisWorker.localID,
+        localId: thisWorker.localId,
       };
     });
     console.log("WA DEBUG - report/localAuthority/user::staffTab - workers: ", ourWorkers)
