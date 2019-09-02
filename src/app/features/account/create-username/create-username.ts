@@ -15,7 +15,6 @@ import { finalize } from 'rxjs/operators';
 
 export class CreateUsername implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
-  protected loginCredentialsExist = false;
   protected return: URLStructure;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
