@@ -46,6 +46,10 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.establishment;
 
     this.subscriptions.add(
+      this.workerService.getAllWorkers(this.workplace.uid).subscribe(workers => this.workerService.setWorkers(workers))
+    );
+
+    this.subscriptions.add(
       this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(total => (this.totalStaffRecords = total))
     );
 
