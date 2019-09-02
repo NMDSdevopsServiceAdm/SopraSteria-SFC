@@ -18,9 +18,6 @@
           {{ isParent ? 'My workplace' : 'Workforce Development Fund' }}
         </a>
       </li>
-      <li *ngIf="isParent">
-        <a class="govuk-body-m" [routerLink]="['workplaces']">All workplaces</a>
-      </li>
     </ul>
 
     <app-details [title]="'What is the Workforce Development Fund'">
@@ -36,25 +33,5 @@
         </div>
       </div>
     </app-details>
-    <ng-container *ngIf="canRunLocalAuthorityReport || isAdmin">
-      <h2 class="govuk-body-l">Local Authority Progress</h2>
-      <ul class="govuk-list govuk-list--inline govuk-list--download">
-        <li *ngIf="canRunLocalAuthorityReport">
-          <a
-            href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-local-authority-report.xls'"
-            class="govuk-body-m"
-            (click)="downloadLocalAuthorityReport($event)"
-            >Download <ng-container *ngIf="isAdmin">user </ng-container>report</a
-          >
-        </li>
-        <li *ngIf="isAdmin">
-          <a
-            href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-local-authority-admin-report.csv'"
-            (click)="downloadLocalAuthorityAdminReport($event)"
-            >Download admin report</a
-          >
-        </li>
-      </ul>
-    </ng-container>
   </div>
 </div>
