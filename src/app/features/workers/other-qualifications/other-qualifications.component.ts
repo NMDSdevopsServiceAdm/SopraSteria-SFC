@@ -50,7 +50,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
     }
 
     return {
-      otherQualification: otherQualification,
+      otherQualification,
     };
   }
 

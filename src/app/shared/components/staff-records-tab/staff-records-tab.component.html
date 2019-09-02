@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-one-half">
     <h2 class="govuk-heading-m">Staff records ({{ workers?.length }})</h2>
   </div>
-  <div class="govuk-grid-column-one-half govuk-util__align-right">
+  <div *ngIf="canAddWorker" class="govuk-grid-column-one-half govuk-util__align-right">
     <a
       role="button"
       draggable="false"

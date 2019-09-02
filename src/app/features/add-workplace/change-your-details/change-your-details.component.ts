@@ -38,7 +38,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   private setupSubscription(): void {
     this.subscriptions.add(
-      combineLatest(this.workplaceService.selectedLocationAddress$, this.createAccountService.userDetails$).subscribe(
+      combineLatest([this.workplaceService.selectedLocationAddress$, this.createAccountService.userDetails$]).subscribe(
         ([locationAddress, userDetails]) => {
           this.locationAddress = locationAddress;
 

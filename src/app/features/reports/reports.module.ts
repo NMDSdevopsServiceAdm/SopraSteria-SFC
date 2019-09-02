@@ -9,6 +9,7 @@ import { WdfComponent } from '@features/reports/pages/wdf/wdf.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { ReportsComponent } from './pages/reports/reports.component';
+import { WorkplacesComponent } from './pages/workplaces/workplaces.component';
 import { ReportsRoutingModule } from './reports-routing.module';
 
 @NgModule({
@@ -19,6 +20,7 @@ import { ReportsRoutingModule } from './reports-routing.module';
     WdfComponent,
     ReportsHeaderComponent,
     WdfUpdateWarningComponent,
+    WorkplacesComponent,
   ],
   providers: [WorkerResolver],
 })

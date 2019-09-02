@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-third">
     <p>
-      <ng-container *ngIf="canAccessWorkplace; else noPermission">
+      <ng-container *ngIf="canViewEstablishment; else noPermission">
         <a [routerLink]="['/workplace', workplace.uid]">
           {{ workplace.name }}
         </a>
@@ -37,11 +37,21 @@
               <a href="#">Data request pending</a>
             </ng-container>
             <ng-template #dataPermissions>
-              <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else changeOwner">
-                <a href="#">Data permissions</a>
+              <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
+                <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
+                  <a href="#">Data permissions</a>
+                </ng-container>
+                <ng-template #notParent>
+                  <a href="#">Change data owner</a>
+                </ng-template>
               </ng-container>
-              <ng-template #changeOwner>
-                <a href="#">Change data owner</a>
+              <ng-template #workplaceIsDataOwner>
+                <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
+                  <a href="#">Change data owner</a>
+                </ng-container>
+                <ng-template #notParent>
+                  <a href="#">Data permissions</a>
+                </ng-template>
               </ng-template>
             </ng-template>
           </span>

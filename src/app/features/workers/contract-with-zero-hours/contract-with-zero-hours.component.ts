@@ -50,7 +50,7 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     }
 
     return {
-      zeroHoursContract: zeroHoursContract,
+      zeroHoursContract,
     };
   }
 

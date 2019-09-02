@@ -4,10 +4,10 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
-import { Roles } from '@core/model/roles.enum';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 })
 export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public canAddWorkplace: boolean;
+  public canAddEstablishment: boolean;
   public primaryWorkplace: Establishment;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
@@ -25,16 +25,17 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public workplacesCount = 0;
 
   constructor(
-    private establishmentService: EstablishmentService,
-    private userService: UserService,
+    private breadcrumbService: BreadcrumbService,
     private errorSummaryService: ErrorSummaryService,
-    private breadcrumbService: BreadcrumbService
+    private establishmentService: EstablishmentService,
+    private permissionsService: PermissionsService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
-    this.canAddWorkplace = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
     this.getEstablishments();
     this.setupServerErrorsMap();
   }

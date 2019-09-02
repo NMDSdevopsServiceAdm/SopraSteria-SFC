@@ -12,13 +12,20 @@ $error_row_padding: $govuk-gutter-half;
   }
 }
 
+.govuk-table__with-action {
+  .govuk-table__row td:last-child,
+  .govuk-table__row th:last-child {
+    width: 1%;
+    white-space: nowrap;
+  }
+}
+
 .govuk-error-table__row {
   border: $error_border_size solid $shiraz;
 }
 
 .govuk-error-table__row--highlight {
   background: rgba(govuk-colour('blue'), 0.15);
-
 }
 
 .govuk-error-table__cell {

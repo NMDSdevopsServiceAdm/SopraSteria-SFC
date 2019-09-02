@@ -3,6 +3,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { Qualification } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import {
   DeleteQualificationDialogComponent,
@@ -17,13 +18,20 @@ import { take } from 'rxjs/operators';
 export class QualificationsComponent implements OnInit {
   @Input() worker: Worker;
   @Input() workplace: Establishment;
+  public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
   public qualifications: Qualification[];
 
-  constructor(private workerService: WorkerService, private dialogService: DialogService) {}
+  constructor(
+    private workerService: WorkerService,
+    private permissionsService: PermissionsService,
+    private dialogService: DialogService
+  ) {}
 
   ngOnInit() {
     this.fetchAllRecords();
+
+    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
   deleteQualification(record, event) {

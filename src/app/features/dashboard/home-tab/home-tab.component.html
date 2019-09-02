@@ -1,7 +1,7 @@
 <div class="govuk-grid-row govuk-!-margin-top-3">
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-m">Home</h2>
-    <ng-container *ngIf="workplace && canEdit">
+    <ng-container *ngIf="workplace && canEditEstablishment">
       <p *ngIf="!workplace.employerType || updateStaffRecords">What you need to do first.</p>
       <app-inset-text *ngIf="!workplace?.employerType" [color]="'todo'">
         You need to provide information on your workplace.<br />
@@ -19,26 +19,21 @@
   <div class="govuk-grid-column-one-third">
     <h3 class="govuk-heading-s">Notifications</h3>
     <p>You have no new notifications</p>
-    <h3 class="govuk-heading-s govuk-!-margin-top-6">Other things you can do</h3>
-    <ul class="govuk-list">
-      <ng-container *ngIf="workplace">
-        <li *ngIf="[editRole, adminRole].includes(user?.role)">
+    <ng-container *ngIf="canBulkUpload || canViewWorkplaces || canViewReports">
+      <h3 class="govuk-heading-s govuk-!-margin-top-6">Other things you can do</h3>
+      <ul *ngIf="workplace" class="govuk-list">
+        <li *ngIf="canBulkUpload">
           <a [routerLink]="['/bulk-upload']" (click)="setReturn()">Bulk upload</a>
         </li>
-        <li *ngIf="workplace.isParent">
+        <li *ngIf="canViewWorkplaces">
           <a [routerLink]="['/workplace', 'view-all-workplaces']">View all workplaces</a>
         </li>
-        <li><a [routerLink]="['/workplace', workplace.uid, 'reports']">View reports</a></li>
-      </ng-container>
-      <ng-container *ngIf="[adminRole].includes(user.role)">
-        <li><a [routerLink]="['/search-users']">Search Users</a></li>
-        <li><a [routerLink]="['/search-establishments']">Search Establishments</a></li>
-      </ng-container>
-      <!--
-        TODO uncomment once relevant sections have been developed
-        <li><a [routerLink]="['/']">Request to become a parent</a></li>
-        <li><a [routerLink]="['/']">Link to parent</a></li>
-      -->
+        <li *ngIf="canViewReports"><a [routerLink]="['/workplace', workplace.uid, 'reports']">View reports</a></li>
+      </ul>
+    </ng-container>
+    <ul *ngIf="[adminRole].includes(user.role)" class="govuk-list">
+      <li><a [routerLink]="['/search-users']">Search Users</a></li>
+      <li><a [routerLink]="['/search-establishments']">Search Establishments</a></li>
     </ul>
   </div>
 </div>

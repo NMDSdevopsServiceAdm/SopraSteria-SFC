@@ -20,7 +20,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-summary-list [canNavigate]="canNavigate" [topBorder]="true" [summaryList]="userInfo"></app-summary-list>
-    <app-summary-list *ngIf="canEdit" [topBorder]="true" [summaryList]="loginInfo"></app-summary-list>
+    <app-summary-list *ngIf="canEditUser" [topBorder]="true" [summaryList]="loginInfo"></app-summary-list>
     <dl
       class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wrap-border govuk-!-margin-bottom-0"
     >
@@ -29,7 +29,7 @@
           Permissions
         </dt>
         <dd class="govuk-summary-list__value">{{ user.isPrimary ? 'Primary' : '' }} {{ user.role }}</dd>
-        <dd *ngIf="canEdit" class="govuk-summary-list__actions">
+        <dd *ngIf="canEditUser" class="govuk-summary-list__actions">
           <a [routerLink]="['permissions']">
             Change
             <span class="govuk-visually-hidden"> user permissions</span>

@@ -27,4 +27,18 @@ export class ReportService {
       responseType: 'blob' as 'json',
     });
   }
+
+  public getLocalAuthorityReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/reports/localauthority/${workplaceUid}`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
+  public getLocalAuthorityAdminReport(): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/reports/localauthority/admin`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
 }

@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-one-half-from-desktop">
     <h2 class="govuk-heading-m">Qualifications and training</h2>
   </div>
-  <div *ngIf="showAddButtons" class="govuk-grid-column-one-half-from-desktop govuk-util__align-right">
+  <div *ngIf="showAddButtons && canEditWorker" class="govuk-grid-column-one-half-from-desktop govuk-util__align-right">
     <a
       class="govuk-button govuk-button--secondary govuk-!-margin-right-4"
       [routerLink]="['../add-qualification']"
@@ -32,7 +32,7 @@
       </app-summary-record-value>
     </dd>
 
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('care-certificate')" (click)="setReturn()">
         <ng-container *ngIf="!worker.careCertificate">
           Provide information
@@ -55,7 +55,7 @@
         {{ worker.qualificationInSocialCare | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('social-care-qualification')" (click)="setReturn()">
         <ng-container *ngIf="!worker.qualificationInSocialCare">
           Provide information
@@ -78,7 +78,7 @@
         {{ worker.socialCareQualification?.title | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('social-care-qualification-level')" (click)="setReturn()">
         <ng-container *ngIf="!worker.socialCareQualification">
           Provide information
@@ -101,7 +101,7 @@
         {{ worker.otherQualification | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('other-qualifications')" (click)="setReturn()">
         <ng-container *ngIf="!worker.otherQualification">
           Provide information
@@ -125,7 +125,7 @@
       </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('other-qualifications-level')" (click)="setReturn()">
+      <a *ngIf="canEditWorker" [routerLink]="getRoutePath('other-qualifications-level')" (click)="setReturn()">
         <ng-container *ngIf="!worker.highestQualification">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -146,7 +146,7 @@
       {{ worker.apprenticeshipTraining | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('apprenticeship-training')" (click)="setReturn()">
+      <a *ngIf="canEditWorker" [routerLink]="getRoutePath('apprenticeship-training')" (click)="setReturn()">
         <ng-container *ngIf="!worker.apprenticeshipTraining">
           Provide information
           <span class="govuk-visually-hidden"> for</span>

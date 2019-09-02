@@ -1,17 +1,26 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 
 import { ReportsComponent } from './pages/reports/reports.component';
 import { WdfComponent } from './pages/wdf/wdf.component';
+import { WorkplacesComponent } from './pages/workplaces/workplaces.component';
 
 const routes: Routes = [
   {
     path: '',
+    canActivate: [CheckPermissionsGuard],
+    data: { permissions: ['canViewWdfReport', 'canRunLocalAuthorityReport'] },
     component: ReportsComponent,
   },
   {
+    path: 'workplaces',
+    component: WorkplacesComponent,
+  },
+  {
     path: 'wdf',
-    data: { title: 'Workforce Development Fund Report' },
+    canActivate: [CheckPermissionsGuard],
+    data: { permissions: ['canViewWdfReport'], title: 'Workforce Development Fund Report' },
     children: [
       {
         path: '',

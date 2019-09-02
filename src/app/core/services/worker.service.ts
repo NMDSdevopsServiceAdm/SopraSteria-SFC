@@ -41,9 +41,8 @@ export class WorkerService {
 
   public createStaffResponse = null;
 
-  // All workers store
-  private _workers$: BehaviorSubject<Worker> = new BehaviorSubject<Worker>(null);
-  public workers$: Observable<Worker> = this._workers$.asObservable();
+  private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
+  public workers$: Observable<Worker[]> = this._workers$.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -73,6 +72,10 @@ export class WorkerService {
 
   setState(worker) {
     this._worker$.next(worker);
+  }
+
+  public setWorkers(workers: Worker[]) {
+    this._workers$.next(workers);
   }
 
   setReturnTo(returnTo: URLStructure): void {

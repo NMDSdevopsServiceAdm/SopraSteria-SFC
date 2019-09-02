@@ -129,10 +129,10 @@ export class OtherServicesComponent extends Question {
         .filter(id => allServicesKeys.includes(id))
         .map(id => {
           const service = { id };
-          const otherService: Service = filter(this.allServices, { id: id })[0];
+          const otherService: Service = filter(this.allServices, { id })[0];
 
           if (otherService.other) {
-            service['other'] = this.form.get(`additionalOtherService${id}`).value;
+            service[`other`] = this.form.get(`additionalOtherService${id}`).value;
           }
           return service;
         }),

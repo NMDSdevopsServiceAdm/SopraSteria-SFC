@@ -1,17 +1,17 @@
-import { ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES, PASSWORD_PATTERN } from '@core/constants/constants';
-import { BackService } from '@core/services/back.service';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { finalize } from 'rxjs/operators';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { LoginCredentials } from '@core/model/login-credentials.model';
 import { OnDestroy, OnInit } from '@angular/core';
-import { RegistrationService } from '@core/services/registration.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES, PASSWORD_PATTERN } from '@core/constants/constants';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { LoginCredentials } from '@core/model/login-credentials.model';
 import { URLStructure } from '@core/model/url.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 export class CreateUsername implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
@@ -177,8 +177,8 @@ export class CreateUsername implements OnInit, OnDestroy {
           })
         )
         .subscribe(
-          (data: Object) => {
-            if (data['status'] === '1') {
+          (data: object) => {
+            if (data[`status`] === '1') {
               this.getUsername.setErrors({ usernameExists: true });
             } else {
               this.getUsername.setErrors({ usernameExists: null });

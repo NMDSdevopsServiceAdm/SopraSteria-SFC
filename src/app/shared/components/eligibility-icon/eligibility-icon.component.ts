@@ -7,6 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
 export class EligibilityIconComponent implements OnInit {
   @Input() eligible: boolean;
   @Input() check: boolean;
+  @Input() num: number = null;
 
   public icon: string;
   public label: string;

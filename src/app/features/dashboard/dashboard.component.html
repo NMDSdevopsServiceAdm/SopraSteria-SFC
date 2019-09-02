@@ -31,15 +31,15 @@
         <app-home-tab [workplace]="workplace"></app-home-tab>
       </app-tab>
 
-      <app-tab *ngIf="workplace" [title]="'Workplace'">
+      <app-tab *ngIf="workplace && canViewEstablishment" [title]="'Workplace'">
         <app-workplace-tab [workplace]="workplace"></app-workplace-tab>
       </app-tab>
 
-      <app-tab *ngIf="canViewStaffRecords && workplace" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
+      <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
         <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
       </app-tab>
 
-      <app-tab *ngIf="workplace" [title]="'User accounts'">
+      <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'User accounts'">
         <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
       </app-tab>
     </app-tabs>

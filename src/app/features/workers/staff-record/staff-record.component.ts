@@ -8,10 +8,10 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-
 import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
 
 @Component({
@@ -19,21 +19,22 @@ import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-work
   templateUrl: './staff-record.component.html',
 })
 export class StaffRecordComponent implements OnInit, OnDestroy {
-  public returnToRecord: URLStructure;
+  public canDeleteWorker: boolean;
   public returnToQuals: URLStructure;
+  public returnToRecord: URLStructure;
   public worker: Worker;
   public workplace: Establishment;
 
-  public updatedDate: any;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private alertService: AlertService,
+    private breadcrumbService: BreadcrumbService,
     private dialogService: DialogService,
-    private workerService: WorkerService,
-    private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
-    private breadcrumbService: BreadcrumbService
+    private permissionsService: PermissionsService,
+    private route: ActivatedRoute,
+    private workerService: WorkerService
   ) {}
 
   ngOnInit() {
@@ -62,6 +63,8 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         }
       })
     );
+
+    this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
   }
 
   ngOnDestroy() {

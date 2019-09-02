@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
-import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
-import { UserService } from '@core/services/user.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 @Component({
   selector: 'app-workplace-tab',
@@ -12,12 +11,12 @@ export class WorkplaceTabComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
 
-  public updateWorkplace: boolean;
+  public updateWorkplaceAlert: boolean;
 
-  constructor(private userService: UserService) {}
+  constructor(private permissionsService: PermissionsService) {}
 
   ngOnInit() {
-    const user = this.userService.loggedInUser;
-    this.updateWorkplace = !this.workplace.employerType && [Roles.Edit, Roles.Admin].includes(user.role);
+    this.updateWorkplaceAlert =
+      !this.workplace.employerType && this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
   }
 }

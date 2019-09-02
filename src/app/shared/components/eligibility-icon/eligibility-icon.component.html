@@ -1,3 +1,6 @@
-<p class="govuk-!-margin-bottom-0 govuk__flex govuk__nowrap">
+<span class="govuk-!-margin-bottom-0 govuk__flex govuk__nowrap">
+  <ng-container *ngIf="num !== null">
+    <strong class="govuk-line-height__normal govuk-!-margin-right-1">{{ num }}</strong>
+  </ng-container>
   <img class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}-icon.svg" alt="" /> {{ label }}
-</p>
+</span>

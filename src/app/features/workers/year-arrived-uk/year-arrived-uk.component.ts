@@ -99,7 +99,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
       return {
         yearArrived: {
           value: yearKnown,
-          year: year,
+          year,
         },
       };
     }

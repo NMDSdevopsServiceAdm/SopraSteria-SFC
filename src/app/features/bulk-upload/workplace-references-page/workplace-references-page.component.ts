@@ -46,8 +46,11 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
 
     this.backService.setBackLink({ url: this.exit });
     this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, reference => {
-      const toMatch = this.primaryWorkplace.isParent ? WorkplaceDataOwner.Parent : WorkplaceDataOwner.Workplace;
-      return reference.dataOwner === toMatch;
+      if (this.primaryWorkplace.isParent) {
+        return reference.dataOwner === WorkplaceDataOwner.Parent || reference.uid === this.primaryWorkplace.uid;
+      } else {
+        return reference.dataOwner === WorkplaceDataOwner.Workplace;
+      }
     });
     this.setupForm();
   }

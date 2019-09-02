@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
-import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { Eligibility } from '@core/model/wdf.model';
 import { Worker } from '@core/model/worker.model';
@@ -11,8 +10,8 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
-import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import {
   WdfWorkplaceConfirmationDialogComponent,
@@ -32,7 +31,7 @@ export class WdfComponent implements OnInit, OnDestroy {
   public report: WDFReport;
   public returnUrl: URLStructure;
   public exitUrl: URLStructure;
-  public canViewStaffRecords: boolean;
+  public canViewWorker: boolean;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -45,24 +44,30 @@ export class WdfComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
-    private userService: UserService
+    private permissionsService: PermissionsService
   ) {}
 
   ngOnInit() {
-    this.breadcrumbService.show(JourneyType.REPORTS);
     const workplaceUid = this.route.snapshot.params.establishmentuid;
 
-    this.canViewStaffRecords = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
+    const breadcrumbConfig =
+      workplaceUid === this.establishmentService.primaryWorkplace.uid
+        ? JourneyType.REPORTS
+        : JourneyType.SUBSIDIARY_REPORTS;
+
+    this.breadcrumbService.show(breadcrumbConfig);
+
+    this.canViewWorker = this.permissionsService.can(workplaceUid, 'canViewWorker');
     this.returnUrl = { url: ['/workplace', workplaceUid, 'reports', 'wdf'] };
     this.exitUrl = { url: ['/workplace', workplaceUid, 'reports'] };
     this.workerService.setReturnTo(null);
 
     this.subscriptions.add(
-      combineLatest(
+      combineLatest([
         this.establishmentService.getEstablishment(workplaceUid, true),
         this.reportService.getWDFReport(workplaceUid),
-        this.workerService.getTotalStaffRecords(workplaceUid)
-      )
+        this.workerService.getTotalStaffRecords(workplaceUid),
+      ])
         .pipe(take(1))
         .subscribe(([workplace, report, totalStaffRecords]) => {
           this.report = report;
@@ -71,7 +76,7 @@ export class WdfComponent implements OnInit, OnDestroy {
         })
     );
 
-    if (this.canViewStaffRecords) {
+    if (this.canViewWorker) {
       this.subscriptions.add(
         this.workerService
           .getAllWorkers(workplaceUid)
@@ -108,7 +113,7 @@ export class WdfComponent implements OnInit, OnDestroy {
   private confirmAndSubmit() {
     const wdfProperties = pickBy(this.workplace.wdf, isObject);
     const keys = Object.keys(
-      pickBy(wdfProperties, function(wdfProperty, key) {
+      pickBy(wdfProperties, (wdfProperty, key) => {
         if (wdfProperty.hasOwnProperty('updatedSinceEffectiveDate')) {
           return wdfProperty.isEligible === Eligibility.YES && !wdfProperty.updatedSinceEffectiveDate;
         }
