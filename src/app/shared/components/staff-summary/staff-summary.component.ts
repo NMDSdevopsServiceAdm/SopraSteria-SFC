@@ -13,6 +13,7 @@ export class StaffSummaryComponent implements OnInit {
   @Input() workers: Array<Worker>;
   @Input() wdfView = false;
   public canViewWorker: boolean;
+  public canEditWorker: boolean;
 
   constructor(private permissionsService: PermissionsService) {}
 
@@ -29,5 +30,6 @@ export class StaffSummaryComponent implements OnInit {
 
   ngOnInit() {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
+    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 }
