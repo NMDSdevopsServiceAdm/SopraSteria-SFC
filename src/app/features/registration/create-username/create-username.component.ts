@@ -33,7 +33,7 @@ export class CreateUsernameComponent extends CreateUsername {
   }
 
   protected setBackLink(): void {
-    const route: string = this.return ? '/registration/confirm-account-details' : '/registration/your-details';
+    const route: string = this.return ? this.return.url[0] : '/registration/your-details';
     this.backService.setBackLink({ url: [route] });
   }
 
@@ -48,7 +48,7 @@ export class CreateUsernameComponent extends CreateUsername {
   }
 
   protected setFormSubmissionLink(): string {
-    return this.return ? '/registration/confirm-account-details' : '/registration/security-question';
+    return this.return ? this.return.url[0] : '/registration/security-question';
   }
 
   protected save(): void {
