@@ -45,6 +45,18 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     this.workplace = this.establishmentService.establishment;
 
+    this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
+    this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
+    this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
+
+    if (this.canViewListOfWorkers) {
+      this.subscriptions.add(
+        this.workerService
+          .getAllWorkers(this.workplace.uid)
+          .subscribe(workers => this.workerService.setWorkers(workers))
+      );
+    }
+
     this.subscriptions.add(
       this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(total => (this.totalStaffRecords = total))
     );
@@ -57,10 +69,6 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.userService.updateReturnUrl({
       url: ['/workplace', this.workplace.uid],
     });
-
-    this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
-    this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
-    this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
   }
 
   public onDeleteWorkplace(event: Event): void {
