@@ -149,7 +149,10 @@ router.route('/').get(async (req, res) => {
           const reportEstablishments = await models.localAuthorityReportEstablishment.findAll({
             where: {
               establishmentFk: establishmentId
-            }
+            },
+            order: [
+              ['workplaceName', 'ASC'],
+            ],
           });
           if (reportEstablishments && Array.isArray(reportEstablishments)) {
             await workplaceTab(establishmentName, establishmentNmdsId, reportDateUK, localAuthority, reportEstablishments);
@@ -166,7 +169,11 @@ router.route('/').get(async (req, res) => {
                     establishmentFk: establishmentId
                   }
               }
-            ]
+            ],
+            order: [
+              ['workplaceName', 'ASC'],
+              ['localId', 'ASC'],
+            ],
           });
           if (reportWorkers && Array.isArray(reportWorkers)) {
             await staffTab(establishmentName, localAuthority, reportWorkers);
