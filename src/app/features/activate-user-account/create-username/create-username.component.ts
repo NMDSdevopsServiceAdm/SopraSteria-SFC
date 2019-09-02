@@ -45,7 +45,6 @@ export class CreateUsernameComponent extends CreateUsername {
     this.subscriptions.add(
       this.createAccountService.loginCredentials$.subscribe((loginCredentials: LoginCredentials) => {
         if (loginCredentials) {
-          this.loginCredentialsExist = true;
           this.preFillForm(loginCredentials);
         }
       })
