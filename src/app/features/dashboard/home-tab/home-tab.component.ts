@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -7,13 +7,13 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home-tab',
   templateUrl: './home-tab.component.html',
 })
-export class HomeTabComponent implements OnInit {
+export class HomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
 
   private subscriptions: Subscription = new Subscription();
@@ -45,17 +45,18 @@ export class HomeTabComponent implements OnInit {
 
     if (this.workplace && this.canEditEstablishment) {
       this.subscriptions.add(
-        this.workerService
-          .getAllWorkers(this.workplace.uid)
-          .pipe(take(1))
-          .subscribe(workers => {
-            this.updateStaffRecords = !(workers.length > 0);
-          })
+        this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(workers => {
+          this.updateStaffRecords = !(workers.length > 0);
+        })
       );
     }
   }
 
   public setReturn(): void {
     this.bulkUploadService.setReturnTo({ url: ['/dashboard'] });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
