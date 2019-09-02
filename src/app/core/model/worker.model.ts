@@ -81,6 +81,7 @@ export interface Worker {
   updated?: string;
   completed?: boolean;
   wdf?: WorkerWdfRecord;
+  wdfEligible: boolean;
 }
 
 export interface WorkerPay {
