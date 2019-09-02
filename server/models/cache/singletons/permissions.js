@@ -270,7 +270,7 @@ class PermissionCache {
     } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Subsidiary' && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Workplace') {
       // console.log("6")
       if (requestData.dataPermissions !== 'None' && requestData.role === 'Read'){
-        permissions = this.filterByRole(requestData.role);
+        permissions = this.filterByRole(this.getRoleEnum(requestData.role));
       } else{
         permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
       }
