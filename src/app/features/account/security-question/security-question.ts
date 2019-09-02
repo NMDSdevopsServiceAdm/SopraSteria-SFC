@@ -13,7 +13,6 @@ export class SecurityQuestion implements OnInit, OnDestroy {
   private securityDetailsMaxLength = 255;
   protected back: URLStructure;
   protected return: URLStructure;
-  protected securityDetailsExist = false;
   protected subscriptions: Subscription = new Subscription();
   public callToActionLabel: string;
   public form: FormGroup;
