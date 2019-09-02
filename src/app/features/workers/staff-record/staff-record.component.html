@@ -19,7 +19,7 @@
         </span>
       </button>
       <a
-        *ngIf="!worker.completed"
+        *ngIf="canEditWorker && !worker.completed"
         class="govuk-button"
         role="button"
         draggable="false"
