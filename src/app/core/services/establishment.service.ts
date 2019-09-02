@@ -96,20 +96,9 @@ export class EstablishmentService {
   }
 
   public resetState() {
+    this._establishmentId = null;
     this._establishment$.next(null);
     this.setPrimaryWorkplace(null);
-  }
-
-  public set establishmentId(value: string) {
-    this._establishmentId = value;
-    localStorage.setItem('establishmentId', value.toString());
-  }
-
-  public getAllServices(establishmentId): Observable<ServiceGroup[]> {
-    const params = new HttpParams().set('all', 'true');
-    return this.http
-      .get<AllServicesResponse>(`/api/establishment/${establishmentId}/services`, { params })
-      .pipe(map(res => res.allOtherServices));
   }
 
   public get establishmentId() {
@@ -126,6 +115,18 @@ export class EstablishmentService {
     }
 
     return this._establishmentId;
+  }
+
+  public set establishmentId(value: string) {
+    this._establishmentId = value;
+    localStorage.setItem('establishmentId', value.toString());
+  }
+
+  public getAllServices(establishmentId): Observable<ServiceGroup[]> {
+    const params = new HttpParams().set('all', 'true');
+    return this.http
+      .get<AllServicesResponse>(`/api/establishment/${establishmentId}/services`, { params })
+      .pipe(map(res => res.allOtherServices));
   }
 
   public get returnTo(): URLStructure {

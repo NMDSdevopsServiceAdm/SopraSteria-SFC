@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
-import { Roles } from '@core/model/roles.enum';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -11,38 +10,37 @@ import { Subscription } from 'rxjs';
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public canViewStaffRecords: boolean;
-  public workplace: Establishment;
+  public canViewEstablishment: boolean;
+  public canViewListOfUsers: boolean;
+  public canViewListOfWorkers: boolean;
   public lastLoggedIn: string;
   public totalStaffRecords: number;
+  public workplace: Establishment;
 
   constructor(
     private establishmentService: EstablishmentService,
+    private permissionsService: PermissionsService,
     private userService: UserService,
-    private workerService: WorkerService,
-    private router: Router
+    private workerService: WorkerService
   ) {}
 
   ngOnInit() {
-    this.canViewStaffRecords = [Roles.Edit, Roles.Admin].includes(this.userService.loggedInUser.role);
     this.workplace = this.establishmentService.primaryWorkplace;
-
-    this.subscriptions.add(
-      this.userService.loggedInUser$.subscribe(user => {
-        if (user && user.role === 'Admin') {
-          if (!this.workplace) {
-            this.router.navigate(['/search-users']);
-            return false;
-          }
-        }
-      })
-    );
+    const workplaceUid: string = this.workplace ? this.workplace.uid : null;
+    this.canViewListOfUsers = this.permissionsService.can(workplaceUid, 'canViewListOfUsers');
+    this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
+    this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
 
     if (this.workplace) {
       this.subscriptions.add(
         this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(total => (this.totalStaffRecords = total))
+      );
+      this.subscriptions.add(
+        this.workerService
+          .getAllWorkers(this.workplace.uid)
+          .subscribe(workers => this.workerService.setWorkers(workers))
       );
     }
 
@@ -53,5 +51,9 @@ export class DashboardComponent implements OnInit {
       url: ['/dashboard'],
       fragment: 'user-accounts',
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

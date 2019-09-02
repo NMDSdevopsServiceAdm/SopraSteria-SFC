@@ -68,11 +68,11 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 400,
-        message: 'No results found.',
+        message: 'Invalid postcode.',
       },
       {
         name: 404,
-        message: 'Invalid postcode.',
+        message: 'No results found.',
       },
     ];
   }

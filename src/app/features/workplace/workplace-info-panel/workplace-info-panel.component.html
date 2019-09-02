@@ -1,7 +1,14 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-third">
     <p>
-      {{ workplace.name }}
+      <ng-container *ngIf="canViewEstablishment; else noPermission">
+        <a [routerLink]="['/workplace', workplace.uid]">
+          {{ workplace.name }}
+        </a>
+      </ng-container>
+      <ng-template #noPermission>
+        {{ workplace.name }}
+      </ng-template>
     </p>
     <p class="govuk-!-margin-bottom-1"><strong>Last updated</strong></p>
     <p class="govuk-!-margin-bottom-0">{{ workplace.updated | date: 'd MMMM y' }}</p>

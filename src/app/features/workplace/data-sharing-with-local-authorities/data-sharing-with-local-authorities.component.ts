@@ -7,7 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocalAuthorityService } from '@core/services/localAuthority.service';
-import { uniqBy } from 'lodash';
+import { findIndex, uniqBy } from 'lodash';
 
 import { Question } from '../question/question.component';
 
@@ -56,11 +56,18 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
     this.next = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
     this.previous = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
 
-    this.subscriptions.add(
-      this.localAuthorityService.getAuthorities().subscribe(authorities => (this.authorities = authorities))
-    );
-
     this.primaryAuthority = this.establishment.primaryAuthority;
+
+    this.subscriptions.add(
+      this.localAuthorityService.getAuthorities().subscribe(authorities => {
+        const index = findIndex(
+          authorities,
+          authority => authority.custodianCode === this.primaryAuthority.custodianCode
+        );
+        authorities.splice(index, 1);
+        this.authorities = authorities;
+      })
+    );
 
     this.establishment.localAuthorities.forEach(authority => {
       if (!authority.isPrimaryAuthority) {
@@ -73,7 +80,7 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
 
   private createLocalAuthorityItem(custodianCode: number = null): FormGroup {
     return this.formBuilder.group({
-      custodianCode: custodianCode,
+      custodianCode,
     });
   }
 

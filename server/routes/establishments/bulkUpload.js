@@ -987,6 +987,15 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         // does not yet exist - check this worker can be associated with a known establishment
         const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, "") : '';
 
+        const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
+          if ( (thatWorker.weeklyContractedHours || thatWorker.weeklyAverageHours) && thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber ) {
+            sum += (thatWorker.weeklyContractedHours ? thatWorker.weeklyContractedHours : ( thatWorker.weeklyAverageHours ? thatWorker.weeklyAverageHours : 0) )
+          }
+          return sum;
+        }, 0);
+      
+        if (myWorkersTotalHours > 65) csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
+
         if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
           // not found the associated establishment
           csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());

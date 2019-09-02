@@ -54,7 +54,7 @@ export class NestedRoutesService {
         routes.push({
           title: child.snapshot.data[nestedRouteProperty],
           params: child.snapshot.params,
-          url: url,
+          url,
         });
       }
 

@@ -10,6 +10,7 @@ import { take } from 'rxjs/operators';
 })
 export class DownloadDataFilesComponent {
   public BulkUploadFileType = BulkUploadFileType;
+  public now: Date = new Date();
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 

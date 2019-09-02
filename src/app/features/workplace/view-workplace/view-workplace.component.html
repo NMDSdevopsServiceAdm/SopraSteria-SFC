@@ -8,7 +8,7 @@
 
   <div class="govuk-grid-column-one-third-from-desktop govuk-util__align-right">
     <button
-      *ngIf="canDelete"
+      *ngIf="canDeleteEstablishment"
       class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
       (click)="onDeleteWorkplace($event)"
     >
@@ -27,11 +27,11 @@
         <app-workplace-tab [workplace]="workplace" [summaryReturnUrl]="summaryReturnUrl"></app-workplace-tab>
       </app-tab>
 
-      <app-tab *ngIf="canViewStaffRecords" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
+      <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
         <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
       </app-tab>
 
-      <app-tab [title]="'User accounts'">
+      <app-tab *ngIf="canViewListOfUsers" [title]="'User accounts'">
         <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
       </app-tab>
     </app-tabs>

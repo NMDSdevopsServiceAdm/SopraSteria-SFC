@@ -104,7 +104,7 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
       weeklyHoursAverage: {
         value: hoursKnown,
         ...(hoursKnown === 'Yes' && {
-          hours: hours,
+          hours,
         }),
       },
     };

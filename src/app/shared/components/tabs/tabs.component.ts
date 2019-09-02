@@ -12,7 +12,7 @@ export class TabsComponent implements AfterContentInit {
   private currentTab: number;
   @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
 
-  @ViewChild('tablist') tablist: ElementRef;
+  @ViewChild('tablist', { static: false }) tablist: ElementRef;
 
   constructor(private location: Location, private route: ActivatedRoute) {}
 

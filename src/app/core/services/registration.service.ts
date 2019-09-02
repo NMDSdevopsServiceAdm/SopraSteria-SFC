@@ -18,6 +18,7 @@ export class RegistrationService {
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
   public isRegulated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public manuallyEnteredWorkplace$: BehaviorSubject<boolean> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient) {}
 
@@ -29,6 +30,7 @@ export class RegistrationService {
     return this.http.post<any>('/api/registration/', registrationPayload);
   }
 
+  /* TODO: Give proper return */
   public getUsernameDuplicate(id: string): Observable<any> {
     return this.http.get(`/api/registration/username/${id}`);
   }

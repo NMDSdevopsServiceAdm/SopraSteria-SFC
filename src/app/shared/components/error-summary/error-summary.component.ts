@@ -13,7 +13,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public formErrorsMap: Array<ErrorDetails>;
   @Input() public serverError?: string;
   @Input() public customErrors?: Array<ErrorDefinition>;
-  @ViewChild('errorSummary') private errorSummaryElement: ElementRef;
+  @ViewChild('errorSummary', { static: true }) private errorSummaryElement: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public errors: Array<ErrorSummary>;
 
@@ -57,18 +57,20 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
           Object.keys(formGroup.errors).forEach(i => this.collectError(formGroup, key));
         }
 
-        const formGroupControls: AbstractControl = formGroup['controls'];
+        const formGroupControls: AbstractControl = formGroup[`controls`];
         Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], `${key}.${i}`));
       } else if (isFormArray) {
-        const formArray = <FormArray>this.form.get(key);
+        const formArray = this.form.get(key) as FormArray;
 
         formArray.controls.forEach(formGroup => {
           if (formGroup.errors) {
             Object.keys(formGroup.errors).forEach(() => this.collectError(formGroup, key));
           }
 
-          const formGroupControls: AbstractControl = formGroup['controls'];
-          Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], `${key}.${i}`));
+          const formGroupControls: AbstractControl = formGroup[`controls`];
+          if (formGroupControls) {
+            Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], `${key}.${i}`));
+          }
         });
       }
     });

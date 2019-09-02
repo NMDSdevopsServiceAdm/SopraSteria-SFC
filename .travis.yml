@@ -51,7 +51,7 @@ before_deploy:
     - if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; mv index_staging.html index.html; fi
 deploy:
   - provider: cloudfoundry
-    edge: true
+    edge: false
     username: nmdsdevopsserviceadm@hotmail.com
     password:
         secure: CBpAGvgpe+AoJlNvuGKh9U9WpkU+toSoSRxtpmVoDhB9ayv6+pGsl+7X/eOfvZbHV1gYVw2HdDmeK1+Fkwd58FOKCTRpQDvuVC4+cZ/Eb8vWsnX3vw0DXZX22zhzUOIyT2fbOjygJx9g2xeuMWza6yMBY5rbPkdJKPU6rYCfxSGl5qFY/hnV6B9qzbQo2ekv0XVfwqAQ1fBQlRkEDUJYLGsXyARPrEasvN9XCF1NaUeVP1Inz14MIdefisJMUyEn2zGUAXqogDKfYfqfSf/TD2e7iiK/j3wpXh1x48vqfw/DqDix3Yvo811bvb6SPeM+srIOfIkVcTDRQOniLM0lZUcNoXKXqYQeELRFdh6t6WezHB4iZ60+K6/ijT1D1KIoCo7CXAyCivfG+5omB7sAwW6GZwHsbdO8scSAxwTlwTyhzmO8L5/xjA/H3o2oq3Zjn1Ga6qDpfBeDDOgV+G6uoehZCtnNvDGRHsHwwOVlKg1dk5gtVrdnrWSKwvwwvXYajIxoqz8QyaEaYrsBXHtBNAa39pxNAit9TjAuxb/CR1LCjggxZwjwY+lREYf1J4xQs/keDp/sIqRuxqf2evMiZjqSMdGgE7e6XRtztgQiOn2JZcnEdveaT4IA7HcOLkvksy3zLjBAMGiG44jPnzV135Xtxl6FpNkCuRPqXVUgg3M=
@@ -62,7 +62,7 @@ deploy:
     on:
         branch: develop
   - provider: cloudfoundry
-    edge: true
+    edge: false
     username: nmdsdevopsserviceadm@hotmail.com
     password:
         secure: CBpAGvgpe+AoJlNvuGKh9U9WpkU+toSoSRxtpmVoDhB9ayv6+pGsl+7X/eOfvZbHV1gYVw2HdDmeK1+Fkwd58FOKCTRpQDvuVC4+cZ/Eb8vWsnX3vw0DXZX22zhzUOIyT2fbOjygJx9g2xeuMWza6yMBY5rbPkdJKPU6rYCfxSGl5qFY/hnV6B9qzbQo2ekv0XVfwqAQ1fBQlRkEDUJYLGsXyARPrEasvN9XCF1NaUeVP1Inz14MIdefisJMUyEn2zGUAXqogDKfYfqfSf/TD2e7iiK/j3wpXh1x48vqfw/DqDix3Yvo811bvb6SPeM+srIOfIkVcTDRQOniLM0lZUcNoXKXqYQeELRFdh6t6WezHB4iZ60+K6/ijT1D1KIoCo7CXAyCivfG+5omB7sAwW6GZwHsbdO8scSAxwTlwTyhzmO8L5/xjA/H3o2oq3Zjn1Ga6qDpfBeDDOgV+G6uoehZCtnNvDGRHsHwwOVlKg1dk5gtVrdnrWSKwvwwvXYajIxoqz8QyaEaYrsBXHtBNAa39pxNAit9TjAuxb/CR1LCjggxZwjwY+lREYf1J4xQs/keDp/sIqRuxqf2evMiZjqSMdGgE7e6XRtztgQiOn2JZcnEdveaT4IA7HcOLkvksy3zLjBAMGiG44jPnzV135Xtxl6FpNkCuRPqXVUgg3M=
@@ -72,5 +72,16 @@ deploy:
     manifest: manifest.test.yml
     on:
         branch: test
+  - provider: cloudfoundry
+    edge: false
+    username: nmdsdevopsserviceadm@hotmail.com
+    password:
+        secure: CBpAGvgpe+AoJlNvuGKh9U9WpkU+toSoSRxtpmVoDhB9ayv6+pGsl+7X/eOfvZbHV1gYVw2HdDmeK1+Fkwd58FOKCTRpQDvuVC4+cZ/Eb8vWsnX3vw0DXZX22zhzUOIyT2fbOjygJx9g2xeuMWza6yMBY5rbPkdJKPU6rYCfxSGl5qFY/hnV6B9qzbQo2ekv0XVfwqAQ1fBQlRkEDUJYLGsXyARPrEasvN9XCF1NaUeVP1Inz14MIdefisJMUyEn2zGUAXqogDKfYfqfSf/TD2e7iiK/j3wpXh1x48vqfw/DqDix3Yvo811bvb6SPeM+srIOfIkVcTDRQOniLM0lZUcNoXKXqYQeELRFdh6t6WezHB4iZ60+K6/ijT1D1KIoCo7CXAyCivfG+5omB7sAwW6GZwHsbdO8scSAxwTlwTyhzmO8L5/xjA/H3o2oq3Zjn1Ga6qDpfBeDDOgV+G6uoehZCtnNvDGRHsHwwOVlKg1dk5gtVrdnrWSKwvwwvXYajIxoqz8QyaEaYrsBXHtBNAa39pxNAit9TjAuxb/CR1LCjggxZwjwY+lREYf1J4xQs/keDp/sIqRuxqf2evMiZjqSMdGgE7e6XRtztgQiOn2JZcnEdveaT4IA7HcOLkvksy3zLjBAMGiG44jPnzV135Xtxl6FpNkCuRPqXVUgg3M=
+    api: https://api.cloud.service.gov.uk
+    organization: dhsc-skills-for-care-nmds-sc-2
+    space: sandbox
+    manifest: manifest.featureGDS.yml
+    on:
+        branch: develop_accessibility_demo
 notifications:
     slack: skills-for-care:Co9S4WS4ZitevGOyBrEb6yEL

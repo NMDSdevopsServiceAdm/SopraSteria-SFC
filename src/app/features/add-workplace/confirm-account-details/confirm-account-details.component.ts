@@ -41,11 +41,11 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
 
   protected setupSubscriptions(): void {
     this.subscriptions.add(
-      combineLatest(
+      combineLatest([
         this.createAccountService.userDetails$,
         this.workplaceService.selectedLocationAddress$,
-        this.workplaceService.selectedWorkplaceService$
-      ).subscribe(([userDetails, locationAddress, workplaceService]) => {
+        this.workplaceService.selectedWorkplaceService$,
+      ]).subscribe(([userDetails, locationAddress, workplaceService]) => {
         this.userDetails = userDetails;
         this.locationAddress = locationAddress;
         this.service = workplaceService;

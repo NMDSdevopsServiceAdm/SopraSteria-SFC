@@ -40,5 +40,6 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
 
   protected setSelectedLocationAddress(): void {
     this.workplaceService.selectedLocationAddress$.next(this.getLocationAddress());
+    this.workplaceService.manuallyEnteredWorkplace$.next(true);
   }
 }

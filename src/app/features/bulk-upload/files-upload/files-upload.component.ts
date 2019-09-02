@@ -87,7 +87,7 @@ export class FilesUploadComponent implements OnInit {
   public onFilesSelection($event: Event): void {
     this.bulkUploadService.resetBulkUpload();
     const target = $event.target || $event.srcElement;
-    this.selectedFiles = Array.from(target['files']);
+    this.selectedFiles = Array.from(target[`files`]);
     this.fileUpload.setValidators(CustomValidators.checkFiles);
     this.fileUpload.updateValueAndValidity();
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
@@ -136,7 +136,7 @@ export class FilesUploadComponent implements OnInit {
 
       const filteredItem = filter(response, ['filename', file.name])[0];
       request.push({
-        file: file,
+        file,
         signedUrl: filteredItem.signedUrl,
       });
     });

@@ -46,4 +46,5 @@ This launches the backend up on default port 3000 (or P1 of your designation). O
 2. Ensure that content follows semantic markup, for instance using definition lists, labels and fieldsets.
 3. Anchors with `target="_blank"` require `<span class="govuk-visually-hidden"> (opens in a new window)</span>` to be placed after the text content and before the closing anchor tag.
 4. All Angular Directives must be wrapped in square brackets `[]`.
-5. Dialogs `h1` element should contain the id `id="dialogHeading"`
+5. Dialogs `h1` element should contain the id `id="dialogHeading"`.
+6. Download links must contain a valid `href` containing the filename.

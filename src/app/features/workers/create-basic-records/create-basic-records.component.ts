@@ -52,7 +52,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
   }
 
   get staffRecordsControl() {
-    return <FormArray>this.form.controls.staffRecords;
+    return this.form.controls.staffRecords as FormArray;
   }
 
   get calculatedTotalStaff() {
@@ -104,7 +104,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
 
   public deleteStaffRecord(event: Event, index: number) {
     event.preventDefault();
-    const staffRecord = <FormGroup>this.staffRecordsControl.controls[index];
+    const staffRecord = this.staffRecordsControl.controls[index] as FormGroup;
     const { uid } = staffRecord.value;
 
     if (uid) {
@@ -162,7 +162,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
   public saveStaffRecord(index: number) {
     this.submitted = true;
 
-    const staffRecord = <FormGroup>this.staffRecordsControl.controls[index];
+    const staffRecord = this.staffRecordsControl.controls[index] as FormGroup;
 
     Object.keys(staffRecord.controls).forEach(key => {
       staffRecord.get(key).markAsTouched();

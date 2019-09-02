@@ -18,6 +18,7 @@ export class WorkplaceService {
   public newWorkplaceUid: string;
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
+  public manuallyEnteredWorkplace$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public serverErrorsMap: ErrorDefinition[] = [
     {
       name: 400,

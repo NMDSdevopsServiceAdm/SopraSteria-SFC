@@ -1,0 +1,38 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">
+      <span class="govuk-caption-xl">Workforce Development Fund</span>
+      Workplaces
+    </h1>
+  </div>
+</div>
+
+<dl class="govuk-list--definition">
+  <dt><app-eligibility-icon [num]="totalEligible" [eligible]="true"></app-eligibility-icon></dt>
+  <dd class="govuk-!-font-size-19 govuk-!-padding-bottom-3">Overall</dd>
+  <ng-container *ngIf="totalIneligible > 0">
+    <dt><app-eligibility-icon [num]="totalIneligible" [eligible]="false"></app-eligibility-icon></dt>
+    <dd></dd>
+  </ng-container>
+</dl>
+
+<table *ngIf="workplaces.length" class="govuk-table govuk-table__with-action">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Workplace name</th>
+      <th scope="col" class="govuk-table__header">Overall</th>
+      <th scope="col" class="govuk-table__header"><span class="govuk-visually-hidden">Report</span></th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let workplace of workplaces" class="govuk-table__row">
+      <td class="govuk-table__cell">{{ workplace.name }}</td>
+      <td class="govuk-table__cell">
+        <app-eligibility-icon [eligible]="workplace.wdf.overall"></app-eligibility-icon>
+      </td>
+      <td class="govuk-table__cell">
+        <a [routerLink]="['/workplace', workplace.uid, 'reports', 'wdf']">View report</a>
+      </td>
+    </tr>
+  </tbody>
+</table>

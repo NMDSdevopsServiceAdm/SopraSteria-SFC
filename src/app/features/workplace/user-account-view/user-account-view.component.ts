@@ -10,6 +10,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import {
   UserAccountDeleteDialogComponent,
@@ -24,7 +25,7 @@ import { take, withLatestFrom } from 'rxjs/operators';
 export class UserAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public canDeleteUser: boolean;
-  public canEdit: boolean;
+  public canEditUser: boolean;
   public canNavigate: boolean;
   public canResendActivationLink: boolean;
   public establishment: Establishment;
@@ -35,13 +36,14 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   public userInfo: SummaryList[];
 
   constructor(
+    private alertService: AlertService,
+    private breadcrumbService: BreadcrumbService,
+    private dialogService: DialogService,
+    private establishmentService: EstablishmentService,
+    private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private router: Router,
-    private breadcrumbService: BreadcrumbService,
-    private userService: UserService,
-    private dialogService: DialogService,
-    private alertService: AlertService,
-    private establishmentService: EstablishmentService
+    private userService: UserService
   ) {
     this.user = this.route.snapshot.data.user;
     this.establishment = this.route.parent.snapshot.data.establishment;
@@ -163,17 +165,17 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   }
 
   private setPermissions(users: Array<UserDetails>, loggedInUser: UserDetails) {
-    const canEdit = [Roles.Edit, Roles.Admin].includes(loggedInUser.role);
+    const canEditUser = this.permissionsService.can(this.establishment.uid, 'canEditUser');
     const isPending = this.user.username === null;
     const editUsersList = users.filter(user => user.role === Roles.Edit);
 
     this.canDeleteUser =
-      canEdit &&
-      (editUsersList.length > 1 || this.user.role === Roles.Read) &&
+      this.permissionsService.can(this.establishment.uid, 'canDeleteUser') &&
+      users.length > 1 &&
       !this.user.isPrimary &&
       loggedInUser.uid !== this.user.uid;
-    this.canResendActivationLink = canEdit && isPending;
-    this.canEdit = canEdit && users.length > 1;
+    this.canResendActivationLink = canEditUser && isPending;
+    this.canEditUser = canEditUser && (!this.user.isPrimary || (this.user.isPrimary && editUsersList.length > 1));
     this.canNavigate = Roles.Admin === loggedInUser.role;
   }
 }

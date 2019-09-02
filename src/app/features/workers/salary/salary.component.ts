@@ -54,12 +54,14 @@ export class SalaryComponent extends QuestionComponent {
             Validators.required,
             Validators.min(this.hourly.min),
             Validators.max(this.hourly.max),
+            Validators.pattern(this.floatPattern),
           ]);
         } else if (value === 'Annually') {
           annualRate.setValidators([
             Validators.required,
             Validators.min(this.annually.min),
             Validators.max(this.annually.max),
+            Validators.pattern(this.intPattern),
           ]);
         }
 
@@ -93,6 +95,10 @@ export class SalaryComponent extends QuestionComponent {
           {
             name: 'required',
             message: 'Annual salary is required.',
+          },
+          {
+            name: 'pattern',
+            message: 'Annual salary must be rounded to the nearest £.',
           },
           {
             name: 'min',
@@ -148,7 +154,7 @@ export class SalaryComponent extends QuestionComponent {
     return {
       annualHourlyPay: {
         value: terms,
-        rate: rate,
+        rate,
       },
     };
   }

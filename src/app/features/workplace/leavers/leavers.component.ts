@@ -45,7 +45,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   }
 
   get leavers(): FormArray {
-    return <FormArray>this.form.get('leavers');
+    return this.form.get('leavers') as FormArray;
   }
 
   get allJobsSelected(): boolean {

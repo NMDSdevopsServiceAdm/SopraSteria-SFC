@@ -44,6 +44,7 @@ import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
+import { OrderOtherPipe } from './pipes/order-other.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
@@ -93,6 +94,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkplacePermissionsBearerPipe,
     WorkplaceSummaryComponent,
     WorkplaceTabComponent,
+    OrderOtherPipe,
   ],
   exports: [
     AlertComponent,
@@ -135,6 +137,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkplacePermissionsBearerPipe,
     WorkplaceSummaryComponent,
     WorkplaceTabComponent,
+    OrderOtherPipe,
   ],
 })
 export class SharedModule {}

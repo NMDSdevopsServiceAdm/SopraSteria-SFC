@@ -26,6 +26,7 @@ export class SelectMainServiceComponent extends SelectMainService {
 
   protected init(): void {
     this.flow = '/registration';
+    this.setBackLink();
   }
 
   protected getServiceCategories(): void {
@@ -45,5 +46,17 @@ export class SelectMainServiceComponent extends SelectMainService {
   protected onSuccess(): void {
     this.registrationService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
     this.navigateToNextPage();
+  }
+
+  protected setBackLink(): void {
+    let route: string;
+
+    if (this.registrationService.manuallyEnteredWorkplace$.value) {
+      route = 'enter-workplace-address';
+    } else {
+      route = this.registrationService.isRegulated() ? 'select-workplace' : 'enter-workplace-address';
+    }
+
+    this.backService.setBackLink({ url: [`${this.flow}/${route}`] });
   }
 }

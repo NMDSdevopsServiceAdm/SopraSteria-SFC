@@ -17,12 +17,12 @@
         <dd class="govuk-summary-list__value">
           {{ qualification.qualification.group }}
         </dd>
-        <dd class="govuk-summary-list__actions">
+        <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
           <a class="govuk-link--no-visited-state" href="#" (click)="deleteQualification(qualification, $event)"
             >Delete<span class="govuk-visually-hidden"> {{ qualification.title }} qualification</span></a
           >
         </dd>
-        <dd class="govuk-summary-list__actions">
+        <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
           <a [routerLink]="['../qualification', qualification.uid]"
             >Change<span class="govuk-visually-hidden"> {{ qualification.title }} qualification</span></a
           >

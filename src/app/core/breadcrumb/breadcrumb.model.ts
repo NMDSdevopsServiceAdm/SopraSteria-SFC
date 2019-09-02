@@ -5,6 +5,7 @@ export enum JourneyType {
   MY_WORKPLACE,
   ALL_WORKPLACES,
   REPORTS,
+  SUBSIDIARY_REPORTS,
 }
 
 export interface JourneyRoute {

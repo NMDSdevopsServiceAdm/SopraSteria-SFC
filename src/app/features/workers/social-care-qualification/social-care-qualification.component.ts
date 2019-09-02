@@ -47,7 +47,7 @@ export class SocialCareQualificationComponent extends QuestionComponent {
     }
 
     return {
-      qualificationInSocialCare: qualificationInSocialCare,
+      qualificationInSocialCare,
     };
   }
 

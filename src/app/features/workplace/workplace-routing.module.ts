@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edit-user-permissions.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
+import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
@@ -53,12 +55,17 @@ const routes: Routes = [
     path: ':establishmentuid',
     component: EditWorkplaceComponent,
     resolve: { establishment: WorkplaceResolver },
+    canActivate: [HasPermissionsGuard],
     data: { title: 'Workplace' },
     children: [
       {
         path: '',
+        canActivate: [CheckPermissionsGuard],
         component: ViewWorkplaceComponent,
-        data: { title: 'View Workplace' },
+        data: {
+          permissions: ['canViewEstablishment'],
+          title: 'View Workplace'
+        },
       },
       {
         path: 'start',
@@ -214,19 +221,19 @@ const routes: Routes = [
       },
       {
         path: 'user/create',
+        canActivate: [CheckPermissionsGuard],
         component: CreateUserAccountComponent,
-        canActivate: [RoleGuard],
         data: {
-          roles: [Roles.Admin, Roles.Edit],
+          permissions: ['canAddUser'],
           title: 'Create User Account',
         },
       },
       {
         path: 'user/saved',
+        canActivate: [CheckPermissionsGuard],
         component: UserAccountSavedComponent,
-        canActivate: [RoleGuard],
         data: {
-          roles: [Roles.Admin, Roles.Edit],
+          permissions: ['canAddUser'],
           title: 'User Account Saved',
         },
       },
@@ -242,10 +249,10 @@ const routes: Routes = [
           {
             path: 'permissions',
             component: UserAccountEditPermissionsComponent,
-            canActivate: [RoleGuard, EditUserPermissionsGuard],
+            canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
             resolve: { user: UserAccountResolver },
             data: {
-              roles: [Roles.Admin, Roles.Edit],
+              permissions: ['canEditUser'],
               title: 'Edit Permissions',
             },
           },
@@ -264,9 +271,9 @@ const routes: Routes = [
       {
         path: 'staff-record',
         loadChildren: '@features/workers/workers.module#WorkersModule',
-        canActivate: [RoleGuard],
+        canActivate: [CheckPermissionsGuard],
         data: {
-          roles: [Roles.Admin, Roles.Edit],
+          permissions: ['canViewWorker'],
           title: 'Staff Records',
         },
       },

@@ -41,7 +41,7 @@
               </h2>
             </legend>
             <div class="govuk-radios">
-              <ng-container *ngFor="let service of item.services; let i = index">
+              <ng-container *ngFor="let service of item.services | orderOther; let i = index">
                 <div class="govuk-radios__item">
                   <input
                     [attr.aria-controls]="'workplaceService-conditional-' + i"

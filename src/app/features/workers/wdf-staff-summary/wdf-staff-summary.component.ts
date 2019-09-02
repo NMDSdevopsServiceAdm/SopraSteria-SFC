@@ -40,9 +40,14 @@ export class WdfStaffSummaryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.breadcrumbService.show(JourneyType.REPORTS);
-
     this.workplace = this.establishmentService.establishment;
+
+    const breadcrumbConfig =
+      this.workplace.uid === this.establishmentService.primaryWorkplace.uid
+        ? JourneyType.REPORTS
+        : JourneyType.SUBSIDIARY_REPORTS;
+
+    this.breadcrumbService.show(breadcrumbConfig);
 
     this.workerService.getWorker(this.workplace.uid, this.route.snapshot.params.id, true).subscribe(worker => {
       this.worker = worker;
@@ -77,7 +82,7 @@ export class WdfStaffSummaryComponent implements OnInit {
   private confirmAndSubmit() {
     const wdfProperties = pickBy(this.worker.wdf, isObject);
     const keys = Object.keys(
-      pickBy(wdfProperties, function(wdfProperty, key) {
+      pickBy(wdfProperties, (wdfProperty, key) => {
         if (wdfProperty.hasOwnProperty('updatedSinceEffectiveDate')) {
           return wdfProperty.isEligible === Eligibility.YES && !wdfProperty.updatedSinceEffectiveDate;
         }

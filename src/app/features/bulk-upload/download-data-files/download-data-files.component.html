@@ -1,19 +1,37 @@
 <h2 class="govuk-heading-m">Download latest data files</h2>
 <ul class="govuk-list govuk-list--download">
   <li>
-    <a href="#" (click)="downloadFile($event, BulkUploadFileType.Establishment)">Workplace information</a><br />
+    <a
+      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-establishments.csv"
+      (click)="downloadFile($event, BulkUploadFileType.Establishment)"
+    >
+      Workplace information
+    </a>
+    <br />
     <a href="/public/download/BUDI_Workplace_Codes_and_Guidance_ACSWDS.pdf" target="_blank">
       Workplace codes and guidance<span class="govuk-visually-hidden">, (opens in a new window)</span>
     </a>
   </li>
   <li>
-    <a href="#" (click)="downloadFile($event, BulkUploadFileType.Worker)">Staff records</a><br />
+    <a
+      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-workers.csv"
+      (click)="downloadFile($event, BulkUploadFileType.Worker)"
+    >
+      Staff records
+    </a>
+    <br />
     <a href="/public/download/BUDI_Staff_Records_Codes_and_Guidance_ACSWDS.pdf" target="_blank">
       Staff records codes and guidance<span class="govuk-visually-hidden">, (opens in a new window)</span>
     </a>
   </li>
   <li>
-    <a href="#" (click)="downloadFile($event, BulkUploadFileType.Training)">Training records</a><br />
+    <a
+      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-training.csv"
+      (click)="downloadFile($event, BulkUploadFileType.Training)"
+    >
+      Training records
+    </a>
+    <br />
     <a href="/public/download/BUDI_Training_Records_Codes_and_Guidance_ACSWDS.pdf" target="_blank">
       Training records codes and guidance<span class="govuk-visually-hidden">, (opens in a new window)</span>
     </a>
