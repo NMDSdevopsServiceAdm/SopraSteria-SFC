@@ -160,16 +160,9 @@ router.route('/').get(async (req, res) => {
 
           // now grab the workers and format the report data
           const reportWorkers = await models.localAuthorityReportWorker.findAll({
-            include: [
-              {
-                  model: models.localAuthorityReportEstablishment,
-                  as: 'establishment',
-                  attributes: [],
-                  where: {
-                    establishmentFk: establishmentId
-                  }
-              }
-            ],
+            where: {
+              establishmentFk: establishmentId
+            },
             order: [
               ['workplaceName', 'ASC'],
               ['localId', 'ASC'],

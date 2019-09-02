@@ -8,10 +8,10 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true,
       field: '"ID"'
     },
-    localAuthorityReportEstablishmentFK: {
+    establishmentFk: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: '"LocalAuthorityReportEstablishmentFK"'
+      field: '"EstablishmentFK"'
     },
     workerFK: {
       type: DataTypes.INTEGER,
@@ -109,14 +109,6 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
-
-  LocalAuthorityReportWorker.associate = (models) => {
-    LocalAuthorityReportWorker.belongsTo(models.localAuthorityReportEstablishment, {
-      foreignKey: 'localAuthorityReportEstablishmentFK',
-      targetKey: 'id',
-      as: 'establishment'
-    });
-  };
 
   return LocalAuthorityReportWorker;
 };
