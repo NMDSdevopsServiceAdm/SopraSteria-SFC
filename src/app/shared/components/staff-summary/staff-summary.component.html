@@ -29,7 +29,7 @@
       </td>
       <td *ngIf="!wdfView" class="govuk-table__cell">
         <a
-          *ngIf="!worker.completed"
+          *ngIf="canEditWorker && !worker.completed"
           class="govuk-util__float-right"
           [routerLink]="[
             '/workplace',
