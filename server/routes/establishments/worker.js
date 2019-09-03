@@ -24,24 +24,26 @@ const validateWorker = async (req, res, next) => {
     const workerId = req.params.workerId;
     const establishmentId = req.establishmentId;
 
-    // if the request for this worker is by a user associated with parent, and the requested establishment is
-    //  not their primary establishment, then they must have been granted "staff" level permission to access the worker
-    if (req.establishmentId !== req.establishment.id) {
-      // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
-      if (!req.parentIsOwner  &&
-          (req.dataPermissions === null || req.dataPermissions !== "Workplace and Staff")) {
-        console.error(`Parent not permitted to access Worker with id: ${workerId}`);
-        return res.status(403).send({ message: `Parent not permitted to access Worker with id: ${workerId ? workerId : 'not applicable'}` });
-      }
+    if (req.role !== 'Admin') {
+        // if the request for this worker is by a user associated with parent, and the requested establishment is
+        //  not their primary establishment, then they must have been granted "staff" level permission to access the worker
+        if (req.establishmentId !== req.establishment.id) {
+            // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
+            if (!req.parentIsOwner  &&
+                (req.dataPermissions === null || req.dataPermissions !== "Workplace and Staff")) {
+            console.error(`Parent not permitted to access Worker with id: ${workerId}`);
+            return res.status(403).send({ message: `Parent not permitted to access Worker with id: ${workerId ? workerId : 'not applicable'}` });
+            }
 
-      // more so, if the parent is not the owner, then only read access is allow
-      if (!req.parentIsOwner && req.method !== 'GET') {
-        return res.status(403).send({ message: `Parent not permitted to update Worker with id: ${workerId ? workerId : 'not applicable'}` });
-      }
-    }
+            // more so, if the parent is not the owner, then only read access is allow
+            if (!req.parentIsOwner && req.method !== 'GET') {
+            return res.status(403).send({ message: `Parent not permitted to update Worker with id: ${workerId ? workerId : 'not applicable'}` });
+            }
+        }
 
-    if(req.role == 'Read'){
-        return res.status(401).send({message: `Not permitted`});
+        if(req.role === 'Read') {
+            return res.status(401).send({message: `Not permitted`});
+        }
     }
 
     if (workerId && workerId !== 'localIdentifier') {
@@ -168,7 +170,7 @@ router.route('/:workerId').get(async (req, res) => {
     try {
         if (await thisWorker.restore(workerId, showHistory && req.query.history !== 'property')) {
             const jsonResponse = thisWorker.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, null);
-            
+
             if (req.query.wdf) jsonResponse.wdf = await thisWorker.wdfToJson();
 
             return res.status(200).json(jsonResponse);
