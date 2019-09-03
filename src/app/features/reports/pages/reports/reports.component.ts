@@ -42,7 +42,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
         this.isParent = workplace.isParent;
         this.isLocalAuthority = workplace.employerType && workplace.employerType.value.startsWith('Local Authority');
         this.canRunLocalAuthorityReport =
-          this.isParent && this.permissionsService.can(workplace.uid, 'canRunLocalAuthorityReport');
+          this.isLocalAuthority && this.permissionsService.can(workplace.uid, 'canRunLocalAuthorityReport');
       })
     );
   }
