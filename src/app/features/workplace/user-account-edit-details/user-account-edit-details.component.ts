@@ -37,7 +37,7 @@ export class UserAccountEditDetailsComponent extends AccountDetails {
   }
 
   protected save(): void {
-    this.changeUserDetails(this.setUserDetails());
+    this.changeUserDetails({ ...this.setUserDetails(), isPrimary: this.userDetails.isPrimary });
   }
 
   private changeUserDetails(userDetails: UserDetails): void {
