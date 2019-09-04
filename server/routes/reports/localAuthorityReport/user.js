@@ -57,8 +57,6 @@ const putStringTemplate = (
     sst.appendChild(si);
     si.appendChild(t);
     
-    si.removeAttribute('xmlns')
-    
     t.textContent = textValue;
     vTag.textContent = sharedStringsUniqueCount[0];
 
@@ -207,10 +205,19 @@ const updateWorkplacesSheet = (
 ) => {
   const putString = putStringTemplate.bind(null, workplacesSheet, sharedStrings, sharedStringsUniqueCount);
   
-  
   putString(
-      workplacesSheet.querySelector("c[r='A2']"),
-      "Hello World"
+      workplacesSheet.querySelector("c[r='B5']"),
+      moment(reportData.date).format("DD/MM/YYYY")
+    );
+    
+  putString(
+      workplacesSheet.querySelector("c[r='B6']"),
+      reportData.reportEstablishment.localAuthority
+    );
+    
+  putString(
+      workplacesSheet.querySelector("c[r='B7']"),
+      reportData.reportEstablishment.name
     );
 
   return workplacesSheet;
@@ -222,6 +229,23 @@ const updateStaffRecordsSheet = (
     sharedStrings,
     sharedStringsUniqueCount
 ) => {
+  const putString = putStringTemplate.bind(null, staffRecordsSheet, sharedStrings, sharedStringsUniqueCount);
+
+  putString(
+      staffRecordsSheet.querySelector("c[r='B5']"),
+      moment(reportData.date).format("DD/MM/YYYY")
+    );
+    
+  putString(
+      staffRecordsSheet.querySelector("c[r='B6']"),
+      reportData.reportEstablishment.localAuthority
+    );
+    
+  putString(
+      staffRecordsSheet.querySelector("c[r='B7']"),
+      reportData.reportEstablishment.name
+    );
+
   return staffRecordsSheet;
 }
 
@@ -234,7 +258,7 @@ const getReport = async (date, thisEstablishment) => {
     reportEstablishment: {
       name: 'Establishment Name',
       nmdsId: 'Establishment NMDS Id',
-      localAuthority: 'LocalAuthority'
+      localAuthority: 'Local Authority'
     },
     establishments: [],
     workers: []
