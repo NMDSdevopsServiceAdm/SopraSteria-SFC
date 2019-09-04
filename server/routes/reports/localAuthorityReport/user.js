@@ -6,25 +6,65 @@ const fs = require('fs');
 const walk = require('walk');
 const JsZip = new require('jszip');
 
+//Constants string needed by this file in several places
+const folderName = 'template';
+const workplacesSheetName = 'xl/worksheets/sheet1.xml';
+const staffRecordsSheetName = 'xl/worksheets/sheet2.xml';
+const sharedStringsName = 'xl/sharedStrings.xml';
+const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+const isNumberRegex = /^[0-9]+(\.[0-9]+)$/;
+
 //XML DOM manipulation helper functions
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
 
 const parseXML = fileContent =>
   (new DOMParser()).parseFromString(fileContent.toString('utf8'), "application/xml");
 
-const serializeXML = dom => {
-  console.log(dom);
-
-  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
+const serializeXML = dom =>
+  '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
   (new XMLSerializer()).serializeToString(dom);
   
-}
+//helper function to set a spreadsheet cell's value
+const putStringTemplate = (
+    sheetDoc,
+    stringsDoc,
+    sharedStringsUniqueCount,
+    element,
+    value
+) => {
+  let vTag = element.querySelector('v');
+  const hasVTag = vTag !== null;
+  const textValue = String(value);
+  const isNumber = isNumberRegex.test(textValue);
+  
+  if(!hasVTag) {
+    vTag = sheetDoc.createElementNS(schema, 'v');
 
-//Constants string needed by this file in several places
-const folderName = 'template';
-const workplacesSheetName = 'xl/worksheets/sheet1.xml';
-const staffRecordsSheetName = 'xl/worksheets/sheet2.xml';
-const sharedStringsName = 'xl/sharedStrings.xml';
+    element.appendChild(vTag);
+  }
+
+  if(isNumber) {
+    element.removeAttribute('t');
+    vTag.textContent = textValue;
+  }
+  else{
+    element.setAttribute('t', 's');
+    
+    const sst = stringsDoc.querySelector('sst');
+    const si = stringsDoc.createElementNS(schema, 'si');
+    const t = stringsDoc.createElementNS(schema, 't');
+
+    sst.appendChild(si);
+    si.appendChild(t);
+    
+    si.removeAttribute('xmlns')
+    
+    t.textContent = textValue;
+    vTag.textContent = sharedStringsUniqueCount[0];
+
+    sharedStringsUniqueCount[0] += 1;
+  }
+};
 
 // for database
 const models = require('../../../models');
@@ -163,9 +203,16 @@ const updateWorkplacesSheet = (
     workplacesSheet,
     reportData,
     sharedStrings,
-    sharedStringsCount,
     sharedStringsUniqueCount
 ) => {
+  const putString = putStringTemplate.bind(null, workplacesSheet, sharedStrings, sharedStringsUniqueCount);
+  
+  
+  putString(
+      workplacesSheet.querySelector("c[r='A2']"),
+      "Hello World"
+    );
+
   return workplacesSheet;
 };
 
@@ -173,7 +220,6 @@ const updateStaffRecordsSheet = (
     staffRecordsSheet,
     reportData,
     sharedStrings,
-    sharedStringsCount,
     sharedStringsUniqueCount
 ) => {
   return staffRecordsSheet;
@@ -206,7 +252,6 @@ const getReport = async (date, thisEstablishment) => {
 
       walker.on("file", (root, fileStats, next) => {
         const zipPath = (root === folderName ? '' : root.replace(/^[^\\\/]*[\\\/]?/, '') + '/') + fileStats.name;
-        console.log()
 
         fs.readFile(`${folderName}/${zipPath}`, (err, fileContent) => {
           if(!err) {
@@ -234,20 +279,15 @@ const getReport = async (date, thisEstablishment) => {
       });
 
       walker.on("end", () => {
-        //const sst = sharedStrings.querySelector("sst");
+        const sst = sharedStrings.querySelector("sst");
         
-        //const sharedStringsCount = [parseInt(sst.getAttribute('count'), 10)];
-        //const sharedStringsUniqueCount = [parseInt(sst.getAttribute('uniqueCount'), 10)];;
-        const sharedStringsCount = [0];
-        const sharedStringsUniqueCount = [0];
+        const sharedStringsUniqueCount = [parseInt(sst.getAttribute('uniqueCount'), 10)];;
 
-        
         //update the workplaces sheet with the report data and add it to the zip
         outputZip.file(workplacesSheetName, serializeXML(updateWorkplacesSheet(
             workplacesSheet,
             reportData,
             sharedStrings,
-            sharedStringsCount,  //pass count by reference rather than by value
             sharedStringsUniqueCount  //pass unique count by reference rather than by value
           )));
           
@@ -256,13 +296,11 @@ const getReport = async (date, thisEstablishment) => {
             staffRecordsSheet,
             reportData,
             sharedStrings,
-            sharedStringsCount,  //pass count by reference rather than by value
             sharedStringsUniqueCount  //pass unique count by reference rather than by value
           )));
           
         //update the shared strings counts we've been keeping track of
-        //sst.setAttribute('count', sharedStringsCount[0]);
-        //sst.setAttribute('uniqueCount', sharedStringsCount[0]);
+        sst.setAttribute('uniqueCount', sharedStringsUniqueCount[0]);
  
         //add the updated shared strings to the zip
         outputZip.file(sharedStringsName, serializeXML(sharedStrings));
