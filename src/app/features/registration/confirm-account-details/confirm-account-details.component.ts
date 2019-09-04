@@ -126,4 +126,10 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
         )
     );
   }
+
+  public onSetReturn(): void {
+    this.registrationService.setReturnTo({
+      url: ['/registration/confirm-account-details'],
+    });
+  }
 }

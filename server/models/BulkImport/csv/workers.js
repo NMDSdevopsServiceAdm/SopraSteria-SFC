@@ -72,7 +72,7 @@ class Worker {
     this._qualifications = null;
     this._amhp = null;
   };
-   
+
   static get UNCHECKED_ESTABLISHMENT_ERROR() { return 997; }
   static get DUPLICATE_ERROR() { return 998; }
   static get HEADERS_ERROR() { return 999; }
@@ -2442,7 +2442,7 @@ class Worker {
       name: this._currentLine.NINUMBER,
     };
   }
-  
+
   // add unchecked establishment reference validation error
   uncheckedEstablishment() {
     return {
@@ -3403,10 +3403,10 @@ class Worker {
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     const columns = [];
     columns.push(establishmentId);
-    columns.push(entity.localIdentifier);   // todo - this will be local identifier
+    columns.push(this._csvQuote(entity.localIdentifier));   // todo - this will be local identifier
     //columns.push('');              // not on download
     columns.push('UNCHECKED');
-    columns.push(entity.nameOrId);
+    columns.push(this._csvQuote(entity.nameOrId));
 
     columns.push(entity.nationalInsuranceNumber ? entity.nationalInsuranceNumber.replace(/\s+/g,'') : '');  // remove whitespace
     columns.push(entity.postcode ? entity.postcode : '',);

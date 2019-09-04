@@ -248,7 +248,10 @@ class PermissionCache {
     let permissions = [];
     const isLoggedInAsParent = requestData.isParent;
 
-    if(estabType == "Standalone") {
+    if (requestData.role === 'Admin') {
+      // console.log("0")
+      permissions = this.filterForAdminRole();
+    } else if (estabType == "Standalone") {
       // console.log("1")
       permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     } else if (!isLoggedInAsParent && estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) === 'Workplace') {
@@ -296,6 +299,10 @@ class PermissionCache {
     }
 
     return theirPermissions;
+  }
+
+  static filterForAdminRole(){
+    return ALL_PERMISSIONS;
   }
 
   static filterByRole(role){

@@ -1,11 +1,12 @@
 import { I18nPluralPipe } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import { sortBy } from 'lodash';
+import { Subscription } from 'rxjs';
 import { isArray } from 'util';
 
 @Component({
@@ -13,11 +14,13 @@ import { isArray } from 'util';
   templateUrl: './workplace-summary.component.html',
   providers: [I18nPluralPipe],
 })
-export class WorkplaceSummaryComponent implements OnInit {
+export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public capacityMessages = [];
   public pluralMap = [];
   public canEditEstablishment: boolean;
   private _workplace: any;
+  protected subscriptions: Subscription = new Subscription();
+  public hasCapacity: boolean;
   @Input() wdfView = false;
   @Input() workerCount?: number;
 
@@ -90,6 +93,12 @@ export class WorkplaceSummaryComponent implements OnInit {
 
   ngOnInit() {
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+
+    this.subscriptions.add(
+      this.establishmentService.getCapacity(this.workplace.uid, true).subscribe(response => {
+        this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;
+      })
+    );
   }
 
   public filterAndSortOtherServices(services: Service[]) {
@@ -103,5 +112,9 @@ export class WorkplaceSummaryComponent implements OnInit {
   public setReturn(): void {
     this.establishmentService.setReturnTo(this.return);
     this.workerService.setReturnTo(this.return);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
