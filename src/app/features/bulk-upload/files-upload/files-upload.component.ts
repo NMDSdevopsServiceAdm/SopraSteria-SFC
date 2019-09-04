@@ -1,5 +1,5 @@
 import { HttpEventType } from '@angular/common/http';
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
@@ -19,12 +19,13 @@ import { tap } from 'rxjs/operators';
   selector: 'app-files-upload',
   templateUrl: './files-upload.component.html',
 })
-export class FilesUploadComponent implements OnInit {
+export class FilesUploadComponent implements OnInit, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public form: FormGroup;
   public filesUploading = false;
   public filesUploaded = false;
   public submitted = false;
-  private selectedFiles: File[];
+  public selectedFiles: File[];
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
   private subscriptions: Subscription = new Subscription();
@@ -41,6 +42,10 @@ export class FilesUploadComponent implements OnInit {
   ngOnInit() {
     this.setupForm();
     this.checkForUploadedFiles();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   public get progress(): number {

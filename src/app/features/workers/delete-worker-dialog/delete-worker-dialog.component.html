@@ -1,6 +1,6 @@
 <h1 id="dialogHeading" class="govuk-heading-l">You are about to delete this staff record.</h1>
 <p>Once deleted you will not be able to access it again.</p>
-<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
       <h1 class="govuk-fieldset__heading">

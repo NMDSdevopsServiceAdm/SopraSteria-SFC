@@ -1,4 +1,4 @@
-import { OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -11,7 +11,8 @@ import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { isNull } from 'util';
 
-export class QuestionComponent implements OnInit, OnDestroy {
+export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public form: FormGroup;
   public worker: Worker;
   public workplace: Establishment;
@@ -58,6 +59,10 @@ export class QuestionComponent implements OnInit, OnDestroy {
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   ngOnDestroy() {

@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { OnInit } from '@angular/core';
+import { AfterViewInit, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { POSTCODE_PATTERN } from '@core/constants/constants';
@@ -9,7 +9,8 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { Subscription } from 'rxjs';
 
-export class WorkplaceNotFound implements OnInit {
+export class WorkplaceNotFound implements OnInit, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   protected form: FormGroup;
   protected flow: string;
   protected serverError: string;
@@ -31,6 +32,10 @@ export class WorkplaceNotFound implements OnInit {
       postcode: [null, this.postcodeValidator],
     });
     this.backService.setBackLink({ url: [this.flow, 'regulated-by-cqc'] });
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected init() {}

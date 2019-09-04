@@ -1,17 +1,18 @@
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
-import { OnDestroy, OnInit } from '@angular/core';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
-import { Subscription } from 'rxjs';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { Subscription } from 'rxjs';
 
-export class ConfirmAccountDetails implements OnInit, OnDestroy {
+export class ConfirmAccountDetails implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   protected formErrorsMap: Array<ErrorDetails>;
   protected locationAddress: LocationAddress;
   protected serverErrorsMap: Array<ErrorDefinition>;
@@ -28,16 +29,17 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
   public userDetails: UserDetails;
   protected actionType: string;
 
-  constructor(
-    protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
-  ) {}
+  constructor(protected errorSummaryService: ErrorSummaryService, protected formBuilder: FormBuilder) {}
 
   ngOnInit() {
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.init();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected init(): void {}

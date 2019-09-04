@@ -2,7 +2,8 @@ import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@ang
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ErrorDefinition, ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-error-summary',
@@ -30,6 +31,22 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
       );
       this.subscriptions.add(this.form.valueChanges.subscribe(() => this.getFormErrors()));
     }
+    this.subscriptions.add(
+      combineLatest([this.errorSummaryService.formEl$, this.errorSummaryService.errorId$])
+        .pipe(filter(([formEl, errorId]) => formEl !== null && errorId !== null))
+        .subscribe(([formEl, errorId]) => {
+          const errorMessage = formEl.nativeElement.querySelector(`#${this.getErrorId(errorId)}`);
+          if (errorMessage) {
+            const errorWrapper = errorMessage.closest('div');
+            const errorElement = errorWrapper ? errorWrapper.querySelector('input,select,textarea') : null;
+            if (errorElement) {
+              setTimeout(() => {
+                errorElement.focus();
+              }, 1);
+            }
+          }
+        })
+    );
   }
 
   /**
@@ -111,10 +128,20 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
     return item.replace('.', '-');
   }
 
+  public focusOnField(item: string) {
+    this.errorSummaryService.errorId$.next(item);
+  }
+
+  public getErrorId(item: string) {
+    return this.transformFragmentName(item) + '-error';
+  }
+
   /**
    * Unsubscribe hook to ensure no memory leaks
    */
   ngOnDestroy(): void {
+    this.errorSummaryService.formEl$.next(null);
+    this.errorSummaryService.errorId$.next(null);
     this.subscriptions.unsubscribe();
   }
 }
