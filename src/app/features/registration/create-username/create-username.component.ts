@@ -22,15 +22,18 @@ export class CreateUsernameComponent extends CreateUsername {
     super(backService, errorSummaryService, formBuilder, registrationService, router);
   }
 
+  protected init(): void {
+    this.return = this.registrationService.returnTo$.value;
+    this.setBackLink();
+  }
+
   protected setCallToActionLabel(): void {
-    const label: string = this.loginCredentialsExist ? 'Save and return' : 'Continue';
+    const label: string = this.return ? 'Save and return' : 'Continue';
     this.callToActionLabel = label;
   }
 
   protected setBackLink(): void {
-    const route: string = this.loginCredentialsExist
-      ? '/registration/confirm-account-details'
-      : '/registration/your-details';
+    const route: string = this.return ? this.return.url[0] : '/registration/your-details';
     this.backService.setBackLink({ url: [route] });
   }
 
@@ -38,7 +41,6 @@ export class CreateUsernameComponent extends CreateUsername {
     this.subscriptions.add(
       this.registrationService.loginCredentials$.subscribe((loginCredentials: LoginCredentials) => {
         if (loginCredentials) {
-          this.loginCredentialsExist = true;
           this.preFillForm(loginCredentials);
         }
       })
@@ -46,7 +48,7 @@ export class CreateUsernameComponent extends CreateUsername {
   }
 
   protected setFormSubmissionLink(): string {
-    return this.loginCredentialsExist ? '/registration/confirm-account-details' : '/registration/security-question';
+    return this.return ? this.return.url[0] : '/registration/security-question';
   }
 
   protected save(): void {

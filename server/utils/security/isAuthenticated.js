@@ -108,7 +108,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             // this is a known subsidairy of this given parent establishment
 
             // but, to be able to access the subsidary, then the permissions must not be null
-            if (referencedEstablishment.dataOwner === 'Workplace') {
+            if (claim.role != 'Admin' && referencedEstablishment.dataOwner === 'Workplace') {
               if (referencedEstablishment.dataPermissions === null) {
                 console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);
                 // failed to find establishment by UUID - being a subsidairy of this known parent

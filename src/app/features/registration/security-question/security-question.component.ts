@@ -6,7 +6,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { SecurityQuestion } from '@features/account/security-question/security-question';
-import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-security-question',
@@ -24,16 +23,16 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   }
 
   protected init(): void {
+    this.return = this.registrationService.returnTo$.value;
+    this.setBackLink();
     this.setupSubscription();
   }
 
   protected setupSubscription(): void {
     this.subscriptions.add(
       this.registrationService.securityDetails$
-        .pipe(finalize(() => this.setBackLink()))
         .subscribe((securityDetails: SecurityDetails) => {
           if (securityDetails) {
-            this.securityDetailsExist = true;
             this.preFillForm(securityDetails);
           }
         })
@@ -41,9 +40,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   }
 
   protected setBackLink(): void {
-    const route: string = this.securityDetailsExist
-      ? '/registration/confirm-account-details'
-      : '/registration/create-username';
+    const route: string = this.return ? this.return.url[0] : '/registration/create-username';
     this.backService.setBackLink({ url: [route] });
   }
 
@@ -57,7 +54,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   }
 
   protected setCallToActionLabel(): void {
-    const label: string = this.securityDetailsExist ? 'Save and return' : 'Continue';
+    const label: string = this.return ? 'Save and return' : 'Continue';
     this.callToActionLabel = label;
   }
 }

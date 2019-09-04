@@ -12,6 +12,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+
 import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
 
 @Component({
@@ -20,6 +21,7 @@ import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-work
 })
 export class StaffRecordComponent implements OnInit, OnDestroy {
   public canDeleteWorker: boolean;
+  public canEditWorker: boolean;
   public returnToQuals: URLStructure;
   public returnToRecord: URLStructure;
   public worker: Worker;
@@ -65,6 +67,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     );
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
+    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
   ngOnDestroy() {
