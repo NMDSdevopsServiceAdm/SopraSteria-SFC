@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -16,7 +16,8 @@ import { combineLatest, Subscription } from 'rxjs';
   selector: 'app-create-user-account',
   templateUrl: './create-user-account.component.html',
 })
-export class CreateUserAccountComponent implements OnInit, OnDestroy {
+export class CreateUserAccountComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   private flow: string;
   private serverErrorsMap: ErrorDefinition[] = this.workplaceService.serverErrorsMap;
   private subscriptions: Subscription = new Subscription();
@@ -43,6 +44,10 @@ export class CreateUserAccountComponent implements OnInit, OnDestroy {
     this.setupForm();
     this.setupFormErrorsMap();
     this.getWorkplaceData();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   private setBackLink(): void {

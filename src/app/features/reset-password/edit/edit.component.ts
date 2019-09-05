@@ -1,5 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -11,7 +21,8 @@ import { Subscription } from 'rxjs';
   selector: 'app-rp-edit',
   templateUrl: './edit.component.html',
 })
-export class ResetPasswordEditComponent implements OnInit, OnDestroy {
+export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public form: FormGroup;
   @Input() validatePasswordResetResponse;
   @Input() headerToken: string;
@@ -56,6 +67,10 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
     this.submitted = false;
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   public setupFormErrorsMap(): void {

@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -13,7 +13,8 @@ import { Subscription } from 'rxjs';
   selector: 'app-login',
   templateUrl: './login.component.html',
 })
-export class LoginComponent implements OnInit, OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public submitted = false;
@@ -38,6 +39,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   ngOnDestroy() {

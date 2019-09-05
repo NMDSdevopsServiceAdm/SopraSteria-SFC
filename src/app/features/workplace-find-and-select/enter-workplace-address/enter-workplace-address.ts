@@ -1,4 +1,4 @@
-import { OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -7,7 +7,8 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
-export class EnterWorkplaceAddress implements OnInit, OnDestroy {
+export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   protected addressMaxLength = 40;
   protected flow: string;
   protected postcodeMaxLength = 8;
@@ -92,6 +93,10 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.init();
     this.setBackLink();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected init(): void {}

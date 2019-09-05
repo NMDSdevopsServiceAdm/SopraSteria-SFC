@@ -5,7 +5,7 @@
   [serverError]="serverError"
 ></app-error-summary>
 
-<form (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="ready">
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="ready">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">

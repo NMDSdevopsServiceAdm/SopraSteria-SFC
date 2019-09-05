@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -9,7 +9,8 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { Subscription } from 'rxjs';
 
-export class FindWorkplaceAddress implements OnInit, OnDestroy {
+export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected flow: string;
@@ -32,6 +33,10 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy {
     this.setupServerErrorsMap();
     this.init();
     this.setBackLink();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   get getPostcode() {

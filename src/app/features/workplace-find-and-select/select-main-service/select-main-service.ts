@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -10,7 +10,8 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
-export class SelectMainService implements OnInit, OnDestroy {
+export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   protected allServices: Array<Service> = [];
   protected flow: string;
   protected otherServiceMaxLength = 120;
@@ -40,6 +41,10 @@ export class SelectMainService implements OnInit, OnDestroy {
     this.setSelectedWorkplaceService();
     this.getServiceCategories();
     this.init();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected setupForm(): void {

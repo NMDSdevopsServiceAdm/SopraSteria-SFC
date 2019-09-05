@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { filter } from 'lodash';
@@ -10,6 +10,8 @@ import * as parse from 'url-parse';
 })
 export class ErrorSummaryService {
   public syncFormErrorsEvent: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  public formEl$: BehaviorSubject<ElementRef> = new BehaviorSubject(null);
+  public errorId$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   constructor(private router: Router) {}
 
