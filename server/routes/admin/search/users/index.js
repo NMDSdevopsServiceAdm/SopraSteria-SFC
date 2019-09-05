@@ -32,6 +32,7 @@ router.route('/').post(async function (req, res) {
           "Login"."Username" AS "Username",
           "Login"."Active" AS "UserIsActive",
           "Login"."PasswdLastChanged" AS "UserPasswdLastChanged",
+          "Login"."InvalidAttempt" AS "InvalidAttempt",
           "Login"."LastLoggedIn" AS "UserLastLoggedIn",
           "User"."FullNameValue" AS "UserFullname",
           "User"."IsPrimary" AS "UserIsPrimary",
@@ -71,6 +72,7 @@ router.route('/').post(async function (req, res) {
           "Login"."Active" AS "UserIsActive",
           "Login"."PasswdLastChanged" AS "UserPasswdLastChanged",
           "Login"."LastLoggedIn" AS "UserLastLoggedIn",
+          "Login"."InvalidAttempt" AS "InvalidAttempt",
           "User"."FullNameValue" AS "UserFullname",
           "User"."IsPrimary" AS "UserIsPrimary",
           "User"."SecurityQuestionValue" AS "UserSecurityQuestion",
@@ -109,6 +111,7 @@ router.route('/').post(async function (req, res) {
         email: thisLogin.UserEmail,
         phone: thisLogin.UserPhone,
         isLocked: !thisLogin.UserIsActive,
+        invalidAttempt: thisLogin.InvalidAttempt,
         passwdLastChanged: thisLogin.UserPasswdLastChanged,
         lastLoggedIn: thisLogin.UserLastLoggedIn,
         establishment: {
