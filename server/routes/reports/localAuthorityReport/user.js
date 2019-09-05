@@ -143,14 +143,12 @@ const getReportData = async (date, thisEstablishment) => {
     type: models.sequelize.QueryTypes.SELECT
   };
 
-  console.log("params", params);
-
   const runReport = await models.sequelize.query(
     `select cqc.localAuthorityReport(:givenEstablishmentId, :givenFromDate, :givenToDate);`,
     params
   );
 
-  console.log("runReport", runReport);
+ // console.log("runReport", runReport);
 
   //Construct the model data object for the report
   const reportData = {
@@ -233,15 +231,15 @@ const updateWorkplacesSheet = (
   if(reportData.establishments.length > 1) {
     for(let i = 0; i < reportData.establishments.length-1; i++) {
       const tempRow = templateRow.cloneNode(true);
-      
+
       tempRow.setAttribute('r', rowIndex);
-      
+
       tempRow.querySelectorAll('c').forEach(elem => {
         elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndex);
       });
-      
+
       templateRow.parentNode.insertBefore(tempRow, currentRow.nextSibling);
-      
+
       currentRow = tempRow;
       rowIndex++;
     }
@@ -250,23 +248,23 @@ const updateWorkplacesSheet = (
     templateRow.remove();
     rowIndex = 13;
   }
-  
+
   //fix the last row in the table
   const lastChild = workplacesSheet.querySelector("sheetData row:last-child");
   lastChild.setAttribute('r', rowIndex);
-  
+
   //fix the dimensions tag value
   const dimension = workplacesSheet.querySelector("dimension");
   dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, "") + rowIndex);
-  
-  if(reportData.establishments.length) {
-    //update the cell values
-    for(let row = 0; row < reportData.establishments.length; row++){
+
+  //update the cell values
+  if(reportData.establishments.length) {  
+    for(let row = 0; row < reportData.establishments.length; row++) {
       for(let column = 0; column < 23; column++) {
         const columnText = String.fromCharCode(column + 65);
-        
+
         const cellToChange = workplacesSheet.querySelector(`c[r='${columnText}${row+13}']`);
-        
+
         switch(columnText) {
           case 'A': {
             putString(
@@ -279,164 +277,163 @@ const updateWorkplacesSheet = (
             putString(
                 cellToChange,
                 reportData.establishments[row].workplaceId
-              );            
+              );
           } break;
 
           case 'C': {
             putString(
                 cellToChange,
                 moment(reportData.establishments[row].lastUpdated).format("DD/MM/YYYY")
-              );            
+              );
           } break;
 
           case 'D': {
-           
+
           } break;
 
           case 'E': {
             putString(
                 cellToChange,
                 reportData.establishments[row].establishmentType
-              );            
+              );
           } break;
 
           case 'F': {
              putString(
                 cellToChange,
                 reportData.establishments[row].mainService
-              );           
+              );
           } break;
 
           case 'G': {
             putString(
                 cellToChange,
                 reportData.establishments[row].serviceUserGroups
-              );            
+              );
           } break;
 
           case 'H': {
             putString(
                 cellToChange,
                 reportData.establishments[row].capacityOfMainService
-              );            
+              );
           } break;
 
           case 'I': {
             putString(
                 cellToChange,
                 reportData.establishments[row].utilisationOfMainService
-              );            
+              );
           } break;
 
           case 'J': {
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfVacancies
-              );            
+              );
           } break;
 
           case 'K': {
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfLeavers
-              );            
+              );
           } break;
 
           case 'L': {
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfStarters
-              );            
+              );
           } break;
 
           case 'M': {
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfStaffRecords
-              );            
+              );
           } break;
 
           case 'N': {
             putString(
                 cellToChange,
-                reportData.establishments[row].numberOfStaffRecordsNotAgency
-              );            
+                0
+              );
           } break;
 
           case 'O': {
             putString(
                 cellToChange,
-                reportData.establishments[row].numberOfAgencyStaffRecords
-              );            
+                0
+              );
           } break;
 
           case 'P': {
             putString(
                 cellToChange,
                 reportData.establishments[row].workplaceComplete? "Yes": "No"
-              );            
+              );
           } break;
 
           case 'Q': {
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfIndividualStaffRecords
-              );            
+              );
           } break;
 
           case 'R': {
             putString(
                 cellToChange,
                 0
-              );            
+              );
           } break;
 
           case 'S': {
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfStaffRecordsNotAgency
-              );            
+              );
           } break;
 
           case 'T': {
             putString(
                 cellToChange,
-                reportData.establishments[row]. numberOfCompleteStaffNotAgency
-              );            
+                reportData.establishments[row].numberOfCompleteStaffNotAgency
+              );
           } break;
 
           case 'U': {
             putString(
                 cellToChange,
                 0
-              );            
+              );
           } break;
 
           case 'V': {
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfAgencyStaffRecords
-              );            
+              );
           } break;
 
           case 'W': {
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfCompleteAgencyStaffRecords
-              );            
+              );
           } break;
 
           case 'X': {
             putString(
                 cellToChange,
                 0
-              );            
-          } break;          
+              );
+          } break;
         }
       }
     }
   }
-  
 
   return workplacesSheet;
 };
@@ -463,48 +460,185 @@ const updateStaffRecordsSheet = (
       staffRecordsSheet.querySelector("c[r='B7']"),
       reportData.reportEstablishment.name
     );
-    
+
     // clone the row the apropriate number of times
   const templateRow = staffRecordsSheet.querySelector("row[r='11']");
   let currentRow = templateRow;
-  let rowIndex = 13;
-  
-  if(reportData.establishments.length > 1) {
+  let rowIndex = 12;
+
+  if(reportData.workers.length > 1) {
     for(let i = 0; i < reportData.workers.length-1; i++) {
       const tempRow = templateRow.cloneNode(true);
-      
+
       tempRow.setAttribute('r', rowIndex);
-      
+
       tempRow.querySelectorAll('c').forEach(elem => {
         elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndex);
       });
-      
+
       templateRow.parentNode.insertBefore(tempRow, currentRow.nextSibling);
-      
+
       currentRow = tempRow;
       rowIndex++;
     }
   }
   else if(reportData.workers.length === 0) {
     templateRow.remove();
-    rowIndex = 12;
+    rowIndex = 11;
   }
-  
+
   //fix the last row in the table
   const lastChild = staffRecordsSheet.querySelector("sheetData row:last-child");
   lastChild.setAttribute('r', rowIndex);
-  
+
   //fix the dimensions tag value
   const dimension = staffRecordsSheet.querySelector("dimension");
   dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, "") + rowIndex);
+
+  if(reportData.workers.length) {
+    //update the cell values
+    for(let row = 0; row < reportData.workers.length; row++){
+      for(let column = 0; column < 18; column++) {
+        const columnText = String.fromCharCode(column + 65);
+
+        const cellToChange = staffRecordsSheet.querySelector(`c[r='${columnText}${row+11}']`);
+
+        if(!cellToChange) {
+            console.log(`c[r='${columnText}${row+11}']`);
+        }
+        else switch(columnText) {
+          case 'A': {
+            putString(
+                cellToChange,
+                reportData.workers[row].localId
+              );
+          } break;
+
+          case 'B': {
+            putString(
+                cellToChange,
+                reportData.workers[row].workplaceName
+              );
+          } break;
+
+          case 'C': {
+          } break;
+
+          case 'D': {
+            putString(
+                cellToChange,
+                reportData.workers[row].workplaceId
+              );
+          } break;
+
+          case 'E': {
+            putString(
+                cellToChange,
+                reportData.workers[row].gender
+              );
+          } break;
+
+          case 'F': {
+             putString(
+                cellToChange,
+                reportData.workers[row].dateOfBirth
+              );
+          } break;
+
+          case 'G': {
+            putString(
+                cellToChange,
+                reportData.workers[row].ethnicity
+              );
+          } break;
+
+          case 'H': {
+            putString(
+                cellToChange,
+                reportData.workers[row].mainJob
+              );
+          } break;
+
+          case 'I': {
+            putString(
+                cellToChange,
+                reportData.workers[row].employmentStatus
+              );
+          } break;
+
+          case 'J': {
+            putString(
+                cellToChange,
+                reportData.workers[row].numberOfVacancies
+              );
+          } break;
+
+          case 'K': {
+            putString(
+                cellToChange,
+                reportData.workers[row].sickDays
+              );
+          } break;
+
+          case 'L': {
+            putString(
+                cellToChange,
+                reportData.workers[row].payInterval
+              );
+          } break;
+
+          case 'M': {
+            putString(
+                cellToChange,
+                reportData.workers[row].rateOfPay
+              );
+          } break;
+
+          case 'N': {
+            putString(
+                cellToChange,
+                reportData.workers[row].relevantSocialCareQualification
+              );
+          } break;
+
+          case 'O': {
+            putString(
+                cellToChange,
+                reportData.workers[row].highestSocialCareQualification
+              );
+          } break;
+
+          case 'P': {
+            putString(
+                cellToChange,
+                reportData.workers[row].nonSocialCareQualification
+              );
+          } break;
+
+          case 'Q': {
+            putString(
+                cellToChange,
+                moment(reportData.workers[row].lastUpdated).format("DD/MM/YYYY")
+              );
+          } break;
+
+          case 'R': {
+            putString(
+                cellToChange,
+                reportData.workers[row].staffRecordComplete
+              );
+          } break;
+        }
+      }
+    }
+  }
+
 
   return staffRecordsSheet;
 }
 
 const getReport = async (date, thisEstablishment) => {
   let reportData = await getReportData(date, thisEstablishment);
-
-  console.log(JSON.stringify(reportData, null, 2));
 
   if(reportData === null) {
     return null;
