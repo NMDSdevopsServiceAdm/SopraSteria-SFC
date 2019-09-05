@@ -32,12 +32,13 @@ interface TotalStaffRecordsResponse {
   providedIn: 'root',
 })
 export class WorkerService {
+  private _alert$: BehaviorSubject<Alert> = new BehaviorSubject<Alert>(null);
   private _worker$ = new BehaviorSubject<Worker>(null);
-  public worker$ = this._worker$.asObservable();
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   private totalStaffReturn$ = new BehaviorSubject<boolean>(false);
-  private _alert$: BehaviorSubject<Alert> = new BehaviorSubject<Alert>(null);
+  public addStaffRecordInProgress$ = new BehaviorSubject<boolean>(false);
   public alert$: Observable<Alert> = this._alert$.asObservable();
+  public worker$ = this._worker$.asObservable();
 
   public createStaffResponse = null;
 
