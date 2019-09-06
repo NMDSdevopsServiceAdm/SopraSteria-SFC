@@ -31,6 +31,10 @@ export class ServicesCapacityComponent extends Question {
     return str.replace(/^[^a-z]+|[^\w:.-]+/gi, '');
   }
 
+  public generateFormControlName(service, question): string {
+    return this.generateId(service) + '_' + question.seq + '_' + question.questionId.toString();
+  }
+
   protected init(): void {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(capacities => {
@@ -43,16 +47,16 @@ export class ServicesCapacityComponent extends Question {
         capacities.allServiceCapacities.forEach((service, i) => {
           const group = this.formBuilder.group({});
           const questions = service.questions;
-
           const id = this.generateId(service.service);
 
           questions.forEach(question => {
             group.addControl(
-              question.seq + '_' + question.questionId.toString(),
+              this.generateFormControlName(id, question),
               new FormControl(question.answer, [Validators.min(0)])
             );
+
             this.formErrorsMap.push({
-              item: `${id}.${question.questionId}`,
+              item: this.generateFormControlName(id, question),
               type: [
                 {
                   name: 'min',
