@@ -27,12 +27,12 @@ export class ServicesCapacityComponent extends Question {
     this.form = this.formBuilder.group({});
   }
 
-  public generateId(str: string): string {
+  public generateFormGroupName(str: string): string {
     return str.replace(/^[^a-z]+|[^\w:.-]+/gi, '');
   }
 
-  public generateFormControlName(service, question): string {
-    return this.generateId(service) + '_' + question.seq + '_' + question.questionId.toString();
+  public generateFormControlName(question): string {
+    return question.seq + '_' + question.questionId.toString();
   }
 
   protected init(): void {
@@ -47,20 +47,24 @@ export class ServicesCapacityComponent extends Question {
         capacities.allServiceCapacities.forEach((service, i) => {
           const group = this.formBuilder.group({});
           const questions = service.questions;
-          const id = this.generateId(service.service);
+          const id = this.generateFormGroupName(service.service);
 
           questions.forEach(question => {
             group.addControl(
-              this.generateFormControlName(id, question),
-              new FormControl(question.answer, [Validators.min(0)])
+              this.generateFormControlName(question),
+              new FormControl(question.answer, [Validators.min(0), Validators.max(999)])
             );
 
             this.formErrorsMap.push({
-              item: this.generateFormControlName(id, question),
+              item: `${id}.${this.generateFormControlName(question)}`,
               type: [
                 {
                   name: 'min',
                   message: 'Answer must be 0 or more',
+                },
+                {
+                  name: 'max',
+                  message: 'Answer must be 999 or less',
                 },
               ],
             });
