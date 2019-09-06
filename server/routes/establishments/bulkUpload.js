@@ -1075,7 +1075,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         const trainingCompletedDate = moment.utc(thisTraingRecord._currentLine.DATECOMPLETED, "DD-MM-YYYY")
         const workerDob = moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, "DD-MM-YYYY")
 
-        if (trainingCompletedDate.diff(workerDob, 'years') < 14 ) {
+        if (workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14 ) {
           csvTrainingSchemaErrors.push(thisTraingRecord.dobTrainingMismatch());
         }
 
