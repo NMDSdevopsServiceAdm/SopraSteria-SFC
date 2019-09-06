@@ -50,8 +50,8 @@ export class SecurityQuestion implements OnInit, OnDestroy, AfterViewInit {
     this.setupForm();
     this.setupSubscription();
     this.setupFormErrorsMap();
-    this.setCallToActionLabel();
     this.init();
+    this.setCallToActionLabel();
   }
 
   ngAfterViewInit() {
