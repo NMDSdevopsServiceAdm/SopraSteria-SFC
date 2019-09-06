@@ -20,7 +20,7 @@
         <ng-container *ngFor="let capacity of capacities; let i = index">
           <div
             class="govuk-form-group"
-            *ngIf="generateId(capacity.service); let groupName"
+            *ngIf="generateFormGroupName(capacity.service); let groupName"
             [class.govuk-form-group--error]="submitted && form.get(groupName).invalid"
             [formGroupName]="groupName"
           >
@@ -34,12 +34,12 @@
                 class="govuk-error-message"
               >
                 <span class="govuk-visually-hidden">Error:</span>
-                {{ getFirstErrorMessage(groupName) }}
+                {{ getFormErrorMessage(groupName, 'overcapacity') }}
               </span>
               <ng-container *ngFor="let question of capacity.questions; let idx = index">
                 <div
                   class="govuk-form-group"
-                  *ngIf="generateFormControlName(capacity.service, question); let controlName"
+                  *ngIf="generateFormControlName(question); let controlName"
                   [class.govuk-form-group--error]="submitted && form.get(groupName).get(controlName).invalid"
                 >
                   <label class="govuk-label" for="{{ controlName }}">
@@ -47,11 +47,11 @@
                   </label>
                   <span
                     *ngIf="submitted && form.get(groupName).get(controlName).invalid"
-                    id="{{ controlName }}-error"
+                    id="{{ groupName }}.{{ controlName }}-error"
                     class="govuk-error-message"
                   >
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFirstErrorMessage(controlName) }}
+                    {{ getFirstErrorMessage(groupName + '.' + controlName) }}
                   </span>
                   <input
                     class="govuk-input govuk-input--width-4"
