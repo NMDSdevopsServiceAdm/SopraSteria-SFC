@@ -14,6 +14,7 @@ import { Question } from '../question/question.component';
 export class ServicesCapacityComponent extends Question {
   public capacities: [];
   public ready = false;
+  public capacityErrorMsg = 'The capacity must be between 1 and 999';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -60,11 +61,11 @@ export class ServicesCapacityComponent extends Question {
               type: [
                 {
                   name: 'min',
-                  message: 'Answer must be 0 or more',
+                  message: this.capacityErrorMsg,
                 },
                 {
                   name: 'max',
-                  message: 'Answer must be 999 or less',
+                  message: this.capacityErrorMsg,
                 },
               ],
             });
