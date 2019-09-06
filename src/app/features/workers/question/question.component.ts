@@ -51,7 +51,12 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         if (!this.initiated) {
           this._init();
 
-          this.back = this.return ? this.return : { url: this.previous };
+          this.back = this.return
+            ? this.return
+            : {
+                url: this.previous,
+                ...(!this.workerService.addStaffRecordInProgress$.value && { fragment: 'staff-records' }),
+              };
           this.backService.setBackLink(this.back);
         }
       })

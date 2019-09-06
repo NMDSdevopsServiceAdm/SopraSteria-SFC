@@ -50,7 +50,9 @@ export class MainJobStartDateComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('other-job-roles');
-    this.previous = this.getRoutePath('staff-details');
+    this.previous = this.workerService.addStaffRecordInProgress$.value
+      ? this.getRoutePath('staff-details')
+      : ['/dashboard'];
   }
 
   public setupFormErrorsMap(): void {
