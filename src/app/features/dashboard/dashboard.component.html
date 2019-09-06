@@ -1,26 +1,27 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">
-      <span *ngIf="workplace?.isParent" class="govuk-caption-xl">Parent</span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+      <span *ngIf="workplace?.isParent" class="govuk-caption-xl govuk-!-margin-bottom-3">Parent</span>
       {{ workplace?.name }}
     </h1>
-  </div>
-
-  <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">Contact Skills for Care</h2>
-    <p class="govuk-!-font-size-16">
-      0113 241 0969<br />
-      <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support@skillsforcare.org.uk</a>
+    <p class="govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-0">
+      Workplace ID: {{ workplace?.nmdsId }}
+    </p>
+    <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16 govuk-!-margin-top-2">
+      Last signed in on {{ lastLoggedIn | date: 'd MMMM y' }}
     </p>
   </div>
-</div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <p>Workplace ID: {{ workplace?.nmdsId }}</p>
-  </div>
-  <div class="govuk-grid-column-one-third">
-    <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16">Last signed in {{ lastLoggedIn | date: 'd MMMM y' }}</p>
+  <div class="govuk-grid-column-one-third contact-col" [class.contact-col--parent]="workplace?.isParent">
+    <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
+      Contact Skills for Care
+    </h2>
+    <p class="govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-0">
+      0113 241 0969
+    </p>
+    <p class="govuk-!-font-size-16 govuk-!-margin-top-2">
+      <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support@skillsforcare.org.uk</a>
+    </p>
   </div>
 </div>
 
