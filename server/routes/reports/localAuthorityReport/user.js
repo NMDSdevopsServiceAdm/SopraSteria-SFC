@@ -1070,7 +1070,6 @@ const updateStaffRecordsSheet = (
   dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, "") + rowIndex);
 
   //update the cell values
-
   for(let row = 0; row < reportData.workers.length; row++) {
     const rowType = row === reportData.workers.length - 1 ? 'WORKERLAST' : 'WORKERREGULAR';
 
