@@ -993,7 +993,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           }
           return sum;
         }, 0);
-      
+
         if (myWorkersTotalHours > 65) csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
 
         if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
@@ -1877,38 +1877,61 @@ router.route('/complete').post(async (req, res) => {
 });
 
 // takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
-const exportToCsv = async (NEWLINE, allMyEstablishemnts) => {
+const exportToCsv = async (NEWLINE, allMyEstablishemnts, primaryEstablishmentId) => {
   const establishmentsCsvArray = [];
   const workersCsvArray = [];
   const trainingCsvArray = [];
 
-  // first the header rows
-  establishmentsCsvArray.push(new CsvEstablishmentValidator().headers);
-  workersCsvArray.push(new CsvWorkerValidator().headers);
-  trainingCsvArray.push(new CsvTrainingValidator().headers);
+  // before being able to write the worker header, we need to know the maximum number of qualifications
+  //  columns across all workers
+  try {
+    const determineMaxQuals = await dbmodels.sequelize.query(
+      `select cqc.maxQualifications(:givenPrimaryEstablishment);`,
+      {
+        replacements: {
+          givenPrimaryEstablishment: primaryEstablishmentId,
+        },
+        type: dbmodels.sequelize.QueryTypes.SELECT
+      }
+    );
 
-  allMyEstablishemnts.forEach(thisEstablishment => {
-    const establishmentCsvValidator = new CsvEstablishmentValidator();
+    if (determineMaxQuals && determineMaxQuals[0].maxqualifications && Number.isInteger(parseInt(determineMaxQuals[0].maxqualifications))) {
+      const MAX_QUALS = parseInt(determineMaxQuals[0].maxqualifications);
 
-    establishmentsCsvArray.push(establishmentCsvValidator.toCSV(thisEstablishment));
+      // first the header rows
+      establishmentsCsvArray.push(new CsvEstablishmentValidator().headers);
+      workersCsvArray.push(new CsvWorkerValidator().headers(MAX_QUALS));
+      trainingCsvArray.push(new CsvTrainingValidator().headers);
 
-    // for each worker on this establishment
-    const thisEstablishmentWorkers = thisEstablishment.workers;
-    thisEstablishmentWorkers.forEach(thisWorker => {
-      const workerCsvValidator = new CsvWorkerValidator();
+      allMyEstablishemnts.forEach(thisEstablishment => {
+        const establishmentCsvValidator = new CsvEstablishmentValidator();
 
-      // note - thisEstablishment.name will need to be local identifier once available
-      workersCsvArray.push(workerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker));
+        establishmentsCsvArray.push(establishmentCsvValidator.toCSV(thisEstablishment));
 
-      // and for this Worker's training records
-      thisWorker.training ? thisWorker.training.forEach(thisTrainingRecord => {
-        const trainingCsvValidator = new CsvTrainingValidator();
+        // for each worker on this establishment
+        const thisEstablishmentWorkers = thisEstablishment.workers;
+        thisEstablishmentWorkers.forEach(thisWorker => {
+          const workerCsvValidator = new CsvWorkerValidator();
 
-        trainingCsvArray.push(trainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord));
-      }) : true;
-    });
+          // note - thisEstablishment.name will need to be local identifier once available
+          workersCsvArray.push(workerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS));
 
-  });
+          // and for this Worker's training records
+          thisWorker.training ? thisWorker.training.forEach(thisTrainingRecord => {
+            const trainingCsvValidator = new CsvTrainingValidator();
+
+            trainingCsvArray.push(trainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord));
+          }) : true;
+        });
+
+      });
+    } else {
+      console.error('bulk upload exportToCsv - max quals error: ', determineMaxQuals);
+    }
+
+  } catch (err) {
+    console.error('bulk upload exportToCsv error: ', err);
+  }
 
   return [establishmentsCsvArray.join(NEWLINE), workersCsvArray.join(NEWLINE), trainingCsvArray.join(NEWLINE)]
 };
@@ -1940,7 +1963,7 @@ router.route('/download/:downloadType').get(async (req, res) => {
         const ENTITY_RESTORE_LEVEL=2;
         // only restore those subs that this primary establishment owns
         const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true);
-        [establishments, workers, training] = await exportToCsv(NEWLINE, myCurrentEstablishments);
+        [establishments, workers, training] = await exportToCsv(NEWLINE, myCurrentEstablishments, primaryEstablishmentId);
 
       } catch(err) {
         console.error('router.get(\'/bulkupload/download\').get: failed to restore my establishments and all associated entities (workers, qualifications and training: ', err);

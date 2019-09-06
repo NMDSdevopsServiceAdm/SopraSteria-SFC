@@ -181,8 +181,18 @@ class Worker {
 
   static get NI_WORKER_DUPLICATE_ERROR() { return 5570 }
 
-  get headers() {
-    return this._headers_v1_without_chgUnique.join(",");
+  headers(MAX_QUALS) {
+    const defaultHeaders = this._headers_v1_without_chgUnique;
+    const DEFAULT_NUMBER_OF_QUALS = 3;
+
+    for (let additionalHeaders = 0; additionalHeaders < MAX_QUALS-DEFAULT_NUMBER_OF_QUALS; additionalHeaders++) {
+      const currentHeader = `${additionalHeaders+DEFAULT_NUMBER_OF_QUALS+1}`;
+      defaultHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}`);
+      defaultHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}NOTES`);
+    }
+
+    // default headers includes three quals
+    return defaultHeaders.join(",");
   }
 
   get lineNumber() {
@@ -3397,7 +3407,7 @@ class Worker {
   }
 
   // takes the given Worker entity and writes it out to CSV string (one line)
-  toCSV(establishmentId, entity) {
+  toCSV(establishmentId, entity, MAX_QUALIFICATIONS) {
     // ["LOCALESTID","UNIQUEWORKERID","CHGUNIQUEWRKID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
     //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
@@ -3620,9 +3630,6 @@ class Worker {
         break;
     }
 
-
-    // and now for qualifications - up to 3 - https://trello.com/c/ahBZTUMC
-    const MAX_QUALIFICATIONS = 3;
     const myQualifications = entity.qualifications.slice(0, MAX_QUALIFICATIONS);
 
     for(let index = 0; index < MAX_QUALIFICATIONS; index++) {
@@ -3633,6 +3640,9 @@ class Worker {
           columns.push(`${mappedQualification};${thisQual.year ? thisQual.year : ''}`);
           columns.push(thisQual.notes ? thisQual.notes : '');
         }
+      } else {
+        columns.push('');
+        columns.push('');
       }
     };
 
