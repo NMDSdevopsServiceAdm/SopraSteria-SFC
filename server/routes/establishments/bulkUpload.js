@@ -332,10 +332,10 @@ router.route('/uploaded').put(async (req, res) => {
       workerHeaders = headerLine.trim();
     }
 
-    if(myDownloads.training){
-      importedTraining = await csv().fromString(myDownloads.training);
-      const positionOfNewline = myDownloads.training.indexOf("\n");
-      const headerLine = myDownloads.training.substring(0, positionOfNewline);
+    if(myDownloads.trainings){
+      importedTraining = await csv().fromString(myDownloads.trainings);
+      const positionOfNewline = myDownloads.trainings.indexOf("\n");
+      const headerLine = myDownloads.trainings.substring(0, positionOfNewline);
       trainingHeaders = headerLine.trim();
     }
 
@@ -375,6 +375,7 @@ router.route('/uploaded').put(async (req, res) => {
     if(importedTraining){
       const trainingCsvValidator = new CsvTrainingValidator(importedTraining[firstRow], firstLineNumber);
       if(trainingCsvValidator.preValidate(trainingHeaders)){
+        console.log("WA DEBUG - prevalidated training - ", importedTraining)
         // count records and update metadata
         trainingMetadata.records = importedTraining.length;
         metadataS3Promises.push(uploadAsJSON(username, establishmentId, trainingMetadata, `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`));
@@ -1074,7 +1075,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         const trainingCompletedDate = moment.utc(thisTraingRecord._currentLine.DATECOMPLETED, "DD-MM-YYYY")
         const workerDob = moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, "DD-MM-YYYY")
 
-        if (trainingCompletedDate.diff(workerDob, 'years') < 14 ) {
+        if (workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14 ) {
           csvTrainingSchemaErrors.push(thisTraingRecord.dobTrainingMismatch());
         }
 
