@@ -1367,57 +1367,6 @@ router.route('/').get(async (req, res) => {
 
     if(await thisEstablishment.restore(req.establishment.id, false)) {
       const theEmployerType = thisEstablishment.employerType;
-<<<<<<< HEAD
-      if (theEmployerType && (theEmployerType.value).startsWith('Local Authority')) {
-
-        // first run the report, which means running the `cqc.localAuthorityReport` function; the function runs in a single transaction
-        // the function returns true or false; encapsulating any SQL exceptions.
-        const runReport = await models.sequelize.query(
-          `select cqc.localAuthorityReport(:givenEstablishmentId, :givenFromDate, :givenToDate);`,
-          {
-            replacements: {
-              givenEstablishmentId: establishmentId,
-              givenFromDate: fromDate,
-              givenToDate: toDate,
-            },
-            type: models.sequelize.QueryTypes.SELECT
-          }
-        );
-
-        if (runReport && runReport[0].localauthorityreport) {
-          // for the report
-          const establishmentName = thisEstablishment.name;
-          const establishmentNmdsId = thisEstablishment.nmdsId;
-          const reportDateUK = moment().format('DD/MM/YYYY');
-          const localAuthority = await _identifyLocalAuthority(thisEstablishment.postcode);
-
-          // now grab the establishments and format the report data
-          const reportEstablishments = await models.localAuthorityReportEstablishment.findAll({
-            where: {
-              establishmentFk: establishmentId
-            },
-            order: [
-              ['workplaceName', 'ASC'],
-            ],
-          });
-          if (reportEstablishments && Array.isArray(reportEstablishments)) {
-            await workplaceTab(establishmentName, establishmentNmdsId, reportDateUK, localAuthority, reportEstablishments);
-          }
-
-          // now grab the workers and format the report data
-          const reportWorkers = await models.localAuthorityReportWorker.findAll({
-            where: {
-              establishmentFk: establishmentId
-            },
-            order: [
-              ['workplaceName', 'ASC'],
-              ['localId', 'ASC'],
-            ],
-          });
-          if (reportWorkers && Array.isArray(reportWorkers)) {
-            await staffTab(establishmentName, localAuthority, reportWorkers);
-          }
-=======
 
       if(theEmployerType && (theEmployerType.value).startsWith('Local Authority')) {
         const date = new Date();
@@ -1426,11 +1375,6 @@ router.route('/').get(async (req, res) => {
         if(report) {
           res.setHeader('Content-disposition',
             `attachment; filename=${moment(date).format("YYYY-MM-DD")}-SFC-Local-Authority-Report.xlsx`);
-<<<<<<< HEAD
->>>>>>> added code to produce an xlsx spreadsheet
-
-=======
->>>>>>> workplaces tab data is in the exported spreadsheet now
           res.setHeader('Content-Type',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           res.setHeader('Content-Length', report.length);
