@@ -339,39 +339,47 @@ const updateWorkplacesSheet = (
           } break;
 
           case 'J': {
+            reportData.establishments[row].numberOfVacancies = parseInt(reportData.establishments[row].numberOfVacancies, 10);
+
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfVacancies
               );
              
-            totals.numberOfVacancies += parseInt(reportData.establishments[row].numberOfVacancies, 10);
+            totals.numberOfVacancies += reportData.establishments[row].numberOfVacancies;
           } break;
 
           case 'K': {
+            reportData.establishments[row].numberOfLeavers = parseInt(reportData.establishments[row].numberOfLeavers, 10);
+            
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfLeavers
               );
               
-            totals.numberOfLeavers += parseInt(reportData.establishments[row].numberOfLeavers, 10);
+            totals.numberOfLeavers += reportData.establishments[row].numberOfLeavers;
           } break;
 
           case 'L': {
+            reportData.establishments[row].numberOfStarters = parseInt(reportData.establishments[row].numberOfStarters, 10);
+            
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfStarters
               );
             
-            totals.numberOfStarters += parseInt(reportData.establishments[row].numberOfStarters, 10);
+            totals.numberOfStarters += reportData.establishments[row].numberOfStarters;
           } break;
 
           case 'M': {
+            reportData.establishments[row].numberOfStaffRecords = parseInt(reportData.establishments[row].numberOfStaffRecords, 10);
+            
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfStaffRecords
               );
               
-            totals.numberOfStaffRecords += parseInt(reportData.establishments[row].numberOfStaffRecords, 10);
+            totals.numberOfStaffRecords += reportData.establishments[row].numberOfStaffRecords;
           } break;
 
           case 'N': {
@@ -396,68 +404,81 @@ const updateWorkplacesSheet = (
           } break;
 
           case 'Q': {
+            reportData.establishments[row].numberOfIndividualStaffRecords = parseInt(reportData.establishments[row].numberOfIndividualStaffRecords, 10);
+            
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfIndividualStaffRecords
               );
               
-            totals.numberOfIndividualStaffRecords += parseInt(reportData.establishments[row].numberOfIndividualStaffRecords, 10);
+            totals.numberOfIndividualStaffRecords += reportData.establishments[row].numberOfIndividualStaffRecords;
           } break;
 
           case 'R': {
             putString(
                 cellToChange,
-                0
+                (reportData.establishments[row].numberOfIndividualStaffRecords /
+                reportData.establishments[row].numberOfStaffRecords) * 100
               );
           } break;
 
           case 'S': {
+            reportData.establishments[row].numberOfStaffRecordsNotAgency = parseInt(reportData.establishments[row].numberOfStaffRecordsNotAgency, 10);
+            
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfStaffRecordsNotAgency
               );
               
-            totals.numberOfStaffRecordsNotAgency += parseInt(reportData.establishments[row].numberOfStaffRecordsNotAgency, 10);
+            totals.numberOfStaffRecordsNotAgency += reportData.establishments[row].numberOfStaffRecordsNotAgency;
           } break;
 
           case 'T': {
+            reportData.establishments[row].numberOfCompleteStaffNotAgency = parseInt(reportData.establishments[row].numberOfCompleteStaffNotAgency, 10);
+            
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfCompleteStaffNotAgency
               );
             
-            totals.numberOfCompleteStaffNotAgency += parseInt(reportData.establishments[row].numberOfCompleteStaffNotAgency, 10);
+            totals.numberOfCompleteStaffNotAgency += reportData.establishments[row].numberOfCompleteStaffNotAgency;
           } break;
 
           case 'U': {
             putString(
                 cellToChange,
-                0
+                (reportData.establishments[row].numberOfCompleteStaffNotAgency /
+                reportData.establishments[row].numberOfStaffRecords) * 100
               );
           } break;
 
           case 'V': {
+            reportData.establishments[row].numberOfAgencyStaffRecords = parseInt(reportData.establishments[row].numberOfAgencyStaffRecords, 10)
+            
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfAgencyStaffRecords
               );
               
-            totals.numberOfAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfAgencyStaffRecords, 10);
+            totals.numberOfAgencyStaffRecords += reportData.establishments[row].numberOfAgencyStaffRecords;
           } break;
 
           case 'W': {
+            reportData.establishments[row].numberOfCompleteAgencyStaffRecords = parseInt(reportData.establishments[row].numberOfCompleteAgencyStaffRecords, 10);
+            
             putString(
                 cellToChange,
                 reportData.establishments[row].numberOfCompleteAgencyStaffRecords
               );
             
-            totals.numberOfCompleteAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfCompleteAgencyStaffRecords, 10);
+            totals.numberOfCompleteAgencyStaffRecords += reportData.establishments[row].numberOfCompleteAgencyStaffRecords;
           } break;
 
           case 'X': {
             putString(
                 cellToChange,
-                0
+                (reportData.establishments[row].numberOfCompleteAgencyStaffRecords /
+                reportData.establishments[row].numberOfStaffRecords) * 100
               );
           } break;
         }
@@ -554,7 +575,8 @@ const updateWorkplacesSheet = (
         case 'R': {
           putString(
               cellToChange,
-              totals.columnR
+              totals.numberOfIndividualStaffRecords /
+              totals.numberOfStaffRecords * 100
             );
         } break;
 
@@ -575,7 +597,8 @@ const updateWorkplacesSheet = (
         case 'U': {
           putString(
               cellToChange,
-              totals.columnU
+              totals.numberOfCompleteStaffNotAgency /
+              totals.numberOfStaffRecords * 100
             );
         } break;
 
@@ -596,7 +619,8 @@ const updateWorkplacesSheet = (
         case 'X': {
           putString(
               cellToChange,
-              totals.columnX
+              totals.numberOfCompleteAgencyStaffRecords /
+              totals.numberOfStaffRecords * 100
             );
         } break;
       }
@@ -733,7 +757,7 @@ const updateStaffRecordsSheet = (
           case 'J': {
             putString(
                 cellToChange,
-                reportData.workers[row].numberOfVacancies
+                reportData.workers[row].contractedAverageHours
               );
           } break;
 
