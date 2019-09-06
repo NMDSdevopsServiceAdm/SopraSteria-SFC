@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
@@ -44,8 +45,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       );
     }
 
-    // TODO: Use user object to get last logged in date
-    this.lastLoggedIn = '';
+    const lastLoggedIn = this.userService.loggedInUser.lastLoggedIn;
+    this.lastLoggedIn = lastLoggedIn ? lastLoggedIn : null;
 
     this.userService.updateReturnUrl({
       url: ['/dashboard'],
