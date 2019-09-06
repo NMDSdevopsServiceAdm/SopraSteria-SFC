@@ -148,7 +148,10 @@ const getReportData = async (date, thisEstablishment) => {
     params
   );
 
- // console.log("runReport", runReport);
+  // if report fails return no data
+  if(!runReport || String(runReport[0].localauthorityreport) !== 'true') {
+    return null;
+  }
 
   //Construct the model data object for the report
   const reportData = {
@@ -161,11 +164,6 @@ const getReportData = async (date, thisEstablishment) => {
     establishments: [],
     workers: []
   };
-
-  // if report fails return no data
-  if(!runReport || String(runReport[0].localauthorityreport) !== 'true') {
-    return null;
-  }
 
   // now grab the establishments and format the report data
   const reportEstablishments = await models.localAuthorityReportEstablishment.findAll({
@@ -250,15 +248,29 @@ const updateWorkplacesSheet = (
   }
 
   //fix the last row in the table
-  const lastChild = workplacesSheet.querySelector("sheetData row:last-child");
-  lastChild.setAttribute('r', rowIndex);
+  workplacesSheet.querySelector("sheetData row:last-child").setAttribute('r', rowIndex);
 
   //fix the dimensions tag value
   const dimension = workplacesSheet.querySelector("dimension");
   dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, "") + rowIndex);
 
   //update the cell values
-  if(reportData.establishments.length) {  
+  if(reportData.establishments.length) {
+    const totals = {
+      numberOfVacancies: 0,
+      numberOfLeavers: 0,
+      numberOfStarters: 0,
+      numberOfStaffRecords: 0,
+      numberOfIndividualStaffRecords: 0,
+      columnR: 0,
+      numberOfStaffRecordsNotAgency: 0,
+      numberOfCompleteStaffNotAgency: 0,
+      columnU: 0,
+      numberOfAgencyStaffRecords: 0,
+      numberOfCompleteAgencyStaffRecords: 0,
+      columnX: 0
+    };
+    
     for(let row = 0; row < reportData.establishments.length; row++) {
       for(let column = 0; column < 23; column++) {
         const columnText = String.fromCharCode(column + 65);
@@ -331,6 +343,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].numberOfVacancies
               );
+             
+            totals.numberOfVacancies += parseInt(reportData.establishments[row].numberOfVacancies, 10);
           } break;
 
           case 'K': {
@@ -338,6 +352,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].numberOfLeavers
               );
+              
+            totals.numberOfLeavers += parseInt(reportData.establishments[row].numberOfLeavers, 10);
           } break;
 
           case 'L': {
@@ -345,6 +361,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].numberOfStarters
               );
+            
+            totals.numberOfStarters += parseInt(reportData.establishments[row].numberOfStarters, 10);
           } break;
 
           case 'M': {
@@ -352,6 +370,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].numberOfStaffRecords
               );
+              
+            totals.numberOfStaffRecords += parseInt(reportData.establishments[row].numberOfStaffRecords, 10);
           } break;
 
           case 'N': {
@@ -380,6 +400,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].numberOfIndividualStaffRecords
               );
+              
+            totals.numberOfIndividualStaffRecords += parseInt(reportData.establishments[row].numberOfIndividualStaffRecords, 10);
           } break;
 
           case 'R': {
@@ -394,6 +416,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].numberOfStaffRecordsNotAgency
               );
+              
+            totals.numberOfStaffRecordsNotAgency += parseInt(reportData.establishments[row].numberOfStaffRecordsNotAgency, 10);
           } break;
 
           case 'T': {
@@ -401,6 +425,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].numberOfCompleteStaffNotAgency
               );
+            
+            totals.numberOfCompleteStaffNotAgency += parseInt(reportData.establishments[row].numberOfCompleteStaffNotAgency, 10);
           } break;
 
           case 'U': {
@@ -415,6 +441,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].numberOfAgencyStaffRecords
               );
+              
+            totals.numberOfAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfAgencyStaffRecords, 10);
           } break;
 
           case 'W': {
@@ -422,6 +450,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].numberOfCompleteAgencyStaffRecords
               );
+            
+            totals.numberOfCompleteAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfCompleteAgencyStaffRecords, 10);
           } break;
 
           case 'X': {
@@ -431,6 +461,144 @@ const updateWorkplacesSheet = (
               );
           } break;
         }
+      }
+    }
+    
+    //update totals
+    for(let column = 0; column < 23; column++) {
+      const columnText = String.fromCharCode(column + 65);
+
+      const cellToChange = workplacesSheet.querySelector(`c[r='${columnText}12']`);
+
+      switch(columnText) {
+        case 'A': {
+        } break;
+
+        case 'B': {
+        } break;
+
+        case 'C': {
+        } break;
+
+        case 'D': {
+
+        } break;
+
+        case 'E': {
+        } break;
+
+        case 'F': {
+        } break;
+
+        case 'G': {
+        } break;
+
+        case 'H': {
+        } break;
+
+        case 'I': {
+        } break;
+
+        case 'J': {
+          putString(
+              cellToChange,
+              totals.numberOfVacancies
+            );
+        } break;
+
+        case 'K': {
+          putString(
+              cellToChange,
+              totals.numberOfLeavers
+            );
+        } break;
+
+        case 'L': {
+          putString(
+              cellToChange,
+              totals.numberOfStarters
+            );
+        } break;
+
+        case 'M': {
+          putString(
+              cellToChange,
+              totals.numberOfStaffRecords
+            );
+        } break;
+
+        case 'N': {
+          putString(
+              cellToChange,
+              0
+            );
+        } break;
+
+        case 'O': {
+          putString(
+              cellToChange,
+              0
+            );
+        } break;
+
+        case 'P': {
+        } break;
+
+        case 'Q': {
+          putString(
+              cellToChange,
+              totals.numberOfIndividualStaffRecords
+            );
+        } break;
+
+        case 'R': {
+          putString(
+              cellToChange,
+              totals.columnR
+            );
+        } break;
+
+        case 'S': {
+          putString(
+              cellToChange,
+              totals.numberOfStaffRecordsNotAgency
+            );
+        } break;
+
+        case 'T': {
+          putString(
+              cellToChange,
+              totals.numberOfCompleteStaffNotAgency
+            );
+        } break;
+
+        case 'U': {
+          putString(
+              cellToChange,
+              totals.columnU
+            );
+        } break;
+
+        case 'V': {
+          putString(
+              cellToChange,
+              totals.numberOfAgencyStaffRecords
+            );
+        } break;
+
+        case 'W': {
+          putString(
+              cellToChange,
+              totals.numberOfCompleteAgencyStaffRecords
+            );
+        } break;
+
+        case 'X': {
+          putString(
+              cellToChange,
+              totals.columnX
+            );
+        } break;
       }
     }
   }
@@ -488,8 +656,7 @@ const updateStaffRecordsSheet = (
   }
 
   //fix the last row in the table
-  const lastChild = staffRecordsSheet.querySelector("sheetData row:last-child");
-  lastChild.setAttribute('r', rowIndex);
+  staffRecordsSheet.querySelector("sheetData row:last-child").setAttribute('r', rowIndex);
 
   //fix the dimensions tag value
   const dimension = staffRecordsSheet.querySelector("dimension");
@@ -503,10 +670,7 @@ const updateStaffRecordsSheet = (
 
         const cellToChange = staffRecordsSheet.querySelector(`c[r='${columnText}${row+11}']`);
 
-        if(!cellToChange) {
-            console.log(`c[r='${columnText}${row+11}']`);
-        }
-        else switch(columnText) {
+        switch(columnText) {
           case 'A': {
             putString(
                 cellToChange,
@@ -625,7 +789,7 @@ const updateStaffRecordsSheet = (
           case 'R': {
             putString(
                 cellToChange,
-                reportData.workers[row].staffRecordComplete
+                reportData.workers[row].staffRecordComplete ? "Yes" : "No"
               );
           } break;
         }
@@ -684,7 +848,7 @@ const getReport = async (date, thisEstablishment) => {
         if(sharedStrings) {
           const sst = sharedStrings.querySelector("sst");
 
-          const sharedStringsUniqueCount = [parseInt(sst.getAttribute('uniqueCount'), 10)];;
+          const sharedStringsUniqueCount = [parseInt(sst.getAttribute('uniqueCount'), 10)];
 
           //update the workplaces sheet with the report data and add it to the zip
           outputZip.file(workplacesSheetName, serializeXML(updateWorkplacesSheet(
