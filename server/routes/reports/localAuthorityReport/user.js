@@ -1,4 +1,5 @@
 // Local Authority user's report
+'use strict';
 
 //external node modules
 const moment = require('moment');
@@ -77,54 +78,49 @@ const Establishment = require('../../../models/classes/establishment').Establish
 
 // identifies the associated local authority of the establishment - code taken from establishment::restore
 const identifyLocalAuthority = async postcode => {
-  // // need to identify which, if any, of the shared authorities is attributed to the
-  // // primary Authority; that is the Local Authority associated with the physical area
-  // // of the given Establishment (using the postcode as the key)
-  // let primaryAuthorityCssr = null;
+  // need to identify which, if any, of the shared authorities is attributed to the
+  // primary Authority; that is the Local Authority associated with the physical area
+  // of the given Establishment (using the postcode as the key)
+  let primaryAuthorityCssr;
 
-  // // lookup primary authority by trying to resolve on specific postcode code
-  // const cssrResults = await models.pcodedata.findOne({
-  //   where: {
-  //     postcode: fetchResults.postcode,
-  //   },
-  //   include: [
-  //     {
-  //       model: models.cssr,
-  //       as: 'theAuthority',
-  //       attributes: ['id', 'name', 'nmdsIdLetter']
-  //     }
-  //   ]
-  // });
+  // lookup primary authority by trying to resolve on specific postcode code
+  const cssrResults = await models.pcodedata.findOne({
+    where: {
+      postcode,
+    },
+    include: [
+      {
+        model: models.cssr,
+        as: 'theAuthority',
+        attributes: ['id', 'name', 'nmdsIdLetter']
+      }
+    ]
+  });
 
-  // if (cssrResults && cssrResults.postcode === fetchResults.postcode &&
-  //   cssrResults.theAuthority && cssrResults.theAuthority.id &&
-  //   Number.isInteger(cssrResults.theAuthority.id)) {
+  if (cssrResults && cssrResults.postcode === postcode &&
+    cssrResults.theAuthority && cssrResults.theAuthority.id &&
+    Number.isInteger(cssrResults.theAuthority.id)) {
 
-  //   fetchResults.primaryAuthorityCssr = {
-  //     id: cssrResults.theAuthority.id,
-  //     name: cssrResults.theAuthority.name
-  //   };
+    return cssrResults.theAuthority.name
+  }
 
-  // } else {
-  //   //  using just the first half of the postcode
-  //   const [firstHalfOfPostcode] = fetchResults.postcode.split(' ');
+  //  using just the first half of the postcode
+  const [firstHalfOfPostcode] = fetchResults.postcode.split(' ');
 
-  //   // must escape the string to prevent SQL injection
-  //   const fuzzyCssrIdMatch = await models.sequelize.query(
-  //     `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
-  //     {
-  //       type: models.sequelize.QueryTypes.SELECT
-  //     }
-  //   );
-  //   if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
-  //     fetchResults.primaryAuthorityCssr = {
-  //       id: fuzzyCssrIdMatch[0].CssrID,
-  //       name: fuzzyCssrIdMatch[0].CssR
-  //     }
-  //   }
-  // }
+  // must escape the string to prevent SQL injection
+  const fuzzyCssrIdMatch = await models.sequelize.query(
+    `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
+    {
+      type: models.sequelize.QueryTypes.SELECT
+    }
+  );
 
-  return 'DEFAULT - KIRKLEES'
+  if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
+    return fuzzyCssrIdMatch[0].CssR;
+  }
+
+  //Couldn't get local authority name. Just leave it blank?
+  return '';
 };
 
 const getReportData = async (date, thisEstablishment) => {
@@ -176,41 +172,7 @@ const getReportData = async (date, thisEstablishment) => {
   });
 
   if(reportEstablishments && Array.isArray(reportEstablishments)) {
-    //reportData.establishments = reportEstablishments;
-    
-    console.log(JSON.stringify(reportEstablishments[2], null, 2)); 
-    
-    const red= {
-      "id": 664,
-      "reportFrom": "2019-09-09",
-      "reportTo": "2019-10-31",
-      "establishmentFk": 479,
-      "workplaceFk": 1433,
-      "workplaceName": "WOZiTech Cares Sub 3 Updated",
-      "workplaceId": "G1002097",
-      "lastUpdated": "2019-08-29",
-      "establishmentType": "Voluntary / Charity",
-      "mainService": "Carers support",
-      "serviceUserGroups": "Missing",
-      "capacityOfMainService": "Missing",
-      "utilisationOfMainService": "Missing",
-      "numberOfVacancies": "Missing",
-      "numberOfStarters": "Missing",
-      "numberOfLeavers": "Missing",
-      "numberOfStaffRecords": "Missing",
-      "workplaceComplete": false,
-      "numberOfIndividualStaffRecords": "Missing",
-      "percentageOfStaffRecords": "80.0",
-      "numberOfStaffRecordsNotAgency": "Missing",
-      "numberOfCompleteStaffNotAgency": "Missing",
-      "percentageOfCompleteStaffRecords": "80.0",
-      "numberOfAgencyStaffRecords": "Missing",
-      "numberOfCompleteAgencyStaffRecords": "Missing",
-      "percentageOfCompleteAgencyStaffRecords": "80.0"
-    }
-    //all red data
-    reportData.establishments = [red,red,red];
-    
+    reportData.establishments = reportEstablishments;
   }
 
   // now grab the workers and format the report data
@@ -283,12 +245,12 @@ const styleLookup = {
       'U': 38,
       'V': 39,
       'W': 40,
-      'X': 41  
+      'X': 38
     },
     'ESTREGULAR': {
       'A': 24,
       'B': 8,
-      'C': 25,
+      'C': 9,
       'D': 8,
       'E': 8,
       'F': 8,
@@ -301,7 +263,7 @@ const styleLookup = {
       'M': 8,
       'N': 8,
       'O': 8,
-      'P': 25,
+      'P': 9,
       'Q': 8,
       'R': 11,
       'S': 10,
@@ -309,7 +271,7 @@ const styleLookup = {
       'U': 11,
       'V': 13,
       'W': 14,
-      'X': 12  
+      'X': 67
     },
     'ESTTOTAL': {
       'A': 7,
@@ -332,10 +294,10 @@ const styleLookup = {
       'R': 11,
       'S': 10,
       'T': 8,
-      'U': 12,
+      'U': 67,
       'V': 13,
       'W': 14,
-      'X': 12  
+      'X': 67
     },
     'WORKERREGULAR': {
       'A': 24,
@@ -355,7 +317,7 @@ const styleLookup = {
       'O': 8,
       'P': 8,
       'Q': 8,
-      'R': 57  
+      'R': 57
     },
     'WORKERLAST': {
       'A': 30,
@@ -375,7 +337,7 @@ const styleLookup = {
       'O': 31,
       'P': 31,
       'Q': 31,
-      'R': 56  
+      'R': 56
     }
   },
   'RED': {
@@ -408,7 +370,7 @@ const styleLookup = {
     'ESTLAST' : {
       'A': 30,
       'B': 34,
-      'C': 32,
+      'C': 70,
       'D': 33,
       'E': 34,
       'F': 34,
@@ -421,15 +383,15 @@ const styleLookup = {
       'M': 34,
       'N': 31,
       'O': 31,
-      'P': 32,
+      'P': 70,
       'Q': 34,
-      'R': 36,
+      'R': 68,
       'S': 35,
       'T': 34,
-      'U': 38,
+      'U': 41,
       'V': 34,
       'W': 35,
-      'X': 41  
+      'X': 41
     },
     'ESTREGULAR': {
       'A': 26,
@@ -452,10 +414,10 @@ const styleLookup = {
       'R': 29,
       'S': 27,
       'T': 26,
-      'U': 29,
+      'U': 12,
       'V': 26,
       'W': 27,
-      'X': 12 
+      'X': 12
     },
     'ESTTOTAL': {
       'A': 7,
@@ -467,21 +429,21 @@ const styleLookup = {
       'G': 8,
       'H': 10,
       'I': 10,
-      'J': 8,
-      'K': 8,
-      'L': 8,
-      'M': 8,
+      'J': 26,
+      'K': 26,
+      'L': 26,
+      'M': 26,
       'N': 8,
       'O': 8,
-      'P': 9,
-      'Q': 8,
-      'R': 11,
-      'S': 10,
-      'T': 8,
+      'P': 25,
+      'Q': 26,
+      'R': 29,
+      'S': 27,
+      'T': 26,
       'U': 12,
-      'V': 13,
-      'W': 14,
-      'X': 12  
+      'V': 26,
+      'W': 27,
+      'X': 12
     },
     'WORKERREGULAR': {
       'A': 24,
@@ -501,7 +463,7 @@ const styleLookup = {
       'O': 26,
       'P': 26,
       'Q': 26,
-      'R': 25  
+      'R': 25
     },
     'WORKERLAST': {
       'A': 30,
@@ -521,11 +483,10 @@ const styleLookup = {
       'O': 34,
       'P': 34,
       'Q': 34,
-      'R': 32  
-    }  
+      'R': 70
+    }
   }
 };
-
 
 const setStyle = (cellToChange, columnText, rowType, isRed) => {
   cellToChange.setAttribute('s', styleLookup[isRed ? 'RED' : 'BLACK'][rowType][columnText]);
@@ -538,12 +499,12 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
     value = 'Missing';
     isRed = true;
   }
-  
+
   putString(
       cellToChange,
       value
     );
-  
+
   setStyle(cellToChange, columnText, rowType, isRed);
 };
 
@@ -617,7 +578,7 @@ const updateWorkplacesSheet = (
       numberOfAgencyStaffRecords: 0,
       numberOfCompleteAgencyStaffRecords: 0
     };
-  
+
     for(let row = 0; row < reportData.establishments.length; row++) {
       const rowType = row === 0 ? 'ESTFIRST' : (row === reportData.establishments.length - 1 ? 'ESTLAST' : 'ESTREGULAR');
 
@@ -651,12 +612,11 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 moment(reportData.establishments[row].lastUpdated).format("DD/MM/YYYY")
               );
-  
+
             if(!moment(reportData.establishments[row].lastUpdated).isBetween(fromDate, toDate)) {
-              //colour it red
               isRed = true;
             }
-            
+
             setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
@@ -669,12 +629,12 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].establishmentType
               );
-  
+
             if(!String(reportData.establishments[row].establishmentType).toLowerCase().includes('local authority')) {
               isRed = true;
             }
 
-            setStyle(cellToChange, columnText, rowType, isRed);  
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'F': {
@@ -691,12 +651,12 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].serviceUserGroups
               );
-  
+
             if(reportData.establishments[row].serviceUserGroups === 'Missing') {
               isRed = true;
             }
 
-            setStyle(cellToChange, columnText, rowType, isRed);  
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'H': {
@@ -704,7 +664,7 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].capacityOfMainService
               );
-  
+
             if(reportData.establishments[row].capacityOfMainService === 'Missing') {
               isRed = true;
             }
@@ -717,12 +677,12 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].utilisationOfMainService
               );
-  
+
             if(reportData.establishments[row].utilisationOfMainService === 'Missing') {
               isRed = true;
             }
-  
-            setStyle(cellToChange, columnText, rowType, isRed);  
+
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'J': {
@@ -733,7 +693,7 @@ const updateWorkplacesSheet = (
                 columnText,
                 rowType
               );
-  
+
             totals.numberOfVacancies += parseInt(reportData.establishments[row].numberOfVacancies, 10);
           } break;
 
@@ -745,7 +705,7 @@ const updateWorkplacesSheet = (
                 columnText,
                 rowType
               );
-  
+
             totals.numberOfLeavers += parseInt(reportData.establishments[row].numberOfLeavers, 10);
           } break;
 
@@ -757,7 +717,7 @@ const updateWorkplacesSheet = (
                 columnText,
                 rowType
               );
-  
+
             totals.numberOfStarters += parseInt(reportData.establishments[row].numberOfStarters, 10);
           } break;
 
@@ -769,22 +729,8 @@ const updateWorkplacesSheet = (
                 columnText,
                 rowType
               );
-  
+
             totals.numberOfStaffRecords += parseInt(reportData.establishments[row].numberOfStaffRecords, 10);
-          } break;
-
-          case 'N': {
-            putString(
-                cellToChange,
-                0
-              );
-          } break;
-
-          case 'O': {
-            putString(
-                cellToChange,
-                0
-              );
           } break;
 
           case 'P': {
@@ -792,11 +738,11 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].workplaceComplete ? "Yes" : "No"
               );
-  
+
             if(!reportData.establishments[row].workplaceComplete) {
               isRed = true;
             }
-  
+
             setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
@@ -808,22 +754,22 @@ const updateWorkplacesSheet = (
                 columnText,
                 rowType
               );
-  
+
             totals.numberOfIndividualStaffRecords += parseInt(reportData.establishments[row].numberOfIndividualStaffRecords, 10);
           } break;
 
           case 'R': {
             let value = reportData.establishments[row].percentageOfStaffRecords;
-  
+
             if(!isNumberRegex.test(String(value))) {
               value = 'Missing';
             }
-  
+
             putString(
                 cellToChange,
                 value
-              );  
-  
+              );
+
             if(value === 'Missing' || value < 90 || value > 100) {
               isRed = true;
             }
@@ -839,7 +785,7 @@ const updateWorkplacesSheet = (
                 columnText,
                 rowType
               );
-  
+
             totals.numberOfStaffRecordsNotAgency += parseInt(reportData.establishments[row].numberOfStaffRecordsNotAgency, 10);
           } break;
 
@@ -851,22 +797,22 @@ const updateWorkplacesSheet = (
                 columnText,
                 rowType
               );
-  
+
             totals.numberOfCompleteStaffNotAgency += parseInt(reportData.establishments[row].numberOfCompleteStaffNotAgency, 10);
           } break;
 
           case 'U': {
             let value = reportData.establishments[row].percentageOfCompleteStaffRecords;
-  
+
             if(!isNumberRegex.test(String(value))) {
               value = 'Missing';
             }
-  
+
             putString(
                 cellToChange,
                 value
               );
-  
+
             if(value === 'Missing' || value < 90 || value > 100) {
               isRed = true;
             }
@@ -882,7 +828,7 @@ const updateWorkplacesSheet = (
                 columnText,
                 rowType
               );
-  
+
             totals.numberOfAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfAgencyStaffRecords, 10);
           } break;
 
@@ -894,22 +840,22 @@ const updateWorkplacesSheet = (
                 columnText,
                 rowType
               );
-  
+
             totals.numberOfCompleteAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfCompleteAgencyStaffRecords, 10);
           } break;
 
           case 'X': {
             let value = reportData.establishments[row].percentageOfCompleteAgencyStaffRecords;
-  
+
             if(!isNumberRegex.test(String(value))) {
               value = 'Missing';
             }
-  
+
             putString(
                 cellToChange,
                 value
               );
-  
+
             if(value === 'Missing' || value < 90 || value > 100) {
               isRed = true;
             }
@@ -919,7 +865,7 @@ const updateWorkplacesSheet = (
         }
       }
     }
-  
+
     //update totals
     const rowType = 'ESTTOTAL';
     for(let column = 0; column < 24; column++) {
@@ -928,34 +874,6 @@ const updateWorkplacesSheet = (
       const cellToChange = workplacesSheet.querySelector(`c[r='${columnText}12']`);
 
       switch(columnText) {
-        case 'A': {
-        } break;
-
-        case 'B': {
-        } break;
-
-        case 'C': {
-        } break;
-
-        case 'D': {
-
-        } break;
-
-        case 'E': {
-        } break;
-
-        case 'F': {
-        } break;
-
-        case 'G': {
-        } break;
-
-        case 'H': {
-        } break;
-
-        case 'I': {
-        } break;
-
         case 'J': {
           basicValidationUpdate(
               putString,
@@ -994,23 +912,6 @@ const updateWorkplacesSheet = (
               columnText,
               rowType
             );
-        } break;
-
-        case 'N': {
-          putString(
-              cellToChange,
-              0
-            );
-        } break;
-
-        case 'O': {
-          putString(
-              cellToChange,
-              0
-            );
-        } break;
-
-        case 'P': {
         } break;
 
         case 'Q': {
@@ -1108,12 +1009,12 @@ const redIifMissing = (putString, cellToChange, value, columnText, rowType) => {
   if(String(value) === 'Missing') {
     isRed = true;
   }
-  
+
   putString(
       cellToChange,
       value
     );
-  
+
   setStyle(cellToChange, columnText, rowType, isRed);
 }
 
@@ -1140,7 +1041,7 @@ const updateStaffRecordsSheet = (
       reportData.reportEstablishment.name
     );
 
-    // clone the row the apropriate number of times
+  // clone the row the apropriate number of times
   const templateRow = staffRecordsSheet.querySelector("row[r='11']");
   let currentRow = templateRow;
   let rowIndex = 12;
@@ -1173,14 +1074,13 @@ const updateStaffRecordsSheet = (
   const dimension = staffRecordsSheet.querySelector("dimension");
   dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, "") + rowIndex);
 
+  //update the cell values
   if(reportData.workers.length) {
-    //update the cell values
     for(let row = 0; row < reportData.workers.length; row++) {
       const rowType = row === reportData.workers.length - 1 ? 'WORKERLAST' : 'WORKERREGULAR';
 
       for(let column = 0; column < 18; column++) {
         const columnText = String.fromCharCode(column + 65);
-
         const cellToChange = staffRecordsSheet.querySelector(`c[r='${columnText}${row+11}']`);
 
         switch(columnText) {
@@ -1202,9 +1102,6 @@ const updateStaffRecordsSheet = (
                 columnText,
                 rowType
               );
-          } break;
-
-          case 'C': {
           } break;
 
           case 'D': {
@@ -1339,18 +1236,17 @@ const updateStaffRecordsSheet = (
 
           case 'Q': {
             let isRed = false;
-  
+
             putString(
                 cellToChange,
                 moment(reportData.workers[row].lastUpdated).format("DD/MM/YYYY")
               );
 
             if(!moment(reportData.workers[row].lastUpdated).isBetween(fromDate, toDate)) {
-              //colour it red
               isRed = true;
             }
 
-            setStyle(cellToChange, columnText, rowType, isRed);  
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'R': {
@@ -1360,7 +1256,7 @@ const updateStaffRecordsSheet = (
                 cellToChange,
                 reportData.workers[row].staffRecordComplete ? "Yes" : "No"
               );
-  
+
             if(!reportData.workers[row].staffRecordComplete) {
               isRed = true;
             }
@@ -1457,20 +1353,10 @@ const getReport = async (date, thisEstablishment) => {
     }));
 };
 
-/*
-(async () => {
-  const report = await getReport(new Date(), {});
-  const filename = 'output.xlsx';
-  fs.createWriteStream(filename).end(report);
-  console.log(`${filename} generated!`);
-})();
-/*/
-
 // gets report
 // NOTE - the Local Authority report is driven mainly by pgsql (postgres functions) and therefore does not
 //    pass through the Establishment/Worker entities. This is done for performance, as these reports
 //    are expected to operate across large sets of data
-//*
 const express = require('express');
 const router = express.Router();
 
@@ -1575,4 +1461,3 @@ router.route('/').get(async (req, res) => {
 });
 
 module.exports = router;
-//*/
