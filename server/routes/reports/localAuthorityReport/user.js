@@ -176,7 +176,41 @@ const getReportData = async (date, thisEstablishment) => {
   });
 
   if(reportEstablishments && Array.isArray(reportEstablishments)) {
-    reportData.establishments = reportEstablishments;
+    //reportData.establishments = reportEstablishments;
+    
+    console.log(JSON.stringify(reportEstablishments[2], null, 2)); 
+    
+    const red= {
+      "id": 664,
+      "reportFrom": "2019-09-09",
+      "reportTo": "2019-10-31",
+      "establishmentFk": 479,
+      "workplaceFk": 1433,
+      "workplaceName": "WOZiTech Cares Sub 3 Updated",
+      "workplaceId": "G1002097",
+      "lastUpdated": "2019-08-29",
+      "establishmentType": "Voluntary / Charity",
+      "mainService": "Carers support",
+      "serviceUserGroups": "Missing",
+      "capacityOfMainService": "Missing",
+      "utilisationOfMainService": "Missing",
+      "numberOfVacancies": "Missing",
+      "numberOfStarters": "Missing",
+      "numberOfLeavers": "Missing",
+      "numberOfStaffRecords": "Missing",
+      "workplaceComplete": false,
+      "numberOfIndividualStaffRecords": "Missing",
+      "percentageOfStaffRecords": "80.0",
+      "numberOfStaffRecordsNotAgency": "Missing",
+      "numberOfCompleteStaffNotAgency": "Missing",
+      "percentageOfCompleteStaffRecords": "80.0",
+      "numberOfAgencyStaffRecords": "Missing",
+      "numberOfCompleteAgencyStaffRecords": "Missing",
+      "percentageOfCompleteAgencyStaffRecords": "80.0"
+    }
+    //all red data
+    reportData.establishments = [red,red,red];
+    
   }
 
   // now grab the workers and format the report data
@@ -230,11 +264,11 @@ const styleLookup = {
       'B': 31,
       'C': 32,
       'D': 33,
-      'E': 34,
+      'E': 31,
       'F': 31,
       'G': 31,
-      'H': 35,
-      'I': 35,
+      'H': 37,
+      'I': 37,
       'J': 31,
       'K': 31,
       'L': 31,
@@ -252,15 +286,15 @@ const styleLookup = {
       'X': 41  
     },
     'ESTREGULAR': {
-      'A': 8,
+      'A': 24,
       'B': 8,
       'C': 25,
       'D': 8,
-      'E': 26,
+      'E': 8,
       'F': 8,
       'G': 8,
-      'H': 27,
-      'I': 27,
+      'H': 10,
+      'I': 10,
       'J': 8,
       'K': 8,
       'L': 8,
@@ -272,7 +306,7 @@ const styleLookup = {
       'R': 11,
       'S': 10,
       'T': 8,
-      'U': 12,
+      'U': 11,
       'V': 13,
       'W': 14,
       'X': 12  
@@ -313,15 +347,15 @@ const styleLookup = {
       'G': 8,
       'H': 8,
       'I': 8,
-      'J': 8,
-      'K': 8,
+      'J': 10,
+      'K': 10,
       'L': 8,
       'M': 42,
       'N': 8,
       'O': 8,
       'P': 8,
       'Q': 8,
-      'R': 25  
+      'R': 57  
     },
     'WORKERLAST': {
       'A': 30,
@@ -333,94 +367,94 @@ const styleLookup = {
       'G': 31,
       'H': 31,
       'I': 31,
-      'J': 31,
-      'K': 31,
+      'J': 37,
+      'K': 37,
       'L': 31,
       'M': 44,
       'N': 31,
       'O': 31,
       'P': 31,
       'Q': 31,
-      'R': 32  
+      'R': 56  
     }
   },
   'RED': {
     'ESTFIRST': {
-      'A': 15,
-      'B': 16,
-      'C': 17,
-      'D': 16,
-      'E': 16,
-      'F': 16,
-      'G': 16,
-      'H': 18,
-      'I': 18,
-      'J': 16,
-      'K': 16,
-      'L': 16,
-      'M': 16,
-      'N': 16,
-      'O': 16,
-      'P': 17,
-      'Q': 16,
-      'R': 19,
-      'S': 18,
-      'T': 16,
-      'U': 20,
-      'V': 21,
-      'W': 22,
-      'X': 23
+      'A': 58,
+      'B': 59,
+      'C': 60,
+      'D': 59,
+      'E': 59,
+      'F': 59,
+      'G': 59,
+      'H': 61,
+      'I': 61,
+      'J': 59,
+      'K': 59,
+      'L': 59,
+      'M': 59,
+      'N': 59,
+      'O': 59,
+      'P': 60,
+      'Q': 59,
+      'R': 62,
+      'S': 61,
+      'T': 59,
+      'U': 63,
+      'V': 64,
+      'W': 65,
+      'X': 66
     },
     'ESTLAST' : {
       'A': 30,
-      'B': 31,
+      'B': 34,
       'C': 32,
       'D': 33,
       'E': 34,
-      'F': 31,
-      'G': 31,
+      'F': 34,
+      'G': 34,
       'H': 35,
       'I': 35,
-      'J': 31,
-      'K': 31,
-      'L': 31,
-      'M': 31,
+      'J': 34,
+      'K': 34,
+      'L': 34,
+      'M': 34,
       'N': 31,
       'O': 31,
       'P': 32,
-      'Q': 31,
+      'Q': 34,
       'R': 36,
-      'S': 37,
-      'T': 31,
+      'S': 35,
+      'T': 34,
       'U': 38,
-      'V': 39,
-      'W': 40,
+      'V': 34,
+      'W': 35,
       'X': 41  
     },
     'ESTREGULAR': {
-      'A': 8,
-      'B': 8,
+      'A': 26,
+      'B': 26,
       'C': 25,
-      'D': 8,
+      'D': 26,
       'E': 26,
-      'F': 8,
-      'G': 8,
+      'F': 26,
+      'G': 26,
       'H': 27,
       'I': 27,
-      'J': 8,
-      'K': 8,
-      'L': 8,
-      'M': 8,
-      'N': 8,
-      'O': 8,
+      'J': 26,
+      'K': 26,
+      'L': 26,
+      'M': 26,
+      'N': 26,
+      'O': 26,
       'P': 25,
-      'Q': 8,
-      'R': 11,
-      'S': 10,
-      'T': 8,
-      'U': 12,
-      'V': 13,
-      'W': 14,
+      'Q': 26,
+      'R': 29,
+      'S': 27,
+      'T': 26,
+      'U': 29,
+      'V': 26,
+      'W': 27,
       'X': 12 
     },
     'ESTTOTAL': {
@@ -459,10 +493,10 @@ const styleLookup = {
       'G': 26,
       'H': 26,
       'I': 26,
-      'J': 26,
-      'K': 26,
+      'J': 27,
+      'K': 27,
       'L': 26,
-      'M': 26,
+      'M': 27,
       'N': 26,
       'O': 26,
       'P': 26,
@@ -472,17 +506,17 @@ const styleLookup = {
     'WORKERLAST': {
       'A': 30,
       'B': 34,
-      'C': 33,
+      'C': 34,
       'D': 34,
       'E': 34,
       'F': 34,
       'G': 34,
       'H': 34,
       'I': 34,
-      'J': 34,
-      'K': 34,
+      'J': 55,
+      'K': 55,
       'L': 34,
-      'M': 34,
+      'M': 55,
       'N': 34,
       'O': 34,
       'P': 34,
@@ -498,7 +532,7 @@ const setStyle = (cellToChange, columnText, rowType, isRed) => {
 };
 
 const basicValidationUpdate = (putString, cellToChange, value, columnText, rowType) => {
-  const isRed = false;
+  let isRed = false;
 
   if(!isNumberRegex.test(String(value))) {
     value = 'Missing';
@@ -587,7 +621,7 @@ const updateWorkplacesSheet = (
     for(let row = 0; row < reportData.establishments.length; row++) {
       const rowType = row === 0 ? 'ESTFIRST' : (row === reportData.establishments.length - 1 ? 'ESTLAST' : 'ESTREGULAR');
 
-      for(let column = 0; column < 23; column++) {
+      for(let column = 0; column < 24; column++) {
         const columnText = String.fromCharCode(column + 65);
         let isRed = false;
 
@@ -599,6 +633,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].workplaceName
               );
+
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'B': {
@@ -606,6 +642,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].workplaceId
               );
+
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'C': {
@@ -775,8 +813,7 @@ const updateWorkplacesSheet = (
           } break;
 
           case 'R': {
-            let value = (reportData.establishments[row].numberOfIndividualStaffRecords /
-                reportData.establishments[row].numberOfStaffRecords) * 100;
+            let value = reportData.establishments[row].percentageOfStaffRecords;
   
             if(!isNumberRegex.test(String(value))) {
               value = 'Missing';
@@ -819,8 +856,7 @@ const updateWorkplacesSheet = (
           } break;
 
           case 'U': {
-            let value = (reportData.establishments[row].numberOfCompleteStaffNotAgency /
-                reportData.establishments[row].numberOfStaffRecords) * 100;
+            let value = reportData.establishments[row].percentageOfCompleteStaffRecords;
   
             if(!isNumberRegex.test(String(value))) {
               value = 'Missing';
@@ -863,8 +899,7 @@ const updateWorkplacesSheet = (
           } break;
 
           case 'X': {
-            let value = (reportData.establishments[row].numberOfCompleteAgencyStaffRecords /
-                reportData.establishments[row].numberOfStaffRecords) * 100;
+            let value = reportData.establishments[row].percentageOfCompleteAgencyStaffRecords;
   
             if(!isNumberRegex.test(String(value))) {
               value = 'Missing';
@@ -887,7 +922,7 @@ const updateWorkplacesSheet = (
   
     //update totals
     const rowType = 'ESTTOTAL';
-    for(let column = 0; column < 23; column++) {
+    for(let column = 0; column < 24; column++) {
       const columnText = String.fromCharCode(column + 65);
 
       const cellToChange = workplacesSheet.querySelector(`c[r='${columnText}12']`);
