@@ -58,8 +58,8 @@ export class CreateUsername implements OnInit, OnDestroy {
     this.setupSubscriptions();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.setCallToActionLabel();
     this.init();
+    this.setCallToActionLabel();
   }
 
   protected init(): void {}
