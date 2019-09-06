@@ -2079,7 +2079,7 @@ class Worker {
   _validationQualificationRecords() {
     // Note - ASC WDS does not support qualifications in progress (not yet achieved)
 
-    const NO_QUALIFICATIONS = 20;
+    const NO_QUALIFICATIONS = 99;
     const padNumber = (number) => (number < 10) ? `0${number}` : number;
 
     // process all attained qualifications, (QUALACH{n}/QUALACH{n}NOTES)
@@ -2486,8 +2486,14 @@ class Worker {
 
     // only run once for first line, so check _lineNumber
     // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
-    if (this._headers_v1.join(',') !== headers &&
-        this._headers_v1_without_chgUnique.join(',') !== headers) {
+
+    // worker CSV can include more than the default three qualification sets of columns
+    // first compare the default headers (up to and including three quals)
+
+    const matchesWithChgUnique = headers.startsWith(this._headers_v1_without_chgUnique.join(','));
+    const matchesWithoutChgUnique = headers.startsWith(this._headers_v1.join(','));
+
+    if (!matchesWithChgUnique && !matchesWithoutChgUnique) {
       this._validationErrors.push({
         worker: null,
         name: null,
@@ -2499,6 +2505,33 @@ class Worker {
       });
       return false;
     }
+
+    // gets this far having passed the default set of headers; now check the qualification headers
+    const additionalQualsHeader = matchesWithChgUnique ? headers.slice(this._headers_v1_without_chgUnique.join(',').length) : headers.slice(this._headers_v1.join(',').length);
+    let remainingHeadersValid = true; // assume success
+    if (additionalQualsHeader.length > 0) {
+      // there are more than the default three qualifications, so validate the remaining headers (noting that the first character will be a comma)
+      const remainingHeaders = additionalQualsHeader.slice(1).split(',');
+
+      // loop two by two
+      let currentIndex = 4;
+      for (let currentHeader = 0; currentHeader < remainingHeaders.length; currentHeader+=2) {
+        const currentHeaderIndex = `${currentIndex}`.padStart(2, '0');
+
+        if (!(remainingHeaders[currentHeader] && remainingHeaders[currentHeader] === `QUALACH${currentHeaderIndex}`) ||
+            !(remainingHeaders[currentHeader+1] && remainingHeaders[currentHeader+1] === `QUALACH${currentHeaderIndex}NOTES`)) {
+          remainingHeadersValid = false;
+          break;
+        }
+        currentIndex++;
+      }
+    }
+
+    if (!remainingHeadersValid) {
+      console.error('CSV Worker::_validateHeaders: failed to validate additional qualification headers: ', additionalQualsHeader);
+      return false;
+    }
+
     return true;
   }
 
