@@ -197,6 +197,322 @@ const getReportData = async (date, thisEstablishment) => {
   return reportData;
 };
 
+const styleLookup = {
+  'BLACK': {
+    'ESTFIRST': {
+      'A': 15,
+      'B': 16,
+      'C': 17,
+      'D': 16,
+      'E': 16,
+      'F': 16,
+      'G': 16,
+      'H': 18,
+      'I': 18,
+      'J': 16,
+      'K': 16,
+      'L': 16,
+      'M': 16,
+      'N': 16,
+      'O': 16,
+      'P': 17,
+      'Q': 16,
+      'R': 19,
+      'S': 18,
+      'T': 16,
+      'U': 20,
+      'V': 21,
+      'W': 22,
+      'X': 23
+    },
+    'ESTLAST' : {
+      'A': 30,
+      'B': 31,
+      'C': 32,
+      'D': 33,
+      'E': 34,
+      'F': 31,
+      'G': 31,
+      'H': 35,
+      'I': 35,
+      'J': 31,
+      'K': 31,
+      'L': 31,
+      'M': 31,
+      'N': 31,
+      'O': 31,
+      'P': 32,
+      'Q': 31,
+      'R': 36,
+      'S': 37,
+      'T': 31,
+      'U': 38,
+      'V': 39,
+      'W': 40,
+      'X': 41  
+    },
+    'ESTREGULAR': {
+      'A': 8,
+      'B': 8,
+      'C': 25,
+      'D': 8,
+      'E': 26,
+      'F': 8,
+      'G': 8,
+      'H': 27,
+      'I': 27,
+      'J': 8,
+      'K': 8,
+      'L': 8,
+      'M': 8,
+      'N': 8,
+      'O': 8,
+      'P': 25,
+      'Q': 8,
+      'R': 11,
+      'S': 10,
+      'T': 8,
+      'U': 12,
+      'V': 13,
+      'W': 14,
+      'X': 12  
+    },
+    'ESTTOTAL': {
+      'A': 7,
+      'B': 8,
+      'C': 9,
+      'D': 8,
+      'E': 8,
+      'F': 8,
+      'G': 8,
+      'H': 10,
+      'I': 10,
+      'J': 8,
+      'K': 8,
+      'L': 8,
+      'M': 8,
+      'N': 8,
+      'O': 8,
+      'P': 9,
+      'Q': 8,
+      'R': 11,
+      'S': 10,
+      'T': 8,
+      'U': 12,
+      'V': 13,
+      'W': 14,
+      'X': 12  
+    },
+    'WORKERREGULAR': {
+      'A': 24,
+      'B': 8,
+      'C': 8,
+      'D': 8,
+      'E': 8,
+      'F': 8,
+      'G': 8,
+      'H': 8,
+      'I': 8,
+      'J': 10,
+      'K': 10,
+      'L': 8,
+      'M': 42,
+      'N': 8,
+      'O': 8,
+      'P': 8,
+      'Q': 8,
+      'R': 25  
+    },
+    'WORKERLAST': {
+      'A': 30,
+      'B': 31,
+      'C': 33,
+      'D': 31,
+      'E': 31,
+      'F': 31,
+      'G': 31,
+      'H': 31,
+      'I': 31,
+      'J': 37,
+      'K': 37,
+      'L': 31,
+      'M': 44,
+      'N': 31,
+      'O': 31,
+      'P': 31,
+      'Q': 34,
+      'R': 32  
+    }
+  },
+  'RED': {
+    'ESTFIRST': {
+      'A': 15,
+      'B': 16,
+      'C': 17,
+      'D': 16,
+      'E': 16,
+      'F': 16,
+      'G': 16,
+      'H': 18,
+      'I': 18,
+      'J': 16,
+      'K': 16,
+      'L': 16,
+      'M': 16,
+      'N': 16,
+      'O': 16,
+      'P': 17,
+      'Q': 16,
+      'R': 19,
+      'S': 18,
+      'T': 16,
+      'U': 20,
+      'V': 21,
+      'W': 22,
+      'X': 23
+    },
+    'ESTLAST' : {
+      'A': 30,
+      'B': 31,
+      'C': 32,
+      'D': 33,
+      'E': 34,
+      'F': 31,
+      'G': 31,
+      'H': 35,
+      'I': 35,
+      'J': 31,
+      'K': 31,
+      'L': 31,
+      'M': 31,
+      'N': 31,
+      'O': 31,
+      'P': 32,
+      'Q': 31,
+      'R': 36,
+      'S': 37,
+      'T': 31,
+      'U': 38,
+      'V': 39,
+      'W': 40,
+      'X': 41  
+    },
+    'ESTREGULAR': {
+      'A': 8,
+      'B': 8,
+      'C': 25,
+      'D': 8,
+      'E': 26,
+      'F': 8,
+      'G': 8,
+      'H': 27,
+      'I': 27,
+      'J': 8,
+      'K': 8,
+      'L': 8,
+      'M': 8,
+      'N': 8,
+      'O': 8,
+      'P': 25,
+      'Q': 8,
+      'R': 11,
+      'S': 10,
+      'T': 8,
+      'U': 12,
+      'V': 13,
+      'W': 14,
+      'X': 12 
+    },
+    'ESTTOTAL': {
+      'A': 7,
+      'B': 8,
+      'C': 9,
+      'D': 8,
+      'E': 8,
+      'F': 8,
+      'G': 8,
+      'H': 10,
+      'I': 10,
+      'J': 8,
+      'K': 8,
+      'L': 8,
+      'M': 8,
+      'N': 8,
+      'O': 8,
+      'P': 9,
+      'Q': 8,
+      'R': 11,
+      'S': 10,
+      'T': 8,
+      'U': 12,
+      'V': 13,
+      'W': 14,
+      'X': 12  
+    },
+    'WORKERREGULAR': {
+      'A': 24,
+      'B': 26,
+      'C': 26,
+      'D': 26,
+      'E': 26,
+      'F': 26,
+      'G': 26,
+      'H': 26,
+      'I': 26,
+      'J': 26,
+      'K': 26,
+      'L': 26,
+      'M': 42,
+      'N': 26,
+      'O': 26,
+      'P': 26,
+      'Q': 26,
+      'R': 25  
+    },
+    'WORKERLAST': {
+      'A': 30,
+      'B': 31,
+      'C': 33,
+      'D': 31,
+      'E': 31,
+      'F': 31,
+      'G': 31,
+      'H': 31,
+      'I': 31,
+      'J': 37,
+      'K': 37,
+      'L': 31,
+      'M': 44,
+      'N': 31,
+      'O': 31,
+      'P': 31,
+      'Q': 34,
+      'R': 32  
+    }  
+  }
+};
+
+
+const setStyle = (cellToChange, columnText, rowType, isRed) => {
+  cellToChange.setAttribute('s', styleLookup[isRed ? 'RED' : 'BLACK'][rowType][columnText]);
+};
+
+const basicValidationUpdate = (putString, cellToChange, value, columnText, rowType) => {
+  const isRed = false;
+
+  if(!isNumberRegex.test(String(value))) {
+    value = 'Missing';
+    isRed = true;
+  }
+  
+  putString(
+      cellToChange,
+      value
+    );
+  
+  setStyle(cellToChange, columnText, rowType, isRed);
+};
+
 const updateWorkplacesSheet = (
     workplacesSheet,
     reportData,
@@ -262,18 +578,18 @@ const updateWorkplacesSheet = (
       numberOfStarters: 0,
       numberOfStaffRecords: 0,
       numberOfIndividualStaffRecords: 0,
-      columnR: 0,
       numberOfStaffRecordsNotAgency: 0,
       numberOfCompleteStaffNotAgency: 0,
-      columnU: 0,
       numberOfAgencyStaffRecords: 0,
-      numberOfCompleteAgencyStaffRecords: 0,
-      columnX: 0
+      numberOfCompleteAgencyStaffRecords: 0
     };
-    
+  
     for(let row = 0; row < reportData.establishments.length; row++) {
+      const rowType = row === 0 ? 'ESTFIRST' : (row === reportData.establishments.length - 1 ? 'ESTLAST' : 'ESTREGULAR');
+
       for(let column = 0; column < 23; column++) {
         const columnText = String.fromCharCode(column + 65);
+        let isRed = false;
 
         const cellToChange = workplacesSheet.querySelector(`c[r='${columnText}${row+13}']`);
 
@@ -297,6 +613,13 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 moment(reportData.establishments[row].lastUpdated).format("DD/MM/YYYY")
               );
+  
+            if(!moment(reportData.establishments[row].lastUpdated).isBetween(fromDate, toDate)) {
+              //colour it red
+              isRed = true;
+            }
+            
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'D': {
@@ -308,6 +631,12 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].establishmentType
               );
+  
+            if(!String(reportData.establishments[row].establishmentType).toLowerCase().includes('local authority')) {
+              isRed = true;
+            }
+
+            setStyle(cellToChange, columnText, rowType, isRed);  
           } break;
 
           case 'F': {
@@ -315,6 +644,8 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].mainService
               );
+
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'G': {
@@ -322,6 +653,12 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].serviceUserGroups
               );
+  
+            if(reportData.establishments[row].serviceUserGroups === 'Missing') {
+              isRed = true;
+            }
+
+            setStyle(cellToChange, columnText, rowType, isRed);  
           } break;
 
           case 'H': {
@@ -329,6 +666,12 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].capacityOfMainService
               );
+  
+            if(reportData.establishments[row].capacityOfMainService === 'Missing') {
+              isRed = true;
+            }
+
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'I': {
@@ -336,50 +679,60 @@ const updateWorkplacesSheet = (
                 cellToChange,
                 reportData.establishments[row].utilisationOfMainService
               );
+  
+            if(reportData.establishments[row].utilisationOfMainService === 'Missing') {
+              isRed = true;
+            }
+  
+            setStyle(cellToChange, columnText, rowType, isRed);  
           } break;
 
           case 'J': {
-            reportData.establishments[row].numberOfVacancies = parseInt(reportData.establishments[row].numberOfVacancies, 10);
-
-            putString(
+            basicValidationUpdate(
+                putString,
                 cellToChange,
-                reportData.establishments[row].numberOfVacancies
+                reportData.establishments[row].numberOfVacancies,
+                columnText,
+                rowType
               );
-             
-            totals.numberOfVacancies += reportData.establishments[row].numberOfVacancies;
+  
+            totals.numberOfVacancies += parseInt(reportData.establishments[row].numberOfVacancies, 10);
           } break;
 
           case 'K': {
-            reportData.establishments[row].numberOfLeavers = parseInt(reportData.establishments[row].numberOfLeavers, 10);
-            
-            putString(
+            basicValidationUpdate(
+                putString,
                 cellToChange,
-                reportData.establishments[row].numberOfLeavers
+                reportData.establishments[row].numberOfLeavers,
+                columnText,
+                rowType
               );
-              
-            totals.numberOfLeavers += reportData.establishments[row].numberOfLeavers;
+  
+            totals.numberOfLeavers += parseInt(reportData.establishments[row].numberOfLeavers, 10);
           } break;
 
           case 'L': {
-            reportData.establishments[row].numberOfStarters = parseInt(reportData.establishments[row].numberOfStarters, 10);
-            
-            putString(
+            basicValidationUpdate(
+                putString,
                 cellToChange,
-                reportData.establishments[row].numberOfStarters
+                reportData.establishments[row].numberOfStarters,
+                columnText,
+                rowType
               );
-            
-            totals.numberOfStarters += reportData.establishments[row].numberOfStarters;
+  
+            totals.numberOfStarters += parseInt(reportData.establishments[row].numberOfStarters, 10);
           } break;
 
           case 'M': {
-            reportData.establishments[row].numberOfStaffRecords = parseInt(reportData.establishments[row].numberOfStaffRecords, 10);
-            
-            putString(
+            basicValidationUpdate(
+                putString,
                 cellToChange,
-                reportData.establishments[row].numberOfStaffRecords
+                reportData.establishments[row].numberOfStaffRecords,
+                columnText,
+                rowType
               );
-              
-            totals.numberOfStaffRecords += reportData.establishments[row].numberOfStaffRecords;
+  
+            totals.numberOfStaffRecords += parseInt(reportData.establishments[row].numberOfStaffRecords, 10);
           } break;
 
           case 'N': {
@@ -399,93 +752,141 @@ const updateWorkplacesSheet = (
           case 'P': {
             putString(
                 cellToChange,
-                reportData.establishments[row].workplaceComplete? "Yes": "No"
+                reportData.establishments[row].workplaceComplete ? "Yes" : "No"
               );
+  
+            if(!reportData.establishments[row].workplaceComplete) {
+              isRed = true;
+            }
+  
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'Q': {
-            reportData.establishments[row].numberOfIndividualStaffRecords = parseInt(reportData.establishments[row].numberOfIndividualStaffRecords, 10);
-            
-            putString(
+            basicValidationUpdate(
+                putString,
                 cellToChange,
-                reportData.establishments[row].numberOfIndividualStaffRecords
+                reportData.establishments[row].numberOfIndividualStaffRecords,
+                columnText,
+                rowType
               );
-              
-            totals.numberOfIndividualStaffRecords += reportData.establishments[row].numberOfIndividualStaffRecords;
+  
+            totals.numberOfIndividualStaffRecords += parseInt(reportData.establishments[row].numberOfIndividualStaffRecords, 10);
           } break;
 
           case 'R': {
+            let value = (reportData.establishments[row].numberOfIndividualStaffRecords /
+                reportData.establishments[row].numberOfStaffRecords) * 100;
+  
+            if(!isNumberRegex.test(String(value))) {
+              value = 'Missing';
+            }
+  
             putString(
                 cellToChange,
-                (reportData.establishments[row].numberOfIndividualStaffRecords /
-                reportData.establishments[row].numberOfStaffRecords) * 100
-              );
+                value
+              );  
+  
+            if(value === 'Missing' || value < 90 || value > 100) {
+              isRed = true;
+            }
+
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'S': {
-            reportData.establishments[row].numberOfStaffRecordsNotAgency = parseInt(reportData.establishments[row].numberOfStaffRecordsNotAgency, 10);
-            
-            putString(
+            basicValidationUpdate(
+                putString,
                 cellToChange,
-                reportData.establishments[row].numberOfStaffRecordsNotAgency
+                reportData.establishments[row].numberOfStaffRecordsNotAgency,
+                columnText,
+                rowType
               );
-              
-            totals.numberOfStaffRecordsNotAgency += reportData.establishments[row].numberOfStaffRecordsNotAgency;
+  
+            totals.numberOfStaffRecordsNotAgency += parseInt(reportData.establishments[row].numberOfStaffRecordsNotAgency, 10);
           } break;
 
           case 'T': {
-            reportData.establishments[row].numberOfCompleteStaffNotAgency = parseInt(reportData.establishments[row].numberOfCompleteStaffNotAgency, 10);
-            
-            putString(
+            basicValidationUpdate(
+                putString,
                 cellToChange,
-                reportData.establishments[row].numberOfCompleteStaffNotAgency
+                reportData.establishments[row].numberOfCompleteStaffNotAgency,
+                columnText,
+                rowType
               );
-            
-            totals.numberOfCompleteStaffNotAgency += reportData.establishments[row].numberOfCompleteStaffNotAgency;
+  
+            totals.numberOfCompleteStaffNotAgency += parseInt(reportData.establishments[row].numberOfCompleteStaffNotAgency, 10);
           } break;
 
           case 'U': {
+            let value = (reportData.establishments[row].numberOfCompleteStaffNotAgency /
+                reportData.establishments[row].numberOfStaffRecords) * 100;
+  
+            if(!isNumberRegex.test(String(value))) {
+              value = 'Missing';
+            }
+  
             putString(
                 cellToChange,
-                (reportData.establishments[row].numberOfCompleteStaffNotAgency /
-                reportData.establishments[row].numberOfStaffRecords) * 100
+                value
               );
+  
+            if(value === 'Missing' || value < 90 || value > 100) {
+              isRed = true;
+            }
+
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
 
           case 'V': {
-            reportData.establishments[row].numberOfAgencyStaffRecords = parseInt(reportData.establishments[row].numberOfAgencyStaffRecords, 10)
-            
-            putString(
+            basicValidationUpdate(
+                putString,
                 cellToChange,
-                reportData.establishments[row].numberOfAgencyStaffRecords
+                reportData.establishments[row].numberOfAgencyStaffRecords,
+                columnText,
+                rowType
               );
-              
-            totals.numberOfAgencyStaffRecords += reportData.establishments[row].numberOfAgencyStaffRecords;
+  
+            totals.numberOfAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfAgencyStaffRecords, 10);
           } break;
 
           case 'W': {
-            reportData.establishments[row].numberOfCompleteAgencyStaffRecords = parseInt(reportData.establishments[row].numberOfCompleteAgencyStaffRecords, 10);
-            
-            putString(
+            basicValidationUpdate(
+                putString,
                 cellToChange,
-                reportData.establishments[row].numberOfCompleteAgencyStaffRecords
+                reportData.establishments[row].numberOfCompleteAgencyStaffRecords,
+                columnText,
+                rowType
               );
-            
-            totals.numberOfCompleteAgencyStaffRecords += reportData.establishments[row].numberOfCompleteAgencyStaffRecords;
+  
+            totals.numberOfCompleteAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfCompleteAgencyStaffRecords, 10);
           } break;
 
           case 'X': {
+            let value = (reportData.establishments[row].numberOfCompleteAgencyStaffRecords /
+                reportData.establishments[row].numberOfStaffRecords) * 100;
+  
+            if(!isNumberRegex.test(String(value))) {
+              value = 'Missing';
+            }
+  
             putString(
                 cellToChange,
-                (reportData.establishments[row].numberOfCompleteAgencyStaffRecords /
-                reportData.establishments[row].numberOfStaffRecords) * 100
+                value
               );
+  
+            if(value === 'Missing' || value < 90 || value > 100) {
+              isRed = true;
+            }
+
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
         }
       }
     }
-    
+  
     //update totals
+    const rowType = 'ESTTOTAL';
     for(let column = 0; column < 23; column++) {
       const columnText = String.fromCharCode(column + 65);
 
@@ -521,30 +922,42 @@ const updateWorkplacesSheet = (
         } break;
 
         case 'J': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
-              totals.numberOfVacancies
+              totals.numberOfVacancies,
+              columnText,
+              rowType
             );
         } break;
 
         case 'K': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
-              totals.numberOfLeavers
+              totals.numberOfLeavers,
+              columnText,
+              rowType
             );
         } break;
 
         case 'L': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
-              totals.numberOfStarters
+              totals.numberOfStarters,
+              columnText,
+              rowType
             );
         } break;
 
         case 'M': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
-              totals.numberOfStaffRecords
+              totals.numberOfStaffRecords,
+              columnText,
+              rowType
             );
         } break;
 
@@ -566,61 +979,85 @@ const updateWorkplacesSheet = (
         } break;
 
         case 'Q': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
-              totals.numberOfIndividualStaffRecords
+              totals.numberOfIndividualStaffRecords,
+              columnText,
+              rowType
             );
         } break;
 
         case 'R': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
               totals.numberOfIndividualStaffRecords /
-              totals.numberOfStaffRecords * 100
+              totals.numberOfStaffRecords * 100,
+              columnText,
+              rowType
             );
         } break;
 
         case 'S': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
-              totals.numberOfStaffRecordsNotAgency
+              totals.numberOfStaffRecordsNotAgency,
+              columnText,
+              rowType
             );
         } break;
 
         case 'T': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
-              totals.numberOfCompleteStaffNotAgency
+              totals.numberOfCompleteStaffNotAgency,
+              columnText,
+              rowType
             );
         } break;
 
         case 'U': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
               totals.numberOfCompleteStaffNotAgency /
-              totals.numberOfStaffRecords * 100
+              totals.numberOfStaffRecords * 100,
+              columnText,
+              rowType
             );
         } break;
 
         case 'V': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
-              totals.numberOfAgencyStaffRecords
+              totals.numberOfAgencyStaffRecords,
+              columnText,
+              rowType
             );
         } break;
 
         case 'W': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
-              totals.numberOfCompleteAgencyStaffRecords
+              totals.numberOfCompleteAgencyStaffRecords,
+              columnText,
+              rowType
             );
         } break;
 
         case 'X': {
-          putString(
+          basicValidationUpdate(
+              putString,
               cellToChange,
               totals.numberOfCompleteAgencyStaffRecords /
-              totals.numberOfStaffRecords * 100
+              totals.numberOfStaffRecords * 100,
+              columnText,
+              rowType
             );
         } break;
       }
@@ -629,6 +1066,21 @@ const updateWorkplacesSheet = (
 
   return workplacesSheet;
 };
+
+const redIifMissing = (putString, cellToChange, value, columnText, rowType) => {
+  let isRed = false;
+
+  if(String(value) === 'Missing') {
+    isRed = true;
+  }
+  
+  putString(
+      cellToChange,
+      value
+    );
+  
+  setStyle(cellToChange, columnText, rowType, isRed);
+}
 
 const updateStaffRecordsSheet = (
     staffRecordsSheet,
@@ -688,7 +1140,9 @@ const updateStaffRecordsSheet = (
 
   if(reportData.workers.length) {
     //update the cell values
-    for(let row = 0; row < reportData.workers.length; row++){
+    for(let row = 0; row < reportData.workers.length; row++) {
+      const rowType = row === reportData.workers.length - 1 ? 'WORKERLAST' : 'WORKERREGULAR';
+
       for(let column = 0; column < 18; column++) {
         const columnText = String.fromCharCode(column + 65);
 
@@ -696,16 +1150,22 @@ const updateStaffRecordsSheet = (
 
         switch(columnText) {
           case 'A': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].localId
+                reportData.workers[row].localId,
+                columnText,
+                rowType
               );
           } break;
 
           case 'B': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].workplaceName
+                reportData.workers[row].workplaceName,
+                columnText,
+                rowType
               );
           } break;
 
@@ -713,114 +1173,169 @@ const updateStaffRecordsSheet = (
           } break;
 
           case 'D': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].workplaceId
+                reportData.workers[row].workplaceId,
+                columnText,
+                rowType
               );
           } break;
 
           case 'E': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].gender
+                reportData.workers[row].gender,
+                columnText,
+                rowType
               );
           } break;
 
           case 'F': {
-             putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].dateOfBirth
+                reportData.workers[row].dateOfBirth,
+                columnText,
+                rowType
               );
           } break;
 
           case 'G': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].ethnicity
+                reportData.workers[row].ethnicity,
+                columnText,
+                rowType
               );
           } break;
 
           case 'H': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].mainJob
+                reportData.workers[row].mainJob,
+                columnText,
+                rowType
               );
           } break;
 
           case 'I': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].employmentStatus
+                reportData.workers[row].employmentStatus,
+                columnText,
+                rowType
               );
           } break;
 
           case 'J': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].contractedAverageHours
+                reportData.workers[row].contractedAverageHours,
+                columnText,
+                rowType
               );
           } break;
 
           case 'K': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].sickDays
+                reportData.workers[row].sickDays,
+                columnText,
+                rowType
               );
           } break;
 
           case 'L': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].payInterval
+                reportData.workers[row].payInterval,
+                columnText,
+                rowType
               );
           } break;
 
           case 'M': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].rateOfPay
+                reportData.workers[row].rateOfPay,
+                columnText,
+                rowType
               );
           } break;
 
           case 'N': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].relevantSocialCareQualification
+                reportData.workers[row].relevantSocialCareQualification,
+                columnText,
+                rowType
               );
           } break;
 
           case 'O': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].highestSocialCareQualification
+                reportData.workers[row].highestSocialCareQualification,
+                columnText,
+                rowType
               );
           } break;
 
           case 'P': {
-            putString(
+            redIifMissing(
+                putString,
                 cellToChange,
-                reportData.workers[row].nonSocialCareQualification
+                reportData.workers[row].nonSocialCareQualification,
+                columnText,
+                rowType
               );
           } break;
 
           case 'Q': {
+            let isRed = false;
+  
             putString(
                 cellToChange,
                 moment(reportData.workers[row].lastUpdated).format("DD/MM/YYYY")
               );
+
+            if(!moment(reportData.workers[row].lastUpdated).isBetween(fromDate, toDate)) {
+              //colour it red
+              isRed = true;
+            }
+
+            setStyle(cellToChange, columnText, rowType, isRed);  
           } break;
 
           case 'R': {
+            let isRed = false;
+
             putString(
                 cellToChange,
                 reportData.workers[row].staffRecordComplete ? "Yes" : "No"
               );
+  
+            if(!reportData.workers[row].staffRecordComplete) {
+              isRed = true;
+            }
+
+            setStyle(cellToChange, columnText, rowType, isRed);
           } break;
         }
       }
     }
   }
-
 
   return staffRecordsSheet;
 }
