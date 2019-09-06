@@ -76,7 +76,10 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.serverErrorsMap = [
       {
         name: 401,
-        message: 'User unauthorised - username or password is incorrect.',
+        message:
+          'User unauthorised - username or password is incorrect. ' +
+          'Your account will be locked after 5 invalid attempts. ' +
+          'Consider resetting your password now.',
       },
       {
         name: 404,
