@@ -690,7 +690,7 @@ const updateWorkplacesSheet = (
               rowType
             );
 
-          totals.numberOfVacancies += parseInt(reportData.establishments[row].numberOfVacancies, 10);
+          totals.numberOfVacancies += parseInt(reportData.establishments[row].numberOfVacancies, 10) || 0;
         } break;
 
         case 'K': {
@@ -702,7 +702,7 @@ const updateWorkplacesSheet = (
               rowType
             );
 
-          totals.numberOfLeavers += parseInt(reportData.establishments[row].numberOfLeavers, 10);
+          totals.numberOfLeavers += parseInt(reportData.establishments[row].numberOfLeavers, 10) || 0;
         } break;
 
         case 'L': {
@@ -714,7 +714,7 @@ const updateWorkplacesSheet = (
               rowType
             );
 
-          totals.numberOfStarters += parseInt(reportData.establishments[row].numberOfStarters, 10);
+          totals.numberOfStarters += parseInt(reportData.establishments[row].numberOfStarters, 10) || 0;
         } break;
 
         case 'M': {
@@ -726,7 +726,7 @@ const updateWorkplacesSheet = (
               rowType
             );
 
-          totals.numberOfStaffRecords += parseInt(reportData.establishments[row].numberOfStaffRecords, 10);
+          totals.numberOfStaffRecords += parseInt(reportData.establishments[row].numberOfStaffRecords, 10) || 0;
         } break;
 
         case 'P': {
@@ -751,7 +751,7 @@ const updateWorkplacesSheet = (
               rowType
             );
 
-          totals.numberOfIndividualStaffRecords += parseInt(reportData.establishments[row].numberOfIndividualStaffRecords, 10);
+          totals.numberOfIndividualStaffRecords += parseInt(reportData.establishments[row].numberOfIndividualStaffRecords, 10) || 0;
         } break;
 
         case 'R': {
@@ -782,7 +782,7 @@ const updateWorkplacesSheet = (
               rowType
             );
 
-          totals.numberOfStaffRecordsNotAgency += parseInt(reportData.establishments[row].numberOfStaffRecordsNotAgency, 10);
+          totals.numberOfStaffRecordsNotAgency += parseInt(reportData.establishments[row].numberOfStaffRecordsNotAgency, 10) || 0;
         } break;
 
         case 'T': {
@@ -794,7 +794,7 @@ const updateWorkplacesSheet = (
               rowType
             );
 
-          totals.numberOfCompleteStaffNotAgency += parseInt(reportData.establishments[row].numberOfCompleteStaffNotAgency, 10);
+          totals.numberOfCompleteStaffNotAgency += parseInt(reportData.establishments[row].numberOfCompleteStaffNotAgency, 10) || 0;
         } break;
 
         case 'U': {
@@ -825,7 +825,7 @@ const updateWorkplacesSheet = (
               rowType
             );
 
-          totals.numberOfAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfAgencyStaffRecords, 10);
+          totals.numberOfAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfAgencyStaffRecords, 10) || 0;
         } break;
 
         case 'W': {
@@ -837,7 +837,7 @@ const updateWorkplacesSheet = (
               rowType
             );
 
-          totals.numberOfCompleteAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfCompleteAgencyStaffRecords, 10);
+          totals.numberOfCompleteAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfCompleteAgencyStaffRecords, 10) || 0;
         } break;
 
         case 'X': {
