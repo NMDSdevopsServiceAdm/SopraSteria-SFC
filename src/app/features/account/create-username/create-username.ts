@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES, PASSWORD_PATTERN } from '@core/constants/constants';
@@ -13,7 +13,8 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
-export class CreateUsername implements OnInit, OnDestroy {
+export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   protected formErrorsMap: Array<ErrorDetails>;
   protected return: URLStructure;
   protected serverErrorsMap: Array<ErrorDefinition>;
@@ -60,6 +61,10 @@ export class CreateUsername implements OnInit, OnDestroy {
     this.setupServerErrorsMap();
     this.init();
     this.setCallToActionLabel();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected init(): void {}
