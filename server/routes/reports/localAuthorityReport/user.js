@@ -1228,7 +1228,7 @@ const updateStaffRecordsSheet = (
 
           putString(
               cellToChange,
-            value
+              value
             );
 
           setStyle(cellToChange, columnText, rowType, isRed);
@@ -1262,7 +1262,7 @@ const updateStaffRecordsSheet = (
               moment(reportData.workers[row].lastUpdated).format("DD/MM/YYYY")
             );
 
-          if(!moment(reportData.workers[row].lastUpdated).isBetween(moment(fromDate).subtract(1, 'd'), moment(toDate).add(1, 'd')))) {
+          if(!moment(reportData.workers[row].lastUpdated).isBetween(moment(fromDate).subtract(1, 'd'), moment(toDate).add(1, 'd'))) {
             isRed = true;
           }
 
