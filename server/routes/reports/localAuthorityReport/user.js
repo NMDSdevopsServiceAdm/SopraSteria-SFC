@@ -575,7 +575,8 @@ const updateWorkplacesSheet = (
       numberOfStaffRecordsNotAgency: 0,
       numberOfCompleteStaffNotAgency: 0,
       numberOfAgencyStaffRecords: 0,
-      numberOfCompleteAgencyStaffRecords: 0
+      numberOfCompleteAgencyStaffRecords: 0,
+      workplaceComplete: true
     };
 
   //update the cell values
@@ -613,7 +614,7 @@ const updateWorkplacesSheet = (
               moment(reportData.establishments[row].lastUpdated).format("DD/MM/YYYY")
             );
 
-          if(!moment(reportData.establishments[row].lastUpdated).isBetween(fromDate, toDate)) {
+          if(!moment(reportData.establishments[row].lastUpdated).isBetween(moment(fromDate).subtract(1, 'd'), moment(toDate).add(1, 'd'))) {
             isRed = true;
           }
 
@@ -737,6 +738,7 @@ const updateWorkplacesSheet = (
 
           if(!reportData.establishments[row].workplaceComplete) {
             isRed = true;
+            totals.workplaceComplete = false;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
@@ -908,6 +910,21 @@ const updateWorkplacesSheet = (
             columnText,
             rowType
           );
+      } break;
+
+      case 'P': {
+        let isRed = false;
+
+        putString(
+          cellToChange,
+          totals.workplaceComplete ? 'Yes' : 'No'
+        );
+
+        if (!totals.workplaceComplete) {
+          isRed = true;
+        }
+
+        setStyle(cellToChange, columnText, rowType, isRed);
       } break;
 
       case 'Q': {
@@ -1199,13 +1216,22 @@ const updateStaffRecordsSheet = (
         } break;
 
         case 'N': {
-          redIifMissing(
-              putString,
+          let isRed = false;
+          const value = String(reportData.workers[row].relevantSocialCareQualification);
+
+          switch (value.toLowerCase()) {
+            case 'missing':
+            case 'no': {
+              isRed = true;
+            } break;
+          }
+
+          putString(
               cellToChange,
-              reportData.workers[row].relevantSocialCareQualification,
-              columnText,
-              rowType
+              value
             );
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'O': {
@@ -1236,7 +1262,7 @@ const updateStaffRecordsSheet = (
               moment(reportData.workers[row].lastUpdated).format("DD/MM/YYYY")
             );
 
-          if(!moment(reportData.workers[row].lastUpdated).isBetween(fromDate, toDate)) {
+          if(!moment(reportData.workers[row].lastUpdated).isBetween(moment(fromDate).subtract(1, 'd'), moment(toDate).add(1, 'd'))) {
             isRed = true;
           }
 
