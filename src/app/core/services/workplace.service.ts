@@ -44,7 +44,7 @@ export class WorkplaceService {
       addressLine2: locationAddress.addressLine2,
       county: locationAddress.county,
       isRegulated: service.isCQC,
-      locationId: locationAddress.locationId || null,
+      ...(locationAddress.locationId && { locationId: locationAddress.locationId }),
       locationName: locationAddress.locationName,
       mainService: service.name,
       postalCode: locationAddress.postalCode,

@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -13,7 +13,8 @@ import { Subscription } from 'rxjs';
   selector: 'app-feedback',
   templateUrl: './feedback.component.html',
 })
-export class FeedbackComponent implements OnInit, OnDestroy {
+export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public form: FormGroup;
   public submitted = false;
   public serverError: string;
@@ -38,6 +39,10 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   private setupForm(): void {

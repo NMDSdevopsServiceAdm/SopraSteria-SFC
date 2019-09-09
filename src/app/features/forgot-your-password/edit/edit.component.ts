@@ -1,14 +1,15 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RequestPasswordResetResponse } from '@core/services/password-reset.service';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RequestPasswordResetResponse } from '@core/services/password-reset.service';
 
 @Component({
   selector: 'app-fp-edit',
   templateUrl: './edit.component.html',
 })
-export class ForgotYourPasswordEditComponent implements OnInit {
+export class ForgotYourPasswordEditComponent implements OnInit, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public form: FormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
@@ -23,6 +24,10 @@ export class ForgotYourPasswordEditComponent implements OnInit {
     });
 
     this.setupFormErrorsMap();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   public setupFormErrorsMap(): void {

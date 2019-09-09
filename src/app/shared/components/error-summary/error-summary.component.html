@@ -14,8 +14,9 @@
       <ng-container *ngIf="errors">
         <li *ngFor="let i of errors">
           <a
+            (click)="focusOnField(i.item)"
             [routerLink]="'.'"
-            [fragment]="transformFragmentName(i.item) + '-error'"
+            [fragment]="getErrorId(i.item)"
             [queryParamsHandling]="'merge'"
             [innerHTML]="getFormErrorMessage(i.item, i.errors[0])"
           >

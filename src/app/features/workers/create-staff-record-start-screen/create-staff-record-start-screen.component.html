@@ -13,6 +13,12 @@
   adding or removing records.
 </p>
 
-<a [routerLink]="['../create-staff-record']" role="button" draggable="false" class="govuk-button govuk-button--start">
+<a
+  [routerLink]="['../create-staff-record']"
+  (click)="beginAddStaffRecord()"
+  role="button"
+  draggable="false"
+  class="govuk-button govuk-button--start"
+>
   Start now
 </a>

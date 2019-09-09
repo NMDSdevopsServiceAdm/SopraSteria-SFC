@@ -14,7 +14,7 @@
   [totalWorkers]="calculatedTotalStaff"
 ></app-total-staff-panel>
 
-<form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
+<form #formEl novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
   <div [formArrayName]="'staffRecords'">
     <div *ngFor="let staffRecord of staffRecordsControl.controls; let i = index" [formGroupName]="i">
       <ng-container *ngIf="staffRecord.get('active').value; then form; else summary"></ng-container>

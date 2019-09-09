@@ -1,4 +1,4 @@
-<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
   <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="form.invalid && submitted">
     <label class="govuk-label govuk-visually-hidden" for="fileUpload">
       Choose files

@@ -33,9 +33,7 @@ $govuk-header-nav-item-border-color: #2e3133;
       color: $govuk-header-link;
     }
 
-    &:hover {
-      text-decoration: underline;
-    }
+    text-decoration: underline;
 
     // When focussed, the text colour needs to be darker to ensure that colour
     // contrast is still acceptable

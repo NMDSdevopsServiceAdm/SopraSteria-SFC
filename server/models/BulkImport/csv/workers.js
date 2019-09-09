@@ -181,8 +181,18 @@ class Worker {
 
   static get NI_WORKER_DUPLICATE_ERROR() { return 5570 }
 
-  get headers() {
-    return this._headers_v1_without_chgUnique.join(",");
+  headers(MAX_QUALS) {
+    const defaultHeaders = this._headers_v1_without_chgUnique;
+    const DEFAULT_NUMBER_OF_QUALS = 3;
+
+    for (let additionalHeaders = 0; additionalHeaders < MAX_QUALS-DEFAULT_NUMBER_OF_QUALS; additionalHeaders++) {
+      const currentHeader = `${additionalHeaders+DEFAULT_NUMBER_OF_QUALS+1}`;
+      defaultHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}`);
+      defaultHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}NOTES`);
+    }
+
+    // default headers includes three quals
+    return defaultHeaders.join(",");
   }
 
   get lineNumber() {
@@ -2069,7 +2079,7 @@ class Worker {
   _validationQualificationRecords() {
     // Note - ASC WDS does not support qualifications in progress (not yet achieved)
 
-    const NO_QUALIFICATIONS = 20;
+    const NO_QUALIFICATIONS = 99;
     const padNumber = (number) => (number < 10) ? `0${number}` : number;
 
     // process all attained qualifications, (QUALACH{n}/QUALACH{n}NOTES)
@@ -2476,8 +2486,14 @@ class Worker {
 
     // only run once for first line, so check _lineNumber
     // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
-    if (this._headers_v1.join(',') !== headers &&
-        this._headers_v1_without_chgUnique.join(',') !== headers) {
+
+    // worker CSV can include more than the default three qualification sets of columns
+    // first compare the default headers (up to and including three quals)
+
+    const matchesWithChgUnique = headers.startsWith(this._headers_v1_without_chgUnique.join(','));
+    const matchesWithoutChgUnique = headers.startsWith(this._headers_v1.join(','));
+
+    if (!matchesWithChgUnique && !matchesWithoutChgUnique) {
       this._validationErrors.push({
         worker: null,
         name: null,
@@ -2489,6 +2505,33 @@ class Worker {
       });
       return false;
     }
+
+    // gets this far having passed the default set of headers; now check the qualification headers
+    const additionalQualsHeader = matchesWithChgUnique ? headers.slice(this._headers_v1_without_chgUnique.join(',').length) : headers.slice(this._headers_v1.join(',').length);
+    let remainingHeadersValid = true; // assume success
+    if (additionalQualsHeader.length > 0) {
+      // there are more than the default three qualifications, so validate the remaining headers (noting that the first character will be a comma)
+      const remainingHeaders = additionalQualsHeader.slice(1).split(',');
+
+      // loop two by two
+      let currentIndex = 4;
+      for (let currentHeader = 0; currentHeader < remainingHeaders.length; currentHeader+=2) {
+        const currentHeaderIndex = `${currentIndex}`.padStart(2, '0');
+
+        if (!(remainingHeaders[currentHeader] && remainingHeaders[currentHeader] === `QUALACH${currentHeaderIndex}`) ||
+            !(remainingHeaders[currentHeader+1] && remainingHeaders[currentHeader+1] === `QUALACH${currentHeaderIndex}NOTES`)) {
+          remainingHeadersValid = false;
+          break;
+        }
+        currentIndex++;
+      }
+    }
+
+    if (!remainingHeadersValid) {
+      console.error('CSV Worker::_validateHeaders: failed to validate additional qualification headers: ', additionalQualsHeader);
+      return false;
+    }
+
     return true;
   }
 
@@ -3397,7 +3440,7 @@ class Worker {
   }
 
   // takes the given Worker entity and writes it out to CSV string (one line)
-  toCSV(establishmentId, entity) {
+  toCSV(establishmentId, entity, MAX_QUALIFICATIONS) {
     // ["LOCALESTID","UNIQUEWORKERID","CHGUNIQUEWRKID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
     //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
@@ -3620,9 +3663,6 @@ class Worker {
         break;
     }
 
-
-    // and now for qualifications - up to 3 - https://trello.com/c/ahBZTUMC
-    const MAX_QUALIFICATIONS = 3;
     const myQualifications = entity.qualifications.slice(0, MAX_QUALIFICATIONS);
 
     for(let index = 0; index < MAX_QUALIFICATIONS; index++) {
@@ -3633,6 +3673,9 @@ class Worker {
           columns.push(`${mappedQualification};${thisQual.year ? thisQual.year : ''}`);
           columns.push(thisQual.notes ? thisQual.notes : '');
         }
+      } else {
+        columns.push('');
+        columns.push('');
       }
     };
 

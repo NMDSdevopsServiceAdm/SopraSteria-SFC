@@ -1,4 +1,4 @@
-import { OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -8,7 +8,8 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
-export class SecurityQuestion implements OnInit, OnDestroy {
+export class SecurityQuestion implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public formErrorsMap: Array<ErrorDetails>;
   private securityDetailsMaxLength = 255;
   protected back: URLStructure;
@@ -49,8 +50,12 @@ export class SecurityQuestion implements OnInit, OnDestroy {
     this.setupForm();
     this.setupSubscription();
     this.setupFormErrorsMap();
-    this.setCallToActionLabel();
     this.init();
+    this.setCallToActionLabel();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected init(): void {}

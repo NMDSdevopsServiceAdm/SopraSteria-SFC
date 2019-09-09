@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="295" uniqueCount="121">
+    <si>
+        <t>Local authority progress report</t>
+    </si>
+    <si>
+        <t>Establishment type</t>
+    </si>
+    <si>
+        <t>Main service</t>
+    </si>
+    <si>
+        <t>Capacity of main service</t>
+    </si>
+    <si>
+        <t>Utilisation of main service</t>
+    </si>
+    <si>
+        <t>Number of vacancies</t>
+    </si>
+    <si>
+        <t>Gender</t>
+    </si>
+    <si>
+        <t>Ethnic group</t>
+    </si>
+    <si>
+        <t>Main job role</t>
+    </si>
+    <si>
+        <t>Employment status</t>
+    </si>
+    <si>
+        <t>Date</t>
+    </si>
+    <si>
+        <t>01/01/2000</t>
+    </si>
+    <si>
+        <t>Local authority name</t>
+    </si>
+    <si>
+        <t>Local Authority</t>
+    </si>
+    <si>
+        <t>Parent name</t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t>Latest update date</t>
+    </si>
+    <si>
+        <t>Service user groups data</t>
+    </si>
+    <si>
+        <t>Leavers in the past 12 months</t>
+    </si>
+    <si>
+        <t>Number of starters in the past 12 months</t>
+    </si>
+    <si>
+        <t>Total</t>
+    </si>
+    <si>
+        <t>n/a</t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t>No</t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t>Completed</t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t>Local ID</t>
+    </si>
+    <si>
+        <t>Date of birth</t>
+    </si>
+    <si>
+        <t>Sickness days</t>
+    </si>
+    <si>
+        <t>Pay interval</t>
+    </si>
+    <si>
+        <t>Rate of pay</t>
+    </si>
+    <si>
+        <t>Relevant social care qualification held</t>
+    </si>
+    <si>
+        <t>Highest level of social care qualification held</t>
+    </si>
+    <si>
+        <t>Non-social care qualification held</t>
+    </si>
+    <si>
+        <t>Last update date</t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t>N/A</t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t>Yes</t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t></t>
+    </si>
+    <si>
+        <t>Workplace level data</t>
+    </si>
+    <si>
+        <t>Workplace/ team name</t>
+    </si>
+    <si>
+        <t>Workplace / team name</t>
+    </si>
+    <si>
+        <t>Staff record complete?</t>
+    </si>
+    <si>
+        <t>Number of individual staff records</t>
+    </si>
+    <si>
+        <t>Percentage of staff records</t>
+    </si>
+    <si>
+        <t>Number of staff records (not agency)</t>
+    </si>
+    <si>
+        <t>Number of complete staff records (not agency)</t>
+    </si>
+    <si>
+        <t>Percentage of complete staff records</t>
+    </si>
+    <si>
+        <t>Individual staff records data</t>
+    </si>
+    <si>
+        <t>Number of agency staff records</t>
+    </si>
+    <si>
+        <t>Number of complete agency staff records</t>
+    </si>
+    <si>
+        <t>Percentage of complete agency staff records</t>
+    </si>
+    <si>
+        <t>Workplace ID</t>
+    </si>
+    <si>
+        <t>Number of staff records</t>
+    </si>
+    <si>
+        <t>Workplace data complete?</t>
+    </si>
+    <si>
+        <t>Contracted/Average hours</t>
+    </si>
+</sst>

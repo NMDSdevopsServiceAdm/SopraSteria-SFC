@@ -6,7 +6,7 @@
 >
 </app-error-summary>
 
-<form *ngIf="renderForm" (ngSubmit)="onSubmit()" [formGroup]="form">
+<form #formEl *ngIf="renderForm" (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">

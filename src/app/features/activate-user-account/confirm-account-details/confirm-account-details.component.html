@@ -23,7 +23,7 @@
       (setReturn)="onSetReturn()"
     ></app-summary-list>
 
-    <form (ngSubmit)="onSubmit()" [formGroup]="form" id="form">
+    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="form">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset" aria-describedby="termsAndConditions-hint">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
