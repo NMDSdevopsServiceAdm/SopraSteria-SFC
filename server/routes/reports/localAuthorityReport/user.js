@@ -1262,7 +1262,7 @@ const updateStaffRecordsSheet = (
               moment(reportData.workers[row].lastUpdated).format("DD/MM/YYYY")
             );
 
-          if(!moment(reportData.workers[row].lastUpdated).isBetween(fromDate, toDate)) {
+          if(!moment(reportData.workers[row].lastUpdated).isBetween(moment(fromDate).subtract(1, 'd'), moment(toDate).add(1, 'd')))) {
             isRed = true;
           }
 
