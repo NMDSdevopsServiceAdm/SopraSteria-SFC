@@ -15,7 +15,7 @@
     <app-summary-list [topBorder]="true" [summaryList]="loginInfo" (setReturn)="onSetReturn()"></app-summary-list>
     <app-summary-list [wrapBorder]="true" [summaryList]="securityInfo" (setReturn)="onSetReturn()"></app-summary-list>
 
-    <form (ngSubmit)="onSubmit()" [formGroup]="form" id="form" class="govuk-!-margin-top-6">
+    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="form" class="govuk-!-margin-top-6">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset" aria-describedby="termsAndConditions-hint">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">

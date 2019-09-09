@@ -6,7 +6,7 @@
 >
 </app-error-summary>
 
-<form novalidate (ngSubmit)="checkUsernameDoesntExist()" [formGroup]="form" id="server-error">
+<form #formEl novalidate (ngSubmit)="checkUsernameDoesntExist()" [formGroup]="form" id="server-error">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
