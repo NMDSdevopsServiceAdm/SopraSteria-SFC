@@ -2310,12 +2310,14 @@ class Establishment {
 
     columns.push(uniqueJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob)).join(';'));
     if (entity.starters && !Array.isArray(entity.starters)) {
-      if (entity.starters === 'None') {
+      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
+        columns.push('0');
+      } else if (entity.starters === 'None') {
         columns.push(uniqueJobs.map(x => 0).join(';'));
       } else if (entity.starters === 'Don\'t know') {
         columns.push(999);
       } else {
-        columns.push('')
+        columns.push('');
       }
     } else {
       columns.push(uniqueJobs.map(thisJob => {
@@ -2328,7 +2330,9 @@ class Establishment {
       }).join(';'));
     }
     if (entity.leavers && !Array.isArray(entity.leavers)) {
-      if (entity.leavers === 'None') {
+      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
+        columns.push('0');
+      } else if (entity.leavers === 'None') {
         columns.push(uniqueJobs.map(x => 0).join(';'));
       } else if (entity.leavers === 'Don\'t know') {
         columns.push(999);
@@ -2346,7 +2350,9 @@ class Establishment {
       }).join(';'));
     }
     if (entity.vacancies && !Array.isArray(entity.vacancies)) {
-      if (entity.vacancies === 'None') {
+      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
+        columns.push('0');
+      } else if (entity.vacancies === 'None') {
         columns.push(uniqueJobs.map(x => 0).join(';'));
       } else if (entity.vacancies === 'Don\'t know') {
         columns.push(999);
