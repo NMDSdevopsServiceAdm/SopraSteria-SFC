@@ -381,8 +381,8 @@ const styleLookup = {
       'K': 34,
       'L': 34,
       'M': 34,
-      'N': 31,
-      'O': 31,
+      'N': 34,
+      'O': 34,
       'P': 70,
       'Q': 34,
       'R': 68,
@@ -433,8 +433,8 @@ const styleLookup = {
       'K': 26,
       'L': 26,
       'M': 26,
-      'N': 8,
-      'O': 8,
+      'N': 26,
+      'O': 26,
       'P': 25,
       'Q': 26,
       'R': 29,
@@ -730,6 +730,16 @@ const updateWorkplacesSheet = (
           totals.numberOfStaffRecords += parseInt(reportData.establishments[row].numberOfStaffRecords, 10) || 0;
         } break;
 
+      case 'N':
+      case 'O': {
+        putString(
+          cellToChange,
+          ''
+        );
+
+        setStyle(cellToChange, columnText, rowType, false);
+      } break;
+
         case 'P': {
           putString(
               cellToChange,
@@ -912,6 +922,16 @@ const updateWorkplacesSheet = (
           );
       } break;
 
+      case 'N':
+      case 'O': {
+        putString(
+          cellToChange,
+          ''
+        );
+
+        setStyle(cellToChange, columnText, rowType, false);
+      } break;
+
       case 'P': {
         let isRed = false;
 
@@ -973,7 +993,7 @@ const updateWorkplacesSheet = (
             putString,
             cellToChange,
             totals.numberOfCompleteStaffNotAgency /
-            totals.numberOfStaffRecords * 100,
+            totals.numberOfStaffRecordsNotAgency * 100,
             columnText,
             rowType
           );
@@ -1004,7 +1024,7 @@ const updateWorkplacesSheet = (
             putString,
             cellToChange,
             totals.numberOfCompleteAgencyStaffRecords /
-            totals.numberOfStaffRecords * 100,
+            totals.numberOfAgencyStaffRecords * 100,
             columnText,
             rowType
           );
@@ -1217,7 +1237,7 @@ const updateStaffRecordsSheet = (
 
         case 'N': {
           let isRed = false;
-          const value = String(reportData.workers[row].relevantSocialCareQualification);
+          let value = String(reportData.workers[row].relevantSocialCareQualification);
 
           switch (value.toLowerCase()) {
             case 'must be yes': {
