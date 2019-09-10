@@ -1,0 +1,54 @@
+.notification-alert {
+  background: rgba(govuk-colour('blue'), 0.15);
+  padding: 14px;
+  display: block;
+  @include govuk-font($size: 16, $weight: 400);
+  text-decoration: none;
+  &:visited {
+    color: govuk-colour('black');
+  }
+  &:active {
+    background: rgba(govuk-colour('blue'), 0.15);
+  }
+
+  &__count {
+    color: govuk-colour('white');
+    background: govuk-colour('red');
+    border-radius: 50%;
+    padding: 3px;
+    display: inline-block;
+    min-width: 20px;
+    text-align: center;
+  }
+}
+
+.notification-list-row {
+  background: govuk-colour('grey-4');
+
+  &--unread {
+    background: none;
+    font-weight: bold;
+  }
+}
+
+.notification-list-item {
+  display: flex;
+  align-items: center;
+
+  &__icon {
+    width: 6px;
+    height: 6px;
+    background: govuk-colour('red');
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+}
+
+.notification-list-item__link {
+  color: govuk-colour('blue');
+
+  &:visited {
+    color: govuk-colour('blue');
+  }
+}
