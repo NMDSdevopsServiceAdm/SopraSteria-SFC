@@ -3593,8 +3593,37 @@ class Worker {
     const averageHoursContract = ['Pool/Bank', 'Agency', 'Other'];
     columns.push(entity.mainJob ? BUDI.jobRoles(BUDI.FROM_ASC, entity.mainJob.jobId) : '');
     columns.push(entity.mainJob && entity.mainJob.other ? entity.mainJob.other : '');
-    columns.push(entity.contract && contractedHoursContract.includes(entity.contract) && entity.contractedHours ? entity.contractedHours.hours : '');
-    columns.push(entity.contract && averageHoursContract.includes(entity.contract) &&entity.averageHours ? entity.averageHours.hours : '');
+
+    // if contracted hours is 'No', then output "999" (don't know)
+    // if contracted hours is 'Yes', then the contracted hours value - which itself could still be empty (null)
+    // if no contracted hours, then output empty (null)
+    // if no contract type, or contract type is not contractedHoursContract, then always empty (null)
+    if (entity.contract && contractedHoursContract.includes(entity.contract)) {
+      if (entity.contractedHours && entity.contractedHours.value === 'Yes') {
+        columns.push(entity.contractedHours.hours);
+      } else if (entity.contractedHours && entity.contractedHours.value === 'No') {
+        columns.push('999');
+      } else {
+        columns.push('');
+      }
+    } else {
+      columns.push('');
+    }
+
+    // if average hours is 'No', then output "999" (don't know)
+    // if average hours is 'Yes', then the average hours value - which itself could still be empty (null)
+    // if no average hours, then output empty (null)
+    if (entity.contract && averageHoursContract.includes(entity.contract)) {
+      if (entity.averageHours && entity.averageHours.value === 'Yes') {
+        columns.push(entity.averageHours.hours);
+      } else if (entity.averageHours && entity.averageHours.value === 'No') {
+        columns.push('999');
+      } else {
+        columns.push('');
+      }
+    } else {
+      columns.push('');
+    }
 
     // "OTHERJOBROLE","OTHERJRDESC"
     columns.push(entity.otherJobs && entity.otherJobs.value === 'Yes'

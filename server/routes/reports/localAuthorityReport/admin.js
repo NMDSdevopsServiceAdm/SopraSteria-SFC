@@ -59,7 +59,7 @@ Latest update date,\
 Status,\
 Confirmed staff record numbers,\
 Workplace data complete?,\
-Staff records compleyte?,\
+Staff records complete?,\
 Number of workplaces/teams at these accounts,\
 Number of complete workplaces/teams,\
 Establishment Type,\
