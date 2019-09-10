@@ -15,6 +15,10 @@ const sharedStringsName = 'xl/sharedStrings.xml';
 const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 
+//Is the occupation a social worker or occupational therapist?
+//TODO: find out if there's a better way to identify this
+const isSWOrOTRegex = /(?<!not )(social worker|occupational therapist)/i;
+
 //XML DOM manipulation helper functions
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
 
@@ -105,7 +109,7 @@ const identifyLocalAuthority = async postcode => {
   }
 
   //  using just the first half of the postcode
-  const [firstHalfOfPostcode] = fetchResults.postcode.split(' ');
+  const [firstHalfOfPostcode] = String(postcode).split(' ');
 
   // must escape the string to prevent SQL injection
   const fuzzyCssrIdMatch = await models.sequelize.query(
@@ -1220,8 +1224,17 @@ const updateStaffRecordsSheet = (
           const value = String(reportData.workers[row].relevantSocialCareQualification);
 
           switch (value.toLowerCase()) {
-            case 'missing':
             case 'no': {
+
+              if(!isSWOrOTRegex.test(reportData.workers[row].mainJob)) {
+                //If the worker is not a social worker of an occupational
+                //therapist then no shouldn't be highlighted in red
+                break;
+              }
+              console.log("b" );
+            } //fall through
+
+            case 'missing': {
               isRed = true;
             } break;
           }
