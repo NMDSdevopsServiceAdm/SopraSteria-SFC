@@ -105,7 +105,7 @@ const identifyLocalAuthority = async postcode => {
   }
 
   //  using just the first half of the postcode
-  const [firstHalfOfPostcode] = fetchResults.postcode.split(' ');
+  const [firstHalfOfPostcode] = postcode.split(' ');
 
   // must escape the string to prevent SQL injection
   const fuzzyCssrIdMatch = await models.sequelize.query(
@@ -1220,8 +1220,12 @@ const updateStaffRecordsSheet = (
           const value = String(reportData.workers[row].relevantSocialCareQualification);
 
           switch (value.toLowerCase()) {
-            case 'missing':
-            case 'no': {
+            case 'must be yes': {
+              isRed = true;
+              value = 'No';
+            } break;
+
+            case 'missing': {
               isRed = true;
             } break;
           }
