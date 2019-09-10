@@ -4,6 +4,7 @@ import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/rout
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney } from '@core/breadcrumb/journey.accounts';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
+import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { publicJourney } from '@core/breadcrumb/journey.public';
 import { reportJourney, subsidiaryReportJourney } from '@core/breadcrumb/journey.report';
 import { allWorkplacesJourney, myWorkplaceJourney } from '@core/breadcrumb/journey.workplaces';
@@ -150,6 +151,10 @@ export class BreadcrumbService {
       }
       case JourneyType.ACCOUNT: {
         routes = accountJourney;
+        break;
+      }
+      case JourneyType.NOTIFICATIONS: {
+        routes = notificationsJourney;
         break;
       }
       default: {
