@@ -1231,7 +1231,6 @@ const updateStaffRecordsSheet = (
                 //therapist then no shouldn't be highlighted in red
                 break;
               }
-              console.log("b" );
             } //fall through
 
             case 'missing': {
