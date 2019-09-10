@@ -12,6 +12,7 @@ import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
+import { NotificationsResolver } from '@core/resolvers/notifications.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
 import { BackService } from '@core/services/back.service';
@@ -49,7 +50,7 @@ import { MomentModule } from 'ngx-moment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {
-  MigratedUserTermsConditionsComponent
+  MigratedUserTermsConditionsComponent,
 } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 
 @NgModule({
@@ -117,6 +118,7 @@ import {
     },
     LoggedInUserResolver,
     PrimaryWorkplaceResolver,
+    NotificationsResolver,
   ],
   bootstrap: [AppComponent],
 })
