@@ -5,7 +5,7 @@
   [serverError]="serverError"
 ></app-error-summary>
 
-<form (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="ready">
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="ready">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
@@ -16,62 +16,56 @@
           You've told us about the services your workplace provides. We need to know what the capacity of these services
           is.
         </p>
-        <div
-          class="govuk-form-group"
-          *ngFor="let capacity of capacities; let i = index"
-          [class.govuk-form-group--error]="submitted && form.get(generateId(capacity.service)).invalid"
-          [formGroupName]="generateId(capacity.service)"
-        >
-          <fieldset class="govuk-fieldset">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-              <h2 class="govuk-fieldset__heading">{{ capacity.service }}</h2>
-            </legend>
-            <span
-              *ngIf="submitted && form.get(generateId(capacity.service)).errors"
-              id="{{ generateId(capacity.service) }}-error"
-              class="govuk-error-message"
-            >
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFirstErrorMessage(generateId(capacity.service)) }}
-            </span>
-            <div
-              *ngFor="let question of capacity.questions; let idx = index"
-              class="govuk-form-group"
-              [class.govuk-form-group--error]="
-                submitted &&
-                form.get(generateId(capacity.service) + '.' + question.seq + '_' + question.questionId).invalid
-              "
-            >
-              <label class="govuk-label" for="question-{{ question.seq }}_{{ question.questionId }}">
-                {{ question.question }}
-              </label>
+
+        <ng-container *ngFor="let capacity of capacities; let i = index">
+          <div
+            class="govuk-form-group"
+            *ngIf="generateFormGroupName(capacity.service); let groupName"
+            [class.govuk-form-group--error]="submitted && form.get(groupName).invalid"
+            [formGroupName]="groupName"
+          >
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                <h2 class="govuk-fieldset__heading">{{ capacity.service }}</h2>
+              </legend>
               <span
-                *ngIf="
-                  submitted &&
-                  form.get(generateId(capacity.service) + '.' + question.seq + '_' + question.questionId).invalid
-                "
-                id="question-{{ question.seq }}_{{ question.questionId }}-error"
+                *ngIf="submitted && form.get(groupName).invalid"
+                id="{{ groupName }}-error"
                 class="govuk-error-message"
               >
                 <span class="govuk-visually-hidden">Error:</span>
-                {{
-                  getFirstErrorMessage(generateId(capacity.service) + '.' + question.seq + '_' + question.questionId)
-                }}
+                {{ getFormErrorMessage(groupName, 'overcapacity') }}
               </span>
-              <input
-                class="govuk-input govuk-input--width-4"
-                [class.govuk-input--error]="
-                  submitted &&
-                  form.get(generateId(capacity.service) + '.' + question.seq + '_' + question.questionId).invalid
-                "
-                [formControlName]="question.seq + '_' + question.questionId"
-                id="question-{{ question.seq }}_{{ question.questionId }}"
-                name="question-{{ question.seq }}_{{ question.questionId }}"
-                type="number"
-              />
-            </div>
-          </fieldset>
-        </div>
+              <ng-container *ngFor="let question of capacity.questions; let idx = index">
+                <div
+                  class="govuk-form-group"
+                  *ngIf="generateFormControlName(question); let controlName"
+                  [class.govuk-form-group--error]="submitted && form.get(groupName).get(controlName).invalid"
+                >
+                  <label class="govuk-label" for="{{ controlName }}">
+                    {{ question.question }}
+                  </label>
+                  <span
+                    *ngIf="submitted && form.get(groupName).get(controlName).invalid"
+                    id="{{ groupName }}.{{ controlName }}-error"
+                    class="govuk-error-message"
+                  >
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFirstErrorMessage(groupName + '.' + controlName) }}
+                  </span>
+                  <input
+                    class="govuk-input govuk-input--width-4"
+                    [class.govuk-input--error]="submitted && form.get(groupName).get(controlName).invalid"
+                    [formControlName]="controlName"
+                    id="{{ controlName }}"
+                    name="{{ controlName }}"
+                    type="number"
+                  />
+                </div>
+              </ng-container>
+            </fieldset>
+          </div>
+        </ng-container>
       </fieldset>
     </div>
   </div>

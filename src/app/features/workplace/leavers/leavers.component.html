@@ -6,7 +6,7 @@
 >
 </app-error-summary>
 
-<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
       <h1 class="govuk-fieldset__heading">Staff who have left in the last 12 months</h1>

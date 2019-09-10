@@ -221,14 +221,14 @@ class Training {
           source: this._currentLine.EXPIRYDATE,
         });
         return false;
-      } else if (actualDate.isBefore(actualDateCompleted, 'day')) {
+      } else if (actualDate.isSameOrBefore(actualDateCompleted, 'day')) {
           this._validationErrors.push({
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Training.EXPIRY_DATE_ERROR,
             errType: `EXPIRY_DATE_ERROR`,
-            error: "EXPIRYDATE is before DATECOMPLETED",
+            error: "EXPIRYDATE must be after DATECOMPLETED",
             source: this._currentLine.EXPIRYDATE,
           });
           return false;

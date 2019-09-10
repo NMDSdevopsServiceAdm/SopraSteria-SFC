@@ -1,4 +1,4 @@
-import { OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -8,7 +8,8 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
-export class SelectWorkplace implements OnInit, OnDestroy {
+export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   protected flow: string;
   protected locationAddresses: Array<LocationAddress>;
   protected subscriptions: Subscription = new Subscription();
@@ -28,6 +29,10 @@ export class SelectWorkplace implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.init();
     this.setBackLink();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected init(): void {}

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocationSearchResponse } from '@core/model/location.model';
@@ -12,7 +12,8 @@ import { RegulatedByCQC } from '@features/workplace-find-and-select/regulated-by
   selector: 'app-regulated-by-cqc',
   templateUrl: './regulated-by-cqc.component.html',
 })
-export class RegulatedByCqcComponent extends RegulatedByCQC {
+export class RegulatedByCqcComponent extends RegulatedByCQC implements AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   constructor(
     private registrationService: RegistrationService,
     protected backService: BackService,
@@ -28,6 +29,10 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
   protected init() {
     this.flow = '/registration';
     this.setBackLink();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected setBackLink(): void {

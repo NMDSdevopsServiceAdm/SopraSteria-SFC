@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_DISPLAY_DEFAULT, DATE_PARSE_FORMAT } from '@core/constants/constants';
@@ -14,7 +14,9 @@ import { QuestionComponent } from '../question/question.component';
   selector: 'app-date-of-birth',
   templateUrl: './date-of-birth.component.html',
 })
-export class DateOfBirthComponent extends QuestionComponent {
+export class DateOfBirthComponent extends QuestionComponent implements AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+
   private minDate = moment()
     .subtract(100, 'years')
     .add(1, 'days');
@@ -52,6 +54,10 @@ export class DateOfBirthComponent extends QuestionComponent {
 
     this.next = this.getRoutePath('home-postcode');
     this.previous = this.getRoutePath('national-insurance-number');
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   public setupFormErrorsMap(): void {

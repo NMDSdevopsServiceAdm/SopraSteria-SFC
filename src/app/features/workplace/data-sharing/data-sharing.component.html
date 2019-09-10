@@ -53,7 +53,7 @@
   </div>
 </div>
 
-<form (ngSubmit)="onSubmit()" [formGroup]="form">
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group">

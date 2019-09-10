@@ -22,5 +22,6 @@ export class StartComponent implements OnInit {
     this.registrationService.loginCredentials$.next(null);
     this.registrationService.securityDetails$.next(null);
     this.registrationService.isRegulated$.next(null);
+    this.registrationService.returnTo$.next(null);
   }
 }
