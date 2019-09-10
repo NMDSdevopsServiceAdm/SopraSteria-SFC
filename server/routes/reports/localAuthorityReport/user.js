@@ -1220,8 +1220,12 @@ const updateStaffRecordsSheet = (
           const value = String(reportData.workers[row].relevantSocialCareQualification);
 
           switch (value.toLowerCase()) {
+            case 'must be yes': {
+              isRed = true;
+              value = 'No';
+            } break;
+
             case 'missing':
-            case 'no': {
               isRed = true;
             } break;
           }
