@@ -14,6 +14,8 @@ const staffRecordsSheetName = 'xl/worksheets/sheet2.xml';
 const sharedStringsName = 'xl/sharedStrings.xml';
 const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
+//const debuglog = console.log.bind(console);
+const debuglog = () => {};
 
 //XML DOM manipulation helper functions
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
@@ -29,6 +31,7 @@ const serializeXML = dom =>
 const putStringTemplate = (
     sheetDoc,
     stringsDoc,
+    sst,
     sharedStringsUniqueCount,
     element,
     value
@@ -51,7 +54,6 @@ const putStringTemplate = (
   else{
     element.setAttribute('t', 's');
 
-    const sst = stringsDoc.querySelector('sst');
     const si = stringsDoc.createElementNS(schema, 'si');
     const t = stringsDoc.createElementNS(schema, 't');
 
@@ -105,7 +107,7 @@ const identifyLocalAuthority = async postcode => {
   }
 
   //  using just the first half of the postcode
-  const [firstHalfOfPostcode] = fetchResults.postcode.split(' ');
+  const [firstHalfOfPostcode] = postcode.split(' ');
 
   // must escape the string to prevent SQL injection
   const fuzzyCssrIdMatch = await models.sequelize.query(
@@ -138,6 +140,8 @@ const getReportData = async (date, thisEstablishment) => {
     },
     type: models.sequelize.QueryTypes.SELECT
   };
+
+  debuglog("LA user report data started:", params);
 
   const runReport = await models.sequelize.query(
     `select cqc.localAuthorityReport(:givenEstablishmentId, :givenFromDate, :givenToDate);`,
@@ -189,6 +193,8 @@ const getReportData = async (date, thisEstablishment) => {
   if(reportWorkers && Array.isArray(reportWorkers)) {
     reportData.workers = reportWorkers;
   }
+
+  debuglog("LA user report data finished:", params, reportData.establishments.length, reportData.workers.length);
 
   return reportData;
 };
@@ -381,8 +387,8 @@ const styleLookup = {
       'K': 34,
       'L': 34,
       'M': 34,
-      'N': 31,
-      'O': 31,
+      'N': 34,
+      'O': 34,
       'P': 70,
       'Q': 34,
       'R': 68,
@@ -433,8 +439,8 @@ const styleLookup = {
       'K': 26,
       'L': 26,
       'M': 26,
-      'N': 8,
-      'O': 8,
+      'N': 26,
+      'O': 26,
       'P': 25,
       'Q': 26,
       'R': 29,
@@ -512,9 +518,12 @@ const updateWorkplacesSheet = (
     workplacesSheet,
     reportData,
     sharedStrings,
+    sst,
     sharedStringsUniqueCount
 ) => {
-  const putString = putStringTemplate.bind(null, workplacesSheet, sharedStrings, sharedStringsUniqueCount);
+  debuglog("updating workplaces sheet");
+
+  const putString = putStringTemplate.bind(null, workplacesSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   //set headers
   putString(
@@ -552,6 +561,8 @@ const updateWorkplacesSheet = (
       currentRow = tempRow;
       rowIndex++;
     }
+
+    currentRow = templateRow;
   }
   else if(reportData.establishments.length === 0) {
     templateRow.remove();
@@ -579,15 +590,19 @@ const updateWorkplacesSheet = (
       workplaceComplete: true
     };
 
+
   //update the cell values
   for(let row = 0; row < reportData.establishments.length; row++) {
+    debuglog("updating establishment", row);
+
     const rowType = row === 0 ? 'ESTFIRST' : (row === reportData.establishments.length - 1 ? 'ESTLAST' : 'ESTREGULAR');
+    let nextSibling = {};
 
     for(let column = 0; column < 24; column++) {
       const columnText = String.fromCharCode(column + 65);
       let isRed = false;
 
-      const cellToChange = workplacesSheet.querySelector(`c[r='${columnText}${row+13}']`);
+      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row+13}']`);
 
       switch(columnText) {
         case 'A': {
@@ -730,6 +745,16 @@ const updateWorkplacesSheet = (
           totals.numberOfStaffRecords += parseInt(reportData.establishments[row].numberOfStaffRecords, 10) || 0;
         } break;
 
+      case 'N':
+      case 'O': {
+        putString(
+          cellToChange,
+          ''
+        );
+
+        setStyle(cellToChange, columnText, rowType, false);
+      } break;
+
         case 'P': {
           putString(
               cellToChange,
@@ -861,12 +886,18 @@ const updateWorkplacesSheet = (
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
       }
+
+      nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
+
+    currentRow = currentRow.nextSibling;
   }
 
   //update totals
   const rowType = 'ESTTOTAL';
   for(let column = 0; column < 24; column++) {
+    debuglog("updating establishment totals");
+
     const columnText = String.fromCharCode(column + 65);
 
     const cellToChange = workplacesSheet.querySelector(`c[r='${columnText}12']`);
@@ -910,6 +941,16 @@ const updateWorkplacesSheet = (
             columnText,
             rowType
           );
+      } break;
+
+      case 'N':
+      case 'O': {
+        putString(
+          cellToChange,
+          ''
+        );
+
+        setStyle(cellToChange, columnText, rowType, false);
       } break;
 
       case 'P': {
@@ -973,7 +1014,7 @@ const updateWorkplacesSheet = (
             putString,
             cellToChange,
             totals.numberOfCompleteStaffNotAgency /
-            totals.numberOfStaffRecords * 100,
+            totals.numberOfStaffRecordsNotAgency * 100,
             columnText,
             rowType
           );
@@ -1004,13 +1045,15 @@ const updateWorkplacesSheet = (
             putString,
             cellToChange,
             totals.numberOfCompleteAgencyStaffRecords /
-            totals.numberOfStaffRecords * 100,
+            totals.numberOfAgencyStaffRecords * 100,
             columnText,
             rowType
           );
       } break;
     }
   }
+
+  debuglog("establishments updated");
 
   return workplacesSheet;
 };
@@ -1034,9 +1077,12 @@ const updateStaffRecordsSheet = (
     staffRecordsSheet,
     reportData,
     sharedStrings,
+    sst,
     sharedStringsUniqueCount
 ) => {
-  const putString = putStringTemplate.bind(null, staffRecordsSheet, sharedStrings, sharedStringsUniqueCount);
+  debuglog("updating staff sheet");
+
+  const putString = putStringTemplate.bind(null, staffRecordsSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   putString(
       staffRecordsSheet.querySelector("c[r='B5']"),
@@ -1073,6 +1119,8 @@ const updateStaffRecordsSheet = (
       currentRow = tempRow;
       rowIndex++;
     }
+
+    currentRow = templateRow;
   }
   else if(reportData.workers.length === 0) {
     templateRow.remove();
@@ -1088,11 +1136,15 @@ const updateStaffRecordsSheet = (
 
   //update the cell values
   for(let row = 0; row < reportData.workers.length; row++) {
+    debuglog("updating worker", row);
+
     const rowType = row === reportData.workers.length - 1 ? 'WORKERLAST' : 'WORKERREGULAR';
+    let nextSibling = {};
 
     for(let column = 0; column < 18; column++) {
       const columnText = String.fromCharCode(column + 65);
-      const cellToChange = staffRecordsSheet.querySelector(`c[r='${columnText}${row+11}']`);
+
+      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row+11}']`);
 
       switch(columnText) {
         case 'A': {
@@ -1217,11 +1269,15 @@ const updateStaffRecordsSheet = (
 
         case 'N': {
           let isRed = false;
-          const value = String(reportData.workers[row].relevantSocialCareQualification);
+          let value = String(reportData.workers[row].relevantSocialCareQualification);
 
           switch (value.toLowerCase()) {
-            case 'missing':
-            case 'no': {
+            case 'must be yes': {
+              isRed = true;
+              value = 'No';
+            } break;
+
+            case 'missing': {
               isRed = true;
             } break;
           }
@@ -1284,8 +1340,14 @@ const updateStaffRecordsSheet = (
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
       }
+
+      nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
-  }
+
+    currentRow = currentRow.nextSibling;
+   }
+
+  debuglog("workers updated");
 
   return staffRecordsSheet;
 }
@@ -1304,11 +1366,17 @@ const getReport = async (date, thisEstablishment) => {
 
       let workplacesSheet, staffRecordsSheet, sharedStrings;
 
+      debuglog("iterating filesystem", thePath);
+
       walker.on("file", (root, fileStats, next) => {
         const pathName = root.replace(thePath, '').replace(/^\//, "");
         const zipPath = (pathName === '' ? '' : pathName + '/') + fileStats.name;
 
+        debuglog("file found", `${thePath}/${zipPath}`);
+
         fs.readFile(`${thePath}/${zipPath}`, (err, fileContent) => {
+          debuglog("content read", zipPath);
+
           if(!err) {
             switch(zipPath) {
               case workplacesSheetName: {
@@ -1334,6 +1402,8 @@ const getReport = async (date, thisEstablishment) => {
       });
 
       walker.on("end", () => {
+        debuglog("all files read");
+
         if(sharedStrings) {
           const sst = sharedStrings.querySelector("sst");
 
@@ -1344,6 +1414,7 @@ const getReport = async (date, thisEstablishment) => {
               workplacesSheet,
               reportData,
               sharedStrings,
+              sst,
               sharedStringsUniqueCount  //pass unique count by reference rather than by value
             )));
 
@@ -1352,6 +1423,7 @@ const getReport = async (date, thisEstablishment) => {
               staffRecordsSheet,
               reportData,
               sharedStrings,
+              sst,
               sharedStringsUniqueCount  //pass unique count by reference rather than by value
             )));
 
@@ -1361,6 +1433,8 @@ const getReport = async (date, thisEstablishment) => {
           //add the updated shared strings to the zip
           outputZip.file(sharedStringsName, serializeXML(sharedStrings));
         }
+
+        debuglog("LA user report: creating zip file");
 
         resolve(outputZip);
       });
@@ -1380,6 +1454,8 @@ const express = require('express');
 const router = express.Router();
 
 router.route('/').get(async (req, res) => {
+  console.log("report/localAuthority/user request started");
+
   try {
     // first ensure this report can only be ran by those establishments with a Local Authority employer type
     const thisEstablishment = new Establishment(req.username);
@@ -1398,6 +1474,8 @@ router.route('/').get(async (req, res) => {
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           res.setHeader('Content-Length', report.length);
 
+          console.log("report/localAuthority/user - 200 response");
+
           return res.status(200).end(report);
         }
         else {
@@ -1409,6 +1487,9 @@ router.route('/').get(async (req, res) => {
       }
       else {
         // only allow on those establishments being a local authority
+
+        console.log("report/localAuthority/user 403 response");
+
         return res.status(403).send();
       }
     }

@@ -53,7 +53,7 @@ export class ServicesCapacityComponent extends Question {
           questions.forEach(question => {
             group.addControl(
               this.generateFormControlName(question),
-              new FormControl(question.answer, [Validators.min(0), Validators.max(999)])
+              new FormControl(question.answer, [Validators.min(1), Validators.max(999)])
             );
 
             this.formErrorsMap.push({
