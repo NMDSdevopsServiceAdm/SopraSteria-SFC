@@ -1076,6 +1076,46 @@ class BUDI {
       { "BUDI": 114, "ASC": 135 },
       { "BUDI": 115, "ASC": 90 },
       { "BUDI": 116, "ASC": 91 },
+      {"BUDI": 92, "ASC": 13},
+      {"BUDI": 119, "ASC": 33},
+      {"BUDI": 121, "ASC": 34},
+      {"BUDI": 136, "ASC": 35},
+      {"BUDI": 123, "ASC": 36},
+      {"BUDI": 124, "ASC": 37},
+      {"BUDI": 125, "ASC": 38},
+      {"BUDI": 118, "ASC": 39},
+      {"BUDI": 137, "ASC": 40},
+      {"BUDI": 131, "ASC": 41},
+      {"BUDI": 134, "ASC": 42},
+      {"BUDI": 138, "ASC": 43},
+      {"BUDI": 143, "ASC": 44},
+      {"BUDI": 141, "ASC": 48},
+      {"BUDI": 120, "ASC": 49},
+      {"BUDI": 122, "ASC": 50},
+      {"BUDI": 126, "ASC": 51},
+      {"BUDI": 128, "ASC": 52},
+      {"BUDI": 127, "ASC": 53},
+      {"BUDI": 142, "ASC": 54},
+      {"BUDI": 133, "ASC": 55},
+      {"BUDI": 135, "ASC": 56},
+      {"BUDI": 139, "ASC": 57},
+      {"BUDI": 140, "ASC": 58},
+      {"BUDI": 129, "ASC": 77},
+      {"BUDI": 130, "ASC": 78},
+      {"BUDI": 132, "ASC": 79},
+      {"BUDI": 117, "ASC": 112},
+      {"BUDI": 302, "ASC": 121},
+      {"BUDI": 304, "ASC": 122},
+      {"BUDI": 303, "ASC": 123},
+      {"BUDI": 310, "ASC": 124},
+      {"BUDI": 308, "ASC": 125},
+      {"BUDI": 306, "ASC": 126},
+      {"BUDI": 301, "ASC": 127},
+      {"BUDI": 305, "ASC": 128},
+      {"BUDI": 307, "ASC": 129},
+      {"BUDI": 312, "ASC": 131},
+      {"BUDI": 313, "ASC": 132},
+      {"BUDI": 311, "ASC": 133},
     ];
 
     if (direction == BUDI.TO_ASC) {
@@ -1083,6 +1123,7 @@ class BUDI {
       return found ? found.ASC : null;
     } else {
       const found = fixedMapping.find(thisQualification => thisQualification.ASC == originalCode)
+      console.log("WA DEBUG - BUDI qualification - original code - ", originalCode, found)
       return found ? found.BUDI : null;
     }
   }
