@@ -18,11 +18,13 @@
       <tr class="govuk-table__row notification-list-row" [class.notification-list-row--unread]="!notification.read">
         <td class="govuk-table__cell">
           <span class="notification-list-item">
-            <span class="notification-list-item__icon"> <span class="govuk-visually-hidden">Uread: </span></span>
+            <span *ngIf="!notification.read" class="notification-list-item__icon">
+              <span class="govuk-visually-hidden">Uread: </span></span
+            >
             <a [routerLink]="[notification.uid]" class="notification-list-item__link">{{ notification.subject }}</a>
           </span>
         </td>
-        <td class="govuk-table__cell">{{ notification.date | date: 'd MMMM yyyy h:mm a' }}</td>
+        <td class="govuk-table__cell">{{ notification.date | longDate }}</td>
       </tr>
     </ng-container>
   </tbody>

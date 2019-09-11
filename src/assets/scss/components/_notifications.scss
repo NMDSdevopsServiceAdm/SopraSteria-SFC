@@ -52,3 +52,18 @@
     color: govuk-colour('blue');
   }
 }
+
+.notification-tag {
+  font-weight: normal;
+  padding: 5px 10px;
+  display: inline-block;
+  min-width: 100px;
+  text-align: center;
+
+  &--view-only {
+    background: govuk-colour('turquoise');
+  }
+  &--edit {
+    background: govuk-colour('yellow');
+  }
+}
