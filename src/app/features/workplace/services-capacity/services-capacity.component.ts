@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { INT_PATTERN } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -13,8 +14,9 @@ import { Question } from '../question/question.component';
 })
 export class ServicesCapacityComponent extends Question {
   public capacities: [];
-  public ready = false;
   public capacityErrorMsg = 'The capacity must be between 1 and 999';
+  public intPattern = INT_PATTERN.toString();
+  public ready = false;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -24,7 +26,7 @@ export class ServicesCapacityComponent extends Question {
     protected establishmentService: EstablishmentService
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
-
+    this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
     this.form = this.formBuilder.group({});
   }
 
@@ -53,7 +55,11 @@ export class ServicesCapacityComponent extends Question {
           questions.forEach(question => {
             group.addControl(
               this.generateFormControlName(question),
-              new FormControl(question.answer, [Validators.min(1), Validators.max(999)])
+              new FormControl(question.answer, [
+                Validators.min(1),
+                Validators.max(999),
+                Validators.pattern(this.intPattern),
+              ])
             );
 
             this.formErrorsMap.push({
@@ -66,6 +72,10 @@ export class ServicesCapacityComponent extends Question {
                 {
                   name: 'max',
                   message: this.capacityErrorMsg,
+                },
+                {
+                  name: 'pattern',
+                  message: 'Capacity must be rounded to the nearest number',
                 },
               ],
             });
