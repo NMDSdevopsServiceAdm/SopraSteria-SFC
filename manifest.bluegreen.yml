@@ -1,5 +1,5 @@
 applications:
-- name: sfcuatgreen
+- name: sfcuatblue
   memory: 8G
   disk_quota: 1GB
   instances: 10
