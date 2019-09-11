@@ -38,6 +38,8 @@ const _fromDateToCsvDate = (convertThis) => {
 
 // gets report
 router.route('/').get(async (req, res) => {
+  req.setTimeout(config.get('app.reports.localAuthority.timeout')*1000);
+
   const userAgent = UserAgentParser(req.headers['user-agent']);
   const windowsTest = /windows/i;
   const NEWLINE = windowsTest.test(userAgent.os.name) ? "\r\n" : "\n";
@@ -100,9 +102,6 @@ Last Years confirmed numbers'+NEWLINE);
         type: models.sequelize.QueryTypes.SELECT
       }
     );
-
-    console.log("WA DEBUG !!!!!!!!!!!! - runReport: ", runReport)
-
 
     /*
     		"LocalAuthority" TEXT,
