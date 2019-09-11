@@ -142,7 +142,8 @@ const config = convict({
     pool: {
       doc: 'Number of connections in the pool',
       format: 'int',
-      default: 5
+      default: 5,
+      env: "DB_POOL"
     }
   },
   notify: {
