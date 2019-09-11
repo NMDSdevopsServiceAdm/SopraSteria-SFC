@@ -42,12 +42,12 @@
                   <a href="#">Data permissions</a>
                 </ng-container>
                 <ng-template #notParent>
-                  <a href="#">Change data owner</a>
+                  <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>
                 </ng-template>
               </ng-container>
               <ng-template #workplaceIsDataOwner>
                 <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                  <a href="#">Change data owner</a>
+                  <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>
                 </ng-container>
                 <ng-template #notParent>
                   <a href="#">Data permissions</a>

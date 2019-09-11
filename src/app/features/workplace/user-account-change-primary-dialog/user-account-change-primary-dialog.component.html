@@ -8,7 +8,7 @@
           Select who will be the new primary edit user.
         </h1>
       </legend>
-      <span *ngIf="submitted && form.get('user').invalid" id="usser-error" class="govuk-error-message">
+      <span *ngIf="submitted && form.get('user').invalid" id="user-error" class="govuk-error-message">
         <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('user') }}
       </span>
       <div class="govuk-radios">
