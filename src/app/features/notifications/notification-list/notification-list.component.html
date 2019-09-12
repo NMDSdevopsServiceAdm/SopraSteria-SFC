@@ -19,7 +19,7 @@
         <td class="govuk-table__cell">
           <span class="notification-list-item">
             <span *ngIf="!notification.read" class="notification-list-item__icon">
-              <span class="govuk-visually-hidden">Uread: </span></span
+              <span class="govuk-visually-hidden">Unread: </span></span
             >
             <a [routerLink]="[notification.uid]" class="notification-list-item__link">{{ notification.subject }}</a>
           </span>
