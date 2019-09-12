@@ -1812,19 +1812,7 @@ class Worker {
     const myCountry = parseInt(this._currentLine.COUNTRYOFBIRTH, 10);
 
     if (this._currentLine.COUNTRYOFBIRTH && this._currentLine.COUNTRYOFBIRTH.length > 0) {
-      if (myCountry === 826) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.COUNTRY_OF_BIRTH_WARNING,
-          warnType: 'COUNTRY_OF_BIRTH_WARNING',
-          warning: "Country of birth has been ignored as worker was born in UK",
-          source: this._currentLine.COUNTRYOFBIRTH,
-        });
-        return false;
-      }
-      else if (isNaN(myCountry)) {
+      if (isNaN(myCountry)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
