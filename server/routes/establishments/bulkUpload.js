@@ -1941,6 +1941,8 @@ const exportToCsv = async (NEWLINE, allMyEstablishemnts, primaryEstablishmentId)
 // TODO - note, regardless of which download type is requested, the way establishments, workers and training entities are restored, it is easy enough to create all three exports every time
 //  Ideally, the CSV content should be prepared and uploaded to S3, and then signed URLs returned for the browsers to download directly, thus not imposing the streaming of large data files through node.js API
 router.route('/download/:downloadType').get(async (req, res) => {
+  req.setTimeout(config.get('bulkupload.download.timeout') * 1000);
+
     // this report returns as plain text. The report line endings are dependent on not the
   //  runtime platform, but on the requesting platform (99.9999% of the users will be on Windows)
   const userAgent = UserAgentParser(req.headers['user-agent']);
