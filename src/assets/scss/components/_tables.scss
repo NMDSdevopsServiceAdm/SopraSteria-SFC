@@ -22,6 +22,10 @@ $error_row_padding: $govuk-gutter-half;
 
 .govuk-error-table__row {
   border: $error_border_size solid $shiraz;
+
+  &--no-border {
+    border: none;
+  }
 }
 
 .govuk-error-table__row--highlight {

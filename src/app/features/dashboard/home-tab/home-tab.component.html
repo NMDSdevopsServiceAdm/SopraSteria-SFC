@@ -18,7 +18,26 @@
   </div>
   <div class="govuk-grid-column-one-third">
     <h3 class="govuk-heading-s">Notifications</h3>
-    <p>You have no new notifications</p>
+    <ng-container *ngIf="numberOfNewNotifications > 0; else noNotifications">
+      <p>
+        <a [routerLink]="['/notifications']" class="notification-alert">
+          You have <span class="notification-alert__count">{{ numberOfNewNotifications }}</span> new
+          {{
+            numberOfNewNotifications
+              | i18nPlural
+                : {
+                    '=1': 'notification',
+                    other: 'notifications'
+                  }
+          }}
+        </a>
+      </p>
+    </ng-container>
+    <ng-template #noNotifications>
+      <p>
+        <a [routerLink]="['/notifications']" class="notification-alert">You have no new notifications</a>
+      </p>
+    </ng-template>
     <ng-container *ngIf="canBulkUpload || canViewWorkplaces || canViewReports">
       <h3 class="govuk-heading-s govuk-!-margin-top-6">Other things you can do</h3>
       <ul *ngIf="workplace" class="govuk-list">

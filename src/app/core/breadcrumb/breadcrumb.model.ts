@@ -6,6 +6,7 @@ export enum JourneyType {
   ALL_WORKPLACES,
   REPORTS,
   SUBSIDIARY_REPORTS,
+  NOTIFICATIONS,
 }
 
 export interface JourneyRoute {

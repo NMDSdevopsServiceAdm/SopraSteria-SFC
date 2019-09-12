@@ -43,6 +43,7 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
+import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
@@ -97,6 +98,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkplacePermissionsBearerPipe,
     WorkplaceSummaryComponent,
     WorkplaceTabComponent,
+    OrderOtherPipe,
+    LongDatePipe,
   ],
   exports: [
     AlertComponent,
@@ -141,6 +144,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkplacePermissionsBearerPipe,
     WorkplaceSummaryComponent,
     WorkplaceTabComponent,
+    OrderOtherPipe,
+    LongDatePipe,
   ],
   entryComponents: [ChangeDataOwnerDialogComponent],
 })
