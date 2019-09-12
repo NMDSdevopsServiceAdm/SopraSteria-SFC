@@ -9,6 +9,7 @@ import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplac
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
+import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { CharacterCountComponent } from './components/character-count/character-count.component';
 import { DatePickerComponent } from './components/date-picker/date-picker.component';
 import { DetailsComponent } from './components/details/details.component';
@@ -59,6 +60,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BackLinkComponent,
     BasicRecordComponent,
     BreadcrumbsComponent,
+    ChangeDataOwnerDialogComponent,
     CharacterCountComponent,
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
@@ -72,6 +74,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     MessagesComponent,
     NumericAnswerPipe,
     OpenEndedAnswerPipe,
+    OrderOtherPipe,
     PanelComponent,
     PersonalDetailsComponent,
     PhaseBannerComponent,
@@ -104,6 +107,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BackLinkComponent,
     BasicRecordComponent,
     BreadcrumbsComponent,
+    ChangeDataOwnerDialogComponent,
     CharacterCountComponent,
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
@@ -117,6 +121,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     MessagesComponent,
     NumericAnswerPipe,
     OpenEndedAnswerPipe,
+    OrderOtherPipe,
     PanelComponent,
     PersonalDetailsComponent,
     PhaseBannerComponent,
@@ -142,5 +147,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     OrderOtherPipe,
     LongDatePipe,
   ],
+  entryComponents: [ChangeDataOwnerDialogComponent],
 })
 export class SharedModule {}
