@@ -322,7 +322,7 @@ const config = convict({
       timeout: {
         doc: 'The timeout in seconds for bulk upload validations',
         format: 'int',
-        default: '300'
+        default: 300
       },
       storeIntermediaries: {
         doc: 'If true, intermediary trace data will be stored',
@@ -332,9 +332,16 @@ const config = convict({
     },
     completion: {
       timeout: {
-        doc: 'The timeout in seconds for bulk upload validations',
+        doc: 'The timeout in seconds for bulk upload completion',
         format: 'int',
-        default: '300'
+        default: 300
+      },
+    },
+    download: {
+      timeout: {
+        doc: 'The timeout in seconds for bulk upload download',
+        format: 'int',
+        default: 300
       },
     }
   },
@@ -373,6 +380,11 @@ const config = convict({
           format: String,
           default: '2019-10-31'
         },
+        timeout: {
+          doc: "The timeout, in seconds, on the Local Authority user and admin API endpoints",
+          format: 'int',
+          default: 180,
+        }
       }
     }
   }

@@ -319,35 +319,33 @@ class Worker {
 
     // must be present and n more than 50 characters
     const MAX_LENGTH = 50;
+    let status = true;
 
-    if (!myLocalId || myLocalId.length == 0) {
+    if (myLocalId === null || myLocalId.length === 0) {
       this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
         error: "LOCALESTID has not been supplied",
-        source: this._currentLine.LOCALESTID,
+        source: myLocalId,
       });
-      return false;
+      status = false;
     } else if (myLocalId.length >= MAX_LENGTH) {
       this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
         error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
-        source: this._currentLine.LOCALESTID,
+        source: myLocalId,
       });
-      return false;
-    } else {
-      this._localId = myLocalId;
-      this._establishmentKey = myLocalId.replace(/\s/g, "");
-      return true;
+      status = false;
     }
 
+    // need the LOCALSTID regardless of whether it has failed validation or not
+    this._localId = myLocalId === null || myLocalId.length === 0 ? `SFCROW$${this._lineNumber}` : myLocalId;
+    this._establishmentKey = this._localId.replace(/\s/g, "");
+
+    return status;
   }
 
   _validateUniqueWorkerId() {
@@ -355,8 +353,9 @@ class Worker {
 
     // must be present and n more than 50 characters
     const MAX_LENGTH = 50;
+    let status = true;
 
-    if (!myUniqueWorkerId || myUniqueWorkerId.length == 0) {
+    if (myUniqueWorkerId === null || myUniqueWorkerId.length === 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -366,7 +365,7 @@ class Worker {
         error: "UNIQUEWORKERID has not been supplied",
         source: this._currentLine.UNIQUEWORKERID,
       });
-      return false;
+      status = false;
     } else if (myUniqueWorkerId.length >= MAX_LENGTH) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -377,12 +376,13 @@ class Worker {
         error: `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.UNIQUEWORKERID,
       });
-      return false;
-    } else {
-      this._uniqueWorkerId = myUniqueWorkerId;
-      this._key = myUniqueWorkerId.replace(/\s/g, "");
-      return true;
+      status = false;
     }
+
+    // need the UNIQUEWORKERID regardless of whether it has failed validation or not
+    this._uniqueWorkerId = myUniqueWorkerId === null || myUniqueWorkerId.length === 0 ? `SFCUNIROW$${this._lineNumber}` :  myUniqueWorkerId;
+    this._key = myUniqueWorkerId.replace(/\s/g, "");
+    return status
   }
 
   //Comment: This may not be supported in UI/system so only checked lenght if exists, could be null
@@ -1812,19 +1812,7 @@ class Worker {
     const myCountry = parseInt(this._currentLine.COUNTRYOFBIRTH, 10);
 
     if (this._currentLine.COUNTRYOFBIRTH && this._currentLine.COUNTRYOFBIRTH.length > 0) {
-      if (myCountry === 826) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.COUNTRY_OF_BIRTH_WARNING,
-          warnType: 'COUNTRY_OF_BIRTH_WARNING',
-          warning: "Country of birth has been ignored as worker was born in UK",
-          source: this._currentLine.COUNTRYOFBIRTH,
-        });
-        return false;
-      }
-      else if (isNaN(myCountry)) {
+      if (isNaN(myCountry)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,

@@ -42,12 +42,12 @@
                   *ngIf="generateFormControlName(question); let controlName"
                   [class.govuk-form-group--error]="submitted && form.get(groupName).get(controlName).invalid"
                 >
-                  <label class="govuk-label" for="{{ controlName }}">
+                  <label class="govuk-label" for="{{ groupName }}-{{ controlName }}">
                     {{ question.question }}
                   </label>
                   <span
                     *ngIf="submitted && form.get(groupName).get(controlName).invalid"
-                    id="{{ groupName }}.{{ controlName }}-error"
+                    id="{{ groupName }}-{{ controlName }}-error"
                     class="govuk-error-message"
                   >
                     <span class="govuk-visually-hidden">Error:</span>
@@ -57,9 +57,10 @@
                     class="govuk-input govuk-input--width-4"
                     [class.govuk-input--error]="submitted && form.get(groupName).get(controlName).invalid"
                     [formControlName]="controlName"
-                    id="{{ controlName }}"
+                    id="{{ groupName }}-{{ controlName }}"
                     name="{{ controlName }}"
                     type="number"
+                    [pattern]="intPattern"
                   />
                 </div>
               </ng-container>

@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
+import { NotificationsService } from '@core/notifications/notifications.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -30,7 +31,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private bulkUploadService: BulkUploadService,
     private permissionsService: PermissionsService,
     private userService: UserService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private notificationsService: NotificationsService
   ) {}
 
   ngOnInit() {
@@ -54,6 +56,11 @@ export class HomeTabComponent implements OnInit, OnDestroy {
 
   public setReturn(): void {
     this.bulkUploadService.setReturnTo({ url: ['/dashboard'] });
+  }
+
+  get numberOfNewNotifications() {
+    const newNotifications = this.notificationsService.notifications.filter(notification => !notification.read);
+    return newNotifications.length;
   }
 
   ngOnDestroy(): void {

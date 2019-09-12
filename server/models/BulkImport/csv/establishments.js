@@ -211,16 +211,17 @@ class Establishment {
 
     // must be present and n more than 50 characters
     const MAX_LENGTH = 50;
+    let status = true;
 
-    if (!myLocalId || myLocalId.length == 0) {
+    if (myLocalId === null || myLocalId.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
         error: "LOCALESTID has not been supplied",
-        source: this._currentLine.LOCALESTID,
+        source: myLocalId,
       });
-      return false;
+      status = false;
     } else if (myLocalId.length >= MAX_LENGTH) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
@@ -229,12 +230,14 @@ class Establishment {
         error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: myLocalId,
       });
-      return false;
-    } else {
-      this._localId = myLocalId;
-      this._key = myLocalId.replace(/\s/g, "");
-      return true;
+      status = false;
     }
+
+    // need the LOCALSTID regardless of whether it has failed validation or not
+    this._localId = myLocalId === null || myLocalId.length === 0 ? `SFCROW$${this._lineNumber}` : myLocalId;
+    this._key = this._localId.replace(/\s/g, "");
+
+    return status;
   }
 
   _validateStatus() {
