@@ -4,7 +4,7 @@
     <sheetViews>
         <sheetView showGridLines="0" workbookViewId="0">
             <pane ySplit="3" topLeftCell="A4" activePane="bottomLeft" state="frozenSplit" />
-            <selection pane="bottomLeft" activeCell="B5" sqref="B" />
+            <selection pane="bottomLeft" activeCell="B5" sqref="B5" />
         </sheetView>
     </sheetViews>
     <sheetFormatPr defaultRowHeight="12.5" x14ac:dyDescent="0.25" />

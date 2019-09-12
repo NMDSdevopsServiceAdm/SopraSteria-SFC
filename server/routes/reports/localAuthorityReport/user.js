@@ -1454,7 +1454,7 @@ const express = require('express');
 const router = express.Router();
 
 router.route('/').get(async (req, res) => {
-  console.log("report/localAuthority/user request started");
+  req.setTimeout(config.get('app.reports.localAuthority.timeout')*1000);
 
   try {
     // first ensure this report can only be ran by those establishments with a Local Authority employer type

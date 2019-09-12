@@ -12,16 +12,18 @@
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list">
       <ng-container *ngIf="errors">
-        <li *ngFor="let i of errors">
-          <a
-            (click)="focusOnField(i.item)"
-            [routerLink]="'.'"
-            [fragment]="getErrorId(i.item)"
-            [queryParamsHandling]="'merge'"
-            [innerHTML]="getFormErrorMessage(i.item, i.errors[0])"
-          >
-          </a>
-        </li>
+        <ng-container *ngIf="getCurrentRoute(); let currentRoute;">
+          <li *ngFor="let i of errors">
+            <a
+              (click)="focusOnField(i.item)"
+              [routerLink]="currentRoute"
+              [fragment]="getErrorId(i.item)"
+              [queryParamsHandling]="'merge'"
+              [innerHTML]="getFormErrorMessage(i.item, i.errors[0])"
+            >
+            </a>
+          </li>
+        </ng-container>
       </ng-container>
       <li *ngIf="serverError">
         <a [routerLink]="'.'" [fragment]="'server-error'" [queryParamsHandling]="'merge'" [innerHTML]="serverError"></a>
@@ -31,7 +33,7 @@
           <a
             [routerLink]="'.'"
             [fragment]="customError.name"
-            [queryParamsHandling]="merge"
+            [queryParamsHandling]="'merge'"
             [innerHTML]="customError.message"
           ></a>
         </li>

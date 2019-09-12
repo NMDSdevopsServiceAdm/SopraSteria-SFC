@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { combineLatest, Subscription } from 'rxjs';
@@ -18,7 +19,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public errors: Array<ErrorSummary>;
 
-  constructor(private errorSummaryService: ErrorSummaryService) {}
+  constructor(private errorSummaryService: ErrorSummaryService, private router: Router) {}
 
   ngOnInit(): void {
     this.setKeyboardFocus();
@@ -134,6 +135,10 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
 
   public getErrorId(item: string) {
     return this.transformFragmentName(item) + '-error';
+  }
+
+  public getCurrentRoute(): string {
+    return this.router.url.split('#')[0];
   }
 
   /**

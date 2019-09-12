@@ -1,0 +1,31 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">
+      <span class="govuk-caption-xl">{{ workplace?.name }}</span>
+      All notifications <span class="govuk-body-l">({{ notifications.length }})</span>
+    </h1>
+  </div>
+</div>
+<table class="govuk-table govuk-table__with-action">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Subject</th>
+      <th scope="col" class="govuk-table__header">Date</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <ng-container *ngFor="let notification of notifications">
+      <tr class="govuk-table__row notification-list-row" [class.notification-list-row--unread]="!notification.read">
+        <td class="govuk-table__cell">
+          <span class="notification-list-item">
+            <span *ngIf="!notification.read" class="notification-list-item__icon">
+              <span class="govuk-visually-hidden">Unread: </span></span
+            >
+            <a [routerLink]="[notification.uid]" class="notification-list-item__link">{{ notification.subject }}</a>
+          </span>
+        </td>
+        <td class="govuk-table__cell">{{ notification.date | longDate }}</td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
