@@ -1717,7 +1717,7 @@ class Establishment extends EntityValidator {
 
 
     // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
-    static async fetchMyEstablishments(isParent, primaryEstablishmentId) {
+    static async fetchMyEstablishments(isParent, isWDF, primaryEstablishmentId) {
         // for each establishment, need:
         //  1. Name
         //  2. Main Service (by title)
@@ -1731,7 +1731,7 @@ class Establishment extends EntityValidator {
 
         // first - get the user's primary establishment (every user will have a primary establishment)
         const fetchResults = await models.establishment.findOne({
-            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated', 'dataOwnershipRequested'],
+            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated', 'dataOwnershipRequested', 'overallWdfEligibility', 'establishmentWdfEligibility', 'staffWdfEligibility'],
             include: [
                 {
                     model: models.services,
@@ -1754,7 +1754,7 @@ class Establishment extends EntityValidator {
             if (isParent) {
                 // get all subsidaries associated with this parent
                 allSubResults = await models.establishment.findAll({
-                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated','dataOwnershipRequested'],
+                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated','dataOwnershipRequested', 'overallWdfEligibility', 'establishmentWdfEligibility', 'staffWdfEligibility'],
                     include: [
                         {
                             model: models.services,
@@ -1776,6 +1776,13 @@ class Establishment extends EntityValidator {
 
             // before returning, need to format the response
             // explicit casting of local identifier to null if not yet set
+            const wdfEffectiveTimeEpoch = WdfCalculator.effectiveTime;
+            const primaryWdf = !isWDF ? undefined : {
+              staff: primaryEstablishmentRecord.staffWdfEligibility ? primaryEstablishmentRecord.staffWdfEligibility.getTime() > wdfEffectiveTimeEpoch : false,
+              workplace: primaryEstablishmentRecord.establishmentWdfEligibility ? primaryEstablishmentRecord.establishmentWdfEligibility.getTime() > wdfEffectiveTimeEpoch : false,
+              overall: primaryEstablishmentRecord.overalWdfEligible ? primaryEstablishmentRecord.overalWdfEligible.getTime() > wdfEffectiveTimeEpoch : false,
+              overallWdfEligibility: primaryEstablishmentRecord.overalWdfEligible ? primaryEstablishmentRecord.overalWdfEligible.toISOString() : null,
+            };
             const myEstablishments = {
               primary: {
                   uid: primaryEstablishmentRecord.uid,
@@ -1787,7 +1794,8 @@ class Establishment extends EntityValidator {
                   mainService: primaryEstablishmentRecord.mainService.name,
                   dataOwner: primaryEstablishmentRecord.dataOwner,
                   dataPermissions: isParent ? undefined : primaryEstablishmentRecord.dataPermissions,
-                  dataOwnershipRequested: primaryEstablishmentRecord.dataOwnershipRequested
+                  dataOwnershipRequested: primaryEstablishmentRecord.dataOwnershipRequested,
+                  wdf: primaryWdf,
               }
             };
 
@@ -1795,6 +1803,12 @@ class Establishment extends EntityValidator {
               myEstablishments.subsidaries = {
                 count: allSubResults.length,
                 establishments: allSubResults.map(thisSub => {
+                  const subWdf = !isWDF ? undefined : {
+                    staff: thisSub.staffWdfEligibility ? thisSub.staffWdfEligibility.getTime() > wdfEffectiveTimeEpoch : false,
+                    workplace: thisSub.establishmentWdfEligibility ? thisSub.establishmentWdfEligibility.getTime() > wdfEffectiveTimeEpoch : false,
+                    overall: thisSub.overalWdfEligible ? thisSub.overalWdfEligible.getTime() > wdfEffectiveTimeEpoch : false,
+                    overallWdfEligibility: thisSub.overalWdfEligible ? thisSub.overalWdfEligible.toISOString() : null,
+                  };
                   return {
                       uid: thisSub.uid,
                       updated: thisSub.updated,
@@ -1804,7 +1818,8 @@ class Establishment extends EntityValidator {
                       mainService: thisSub.mainService.name,
                       dataOwner: thisSub.dataOwner,
                       dataPermissions: thisSub.dataPermissions,
-                      dataOwnershipRequested: thisSub.dataOwnershipRequested
+                      dataOwnershipRequested: thisSub.dataOwnershipRequested,
+                      wdf: subWdf,
                   };
                 })
               };
