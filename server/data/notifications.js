@@ -19,7 +19,7 @@ exports.getListByUser = async ({ userUid, limit, offset }) =>
   db.query(getListQuery, {
     replacements: {
       userUid,
-      limit: Number.isInteger(limit) ? limit : null,
+      limit: Number.isInteger(limit) && limit > 0 ? limit : null,
       offset: Number.isInteger(offset) && offset > 0 ? offset : 0
     },
     type: db.QueryTypes.SELECT
