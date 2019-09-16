@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const Authorization = require('./isAuthenticated');
 
 // this generates the login JWT
-exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, isParent, username, role) => {
+exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, isParent, username, role, userUid) => {
   const Token_Secret = Authorization.getTokenSecret();
 
   var claims = {
@@ -11,6 +11,7 @@ exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, isParent, use
     EstablishmentUID: establishmentUid,
     role,
     isParent,
+    userUid,
     sub: username,
     aud: config.get('jwt.aud.login'),
     iss: config.get('jwt.iss')
@@ -28,6 +29,7 @@ exports.regenerateLoginToken = (ttlMinutes, req) => {
     EstablishmentUID: req.establishment.uid ? req.establishment.uid : null,
     role: req.role,
     isParent: req.isParent,
+    userUid: req.userUid,
     sub: req.username,
     aud: config.get('jwt.aud.login'),
     iss: config.get('jwt.iss')
