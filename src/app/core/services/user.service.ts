@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
+import { DataPermissions, GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -96,7 +96,19 @@ export class UserService {
    */
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
-    return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`, { params });
+    return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`, { params }).pipe(
+      map(response => {
+        const establishments = response.subsidaries.establishments;
+
+        if (establishments.length) {
+          response.subsidaries.establishments = establishments.filter(
+            establishment => establishment.dataPermissions !== DataPermissions.None
+          );
+        }
+
+        return response;
+      })
+    );
   }
 
   /*
