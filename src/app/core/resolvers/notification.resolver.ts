@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
-import { NotificationsService } from '@core/notifications/notifications.service';
+import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
