@@ -145,10 +145,10 @@ Last Years confirmed numbers'+NEWLINE);
 
     if (runReport && Array.isArray(runReport)) {
       runReport.forEach(thisPrimaryLaEstablishment => {
-        res.write(`${thisPrimaryLaEstablishment.LocalAuthority},\
+        res.write(`${_csvQuote(thisPrimaryLaEstablishment.LocalAuthority)},\
 ${thisPrimaryLaEstablishment.WorkplaceID},\
 1,\
-${thisPrimaryLaEstablishment.WorkplaceName},\
+${_csvQuote(thisPrimaryLaEstablishment.WorkplaceName)},\
 ${thisPrimaryLaEstablishment.LatestUpdate},\
 ,\
 ,\
