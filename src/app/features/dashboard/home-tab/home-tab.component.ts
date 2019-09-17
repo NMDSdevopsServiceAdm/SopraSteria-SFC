@@ -59,7 +59,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   }
 
   get numberOfNewNotifications() {
-    const newNotifications = this.notificationsService.notifications.filter(notification => !notification.read);
+    const newNotifications = this.notificationsService.notifications.filter(notification => !notification.isViewed);
     return newNotifications.length;
   }
 

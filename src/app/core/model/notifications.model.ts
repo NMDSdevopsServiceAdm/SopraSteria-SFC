@@ -1,8 +1,8 @@
 export interface NotificationSummary {
-  uid: string;
-  read: boolean;
-  subject: string;
-  date: string;
+  created: string;
+  isViewed: boolean;
+  notificationUid: string;
+  type: string;
 }
 
 export interface Notification {

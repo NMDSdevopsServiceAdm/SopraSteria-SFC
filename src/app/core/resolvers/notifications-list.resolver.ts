@@ -10,8 +10,7 @@ export class NotificationsListResolver implements Resolve<any> {
   constructor(private establishmentService: EstablishmentService, private notificationsService: NotificationsService) {}
 
   resolve() {
-    const workplaceUid = this.establishmentService.establishmentId;
-    return this.notificationsService.getAllNotifications(workplaceUid).pipe(
+    return this.notificationsService.getAllNotifications().pipe(
       tap(notifications => (this.notificationsService.notifications = notifications)),
       catchError(() => {
         return of([]);

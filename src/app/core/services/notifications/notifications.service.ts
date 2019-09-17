@@ -10,13 +10,13 @@ export class NotificationsService {
   public activeNotification$: BehaviorSubject<Notification> = new BehaviorSubject(null);
   constructor() {}
 
-  getAllNotifications(workplaceUid: string) {
+  getAllNotifications() {
     return of([
-      { uid: '1', subject: 'Change data owner', read: false, date: '2019-08-21T15:20:53.205Z' },
-      { uid: '2', subject: 'Request to become a parent', read: false, date: '2019-08-18T15:20:53.205Z' },
-      { uid: '3', subject: 'Remove parent link', read: true, date: '2019-08-13T15:20:53.205Z' },
-      { uid: '4', subject: 'Changes to Terms and Conditions', read: false, date: '2019-07-13T15:20:53.205Z' },
-      { uid: '6', subject: 'New workplace application', read: true, date: '2019-03-13T15:20:53.205Z' },
+      { notificationUid: '1', type: 'Change data owner', isViewed: false, created: '2019-08-21T15:20:53.205Z' },
+      { notificationUid: '2', type: 'Request to become a parent', isViewed: false, created: '2019-08-18T15:20:53.205Z' },
+      { notificationUid: '3', type: 'Remove parent link', isViewed: true, created: '2019-08-13T15:20:53.205Z' },
+      { notificationUid: '4', type: 'Changes to Terms and Conditions', isViewed: false, created: '2019-07-13T15:20:53.205Z' },
+      { notificationUid: '6', type: 'New workplace application', isViewed: true, created: '2019-03-13T15:20:53.205Z' },
     ] as NotificationSummary[]);
   }
 
