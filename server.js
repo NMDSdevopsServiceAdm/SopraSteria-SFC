@@ -1,3 +1,5 @@
+//simplify relative requires without using the rfr npm module
+global.rfr = module => require(__dirname + '/' + module);
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
