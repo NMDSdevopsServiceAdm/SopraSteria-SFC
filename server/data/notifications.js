@@ -25,3 +25,43 @@ exports.getListByUser = async ({ userUid, limit, offset }) =>
     type: db.QueryTypes.SELECT
   });
 
+const getOneQuery =
+`
+  SELECT
+    "notificationUid",
+    type,
+    created,
+    "isViewed"
+  FROM cqc."Notifications"
+  WHERE cqc."Notifications"."notificationUid" = :notificationUid
+  AND cqc."Notifications"."recipientUserUid" = :userUid
+  LIMIT :limit;
+`;
+
+exports.getOne = async ({ userUid, notificationUid }) =>
+  db.query(getOneQuery, {
+    replacements: {
+      userUid,
+      notificationUid,
+      limit: 1
+    },
+    type: db.QueryTypes.SELECT
+  });
+
+const markOneAsReadQuery =
+`
+  UPDATE cqc."Notifications"
+  SET "isViewed" = :isViewed
+  WHERE "Notifications"."notificationUid" = :notificationUid
+  AND "Notifications"."recipientUserUid" = :userUid;
+`;
+
+exports.markOneAsRead = async ({ userUid, notificationUid }) =>
+  db.query(markOneAsReadQuery, {
+    replacements: {
+      userUid,
+      notificationUid,
+      isViewed: true
+    },
+    type: db.QueryTypes.UPDATE
+  });
