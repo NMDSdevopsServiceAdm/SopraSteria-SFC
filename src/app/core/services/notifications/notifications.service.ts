@@ -1,42 +1,29 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Notification, NotificationSummary } from '@core/model/notifications.model';
-import { BehaviorSubject, of } from 'rxjs';
+import { Notification } from '@core/model/notifications.model';
+import { BehaviorSubject } from 'rxjs';
+import { filter } from 'lodash';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationsService {
-  public notifications$: BehaviorSubject<NotificationSummary[]> = new BehaviorSubject(null);
-  public activeNotification$: BehaviorSubject<Notification> = new BehaviorSubject(null);
+  public notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject(null);
   constructor(private http: HttpClient) {}
 
   getAllNotifications() {
-    return this.http.get<NotificationSummary[]>('/api/user/my/notifications');
+    return this.http.get<Notification[]>('/api/user/my/notifications');
   }
 
-  getNotification(workplaceUid: string, notificationUid) {
-    return of({
-      uid: '1',
-      subject: 'Change data owner',
-      date: '2019-08-21T15:20:53.205Z',
-      status: 'pending',
-    } as Notification);
+  public getNotification(notificationUid: string): Notification {
+    return filter(this.notifications, { notificationUid })[0];
   }
 
-  set notifications(notifications: NotificationSummary[]) {
+  set notifications(notifications: Notification[]) {
     this.notifications$.next(notifications);
   }
 
-  get notifications(): NotificationSummary[] {
+  get notifications(): Notification[] {
     return this.notifications$.value;
-  }
-
-  set activeNotification(notification: Notification) {
-    this.activeNotification$.next(notification);
-  }
-
-  get activeNotification(): Notification {
-    return this.activeNotification$.value;
   }
 }

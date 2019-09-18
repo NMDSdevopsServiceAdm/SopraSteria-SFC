@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { NotificationSummary } from '@core/model/notifications.model';
+import { Notification } from '@core/model/notifications.model';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,7 +12,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 })
 export class NotificationListComponent implements OnInit {
   workplace: Establishment;
-  notifications: NotificationSummary[];
+  notifications: Notification[];
   constructor(
     private establishmentService: EstablishmentService,
     private notificationService: NotificationsService,
