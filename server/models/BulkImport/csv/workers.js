@@ -1187,9 +1187,8 @@ class Worker {
       const MAX_VALUE = 366.0;
       const DONT_KNOW_VALUE = 999;
 
-      const containsHalfDay = this._currentLine.DAYSSICK.indexOf('.') > 0 ? parseInt(this._currentLine.DAYSSICK.split(".")[1], 10) : 5;
-
-      if (myDaysSick != DONT_KNOW_VALUE && (isNaN(myDaysSick) || containsHalfDay !== 5 || myDaysSick < 0 || myDaysSick > MAX_VALUE)) {
+      const containsHalfDay = this._currentLine.DAYSSICK.indexOf('.') > 0 ? [0,5].includes(parseInt(this._currentLine.DAYSSICK.split(".")[1], 10)) : true;
+      if (myDaysSick != DONT_KNOW_VALUE && (isNaN(myDaysSick) || !containsHalfDay || myDaysSick < 0 || myDaysSick > MAX_VALUE)) {
 
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,

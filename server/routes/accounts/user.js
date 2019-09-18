@@ -14,9 +14,9 @@ const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
 const uuid = require('uuid');
 
-
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
+const notifications = rfr('server/data/notifications');
 
 // default route
 router.route('/').get(async (req, res) => {
@@ -727,7 +727,7 @@ router.route('/my/establishments').get(async (req, res) => {
     const isWDF = req.query.wdf ? true : false;
 
     try {
-        const thisUser = new User.User(primaryEstablishmentId);;
+        const thisUser = new User.User(primaryEstablishmentId);
         await thisUser.restore(null, theLoggedInUser, false);
 
         const myEstablishments = await thisUser.myEstablishments(isParent, isWDF, null);
@@ -737,6 +737,70 @@ router.route('/my/establishments').get(async (req, res) => {
         console.error("/user/my/establishments: ERR: ", err.message);
         return res.status(503).send({});        // intentionally an empty JSON response
     }
+});
+
+// Lists the notifications for the logged in (as given by JWT) user
+router.use('/my/notifications', Authorization.isAuthorised);
+router.route('/my/notifications').get(async (req, res) => {
+  try {
+    //pull the user's uuid out of JWT
+    const params = {
+      userUid: req.userUid
+    };
+
+    //add pagination parameters if specified on the query string
+    if (Number.isInteger(+req.query.limit)) {
+      params.limit = +req.query.limit;
+    }
+
+    if (Number.isInteger(+req.query.offset)) {
+      params.offset = +req.query.offset;
+    }
+
+    console.log('/my/notifications', params);
+
+    //return the list
+    return res.status(200).send(await notifications.getListByUser(params));
+  } catch(e) {
+    return res.status(500).send({
+      message: e.message
+    });
+  }
+});
+
+router.route('/my/notifications/:notificationUid').post(async (req, res) => {
+  try {
+    if (req.body.isViewed !== true) {
+      return res.status(400).send({
+        message: 'The isViewed field is required to be true'
+      });
+    }
+
+    const params = {
+      userUid: req.userUid, //pull the user's uuid out of JWT
+      notificationUid: req.params.notificationUid // and the notificationUid from the url
+    };
+
+    console.log('/my/notifications/:notificationUid (POST)', params);
+
+    const notification = await (notifications.markOneAsRead(params).
+      then(() => notifications.getOne(params)));
+
+    if (notification.length !== 1) {
+      return res.status(404).send({
+        message: 'Not found'
+      });
+    }
+
+    notification[0].typeContent = {};
+
+    //return the list
+    return res.status(200).send(notification[0]);
+  } catch(e) {
+    return res.status(500).send({
+      message: e.message
+    });
+  }
 });
 
 router.use('/swap/establishment/:id', Authorization.isAdmin);
@@ -769,18 +833,6 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
     }
   }
 
-  // gets here having found the establishment
-  const loginTokenTTL = config.get('jwt.ttl.login');
-  const token = generateJWT.loginJWT(loginTokenTTL,
-                                     establishment.id,
-                                     establishment.uid,
-                                     establishment.isParent,
-                                     req.username,
-                                     'Admin');
-  var date = new Date().getTime();
-  date += (loginTokenTTL * 60  * 1000);
-
-
   // dereference the user
   const thisUser = await models.login.findOne({
     attributes: ['username', 'lastLogin'],
@@ -794,6 +846,18 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
       }
     ]
   });
+
+  // gets here having found the establishment
+  const loginTokenTTL = config.get('jwt.ttl.login');
+  const token = generateJWT.loginJWT(loginTokenTTL,
+                                     establishment.id,
+                                     establishment.uid,
+                                     establishment.isParent,
+                                     req.username,
+                                     'Admin',
+                                     thisUser.user.uid);
+  var date = new Date().getTime();
+  date += (loginTokenTTL * 60  * 1000);
 
   if (!thisUser || !thisUser.username || !thisUser.user.uid) {
     console.log('POST .../user/swap/establishment failed to dereference thisUser');

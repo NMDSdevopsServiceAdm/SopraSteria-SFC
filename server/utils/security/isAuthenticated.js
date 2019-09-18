@@ -20,7 +20,8 @@ exports.isAuthorised = (req, res , next) => {
       if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
         return res.status(403).send('Invalid Token');
       } else {
-        req.username= claim.sub;
+        req.username = claim.sub;
+        req.userUid = claim.userUid;
         req.role = claim.role;
         req.isParent = claim.isParent;
         req.establishment = {
@@ -134,7 +135,8 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             establishmentIdIsUID = false;
 
             // restore claims
-            req.username= claim.sub;
+            req.username = claim.sub;
+            req.userUid = claim.userUid;
             req.isParent = claim.isParent;
             req.role = claim.role;
             req.establishment = {
@@ -170,7 +172,8 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             return res.status(403).send({message: `Not permitted`});
           }
 
-          req.username= claim.sub;
+          req.username = claim.sub;
+          req.userUId = claim.userUid;
           req.isParent = claim.isParent;
           req.role = claim.role;
           req.establishment = {
@@ -343,6 +346,7 @@ exports.isAdmin = (req, res , next) => {
           return res.status(403).send('You\'re not admin');
         } else {
           req.username = claim.sub;
+          req.userUid = claim.userUid;
           next();
         }
       }
@@ -385,6 +389,7 @@ exports.isAdminOrOnDemandReporting = (req, res , next) => {
         return res.status(403).send('Invalid Token');
       } else {
         req.username = claim.sub;
+        req.userUid = claim.userUid;
         next();
       }
     });

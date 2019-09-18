@@ -131,7 +131,8 @@ router.post('/', async (req, res) => {
                                            establishmentUser.user.establishment ? establishmentUser.user.establishment.uid : null,
                                            establishmentUser.user.establishment ? establishmentUser.user.establishment.isParent : null,
                                            givenUsername,
-                                           establishmentUser.user.UserRoleValue);
+                                           establishmentUser.user.UserRoleValue,
+                                           establishmentUser.user.uid);
         var date = new Date().getTime();
         date += (loginTokenTTL * 60  * 1000);
 
