@@ -17,6 +17,7 @@ const uuid = require('uuid');
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
 const notifications = rfr('server/data/notifications');
+const ownership = rfr('server/data/ownership');
 
 // default route
 router.route('/').get(async (req, res) => {
@@ -876,6 +877,28 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
   );
 
   return res.set({'Authorization': 'Bearer ' + token}).status(200).json(response);
+});
+
+// PUT request for ownership change request
+router.use('/my/:id/ownershipChange', Authorization.isAuthorised);
+router.route('/my/:id/ownershipChange').put(async (req, res) => {
+  try {
+    const params = {
+        userUid: req.userUid, //pull the user's uuid out of JWT
+        subEstablishmentId: req.params.id, // and the id from the url
+        permissionRequest: req.body.permissionRequest
+    };
+
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    //if (!uuidRegex.test(params.subEstablishmentId.toUpperCase())) return res.status(400).send({ message: 'Unexpected establishment id'});
+
+    //save records
+    return res.status(200).send(await ownership.changeOwnershipRequest(params));
+  } catch(e) {
+    return res.status(500).send({
+      message: e.message
+    });
+  }
 });
 
 module.exports = router;
