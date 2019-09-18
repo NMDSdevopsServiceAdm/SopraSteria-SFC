@@ -2312,7 +2312,7 @@ class Establishment {
     });
 
     columns.push(uniqueJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob)).join(';'));
-    if (entity.starters && !Array.isArray(entity.starters)) {
+    if (entity.starters !== null && !Array.isArray(entity.starters)) {
       if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
         columns.push('0');
       } else if (entity.starters === 'None') {
@@ -2322,7 +2322,7 @@ class Establishment {
       } else {
         columns.push('');
       }
-    } else {
+    } else if (entity.starters !== null) {
       columns.push(uniqueJobs.map(thisJob => {
         const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.jobId === thisJob);
         if (isThisJobAStarterJob) {
@@ -2331,8 +2331,10 @@ class Establishment {
           return 0;
         }
       }).join(';'));
+    } else {
+      columns.push(999);
     }
-    if (entity.leavers && !Array.isArray(entity.leavers)) {
+    if (entity.leavers !== null && !Array.isArray(entity.leavers)) {
       if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
         columns.push('0');
       } else if (entity.leavers === 'None') {
@@ -2342,7 +2344,7 @@ class Establishment {
       } else  {
         columns.push('');
       }
-    } else {
+    } else if (entity.leavers !== null) {
       columns.push(uniqueJobs.map(thisJob => {
         const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.jobId === thisJob);
         if (isThisJobALeaverJob) {
@@ -2351,8 +2353,10 @@ class Establishment {
           return 0;
         }
       }).join(';'));
+    } else {
+      columns.push(999);
     }
-    if (entity.vacancies && !Array.isArray(entity.vacancies)) {
+    if (entity.vacancies !== null && !Array.isArray(entity.vacancies)) {
       if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
         columns.push('0');
       } else if (entity.vacancies === 'None') {
@@ -2362,7 +2366,7 @@ class Establishment {
       } else {
         columns.push('');
       }
-    } else {
+    } else if (entity.vacancies !== null) {
       columns.push(uniqueJobs.map(thisJob => {
         const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.jobId === thisJob);
         if (isThisJobAVacancyJob) {
@@ -2371,6 +2375,8 @@ class Establishment {
           return 0;
         }
       }).join(';'));
+    } else {
+      columns.push(999);
     }
 
     // reasons for leaving - currently can't be mapped - interim solution is a string of "reasonID:count|reasonId:count" (without BUDI mapping)
