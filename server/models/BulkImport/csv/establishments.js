@@ -2316,15 +2316,15 @@ class Establishment {
       if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
         columns.push('0');
       } else if (entity.starters === 'None') {
-        columns.push(uniqueJobs.map(x => 0).join(';'));
+        columns.push(uniqueJobs.length ? uniqueJobs.map(x => 0).join(';') : '0');
       } else if (entity.starters === 'Don\'t know') {
         columns.push(999);
       } else {
         columns.push('');
       }
-    } else {
+    } else if (entity.starters !== null) {
       columns.push(uniqueJobs.map(thisJob => {
-        const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.jobId === thisJob);
+        const isThisJobAStarterJob = entity.starters ? entity.starters.find(myStarter => myStarter.jobId === thisJob) : false;
         if (isThisJobAStarterJob) {
           return isThisJobAStarterJob.total;
         } else {
@@ -2336,15 +2336,15 @@ class Establishment {
       if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
         columns.push('0');
       } else if (entity.leavers === 'None') {
-        columns.push(uniqueJobs.map(x => 0).join(';'));
+        columns.push(uniqueJobs.length ? uniqueJobs.map(x => 0).join(';') : '0');
       } else if (entity.leavers === 'Don\'t know') {
         columns.push(999);
       } else  {
         columns.push('');
       }
-    } else {
+    } else if (entity.leavers !== null) {
       columns.push(uniqueJobs.map(thisJob => {
-        const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.jobId === thisJob);
+        const isThisJobALeaverJob = entity.leavers ? entity.leavers.find(myLeaver => myLeaver.jobId === thisJob) : false;
         if (isThisJobALeaverJob) {
           return isThisJobALeaverJob.total;
         } else {
@@ -2356,7 +2356,7 @@ class Establishment {
       if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
         columns.push('0');
       } else if (entity.vacancies === 'None') {
-        columns.push(uniqueJobs.map(x => 0).join(';'));
+        columns.push(uniqueJobs.length ? uniqueJobs.map(x => 0).join(';') : '0');
       } else if (entity.vacancies === 'Don\'t know') {
         columns.push(999);
       } else {
@@ -2364,7 +2364,7 @@ class Establishment {
       }
     } else {
       columns.push(uniqueJobs.map(thisJob => {
-        const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.jobId === thisJob);
+        const isThisJobAVacancyJob = entity.vacancies ? entity.vacancies.find(myVacancy => myVacancy.jobId === thisJob) : false;
         if (isThisJobAVacancyJob) {
           return isThisJobAVacancyJob.total;
         } else {
