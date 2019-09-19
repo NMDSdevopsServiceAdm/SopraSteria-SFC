@@ -27,7 +27,7 @@ export class WorkplacesComponent implements OnInit {
           this.workplaces = workplaces.subsidaries.establishments;
 
           if (this.workplaces.length) {
-            this.workplaces = filter(this.workplaces, this.excludeWorkplaces);
+            this.workplaces = filter(this.workplaces, this.exclusionCheck);
           }
 
           this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
@@ -43,7 +43,7 @@ export class WorkplacesComponent implements OnInit {
    * Exclude if dataOwner is 'Workplace' with no data permissions
    * @param w - Workplace
    */
-  private excludeWorkplaces(w: Workplace): boolean {
+  private exclusionCheck(w: Workplace): boolean {
     return w.dataOwner === WorkplaceDataOwner.Workplace && w.dataPermissions === DataPermissions.None ? false : true;
   }
 }
