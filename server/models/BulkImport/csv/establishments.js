@@ -1102,6 +1102,7 @@ class Establishment {
     // mandatory
     const MAX_TOTAL = 999;
     const myTotalPermTemp = parseInt(this._currentLine.TOTALPERMTEMP);
+    const HEAD_OFFICE_MAIN_SERVICE=72;
 
     if (Number.isNaN(myTotalPermTemp)) {
       this._validationErrors.push({
@@ -1119,6 +1120,16 @@ class Establishment {
         errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
         errType: `TOTAL_PERM_TEMP_ERROR`,
         error: `Total Permanent and Temporary (TOTALPERMTEMP) must be 0 or more, but less than ${MAX_TOTAL}`,
+        source: myTotalPermTemp,
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
+    } else if (this._mainService && this.mainService !== HEAD_OFFICE_MAIN_SERVICE && myTotalPermTemp === 0) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
+        errType: `TOTAL_PERM_TEMP_ERROR`,
+        error: `Total Permanent and Temporary (TOTALPERMTEMP) cannot be 0 except when MAINSERVICE is head office`,
         source: myTotalPermTemp,
         name: this._currentLine.LOCALESTID,
       });
