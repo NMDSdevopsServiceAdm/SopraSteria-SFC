@@ -884,16 +884,22 @@ router.use('/my/:id/ownershipChange', Authorization.isAuthorised);
 router.route('/my/:id/ownershipChange').put(async (req, res) => {
   try {
     const params = {
+        ownerRequestChangeUid: uuid.v4(),
         userUid: req.userUid, //pull the user's uuid out of JWT
         subEstablishmentId: req.params.id, // and the id from the url
         permissionRequest: req.body.permissionRequest
     };
 
-    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-    //if (!uuidRegex.test(params.subEstablishmentId.toUpperCase())) return res.status(400).send({ message: 'Unexpected establishment id'});
-
     //save records
-    return res.status(200).send(await ownership.changeOwnershipRequest(params));
+    let changeRequestResp = await ownership.changeOwnershipRequest(params);
+    if(!changeRequestResp){
+        return res.status(404).send({
+            message: 'Invalid request',
+          });
+    }else{
+        let resp = await ownership.lastOwnershipRequest(params);
+        return res.status(200).send(resp[0]);
+    }
   } catch(e) {
     return res.status(500).send({
       message: e.message
