@@ -413,7 +413,7 @@ const getReport = async (date, thisEstablishment) => {
       const walker = walk.walk(thePath);
       const outputZip = new JsZip();
 
-      let overviewSheet, establishmentsSheetstaffRecordsSheet, sharedStrings;
+      let overviewSheet, establishmentsSheet, workersSheet, sharedStrings;
 
       debuglog("iterating filesystem", thePath);
 
@@ -428,17 +428,16 @@ const getReport = async (date, thisEstablishment) => {
 
           if(!err) {
             switch(zipPath) {
-              case workplacesSheetName: {
-                workplacesSheet = parseXML(fileContent);
+              case overviewSheetName: {
+                overviewSheet = parseXML(fileContent);
               } break;
 
-              case workplacesSheetName: {
-                workplacesSheet = parseXML(fileContent);
+              case establishmentsSheetName: {
+                establishmentsSheet = parseXML(fileContent);
               } break;
 
-
-              case staffRecordsSheetName: {
-                staffRecordsSheet = parseXML(fileContent);
+              case workersSheetName: {
+                workersSheet = parseXML(fileContent);
               } break;
 
               case sharedStringsName: {
@@ -464,8 +463,8 @@ const getReport = async (date, thisEstablishment) => {
           const sharedStringsUniqueCount = [parseInt(sst.getAttribute('uniqueCount'), 10)];
 
           //update the overview sheet with the report data and add it to the zip
-          outputZip.file(workplacesSheetName, serializeXML(updateWorkplacesSheet(
-              workplacesSheet,
+          outputZip.file(overviewSheetName, serializeXML(updateOverviewSheet(
+              overviewSheetName,
               reportData,
               sharedStrings,
               sst,
@@ -473,8 +472,8 @@ const getReport = async (date, thisEstablishment) => {
             )));
 
           //update the establishments sheet with the report data and add it to the zip
-          outputZip.file(staffRecordsSheetName, serializeXML(updateStaffRecordsSheet(
-              staffRecordsSheet,
+          outputZip.file(establishmentsSheetName, serializeXML(updateEstablishmentsSheet(
+              establishmentsSheet,
               reportData,
               sharedStrings,
               sst,
@@ -482,8 +481,8 @@ const getReport = async (date, thisEstablishment) => {
             )));
 
           //update the workplaces sheet with the report data and add it to the zip
-          outputZip.file(staffRecordsSheetName, serializeXML(updateStaffRecordsSheet(
-              staffRecordsSheet,
+          outputZip.file(workersSheetName, serializeXML(updateWorkersSheet(
+              workersSheet,
               reportData,
               sharedStrings,
               sst,
