@@ -386,7 +386,7 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-basic-records']" (click)="setReturn()">
-          <ng-container *ngIf="!workplace.totalWorkers === 0">
+          <ng-container *ngIf="!workplace.totalWorkers || !workplace.totalWorkers === 0">
             Provide information
             <span class="govuk-visually-hidden"> for</span>
           </ng-container>
