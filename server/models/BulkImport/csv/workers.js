@@ -1992,6 +1992,9 @@ class Worker {
       const qualificationYear = parseInt(myQualification[1], 10);
       const qualificationYearIsValid = myQualification[1] ? parseInt(myQualification[1], 10).toString() === myQualification[1] : true;
 
+      const MAX_YEAR_AGE=100;
+      const CURRENT_YEAR = new Date().getFullYear();
+
       if (myQualification[1] === null || myQualification[1] === undefined || myQualification[1].length === 0) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -2013,6 +2016,16 @@ class Worker {
           source: qualification,
         });
       } else if (myQualification[1] !== null && (isNaN(qualificationYear) || !qualificationYearIsValid)) {
+        localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: qualificationError,
+          errType: qualificationErrorName,
+          error: `The year in (${qualificationName}) is invalid`,
+          source: qualification,
+        });
+      } else if (qualificationYear < CURRENT_YEAR - MAX_YEAR_AGE || qualificationYear > CURRENT_YEAR) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
