@@ -28,8 +28,12 @@
       Employer type
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.employerType">
-        {{ !!workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value || '-' }}
+      <app-summary-record-value
+        *ngIf="workplace.wdf?.employerType"
+        [wdfView]="wdfView"
+        [wdfValue]="workplace.wdf?.employerType"
+      >
+        {{ workplace.wdf.employerType?.other ? workplace.wdf.employerType.other : workplace.wdf.employerType.value }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
