@@ -49,11 +49,13 @@ export class WdfStaffSummaryComponent implements OnInit {
 
     this.breadcrumbService.show(breadcrumbConfig);
 
-    this.workerService.getWorker(this.workplace.uid, this.route.snapshot.params.id, true).subscribe(worker => {
-      this.worker = worker;
-      this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
-      this.exitUrl = { url: ['/workplace', this.workplace.uid, 'reports', 'wdf'], fragment: 'staff-records' };
-    });
+    this.workerService
+      .getWorker(this.route.snapshot.params.establishmentuid, this.route.snapshot.params.id, true)
+      .subscribe(worker => {
+        this.worker = worker;
+        this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
+        this.exitUrl = { url: ['/workplace', this.workplace.uid, 'reports', 'wdf'], fragment: 'staff-records' };
+      });
   }
 
   public onConfirmAndSubmit() {
