@@ -25,6 +25,9 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
           this.property = null;
         }
       }
+      else if(document.numberOfStaff) {
+        this.property = null;
+      }
     }
 
     restorePropertyFromSequelize(document) {
