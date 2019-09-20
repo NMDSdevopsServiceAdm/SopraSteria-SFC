@@ -880,8 +880,9 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
 });
 
 // PUT request for ownership change request
-router.use('/my/:id/ownershipChange', Authorization.isAuthorised);
-router.route('/my/:id/ownershipChange').put(async (req, res) => {
+router.use('/establishment/:id/ownershipChange', Authorization.isAuthorised);
+router.use('/establishment/:id/ownershipChange', Authorization.hasAuthorisedEstablishment);
+router.route('/establishment/:id/ownershipChange').post(async (req, res) => {
   try {
     const params = {
         ownerRequestChangeUid: uuid.v4(),
@@ -890,20 +891,32 @@ router.route('/my/:id/ownershipChange').put(async (req, res) => {
         permissionRequest: req.body.permissionRequest
     };
 
-    //save records
-    let changeRequestResp = await ownership.changeOwnershipRequest(params);
-    if(!changeRequestResp){
-        return res.status(404).send({
-            message: 'Invalid request',
+    //check post establishment ID has IsParent value true and has some ParentID
+    let checkEstablishmentResult = await ownership.checkEstablishment(params);
+    if(!checkEstablishmentResult.length){
+        return res.status(400).send({
+            message: 'Establishement is not a subsidiary',
           });
     }else{
-        let resp = await ownership.lastOwnershipRequest(params);
-        return res.status(200).send(resp[0]);
+        //save records
+        params.recipientUserUid = checkEstablishmentResult[0].UserUID;
+        let changeRequestResp = await ownership.changeOwnershipRequest(params);
+        if(!changeRequestResp){
+            return res.status(400).send({
+                message: 'Invalid request',
+            });
+        }else{
+            params.notificationUid = uuid.v4();
+            let addNotificationResp = await ownership.insertNewNotification(params);
+            if(addNotificationResp){
+                let resp = await ownership.lastOwnershipRequest(params);
+                return res.status(201).send(resp[0]);
+            }
+        }
     }
   } catch(e) {
-    return res.status(500).send({
-      message: e.message
-    });
+    console.error("/establishment/:id/ownershipChange: ERR: ", err.message);
+    return res.status(503).send({});        // intentionally an empty JSON response
   }
 });
 
