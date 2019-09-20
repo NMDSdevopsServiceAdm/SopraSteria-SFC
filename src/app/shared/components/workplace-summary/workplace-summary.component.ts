@@ -26,10 +26,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   @Input()
   set workplace(workplace: any) {
-    if (!workplace.employerType) {
-      return;
-    }
-
     this._workplace = workplace;
     this.capacityMessages = [];
 
