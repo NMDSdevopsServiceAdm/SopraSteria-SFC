@@ -12,8 +12,8 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.numberOfStaff !== null) {
-            const givenStaff = isNaN(parseInt(document.numberOfStaff, 10)) ? null : parseInt(document.numberOfStaff, 10);
+        if (document.numberOfStaff !== null && document.numberOfStaff !== undefined) {
+          const givenStaff = isNaN(parseInt(document.numberOfStaff, 10)) ? null : parseInt(document.numberOfStaff, 10);
             const MAX_STAFF=999;
             const MIN_STAFF=0;
             if (givenStaff !== null &&
