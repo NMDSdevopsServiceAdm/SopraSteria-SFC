@@ -880,7 +880,6 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
 });
 
 // PUT request for ownership change request
-router.use('/establishment/:id/ownershipChange', Authorization.isAuthorised);
 router.use('/establishment/:id/ownershipChange', Authorization.hasAuthorisedEstablishment);
 router.route('/establishment/:id/ownershipChange').post(async (req, res) => {
   try {
