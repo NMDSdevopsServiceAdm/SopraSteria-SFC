@@ -13,7 +13,7 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
     // concrete implementations
     async restoreFromJson(document) {
       // Only do validation if numberOfStaff is numeric
-      if (/^[0-9]+$/.test(String(document.numberOfStaff))) {
+      if (/^-?[0-9]+$/.test(String(document.numberOfStaff))) {
         const givenStaff = parseInt(document.numberOfStaff, 10);
         const MAX_STAFF = 999;
         const MIN_STAFF = 0;
