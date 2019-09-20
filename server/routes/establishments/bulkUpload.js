@@ -2025,7 +2025,7 @@ router.route('/trickle').post(async (req, res) => {
   const withError = !req.query.error || req.query.error !== 'true' ? false : true;
   const withTrickle = !req.query.trickle || req.query.trickle !== 'false' ? true : false;
 
-  const RETRY_TIMEOUT_SECS=1;
+  const RETRY_TIMEOUT_SECS=15;
   const RETRY_TIMEOUT=RETRY_TIMEOUT_SECS*1000;  // milliseconds
   let currentRetries = 0;
   let firstStatusFlush=true;
@@ -2067,8 +2067,7 @@ router.route('/trickle').post(async (req, res) => {
         }
       } else {
         if (withError) {
-          response.error = 'Forced error';
-        }
+E        }
 
         return res.status(200).send(response);
       }
