@@ -888,12 +888,24 @@ router.route('/establishment/:id/ownershipChange').post(async (req, res) => {
         message: 'Sub establishment id must be an integer',
       });
     }
+
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    if (!uuidRegex.test(req.userUid.toUpperCase())){
+      console.error('Invalid user UUID');
+      return res.status(400).send();
+    }
+
     const params = {
         ownerRequestChangeUid: uuid.v4(),
         userUid: req.userUid, //pull the user's uuid out of JWT
         subEstablishmentId: req.params.id, // and the id from the url
         permissionRequest: req.body.permissionRequest
     };
+
+    if (!uuidRegex.test(params.ownerRequestChangeUid.toUpperCase())){
+      console.error('Invalid owner change request UUID');
+      return res.status(400).send();
+    }
 
     //get posted sub establishment details
     let getEstiblishmentDetails = await ownership.getEstablishmentDetails(params);
@@ -919,6 +931,11 @@ router.route('/establishment/:id/ownershipChange').post(async (req, res) => {
           });
         }
         //save records
+        if (!uuidRegex.test(checkEstablishmentResult[0].UserUID.toUpperCase())){
+          console.error('Invalid recepient user UUID');
+          return res.status(400).send();
+        }
+
         params.recipientUserUid = checkEstablishmentResult[0].UserUID;
         let changeRequestResp = await ownership.changeOwnershipRequest(params);
         if(!changeRequestResp){
@@ -927,6 +944,11 @@ router.route('/establishment/:id/ownershipChange').post(async (req, res) => {
             });
         }else{
             params.notificationUid = uuid.v4();
+            if (!uuidRegex.test(params.notificationUid.toUpperCase())){
+              console.error('Invalid notification UUID');
+              return res.status(400).send();
+            }
+
             let addNotificationResp = await ownership.insertNewNotification(params);
             if(addNotificationResp){
                 let resp = await ownership.lastOwnershipRequest(params);
