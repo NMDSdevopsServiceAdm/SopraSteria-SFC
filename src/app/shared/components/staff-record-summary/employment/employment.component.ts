@@ -1,5 +1,6 @@
 import { DecimalPipe, Location } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -20,9 +21,10 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   constructor(
     location: Location,
     permissionsService: PermissionsService,
+    route: ActivatedRoute,
     workerService: WorkerService,
   ) {
-    super(location, permissionsService, workerService);
+    super(location, permissionsService, route, workerService);
   }
 
   isNumber(number: number) {
