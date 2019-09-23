@@ -883,6 +883,11 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
 router.use('/establishment/:id/ownershipChange', Authorization.hasAuthorisedEstablishment);
 router.route('/establishment/:id/ownershipChange').post(async (req, res) => {
   try {
+    if(!Number.isInteger(+req.params.id)){
+      return res.status(400).send({
+        message: 'Sub establishment id must be an integer',
+      });
+    }
     const params = {
         ownerRequestChangeUid: uuid.v4(),
         userUid: req.userUid, //pull the user's uuid out of JWT
@@ -890,13 +895,29 @@ router.route('/establishment/:id/ownershipChange').post(async (req, res) => {
         permissionRequest: req.body.permissionRequest
     };
 
+    //get posted sub establishment details
+    let getEstiblishmentDetails = await ownership.getEstablishmentDetails(params);
+    if(!getEstiblishmentDetails.length){
+      return res.status(404).send({
+        message: 'Establishment is not found',
+      });
+    }
+
     //check post establishment ID has IsParent value true and has some ParentID
     let checkEstablishmentResult = await ownership.checkEstablishment(params);
     if(!checkEstablishmentResult.length){
         return res.status(400).send({
-            message: 'Establishement is not a subsidiary',
+            message: 'Establishment is not a subsidiary',
           });
     }else{
+
+        //check already exists ownership records for posted sub establishment id
+        let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnership(params);
+        if(checkAlreadyRequestedOwnership.length){
+          return res.status(400).send({
+              message: `Ownership is already requested for sub establishment id: ${req.params.id}`,
+          });
+        }
         //save records
         params.recipientUserUid = checkEstablishmentResult[0].UserUID;
         let changeRequestResp = await ownership.changeOwnershipRequest(params);

@@ -10,6 +10,21 @@ WHERE a."IsPrimary" = true and b."IsParent" = false AND b."ParentID" IS NOT NULL
 AND a."EstablishmentID" = :subEstId;
 `;
 
+const getEstablishmentDetailsQuery =
+`
+SELECT "EstablishmentID"
+FROM cqc."Establishment"
+WHERE "EstablishmentID" = :subEstId;
+`;
+
+const checkAlreadyRequestedOwnershipQuery =
+`
+SELECT "subEstablishmentID", "approvalStatus"
+FROM cqc."OwnerChangeRequest"
+WHERE "subEstablishmentID" = :subEstId
+AND "approvalStatus" = :status;
+`
+
 const insertChangeOwnershipQuery =
 `
 INSERT INTO
@@ -36,10 +51,27 @@ cqc."Notifications"
 VALUES (:nuid, :type, :typUid, :recipientUserUid, :isViewed);
 `;
 
+exports.getEstablishmentDetails = async(params) =>
+  db.query(getEstablishmentDetailsQuery, {
+    replacements: {
+        subEstId: params.subEstablishmentId
+    },
+    type: db.QueryTypes.SELECT
+  })
+
 exports.checkEstablishment = async(params) =>
     db.query(checkEstablishmentQuery, {
         replacements: {
             subEstId: params.subEstablishmentId
+        },
+        type: db.QueryTypes.SELECT
+    })
+
+exports.checkAlreadyRequestedOwnership = async(params) =>
+    db.query(checkAlreadyRequestedOwnershipQuery, {
+        replacements: {
+            subEstId: params.subEstablishmentId,
+            status: 'REQUESTED'
         },
         type: db.QueryTypes.SELECT
     })
