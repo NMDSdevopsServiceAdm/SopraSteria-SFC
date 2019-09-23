@@ -7,6 +7,12 @@ const fs = require('fs');
 const walk = require('walk');
 const JsZip = new require('jszip');
 
+const Establishment = require('../../../models/classes/establishment').Establishment;
+
+// for database
+const models = require('../../../models');
+
+
 // Constants string needed by this file in several places
 const folderName = 'template';
 const overviewSheetName = 'xl/worksheets/sheet1.xml';
@@ -67,7 +73,7 @@ const putStringTemplate = (
   }
 };
 
-const getReportData = async (date, establishmentId) => {
+const getReportData = async (date, thisEstablishment) => {
   // for the report
   const establishmentId = thisEstablishment.id;
     
@@ -76,9 +82,7 @@ const getReportData = async (date, establishmentId) => {
   // the function returns true or false; encapsulating any SQL exceptions.
   const params = {
     replacements: {
-      givenEstablishmentId: establishmentId,
-      givenFromDate: fromDate,
-      givenToDate: toDate,
+      givenEstablishmentId: establishmentId
     },
     type: models.sequelize.QueryTypes.SELECT
   };
@@ -182,28 +186,28 @@ const styleLookup = {
     },
     ESTREGULAR: {
       A: 2,
-      B: 2,
-      C: 2,
-      D: 2,
-      E: 2,
-      F: 2,
-      G: 2,
-      H: 2,
-      I: 2,
-      J: 2,
-      K: 2,
-      L: 2,
-      M: 2,
-      N: 2,
-      O: 2,
-      P: 2,
-      Q: 2,
-      R: 2,
-      S: 2,
-      T: 2,
-      U: 2,
-      V: 2,
-      W: 2
+      B: 6,
+      C: 7,
+      D: 24,
+      E: 15,
+      F: 12,
+      G: 12,
+      H: 15,
+      I: 15,
+      J: 15,
+      K: 26,
+      L: 27,
+      M: 12,
+      N: 28,
+      O: 27,
+      P: 12,
+      Q: 29,
+      R: 24,
+      S: 15,
+      T: 15,
+      U: 15,
+      V: 15,
+      W: 26
     },
     ESTLAST: {
       A: 2,
@@ -232,55 +236,51 @@ const styleLookup = {
     },
     WKRREGULAR: {
       A: 2,
-      B: 2,
-      C: 2,
-      D: 2,
-      E: 2,
-      F: 2,
-      G: 2,
-      H: 2,
-      I: 2,
-      J: 2,
-      K: 2,
-      L: 2,
-      M: 2,
-      N: 2,
-      O: 2,
-      P: 2,
-      Q: 2,
-      R: 2,
-      S: 2,
-      T: 2,
-      U: 2,
-      V: 2,
-      W: 2,
-      X: 2
+      B: 38,
+      C: 15,
+      D: 15,
+      E: 15,
+      F: 15,
+      G: 15,
+      H: 15,
+      I: 15,
+      J: 15,
+      K: 25,
+      L: 25,
+      M: 10,
+      N: 39,
+      O: 12,
+      P: 15,
+      Q: 25,
+      R: 15,
+      S: 15,
+      T: 15,
+      U: 60,
+      V: 61
     },
     WKRLAST: {
       A: 2,
-      B: 2,
-      C: 2,
-      D: 2,
-      E: 2,
-      F: 2,
-      G: 2,
-      H: 2,
-      I: 2,
-      J: 2,
-      K: 2,
-      L: 2,
-      M: 2,
-      N: 2,
-      O: 2,
-      P: 2,
-      Q: 2,
-      R: 2,
-      S: 2,
-      T: 2,
-      U: 2,
-      V: 2,
-      W: 2,
-      X: 2
+      B: 41,
+      C: 20,
+      D: 20,
+      E: 20,
+      F: 20,
+      G: 20,
+      H: 20,
+      I: 20,
+      J: 20,
+      K: 22,
+      L: 22,
+      M: 20,
+      N: 42,
+      O: 22,
+      P: 20,
+      Q: 22,
+      R: 20,
+      S: 20,
+      T: 20,
+      U: 62,
+      V: 63
     }
   },
   RED: {
@@ -321,19 +321,19 @@ const styleLookup = {
       H: 15,
       I: 15,
       J: 15,
-      K: 2,
-      L: 2,
-      M: 2,
-      N: 2,
-      O: 2,
-      P: 2,
-      Q: 2,
-      R: 2,
-      S: 2,
-      T: 2,
-      U: 2,
-      V: 2,
-      W: 2
+      K: 26,
+      L: 27,
+      M: 12,
+      N: 28,
+      O: 27,
+      P: 12,
+      Q: 29,
+      R: 24,
+      S: 15,
+      T: 15,
+      U: 15,
+      V: 15,
+      W: 26
     },
     ESTLAST: {
       A: 2,
@@ -362,55 +362,51 @@ const styleLookup = {
     },
     WKRREGULAR: {
       A: 2,
-      B: 2,
-      C: 2,
-      D: 2,
-      E: 2,
-      F: 2,
-      G: 2,
-      H: 2,
-      I: 2,
-      J: 2,
-      K: 2,
-      L: 2,
-      M: 2,
-      N: 2,
-      O: 2,
-      P: 2,
-      Q: 2,
-      R: 2,
-      S: 2,
-      T: 2,
-      U: 2,
-      V: 2,
-      W: 2,
-      X: 2
+      B: 38,
+      C: 15,
+      D: 15,
+      E: 15,
+      F: 15,
+      G: 15,
+      H: 15,
+      I: 15,
+      J: 15,
+      K: 25,
+      L: 25,
+      M: 10,
+      N: 39,
+      O: 12,
+      P: 15,
+      Q: 25,
+      R: 15,
+      S: 15,
+      T: 15,
+      U: 60,
+      V: 61
     },
     WKRLAST: {
       A: 2,
-      B: 2,
-      C: 2,
-      D: 2,
-      E: 2,
-      F: 2,
-      G: 2,
-      H: 2,
-      I: 2,
-      J: 2,
-      K: 2,
-      L: 2,
-      M: 2,
-      N: 2,
-      O: 2,
-      P: 2,
-      Q: 2,
-      R: 2,
-      S: 2,
-      T: 2,
-      U: 2,
-      V: 2,
-      W: 2,
-      X: 2
+      B: 41,
+      C: 20,
+      D: 20,
+      E: 20,
+      F: 20,
+      G: 20,
+      H: 20,
+      I: 20,
+      J: 20,
+      K: 22,
+      L: 22,
+      M: 20,
+      N: 42,
+      O: 22,
+      P: 20,
+      Q: 22,
+      R: 20,
+      S: 20,
+      T: 20,
+      U: 62,
+      V: 63
     }
   }
 };
@@ -434,7 +430,6 @@ const updateOverviewSheet = (
   putString(
     overviewSheet.querySelector("c[r='B6']"),
     `Parent name : ${reportData.parentName}`
-    moment(reportData.date).format('DD/MM/YYYY')
   );
 
   putString(
@@ -478,6 +473,8 @@ const updateOverviewSheet = (
   
   // TODO: fix the bottom 2 merge cells
   /////////////////////////////////////
+  
+  // fix the page footer timestamp
 
   // update the cell values
   for (let row = 0; row < reportData.establishments.length; row++) {
@@ -486,80 +483,86 @@ const updateOverviewSheet = (
     const rowType = row === reportData.establishments.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 24; column++) {
+    for (let column = 0; column < 11; column++) {
       const columnText = String.fromCharCode(column + 65);
       const isRed = false;
+      
+      console.log(columnText);
 
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 13}']`);
+      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 11}']`);
 
       switch (columnText) {
         case 'A': {
         } break;
 
         case 'B': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].subsidiaryName
+            );
         } break;
 
         case 'C': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].subsidiarySharingPermissions
+            );
         } break;
 
         case 'D': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].currentWdfEligibilityStatus
+            );
         } break;
 
         case 'E': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].dateEligibilityAchieved
+            );
         } break;
 
         case 'F': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].isDataFullyCompleted
+            );
         } break;
 
         case 'G': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].updatedInCurrentFinancialYear
+            );
         } break;
 
         case 'H': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].totalWorkersCount
+            );
         } break;
 
         case 'I': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].workerRecordsCount
+            );
         } break;
 
         case 'J': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].completedWorkerRecordsCount
+            );
         } break;
 
         case 'K': {
-        } break;
-
-        case 'L': {
-        } break;
-
-        case 'M': {
-        } break;
-
-        case 'N': {
-        } break;
-
-        case 'O': {
-        } break;
-
-        case 'P': {
-        } break;
-
-        case 'Q': {
-        } break;
-
-        case 'R': {
-        } break;
-
-        case 'S': {
-        } break;
-
-        case 'T': {
-        } break;
-
-        case 'U': {
-        } break;
-
-        case 'V': {
-        } break;
-
-        case 'W': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].completedWorkerRecordsPercentage
+            );
         } break;
       }
       
@@ -592,7 +595,6 @@ const updateEstablishmentsSheet = (
   putString(
     overviewSheet.querySelector("c[r='B6']"),
     `Parent name : ${reportData.parentName}`
-    moment(reportData.date).format('DD/MM/YYYY')
   );
 
   putString(
@@ -652,69 +654,157 @@ const updateEstablishmentsSheet = (
         } break;
 
         case 'B': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].subsidiaryName
+            );
         } break;
 
         case 'C': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].subsidiarySharingPermissions
+            );
         } break;
 
         case 'D': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].establishmentType
+            );
         } break;
 
         case 'E': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].mainService
+            );
         } break;
 
         case 'F': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].mainServiceCapacity
+            );
         } break;
 
         case 'G': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].mainServiceUtilisation
+            );
         } break;
 
         case 'H': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].otherServices
+            );
         } break;
 
         case 'I': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].serviceUsers
+            );
         } break;
 
         case 'J': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].investorsInPeopleStatus
+            );
         } break;
 
         case 'K': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].updatedLastDate
+            );
         } break;
 
         case 'L': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].totalWorkersCount
+            );
         } break;
 
         case 'M': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].workerRecordsCount
+            );
         } break;
 
         case 'N': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].workersWithRecordsPercentage
+            );
         } break;
 
         case 'O': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].startersInLast12Months
+            );
         } break;
 
         case 'P': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].leaversInLast12Months
+            );
         } break;
 
         case 'Q': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].vacanciesOnCompletionDateCount
+            );
         } break;
 
         case 'R': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].leavingReasonsCountEqualsLeavers
+            );
         } break;
 
         case 'S': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].leavingDestinationCountEqualsLeavers
+            );
         } break;
 
         case 'T': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].startersByJobRoleCountEqualsTotalStarters
+            );
         } break;
 
         case 'U': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].leaversByJobRoleEqualsTotalLeavers
+            );
         } break;
 
         case 'V': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].vacanciesByJobRoleEqualsTotalVacancies
+            );
         } break;
 
         case 'W': {
+          putString(
+              cellToChange,
+              reportData.establishments[row].totalWorkersCountGTEWorkerRecords
+            );
         } break;
       }
 
@@ -744,7 +834,6 @@ const updateWorkersSheet = (
   putString(
     overviewSheet.querySelector("c[r='B6']"),
     `Parent name : ${reportData.parentName}`
-    moment(reportData.date).format('DD/MM/YYYY')
   );
 
   putString(
@@ -804,69 +893,143 @@ const updateWorkersSheet = (
         } break;
 
         case 'B': {
+          putString(
+              cellToChange,
+              reportData.workers[row].localId
+            );
         } break;
 
         case 'C': {
+          putString(
+              cellToChange,
+              reportData.workers[row].subsidiaryName
+            );
         } break;
 
         case 'D': {
+          putString(
+              cellToChange,
+              reportData.workers[row].gender
+            );
         } break;
 
         case 'E': {
+          putString(
+              cellToChange,
+              reportData.workers[row].dateOfBirth
+            );
         } break;
 
         case 'F': {
+          putString(
+              cellToChange,
+              reportData.workers[row].nationality
+            );
         } break;
 
         case 'G': {
+          putString(
+              cellToChange,
+              reportData.workers[row].mainJobRole
+            );
         } break;
 
         case 'H': {
+          putString(
+              cellToChange,
+              reportData.workers[row].mainJobDateStarted
+            );
         } break;
 
         case 'I': {
+          putString(
+              cellToChange,
+              reportData.workers[row].recruitmentSource
+            );
         } break;
 
         case 'J': {
+          putString(
+              cellToChange,
+              reportData.workers[row].employmentStatus
+            );
         } break;
 
         case 'K': {
+          putString(
+              cellToChange,
+              reportData.workers[row].contractedHours
+            );
         } break;
 
         case 'L': {
+          putString(
+              cellToChange,
+              reportData.workers[row].additionalHours
+            );
         } break;
 
         case 'M': {
+          putString(
+              cellToChange,
+              reportData.workers[row].fullTimeStatus
+            );
         } break;
 
         case 'N': {
+          putString(
+              cellToChange,
+              reportData.workers[row].isZeroHoursContract
+            );
         } break;
 
         case 'O': {
+          putString(
+              cellToChange,
+              reportData.workers[row].sicknessDays
+            );
         } break;
 
         case 'P': {
+          putString(
+              cellToChange,
+              reportData.workers[row].payInterval
+            );
         } break;
 
         case 'Q': {
+          putString(
+              cellToChange,
+              reportData.workers[row].rateOfPay
+            );
         } break;
 
         case 'R': {
+          putString(
+              cellToChange,
+              reportData.workers[row].inductionStatus
+            );
         } break;
 
         case 'S': {
+          putString(
+              cellToChange,
+              reportData.workers[row].careCertificate
+            );
         } break;
 
         case 'T': {
+          putString(
+              cellToChange,
+              reportData.workers[row].highestQualificationHeld
+            );
         } break;
 
         case 'U': {
-        } break;
-
-        case 'V': {
-        } break;
-
-        case 'W': {
+          putString(
+              cellToChange,
+              reportData.workers[row].lastFullyUpdatedDate
+            );
         } break;
       }
 

@@ -1,2 +1,226 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac"><dimension ref="A1:M22"/><sheetViews><sheetView showGridLines="0" tabSelected="1" workbookViewId="0"><pane ySplit="3" topLeftCell="A9" activePane="bottomLeft" state="frozenSplit"/><selection pane="bottomLeft" activeCell="I13" sqref="I13"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="12.5" x14ac:dyDescent="0.25"/><cols><col min="1" max="1" width="1.26953125" customWidth="1"/><col min="2" max="2" width="32.26953125" customWidth="1"/><col min="3" max="3" width="20.26953125" customWidth="1"/><col min="4" max="4" width="13.453125" customWidth="1"/><col min="5" max="5" width="17.453125" customWidth="1"/><col min="6" max="6" width="17.7265625" customWidth="1"/><col min="7" max="7" width="17.26953125" customWidth="1"/><col min="8" max="11" width="17.453125" customWidth="1"/><col min="12" max="12" width="2.453125" customWidth="1"/><col min="13" max="13" width="255" customWidth="1"/><col min="14" max="14" width="1.26953125" customWidth="1"/></cols><sheetData><row r="1" spans="1:13" ht="1.4" customHeight="1" x14ac:dyDescent="0.25"/><row r="2" spans="1:13" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25"><c r="A2" s="47" t="s"><v>2</v></c><c r="B2" s="48"/><c r="C2" s="48"/><c r="D2" s="48"/><c r="E2" s="48"/><c r="F2" s="48"/><c r="G2" s="48"/><c r="H2" s="48"/><c r="I2" s="48"/><c r="J2" s="48"/><c r="K2" s="48"/><c r="L2" s="48"/><c r="M2" s="49"/></row><row r="3" spans="1:13" ht="1.5" customHeight="1" x14ac:dyDescent="0.25"/><row r="4" spans="1:13" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25"><c r="B4" s="50" t="s"><v>3</v></c><c r="C4" s="51"/><c r="D4" s="51"/><c r="E4" s="51"/><c r="F4" s="51"/><c r="G4" s="51"/><c r="H4" s="51"/><c r="I4" s="51"/><c r="J4" s="51"/><c r="K4" s="51"/><c r="L4" s="52"/></row><row r="5" spans="1:13" ht="5.9" customHeight="1" x14ac:dyDescent="0.25"/><row r="6" spans="1:13" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25"><c r="B6" s="53" t="s"><v>0</v></c><c r="C6" s="54"/><c r="D6" s="54"/><c r="E6" s="54"/><c r="F6" s="54"/><c r="G6" s="54"/><c r="H6" s="54"/><c r="I6" s="54"/><c r="J6" s="54"/><c r="K6" s="54"/><c r="L6" s="54"/></row><row r="7" spans="1:13" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25"><c r="B7" s="55" t="s"><v>4</v></c><c r="C7" s="54"/><c r="D7" s="54"/><c r="E7" s="54"/><c r="F7" s="54"/><c r="G7" s="54"/><c r="H7" s="54"/><c r="I7" s="54"/><c r="J7" s="54"/><c r="K7" s="54"/><c r="L7" s="54"/></row><row r="8" spans="1:13" ht="11.9" customHeight="1" x14ac:dyDescent="0.25"/><row r="9" spans="1:13" ht="13" x14ac:dyDescent="0.3"><c r="B9" s="1"/><c r="C9" s="2" t="s"><v>5</v></c><c r="D9" s="56" t="s"><v>6</v></c><c r="E9" s="57"/><c r="F9" s="56" t="s"><v>7</v></c><c r="G9" s="57"/><c r="H9" s="56" t="s"><v>8</v></c><c r="I9" s="58"/><c r="J9" s="58"/><c r="K9" s="59"/></row><row r="10" spans="1:13" ht="50" x14ac:dyDescent="0.25"><c r="B10" s="3" t="s"><v>9</v></c><c r="C10" s="4" t="s"><v>10</v></c><c r="D10" s="4" t="s"><v>11</v></c><c r="E10" s="4" t="s"><v>12</v></c><c r="F10" s="4" t="s"><v>13</v></c><c r="G10" s="4" t="s"><v>14</v></c><c r="H10" s="4" t="s"><v>15</v></c><c r="I10" s="4" t="s"><v>16</v></c><c r="J10" s="4" t="s"><v>17</v></c><c r="K10" s="5" t="s"><v>18</v></c></row><row r="11" spans="1:13" x14ac:dyDescent="0.25"><c r="B11" s="6" t="s"><v>19</v></c><c r="C11" s="7" t="s"><v>20</v></c><c r="D11" s="8" t="s"><v>21</v></c><c r="E11" s="9"/><c r="F11" s="10" t="s"><v>22</v></c><c r="G11" s="11" t="s"><v>23</v></c><c r="H11" s="12"><v>10</v></c><c r="I11" s="12"><v>0</v></c><c r="J11" s="12"><v>0</v></c><c r="K11" s="13"><v>0</v></c></row><row r="12" spans="1:13" x14ac:dyDescent="0.25"><c r="B12" s="6" t="s"><v>19</v></c><c r="C12" s="7" t="s"><v>20</v></c><c r="D12" s="8" t="s"><v>21</v></c><c r="E12" s="9"/><c r="F12" s="10" t="s"><v>22</v></c><c r="G12" s="11" t="s"><v>23</v></c><c r="H12" s="12"><v>1</v></c><c r="I12" s="12"><v>1</v></c><c r="J12" s="12"><v>1</v></c><c r="K12" s="14"><v>100</v></c></row><row r="13" spans="1:13" x14ac:dyDescent="0.25"><c r="B13" s="6" t="s"><v>24</v></c><c r="C13" s="7" t="s"><v>20</v></c><c r="D13" s="8" t="s"><v>21</v></c><c r="E13" s="9"/><c r="F13" s="10" t="s"><v>22</v></c><c r="G13" s="11" t="s"><v>23</v></c><c r="H13" s="12"><v>23</v></c><c r="I13" s="12"><v>4</v></c><c r="J13" s="12"><v>1</v></c><c r="K13" s="13"><v>4.3478199999999996</v></c></row><row r="14" spans="1:13" x14ac:dyDescent="0.25"><c r="B14" s="6" t="s"><v>25</v></c><c r="C14" s="7" t="s"><v>20</v></c><c r="D14" s="8" t="s"><v>21</v></c><c r="E14" s="9"/><c r="F14" s="15" t="s"><v>23</v></c><c r="G14" s="11" t="s"><v>23</v></c><c r="H14" s="12"><v>4</v></c><c r="I14" s="12"><v>4</v></c><c r="J14" s="12"><v>1</v></c><c r="K14" s="13"><v>25</v></c></row><row r="15" spans="1:13" x14ac:dyDescent="0.25"><c r="B15" s="6" t="s"><v>26</v></c><c r="C15" s="7" t="s"><v>20</v></c><c r="D15" s="8" t="s"><v>21</v></c><c r="E15" s="9"/><c r="F15" s="15" t="s"><v>23</v></c><c r="G15" s="11" t="s"><v>23</v></c><c r="H15" s="12"><v>2</v></c><c r="I15" s="12"><v>1</v></c><c r="J15" s="12"><v>0</v></c><c r="K15" s="13"><v>0</v></c></row><row r="16" spans="1:13" x14ac:dyDescent="0.25"><c r="B16" s="6" t="s"><v>27</v></c><c r="C16" s="7" t="s"><v>20</v></c><c r="D16" s="8" t="s"><v>21</v></c><c r="E16" s="9"/><c r="F16" s="15" t="s"><v>23</v></c><c r="G16" s="11" t="s"><v>23</v></c><c r="H16" s="12"><v>6</v></c><c r="I16" s="12"><v>1</v></c><c r="J16" s="12"><v>1</v></c><c r="K16" s="13"><v>16.66666</v></c></row><row r="17" spans="2:12" x14ac:dyDescent="0.25"><c r="B17" s="16" t="s"><v>28</v></c><c r="C17" s="17" t="s"><v>20</v></c><c r="D17" s="18" t="s"><v>21</v></c><c r="E17" s="19"/><c r="F17" s="20" t="s"><v>23</v></c><c r="G17" s="21" t="s"><v>23</v></c><c r="H17" s="22"><v>6</v></c><c r="I17" s="22"><v>1</v></c><c r="J17" s="22"><v>1</v></c><c r="K17" s="23"><v>16.66666</v></c></row><row r="18" spans="2:12" ht="409.6" hidden="1" customHeight="1" x14ac:dyDescent="0.25"/><row r="19" spans="2:12" ht="8.65" customHeight="1" x14ac:dyDescent="0.25"/><row r="20" spans="2:12" ht="22.9" customHeight="1" x14ac:dyDescent="0.25"><c r="B20" s="43" t="s"><v>29</v></c><c r="C20" s="44"/><c r="D20" s="44"/><c r="E20" s="44"/><c r="F20" s="44"/><c r="G20" s="44"/><c r="H20" s="44"/><c r="I20" s="44"/><c r="J20" s="44"/><c r="K20" s="44"/><c r="L20" s="45"/></row><row r="21" spans="2:12" ht="71.650000000000006" customHeight="1" x14ac:dyDescent="0.25"><c r="B21" s="46" t="s"><v>1</v></c><c r="C21" s="44"/><c r="D21" s="44"/><c r="E21" s="44"/><c r="F21" s="44"/><c r="G21" s="44"/><c r="H21" s="44"/><c r="I21" s="44"/><c r="J21" s="44"/><c r="K21" s="44"/><c r="L21" s="45"/></row><row r="22" spans="2:12" ht="409.6" hidden="1" customHeight="1" x14ac:dyDescent="0.25"/></sheetData><mergeCells count="9"><mergeCell ref="B20:L20"/><mergeCell ref="B21:L21"/><mergeCell ref="A2:M2"/><mergeCell ref="B4:L4"/><mergeCell ref="B6:L6"/><mergeCell ref="B7:L7"/><mergeCell ref="D9:E9"/><mergeCell ref="F9:G9"/><mergeCell ref="H9:K9"/></mergeCells><phoneticPr fontId="0" type="noConversion"/><hyperlinks><hyperlink ref="B11" r:id="rId1"/><hyperlink ref="B12" r:id="rId2"/><hyperlink ref="B13" r:id="rId3"/><hyperlink ref="B14" r:id="rId4"/><hyperlink ref="B15" r:id="rId5"/><hyperlink ref="B16" r:id="rId6"/><hyperlink ref="B17" r:id="rId7"/></hyperlinks><pageMargins left="0.19685039370078741" right="0.19685039370078741" top="0.19685039370078741" bottom="0.63900393700787406" header="0.19685039370078741" footer="0.19685039370078741"/><pageSetup paperSize="9" orientation="landscape" horizontalDpi="0" verticalDpi="0"/><headerFooter alignWithMargins="0"><oddFooter>&amp;L&amp;"Arial"&amp;8&amp;I28/01/2019 09:00:29&amp;I &amp;C&amp;R</oddFooter></headerFooter></worksheet>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac">
+    <dimension ref="A1:M16" />
+    <sheetViews>
+        <sheetView showGridLines="0" tabSelected="1" workbookViewId="0">
+            <pane ySplit="3" topLeftCell="A9" activePane="bottomLeft" state="frozenSplit" />
+            <selection pane="bottomLeft" activeCell="B7" sqref="B7" />
+        </sheetView>
+    </sheetViews>
+    <sheetFormatPr defaultRowHeight="12.5" x14ac:dyDescent="0.25" />
+    <cols>
+        <col min="1" max="1" width="1.26953125" customWidth="1" />
+        <col min="2" max="2" width="32.26953125" customWidth="1" />
+        <col min="3" max="3" width="20.26953125" customWidth="1" />
+        <col min="4" max="4" width="13.453125" customWidth="1" />
+        <col min="5" max="5" width="17.453125" customWidth="1" />
+        <col min="6" max="6" width="17.7265625" customWidth="1" />
+        <col min="7" max="7" width="17.26953125" customWidth="1" />
+        <col min="8" max="11" width="17.453125" customWidth="1" />
+        <col min="12" max="12" width="2.453125" customWidth="1" />
+        <col min="13" max="13" width="255" customWidth="1" />
+        <col min="14" max="14" width="1.26953125" customWidth="1" />
+    </cols>
+    <sheetData>
+        <row r="1" spans="1:13" ht="1.4" customHeight="1" x14ac:dyDescent="0.25" />
+        <row r="2" spans="1:13" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
+            <c r="A2" s="47" t="s">
+                <v>2</v>
+            </c>
+            <c r="B2" s="48" />
+            <c r="C2" s="48" />
+            <c r="D2" s="48" />
+            <c r="E2" s="48" />
+            <c r="F2" s="48" />
+            <c r="G2" s="48" />
+            <c r="H2" s="48" />
+            <c r="I2" s="48" />
+            <c r="J2" s="48" />
+            <c r="K2" s="48" />
+            <c r="L2" s="48" />
+            <c r="M2" s="49" />
+        </row>
+        <row r="3" spans="1:13" ht="1.5" customHeight="1" x14ac:dyDescent="0.25" />
+        <row r="4" spans="1:13" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+            <c r="B4" s="50" t="s">
+                <v>3</v>
+            </c>
+            <c r="C4" s="51" />
+            <c r="D4" s="51" />
+            <c r="E4" s="51" />
+            <c r="F4" s="51" />
+            <c r="G4" s="51" />
+            <c r="H4" s="51" />
+            <c r="I4" s="51" />
+            <c r="J4" s="51" />
+            <c r="K4" s="51" />
+            <c r="L4" s="52" />
+        </row>
+        <row r="5" spans="1:13" ht="5.9" customHeight="1" x14ac:dyDescent="0.25" />
+        <row r="6" spans="1:13" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+            <c r="B6" s="53" t="s">
+                <v>0</v>
+            </c>
+            <c r="C6" s="54" />
+            <c r="D6" s="54" />
+            <c r="E6" s="54" />
+            <c r="F6" s="54" />
+            <c r="G6" s="54" />
+            <c r="H6" s="54" />
+            <c r="I6" s="54" />
+            <c r="J6" s="54" />
+            <c r="K6" s="54" />
+            <c r="L6" s="54" />
+        </row>
+        <row r="7" spans="1:13" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+            <c r="B7" s="55" t="s">
+                <v>4</v>
+            </c>
+            <c r="C7" s="54" />
+            <c r="D7" s="54" />
+            <c r="E7" s="54" />
+            <c r="F7" s="54" />
+            <c r="G7" s="54" />
+            <c r="H7" s="54" />
+            <c r="I7" s="54" />
+            <c r="J7" s="54" />
+            <c r="K7" s="54" />
+            <c r="L7" s="54" />
+        </row>
+        <row r="8" spans="1:13" ht="11.9" customHeight="1" x14ac:dyDescent="0.25" />
+        <row r="9" spans="1:13" ht="13" x14ac:dyDescent="0.3">
+            <c r="B9" s="1" />
+            <c r="C9" s="2" t="s">
+                <v>5</v>
+            </c>
+            <c r="D9" s="56" t="s">
+                <v>6</v>
+            </c>
+            <c r="E9" s="57" />
+            <c r="F9" s="56" t="s">
+                <v>7</v>
+            </c>
+            <c r="G9" s="57" />
+            <c r="H9" s="56" t="s">
+                <v>8</v>
+            </c>
+            <c r="I9" s="58" />
+            <c r="J9" s="58" />
+            <c r="K9" s="59" />
+        </row>
+        <row r="10" spans="1:13" ht="50" x14ac:dyDescent="0.25">
+            <c r="B10" s="3" t="s">
+                <v>9</v>
+            </c>
+            <c r="C10" s="4" t="s">
+                <v>10</v>
+            </c>
+            <c r="D10" s="4" t="s">
+                <v>11</v>
+            </c>
+            <c r="E10" s="4" t="s">
+                <v>12</v>
+            </c>
+            <c r="F10" s="4" t="s">
+                <v>13</v>
+            </c>
+            <c r="G10" s="4" t="s">
+                <v>14</v>
+            </c>
+            <c r="H10" s="4" t="s">
+                <v>15</v>
+            </c>
+            <c r="I10" s="4" t="s">
+                <v>16</v>
+            </c>
+            <c r="J10" s="4" t="s">
+                <v>17</v>
+            </c>
+            <c r="K10" s="5" t="s">
+                <v>18</v>
+            </c>
+        </row>
+        <row r="11" spans="1:13" x14ac:dyDescent="0.25">
+            <c r="B11" s="6" t="s">
+                <v>19</v>
+            </c>
+            <c r="C11" s="7" t="s">
+                <v>20</v>
+            </c>
+            <c r="D11" s="8" t="s">
+                <v>21</v>
+            </c>
+            <c r="E11" s="9" />
+            <c r="F11" s="10" t="s">
+                <v>22</v>
+            </c>
+            <c r="G11" s="11" t="s">
+                <v>23</v>
+            </c>
+            <c r="H11" s="12">
+                <v>10</v>
+            </c>
+            <c r="I11" s="12">
+                <v>0</v>
+            </c>
+            <c r="J11" s="12">
+                <v>0</v>
+            </c>
+            <c r="K11" s="13">
+                <v>0</v>
+            </c>
+        </row>
+        <row r="12" spans="2:12" ht="409.6" hidden="1" customHeight="1" x14ac:dyDescent="0.25" />
+        <row r="13" spans="2:12" ht="8.65" customHeight="1" x14ac:dyDescent="0.25" />
+        <row r="14" spans="2:12" ht="22.9" customHeight="1" x14ac:dyDescent="0.25">
+            <c r="B14" s="43" t="s">
+                <v>29</v>
+            </c>
+            <c r="C14" s="44" />
+            <c r="D14" s="44" />
+            <c r="E14" s="44" />
+            <c r="F14" s="44" />
+            <c r="G14" s="44" />
+            <c r="H14" s="44" />
+            <c r="I14" s="44" />
+            <c r="J14" s="44" />
+            <c r="K14" s="44" />
+            <c r="L14" s="45" />
+        </row>
+        <row r="15" spans="2:12" ht="71.650000000000006" customHeight="1" x14ac:dyDescent="0.25">
+            <c r="B15" s="46" t="s">
+                <v>1</v>
+            </c>
+            <c r="C15" s="44" />
+            <c r="D15" s="44" />
+            <c r="E15" s="44" />
+            <c r="F15" s="44" />
+            <c r="G15" s="44" />
+            <c r="H15" s="44" />
+            <c r="I15" s="44" />
+            <c r="J15" s="44" />
+            <c r="K15" s="44" />
+            <c r="L15" s="45" />
+        </row>
+        <row r="16" spans="2:12" ht="409.6" hidden="1" customHeight="1" x14ac:dyDescent="0.25" />
+    </sheetData>
+    <mergeCells count="9">
+        <mergeCell ref="B14:L14" />
+        <mergeCell ref="B15:L15" />
+        <mergeCell ref="A2:M2" />
+        <mergeCell ref="B4:L4" />
+        <mergeCell ref="B6:L6" />
+        <mergeCell ref="B7:L7" />
+        <mergeCell ref="D9:E9" />
+        <mergeCell ref="F9:G9" />
+        <mergeCell ref="H9:K9" />
+    </mergeCells>
+    <phoneticPr fontId="0" type="noConversion" />
+    <hyperlinks>
+        <hyperlink ref="B11" r:id="rId1" />
+    </hyperlinks>
+    <pageMargins left="0.19685039370078741" right="0.19685039370078741" top="0.19685039370078741" bottom="0.63900393700787406" header="0.19685039370078741" footer="0.19685039370078741" />
+    <pageSetup paperSize="9" orientation="landscape" horizontalDpi="0" verticalDpi="0" />
+    <headerFooter alignWithMargins="0">
+        <oddFooter>&amp;L&amp;"Arial"&amp;8&amp;I28/01/2019 09:00:29&amp;I &amp;C&amp;R</oddFooter>
+    </headerFooter></worksheet>
