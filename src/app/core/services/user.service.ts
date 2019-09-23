@@ -96,19 +96,7 @@ export class UserService {
    */
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
-    return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`, { params }).pipe(
-      map(response => {
-        const establishments = response.subsidaries.establishments;
-
-        if (establishments.length) {
-          response.subsidaries.establishments = establishments.filter(
-            establishment => establishment.dataPermissions !== DataPermissions.None
-          );
-        }
-
-        return response;
-      })
-    );
+    return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`, { params });
   }
 
   /*

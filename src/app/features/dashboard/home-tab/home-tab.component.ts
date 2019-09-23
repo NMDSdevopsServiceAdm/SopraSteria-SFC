@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
-import { NotificationsService } from '@core/notifications/notifications.service';
+import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -59,7 +59,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   }
 
   get numberOfNewNotifications() {
-    const newNotifications = this.notificationsService.notifications.filter(notification => !notification.read);
+    const newNotifications = this.notificationsService.notifications.filter(notification => !notification.isViewed);
     return newNotifications.length;
   }
 

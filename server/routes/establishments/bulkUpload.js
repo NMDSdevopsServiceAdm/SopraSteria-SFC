@@ -2018,4 +2018,70 @@ router.route('/download/:downloadType').get(async (req, res) => {
 
 });
 
+// demo API to showcase how trickle feed responses would work for the client
+//  no parameter validation and no error handling and no security
+router.route('/trickle').post(async (req, res) => {
+  const retries = parseInt(req.query.retries, 10);
+  const withError = !req.query.error || req.query.error !== 'true' ? false : true;
+  const withTrickle = !req.query.trickle || req.query.trickle !== 'false' ? true : false;
+
+  const RETRY_TIMEOUT_SECS=15;
+  const RETRY_TIMEOUT=RETRY_TIMEOUT_SECS*1000;  // milliseconds
+  let currentRetries = 0;
+  let firstStatusFlush=true;
+
+  const response = {
+    status: []
+  };
+
+  const statusMsg = () => {
+    currentRetries++;
+    const timestamp = new Date().toISOString();
+
+    response.status.push({
+      message: `${currentRetries}`,
+      duration: `${RETRY_TIMEOUT} seconds`,
+      timestamp
+    });
+
+    if (withTrickle) {
+      if (firstStatusFlush) {
+        console.log(`WA DEBUG - timed out: ${currentRetries} - ${timestamp}`);
+        res.write(`{ "message": "${currentRetries}", "duration":"${RETRY_TIMEOUT} seconds", "timestamp":"${timestamp}" }`);
+        firstStatusFlush=false;
+      } else {
+        console.log(`WA DEBUG - comma timed out: ${currentRetries} - ${timestamp}`);
+        res.write(`,{ "message": "${currentRetries}", "duration":"${RETRY_TIMEOUT} seconds", "timestamp":"${timestamp}" }`);
+      }
+      res.flush();
+    }
+
+    if (currentRetries < retries) {
+      setTimeout(statusMsg, RETRY_TIMEOUT);
+    } else {
+      if (withTrickle) {
+        if (withError) {
+          res.end('],"error": "Forced Failure"}');
+        } else {
+          return res.end(']}');
+        }
+      } else {
+        if (withError) {
+E        }
+
+        return res.status(200).send(response);
+      }
+    }
+  };
+
+  if (withTrickle) {
+    res.status(200);
+    res.header('Content-Type', 'application/json');
+    res.write('{"status": [');
+    res.flush();
+  }
+
+  setTimeout(statusMsg, RETRY_TIMEOUT);
+});
+
 module.exports = router;
