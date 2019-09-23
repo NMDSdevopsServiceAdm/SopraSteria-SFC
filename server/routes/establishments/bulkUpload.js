@@ -375,7 +375,6 @@ router.route('/uploaded').put(async (req, res) => {
     if(importedTraining){
       const trainingCsvValidator = new CsvTrainingValidator(importedTraining[firstRow], firstLineNumber);
       if(trainingCsvValidator.preValidate(trainingHeaders)){
-        console.log("WA DEBUG - prevalidated training - ", importedTraining)
         // count records and update metadata
         trainingMetadata.records = importedTraining.length;
         metadataS3Promises.push(uploadAsJSON(username, establishmentId, trainingMetadata, `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`));
@@ -1051,7 +1050,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     myTrainings.forEach(thisTraingRecord => {
 
       const establishmentKeyNoWhitespace = (thisTraingRecord.localeStId || '').replace(/\s/g, "");
-      const workerKeyNoWhitespace = (thisTraingRecord.localeStId + thisTraingRecord.uniqueWorkerId).replace(/\s/g, "");
+      const workerKeyNoWhitespace = ((thisTraingRecord.localeStId || '') + (thisTraingRecord.uniqueWorkerId || '')).replace(/\s/g, "");
 
       if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
         // not found the associated establishment
@@ -1072,10 +1071,14 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         const foundWorkerByLineNumber = allWorkersByKey[workerKeyNoWhitespace];
         const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
 
+        // training cross-validation against worker's date of birth (DOB) can only be applied, if:
+        //  1. the associated Worker can be matched
+        //  2. the worker has DOB defined (it's not a mandatory property)
         const trainingCompletedDate = moment.utc(thisTraingRecord._currentLine.DATECOMPLETED, "DD-MM-YYYY")
-        const workerDob = moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, "DD-MM-YYYY")
+        const foundAssociatedWorker = workersKeyed[workerKeyNoWhitespace];
+        const workerDob = foundAssociatedWorker && foundAssociatedWorker.DOB ? moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, "DD-MM-YYYY") : null;
 
-        if (workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14 ) {
+        if (workerDob && workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14 ) {
           csvTrainingSchemaErrors.push(thisTraingRecord.dobTrainingMismatch());
         }
 
