@@ -15,16 +15,18 @@
   </thead>
   <tbody class="govuk-table__body">
     <ng-container *ngFor="let notification of notifications">
-      <tr class="govuk-table__row notification-list-row" [class.notification-list-row--unread]="!notification.read">
+      <tr class="govuk-table__row notification-list-row" [class.notification-list-row--unread]="!notification.isViewed">
         <td class="govuk-table__cell">
           <span class="notification-list-item">
-            <span *ngIf="!notification.read" class="notification-list-item__icon">
+            <span *ngIf="!notification.isViewed" class="notification-list-item__icon">
               <span class="govuk-visually-hidden">Unread: </span></span
             >
-            <a [routerLink]="[notification.uid]" class="notification-list-item__link">{{ notification.subject }}</a>
+            <a [routerLink]="[notification.notificationUid]" class="notification-list-item__link">{{
+              notification.type | notificationType
+            }}</a>
           </span>
         </td>
-        <td class="govuk-table__cell">{{ notification.date | longDate }}</td>
+        <td class="govuk-table__cell">{{ notification.created | longDate }}</td>
       </tr>
     </ng-container>
   </tbody>

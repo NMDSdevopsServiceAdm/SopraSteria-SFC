@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { GetWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
+import { DataPermissions, GetWorkplacesResponse, Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
 import { filter, orderBy } from 'lodash';
@@ -24,7 +24,12 @@ export class WorkplacesComponent implements OnInit {
     this.subscriptions.add(
       this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
         if (workplaces.subsidaries) {
-          this.workplaces = workplaces.subsidaries.establishments; // TODO: Filter out Workplaces with no permissions
+          this.workplaces = workplaces.subsidaries.establishments;
+
+          if (this.workplaces.length) {
+            this.workplaces = filter(this.workplaces, this.exclusionCheck);
+          }
+
           this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
 
           this.totalEligible = filter(this.workplaces, workplace => workplace.wdf.overall).length;
@@ -32,5 +37,13 @@ export class WorkplacesComponent implements OnInit {
         }
       })
     );
+  }
+
+  /**
+   * Exclude if dataOwner is 'Workplace' with no data permissions
+   * @param w - Workplace
+   */
+  private exclusionCheck(w: Workplace): boolean {
+    return w.dataOwner === WorkplaceDataOwner.Workplace && w.dataPermissions === DataPermissions.None ? false : true;
   }
 }
