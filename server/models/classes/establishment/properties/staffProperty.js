@@ -12,18 +12,23 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.numberOfStaff !== null) {
-            const givenStaff = isNaN(parseInt(document.numberOfStaff, 10)) ? null : parseInt(document.numberOfStaff, 10);
-            const MAX_STAFF=999;
-            const MIN_STAFF=0;
-            if (givenStaff !== null &&
-                givenStaff >= MIN_STAFF &&
-                givenStaff <= MAX_STAFF) {
-                this.property = givenStaff;
-            } else {
-               this.property = null;
-            }
+      if (/^-?[0-9]+$/.test(String(document.numberOfStaff))) {
+        const givenStaff = parseInt(document.numberOfStaff, 10);
+        const MAX_STAFF = 999;
+        const MIN_STAFF = 0;
+
+        //if document.numberOfStaff is numeric it must be in range
+        if (givenStaff >= MIN_STAFF && givenStaff <= MAX_STAFF) {
+          this.property = givenStaff;
         }
+        else {
+          this.property = null;
+        }
+      }
+      else if(document.numberOfStaff) {
+        //any other non falsy value fails validation
+        this.property = null;
+      }
     }
 
     restorePropertyFromSequelize(document) {
