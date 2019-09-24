@@ -651,8 +651,6 @@ class Establishment {
       const listOfLAs = this._currentLine.SHARELA.split(';');
       const isValid = listOfLAs.every(thisLA => !Number.isNaN(parseInt(thisLA)));
 
-      console.log("WA DEBUG - SHARELA validation - this._shareWithLA", this._shareWithLA, listOfLAs, listOfLAs.length)
-
       if (!isValid) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,

@@ -555,7 +555,6 @@ class Worker extends EntityValidator {
                     //  it's current WDF Eligibility, and if it is eligible, update
                     //  the last WDF Eligibility status
                     const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
-                    console.log("WA DEBUG - currentWdfEligibiity", currentWdfEligibiity);
 
                     const effectiveDateTime = WdfCalculator.effectiveTime;
 
