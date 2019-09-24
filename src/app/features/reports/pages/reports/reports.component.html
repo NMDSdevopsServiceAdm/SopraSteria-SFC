@@ -18,6 +18,9 @@
           {{ isParent ? 'My workplace' : 'Workforce Development Fund' }}
         </a>
       </li>
+      <li *ngIf="isParent">
+        <a class="govuk-body-m" [routerLink]="['workplaces']">All workplaces</a>
+      </li>
     </ul>
 
     <app-details [title]="'What is the Workforce Development Fund'">
