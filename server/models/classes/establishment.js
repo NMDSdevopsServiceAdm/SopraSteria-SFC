@@ -1718,119 +1718,120 @@ class Establishment extends EntityValidator {
 
     // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
     static async fetchMyEstablishments(isParent, isWDF, primaryEstablishmentId) {
-        // for each establishment, need:
-        //  1. Name
-        //  2. Main Service (by title)
-        //  3. Data Owner
-        //  4. Data Owner Permissions
-        //  5. Updated
-        //  6. UID (significantly to be able to navigate to the specific establishment)
-        //  7. ParentUID
-        let allSubResults = null;
-        let primaryEstablishmentRecord = null;
+      // for each establishment, need:
+      //  1. Name
+      //  2. Main Service (by title)
+      //  3. Data Owner
+      //  4. Data Owner Permissions
+      //  5. Updated
+      //  6. UID (significantly to be able to navigate to the specific establishment)
+      //  7. ParentUID
 
-        // first - get the user's primary establishment (every user will have a primary establishment)
-        const fetchResults = await models.establishment.findOne({
-            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated', 'dataOwnershipRequested', 'overallWdfEligibility', 'establishmentWdfEligibility', 'staffWdfEligibility'],
-            include: [
-                {
-                    model: models.services,
-                    as: 'mainService',
-                    attributes: ['id', 'name']
-                }
-            ],
-            where: {
-                "id": primaryEstablishmentId
+      // only get the sub if the isParent parameter is truthy
+      const where = isParent ? {
+        $or: [
+          {
+            id: {
+              $eq: primaryEstablishmentId
             }
-        });
-
-        if (fetchResults) {
-            // this is the primary establishemnt
-            primaryEstablishmentRecord = fetchResults;
-
-            // now, if the primary establishment is a parent
-            //  and if the user's role against their primary parent is Edit
-            //  fetch all other establishments associated with this parent
-            if (isParent) {
-                // get all subsidaries associated with this parent
-                allSubResults = await models.establishment.findAll({
-                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'dataPermissions', 'NameValue', 'updated','dataOwnershipRequested', 'overallWdfEligibility', 'establishmentWdfEligibility', 'staffWdfEligibility'],
-                    include: [
-                        {
-                            model: models.services,
-                            as: 'mainService',
-                            attributes: ['id', 'name']
-                        }
-                    ],
-                    where: {
-                        "parentUid": primaryEstablishmentRecord.uid
-                    },
-                    order: [
-                        ['updated','DESC']
-                    ]
-                });
-
-                // note - there is no error is there are no subs; an establishment can exist as a parent but with no subs
-            }
-            // else - do nothing - there is no error
-
-            // before returning, need to format the response
-            // explicit casting of local identifier to null if not yet set
-            const wdfEffectiveTimeEpoch = WdfCalculator.effectiveTime;
-            const primaryWdf = !isWDF ? undefined : {
-              staff: primaryEstablishmentRecord.staffWdfEligibility ? primaryEstablishmentRecord.staffWdfEligibility.getTime() > wdfEffectiveTimeEpoch : false,
-              workplace: primaryEstablishmentRecord.establishmentWdfEligibility ? primaryEstablishmentRecord.establishmentWdfEligibility.getTime() > wdfEffectiveTimeEpoch : false,
-              overall: primaryEstablishmentRecord.overalWdfEligible ? primaryEstablishmentRecord.overalWdfEligible.getTime() > wdfEffectiveTimeEpoch : false,
-              overallWdfEligibility: primaryEstablishmentRecord.overalWdfEligible ? primaryEstablishmentRecord.overalWdfEligible.toISOString() : null,
-            };
-            const myEstablishments = {
-              primary: {
-                  uid: primaryEstablishmentRecord.uid,
-                  updated: primaryEstablishmentRecord.updated,
-                  isParent: primaryEstablishmentRecord.isParent,
-                  parentUid: primaryEstablishmentRecord.parentUid,
-                  name: primaryEstablishmentRecord.NameValue,
-                  localIdentifier: primaryEstablishmentRecord.LocalIdentifierValue ? primaryEstablishmentRecord.LocalIdentifierValue : null,
-                  mainService: primaryEstablishmentRecord.mainService.name,
-                  dataOwner: primaryEstablishmentRecord.dataOwner,
-                  dataPermissions: isParent ? undefined : primaryEstablishmentRecord.dataPermissions,
-                  dataOwnershipRequested: primaryEstablishmentRecord.dataOwnershipRequested,
-                  wdf: primaryWdf,
+          },
+          {
+            parentID:
+              {
+                $eq: primaryEstablishmentId
               }
-            };
+          }
+        ]
+      } : { id: primaryEstablishmentId };
 
-            if (allSubResults && allSubResults.length > 0) {
-              myEstablishments.subsidaries = {
-                count: allSubResults.length,
-                establishments: allSubResults.map(thisSub => {
-                  const subWdf = !isWDF ? undefined : {
-                    staff: thisSub.staffWdfEligibility ? thisSub.staffWdfEligibility.getTime() > wdfEffectiveTimeEpoch : false,
-                    workplace: thisSub.establishmentWdfEligibility ? thisSub.establishmentWdfEligibility.getTime() > wdfEffectiveTimeEpoch : false,
-                    overall: thisSub.overalWdfEligible ? thisSub.overalWdfEligible.getTime() > wdfEffectiveTimeEpoch : false,
-                    overallWdfEligibility: thisSub.overalWdfEligible ? thisSub.overalWdfEligible.toISOString() : null,
-                  };
-                  return {
-                      uid: thisSub.uid,
-                      updated: thisSub.updated,
-                      parentUid: thisSub.parentUid,
-                      name: thisSub.NameValue,
-                      localIdentifier: thisSub.LocalIdentifierValue ? thisSub.LocalIdentifierValue : null,
-                      mainService: thisSub.mainService.name,
-                      dataOwner: thisSub.dataOwner,
-                      dataPermissions: thisSub.dataPermissions,
-                      dataOwnershipRequested: thisSub.dataOwnershipRequested,
-                      wdf: subWdf,
-                  };
-                })
-              };
-            }
+      // first - get the user's primary establishment (every user will have a primary establishment)
+      const fetchResults = await models.establishment.findAll({
+        attributes: [
+          'uid',
+          'isParent',
+          'parentUid',
+          'dataOwner',
+          'LocalIdentifierValue',
+          'dataPermissions',
+          'NameValue',
+          'updated',
+          'dataOwnershipRequested',
+          'overallWdfEligibility',
+          'establishmentWdfEligibility',
+          'staffWdfEligibility',
+          'lastWdfEligibility',
+          include: [
+            [models.Sequelize.fn("COUNT", models.Sequelize.col("Worker.id")), "workerCount"]
+            [models.Sequelize.fn("SUM", models.Sequelize.col(`case when Worker.lastUpdatedDate > '${WdfCalculator.effectiveDate.toISOString()}' then 1 else 0 end`)), "eligibleWorkersCount"]
+          ]
+        ],
+        include: [
+          {
+            model: models.services,
+            as: 'mainService',
+            attributes: ['name']
+          },
+          {
+            model: Worker, attributes: []
+          }
+        ],
+        where,
+        order: [
+          // list the primary establishment first
+          models.sequelize.fn('isnull', models.sequelize.col('parentID'))
+        ],
+        group: ['Worker.id']
+      });
 
-            return myEstablishments;
+      // if no results return false?! whatever. It's what it did before
+      if (fetchResults.length === 0) {
+        return false;
+      }
 
+      // map the results to the desired type
+      const mappedResults = fetchResults.map(async thisSub => {
+        const {
+          uid,
+          updated,
+          parentUid,
+          nameValue: name,
+          LocalIdentifierValue,
+          mainService: { name: mainService },
+          dataOwner,
+          dataPermissions,
+          dataOwnershipRequested
+        } = thisSub;
 
-        } else {
-            return false;
-        }
+        return {
+          uid,
+          updated,
+          parentUid,
+          name,
+          localIdentifier: LocalIdentifierValue || null,
+          mainService,
+          dataOwner,
+          dataPermissions,
+          dataOwnershipRequested,
+          wdf: isWDF ? await WdfCalculator.calculateData({
+            thisEstablishment: thisSub,
+            calculateOverall: true,
+            calculateStaff: true,
+            calculateEstablishment: true,
+            readOnly: true
+          }) : undefined
+        };
+      });
+
+      // The first result is the primary establishment. put it in a special field
+      const primary = mappedResults.shift();
+
+      return {
+        primary,
+        subsidaries: mappedResults.length ? {
+          count: mappedResults.length,
+          establishments: mappedResults
+        } : undefined
+      };
     }
 
     // a helper function that updates the establishment and adds the necessary audit events
