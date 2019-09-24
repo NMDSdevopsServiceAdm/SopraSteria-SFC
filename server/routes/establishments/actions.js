@@ -16,14 +16,14 @@ router.route('/ownershipChange').post(async (req, res) => {
     }
 
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-    if (!uuidRegex.test(req.userUId.toUpperCase())){
+    if (!uuidRegex.test(req.userUid.toUpperCase())){
       console.error('Invalid user UUID');
       return res.status(400).send();
     }
 
     const params = {
         ownerRequestChangeUid: uuid.v4(),
-        userUid: req.userUId,
+        userUid: req.userUid,
         subEstablishmentId: req.establishmentId,
         permissionRequest: req.body.permissionRequest
     };
