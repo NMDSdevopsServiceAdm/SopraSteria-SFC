@@ -1,10 +1,13 @@
 # NgSfcV2
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.2.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.3.
 
 ## Development server
+1. The `dist/` folder `MUST` be present in order to run the front end application. The `dist` folder is generated via `ng build`
+2. Run `ng dev` for a dev server. Navigate to `http://localhost:3000/` to view the application
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:8080/`. The app will automatically reload if you change any of the source files.
+#### Note: #### 
+FE code changes require a manual page refresh to reflect in the browser.
 
 ## Code scaffolding
 
