@@ -16,10 +16,6 @@ router.route('/ownershipChange').post(async (req, res) => {
     }
 
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-    if (!uuidRegex.test(req.userUid.toUpperCase())){
-      console.error('Invalid user UUID');
-      return res.status(400).send();
-    }
 
     const params = {
         ownerRequestChangeUid: uuid.v4(),
@@ -52,16 +48,12 @@ router.route('/ownershipChange').post(async (req, res) => {
         let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnership(params);
         if(checkAlreadyRequestedOwnership.length){
           return res.status(400).send({
-              message: `Ownership is already requested for sub establishment id: ${req.params.id}`,
+              message: `Ownership is already requested for posted establishment id`,
           });
         }
         //save records
-        if (!uuidRegex.test(checkEstablishmentResult[0].UserUID.toUpperCase())){
-          console.error('Invalid recepient user UUID');
-          return res.status(400).send();
-        }
 
-        params.recipientUserUid = checkEstablishmentResult[0].UserUID;
+        params.recipientUserUid = req.userUid;
         let changeRequestResp = await ownership.changeOwnershipRequest(params);
         if(!changeRequestResp){
             return res.status(400).send({

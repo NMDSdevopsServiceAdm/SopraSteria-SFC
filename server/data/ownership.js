@@ -11,10 +11,9 @@ WHERE "EstablishmentID" = :subEstId;
 
 const checkEstablishmentQuery =
 `
-SELECT a."EstablishmentID", a."UserUID", b."IsParent", b."ParentID"
-FROM cqc."User" a JOIN cqc."Establishment" b ON a."EstablishmentID" = b."EstablishmentID"
-WHERE a."IsPrimary" = true and b."IsParent" = false AND b."ParentID" IS NOT NULL
-AND a."EstablishmentID" = :subEstId;
+SELECT "EstablishmentID", "IsParent", "ParentID" FROM cqc."Establishment"
+WHERE "IsParent" = false AND "ParentID" IS NOT NULL AND "Archived" = false
+AND "EstablishmentID" = :subEstId;
 `;
 
 const checkAlreadyRequestedOwnershipQuery =
@@ -35,7 +34,7 @@ VALUES (:uid, :subEstId, :permReq, :appStatus, :userUid);
 
 const lastOwnerChangeRequestQuery =
 `
-SELECT "ownerChangeRequestUID", "subEstablishmentID", "permissionRequest", "approvalStatus", "approvalReason", created, "createdByUserUID", updated, "updatedByUserUID"
+SELECT "ownerChangeRequestUID", "permissionRequest", "approvalStatus", created, "createdByUserUID"
 FROM cqc."OwnerChangeRequest"
 WHERE cqc."OwnerChangeRequest"."subEstablishmentID" = :subEstId
 ORDER BY cqc."OwnerChangeRequest"."created" DESC
