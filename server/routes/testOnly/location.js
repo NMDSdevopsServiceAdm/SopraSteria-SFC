@@ -5,10 +5,6 @@ const models = require('../../models');
 // returns a random set of addresses from the location dataset
 //  if passing the limit parameter can vary the set size (defaults to 100)
 router.route('/random').get(async (req, res) => {
-  console.log("WA DEBUG - req param: ", req.query.limit)
-  console.log("WA DEBUG - sanitised req param: ", req.sanitize(req.query.limit))
-
-
   const setSize = req.sanitize(req.query.limit) ? req.sanitize(req.query.limit) : 10;
 
   try {

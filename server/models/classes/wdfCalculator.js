@@ -200,8 +200,6 @@ class WdfCalculator {
       );
     }
 
-    console.log("WA DEBUG - WDF est - got here")
-
     return this.NOW_ELIGIBLE;
   }
 
@@ -323,8 +321,6 @@ class WdfCalculator {
         break;
     }
 
-    console.log("WA DEBUG - recalculating Overall WDF Eligbility for establishment having id/uid/wdf impact and triggers (staff/establishment/overal): ", establishmentID, establishmentUID, this.wdfImpactToString(wdfImpact), calculateStaff, calculateEstablishment, calculateOverall);
-
     try {
       let thisEstablishment = null;
 
@@ -403,7 +399,6 @@ class WdfCalculator {
         console.error('WdfCalculator::calculate - Failed to find establishment having id/uid: ', establishmentID, establishmentUID);
         return false;
       } else {
-        console.log("WA DEBUG - WDF: ", wdf, wdf.reasons ? wdf.reasons : null);
         return wdf;
       }
     } catch (err) {

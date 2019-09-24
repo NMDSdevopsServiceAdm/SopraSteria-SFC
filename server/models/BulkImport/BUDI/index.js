@@ -1123,7 +1123,6 @@ class BUDI {
       return found ? found.ASC : null;
     } else {
       const found = fixedMapping.find(thisQualification => thisQualification.ASC == originalCode)
-      console.log("WA DEBUG - BUDI qualification - original code - ", originalCode, found)
       return found ? found.BUDI : null;
     }
   }
