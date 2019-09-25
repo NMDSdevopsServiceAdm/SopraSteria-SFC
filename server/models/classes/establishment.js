@@ -1828,6 +1828,7 @@ class Establishment extends EntityValidator {
           ],
           where,
           order: [
+            models.sequelize.literal('"ParentID" IS NOT NULL'),
             'NameValue'
           ]
         };
