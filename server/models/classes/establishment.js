@@ -1726,7 +1726,7 @@ class Establishment extends EntityValidator {
       //  5. Updated
       //  6. UID (significantly to be able to navigate to the specific establishment)
       //  7. ParentUID
-
+  
       // only get the sub if the isParent parameter is truthy
       const where = isParent ? {
         $or: [
@@ -1736,7 +1736,7 @@ class Establishment extends EntityValidator {
             }
           },
           {
-            parentID:
+            ParentID:
               {
                 $eq: primaryEstablishmentId
               }
@@ -1744,44 +1744,97 @@ class Establishment extends EntityValidator {
         ]
       } : { id: primaryEstablishmentId };
 
-      // first - get the user's primary establishment (every user will have a primary establishment)
-      const fetchResults = await models.establishment.findAll({
-        attributes: [
-          'uid',
-          'isParent',
-          'parentUid',
-          'dataOwner',
-          'LocalIdentifierValue',
-          'dataPermissions',
-          'NameValue',
-          'updated',
-          'dataOwnershipRequested',
-          'overallWdfEligibility',
-          'establishmentWdfEligibility',
-          'staffWdfEligibility',
-          'lastWdfEligibility',
+      let params;
+      
+      if(isWDF) {
+        params = {
+          attributes: [
+            'uid',
+            'updated',
+            'parentUid',
+            'NameValue',
+            'LocalIdentifierValue',
+            'dataOwner',
+            'dataPermissions',
+            'dataOwnershipRequested',
+            'overallWdfEligibility',
+            'lastWdfEligibility',
+            'NumberOfStaffValue',
+            [models.sequelize.fn("COUNT", models.sequelize.col('"workers"."ID"')), "workerCount"],
+            [models.sequelize.fn(
+                "SUM",
+                models.sequelize.literal(`CASE WHEN "workers"."LastWdfEligibility" > '${WdfCalculator.effectiveDate.toISOString()}' THEN 1 ELSE 0 END`)
+              ),
+              "eligibleWorkersCount"]
+          ],
           include: [
-            [models.Sequelize.fn("COUNT", models.Sequelize.col("Worker.id")), "workerCount"]
-            [models.Sequelize.fn("SUM", models.Sequelize.col(`case when Worker.lastUpdatedDate > '${WdfCalculator.effectiveDate.toISOString()}' then 1 else 0 end`)), "eligibleWorkersCount"]
+            {
+              model: models.services,
+              as: 'mainService',
+              attributes: ['name']
+            },
+            {
+              model: models.worker, 
+              as: 'workers',
+              attributes: []
+            }
+          ],
+          where,
+          order: [
+            // list the primary establishment first
+            models.sequelize.literal('"ParentID" IS NOT NULL'),
+            'NameValue'
+          ],
+          group: [
+            'establishment.EstablishmentID',
+            'mainService.id',
+            'mainService.name',
+            'uid',
+            'establishment.updated',
+            'parentUid',
+            'NameValue',
+            'establishment.LocalIdentifierValue',
+            'dataOwner',
+            'dataPermissions',
+            'dataOwnershipRequested',
+            'overallWdfEligibility',
+            'lastWdfEligibility',
+            'NumberOfStaffValue'
           ]
-        ],
-        include: [
-          {
-            model: models.services,
-            as: 'mainService',
-            attributes: ['name']
-          },
-          {
-            model: Worker, attributes: []
-          }
-        ],
-        where,
-        order: [
-          // list the primary establishment first
-          models.sequelize.fn('isnull', models.sequelize.col('parentID'))
-        ],
-        group: ['Worker.id']
-      });
+        };
+        
+              console.log("isWDF", isWDF, params)
+  
+
+      }
+      else {
+        params = {
+          attributes: [
+            'uid',
+            'updated',
+            'parentUid',
+            'NameValue',
+            'LocalIdentifierValue',
+            'dataOwner',
+            'dataPermissions',
+            'dataOwnershipRequested'
+          ],
+          include: [
+            {
+              model: models.services,
+              as: 'mainService',
+              attributes: ['name']
+            }
+          ],
+          where,
+          order: [
+            'NameValue'
+          ]
+        };
+      }
+
+      // first - get the user's primary establishment (every user will have a primary establishment)
+      const fetchResults = await models.establishment.findAll(params);
 
       // if no results return false?! whatever. It's what it did before
       if (fetchResults.length === 0) {
@@ -1789,12 +1842,12 @@ class Establishment extends EntityValidator {
       }
 
       // map the results to the desired type
-      const mappedResults = fetchResults.map(async thisSub => {
+      const mappedResults = await Promise.all(fetchResults.map(async thisSub => {
         const {
           uid,
           updated,
           parentUid,
-          nameValue: name,
+          NameValue: name,
           LocalIdentifierValue,
           mainService: { name: mainService },
           dataOwner,
@@ -1820,7 +1873,7 @@ class Establishment extends EntityValidator {
             readOnly: true
           }) : undefined
         };
-      });
+      }));
 
       // The first result is the primary establishment. put it in a special field
       const primary = mappedResults.shift();

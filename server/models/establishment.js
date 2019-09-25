@@ -547,6 +547,11 @@ module.exports = function(sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'auditEvents'
     });
+    Establishment.hasMany(models.worker, {  
+      foreignKey: 'establishmentFk',
+      sourceKey: 'id',
+      as: 'workers'
+    });
   };
 
   return Establishment;

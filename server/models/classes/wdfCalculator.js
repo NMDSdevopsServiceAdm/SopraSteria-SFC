@@ -57,7 +57,7 @@ class WdfCalculator {
 
   wdfImpactToFields (wdfImpact) {
     // we now always calculate the staff and establishment eligibility
-    let calculateOverall = false; let calculateStaff = true; let calculateEstablishment = true;
+    let calculateOverall = false, calculateStaff = true, calculateEstablishment = true;
 
     switch (wdfImpact) {
       case 1000:
@@ -390,9 +390,31 @@ class WdfCalculator {
               'overallWdfEligibility',
               'staffWdfEligibility',
               'establishmentWdfEligibility',
-              'NumberOfStaffValue'
+              'NumberOfStaffValue',
+              [models.sequelize.fn("COUNT", models.sequelize.col('"workers"."ID"')), "workerCount"],
+              [models.sequelize.fn(
+                  "SUM",
+                  models.sequelize.literal(`CASE WHEN "workers"."LastWdfEligibility" > '${this  .effectiveDate.toISOString()}' THEN 1 ELSE 0 END`)
+                ),
+                "eligibleWorkersCount"]
+            ],
+            include: [
+              {
+                model: models.worker, 
+                as: 'workers',
+                attributes: []
+              }
             ],
             where,
+            group: [
+              'establishment.EstablishmentID',
+              'uid',
+              'lastWdfEligibility',
+              'overallWdfEligibility',
+              'staffWdfEligibility',
+              'establishmentWdfEligibility',
+              'NumberOfStaffValue',
+            ],
             transaction: externalTransaction
           });
         } else {
@@ -442,50 +464,6 @@ class WdfCalculator {
     try {
       // run calculation - effectively as a simulation
       return this.calculate('', establishmentID, establishmentUID, null, this.REPORT, false);
-    } catch (err) {
-      console.error('WdfCalculator::report - failed to report on WDF : ', err);
-      return false;
-    }
-  }
-}
-
-const THE_WDF_CALCULATOR = new WdfCalculator();
-
-exports.WdfCalculator = THE_WDF_CALCULATOR;
-lishment.staffWdfEligibility ? thisEstablishment.staffWdfEligibility : undefined;
-          wdf.workplace = overallIsEligbile ? true : calculatedEstablishmentEligible && calculatedEstablishmentEligible !== this.NOT_ELIGIBLE ? true : false;
-          // wdf.establishmentElibigility = thisEstablishment.establishmentWdfEligibility ? thisEstablishment.establishmentWdfEligibility : undefined;
-          wdf.overall = thisEstablishment.overallWdfEligibility && (thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) ? true : false;
-          wdf.overallWdfEligibility = thisEstablishment.overallWdfEligibility ? thisEstablishment.overallWdfEligibility : undefined;
-          wdf.reasons = reasons.length > 0 ? reasons : undefined;
-
-        } else {
-          // handle this error outside of the transaction, because otherwise we risk the danger of rolling back the whole transaction
-        }
-      });
-
-      if (!foundEstablishment) {
-        console.error('WdfCalculator::calculate - Failed to find establishment having id/uid: ', establishmentID, establishmentUID);
-        return false;
-      } else {
-        console.log("WA DEBUG - WDF: ", wdf, wdf.reasons ? wdf.reasons : null);
-        return wdf;
-      }
-    } catch (err) {
-      console.error('WdfCalculator::calculate - Failed to fetch establishment/workers: ', err);
-      return false;
-    }
-
-  }
-
-  // reports on WDF Eligibility for the given Establishment
-  // returns the WDF for reporting on success and false on error
-  async report(establishmentID, establishmentUID) {
-    try {
-      // run calculation - effectively as a simulation
-      const wdfReport = this.calculate('', establishmentID, establishmentUID, null, this.REPORT, false);
-      return wdfReport;
-
     } catch (err) {
       console.error('WdfCalculator::report - failed to report on WDF : ', err);
       return false;
