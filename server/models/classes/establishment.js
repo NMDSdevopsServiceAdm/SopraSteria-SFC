@@ -1736,10 +1736,9 @@ class Establishment extends EntityValidator {
             }
           },
           {
-            ParentID:
-              {
-                $eq: primaryEstablishmentId
-              }
+            ParentID: {
+              $eq: primaryEstablishmentId
+            }
           }
         ]
       } : { id: primaryEstablishmentId };
@@ -1802,10 +1801,6 @@ class Establishment extends EntityValidator {
             'NumberOfStaffValue'
           ]
         };
-        
-              console.log("isWDF", isWDF, params)
-  
-
       }
       else {
         params = {
