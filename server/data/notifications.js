@@ -56,6 +56,14 @@ const markOneAsReadQuery =
   AND "Notifications"."recipientUserUid" = :userUid;
 `;
 
+const insertNotificationQuery =
+`
+INSERT INTO
+cqc."Notifications"
+("notificationUid", "type", "typeUid", "recipientUserUid", "isViewed")
+VALUES (:nuid, :type, :typUid, :recipientUserUid, :isViewed);
+`;
+
 exports.markOneAsRead = async ({ userUid, notificationUid }) =>
   db.query(markOneAsReadQuery, {
     replacements: {
@@ -65,3 +73,15 @@ exports.markOneAsRead = async ({ userUid, notificationUid }) =>
     },
     type: db.QueryTypes.UPDATE
   });
+
+  exports.insertNewNotification = async (params) =>
+    db.query(insertNotificationQuery, {
+        replacements: {
+            nuid: params.notificationUid,
+            type: "OWNERCHANGE",
+            typUid: params.ownerRequestChangeUid,
+            recipientUserUid: params.recipientUserUid,
+            isViewed: false
+        },
+        type: db.QueryTypes.INSERT
+    })

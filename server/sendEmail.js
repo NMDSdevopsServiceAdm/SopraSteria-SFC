@@ -83,10 +83,8 @@ const badParam = {
 const sendMyEmail = async () =>  {
     try {
         const goodSendPromise = await SES.sendEmail(goodParam).promise();
-        console.log("WA DEBUG@ sendPromise: ", goodSendPromise);
 
         const badSendPromise = await SES.sendEmail(badParam).promise();
-        console.log("WA DEBUG@ sendPromise: ", badSendPromise);
     } catch (err) {
         console.error(err);
     }

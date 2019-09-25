@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
@@ -23,28 +24,27 @@ export class StaffRecordSummaryComponent implements OnInit {
   @Input() return: URLStructure;
   @Input() wdfView = false;
 
-  public returnTo: URLStructure;
   private _worker: Worker;
+  private workplaceUid: string;
   public canEditWorker: boolean;
+  public returnTo: URLStructure;
 
   constructor(
     private location: Location,
     private permissionsService: PermissionsService,
+    private route: ActivatedRoute,
     public workerService: WorkerService
   ) {}
 
   ngOnInit() {
-    const staffRecordPath = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
+    this.workplaceUid = this.route.snapshot.params.establishmentuid;
+
+    const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
     this.returnTo = this.wdfView
       ? { url: [...staffRecordPath, ...['wdf-summary']] }
       : { url: [...staffRecordPath, ...['check-answers']] };
 
-    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-  }
-
-  goBack(event) {
-    event.preventDefault();
-    this.location.back();
+    this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
   }
 
   setReturn() {
@@ -52,6 +52,6 @@ export class StaffRecordSummaryComponent implements OnInit {
   }
 
   public getRoutePath(name: string) {
-    return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
+    return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, name];
   }
 }

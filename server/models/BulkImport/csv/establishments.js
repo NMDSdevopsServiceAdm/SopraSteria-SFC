@@ -56,6 +56,7 @@ class Establishment {
 
   static get EXPECT_JUST_ONE_ERROR() { return 950; }
   static get MISSING_PRIMARY_ERROR() { return 955; }
+  static get CANNOT_DELETE_PRIMARY_ERROR() { return 956; }
 
   static get NOT_OWNER_ERROR() { return 997; }
   static get DUPLICATE_ERROR() { return 998; }
@@ -649,8 +650,6 @@ class Establishment {
     if (this._currentLine.SHARELA && this._currentLine.SHARELA.length > 0) {
       const listOfLAs = this._currentLine.SHARELA.split(';');
       const isValid = listOfLAs.every(thisLA => !Number.isNaN(parseInt(thisLA)));
-
-      console.log("WA DEBUG - SHARELA validation - this._shareWithLA", this._shareWithLA, listOfLAs, listOfLAs.length)
 
       if (!isValid) {
         this._validationErrors.push({
@@ -1755,6 +1754,19 @@ class Establishment {
       errType: `MISSING_PRIMARY_ERROR`,
       error: `Missing the primary establishment: ${name}`,
       source: '',
+      name,
+    };
+  }
+
+  static cannotDeletePrimaryEstablishmentError(name) {
+    return {
+      origin: 'Establishments',
+      lineNumber: 1,
+      errCode: Establishment.CANNOT_DELETE_PRIMARY_ERROR,
+      errType: `CANNOT_DELETE_PRIMARY_ERROR`,
+      error: `STATUS cannot be DELETE for primary establishment: ${name}`,
+      source: '',
+      name,
     };
   }
 

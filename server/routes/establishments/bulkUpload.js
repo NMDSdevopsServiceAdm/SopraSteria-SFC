@@ -375,7 +375,6 @@ router.route('/uploaded').put(async (req, res) => {
     if(importedTraining){
       const trainingCsvValidator = new CsvTrainingValidator(importedTraining[firstRow], firstLineNumber);
       if(trainingCsvValidator.preValidate(trainingHeaders)){
-        console.log("WA DEBUG - prevalidated training - ", importedTraining)
         // count records and update metadata
         trainingMetadata.records = importedTraining.length;
         metadataS3Promises.push(uploadAsJSON(username, establishmentId, trainingMetadata, `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`));
@@ -1051,7 +1050,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     myTrainings.forEach(thisTraingRecord => {
 
       const establishmentKeyNoWhitespace = (thisTraingRecord.localeStId || '').replace(/\s/g, "");
-      const workerKeyNoWhitespace = (thisTraingRecord.localeStId + thisTraingRecord.uniqueWorkerId).replace(/\s/g, "");
+      const workerKeyNoWhitespace = ((thisTraingRecord.localeStId || '') + (thisTraingRecord.uniqueWorkerId || '')).replace(/\s/g, "");
 
       if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
         // not found the associated establishment
@@ -1072,10 +1071,14 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         const foundWorkerByLineNumber = allWorkersByKey[workerKeyNoWhitespace];
         const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
 
+        // training cross-validation against worker's date of birth (DOB) can only be applied, if:
+        //  1. the associated Worker can be matched
+        //  2. the worker has DOB defined (it's not a mandatory property)
         const trainingCompletedDate = moment.utc(thisTraingRecord._currentLine.DATECOMPLETED, "DD-MM-YYYY")
-        const workerDob = moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, "DD-MM-YYYY")
+        const foundAssociatedWorker = workersKeyed[workerKeyNoWhitespace];
+        const workerDob = foundAssociatedWorker && foundAssociatedWorker.DOB ? moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, "DD-MM-YYYY") : null;
 
-        if (workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14 ) {
+        if (workerDob && workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14 ) {
           csvTrainingSchemaErrors.push(thisTraingRecord.dobTrainingMismatch());
         }
 
@@ -1131,6 +1134,11 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     const onloadedPrimaryEstablishment = myAPIEstablishments[primaryEstablishment.key];
     if (!onloadedPrimaryEstablishment) {
       csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
+    } else {
+      // primary establishment does exist in given CSV; check STATUS is not DELETE - cannot delete the primary establishment
+      if (onloadedPrimaryEstablishment.status === 'DELETE') {
+        csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.cannotDeletePrimaryEstablishmentError(primaryEstablishment.name));
+      }
     }
   } else {
     console.error(("Seriously, if seeing this then something has truely gone wrong - the primary establishment should always be in the set of current establishments!"));
@@ -2016,6 +2024,72 @@ router.route('/download/:downloadType').get(async (req, res) => {
     return res.status(503).send({});
   }
 
+});
+
+// demo API to showcase how trickle feed responses would work for the client
+//  no parameter validation and no error handling and no security
+router.route('/trickle').post(async (req, res) => {
+  const retries = parseInt(req.query.retries, 10);
+  const withError = !req.query.error || req.query.error !== 'true' ? false : true;
+  const withTrickle = !req.query.trickle || req.query.trickle !== 'false' ? true : false;
+
+  const RETRY_TIMEOUT_SECS=15;
+  const RETRY_TIMEOUT=RETRY_TIMEOUT_SECS*1000;  // milliseconds
+  let currentRetries = 0;
+  let firstStatusFlush=true;
+
+  const response = {
+    status: []
+  };
+
+  const statusMsg = () => {
+    currentRetries++;
+    const timestamp = new Date().toISOString();
+
+    response.status.push({
+      message: `${currentRetries}`,
+      duration: `${RETRY_TIMEOUT} seconds`,
+      timestamp
+    });
+
+    if (withTrickle) {
+      if (firstStatusFlush) {
+        console.log(`WA DEBUG - timed out: ${currentRetries} - ${timestamp}`);
+        res.write(`{ "message": "${currentRetries}", "duration":"${RETRY_TIMEOUT} seconds", "timestamp":"${timestamp}" }`);
+        firstStatusFlush=false;
+      } else {
+        console.log(`WA DEBUG - comma timed out: ${currentRetries} - ${timestamp}`);
+        res.write(`,{ "message": "${currentRetries}", "duration":"${RETRY_TIMEOUT} seconds", "timestamp":"${timestamp}" }`);
+      }
+      res.flush();
+    }
+
+    if (currentRetries < retries) {
+      setTimeout(statusMsg, RETRY_TIMEOUT);
+    } else {
+      if (withTrickle) {
+        if (withError) {
+          res.end('],"error": "Forced Failure"}');
+        } else {
+          return res.end(']}');
+        }
+      } else {
+        if (withError) {
+E        }
+
+        return res.status(200).send(response);
+      }
+    }
+  };
+
+  if (withTrickle) {
+    res.status(200);
+    res.header('Content-Type', 'application/json');
+    res.write('{"status": [');
+    res.flush();
+  }
+
+  setTimeout(statusMsg, RETRY_TIMEOUT);
 });
 
 module.exports = router;

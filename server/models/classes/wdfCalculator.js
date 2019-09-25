@@ -250,8 +250,6 @@ class WdfCalculator {
 
     // gets this far if now eligible - but do not update establishment WDF eligibility  - no tracking
 
-    console.log('WA DEBUG - WDF est - got here');
-
     return this.NOW_ELIGIBLE;
   }
 
