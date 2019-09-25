@@ -406,6 +406,7 @@ class WdfCalculator {
             include: [
               {
                 model: models.worker,
+                required: false,
                 as: 'workers',
                 attributes: [],
                 where: {
