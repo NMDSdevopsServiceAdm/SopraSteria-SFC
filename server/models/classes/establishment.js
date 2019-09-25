@@ -1779,8 +1779,12 @@ class Establishment extends EntityValidator {
             },
             {
               model: models.worker, 
+              required: false,
               as: 'workers',
-              attributes: []
+              attributes: [],
+              where: {
+                archived: false
+              }
             }
           ],
           where,
