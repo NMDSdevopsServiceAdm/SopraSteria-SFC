@@ -225,7 +225,7 @@ class WdfCalculator {
 
     // the number of active worker records must be the same as the declared Establishment staff
     // console.log(`WA DEBUG - Establishment has #${thisEstablishment.workerCount} workers`)
-    if (parseInt(thisEstablishment.workersCount || 0, 10) !== thisEstablishment.NumberOfStaffValue) {
+    if (parseInt(thisEstablishment.workerCount || 0, 10) !== parseInt(thisEstablishment.NumberOfStaffValue, 10)) {
       reasons.push({
         establishment: {
           message: 'Number of Staff not equal to #staff',
@@ -257,7 +257,7 @@ class WdfCalculator {
     thisEstablishment,
     reasons
   }) {
-    const workersCount = parseInt(thisEstablishment.workersCount || 0, 10);
+    const workersCount = parseInt(thisEstablishment.workerCount || 0, 10);
     const eligibleWorkersCount = parseInt(thisEstablishment.eligibleWorkersCount || 0, 10);
 
     // console.log(`WA DEBUG - recalculating staff WDF eligibility for establishment (${establishment.id})`);
@@ -309,14 +309,21 @@ class WdfCalculator {
     const wdf = {};
     const reasons = [];
 
+    let plainEstablishment = thisEstablishment;
+
+    try {
+      //get a plain object from sequelize if it's a sequelize model
+      plainEstablishment = thisEstablishment.get({ plain: true });
+    } catch(e) {}
+
     // staff and establishment eligibility must be calculated/recalculated prior to overall, because any changes to the former, affects the latter
     const calculatedStaffEligible = calculateStaff ? await this._staffWdfEligibility({
-      thisEstablishment,
+      thisEstablishment: plainEstablishment,
       reasons
     }) : null;
 
     const calculatedEstablishmentEligible = calculateEstablishment ? await this._establishmentWdfEligibility({
-      thisEstablishment,
+      thisEstablishment: plainEstablishment,
       reasons
     }) : null;
 
@@ -324,7 +331,7 @@ class WdfCalculator {
     //  to reflect the latest staff/establishment values
     if (calculateOverall) {
       this._overallWdfEligibility({
-        thisEstablishment,
+        thisEstablishment: plainEstablishment,
         calculatedStaffEligible,
         calculatedEstablishmentEligible,
         readOnly,
@@ -398,7 +405,7 @@ class WdfCalculator {
             ],
             include: [
               {
-                model: models.worker, 
+                model: models.worker,
                 as: 'workers',
                 attributes: []
               }
