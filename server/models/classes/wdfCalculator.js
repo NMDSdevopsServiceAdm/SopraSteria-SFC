@@ -407,7 +407,10 @@ class WdfCalculator {
               {
                 model: models.worker,
                 as: 'workers',
-                attributes: []
+                attributes: [],
+                where: {
+                  archived: false
+                }
               }
             ],
             where,
