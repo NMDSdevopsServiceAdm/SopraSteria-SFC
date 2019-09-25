@@ -27,7 +27,7 @@ const BulkUpload = require('./bulkUpload');
 const LocalIdentifier = require('./localIdentifier');
 const LocalIdentifiers = require('./localIdentifiers');
 const Permissions = require('./permissions');
-const Actions = require('./actions');
+const OwnershipChange = require('./ownershipChange');
 
 const Approve = require('./approve');
 const Reject = require('./reject');
@@ -66,7 +66,7 @@ router.use('/:id/bulkupload', BulkUpload);
 router.use('/:id/localIdentifier', LocalIdentifier);
 router.use('/:id/localIdentifiers', LocalIdentifiers);
 router.use('/:id/permissions', Permissions);
-router.use('/:id/actions', Actions);
+router.use('/:id/ownershipChange', OwnershipChange);
 
 
 router.route('/:id').post(async (req, res) => {

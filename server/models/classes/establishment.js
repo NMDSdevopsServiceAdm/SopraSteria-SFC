@@ -98,6 +98,7 @@ class Establishment extends EntityValidator {
         this._parentId = null;
         this._dataOwner = null;
         this._dataPermissions = null;
+        this._archived = null;
 
         // interim reasons for leaving - https://trello.com/c/vNHbfdms
         this._reasonsForLeaving = null;
@@ -267,6 +268,10 @@ class Establishment extends EntityValidator {
     }
     get status() {
       return this._status;
+    }
+
+    get archived(){
+      return this._archived;
     }
 
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -935,7 +940,6 @@ class Establishment extends EntityValidator {
             }
 
             const fetchResults = await models.establishment.findOne(fetchQuery);
-
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
@@ -970,6 +974,7 @@ class Establishment extends EntityValidator {
 
                 // interim solution for reason for leaving
                 this._reasonsForLeaving = fetchResults.reasonsForLeaving;
+                this._archived = fetchResults.archived;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)

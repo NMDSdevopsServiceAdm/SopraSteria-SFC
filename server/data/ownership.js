@@ -2,20 +2,6 @@
 
 const db = rfr('server/utils/datastore');
 
-const getEstablishmentDetailsQuery =
-`
-SELECT "EstablishmentID"
-FROM cqc."Establishment"
-WHERE "EstablishmentID" = :subEstId;
-`;
-
-const checkEstablishmentQuery =
-`
-SELECT "EstablishmentID", "IsParent", "ParentID" FROM cqc."Establishment"
-WHERE "IsParent" = false AND "ParentID" IS NOT NULL AND "Archived" = false
-AND "EstablishmentID" = :subEstId;
-`;
-
 const checkAlreadyRequestedOwnershipQuery =
 `
 SELECT "subEstablishmentID", "approvalStatus"
@@ -28,8 +14,8 @@ const insertChangeOwnershipQuery =
 `
 INSERT INTO
 cqc."OwnerChangeRequest"
-("ownerChangeRequestUID", "subEstablishmentID", "permissionRequest", "approvalStatus", "createdByUserUID")
-VALUES (:uid, :subEstId, :permReq, :appStatus, :userUid);
+("ownerChangeRequestUID", "subEstablishmentID", "permissionRequest", "approvalStatus", "createdByUserUID", "updatedByUserUID")
+VALUES (:uid, :subEstId, :permReq, :appStatus, :userUid, :userUid);
 `;
 
 const lastOwnerChangeRequestQuery =
@@ -41,21 +27,20 @@ ORDER BY cqc."OwnerChangeRequest"."created" DESC
 LIMIT :limit;
 `;
 
-exports.getEstablishmentDetails = async(params) =>
-  db.query(getEstablishmentDetailsQuery, {
+const getReipientUserDetailsQuery =
+`
+select "UserUID" from cqc."Establishment" a JOIN
+cqc."User" b ON a."EstablishmentID" = b."EstablishmentID"  where a."EstablishmentID" = :estID AND b."IsPrimary" = true;
+`;
+
+exports.getReipientUserDetails = async(params) =>
+  db.query(getReipientUserDetailsQuery, {
     replacements: {
-        subEstId: params.subEstablishmentId
+      estID: params.parentId
     },
     type: db.QueryTypes.SELECT
   })
 
-exports.checkEstablishment = async(params) =>
-    db.query(checkEstablishmentQuery, {
-        replacements: {
-            subEstId: params.subEstablishmentId
-        },
-        type: db.QueryTypes.SELECT
-    })
 
 exports.checkAlreadyRequestedOwnership = async(params) =>
     db.query(checkAlreadyRequestedOwnershipQuery, {
