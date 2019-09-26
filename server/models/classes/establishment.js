@@ -1722,7 +1722,7 @@ class Establishment extends EntityValidator {
 
 
     // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
-    static async fetchMyEstablishments(isParent, isWDF, primaryEstablishmentId) {
+    static async fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF) {
       // for each establishment, need:
       //  1. Name
       //  2. Main Service (by title)
@@ -1731,7 +1731,7 @@ class Establishment extends EntityValidator {
       //  5. Updated
       //  6. UID (significantly to be able to navigate to the specific establishment)
       //  7. ParentUID
-  
+
       // only get the sub if the isParent parameter is truthy
       const where = isParent ? {
         $or: [
@@ -1749,7 +1749,7 @@ class Establishment extends EntityValidator {
       } : { id: primaryEstablishmentId };
 
       let params;
-      
+
       if(isWDF) {
         params = {
           attributes: [
@@ -1778,7 +1778,7 @@ class Establishment extends EntityValidator {
               attributes: ['name']
             },
             {
-              model: models.worker, 
+              model: models.worker,
               required: false,
               as: 'workers',
               attributes: [],
@@ -1945,11 +1945,11 @@ class Establishment extends EntityValidator {
     //    "updated" status is not updated
     async bulkUpdateLocalIdentifiers(username, givenLocalIdentifiers) {
       try {
-
-        const myEstablishments = await Establishment.fetchMyEstablishments(this.isParent, this.id);
+        const myEstablishments = await Establishment.fetchMyEstablishments(this.isParent, this.id, false);
 
         // create a list of those establishment UIDs - the user will only be able to update the local identifier for which they own
         const myEstablishmentUIDs = [];
+
         myEstablishmentUIDs.push({
           uid: myEstablishments.primary.uid,
           localIdentifier: myEstablishments.primary.localIdentifier,
