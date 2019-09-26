@@ -1134,6 +1134,11 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     const onloadedPrimaryEstablishment = myAPIEstablishments[primaryEstablishment.key];
     if (!onloadedPrimaryEstablishment) {
       csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
+    } else {
+      // primary establishment does exist in given CSV; check STATUS is not DELETE - cannot delete the primary establishment
+      if (onloadedPrimaryEstablishment.status === 'DELETE') {
+        csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.cannotDeletePrimaryEstablishmentError(primaryEstablishment.name));
+      }
     }
   } else {
     console.error(("Seriously, if seeing this then something has truely gone wrong - the primary establishment should always be in the set of current establishments!"));
