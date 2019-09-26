@@ -247,6 +247,11 @@ class Establishment extends EntityValidator {
     get isParent() {
         return this._isParent;
     }
+
+    get parentId() {
+        return this._parentId;
+    }
+
     get parentUid() {
         return this._parentUid;
     }
@@ -1731,7 +1736,7 @@ class Establishment extends EntityValidator {
       //  5. Updated
       //  6. UID (significantly to be able to navigate to the specific establishment)
       //  7. ParentUID
-  
+
       // only get the sub if the isParent parameter is truthy
       const where = isParent ? {
         $or: [
@@ -1749,7 +1754,7 @@ class Establishment extends EntityValidator {
       } : { id: primaryEstablishmentId };
 
       let params;
-      
+
       if(isWDF) {
         params = {
           attributes: [
@@ -1778,7 +1783,7 @@ class Establishment extends EntityValidator {
               attributes: ['name']
             },
             {
-              model: models.worker, 
+              model: models.worker,
               required: false,
               as: 'workers',
               attributes: [],
