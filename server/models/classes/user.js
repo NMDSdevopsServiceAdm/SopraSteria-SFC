@@ -1103,7 +1103,7 @@ class User {
 
         const primaryEstablishmentId = this._establishmentId;
 
-        return await Establishment.fetchMyEstablishments(isParent, isWDF, primaryEstablishmentId);
+        return await Establishment.fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF);
     };
 
 };
