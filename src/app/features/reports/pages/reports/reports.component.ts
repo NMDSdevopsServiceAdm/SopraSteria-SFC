@@ -39,7 +39,9 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.establishment$.pipe(take(1)).subscribe(workplace => {
         this.workplace = workplace;
-        this.isParent = workplace.isParent;
+        this.isParent = this.establishmentService.primaryWorkplace
+          ? this.establishmentService.primaryWorkplace.isParent
+          : workplace.isParent;
         this.isLocalAuthority = workplace.employerType && workplace.employerType.value.startsWith('Local Authority');
         this.canRunLocalAuthorityReport =
           this.isParent &&
