@@ -72,6 +72,7 @@ export class WdfComponent implements OnInit, OnDestroy {
         .subscribe(([workplace, report, totalStaffRecords]) => {
           this.report = report;
           this.workplace = workplace;
+          this.establishmentService.setState(workplace);
           this.workerCount = totalStaffRecords;
         })
     );
