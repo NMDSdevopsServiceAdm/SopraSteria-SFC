@@ -54,7 +54,7 @@ FROM cqc."OwnerChangeRequest"
 WHERE "ownerChangeRequestUID" = :ownerChangeId;
 `;
 
-const changechangedDataOwnershipRequestedQuery =
+const changedDataOwnershipRequestedQuery =
 `
 UPDATE cqc."Establishment"
 SET "DataOwnershipRequested" = NOW()
@@ -128,7 +128,7 @@ exports.updateOwnershipRequest = async (params) =>
   })
 
 exports.changedDataOwnershipRequested = async (params) =>
-  db.query(changechangedDataOwnershipRequestedQuery, {
+  db.query(changedDataOwnershipRequestedQuery, {
       replacements: {
           estId: params.subEstablishmentId
         },
