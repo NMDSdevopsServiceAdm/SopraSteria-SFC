@@ -54,6 +54,12 @@ router.route('/').post(async (req, res) => {
             if(getRecipientUserDetails.length){
               //save records
               params.recipientUserUid = getRecipientUserDetails[0].UserUID;
+              let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
+              if(!saveDataOwnershipRequested){
+                return res.status(400).send({
+                    message: 'Invalid request',
+                });
+              }
               let changeRequestResp = await ownership.changeOwnershipRequest(params);
               if(!changeRequestResp){
                   return res.status(400).send({
@@ -81,8 +87,81 @@ router.route('/').post(async (req, res) => {
       return res.status(503).send({});        // intentionally an empty JSON response
     }
   } catch(e) {
-    console.error("/establishment/:id/actions/ownershipChange: ERR: ", e.message);
+    console.error("/establishment/:id/ownershipChange: ERR: ", e.message);
     return res.status(503).send({});        // intentionally an empty JSON response
+  }
+});
+
+// PUT request for ownership change request approve/reject
+router.route('/').put(async (req, res) => {
+  try{
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+
+    // Get establishment details
+    const thisEstablishment = new Establishment.Establishment(req.username);
+    try{
+      if(await thisEstablishment.restore(req.establishmentId, false)){
+        if(!thisEstablishment){
+          return res.status(404).send({
+            message: 'Establishment is not found',
+          });
+        }else if(thisEstablishment.isParent || thisEstablishment._parentId === null || thisEstablishment.archived){
+          return res.status(404).send({
+            message: 'Establishment is not a subsidiary',
+          });
+        }else{
+          const params = {
+            userUid: req.userUid,
+            subEstablishmentId: req.establishmentId,
+            approvalStatus: req.body.approvalStatus,
+            approvalReason: req.body.approvalReason
+          };
+          //check already exists ownership records for posted sub establishment id with status: "REQUESTED"
+          let ownershipDetails = await ownership.ownershipDetails(params);
+          if(!ownershipDetails.length){
+            return res.status(404).send({
+              message: `Ownership is not requested`,
+            });
+          }else if(ownershipDetails[0].approvalStatus !== "REQUESTED"){
+            return res.status(400).send({
+              message: `Ownership is already approved/rejected`,
+            });
+          }else{
+            params.parentId = thisEstablishment._parentId;
+            let getRecipientUserDetails = await ownership.getReipientUserDetails(params);
+            if(getRecipientUserDetails.length){
+              //save records
+              params.recipientUserUid = getRecipientUserDetails[0].UserUID;
+              params.ownerRequestChangeUid = ownershipDetails[0].ownerChangeRequestUID;
+              let changeRequestResp = await ownership.updateOwnershipRequest(params);
+              if(!changeRequestResp){
+                  return res.status(400).send({
+                      message: 'Invalid request',
+                  });
+              }else{
+                  params.notificationUid = uuid.v4();
+                  if (!uuidRegex.test(params.notificationUid.toUpperCase())){
+                    console.error('Invalid notification UUID');
+                    return res.status(400).send();
+                  }
+
+                  let addNotificationResp = await notifications.insertNewNotification(params);
+                  if(addNotificationResp){
+                      let resp = await ownership.getUpdatedOwnershipRequest(params);
+                      return res.status(201).send(resp[0]);
+                  }
+              }
+            }
+          }
+        }
+      }
+    }catch(e){
+      console.error("/establishment/:id/ownershipChange: ERR: ", e.message);
+      return res.status(503).send({});
+    }
+  }catch(e){
+    console.error("/establishment/:id/ownershipChange: ERR: ", e.message);
+    return res.status(503).send({});
   }
 });
 
