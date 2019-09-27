@@ -1,10 +1,10 @@
 import { JourneyRoute } from './breadcrumb.model';
 
 enum Path {
-  REPORTS_LANDING_URL = '/workplace/:workplaceUid/reports',
-  ALL_WORKPLACES = '/workplace/:workplaceUid/reports/workplaces',
-  WDF = '/workplace/:workplaceUid/reports/wdf',
-  WDF_STAFF_RECORD = '/workplace/:workplaceUid/staff-record/:workerUid/wdf-summary',
+  REPORTS_LANDING_URL = '/reports',
+  ALL_WORKPLACES = '/reports/all-workplaces',
+  WDF = '/reports/workplace/:workplaceUid/wdf',
+  WDF_STAFF_RECORD = '/reports/workplace/:workplaceUid/staff-record/:workerUid/wdf-summary',
 }
 
 export const reportJourney: JourneyRoute = {
