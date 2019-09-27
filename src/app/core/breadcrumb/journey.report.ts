@@ -1,7 +1,7 @@
 import { JourneyRoute } from './breadcrumb.model';
 
 enum Path {
-  REPORTS_LANDING_URL = '/workplace/:workplaceUid/reports',
+  REPORTS_LANDING_URL = '/workplace/reports',
   ALL_WORKPLACES = '/workplace/:workplaceUid/reports/workplaces',
   WDF = '/workplace/:workplaceUid/reports/wdf',
   WDF_STAFF_RECORD = '/workplace/:workplaceUid/staff-record/:workerUid/wdf-summary',
