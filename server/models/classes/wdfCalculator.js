@@ -331,7 +331,7 @@ class WdfCalculator {
     //  to reflect the latest staff/establishment values
     if (calculateOverall) {
       this._overallWdfEligibility({
-        thisEstablishment: plainEstablishment,
+        thisEstablishment,
         calculatedStaffEligible,
         calculatedEstablishmentEligible,
         readOnly,
