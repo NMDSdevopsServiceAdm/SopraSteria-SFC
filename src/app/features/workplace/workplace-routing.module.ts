@@ -48,11 +48,6 @@ const routes: Routes = [
     data: { title: 'View My Workplaces' },
   },
   {
-    path: 'reports',
-    loadChildren: '@features/reports/reports.module#ReportsModule',
-    data: { title: 'Reports' },
-  },
-  {
     path: 'start-screen',
     data: { title: 'Start' },
   },
