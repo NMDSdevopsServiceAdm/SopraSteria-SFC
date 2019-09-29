@@ -330,7 +330,7 @@ class WdfCalculator {
     // note - in each of the above calculate stages (staff/establishment), the "thisEstablishment" is updated
     //  to reflect the latest staff/establishment values
     if (calculateOverall) {
-      this._overallWdfEligibility({
+      await this._overallWdfEligibility({
         thisEstablishment,
         calculatedStaffEligible,
         calculatedEstablishmentEligible,
@@ -379,81 +379,87 @@ class WdfCalculator {
       calculateOverall
     );
 
+    let t;
+
     try {
-      await models.sequelize.transaction(async t => {
-        const where = establishmentUID ? { uid: establishmentUID } : { id: establishmentID };
+      t = await models.sequelize.transaction();
 
-        let thisEstablishment;
+      const where = establishmentUID ? { uid: establishmentUID } : { id: establishmentID };
 
-        if (calculateStaff || calculateEstablishment) {
-          // get worker counts as part of the query
-          thisEstablishment = await models.establishment.findOne({
-            attributes: [
-              'id',
-              'uid',
-              'lastWdfEligibility',
-              'overallWdfEligibility',
-              'staffWdfEligibility',
-              'establishmentWdfEligibility',
-              'NumberOfStaffValue',
-              [models.sequelize.fn("COUNT", models.sequelize.col('"workers"."ID"')), "workerCount"],
-              [models.sequelize.fn(
-                  "SUM",
-                  models.sequelize.literal(`CASE WHEN "workers"."LastWdfEligibility" > '${this  .effectiveDate.toISOString()}' THEN 1 ELSE 0 END`)
-                ),
-                "eligibleWorkersCount"]
-            ],
-            include: [
-              {
-                model: models.worker,
-                required: false,
-                as: 'workers',
-                attributes: [],
-                where: {
-                  archived: false
-                }
+      let params;
+
+      if (calculateStaff || calculateEstablishment) {
+        // get worker counts as part of the query
+        params = {
+          attributes: [
+            'id',
+            'uid',
+            'lastWdfEligibility',
+            'overallWdfEligibility',
+            'staffWdfEligibility',
+            'establishmentWdfEligibility',
+            'NumberOfStaffValue',
+            [models.sequelize.fn("COUNT", models.sequelize.col('"workers"."ID"')), "workerCount"],
+            [models.sequelize.fn(
+                "SUM",
+                models.sequelize.literal(`CASE WHEN "workers"."LastWdfEligibility" > '${this  .effectiveDate.toISOString()}' THEN 1 ELSE 0 END`)
+              ),
+              "eligibleWorkersCount"]
+          ],
+          include: [
+            {
+              model: models.worker,
+              required: false,
+              as: 'workers',
+              attributes: [],
+              where: {
+                archived: false
               }
-            ],
-            where,
-            group: [
-              'establishment.EstablishmentID',
-              'uid',
-              'lastWdfEligibility',
-              'overallWdfEligibility',
-              'staffWdfEligibility',
-              'establishmentWdfEligibility',
-              'NumberOfStaffValue',
-            ],
-            transaction: externalTransaction
-          });
-        } else {
-          thisEstablishment = await models.establishment.findOne({
-            attributes: [
-              'id',
-              'uid',
-              'lastWdfEligibility',
-              'overallWdfEligibility',
-              'staffWdfEligibility',
-              'establishmentWdfEligibility',
-              'NumberOfStaffValue'
-            ],
-            where,
-            transaction: externalTransaction
-          });
-        }
+            }
+          ],
+          where,
+          group: [
+            'establishment.EstablishmentID',
+            'uid',
+            'lastWdfEligibility',
+            'overallWdfEligibility',
+            'staffWdfEligibility',
+            'establishmentWdfEligibility',
+            'NumberOfStaffValue',
+          ],
+          transaction: externalTransaction || t
+        };
+      } else {
+        params = {
+          attributes: [
+            'id',
+            'uid',
+            'lastWdfEligibility',
+            'overallWdfEligibility',
+            'staffWdfEligibility',
+            'establishmentWdfEligibility',
+            'NumberOfStaffValue'
+          ],
+          where,
+          transaction: externalTransaction || t
+        };
+      }
 
-        if (thisEstablishment && thisEstablishment.id) {
-          wdf = this.calculateData({
-            thisEstablishment,
-            calculateOverall,
-            calculateStaff,
-            calculateEstablishment,
-            readOnly,
-            savedBy,
-            thisTransaction: externalTransaction || t
-          });
-        }
-      });
+      const thisEstablishment = await models.establishment.findOne(params);
+
+      if (thisEstablishment && thisEstablishment.id) {
+        wdf = await this.calculateData({
+          thisEstablishment,
+          calculateOverall,
+          calculateStaff,
+          calculateEstablishment,
+          readOnly,
+          savedBy,
+          thisTransaction: externalTransaction || t
+        });
+      }
+
+      t.commit();
 
       if (wdf) {
         console.log('WA DEBUG - WDF: ', wdf, wdf.reasons ? wdf.reasons : null);
@@ -461,6 +467,9 @@ class WdfCalculator {
         console.error('WdfCalculator::calculate - Failed to find establishment having id/uid: ', establishmentID, establishmentUID);
       }
     } catch (err) {
+      if(t) {
+        t.rollback();
+      }
       console.error('WdfCalculator::calculate - Failed to fetch establishment/workers: ', err);
     }
 
