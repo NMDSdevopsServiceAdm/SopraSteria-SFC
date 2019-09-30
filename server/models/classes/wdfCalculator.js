@@ -323,13 +323,8 @@ class WdfCalculator {
       wdf.overall = false;
     }
 
-    if (wdf.overall) {
-      wdf.staff = true;
-      wdf.workplace = true;
-    } else {
-      wdf.staff = calculatedStaffEligible && calculatedStaffEligible !== this.NOT_ELIGIBLE;
-      wdf.workplace = calculatedEstablishmentEligible && calculatedEstablishmentEligible !== this.NOT_ELIGIBLE;
-    }
+    wdf.staff = calculatedStaffEligible !== this.NOT_ELIGIBLE;
+    wdf.workplace = calculatedEstablishmentEligible !== this.NOT_ELIGIBLE;
 
     wdf.reasons = reasons.length > 0 ? reasons : undefined;
 
