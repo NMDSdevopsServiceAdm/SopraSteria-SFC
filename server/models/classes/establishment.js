@@ -812,35 +812,41 @@ class Establishment extends EntityValidator {
             updatedBy: savedBy.toLowerCase()
           };
 
-          // every time the establishment is saved, need to calculate
-          //  it's current WDF Eligibility, and if it is eligible, update
-          //  the last WDF Eligibility status
-          const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
+          // Every time the establishment is saved, need to calculate
+          // it's current WDF eligibility. If it is eligible then
+          // update the last WDF Eligibility status
+          const wdfEligibility = await this.isWdfEligible(WdfCalculator.effectiveDate);
           const effectiveDateTime = WdfCalculator.effectiveTime;
 
           let wdfAudit = null;
 
-          if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
+          if (wdfEligibility.currentEligibility) {
             updateDocument.lastWdfEligibility = updatedTimestamp;
+            updateDocument.establishmentWdfEligibility = updatedTimestamp;
             wdfAudit = {
               username: savedBy.toLowerCase(),
               type: 'wdfEligible'
             };
           }
+          else {
+            // blank out establishmentWdfEligibility to indicate the
+            // establishment is not currently wdf eligable, but preserve
+            // the value in lastWdfEligibility as that field is audited
+            updateDocument.establishmentWdfEligibility = null;
+          }
 
           // now save the document
-          const [updatedRecordCount, updatedRows] =
-                        await models.establishment.update(
-                          updateDocument,
-                          {
-                            returning: true,
-                            where: {
-                              uid: this.uid
-                            },
-                            attributes: ['id', 'updated'],
-                            transaction: thisTransaction
-                          }
-                        );
+          const [updatedRecordCount, updatedRows] = await models.establishment.update(
+            updateDocument,
+            {
+              returning: true,
+              where: {
+                uid: this.uid
+              },
+              attributes: ['id', 'updated'],
+              transaction: thisTransaction
+            }
+          );
 
           if (updatedRecordCount === 1) {
             const updatedRecord = updatedRows[0].get({ plain: true });
@@ -860,16 +866,19 @@ class Establishment extends EntityValidator {
                 establishmentFk: this._id
               };
             }));
+
             if (wdfAudit) {
               wdfAudit.establishmentFk = this._id;
               allAuditEvents.push(wdfAudit);
             }
+
             await models.establishmentAudit.bulkCreate(allAuditEvents, { transaction: thisTransaction });
 
             // now - work through any additional models having processed all properties (first delete and then re-create)
             const additionalModels = this._properties.additionalModels;
             const additionalModelsByname = Object.keys(additionalModels);
             const deleteModelPromises = [];
+
             additionalModelsByname.forEach(async thisModelByName => {
               deleteModelPromises.push(
                 models[thisModelByName].destroy({
@@ -880,8 +889,11 @@ class Establishment extends EntityValidator {
                 })
               );
             });
+
             await Promise.all(deleteModelPromises);
+
             const createModelPromises = [];
+
             additionalModelsByname.forEach(async thisModelByName => {
               const thisModelData = additionalModels[thisModelByName];
               createModelPromises.push(
@@ -896,6 +908,7 @@ class Establishment extends EntityValidator {
                 )
               );
             });
+
             await Promise.all(createModelPromises);
 
             // always recalculate WDF - if not bulk upload (this._status)
@@ -946,7 +959,6 @@ class Establishment extends EntityValidator {
     try {
       // restore establishment based on id as an integer (primary key or uid)
       let fetchQuery = {
-        // attributes: ['id', 'uid'],
         where: {
           id: id
         }
@@ -954,7 +966,6 @@ class Establishment extends EntityValidator {
 
       if (!Number.isInteger(id)) {
         fetchQuery = {
-          // attributes: ['id', 'uid'],
           where: {
             uid: id,
             archived: false
@@ -1152,16 +1163,12 @@ class Establishment extends EntityValidator {
 
         const allAssociatedServiceIndices = [];
 
-        // console.log('allCapacitiesResults.mainService', allCapacitiesResults.mainService)
-        // console.log('allCapacitiesResults.otherServices', allCapacitiesResults.otherServices)
-
         if (allCapacitiesResults && allCapacitiesResults.id) {
           // merge tha main and other service ids
           if (allCapacitiesResults.mainService.id) {
             allAssociatedServiceIndices.push(allCapacitiesResults.mainService.id);
           }
-          // TODO: there is a much better way to derference (transpose) the id on an Array of objects
-          //  viz. Map
+
           if (allCapacitiesResults.otherServices) {
             allCapacitiesResults.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
           }
@@ -1558,18 +1565,6 @@ class Establishment extends EntityValidator {
             this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
           }
         }
-
-        // prov id can be null for a Non-CQC site - CANNOT IMPOSE THIS PROPERTY AS IT IS NOT YET COMING FROM REGISTRATION
-        // if (this._isRegulated && this._provId === null) {
-        //   allExistAndValid = false;
-        //   this._validations.push(new ValidationMessage(
-        //       ValidationMessage.ERROR,
-        //       106,
-        //       'Missing (mandatory) for a CQC Registered site',
-        //       ['ProvID']
-        //   ));
-        //   this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Prov ID for a (CQC) Regulated workspace');
-        // }
       } catch (err) {
         console.error(err);
       }
@@ -1587,16 +1582,17 @@ class Establishment extends EntityValidator {
     // this establishment is eligible only if the last eligible date is later than the effective date
     //  the WDF by property will show the current eligibility of each property
     return {
+      // whether the establishment has achieved overall wdf eligibility in this financial year
+      isEligible: !!(this._overallWdfEligibility && (this._overallWdfEligibility > effectiveFrom)),
+
+      // whether just the establishment fields are currently considered wdf valid
+      currentEligibility: wdfPropertyValues.every(thisWdfProperty =>
+        (thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
+        thisWdfProperty.isEligible === 'Not relevant'
+      ),
+
+      // The date just the establishment fields were last wdf valid
       lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-      isEligible: wdfPropertyValues.every(thisWdfProperty => {
-        if ((thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
-                    (thisWdfProperty.isEligible === 'Not relevant')) {
-          return true;
-        } else {
-          return false;
-        }
-      }),
-      currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
       ...wdfByProperty
     };
   }
@@ -1613,18 +1609,21 @@ class Establishment extends EntityValidator {
       case PER_PROPERTY_ELIGIBLE:
         referenceTime = property.savedAt.getTime();
         break;
+
       case RECORD_LEVEL_ELIGIBLE:
         referenceTime = this._updated.getTime();
         break;
+
       case COMPLETED_PROPERTY_ELIGIBLE:
         // there is no completed property (yet) - copy the code from '.../server/models/classes/worker.js' once there is
         throw new Error('Establishment WDF by Completion is Not implemented');
     }
 
     return property &&
-               (property.property !== null && property.property !== undefined) &&
-               property.valid &&
-               referenceTime !== null;
+      property.property !== null &&
+      property.property !== undefined &&
+      property.valid &&
+      referenceTime !== null;
   }
 
   // returns the WDF eligibility of each WDF relevant property as referenced from
@@ -1649,21 +1648,17 @@ class Establishment extends EntityValidator {
     //   are capacities. Otherwise, it (capacities eligibility) is not relevant.
     // All Known Capacities is available from the CapacityServices property JSON
     const hasCapacities = this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').toJSON(false, false).allServiceCapacities.length > 0 : false;
+
     let capacitiesEligible;
     if (hasCapacities) {
       // first validate whether any of the capacities are eligible - this is simply a check that capacities are valid.
       const capacitiesProperty = this._properties.get('CapacityServices');
-      // const capacitiesEligibility = this._isPropertyWdfBasicEligible(effectiveFromEpoch, capacitiesProperty);
 
       // we're only interested in the main service capacities
-      const mainServiceCapacities = capacitiesProperty.toJSON(false, false).allServiceCapacities.filter(thisCapacity => {
-        const mainServiceCapacityRegex = /^Main Service - /;
-        if (mainServiceCapacityRegex.test(thisCapacity.service)) {
-          return true;
-        } else {
-          return false;
-        }
-      });
+      const mainServiceCapacities = capacitiesProperty
+        .toJSON(false, false)
+        .allServiceCapacities
+        .filter(thisCapacity => (/^Main Service - /).test(thisCapacity.service));
 
       if (mainServiceCapacities.length === 0) {
         capacitiesEligible = 'Not relevant';
@@ -1680,11 +1675,12 @@ class Establishment extends EntityValidator {
       updatedSinceEffectiveDate: this._properties.get('CapacityServices').toJSON(false, true, WdfCalculator.effectiveDate)
     };
 
+    const serviceUsers = this._properties.get('ServiceUsers');
     myWdf.serviceUsers = {
       // for service users, it is not enough that the property itself is valid, to be WDF eligible it
       //   there must be at least one service user
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? this._properties.get('ServiceUsers').property.length > 0 ? 'Yes' : 'No' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('ServiceUsers').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, serviceUsers) && serviceUsers.property.length > 0 ? 'Yes' : 'No',
+      updatedSinceEffectiveDate: serviceUsers.toJSON(false, true, WdfCalculator.effectiveDate)
     };
 
     // vacancies, starters and leavers
@@ -1718,12 +1714,11 @@ class Establishment extends EntityValidator {
   // returns the WDF eligibilty as JSON object
   async wdfToJson () {
     const effectiveFrom = WdfCalculator.effectiveDate;
-    const myWDF = {
+
+    return {
       effectiveFrom: effectiveFrom.toISOString(),
-      overalWdfEligible: this._overallWdfEligibility ? this._overallWdfEligibility.toISOString() : false,
       ...await this.isWdfEligible(effectiveFrom)
     };
-    return myWDF;
   }
 
   // for the given establishment, updates the last bulk uploaded timestamp
@@ -1786,6 +1781,7 @@ class Establishment extends EntityValidator {
           'dataOwnershipRequested',
           'overallWdfEligibility',
           'lastWdfEligibility',
+          'establishmentWdfEligibility',
           'NumberOfStaffValue',
           [models.sequelize.fn('COUNT', models.sequelize.col('"workers"."ID"')), 'workerCount'],
           [models.sequelize.fn(
@@ -1830,6 +1826,7 @@ class Establishment extends EntityValidator {
           'dataOwnershipRequested',
           'overallWdfEligibility',
           'lastWdfEligibility',
+          'establishmentWdfEligibility',
           'NumberOfStaffValue'
         ]
       };
@@ -1947,6 +1944,7 @@ class Establishment extends EntityValidator {
         type: 'saved',
         property: 'LocalIdentifier'
       });
+
       allAuditEvents.push({
         establishmentFk: updatedRecord.EstablishmentID,
         username,
@@ -2114,6 +2112,7 @@ class Establishment extends EntityValidator {
           // only try to update if not yet eligible
           if (thisEstablishment._lastWdfEligibility === null) {
             const wdfEligibility = await thisEstablishment.wdfToJson();
+
             if (wdfEligibility.isEligible) {
               await models.establishment.update(
                 {
@@ -2138,7 +2137,7 @@ class Establishment extends EntityValidator {
             }
           } // end if _lastWdfEligibility
 
-          // checking checked/updated establihsment, now iterate through the workers
+          // checking checked/updated establishment, now iterate through the workers
           const workers = await Worker.fetch(establishmentId);
           const workerPromise = Promise.resolve(null);
           await workers.reduce((p, thisWorker) => p.then(() => Worker.recalcWdf(username, establishmentId, thisWorker.uid, t).then(log)), workerPromise);

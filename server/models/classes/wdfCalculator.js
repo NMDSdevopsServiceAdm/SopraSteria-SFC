@@ -157,7 +157,6 @@ class WdfCalculator {
     thisTransaction,
     reasons
   }) {
-    // console.log(`WA DEBUG - recalculating overal WDF eligibility for establishment (${establishment.id})`);
     if (thisEstablishment.overallWdfEligibility && thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) {
       // already eligibile
       return this.ALREADY_ELIGIBLE;
@@ -205,6 +204,8 @@ class WdfCalculator {
     thisEstablishment,
     reasons
   }) {
+    let retval = this.NOW_ELIGIBLE;
+
     // the number of active worker records must be the same as the declared Establishment staff
     if (parseInt(thisEstablishment.workerCount || 0, 10) !== parseInt(thisEstablishment.NumberOfStaffValue, 10)) {
       reasons.push({
@@ -214,11 +215,11 @@ class WdfCalculator {
         }
       });
 
-      return this.NOT_ELIGIBLE;
+      retval = this.NOT_ELIGIBLE;
     }
 
-    // with number of staff/#workers matching, the establishment itself must be eligible
-    if (!(thisEstablishment.lastWdfEligibility && thisEstablishment.lastWdfEligibility.getTime() > this.effectiveTime)) {
+    // with number of staff/#workers matching, the establishment itself must currently be eligible
+    if (!(thisEstablishment.establishmentWdfEligibility && thisEstablishment.establishmentWdfEligibility.getTime() > this.effectiveTime)) {
       reasons.push({
         establishment: {
           message: 'Workplace properties not all eligible',
@@ -226,12 +227,12 @@ class WdfCalculator {
         }
       });
 
-      return this.NOT_ELIGIBLE;
+      retval = this.NOT_ELIGIBLE;
     }
 
     // gets this far if now eligible - but do not update establishment WDF eligibility  - no tracking
 
-    return this.NOW_ELIGIBLE;
+    return retval;
   }
 
   async _staffWdfEligibility ({
@@ -367,15 +368,14 @@ class WdfCalculator {
           attributes: [
             'id',
             'uid',
-            'lastWdfEligibility',
             'overallWdfEligibility',
-            'staffWdfEligibility',
+            'lastWdfEligibility',
             'establishmentWdfEligibility',
             'NumberOfStaffValue',
             [models.sequelize.fn("COUNT", models.sequelize.col('"workers"."ID"')), "workerCount"],
             [models.sequelize.fn(
                 "SUM",
-                models.sequelize.literal(`CASE WHEN "workers"."LastWdfEligibility" > '${this  .effectiveDate.toISOString()}' THEN 1 ELSE 0 END`)
+                models.sequelize.literal(`CASE WHEN "workers"."LastWdfEligibility" > '${this.effectiveDate.toISOString()}' THEN 1 ELSE 0 END`)
               ),
               "eligibleWorkersCount"]
           ],
@@ -394,9 +394,8 @@ class WdfCalculator {
           group: [
             'establishment.EstablishmentID',
             'uid',
-            'lastWdfEligibility',
             'overallWdfEligibility',
-            'staffWdfEligibility',
+            'lastWdfEligibility',
             'establishmentWdfEligibility',
             'NumberOfStaffValue',
           ],
@@ -407,9 +406,8 @@ class WdfCalculator {
           attributes: [
             'id',
             'uid',
-            'lastWdfEligibility',
             'overallWdfEligibility',
-            'staffWdfEligibility',
+            'lastWdfEligibility',
             'establishmentWdfEligibility',
             'NumberOfStaffValue'
           ],
