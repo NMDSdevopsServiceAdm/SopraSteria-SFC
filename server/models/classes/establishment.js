@@ -247,6 +247,11 @@ class Establishment extends EntityValidator {
     get isParent() {
         return this._isParent;
     }
+
+    get parentId() {
+        return this._parentId;
+    }
+
     get parentUid() {
         return this._parentUid;
     }
