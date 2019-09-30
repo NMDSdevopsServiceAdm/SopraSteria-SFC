@@ -63,21 +63,16 @@ class WdfCalculator {
       case 1000:
         // add worker
         calculateOverall = true;
-        calculateEstablishment = true;
-        calculateStaff = true;
         break;
 
       case 1001:
         // update worker
         calculateOverall = true;
-        calculateStaff = true;
         break;
 
       case 1002:
         // delete worker
         calculateOverall = true;
-        calculateEstablishment = true;
-        calculateStaff = true;
         break;
 
       case 2000:
@@ -87,7 +82,6 @@ class WdfCalculator {
       case 2001:
         // update establishment
         calculateOverall = true;
-        calculateEstablishment = true;
         break;
 
       case 2002:
@@ -97,22 +91,16 @@ class WdfCalculator {
       case 3000:
         // bulk upload
         calculateOverall = true;
-        calculateEstablishment = true;
-        calculateStaff = true;
         break;
 
       case 4000:
         // report
         calculateOverall = true;
-        calculateEstablishment = true;
-        calculateStaff = true;
         break;
 
       case 5000:
         // recalc
         calculateOverall = true;
-        calculateEstablishment = true;
-        calculateStaff = true;
         break;
     }
 
@@ -217,14 +205,7 @@ class WdfCalculator {
     thisEstablishment,
     reasons
   }) {
-    // console.log(`WA DEBUG - recalculating establishment WDF eligibility for establishment (${establishment.id})`);
-    if (thisEstablishment.overallWdfEligibility && thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) {
-      // already eligibile
-      return this.ALREADY_ELIGIBLE;
-    }
-
     // the number of active worker records must be the same as the declared Establishment staff
-    // console.log(`WA DEBUG - Establishment has #${thisEstablishment.workerCount} workers`)
     if (parseInt(thisEstablishment.workerCount || 0, 10) !== parseInt(thisEstablishment.NumberOfStaffValue, 10)) {
       reasons.push({
         establishment: {
@@ -260,12 +241,6 @@ class WdfCalculator {
     const workersCount = parseInt(thisEstablishment.workerCount || 0, 10);
     const eligibleWorkersCount = parseInt(thisEstablishment.eligibleWorkersCount || 0, 10);
 
-    // console.log(`WA DEBUG - recalculating staff WDF eligibility for establishment (${establishment.id})`);
-    if (thisEstablishment.overallWdfEligibility && thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) {
-      // already eligibile
-      return this.ALREADY_ELIGIBLE;
-    }
-
     if (workersCount === 0) {
       reasons.push({
         staff: {
@@ -277,11 +252,9 @@ class WdfCalculator {
       return this.NOT_ELIGIBLE;
     }
 
-    // at least 90% of all current workers must be eligible
-
     const weightedStaffEligibility = workersCount > 0 ? eligibleWorkersCount / workersCount : 0;
 
-    // console.log(`WA DEBUG - establishment has #${workers.length} workers having #${allEligibleWorkers.length} eligible workers: ${weightedStaffEligibility*100}%`)
+    // at least 90% of all current workers must be eligible
     if (weightedStaffEligibility < 0.9) {
       reasons.push({
         staff: {
@@ -296,7 +269,7 @@ class WdfCalculator {
     return this.NOW_ELIGIBLE;
   }
 
-  // calculate eligability for a establishment model provided as a paremeter
+  // calculate eligibility for a establishment model provided as a paremeter
   async calculateData ({
     thisEstablishment,
     calculateOverall,
