@@ -1579,8 +1579,8 @@ class Establishment extends EntityValidator {
     const wdfByProperty = await this.wdf(effectiveFrom);
     const wdfPropertyValues = Object.values(wdfByProperty);
 
-    // this establishment is eligible only if the last eligible date is later than the effective date
-    //  the WDF by property will show the current eligibility of each property
+    // This establishment is eligible only if the overall eligible date is later than the effective date
+    // The WDF by property will show the current eligibility of each property
     return {
       // whether the establishment has achieved overall wdf eligibility in this financial year
       isEligible: !!(this._overallWdfEligibility && (this._overallWdfEligibility > effectiveFrom)),
