@@ -38,7 +38,15 @@ let ALL_PERMISSIONS = [
     description: 'change permissions for subsidiary views',
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: [],
-    subOwnedByParentAccessBySub: [],
+    subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    isAdmin: false,
+  },
+  {
+    code: 'canChangeDataOwner',
+    description: 'change data owner',
+    role: ['Edit'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
     isAdmin: false,
   },
   {
