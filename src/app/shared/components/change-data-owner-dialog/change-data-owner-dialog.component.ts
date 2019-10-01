@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -8,12 +8,13 @@ import { SummaryList } from '@core/model/summary-list.model';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-change-data-owner-dialog',
   templateUrl: './change-data-owner-dialog.component.html',
 })
-export class ChangeDataOwnerDialogComponent extends DialogComponent implements OnInit {
+export class ChangeDataOwnerDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];
   public form: FormGroup;
   public formErrorsMap: ErrorDetails[];
@@ -21,6 +22,10 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   public workplace: Workplace;
   public dataPermissionsRequester: Establishment;
   public summaryList: SummaryList[];
+  protected subscriptions: Subscription = new Subscription();
+  public permissionType: string;
+  public isOwnershipError: boolean;
+  public serverError: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
@@ -105,5 +110,29 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
         ],
       },
     ];
+  }
+  public changeOwnership() {
+    if (this.form.valid) {
+      this.permissionType = this.form.value.dataPermission;
+      let requestedPermission = {
+        permissionRequest: this.permissionType,
+      };
+      this.subscriptions.add(
+        this.establishmentService
+          .changeOwnership(this.workplace.uid, requestedPermission)
+          .subscribe(data => {
+            if (data) {
+              this.close(true);
+            }
+          },
+            error => {
+              this.isOwnershipError = true;
+              this.serverError = error.error.message;
+            })
+      );
+    }
+  }
+  public ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
