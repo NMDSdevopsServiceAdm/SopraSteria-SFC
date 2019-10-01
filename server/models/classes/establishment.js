@@ -99,6 +99,7 @@ class Establishment extends EntityValidator {
         this._dataOwner = null;
         this._dataPermissions = null;
         this._archived = null;
+        this._dataOwnershipRequested = null;
 
         // interim reasons for leaving - https://trello.com/c/vNHbfdms
         this._reasonsForLeaving = null;
@@ -277,6 +278,10 @@ class Establishment extends EntityValidator {
 
     get archived(){
       return this._archived;
+    }
+
+    get dataOwnershipRequested(){
+      return this._dataOwnershipRequested;
     }
 
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -980,6 +985,7 @@ class Establishment extends EntityValidator {
                 // interim solution for reason for leaving
                 this._reasonsForLeaving = fetchResults.reasonsForLeaving;
                 this._archived = fetchResults.archived;
+                this._dataOwnershipRequested = fetchResults.dataOwnershipRequested;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
