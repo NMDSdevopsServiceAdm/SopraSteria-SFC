@@ -806,33 +806,29 @@ const _validateWorkerCsv = async (
   myAPIQualifications,
   myCurrentEstablishments
 ) => {
-  const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber, myCurrentEstablishments);
-
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
+  const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber, myCurrentEstablishments);
   lineValidator.validate();
   lineValidator.transform();
-
-  const thisWorkerAsAPI = lineValidator.toAPI();
 
   // construct Worker entity
   const thisApiWorker = new WorkerEntity();
 
   try {
-    await thisApiWorker.load(thisWorkerAsAPI);
+    await thisApiWorker.load(lineValidator.toAPI());
 
-    const isValid = thisApiWorker.validate();
-    if (isValid) {
+    if (thisApiWorker.validate()) {
       // no validation errors in the entity itself, so add it ready for completion
       myAPIWorkers[currentLineNumber] = thisApiWorker;
 
       // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
       //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
-      const thisQualificationAsAPI = lineValidator.toQualificationAPI();
-      await Promise.all(
-        thisQualificationAsAPI.map((thisQual) => {
-          return _loadWorkerQualifications(lineValidator, thisQual, thisApiWorker, myAPIQualifications);
-        })
-      );
+      await Promise.all(lineValidator.toQualificationAPI().map(thisQual => _loadWorkerQualifications(
+        lineValidator,
+        thisQual,
+        thisApiWorker,
+        myAPIQualifications
+      )));
     } else {
       const errors = thisApiWorker.errors;
       const warnings = thisApiWorker.warnings;
@@ -918,10 +914,14 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   //    2: { },
   //    ...
   // }
-  const myAPIEstablishments = {}; const myAPIWorkers = {}; const myAPITrainings = {}; const myAPIQualifications = {};
+  const myAPIEstablishments = {};
+  const myAPIWorkers = {};
+  const myAPITrainings = {};
+  const myAPIQualifications = {};
 
   // for unique/cross-reference validations
-  const allEstablishmentsByKey = {}; const allWorkersByKey = {};
+  const allEstablishmentsByKey = {};
+  const allWorkersByKey = {};
 
   // /////////////////////////
 
