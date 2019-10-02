@@ -58,8 +58,8 @@ export class WdfComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(breadcrumbConfig);
 
     this.canViewWorker = this.permissionsService.can(workplaceUid, 'canViewWorker');
-    this.returnUrl = { url: ['/workplace', workplaceUid, 'reports', 'wdf'] };
-    this.exitUrl = { url: ['/workplace', workplaceUid, 'reports'] };
+    this.returnUrl = { url: ['/reports', 'workplace', workplaceUid, 'wdf'] };
+    this.exitUrl = { url: ['/reports', 'reports'] };
     this.workerService.setReturnTo(null);
 
     this.subscriptions.add(
@@ -72,6 +72,7 @@ export class WdfComponent implements OnInit, OnDestroy {
         .subscribe(([workplace, report, totalStaffRecords]) => {
           this.report = report;
           this.workplace = workplace;
+          this.establishmentService.setState(workplace);
           this.workerCount = totalStaffRecords;
         })
     );

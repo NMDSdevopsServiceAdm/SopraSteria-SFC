@@ -47,7 +47,7 @@
         <li *ngIf="canViewWorkplaces">
           <a [routerLink]="['/workplace', 'view-all-workplaces']">View all workplaces</a>
         </li>
-        <li *ngIf="canViewReports"><a [routerLink]="['/workplace', workplace.uid, 'reports']">View reports</a></li>
+        <li *ngIf="canViewReports"><a [routerLink]="['/reports']">View reports</a></li>
       </ul>
     </ng-container>
     <ul *ngIf="[adminRole].includes(user.role)" class="govuk-list">

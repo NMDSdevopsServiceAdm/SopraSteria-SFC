@@ -1,4 +1,4 @@
-<app-reports-header *ngIf="workplace" [workplace]="workplace"></app-reports-header>
+<app-reports-header *ngIf="primaryWorkplace" [workplace]="primaryWorkplace"></app-reports-header>
 
 <div class="govuk-grid-row govuk-!-margin-bottom-3">
   <div class="govuk-grid-column-full">
@@ -14,12 +14,12 @@
         </a>
       </li>
       <li>
-        <a class="govuk-body-m" [routerLink]="['../wdf']">
+        <a class="govuk-body-m" [routerLink]="['workplace', primaryWorkplace.uid, 'wdf']">
           {{ isParent ? 'My workplace' : 'Workforce Development Fund' }}
         </a>
       </li>
       <li *ngIf="isParent">
-        <a class="govuk-body-m" [routerLink]="['workplaces']">All workplaces</a>
+        <a class="govuk-body-m" [routerLink]="['all-workplaces']">All workplaces</a>
       </li>
     </ul>
 

@@ -53,8 +53,6 @@ const getUser = async (req, res) => {
     let userId;
     const establishment = req.establishment;
 
-    console.log("WA DEBUG - establishment from req: ", establishment)
-
     if(req.params.userId){
         userId = req.params.userId;
     } else {

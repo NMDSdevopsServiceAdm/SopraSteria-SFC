@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { ReportsGuard } from '@core/guards/reports.guard';
 
 import { ReportsComponent } from './pages/reports/reports.component';
@@ -14,17 +15,18 @@ const routes: Routes = [
     component: ReportsComponent,
   },
   {
-    path: 'workplaces',
+    path: 'all-workplaces',
     component: WorkplacesComponent,
   },
   {
-    path: 'wdf',
-    canActivate: [CheckPermissionsGuard],
+    path: 'workplace/:establishmentuid/wdf',
+    canActivate: [HasPermissionsGuard],
     data: { permissions: ['canViewWdfReport'], title: 'Workforce Development Fund Report' },
     children: [
       {
         path: '',
         component: WdfComponent,
+        canActivate: [CheckPermissionsGuard],
       },
     ],
   },

@@ -489,8 +489,6 @@ router.route('/')
 
         if (!defaultError) defaultError = responseErrors.default;
 
-        console.log("WA DEBUG - exception: ", err)
-
         if (err instanceof EstablishmentSaveException) {
           if (err.message === 'Duplicate Establishment') {
             defaultError = responseErrors.duplicateEstablishment;

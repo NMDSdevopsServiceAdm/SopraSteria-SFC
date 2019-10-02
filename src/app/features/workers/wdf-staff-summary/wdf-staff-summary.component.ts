@@ -54,7 +54,7 @@ export class WdfStaffSummaryComponent implements OnInit {
       .subscribe(worker => {
         this.worker = worker;
         this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
-        this.exitUrl = { url: ['/workplace', this.workplace.uid, 'reports', 'wdf'], fragment: 'staff-records' };
+        this.exitUrl = { url: ['/reports', 'workplace', this.workplace.uid, 'wdf'], fragment: 'staff-records' };
       });
   }
 

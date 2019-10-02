@@ -277,11 +277,6 @@ const routes: Routes = [
           title: 'Staff Records',
         },
       },
-      {
-        path: 'reports',
-        loadChildren: '@features/reports/reports.module#ReportsModule',
-        data: { title: 'Reports' },
-      },
     ],
   },
 ];

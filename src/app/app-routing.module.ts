@@ -96,6 +96,11 @@ const routes: Routes = [
         data: { title: 'Workplace' },
       },
       {
+        path: 'reports',
+        loadChildren: '@features/reports/reports.module#ReportsModule',
+        data: { title: 'Reports' },
+      },
+      {
         path: 'add-workplace',
         loadChildren: '@features/add-workplace/add-workplace.module#AddWorkplaceModule',
         canActivate: [CheckPermissionsGuard],

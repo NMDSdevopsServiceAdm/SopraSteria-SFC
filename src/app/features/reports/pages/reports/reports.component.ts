@@ -18,6 +18,7 @@ import { take } from 'rxjs/operators';
 })
 export class ReportsComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
+  public primaryWorkplace: Establishment;
   public canRunLocalAuthorityReport: boolean;
   public isAdmin: boolean;
   public isParent: boolean;
@@ -36,10 +37,11 @@ export class ReportsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.REPORTS);
     this.isAdmin = [Roles.Admin].includes(this.userService.loggedInUser.role);
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.subscriptions.add(
       this.establishmentService.establishment$.pipe(take(1)).subscribe(workplace => {
         this.workplace = workplace;
-        this.isParent = workplace.isParent;
+        this.isParent = this.primaryWorkplace ? this.primaryWorkplace.isParent : workplace.isParent;
         this.isLocalAuthority = workplace.employerType && workplace.employerType.value.startsWith('Local Authority');
         this.canRunLocalAuthorityReport =
           this.isParent &&

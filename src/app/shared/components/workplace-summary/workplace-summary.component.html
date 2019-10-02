@@ -28,21 +28,22 @@
       Employer type
     </dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value
-        *ngIf="workplace.wdf?.employerType"
-        [wdfView]="wdfView"
-        [wdfValue]="workplace.wdf?.employerType"
-      >
-        {{ workplace.wdf.employerType?.other ? workplace.wdf.employerType.other : workplace.wdf.employerType.value }}
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.employerType">
+        <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
+          -
+        </ng-container>
+        <ng-template #employertype>
+          {{ workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value }}
+        </ng-template>
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <a [routerLink]="['/workplace', workplace.uid, 'type-of-employer']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.employerType?.value">
+        <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value)">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="workplace.employerType?.value">
+        <ng-container *ngIf="workplace.employerType?.other || workplace.employerType?.value">
           Change
         </ng-container>
         <span class="govuk-visually-hidden"> employer type</span>

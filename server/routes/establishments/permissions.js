@@ -10,11 +10,16 @@ router.route('/').get(async (req, res) => {
 
   try {
     if (await thisEstablishment.restore(establishmentId)) {
+        const permissions = await PermissionCache.myPermissions(req).map((item) => {
+          if(item.code === "canChangeDataOwner" && thisEstablishment.dataOwnershipRequested !== null){
+            return { [item.code]: false };
+          }else{
+            return { [item.code]: true };
+          }
+        })
         return res.status(200).json({
             uid: thisEstablishment.uid,
-            permissions: Object.assign({}, ...PermissionCache.myPermissions(req).map((item) => {
-                return { [item.code]: true }
-            }))
+            permissions: Object.assign({}, ...permissions)
         });
     } else {
       return res.status(404).send('Not Found');
