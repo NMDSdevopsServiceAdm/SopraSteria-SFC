@@ -390,19 +390,17 @@ router.route('/uploaded').put(async (req, res) => {
     // ////////////////////////////////////
     await Promise.all(metadataS3Promises);
 
-    const generateReturnData = (metaData) => {
-      return {
-        filename: metaData.filename,
-        uploaded: metaData.lastModified,
-        username: metaData.userName ? metaData.userName : null,
-        records: metaData.records,
-        errors: 0,
-        warnings: 0,
-        fileType: metaData.fileType,
-        size: metaData.size,
-        key: metaData.key
-      };
-    };
+    const generateReturnData = (metaData) => ({
+      filename: metaData.filename,
+      uploaded: metaData.lastModified,
+      username: metaData.userName ? metaData.userName : null,
+      records: metaData.records,
+      errors: 0,
+      warnings: 0,
+      fileType: metaData.fileType,
+      size: metaData.size,
+      key: metaData.key
+    });
 
     const returnData = [];
 
