@@ -63,21 +63,16 @@ class WdfCalculator {
       case 1000:
         // add worker
         calculateOverall = true;
-        calculateEstablishment = true;
-        calculateStaff = true;
         break;
 
       case 1001:
         // update worker
         calculateOverall = true;
-        calculateStaff = true;
         break;
 
       case 1002:
         // delete worker
         calculateOverall = true;
-        calculateEstablishment = true;
-        calculateStaff = true;
         break;
 
       case 2000:
@@ -87,7 +82,6 @@ class WdfCalculator {
       case 2001:
         // update establishment
         calculateOverall = true;
-        calculateEstablishment = true;
         break;
 
       case 2002:
@@ -97,22 +91,16 @@ class WdfCalculator {
       case 3000:
         // bulk upload
         calculateOverall = true;
-        calculateEstablishment = true;
-        calculateStaff = true;
         break;
 
       case 4000:
         // report
         calculateOverall = true;
-        calculateEstablishment = true;
-        calculateStaff = true;
         break;
 
       case 5000:
         // recalc
         calculateOverall = true;
-        calculateEstablishment = true;
-        calculateStaff = true;
         break;
     }
 
@@ -169,7 +157,6 @@ class WdfCalculator {
     thisTransaction,
     reasons
   }) {
-    // console.log(`WA DEBUG - recalculating overal WDF eligibility for establishment (${establishment.id})`);
     if (thisEstablishment.overallWdfEligibility && thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) {
       // already eligibile
       return this.ALREADY_ELIGIBLE;
@@ -217,14 +204,9 @@ class WdfCalculator {
     thisEstablishment,
     reasons
   }) {
-    // console.log(`WA DEBUG - recalculating establishment WDF eligibility for establishment (${establishment.id})`);
-    if (thisEstablishment.overallWdfEligibility && thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) {
-      // already eligibile
-      return this.ALREADY_ELIGIBLE;
-    }
+    let retval = this.NOW_ELIGIBLE;
 
     // the number of active worker records must be the same as the declared Establishment staff
-    // console.log(`WA DEBUG - Establishment has #${thisEstablishment.workerCount} workers`)
     if (parseInt(thisEstablishment.workerCount || 0, 10) !== parseInt(thisEstablishment.NumberOfStaffValue, 10)) {
       reasons.push({
         establishment: {
@@ -233,11 +215,11 @@ class WdfCalculator {
         }
       });
 
-      return this.NOT_ELIGIBLE;
+      retval = this.NOT_ELIGIBLE;
     }
 
-    // with number of staff/#workers matching, the establishment itself must be eligible
-    if (!(thisEstablishment.lastWdfEligibility && thisEstablishment.lastWdfEligibility.getTime() > this.effectiveTime)) {
+    // with number of staff/#workers matching, the establishment itself must currently be eligible
+    if (!(thisEstablishment.establishmentWdfEligibility && thisEstablishment.establishmentWdfEligibility.getTime() > this.effectiveTime)) {
       reasons.push({
         establishment: {
           message: 'Workplace properties not all eligible',
@@ -245,12 +227,12 @@ class WdfCalculator {
         }
       });
 
-      return this.NOT_ELIGIBLE;
+      retval = this.NOT_ELIGIBLE;
     }
 
     // gets this far if now eligible - but do not update establishment WDF eligibility  - no tracking
 
-    return this.NOW_ELIGIBLE;
+    return retval;
   }
 
   async _staffWdfEligibility ({
@@ -259,12 +241,6 @@ class WdfCalculator {
   }) {
     const workersCount = parseInt(thisEstablishment.workerCount || 0, 10);
     const eligibleWorkersCount = parseInt(thisEstablishment.eligibleWorkersCount || 0, 10);
-
-    // console.log(`WA DEBUG - recalculating staff WDF eligibility for establishment (${establishment.id})`);
-    if (thisEstablishment.overallWdfEligibility && thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) {
-      // already eligibile
-      return this.ALREADY_ELIGIBLE;
-    }
 
     if (workersCount === 0) {
       reasons.push({
@@ -277,11 +253,9 @@ class WdfCalculator {
       return this.NOT_ELIGIBLE;
     }
 
-    // at least 90% of all current workers must be eligible
-
     const weightedStaffEligibility = workersCount > 0 ? eligibleWorkersCount / workersCount : 0;
 
-    // console.log(`WA DEBUG - establishment has #${workers.length} workers having #${allEligibleWorkers.length} eligible workers: ${weightedStaffEligibility*100}%`)
+    // at least 90% of all current workers must be eligible
     if (weightedStaffEligibility < 0.9) {
       reasons.push({
         staff: {
@@ -296,7 +270,7 @@ class WdfCalculator {
     return this.NOW_ELIGIBLE;
   }
 
-  // calculate eligability for a establishment model provided as a paremeter
+  // calculate eligibility for a establishment model provided as a paremeter
   async calculateData ({
     thisEstablishment,
     calculateOverall,
@@ -330,7 +304,7 @@ class WdfCalculator {
     // note - in each of the above calculate stages (staff/establishment), the "thisEstablishment" is updated
     //  to reflect the latest staff/establishment values
     if (calculateOverall) {
-      this._overallWdfEligibility({
+      await this._overallWdfEligibility({
         thisEstablishment,
         calculatedStaffEligible,
         calculatedEstablishmentEligible,
@@ -349,13 +323,8 @@ class WdfCalculator {
       wdf.overall = false;
     }
 
-    if (wdf.overall) {
-      wdf.staff = true;
-      wdf.workplace = true;
-    } else {
-      wdf.staff = calculatedStaffEligible && calculatedStaffEligible !== this.NOT_ELIGIBLE;
-      wdf.workplace = calculatedEstablishmentEligible && calculatedEstablishmentEligible !== this.NOT_ELIGIBLE;
-    }
+    wdf.staff = calculatedStaffEligible !== this.NOT_ELIGIBLE;
+    wdf.workplace = calculatedEstablishmentEligible !== this.NOT_ELIGIBLE;
 
     wdf.reasons = reasons.length > 0 ? reasons : undefined;
 
@@ -379,81 +348,84 @@ class WdfCalculator {
       calculateOverall
     );
 
+    let t;
+
     try {
-      await models.sequelize.transaction(async t => {
-        const where = establishmentUID ? { uid: establishmentUID } : { id: establishmentID };
+      t = await models.sequelize.transaction();
 
-        let thisEstablishment;
+      const where = establishmentUID ? { uid: establishmentUID } : { id: establishmentID };
 
-        if (calculateStaff || calculateEstablishment) {
-          // get worker counts as part of the query
-          thisEstablishment = await models.establishment.findOne({
-            attributes: [
-              'id',
-              'uid',
-              'lastWdfEligibility',
-              'overallWdfEligibility',
-              'staffWdfEligibility',
-              'establishmentWdfEligibility',
-              'NumberOfStaffValue',
-              [models.sequelize.fn("COUNT", models.sequelize.col('"workers"."ID"')), "workerCount"],
-              [models.sequelize.fn(
-                  "SUM",
-                  models.sequelize.literal(`CASE WHEN "workers"."LastWdfEligibility" > '${this  .effectiveDate.toISOString()}' THEN 1 ELSE 0 END`)
-                ),
-                "eligibleWorkersCount"]
-            ],
-            include: [
-              {
-                model: models.worker,
-                required: false,
-                as: 'workers',
-                attributes: [],
-                where: {
-                  archived: false
-                }
+      let params;
+
+      if (calculateStaff || calculateEstablishment) {
+        // get worker counts as part of the query
+        params = {
+          attributes: [
+            'id',
+            'uid',
+            'overallWdfEligibility',
+            'lastWdfEligibility',
+            'establishmentWdfEligibility',
+            'NumberOfStaffValue',
+            [models.sequelize.fn("COUNT", models.sequelize.col('"workers"."ID"')), "workerCount"],
+            [models.sequelize.fn(
+                "SUM",
+                models.sequelize.literal(`CASE WHEN "workers"."LastWdfEligibility" > '${this.effectiveDate.toISOString()}' THEN 1 ELSE 0 END`)
+              ),
+              "eligibleWorkersCount"]
+          ],
+          include: [
+            {
+              model: models.worker,
+              required: false,
+              as: 'workers',
+              attributes: [],
+              where: {
+                archived: false
               }
-            ],
-            where,
-            group: [
-              'establishment.EstablishmentID',
-              'uid',
-              'lastWdfEligibility',
-              'overallWdfEligibility',
-              'staffWdfEligibility',
-              'establishmentWdfEligibility',
-              'NumberOfStaffValue',
-            ],
-            transaction: externalTransaction
-          });
-        } else {
-          thisEstablishment = await models.establishment.findOne({
-            attributes: [
-              'id',
-              'uid',
-              'lastWdfEligibility',
-              'overallWdfEligibility',
-              'staffWdfEligibility',
-              'establishmentWdfEligibility',
-              'NumberOfStaffValue'
-            ],
-            where,
-            transaction: externalTransaction
-          });
-        }
+            }
+          ],
+          where,
+          group: [
+            'establishment.EstablishmentID',
+            'uid',
+            'overallWdfEligibility',
+            'lastWdfEligibility',
+            'establishmentWdfEligibility',
+            'NumberOfStaffValue',
+          ],
+          transaction: externalTransaction || t
+        };
+      } else {
+        params = {
+          attributes: [
+            'id',
+            'uid',
+            'overallWdfEligibility',
+            'lastWdfEligibility',
+            'establishmentWdfEligibility',
+            'NumberOfStaffValue'
+          ],
+          where,
+          transaction: externalTransaction || t
+        };
+      }
 
-        if (thisEstablishment && thisEstablishment.id) {
-          wdf = this.calculateData({
-            thisEstablishment,
-            calculateOverall,
-            calculateStaff,
-            calculateEstablishment,
-            readOnly,
-            savedBy,
-            thisTransaction: externalTransaction || t
-          });
-        }
-      });
+      const thisEstablishment = await models.establishment.findOne(params);
+
+      if (thisEstablishment && thisEstablishment.id) {
+        wdf = await this.calculateData({
+          thisEstablishment,
+          calculateOverall,
+          calculateStaff,
+          calculateEstablishment,
+          readOnly,
+          savedBy,
+          thisTransaction: externalTransaction || t
+        });
+      }
+
+      t.commit();
 
       if (wdf) {
         console.log('WA DEBUG - WDF: ', wdf, wdf.reasons ? wdf.reasons : null);
@@ -461,6 +433,9 @@ class WdfCalculator {
         console.error('WdfCalculator::calculate - Failed to find establishment having id/uid: ', establishmentID, establishmentUID);
       }
     } catch (err) {
+      if(t) {
+        t.rollback();
+      }
       console.error('WdfCalculator::calculate - Failed to fetch establishment/workers: ', err);
     }
 

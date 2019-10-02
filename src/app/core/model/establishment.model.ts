@@ -143,3 +143,7 @@ export interface LocalIdentifier {
   uid: string;
   value: string;
 }
+
+export interface ChangeOwner {
+  permissionRequest: string;
+}

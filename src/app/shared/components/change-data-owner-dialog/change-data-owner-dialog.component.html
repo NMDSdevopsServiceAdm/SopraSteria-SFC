@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+<app-error-summary *ngIf="submitted && form.invalid || isOwnershipError" [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError" [form]="form">
+</app-error-summary>
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
@@ -15,23 +17,14 @@
       </p>
       <p>Select what data {{ workplace.name }} will have view only access to:</p>
 
-      <span
-        *ngIf="submitted && form.get('dataPermission').invalid"
-        id="dataPermission-error"
-        class="govuk-error-message"
-      >
+      <span *ngIf="submitted && form.get('dataPermission').invalid" id="dataPermission-error"
+        class="govuk-error-message">
         <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('dataPermission') }}
       </span>
       <div class="govuk-radios">
         <div class="govuk-radios__item" *ngFor="let dataPermission of dataPermissions; let i = index">
-          <input
-            class="govuk-radios__input"
-            id="dataPermission-{{ i }}"
-            name="dataPermission"
-            [formControlName]="'dataPermission'"
-            type="radio"
-            [value]="dataPermission"
-          />
+          <input class="govuk-radios__input" id="dataPermission-{{ i }}" name="dataPermission"
+            [formControlName]="'dataPermission'" type="radio" [value]="dataPermission" />
           <label class="govuk-label govuk-radios__label" for="dataPermission-{{ i }}">
             {{ dataPermission | dataViewPermissions }}
           </label>
@@ -44,7 +37,7 @@
     <strong>{{ workplace.name }} will need to approve your request.</strong>
   </p>
 
-  <button type="submit" class="govuk-button">Save and return</button>
+  <button type="submit" (click)="changeOwnership()" class="govuk-button">Save and return</button>
   <button type="button" (click)="close(null)" class="govuk-button govuk-button--link govuk-util__float-right">
     Exit
   </button>

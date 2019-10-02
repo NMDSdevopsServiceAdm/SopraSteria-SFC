@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Output, EventEmitter, } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { DialogService } from '@core/services/dialog.service';
@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './workplace-info-panel.component.html',
 })
 export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
+  @Output() public changeOwnershipEvent = new EventEmitter();
   @Input() public workplace: Workplace;
   public canViewEstablishment: boolean;
   public canChangePermissionsForSubsidiary: boolean;
@@ -23,7 +24,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
@@ -52,7 +53,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   }
 
   private changeDataOwner(): void {
-    console.log('changeDataOwner fired');
+    this.changeOwnershipEvent.emit(true);
   }
 
   ngOnDestroy(): void {
