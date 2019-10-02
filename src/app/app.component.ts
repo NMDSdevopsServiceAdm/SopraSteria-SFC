@@ -6,7 +6,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { IdleService } from '@core/services/idle.service';
 import { NestedRoutesService } from '@core/services/nested-routes.service';
-import { Angulartics2GoogleGlobalSiteTag } from 'angulartics2/gst';
+import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { filter, take, takeWhile } from 'rxjs/operators';
 
 enableProdMode();
@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
     private nestedRoutesService: NestedRoutesService,
     private authService: AuthService,
     private idleService: IdleService,
-    private angulartics: Angulartics2GoogleGlobalSiteTag
+    private angulartics2GoogleTagManager: Angulartics2GoogleTagManager
   ) {
     this.nestedRoutesService.routes$.subscribe(routes => {
       if (routes) {
@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.angulartics.startTracking();
+    angulartics2GoogleTagManager.startTracking();
   }
 
   ngOnInit() {
