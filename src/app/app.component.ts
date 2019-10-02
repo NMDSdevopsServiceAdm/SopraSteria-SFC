@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
       }
     });
 
-    angulartics2GoogleTagManager.startTracking();
+    this.angulartics2GoogleTagManager.startTracking();
   }
 
   ngOnInit() {
