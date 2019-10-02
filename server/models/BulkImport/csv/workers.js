@@ -1416,136 +1416,158 @@ class Worker {
   }
 
   _validateContHours () {
-    const myContHours = parseFloat(this._currentLine.CONTHOURS);
-    const digitRegex = /^\d+(\.[0,5]{1})?$/; // e.g. 15 or 0.5 or 1.0 or 100.5
+    const digitRegex = /^-?\d+(\.[0,5]{1})?$/; // e.g. 15 or 0.5 or 1.0 or 100.5
+    const MIN_VALUE = 0;
     const MAX_VALUE = 75;
     const EMPL_STATUSES = [3, 4, 7];
-    const myEmplStatus = this._currentLine.EMPLSTATUS;
+
+    const strContHours = String(this._currentLine.CONTHOURS);
+    const fltContHours = parseFloat(this._currentLine.CONTHOURS);
+    const intEmplStatus = parseInt(this._currentLine.EMPLSTATUS, 10);
+
+    // If it's one of the employment statuses that shouldn't have a
+    // contract hours and it does then that's a validation failure
+    if (EMPL_STATUSES.includes(intEmplStatus) && strContHours !== '') {
+      let contractType;
+      switch (intEmplStatus) {
+        case 3:
+          contractType = 'Pool/Bank';
+          break;
+        case 4:
+          contractType = 'Agency';
+          break;
+        case 7:
+          contractType = 'Other';
+          break;
+      }
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+
+        warnCode: Worker.CONT_HOURS_WARNING,
+        warnType: 'CONT_HOURS_WARNING',
+        warning: `CONTHOURS will be ignored as EMPLSTATUS is ${contractType}`,
+        source: strContHours
+      });
+      return false;
+    }
 
     // optional
-    if (this._currentLine.CONTHOURS && this._currentLine.CONTHOURS.length > 0) {
-      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) && Math.floor(myContHours) !== 999) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.CONT_HOURS_WARNING,
-          warnType: 'CONT_HOURS_WARNING',
-          warning: 'The code you have entered for CONTHOURS is incorrect and will be ignored',
-          source: this._currentLine.CONTHOURS
-        });
-        return false;
-      } else if (myContHours > MAX_VALUE) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.CONT_HOURS_WARNING,
-          warnType: 'CONT_HOURS_WARNING',
-          warning: 'CONTHOURS is greater than 75 and will be ignored',
-          source: this._currentLine.CONTHOURS
-        });
-        return false;
-      } else if (myEmplStatus && EMPL_STATUSES.includes(parseFloat(myEmplStatus))) {
-        let contractType = '';
-        switch (myEmplStatus) {
-          case '3':
-            contractType = 'Pool/Bank';
-            break;
-          case '4':
-            contractType = 'Agency';
-            break;
-          case '7':
-            contractType = 'Other';
-            break;
-        }
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-
-          warnCode: Worker.CONT_HOURS_WARNING,
-          warnType: 'CONT_HOURS_WARNING',
-          warning: `CONTHOURS will be ignored as EMPLSTATUS is ${contractType}`,
-          source: this._currentLine.CONTHOURS
-        });
-        return false;
-      } else {
-        if (Math.floor(myContHours) === 999) {
-          this._contHours = 'No';
-        } else {
-          this._contHours = myContHours;
-        }
-        return true;
-      }
-    } else {
+    if (strContHours === '') {
+      this._contHours = '';
       return true;
     }
+
+    if ((!digitRegex.test(strContHours)) || fltContHours < MIN_VALUE) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.CONT_HOURS_WARNING,
+        warnType: 'CONT_HOURS_WARNING',
+        warning: 'The code you have entered for CONTHOURS is incorrect and will be ignored',
+        source: strContHours
+      });
+      return false;
+    }
+
+    if ((fltContHours | 0) /* cast to int asm.js style */ === 999) {
+      this._contHours = 'No';
+      return true;
+    }
+
+    if (fltContHours > MAX_VALUE) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.CONT_HOURS_WARNING,
+        warnType: 'CONT_HOURS_WARNING',
+        warning: 'CONTHOURS is greater than 75 and will be ignored',
+        source: strContHours
+      });
+      return false;
+    }
+
+    this._contHours = fltContHours;
+    return true;
   }
 
   _validateAvgHours () {
-    const myAvgHours = parseFloat(this._currentLine.AVGHOURS);
-    const digitRegex = /^\d+(\.[0,5]{1})?$/; // e.g. 15 or 0.5 or 1.0 or 100.5
+    const digitRegex = /^-?\d+(\.[0,5]{1})?$/; // e.g. 15 or 0.5 or 1.0 or 100.5
+    const MIN_VALUE = 0;
     const MAX_VALUE = 75;
     const EMPL_STATUSES = [1, 2];
-    const myEmplStatus = this._currentLine.EMPLSTATUS;
+
+    const strAvgHours = String(this._currentLine.AVGHOURS);
+    const fltAvgHours = parseFloat(this._currentLine.AVGHOURS);
+    const intEmplStatus = parseInt(this._currentLine.EMPLSTATUS, 10);
+
+    // If it's one of the employment statuses that shouldn't have an
+    // average hours and it does then that's a validation failure
+    if (EMPL_STATUSES.includes(intEmplStatus) && strAvgHours !== '') {
+      let contractType;
+      switch (intEmplStatus) {
+        case 1:
+          contractType = 'Permanent';
+          break;
+        case 2:
+          contractType = 'Temporary';
+          break;
+      }
+
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.AVG_HOURS_WARNING,
+        warnType: 'AVG_HOURS_ERROR',
+        warning: `AVGHOURS will be ignored as staff record is ${contractType}`,
+        source: strAvgHours
+      });
+      return false;
+    }
 
     // optional
-    if (this._currentLine.AVGHOURS && this._currentLine.AVGHOURS.length > 0) {
-      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS) && (Math.floor(myAvgHours) !== 999)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.AVG_HOURS_WARNING,
-          warnType: 'AVG_HOURS_ERROR',
-          warning: 'The code you have entered for AVGHOURS is incorrect and will be ignored',
-          source: this._currentLine.AVGHOURS
-        });
-        return false;
-      } else if (myAvgHours > MAX_VALUE) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.AVG_HOURS_WARNING,
-          warnType: 'AVG_HOURS_ERROR',
-          warning: 'AVGHOURS is greater than 75 and will be ignored',
-          source: this._currentLine.AVGHOURS
-        });
-        return false;
-      } else if (myEmplStatus && EMPL_STATUSES.includes(parseFloat(myEmplStatus))) {
-        let contractType = '';
-        switch (myEmplStatus) {
-          case '1':
-            contractType = 'Permanent';
-            break;
-          case '2':
-            contractType = 'Temporary';
-            break;
-        }
-
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.AVG_HOURS_WARNING,
-          warnType: 'AVG_HOURS_ERROR',
-          warning: `AVGHOURS will be ignored as staff record is ${contractType}`,
-          source: this._currentLine.AVGHOURS
-        });
-        return false;
-      } else {
-        if (Math.floor(myAvgHours) === 999) {
-          this._avgHours = 'No';
-        } else {
-          this._avgHours = myAvgHours;
-        }
-        return true;
-      }
-    } else {
+    if (strAvgHours === '') {
+      this._avgHours = '';
       return true;
     }
+
+    if ((!digitRegex.test(strAvgHours)) || fltAvgHours < MIN_VALUE) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.AVG_HOURS_WARNING,
+        warnType: 'AVG_HOURS_ERROR',
+        warning: 'The code you have entered for AVGHOURS is incorrect and will be ignored',
+        source: strAvgHours
+      });
+      return false;
+    }
+
+    if ((fltAvgHours | 0) /* cast to int asm.js style */ === 999) {
+      this._avgHours = 'No';
+      return true;
+    }
+
+    if (fltAvgHours > MAX_VALUE) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.AVG_HOURS_WARNING,
+        warnType: 'AVG_HOURS_ERROR',
+        warning: 'AVGHOURS is greater than 75 and will be ignored',
+        source: strAvgHours
+      });
+      return false;
+    }
+
+    this._avgHours = fltAvgHours;
+    return true;
   }
 
   _validateOtherJobs () {
