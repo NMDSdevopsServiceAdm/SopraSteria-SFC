@@ -1455,7 +1455,7 @@ class Worker {
 
     // optional
     if (strContHours === '') {
-      this._contHours = '';
+      this._contHours = null;
       return true;
     }
 
@@ -1531,7 +1531,7 @@ class Worker {
 
     // optional
     if (strAvgHours === '') {
-      this._avgHours = '';
+      this._avgHours = null;
       return true;
     }
 
@@ -2812,7 +2812,7 @@ class Worker {
       }
     }
 
-    if (this._contHours) {
+    if (this._contHours !== null) {
       if (this._contHours !== 'No') {
         changeProperties.weeklyHoursContracted = {
           value: 'Yes',
@@ -2824,7 +2824,7 @@ class Worker {
         };
       }
     }
-    if (this._avgHours) {
+    if (this._avgHours !== null) {
       if (this._avgHours !== 'No') {
         changeProperties.weeklyHoursAverage = {
           value: 'Yes',
