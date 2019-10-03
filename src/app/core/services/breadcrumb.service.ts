@@ -83,8 +83,12 @@ export class BreadcrumbService {
   }
 
   private getPath(url: string, segments: UrlSegment[]) {
+    const reportUrl = url;
     const path = this.getParts(url).map((part, index) => {
       if (this.isParameter(part)) {
+        if (reportUrl === '/reports/workplace/:workplaceUid/wdf') {
+          return segments[index - 1] ? segments[index - 1].path : part;
+        }
         return segments[index] ? segments[index].path : part;
       }
       return part;
