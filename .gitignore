@@ -54,3 +54,4 @@ Thumbs.db
 
 // nodemon localisations
 nodemon.json
+.nyc_output/
