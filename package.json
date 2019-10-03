@@ -17,7 +17,8 @@
     "metrics": "opener http://localhost:3000/apimetrics/ui",
     "api:proxy": "node proxy.js",
     "api:server": "node server.js",
-    "server": "npm-run-all -p -l build:watch api:server"
+    "server": "npm-run-all -p -l build:watch api:server",
+    "server:test": "nyc mocha --exit"
   },
   "private": true,
   "dependencies": {
