@@ -22,6 +22,7 @@ const generateJWT = require('../utils/security/generateJWT');
 const passwordCheck = require('../utils/security/passwordValidation').isPasswordValid;
 const usernameCheck = require('../utils/security/usernameValidation').isUsernameValid;
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
+const pCodeCheck = require('../utils/postcodeSanitizer');
 
 class RegistrationException {
   constructor(originalError, errCode, errMessage) {
@@ -341,11 +342,59 @@ router.route('/')
         EstablishmentID:0,
         AdminUser: true
       };
+      // Check if the user is allowed to be active based on wether they are CQC registered
+      let userActive = false;
+      let CQCpostcode = false;
+      let CQClocationID = false;
+      // Check if the Postcode is in the CQC database
+      try {
+        console.log('AR - Checking if Postcode is CQC registered.');
+        let cleanPostcode= pCodeCheck.sanitisePostcode(Estblistmentdata.PostCode);
+
+        if (cleanPostcode != null) {
+          //Find matching postcode data
+          let results = await models.location.findAll({
+            where: {
+              postalcode: cleanPostcode
+            }
+          });
+          if (results.length) {
+            CQCpostcode = true;
+            console.log('AR - Found matching CQC Postcode');
+          }
+        }
+      } catch(error) {
+        console.error(error)
+      }
+      // Check if the location ID is in the CQC database
+      try {
+        console.log('AR - Checking if Location ID is CQC registered.');
+
+        if (Estblistmentdata.LocationID != null) {
+          //Find matching postcode data
+          let results = await models.location.findAll({
+            where: {
+              locationid: Estblistmentdata.LocationID
+            }
+          });
+          if (results.length) {
+            CQClocationID = true;
+            console.log('AR - Found matching CQC Location ID');
+          }
+        }
+      } catch(error) {
+        console.error(error)
+      }
+
+      if (CQCpostcode && CQClocationID) {
+        userActive = true;
+      }
+
       var Logindata = {
         RegistrationId:0,
         UserName: req.body[0].user.username,
         Password: escape(req.body[0].user.password),
-        Active:true,
+        Active:userActive,
         InvalidAttempt:0
       };
 
@@ -445,6 +494,7 @@ router.route('/')
             username: Logindata.UserName.toLowerCase(),
             password: Logindata.Password,
             isPrimary: true,
+            isActive: Logindata.Active
           });
           if (newUser.isValid) {
             await newUser.save(Logindata.UserName, 0, t);
@@ -468,7 +518,7 @@ router.route('/')
           slack.info("Registration", JSON.stringify(slackMsg, null, 2));
           // post through feedback topic - async method but don't wait for a responseThe
           sns.postToRegistrations(slackMsg);
-
+          console.log(Logindata);
           // gets here on success
           res.status(200);
           res.json({
@@ -477,7 +527,8 @@ router.route('/')
             "establishmentId" : Estblistmentdata.id,
             "establishmentUid" : Estblistmentdata.eUID,
             "primaryUser" : Logindata.UserName,
-            "nmdsId": Estblistmentdata.NmdsId ? Estblistmentdata.NmdsId : 'undefined'
+            "nmdsId": Estblistmentdata.NmdsId ? Estblistmentdata.NmdsId : 'undefined',
+            "active": Logindata.Active
           });
         });
 

@@ -35,6 +35,7 @@ class User {
         this._id = null;
         this._uid = null;
         this._username = null;
+        this._active = false;
         this._created = null;
         this._updated = null;
         this._updatedBy = null;
@@ -214,6 +215,9 @@ class User {
                     this._isPrimary = false;
                 }
             }
+            if(document.isActive) {
+              this._active = document.isActive;
+            }
         } catch (err) {
             this._log(User.LOG_ERROR, `User::load - failed: ${err}`);
             throw new UserExceptions.UserJsonException(
@@ -379,7 +383,7 @@ class User {
                                 registrationId: this._id,
                                 username: this._username,
                                 Hash: passwordHash,
-                                isActive: true,
+                                isActive: this._active,
                                 invalidAttempt: 0,
                             },
                             {transaction: thisTransaction}
@@ -474,7 +478,7 @@ class User {
                                 registrationId: this._id,
                                 username: this._username,
                                 Hash: passwordHash,
-                                isActive: true,
+                                isActive: this._active,
                                 invalidAttempt: 0,
                             },
                             {transaction: thisTransaction}
