@@ -6,6 +6,8 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-workplace-info-panel',
@@ -23,7 +25,10 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   constructor(
     private dialogService: DialogService,
     private establishmentService: EstablishmentService,
-    private permissionsService: PermissionsService
+    private router: Router,
+    private permissionsService: PermissionsService,
+    private alertService: AlertService,
+
   ) { }
 
   ngOnInit() {
@@ -48,6 +53,8 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     dialog.afterClosed.subscribe(changeDataOwnerConfirmed => {
       if (changeDataOwnerConfirmed) {
         this.changeDataOwner();
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({ type: 'success', message: `Request to change data owner has been sent to ${this.workplace.name} ` });
       }
     });
   }
