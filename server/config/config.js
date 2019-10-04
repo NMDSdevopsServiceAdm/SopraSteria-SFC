@@ -142,7 +142,8 @@ const config = convict({
     pool: {
       doc: 'Number of connections in the pool',
       format: 'int',
-      default: 5
+      default: 5,
+      env: "DB_POOL"
     }
   },
   notify: {
@@ -414,9 +415,9 @@ if (config.get('aws.secrets.use')) {
     // DB rebind
     config.set('db.host', AWSSecrets.dbHost());
     config.set('db.password', AWSSecrets.dbPass());
-    config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
-    config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
-    config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
+    //config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
+    //config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
+    //config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
 
     // external APIs
     config.set('slack.url', AWSSecrets.slackUrl());
