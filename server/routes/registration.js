@@ -343,6 +343,7 @@ router.route('/')
         AdminUser: true
       };
       // Check if the user is allowed to be active based on wether they are CQC registered
+      let userActive = false;
       let CQCpostcode = false;
       let CQClocationID = false;
       // Check if the Postcode is in the CQC database
@@ -385,11 +386,15 @@ router.route('/')
         console.error(error)
       }
 
+      if (CQCpostcode && CQClocationID) {
+        userActive = true;
+      }
+
       var Logindata = {
         RegistrationId:0,
         UserName: req.body[0].user.username,
         Password: escape(req.body[0].user.password),
-        Active: CQCpostcode && CQClocationID,
+        Active:userActive,
         InvalidAttempt:0
       };
 
