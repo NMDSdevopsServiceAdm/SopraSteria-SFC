@@ -275,6 +275,10 @@ class Establishment extends EntityValidator {
     return this._status;
   }
 
+  get key() {
+    return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, "") : this.name).replace(/\s/g, "");
+  }
+
   get archived () {
     return this._archived;
   }
