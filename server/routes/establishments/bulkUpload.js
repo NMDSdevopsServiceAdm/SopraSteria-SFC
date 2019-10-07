@@ -1417,7 +1417,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   status = !(csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0 || csvTrainingSchemaErrors.length > 0);
 
-  const response = {
+  return {
     status,
     report,
     validation: {
@@ -1445,8 +1445,6 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
       resulting: establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false, false, false, false, true, null, true))
     }
   };
-
-  return response;
 };
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
