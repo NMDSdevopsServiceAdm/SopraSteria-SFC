@@ -1906,9 +1906,12 @@ class Establishment extends EntityValidator {
     // The first result is the primary establishment. put it in a special field
     const primary = mappedResults.shift();
 
+    // Add a boolean flag to indicate the establishment is a parent
+    primary.isParent = !!(mappedResults.length);
+
     return {
       primary,
-      subsidaries: mappedResults.length ? {
+      subsidaries: primary.isParent ? {
         count: mappedResults.length,
         establishments: mappedResults
       } : undefined
