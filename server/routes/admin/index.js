@@ -4,12 +4,14 @@ const router = express.Router();
 const isAdmin = require('../../utils/security/isAuthenticated').isAdmin;
 
 const search = require('./search');
+const approval = require('./approval');
 const recalcWdf = require('./recalcWdf');
 
 // middleware authentication - only role=Admin from here on in
 router.use('/', isAdmin);
 
 router.use('/search', search);
+router.use('/approval', approval);
 router.use('/recalcWdf', recalcWdf);
 
 router.route('/').post(async function (req, res) {
