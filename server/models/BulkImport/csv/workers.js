@@ -3554,13 +3554,12 @@ class Worker {
         careCert = 1;
         break;
 
-      case 'Yes, in progress or partially completed':
-        careCert = 3;
-        break;
-
-      default:
       case 'No':
         careCert = 2;
+        break;
+
+      case 'Yes, in progress or partially completed':
+        careCert = 3;
         break;
     }
     columns.push(careCert);
