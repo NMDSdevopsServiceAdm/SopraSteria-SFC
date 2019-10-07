@@ -447,66 +447,99 @@ router.route('/validate').put(async (req, res) => {
   // manage the request timeout
   req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
 
+  const establishments = {
+    imported: null,
+    establishmentMetadata: new MetaData()
+  };
+
+  const workers = {
+    imported: null,
+    workerMetadata: new MetaData()
+  };
+
+  const trainings = {
+    imported: null,
+    trainingMetadata: new MetaData()
+  };
+
+  let estNotFound = true;
+  let wrkNotFound = true;
+  let trnNotFound = true;
   const establishmentId = req.establishmentId;
-  const username = req.username;
-  const isParent = req.isParent;
-  const myDownloads = {};
-  const establishmentMetadata = new MetaData();
-  const workerMetadata = new MetaData();
-  const trainingMetadata = new MetaData();
 
   try {
-    // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
-    const params = {
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
-      Prefix: `${req.establishmentId}/latest/`
-    };
-    const data = await s3.listObjects(params).promise();
+    const validationResponse =
 
-    const createModelPromises = [];
-    data.Contents.forEach(myFile => {
-      const ignoreMetaDataObjects = /.*metadata.json$/;
-      const ignoreRoot = /.*\/$/;
-      if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
-        createModelPromises.push(downloadContent(myFile.Key));
-      }
-    });
+      // get list of files from s3 bucket
+      await s3.listObjects({
+        Bucket: appConfig.get('bulkupload.bucketname').toString(),
+        Prefix: `${establishmentId}/latest/`
+      }).promise()
 
-    await Promise.all(createModelPromises).then(function (values) {
-      values.forEach(myfile => {
-        if (CsvEstablishmentValidator.isContent(myfile.data)) {
-          myDownloads.establishments = myfile.data;
-          establishmentMetadata.filename = myfile.filename;
-          establishmentMetadata.fileType = 'Establishment';
-          establishmentMetadata.userName = myfile.username;
-        } else if (CsvWorkerValidator.isContent(myfile.data)) {
-          myDownloads.workers = myfile.data;
-          workerMetadata.filename = myfile.filename;
-          workerMetadata.fileType = 'Worker';
-          workerMetadata.userName = myfile.username;
-        } else if (CsvTrainingValidator.isContent(myfile.data)) {
-          myDownloads.trainings = myfile.data;
-          trainingMetadata.filename = myfile.filename;
-          trainingMetadata.fileType = 'Training';
-          trainingMetadata.userName = myfile.username;
-        }
-      });
-    }).catch(err => {
-      console.error('NM: validate.put', err);
-    });
+      // download the contents of the appropriate ones we find
+        .then(data => Promise.all(data.Contents.reduce((arr, myFileStats) => {
+          if (!(/.*metadata.json$/.test(myFileStats.Key) || /.*\/$/.test(myFileStats.Key))) {
+            arr.push(
+              downloadContent(myFileStats.Key)
 
-    const importedEstablishments = myDownloads.establishments ? await csv().fromString(myDownloads.establishments) : null;
-    const importedWorkers = myDownloads.workers ? await csv().fromString(myDownloads.workers) : null;
-    const importedTraining = myDownloads.trainings ? await csv().fromString(myDownloads.trainings) : null;
+              // for each downloaded file, test its type then update the closure variables
+                .then(myFile => {
+                  let obj = null;
+                  let metadata = null;
 
-    const validationResponse = await validateBulkUploadFiles(
-      true,
-      username,
-      establishmentId,
-      isParent,
-      { imported: importedEstablishments, establishmentMetadata: establishmentMetadata },
-      { imported: importedWorkers, workerMetadata: workerMetadata },
-      { imported: importedTraining, trainingMetadata: trainingMetadata });
+                  // figure out which type of csv this file is and load the data
+                  if (estNotFound && CsvEstablishmentValidator.isContent(myFile.data)) {
+                    estNotFound = false;
+                    obj = establishments;
+                    metadata = establishments.establishmentMetadata;
+
+                    metadata.filename = myFile.filename;
+                    metadata.fileType = 'Establishment';
+                    metadata.userName = myFile.username;
+                  } else if (wrkNotFound && CsvWorkerValidator.isContent(myFile.data)) {
+                    wrkNotFound = false;
+                    obj = workers;
+                    metadata = workers.workerMetadata;
+
+                    metadata.filename = myFile.filename;
+                    metadata.fileType = 'Worker';
+                    metadata.userName = myFile.username;
+                  } else if (trnNotFound && CsvTrainingValidator.isContent(myFile.data)) {
+                    trnNotFound = false;
+                    obj = trainings;
+                    metadata = trainings.trainingMetadata;
+
+                    metadata.filename = myFile.filename;
+                    metadata.fileType = 'Training';
+                    metadata.userName = myFile.username;
+                  }
+
+                  // if not one of our expected types then just return
+                  if (obj === null) {
+                    return true;
+                  }
+                  // parse the file contents as csv then return the data
+                  return csv().fromString(myFile.data).then(imported => {
+                    obj.imported = imported;
+                    return true;
+                  });
+                })
+            );
+          }
+
+          return arr;
+        }, [])))
+
+      // validate the csv files we found
+        .then(() => validateBulkUploadFiles(
+          true,
+          req.username,
+          establishmentId,
+          req.isParent,
+          establishments,
+          workers,
+          trainings
+        ));
 
     // handle parsing errors
     if (!validationResponse.status) {
@@ -515,13 +548,12 @@ router.route('/validate').put(async (req, res) => {
         workers: validationResponse.metaData.workers.toJSON(),
         training: validationResponse.metaData.training.toJSON()
       });
-    } else {
-      return res.status(200).send({
-        establishment: validationResponse.metaData.establishments.toJSON(),
-        workers: validationResponse.metaData.workers.toJSON(),
-        training: validationResponse.metaData.training.toJSON()
-      });
     }
+    return res.status(200).send({
+      establishment: validationResponse.metaData.establishments.toJSON(),
+      workers: validationResponse.metaData.workers.toJSON(),
+      training: validationResponse.metaData.training.toJSON()
+    });
   } catch (err) {
     console.error(err);
     return res.status(503).send({});
@@ -810,28 +842,24 @@ const _validateWorkerCsv = async (
   lineValidator.validate();
   lineValidator.transform();
 
-  const thisWorkerAsAPI = lineValidator.toAPI();
-
   // construct Worker entity
   const thisApiWorker = new WorkerEntity();
 
   try {
-    await thisApiWorker.load(thisWorkerAsAPI);
+    await thisApiWorker.load(lineValidator.toAPI());
 
-    const isValid = thisApiWorker.validate();
-    if (isValid) {
+    if (thisApiWorker.validate()) {
       // no validation errors in the entity itself, so add it ready for completion
-      // console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
       myAPIWorkers[currentLineNumber] = thisApiWorker;
 
       // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
       //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
-      const thisQualificationAsAPI = lineValidator.toQualificationAPI();
-      await Promise.all(
-        thisQualificationAsAPI.map((thisQual) => {
-          return _loadWorkerQualifications(lineValidator, thisQual, thisApiWorker, myAPIQualifications);
-        })
-      );
+      await Promise.all(lineValidator.toQualificationAPI().map(thisQual => _loadWorkerQualifications(
+        lineValidator,
+        thisQual,
+        thisApiWorker,
+        myAPIQualifications
+      )));
     } else {
       const errors = thisApiWorker.errors;
       const warnings = thisApiWorker.warnings;
@@ -1007,8 +1035,13 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
         const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
 
         const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
-          if ((thatWorker.weeklyContractedHours || thatWorker.weeklyAverageHours) && thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
-            sum += (thatWorker.weeklyContractedHours ? thatWorker.weeklyContractedHours : (thatWorker.weeklyAverageHours ? thatWorker.weeklyAverageHours : 0));
+          if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
+            if (thatWorker.weeklyContractedHours) {
+              return sum + thatWorker.weeklyContractedHours;
+            }
+            if (thatWorker.weeklyAverageHours) {
+              return sum + thatWorker.weeklyAverageHours;
+            }
           }
           return sum;
         }, 0);
