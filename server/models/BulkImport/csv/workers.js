@@ -3477,12 +3477,8 @@ class Worker {
     columns.push(dobParts ? `${dobParts[2]}/${dobParts[1]}/${dobParts[0]}` : ''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
 
     // "GENDER",
-    let genderId;
+    let genderId = '';
     switch (entity.gender) {
-      case null:
-        genderId = '';
-        break;
-
       case 'Female':
         genderId = 2;
         break;
@@ -3496,7 +3492,6 @@ class Worker {
         break;
 
       case 'Don\'t know':
-      default:
         genderId = 3;
         break;
     }
@@ -3509,12 +3504,8 @@ class Worker {
     columns.push(entity.nationality ? this._maptoCSVnationality(entity.nationality) : '');
 
     // "BRITISHCITIZENSHIP"
-    let britishCitizenship;
+    let britishCitizenship = '';
     switch (entity.britishCitizenship) {
-      case null:
-        britishCitizenship = '';
-        break;
-
       case 'Yes':
         britishCitizenship = 1;
         break;
@@ -3524,7 +3515,6 @@ class Worker {
         break;
 
       case 'Don\'t know':
-      default:
         britishCitizenship = 999;
         break;
     }
@@ -3537,12 +3527,8 @@ class Worker {
     columns.push(entity.yearArrived ? entity.yearArrived.year : '');
 
     // "DISABLED"
-    let disability;
+    let disability = '';
     switch (entity.disabiliity) {
-      case null:
-        disability = '';
-        break;
-
       case 'Yes':
         disability = 1;
         break;
@@ -3556,19 +3542,14 @@ class Worker {
         break;
 
       case 'Don\'t know':
-      default:
         disability = 3;
         break;
     }
     columns.push(disability);
 
     // "CARECERT"
-    let careCert;
+    let careCert = '';
     switch (entity.careCerticate) {
-      case null:
-        careCert = '';
-        break;
-
       case 'Yes, completed':
         careCert = 1;
         break;
@@ -3589,33 +3570,31 @@ class Worker {
 
     // "STARTDATE"
     const mainJobStartDateParts = entity.mainJobStartDate ? entity.mainJobStartDate.split('-') : null;
-    columns.push(mainJobStartDateParts ? `${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}`) : ''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
+    columns.push(mainJobStartDateParts ? `${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}` : ''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
 
     // "STARTINSECT"
     columns.push(this._maptoCSVStartedInSector(entity.socialCareStartDate));
 
     // "APPRENTICE"
-    let apprenticeship;
+    let apprenticeship = '';
     switch (entity.apprenticeship) {
-      case null:
-        apprenticeship = '';
-        break;
       case 'Yes':
         apprenticeship = 1;
         break;
+
       case 'No':
         apprenticeship = 2;
         break;
 
       case 'Don\'t know':
       default:
-      apprenticeship = 999;
+        apprenticeship = 999;
         break;
     }
     columns.push(apprenticeship);
 
     // EMPLSTATUS/;contract - mandatory
-    let empStatus;
+    let empStatus = '';
     switch (entity.contract) {
       case 'Permanent':
         empStatus = 1;
@@ -3634,19 +3613,14 @@ class Worker {
         break;
 
       case 'Other':
-      default:
-        columns.push(7);
+        empStatus = 7;
         break;
     }
     columns.push(empStatus);
 
     // "ZEROHRCONT"
-    let zeroHours;
+    let zeroHours = '';
     switch (entity.zeroContractHours) {
-      case null:
-        zeroHours = '';
-        break;
-
       case 'Yes':
         zeroHours = 1;
         break;
@@ -3656,7 +3630,6 @@ class Worker {
         break;
 
       case 'Don\'t know':
-      default:
         zeroHours = 999;
         break;
     }
@@ -3702,7 +3675,7 @@ class Worker {
     columns.push(contHours);
 
     // "AVGHOURS"
-    let avgHours = '';  // if no average hours, then output empty (null)
+    let avgHours = ''; // if no average hours, then output empty (null)
     if (entity.contract && ['Pool/Bank', 'Agency', 'Other'].includes(entity.contract) && entity.averageHours) {
       switch (entity.averageHours.value) {
         case 'Yes':
@@ -3720,40 +3693,37 @@ class Worker {
 
     // "OTHERJOBROLE"
     columns.push(
-      entity.otherJobs && entity.otherJobs.value === 'Yes' ?
-      entity.otherJobs.otherJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId)).join(';') :
-      ''
+      entity.otherJobs && entity.otherJobs.value === 'Yes'
+        ? entity.otherJobs.otherJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId)).join(';')
+        : ''
     );
 
     // "OTHERJRDESC"
     columns.push(
-      entity.otherJobs && entity.otherJobs.value === 'Yes' ?
-      entity.otherJobs.otherJobs.map(thisJob => thisJob.other).join(';') :
-      ''
+      entity.otherJobs && entity.otherJobs.value === 'Yes'
+        ? entity.otherJobs.otherJobs.map(thisJob => thisJob.other).join(';')
+        : ''
     );
 
     const NURSE_JOB_ID = 23;
 
     // "NMCREG"
     columns.push(
-      entity.mainJob.jobId === NURSE_JOB_ID && entity.registeredNurse ?
-      this._maptoCSVregsiterNurse(entity.registeredNurse) :
-      ''
+      entity.mainJob.jobId === NURSE_JOB_ID && entity.registeredNurse
+        ? this._maptoCSVregsiterNurse(entity.registeredNurse)
+        : ''
     );
 
     // "NURSESPEC"
     columns.push(
-      entity.mainJob.jobId === NURSE_JOB_ID && entity.nurseSpecialism ?
-      BUDI.nursingSpecialist(BUDI.FROM_ASC, entity.nurseSpecialism.id) :
-      ''
+      entity.mainJob.jobId === NURSE_JOB_ID && entity.nurseSpecialism
+        ? BUDI.nursingSpecialist(BUDI.FROM_ASC, entity.nurseSpecialism.id)
+        : ''
     );
 
     // "AMHP"
-    let ahmp;
+    let ahmp = '';
     switch (entity.approvedMentalHealthWorker) {
-      case null:
-        ahmp = '';
-        break;
       case 'Yes':
         ahmp = 1;
         break;
@@ -3763,28 +3733,22 @@ class Worker {
         break;
 
       case 'Don\'t know':
-      default:
         ahmp = 999;
         break;
     }
     columns.push(ahmp);
 
     // "SCQUAL"
-    let scqual;
+    let scqual = '';
     switch (entity.socialCareQualification) {
-      case null:
-        scqual = '';
-        break;
-
       case 'Yes': {
-        const budi = entity.socialCareQualificationLevel ?
-          BUDI.qualificationLevels(BUDI.FROM_ASC, entity.socialCareQualificationLevel.qualificationId) :
-          null;
+        const budi = entity.socialCareQualificationLevel
+          ? BUDI.qualificationLevels(BUDI.FROM_ASC, entity.socialCareQualificationLevel.qualificationId)
+          : null;
 
-        if(budi !== null) {
-          scqual = '1;'+budi;
-        }
-        else {
+        if (budi !== null) {
+          scqual = '1;' + budi;
+        } else {
           scqual = '1';
         }
       } break;
@@ -3794,28 +3758,22 @@ class Worker {
         break;
 
       case 'Don\'t know':
-      default:
         scqual = 999;
         break;
     }
     columns.push(scqual);
 
     // "NONSCQUAL"
-    let nonscqual;
+    let nonscqual = '';
     switch (entity.nonSocialCareQualification) {
-      case null:
-        nonscqual = '';
-        break;
-
       case 'Yes': {
-        const budi = entity.nonSocialCareQualificationLevel ?
-          BUDI.qualificationLevels(BUDI.FROM_ASC, entity.nonSocialCareQualificationLevel.qualificationId) :
-          null
+        const budi = entity.nonSocialCareQualificationLevel
+          ? BUDI.qualificationLevels(BUDI.FROM_ASC, entity.nonSocialCareQualificationLevel.qualificationId)
+          : null;
 
-        if(budi !== null) {
-          nonscqual = '1;'+budi;
-        }
-        else {
+        if (budi !== null) {
+          nonscqual = '1;' + budi;
+        } else {
           nonscqual = '1';
         }
       } break;
@@ -3825,7 +3783,6 @@ class Worker {
         break;
 
       case 'Don\'t know':
-      default:
         nonscqual = 999;
         break;
     }
@@ -3842,8 +3799,7 @@ class Worker {
       if (mappedQualification) {
         columns.push(`${mappedQualification};${thisQual.year ? thisQual.year : ''}`);
         columns.push(thisQual.notes ? thisQual.notes : '');
-      }
-      else {
+      } else {
         columns.push('');
         columns.push('');
       }
