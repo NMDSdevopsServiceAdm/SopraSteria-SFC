@@ -3788,12 +3788,11 @@ class Worker {
     columns.push(nonscqual);
 
     const myQualifications = entity.qualifications.slice(0, MAX_QUALIFICATIONS);
-
-    const len = Math.min(myQualifications.length, MAX_QUALIFICATIONS);
+    const len = Math.max(3, Math.min(myQualifications.length, MAX_QUALIFICATIONS));
 
     for (let index = 0; index < len; index++) {
       const thisQual = myQualifications[index];
-      const mappedQualification = BUDI.qualifications(BUDI.FROM_ASC, thisQual.qualification.id);
+      const mappedQualification = thisQual ? BUDI.qualifications(BUDI.FROM_ASC, thisQual.qualification.id) : null;
 
       if (mappedQualification) {
         columns.push(`${mappedQualification};${thisQual.year ? thisQual.year : ''}`);
