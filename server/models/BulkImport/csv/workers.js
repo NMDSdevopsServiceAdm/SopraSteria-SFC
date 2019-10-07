@@ -153,13 +153,10 @@ class Worker {
   static get NMCREG_WARNING () { return 3340; }
   static get NURSE_SPEC_WARNING () { return 3350; }
 
-  static get SOCIALCARE_QUAL_ERROR () { return 3360; }
-  static get NON_SOCIALCARE_QUAL_ERROR () { return 3370; }
-
-  static get AMHP_WARNING () { return 3380; }
-
   static get SOCIALCARE_QUAL_WARNING () { return 3360; }
   static get NON_SOCIALCARE_QUAL_WARNING () { return 3370; }
+
+  static get AMHP_WARNING () { return 3380; }
 
   static get YEAROFENTRY_WARNING () { return 3380; }
 
@@ -648,7 +645,6 @@ class Worker {
     const MAXIMUM_AGE = 100;
     const maxDate = moment().subtract(MINIMUM_AGE, 'y');
     const minDate = moment().subtract(MAXIMUM_AGE, 'y');
-    const dobRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
     const myDOB = this._currentLine.DOB;
     const myDobRealDate = moment.utc(myDOB, 'DD/MM/YYYY');
 
@@ -693,10 +689,10 @@ class Worker {
 
   _validateGender () {
     const genderValues = [1, 2, 3, 4]; // [MALE=1, FEMALE=2, UNKNOWN=3, OTHER=4];
-    const myGender = parseInt(this._currentLine.GENDER);
+    const myGender = parseInt(this._currentLine.GENDER, 10);
 
     if (this._currentLine.GENDER.length > 0) {
-      if (isNaN(myGender) || !genderValues.includes(parseInt(myGender))) {
+      if (isNaN(myGender) || !genderValues.includes(parseInt(myGender, 10))) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -729,7 +725,7 @@ class Worker {
 
   // Mandatory for local Authority - need to check this conditional check
   _validateEthnicity () {
-    const myEthnicity = parseInt(this._currentLine.ETHNICITY);
+    const myEthnicity = parseInt(this._currentLine.ETHNICITY, 10);
 
     // optional
     if (this._currentLine.ETHNICITY && this._currentLine.ETHNICITY.length > 0) {
@@ -755,7 +751,7 @@ class Worker {
 
   _validateCitizenShip () {
     const BritishCitizenshipValues = [1, 2, 999];
-    const myBritishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP);
+    const myBritishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP, 10);
     const myNationality = parseInt(this._currentLine.NATIONALITY, 10);
 
     if (this._currentLine.BRITISHCITIZENSHIP && this._currentLine.BRITISHCITIZENSHIP.length > 0) {
@@ -770,7 +766,7 @@ class Worker {
           source: this._currentLine.BRITISHCITIZENSHIP
         });
         return false;
-      } else if (isNaN(myBritishCitizenship) || !BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
+      } else if (isNaN(myBritishCitizenship) || !BritishCitizenshipValues.includes(parseInt(myBritishCitizenship, 10))) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -852,7 +848,7 @@ class Worker {
           source: this._currentLine.YEAROFENTRY
         });
         return false;
-      } else if (myCountry && parseInt(myCountry) === 826) {
+      } else if (myCountry && parseInt(myCountry, 10) === 826) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -876,7 +872,7 @@ class Worker {
 
     // optional
     if (this._currentLine.DISABLED && this._currentLine.DISABLED.length > 0) {
-      if (isNaN(myDisabled) || !disabledValues.includes(parseInt(myDisabled))) {
+      if (isNaN(myDisabled) || !disabledValues.includes(parseInt(myDisabled, 10))) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -911,10 +907,10 @@ class Worker {
 
   _validateCareCert () {
     const careCertValues = [1, 2, 3];
-    const myCareCert = parseInt(this._currentLine.CARECERT);
+    const myCareCert = parseInt(this._currentLine.CARECERT, 10);
 
     if (this._currentLine.CARECERT && this._currentLine.CARECERT.length > 0) {
-      if (isNaN(myCareCert) || !careCertValues.includes(parseInt(myCareCert))) {
+      if (isNaN(myCareCert) || !careCertValues.includes(parseInt(myCareCert, 10))) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -945,7 +941,7 @@ class Worker {
   }
 
   _validateRecSource () {
-    const myRecSource = parseInt(this._currentLine.RECSOURCE);
+    const myRecSource = parseInt(this._currentLine.RECSOURCE, 10);
 
     // optional
     if (this._currentLine.RECSOURCE && (isNaN(myRecSource))) {
@@ -1064,7 +1060,7 @@ class Worker {
         source: this._currentLine.STARTINSECT
       });
       return false;
-    } else if (this._startDate && parseInt(myStartInsect) > this._startDate.year()) {
+    } else if (this._startDate && parseInt(myStartInsect, 10) > this._startDate.year()) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1075,7 +1071,7 @@ class Worker {
         source: this._currentLine.STARTINSECT
       });
       return false;
-    } else if (myRealDOBDate && myRealDOBDate.year() + AGE > parseInt(myStartInsect)) {
+    } else if (myRealDOBDate && myRealDOBDate.year() + AGE > parseInt(myStartInsect, 10)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1202,7 +1198,7 @@ class Worker {
       const DONT_KNOW_VALUE = 999;
 
       const containsHalfDay = this._currentLine.DAYSSICK.indexOf('.') > 0 ? [0, 5].includes(parseInt(this._currentLine.DAYSSICK.split('.')[1], 10)) : true;
-      if (myDaysSick != DONT_KNOW_VALUE && (isNaN(myDaysSick) || !containsHalfDay || myDaysSick < 0 || myDaysSick > MAX_VALUE)) {
+      if (myDaysSick !== DONT_KNOW_VALUE && (isNaN(myDaysSick) || !containsHalfDay || myDaysSick < 0 || myDaysSick > MAX_VALUE)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1245,7 +1241,7 @@ class Worker {
           source: this._currentLine.SALARYINT
         });
         return false;
-      } else if (!salaryIntValues.includes(parseInt(mySalaryInt))) {
+      } else if (!salaryIntValues.includes(parseInt(mySalaryInt, 10))) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1277,7 +1273,7 @@ class Worker {
   }
 
   _validateSalary () {
-    const mySalary = parseInt(this._currentLine.SALARY);
+    const mySalary = parseInt(this._currentLine.SALARY, 10);
     const digitRegex = /^[0-9]{1,9}$/;
 
     // optional
@@ -1356,7 +1352,7 @@ class Worker {
     const myMainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
 
     // note - optional in bulk import spec, but mandatory in ASC WDS frontend and backend
-    if (!this._currentLine.MAINJOBROLE || this._currentLine.MAINJOBROLE.length == 0 || isNaN(myMainJobRole)) {
+    if (!this._currentLine.MAINJOBROLE || this._currentLine.MAINJOBROLE.length === 0 || isNaN(myMainJobRole)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1556,7 +1552,7 @@ class Worker {
     const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
     const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
     const localValidationErrors = [];
-    const isValid = listOfotherJobs.every(job => !Number.isNaN(parseInt(job)));
+    const isValid = listOfotherJobs.every(job => !Number.isNaN(parseInt(job, 10)));
 
     if (this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
       if (!isValid) {
@@ -1589,7 +1585,7 @@ class Worker {
           if (otherJobs.includes(thisJobIndex)) {
             const myJobOther = listOfotherJobsDescriptions[index];
             const MAX_LENGTH = 120;
-            if (!myJobOther || myJobOther.length == 0) {
+            if (!myJobOther || myJobOther.length === 0) {
               localValidationErrors.push({
                 worker: this._currentLine.UNIQUEWORKERID,
                 name: this._currentLine.LOCALESTID,
@@ -1718,7 +1714,7 @@ class Worker {
 
   _validateAmhp () {
     const amhpValues = [1, 2, 999];
-    const myAmhp = parseInt(this._currentLine.AMHP);
+    const myAmhp = parseInt(this._currentLine.AMHP, 10);
     const SOCIAL_WORKER_ROLE = 6;
 
     const otherJobRoleIsSocialWorker = !!(this._otherJobs && this._otherJobs.includes(SOCIAL_WORKER_ROLE));
@@ -1828,7 +1824,7 @@ class Worker {
     const mySocialCare = this._currentLine.SCQUAL ? this._currentLine.SCQUAL.split(';') : null;
     const mainJobRoles = [6, 16, 15];
     const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
-    const mySocialCareIndicator = (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) ? parseInt(mySocialCare[0]) : null;
+    const mySocialCareIndicator = (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) ? parseInt(mySocialCare[0], 10) : null;
 
     if (mySocialCareIndicator === null) {
       this._validationErrors.push({
@@ -1856,7 +1852,7 @@ class Worker {
 
     if (mySocialCareIndicator === 1) {
       // if the social care indicator is "1" (yes) - then get the next value which must be the level
-      const mySocialCareLevel = parseInt(mySocialCare[1]);
+      const mySocialCareLevel = parseInt(mySocialCare[1], 10);
 
       if (!mySocialCareLevel && mySocialCareLevel !== 0) {
         this._validationErrors.push({
@@ -1908,7 +1904,7 @@ class Worker {
     const myNonSocialCare = this._currentLine.NONSCQUAL ? this._currentLine.NONSCQUAL.split(';') : null;
     const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
 
-    const myNonSocialCareIndicator = (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) ? parseInt(myNonSocialCare[0]) : null;
+    const myNonSocialCareIndicator = (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) ? parseInt(myNonSocialCare[0], 10) : null;
 
     if (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) {
       if (isNaN(myNonSocialCareIndicator) || !ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
@@ -1921,12 +1917,12 @@ class Worker {
           error: 'The code you have entered for NONSCQUAL is incorrect',
           source: this._currentLine.NONSCQUAL
         });
-      } else if (myNonSocialCareIndicator == 1) {
+      } else if (myNonSocialCareIndicator === 1) {
         this._nonSocialCareQualification = myNonSocialCareIndicator;
 
         // if the social care indicator is "1" (yes) - then get the next value which must be the level - optional only for non-social care!
-        if (myNonSocialCareIndicator == 1) {
-          let myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
+        if (myNonSocialCareIndicator === 1) {
+          let myNonSocialCareLevel = parseInt(myNonSocialCare[1], 10);
           if (isNaN(myNonSocialCareLevel)) {
             myNonSocialCareLevel = 999; // "Don't know"
           } else if (myNonSocialCareLevel) {
@@ -2274,11 +2270,11 @@ class Worker {
   _transformNationality () {
     if (this._nationality) {
       // ASC WDS nationality is a split enum/index
-      if (this._nationality == 826) {
+      if (this._nationality === 826) {
         this._nationality = 'British';
-      } else if (this._nationality == 998) {
+      } else if (this._nationality === 998) {
         this._nationality = 'Don\'t know';
-      } else if (this._nationality == 999) {
+      } else if (this._nationality === 999) {
         this._nationality = 'Other';
       } else {
         const myValidatedNationality = BUDI.nationality(BUDI.TO_ASC, this._nationality);
@@ -2303,11 +2299,11 @@ class Worker {
   _transformCountryOfBirth () {
     if (this._countryOfBirth) {
       // ASC WDS country of birth is a split enum/index
-      if (this._countryOfBirth == 826) {
+      if (this._countryOfBirth === 826) {
         this._countryOfBirth = 'United Kingdom';
-      } else if (this._countryOfBirth == 998) {
+      } else if (this._countryOfBirth === 998) {
         this._countryOfBirth = 'Don\'t know';
-      } else if (this._countryOfBirth == 999) {
+      } else if (this._countryOfBirth === 999) {
         this._countryOfBirth = 'Other';
       } else {
         const myValidatedCountry = BUDI.country(BUDI.TO_ASC, this._countryOfBirth);
@@ -2462,7 +2458,6 @@ class Worker {
     const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
     const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMB/;
 
-    const toReturn = contentRegex1.test(data.substring(0, 50)) || contentRegex2.test(data.substring(0, 50));
     return contentRegex1.test(data.substring(0, 50)) || contentRegex2.test(data.substring(0, 50));
   }
 
@@ -2604,7 +2599,6 @@ class Worker {
       status: this._status,
       uniqueWorkerId: this._uniqueWorkerId,
       changeUniqueWorker: this._changeUniqueWorkerId ? this._changeUniqueWorkerId : undefined,
-      status: this._status,
       displayId: this._displayId,
       niNumber: this._NINumber ? this._NINumber : undefined,
       postcode: this._postCode ? this._postCode : undefined,
@@ -2695,7 +2689,7 @@ class Worker {
         ethnicityId: this._ethnicity
       } : undefined,
       britishCitizenship: this._britishNationality ? this._britishNationality : undefined,
-      yearArrived: this._yearOfEntry ? 	{
+      yearArrived: this._yearOfEntry ? {
         value: 'Yes',
         year: this._yearOfEntry
       } : undefined,
@@ -2870,22 +2864,26 @@ class Worker {
   toQualificationAPI () {
     const myMappedQuals = [];
 
-    this._qualifications ? this._qualifications.forEach(thisQual => {
-      if (!thisQual) return undefined;
+    if (this._qualifications) {
+      this._qualifications.forEach(thisQual => {
+        if (!thisQual) {
+          return undefined;
+        }
 
-      const changeProperties = {
-        column: thisQual.column, // this is necessary to map the qualification to the CSV column
-        type: undefined, // the qualification type does not come from bulk upload
-        qualification: {
-          id: thisQual.id
-        },
-        year: thisQual.year ? thisQual.year : undefined,
-        other: undefined, // "other" qualifier does not come from bulk import
-        notes: thisQual.desc ? thisQual.desc : undefined
-      };
+        const changeProperties = {
+          column: thisQual.column, // this is necessary to map the qualification to the CSV column
+          type: undefined, // the qualification type does not come from bulk upload
+          qualification: {
+            id: thisQual.id
+          },
+          year: thisQual.year ? thisQual.year : undefined,
+          other: undefined, // "other" qualifier does not come from bulk import
+          notes: thisQual.desc ? thisQual.desc : undefined
+        };
 
-      myMappedQuals.push(changeProperties);
-    }) : true;
+        myMappedQuals.push(changeProperties);
+      });
+    }
 
     return myMappedQuals;
   }
@@ -3228,69 +3226,73 @@ class Worker {
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
   addQualificationAPIValidation (columnIndex, errors, warnings) {
     errors.forEach(thisError => {
-      thisError.properties ? thisError.properties.forEach(thisProp => {
-        const validationError = {
-          lineNumber: this._lineNumber,
-          error: thisError.message,
-          name: this._currentLine.LOCALESTID
-        };
+      if (thisError.properties) {
+        thisError.properties.forEach(thisProp => {
+          const validationError = {
+            lineNumber: this._lineNumber,
+            error: thisError.message,
+            name: this._currentLine.LOCALESTID
+          };
 
-        switch (thisProp) {
-          case 'Qualification':
+          switch (thisProp) {
+            case 'Qualification':
             // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_WARNING`];
             // validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
             // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-            break;
-          case 'Year':
+              break;
+            case 'Year':
             // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
             // validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
             // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-            break;
-          case 'Notes':
+              break;
+            case 'Notes':
             // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
             // validationError.errType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
             // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
-            break;
-          default:
+              break;
+            default:
             // validationError.errCode = thisError.code;
             // validationError.errType = 'Undefined';
             // validationError.source  = thisProp;
-        }
-        this._validationErrors.push(validationError);
-      }) : true;
+          }
+          this._validationErrors.push(validationError);
+        });
+      }
     });
 
     warnings.forEach(thisWarning => {
-      thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
-        const validationWarning = {
-          lineNumber: this._lineNumber,
-          warning: thisWarning.message
-        };
+      if (thisWarning.properties) {
+        thisWarning.properties.forEach(thisProp => {
+          const validationWarning = {
+            lineNumber: this._lineNumber,
+            warning: thisWarning.message
+          };
 
-        switch (thisProp) {
-          case 'Qualification':
+          switch (thisProp) {
+            case 'Qualification':
             // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
             // validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
             // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-            break;
-          case 'Year':
+              break;
+            case 'Year':
             // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
             // validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
             // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-            break;
-          case 'Notes':
+              break;
+            case 'Notes':
             // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
             // validationWarning.warnType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
             // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
-            break;
-          default:
+              break;
+            default:
             // validationWarning.warnCode = thisWarning.code;
             // validationWarning.warnType = 'Undefined';
             // validationWarning.source  = thisProp;
-        }
+          }
 
-        this._validationErrors.push(validationWarning);
-      }) : true;
+          this._validationErrors.push(validationWarning);
+        });
+      }
     });
   }
 

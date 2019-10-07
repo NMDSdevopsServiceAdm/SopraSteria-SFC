@@ -9,7 +9,9 @@ const config = require('../../config/config');
 
 const timerLog = require('../../utils/timerLog');
 
-const UserAgentParser = require('ua-parser-js');
+// Shorthand for hasOwnProperty that also works with bare objects
+const hasProp = (obj, prop) =>
+  Object.prototype.hasOwnProperty.bind(obj)(prop);
 
 const router = express.Router();
 const s3 = new AWS.S3({
@@ -58,8 +60,8 @@ router.route('/uploaded').get(async (req, res) => {
           key: encodeURI(file.Key)
         };
 
-        const fileMetaData = data.Contents.filter(myFile => myFile.Key == file.Key + '.metadata.json');
-        if (fileMetaData.length == 1) {
+        const fileMetaData = data.Contents.filter(myFile => myFile.Key === file.Key + '.metadata.json');
+        if (fileMetaData.length === 1) {
           const metaData = await downloadContent(fileMetaData[0].Key);
           const metadataJSON = JSON.parse(metaData.data);
           returnData.records = metadataJSON.records ? metadataJSON.records : 0;
@@ -105,7 +107,9 @@ router.route('/uploaded/*').get(async (req, res) => {
 
     return res.status(200).send({ file: returnData });
   } catch (err) {
-    if (err.code && err.code == 'NotFound') return res.status(404).send({});
+    if (err.code && err.code === 'NotFound') {
+      return res.status(404).send({});
+    }
     console.log(err);
     return res.status(503).send({});
   }
@@ -251,8 +255,6 @@ router.route('/uploaded').put(async (req, res) => {
   const workerMetadata = new MetaData();
   const trainingMetadata = new MetaData();
 
-  let status = true; // assume good
-
   try {
     // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
     const params = {
@@ -298,15 +300,8 @@ router.route('/uploaded').put(async (req, res) => {
         trainingMetadata.size = myfile.size;
         trainingMetadata.key = myfile.key;
         trainingMetadata.lastModified = myfile.lastModified;
-      } else {
-
       }
     });
-
-    // as a minimum, expect upon at least establishment and worker
-    if (!(workerMetadata.fileType && establishmentMetadata.fileType)) {
-      status = false;
-    }
 
     let workerHeaders, establishmentHeaders, trainingHeaders;
     let importedWorkers = null; let importedEstablishments = null; let importedTraining = null;
@@ -336,7 +331,7 @@ router.route('/uploaded').put(async (req, res) => {
 
     await Promise.all(headerPromises);
 
-    /// ///////////////////////////
+    // ////////////////////////////
     const firstRow = 0;
     const firstLineNumber = 1;
     const metadataS3Promises = [];
@@ -346,11 +341,15 @@ router.route('/uploaded').put(async (req, res) => {
       if (establishmentsCsvValidator.preValidate(establishmentHeaders)) {
         // count records and update metadata
         establishmentMetadata.records = importedEstablishments.length;
-        metadataS3Promises.push(uploadAsJSON(username, establishmentId, establishmentMetadata, `${establishmentId}/latest/${establishmentMetadata.filename}.metadata.json`));
+        metadataS3Promises.push(uploadAsJSON(
+          username,
+          establishmentId,
+          establishmentMetadata,
+          `${establishmentId}/latest/${establishmentMetadata.filename}.metadata.json`
+        ));
       } else {
         // reset metadata filetype because this is not an expected establishment
         establishmentMetadata.fileType = null;
-        status = false;
       }
     }
 
@@ -359,11 +358,15 @@ router.route('/uploaded').put(async (req, res) => {
       if (workerCsvValidator.preValidate(workerHeaders)) {
         // count records and update metadata
         workerMetadata.records = importedWorkers.length;
-        metadataS3Promises.push(uploadAsJSON(username, establishmentId, workerMetadata, `${establishmentId}/latest/${workerMetadata.filename}.metadata.json`));
+        metadataS3Promises.push(uploadAsJSON(
+          username,
+          establishmentId,
+          workerMetadata,
+          `${establishmentId}/latest/${workerMetadata.filename}.metadata.json`
+        ));
       } else {
         // reset metadata filetype because this is not an expected establishment
         workerMetadata.fileType = null;
-        status = false;
       }
     }
 
@@ -372,30 +375,32 @@ router.route('/uploaded').put(async (req, res) => {
       if (trainingCsvValidator.preValidate(trainingHeaders)) {
         // count records and update metadata
         trainingMetadata.records = importedTraining.length;
-        metadataS3Promises.push(uploadAsJSON(username, establishmentId, trainingMetadata, `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`));
+        metadataS3Promises.push(uploadAsJSON(
+          username,
+          establishmentId,
+          trainingMetadata,
+          `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`
+        ));
       } else {
         // reset metadata filetype because this is not an expected establishment
         trainingMetadata.fileType = null;
-        status = false;
       }
     }
 
-    /// ///////////////////////////////////
+    // ////////////////////////////////////
     await Promise.all(metadataS3Promises);
 
-    const generateReturnData = (metaData) => {
-      return {
-        filename: metaData.filename,
-        uploaded: metaData.lastModified,
-        username: metaData.userName ? metaData.userName : null,
-        records: metaData.records,
-        errors: 0,
-        warnings: 0,
-        fileType: metaData.fileType,
-        size: metaData.size,
-        key: metaData.key
-      };
-    };
+    const generateReturnData = metaData => ({
+      filename: metaData.filename,
+      uploaded: metaData.lastModified,
+      username: metaData.userName ? metaData.userName : null,
+      records: metaData.records,
+      errors: 0,
+      warnings: 0,
+      fileType: metaData.fileType,
+      size: metaData.size,
+      key: metaData.key
+    });
 
     const returnData = [];
 
@@ -524,7 +529,7 @@ router.route('/validate').put(async (req, res) => {
 });
 
 // alternative (testable) route, which passes the establishment, worker and training CSV as content
-//  return the validation errors as response
+// return the validation errors as the response
 router.route('/validate').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
@@ -534,7 +539,6 @@ router.route('/validate').post(async (req, res) => {
   const trainingMetadata = new MetaData();
 
   const establishmentRegex = /LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES/;
-  const workerRegex = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
   const trainingRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
   const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
 
@@ -559,9 +563,19 @@ router.route('/validate').post(async (req, res) => {
       username,
       establishmentId,
       isParent,
-      { imported: importedEstablishments, establishmentMetadata: establishmentMetadata },
-      { imported: importedWorkers, workerMetadata: workerMetadata },
-      { imported: importedTraining, trainingMetadata: trainingMetadata });
+      {
+        imported: importedEstablishments,
+        establishmentMetadata: establishmentMetadata
+      },
+      {
+        imported: importedWorkers,
+        workerMetadata: workerMetadata
+      },
+      {
+        imported: importedTraining,
+        trainingMetadata: trainingMetadata
+      }
+    );
 
     // handle parsing errors
     if (!validationResponse.status) {
@@ -572,10 +586,10 @@ router.route('/validate').post(async (req, res) => {
           records: importedEstablishments.length,
           deleted: validationResponse.metaData.establishments.deleted,
           errors: validationResponse.validation.establishments
-            .filter(thisVal => thisVal.hasOwnProperty('errCode'))
+            .filter(thisVal => hasProp(thisVal, 'errCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           warnings: validationResponse.validation.establishments
-            .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
+            .filter(thisVal => hasProp(thisVal, 'warnCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           data: {
             csv: validationResponse.data.csv.establishments,
@@ -587,10 +601,10 @@ router.route('/validate').post(async (req, res) => {
           records: importedWorkers.length,
           deleted: validationResponse.metaData.workers.deleted,
           errors: validationResponse.validation.workers
-            .filter(thisVal => thisVal.hasOwnProperty('errCode'))
+            .filter(thisVal => hasProp(thisVal, 'errCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           warnings: validationResponse.validation.workers
-            .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
+            .filter(thisVal => hasProp(thisVal, 'warnCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           data: {
             csv: validationResponse.data.csv.workers,
@@ -604,10 +618,10 @@ router.route('/validate').post(async (req, res) => {
           filename: null,
           records: importedTraining.length,
           errors: validationResponse.validation.training
-            .filter(thisVal => thisVal.hasOwnProperty('errCode'))
+            .filter(thisVal => hasProp(thisVal, 'errCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           warnings: validationResponse.validation.training
-            .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
+            .filter(thisVal => hasProp(thisVal, 'warnCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           data: {
             csv: validationResponse.data.csv.training,
@@ -664,8 +678,7 @@ async function uploadAsJSON (username, establishmentId, content, key) {
   };
 
   try {
-    const objData = await s3.putObject(params).promise();
-    // console.log(`${key} has been uploaded!`);
+    await s3.putObject(params).promise();
   } catch (err) {
     console.error('uploadAsJSON: ', err);
     throw new Error(`Failed to upload S3 object: ${key}`);
@@ -687,16 +700,22 @@ async function uploadAsCSV (username, establishmentId, content, key) {
   };
 
   try {
-    const objData = await s3.putObject(params).promise();
-    // console.log(`${key} has been uploaded!`);
+    await s3.putObject(params).promise();
   } catch (err) {
     console.error('uploadAsCSV: ', err);
     throw new Error(`Failed to upload S3 object: ${key}`);
   }
 }
 
-const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments, myCurrentEstablishments) => {
-  const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber, myCurrentEstablishments); // +2 because the first row is CSV headers, and forEach counter is zero index
+const _validateEstablishmentCsv = async (
+  thisLine,
+  currentLineNumber,
+  csvEstablishmentSchemaErrors,
+  myEstablishments,
+  myAPIEstablishments,
+  myCurrentEstablishments
+) => {
+  const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber, myCurrentEstablishments);
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   lineValidator.validate();
@@ -723,8 +742,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
     const isValid = thisApiEstablishment.validate();
 
     if (isValid) {
-      // no validation errors in the entity itself, so add it ready for completion
-      // console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
+      // No validation errors in the entity itself, so add it ready for completion
       myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
     } else {
       const errors = thisApiEstablishment.errors;
@@ -733,10 +751,10 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
       lineValidator.addAPIValidations(errors, warnings);
 
       if (errors.length === 0) {
-        // console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
         myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
       } else {
-        // TODO - remove this when capacities and services are fixed; temporarily adding establishments even though they're in error (because service/capacity validations put all in error)
+        // TODO: Remove this when capacities and services are fixed; temporarily adding establishments
+        // even though they're in error (because service/capacity validations put all in error)
         myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
       }
     }
@@ -749,19 +767,16 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
     lineValidator.validationErrors.forEach(thisError => csvEstablishmentSchemaErrors.push(thisError));
   }
 
-  // console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
-  // console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
   myEstablishments.push(lineValidator);
 };
 
 const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications) => {
   const thisApiQualification = new QualificationEntity();
-  const isValid = await thisApiQualification.load(thisQual); // ignores "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
-  // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
+  // load while ignoring the "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
+  const isValid = await thisApiQualification.load(thisQual);
 
   if (isValid) {
     // no validation errors in the entity itself, so add it ready for completion
-    // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
     myAPIQualifications[lineValidator.lineNumber] = thisApiQualification;
 
     // associate the qualification entity to the Worker
@@ -773,7 +788,6 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker,
     lineValidator.addQualificationAPIValidation(thisQual.column, errors, warnings);
 
     if (errors.length === 0) {
-      // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
       myAPIQualifications[lineValidator.lineNumber] = thisApiQualification;
 
       // associate the qualification entity to the Worker
@@ -782,10 +796,17 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker,
   }
 };
 
-const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications, myCurrentEstablishments) => {
-  const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber, myCurrentEstablishments); // +2 because the first row is CSV headers, and forEach counter is zero index
-
+const _validateWorkerCsv = async (
+  thisLine,
+  currentLineNumber,
+  csvWorkerSchemaErrors,
+  myWorkers,
+  myAPIWorkers,
+  myAPIQualifications,
+  myCurrentEstablishments
+) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
+  const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber, myCurrentEstablishments);
   lineValidator.validate();
   lineValidator.transform();
 
@@ -818,7 +839,6 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
       lineValidator.addAPIValidations(errors, warnings);
 
       if (errors.length === 0) {
-        // console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
         myAPIWorkers[currentLineNumber] = thisApiWorker;
       }
     }
@@ -831,13 +851,11 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
     lineValidator.validationErrors.forEach(thisError => csvWorkerSchemaErrors.push(thisError));
   }
 
-  // console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
-  // console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
   myWorkers.push(lineValidator);
 };
 
 const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings) => {
-  const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber); // +2 because the first row is CSV headers, and forEach counter is zero index
+  const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber);
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   lineValidator.validate();
@@ -849,7 +867,6 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
     const isValid = await thisApiTraining.load(thisTrainingAsAPI);
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
-      // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
       myAPITrainings[currentLineNumber] = thisApiTraining;
     } else {
       const errors = thisApiTraining.errors;
@@ -858,7 +875,6 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
       lineValidator.addAPIValidations(errors, warnings);
 
       if (errors.length === 0) {
-        // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
         myAPITrainings[currentLineNumber] = thisApiTraining;
       }
     }
@@ -871,16 +887,20 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
     lineValidator.validationErrors.forEach(thisError => csvTrainingSchemaErrors.push(thisError));
   }
 
-  // console.log("WA DEBUG - this training csv record: ", lineValidator.toJSON());
-  // console.log("WA DEBUG - this training API record: ", JSON.stringify(lineValidator.toAPI(), null, 4));
   myTrainings.push(lineValidator);
 };
 
 // if commit is false, then the results of validation are not uploaded to S3
 const validateBulkUploadFiles = async (commit, username, establishmentId, isParent, establishments, workers, training) => {
   let status = true;
-  const csvEstablishmentSchemaErrors = []; const csvWorkerSchemaErrors = []; const csvTrainingSchemaErrors = [];
-  const myEstablishments = []; const myWorkers = []; const myTrainings = [];
+
+  const csvEstablishmentSchemaErrors = [];
+  const csvWorkerSchemaErrors = [];
+  const csvTrainingSchemaErrors = [];
+
+  const myEstablishments = [];
+  const myWorkers = [];
+  const myTrainings = [];
   const workersKeyed = [];
 
   const validateStartTime = new Date();
@@ -899,18 +919,28 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   //    2: { },
   //    ...
   // }
-  const myAPIEstablishments = {}; const myAPIWorkers = {}; const myAPITrainings = {}; const myAPIQualifications = {};
+  const myAPIEstablishments = {};
+  const myAPIWorkers = {};
+  const myAPITrainings = {};
+  const myAPIQualifications = {};
 
   // for unique/cross-reference validations
-  const allEstablishmentsByKey = {}; const allWorkersByKey = {};
+  const allEstablishmentsByKey = {};
+  const allWorkersByKey = {};
+
+  // /////////////////////////
 
   // parse and process Establishments CSV
-  if (Array.isArray(establishments.imported) && establishments.imported.length > 0 && establishments.establishmentMetadata.fileType == 'Establishment') {
-    await Promise.all(
-      establishments.imported.map((thisLine, currentLineNumber) => {
-        return _validateEstablishmentCsv(thisLine, currentLineNumber + 2, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments, myCurrentEstablishments);
-      })
-    );
+  if (Array.isArray(establishments.imported) && establishments.imported.length > 0 && establishments.establishmentMetadata.fileType === 'Establishment') {
+    // validate all establishment rows
+    await Promise.all(establishments.imported.map((thisLine, currentLineNumber) => _validateEstablishmentCsv(
+      thisLine,
+      currentLineNumber + 2,
+      csvEstablishmentSchemaErrors,
+      myEstablishments,
+      myAPIEstablishments,
+      myCurrentEstablishments
+    )));
 
     // having parsed all establishments, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
@@ -937,13 +967,19 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   establishments.establishmentMetadata.records = myEstablishments.length;
 
+  // /////////////////////////
+
   // parse and process Workers CSV
-  if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType == 'Worker') {
-    await Promise.all(
-      workers.imported.map((thisLine, currentLineNumber) => {
-        return _validateWorkerCsv(thisLine, currentLineNumber + 2, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications, myCurrentEstablishments);
-      })
-    );
+  if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType === 'Worker') {
+    await Promise.all(workers.imported.map((thisLine, currentLineNumber) => _validateWorkerCsv(
+      thisLine,
+      currentLineNumber + 2,
+      csvWorkerSchemaErrors,
+      myWorkers,
+      myAPIWorkers,
+      myAPIQualifications,
+      myCurrentEstablishments
+    )));
 
     // having parsed all workers, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
@@ -977,7 +1013,9 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
           return sum;
         }, 0);
 
-        if (myWorkersTotalHours > 65) csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
+        if (myWorkersTotalHours > 65) {
+          csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
+        }
 
         if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
           // not found the associated establishment
@@ -990,7 +1028,9 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
           allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
 
           // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
-          changeKeyNoWhitespace ? allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber : true;
+          if (changeKeyNoWhitespace) {
+            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+          }
 
           // associate this worker to the known establishment
           const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace] ? myAPIEstablishments[establishmentKeyNoWhitespace] : null;
@@ -1017,8 +1057,10 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   const validateWorkersTime = new Date();
   timerLog('CHECKPOINT - BU Validate - have validated workers', validateEstablishmentsTime, validateWorkersTime);
 
+  // /////////////////////////
+
   // parse and process Training CSV
-  if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType == 'Training') {
+  if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType === 'Training') {
     await Promise.all(
       training.imported.map((thisLine, currentLineNumber) => {
         return _validateTrainingCsv(thisLine, currentLineNumber + 2, csvTrainingSchemaErrors, myTrainings, myAPITrainings);
@@ -1027,8 +1069,10 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
     // note - there is no uniqueness test for a training record
 
-    // having parsed all establishments, workers and training, need to cross-check all training records' establishment reference (LOCALESTID) against all parsed establishments
-    // having parsed all establishments, workers and training, need to cross-check all training records' worker reference (UNIQUEWORKERID) against all parsed workers
+    // Having parsed all establishments, workers and training, need to cross-check all training records' establishment reference
+    // (LOCALESTID) against all parsed establishments
+    // Having parsed all establishments, workers and training, need to cross-check all training records' worker reference
+    // (UNIQUEWORKERID) against all parsed workers
     myTrainings.forEach(thisTraingRecord => {
       const establishmentKeyNoWhitespace = (thisTraingRecord.localeStId || '').replace(/\s/g, '');
       const workerKeyNoWhitespace = ((thisTraingRecord.localeStId || '') + (thisTraingRecord.uniqueWorkerId || '')).replace(/\s/g, '');
@@ -1091,7 +1135,6 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   // firstly, if the logged in account performing this validation is not a parent, then
   //  there should be just one establishment, and that establishment should the primary establishment
   if (!isParent) {
-    const numberOfEstablishments = establishments.imported.length;
     const MAX_ESTABLISHMENTS = 1;
 
     if (establishments.imported.length !== MAX_ESTABLISHMENTS) {
@@ -1107,7 +1150,6 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
     }
   });
 
-  const notPrimary = true;
   if (primaryEstablishment) {
     const onloadedPrimaryEstablishment = myAPIEstablishments[primaryEstablishment.key];
     if (!onloadedPrimaryEstablishment) {
@@ -1162,14 +1204,18 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   const validateDifferenceReportTime = new Date();
   timerLog('CHECKPOINT - BU Validate - diference report', validateCompleteTime, validateDifferenceReportTime);
-  timerLog('CHECKPOINT - BU Validate - overall validations including restoring state and difference report', validateStartTime, validateDifferenceReportTime);
+  timerLog(
+    'CHECKPOINT - BU Validate - overall validations including restoring state and difference report',
+    validateStartTime,
+    validateDifferenceReportTime
+  );
 
   // from the validation report, get a summary of deleted establishments and workers
   // the report will always have new, udpated, deleted array values, even if empty
   // Note - Array.reduce but it doesn't work with empty arrays, except when you provide an initial value (0 in this case)
   establishments.establishmentMetadata.deleted = report.deleted.length;
-  const numberOfDeletedWorkersFromUpdatedEstablishments = report.updated.reduce((total, current) => total += current.workers.deleted.length, 0);
-  const numberOfDeletedWorkersFromDeletedEstablishments = report.deleted.reduce((total, current) => total += current.workers.deleted.length, 0);
+  const numberOfDeletedWorkersFromUpdatedEstablishments = report.updated.reduce((total, current) => total + current.workers.deleted.length, 0);
+  const numberOfDeletedWorkersFromDeletedEstablishments = report.deleted.reduce((total, current) => total + current.workers.deleted.length, 0);
   workers.workerMetadata.deleted = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
 
   // upload intermediary/validation S3 objects
@@ -1177,45 +1223,154 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
     const s3UploadPromises = [];
 
     // upload the metadata as JSON to S3 - these are requited for uploaded list endpoint
-    establishments.imported ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, establishments.establishmentMetadata, `${establishmentId}/latest/${establishments.establishmentMetadata.filename}.metadata.json`)) : true;
-    workers.imported ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, workers.workerMetadata, `${establishmentId}/latest/${workers.workerMetadata.filename}.metadata.json`)) : true;
-    training.imported ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, training.trainingMetadata, `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`)) : true;
+    if (establishments.imported) {
+      s3UploadPromises.push(uploadAsJSON(
+        username,
+        establishmentId,
+        establishments.establishmentMetadata,
+        `${establishmentId}/latest/${establishments.establishmentMetadata.filename}.metadata.json`
+      ));
+    }
 
-    // upload the validation data to S3 - these are reuquired for validation report - although one object is likely to be quicker to upload - and only one object is required then to download
-    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/establishments.validation.json`));
-    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/workers.validation.json`));
-    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvTrainingSchemaErrors, `${establishmentId}/validation/training.validation.json`));
-    s3UploadPromises.push(uploadAsJSON(username, establishmentId, report, `${establishmentId}/validation/difference.report.json`));
+    if (workers.imported) {
+      s3UploadPromises.push(uploadAsJSON(
+        username,
+        establishmentId,
+        workers.workerMetadata,
+        `${establishmentId}/latest/${workers.workerMetadata.filename}.metadata.json`
+      ));
+    }
+
+    if (training.imported) {
+      s3UploadPromises.push(uploadAsJSON(
+        username,
+        establishmentId,
+        training.trainingMetadata,
+        `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`
+      ));
+    }
+
+    // upload the validation data to S3 - these are reuquired for validation report -
+    // although one object is likely to be quicker to upload - and only one object is required then to download
+    s3UploadPromises.push(uploadAsJSON(
+      username,
+      establishmentId,
+      csvEstablishmentSchemaErrors,
+      `${establishmentId}/validation/establishments.validation.json`
+    ));
+
+    s3UploadPromises.push(uploadAsJSON(
+      username,
+      establishmentId,
+      csvWorkerSchemaErrors,
+      `${establishmentId}/validation/workers.validation.json`
+    ));
+
+    s3UploadPromises.push(uploadAsJSON(
+      username,
+      establishmentId,
+      csvTrainingSchemaErrors,
+      `${establishmentId}/validation/training.validation.json`
+    ));
+
+    s3UploadPromises.push(uploadAsJSON(
+      username,
+      establishmentId,
+      report,
+      `${establishmentId}/validation/difference.report.json`
+    ));
 
     // to false to disable the upload of intermediary objects
     // the all entities intermediary file is required on completion - establishments entity for validation report
-    const allentitiesreadyforjson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false, false, false, false, true, null, true));
-    establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`)) : true;
+    if (establishmentsAsArray.length > 0) {
+      s3UploadPromises.push(uploadAsJSON(
+        username,
+        establishmentId,
+        establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false, false, false, false, true, null, true)),
+        `${establishmentId}/intermediary/all.entities.json`
+      ));
+    }
 
     // for the purpose of the establishment validation report, need a list of all unique local authorities against all establishments
     const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
-    const unqiueLAs = establishmentsOnlyForJson ? establishmentsOnlyForJson.map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
+    const uniqueLocalAuthorities = establishmentsOnlyForJson.map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
       .reduce((acc, val) => acc.concat(val), [])
       .map(la => la.name)
       .sort((a, b) => a > b)
-      .filter((value, index, self) => self.indexOf(value) === index) : [];
-    s3UploadPromises.push(uploadAsJSON(username, establishmentId, unqiueLAs, `${establishmentId}/intermediary/all.localauthorities.json`));
+      .filter((value, index, self) => self.indexOf(value) === index);
 
-    const traceData = config.get('bulkupload.validation.storeIntermediaries');
-    if (traceData) {
+    s3UploadPromises.push(uploadAsJSON(
+      username,
+      establishmentId,
+      uniqueLocalAuthorities,
+      `${establishmentId}/intermediary/all.localauthorities.json`
+    ));
+
+    if (config.get('bulkupload.validation.storeIntermediaries')) {
       // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
-      myEstablishments.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.csv.json`)) : true;
-      myWorkers.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myWorkers.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${workers.workerMetadata.filename}.csv.json`)) : true;
-      myTrainings.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`)) : true;
+      if (myEstablishments.length > 0) {
+        s3UploadPromises.push(uploadAsJSON(
+          username,
+          establishmentId,
+          myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
+          `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.csv.json`
+        ));
+      }
+
+      if (myWorkers.length > 0) {
+        s3UploadPromises.push(uploadAsJSON(
+          username,
+          establishmentId,
+          myWorkers.map(thisEstablishment => thisEstablishment.toJSON()),
+          `${establishmentId}/intermediary/${workers.workerMetadata.filename}.csv.json`
+        ));
+      }
+
+      if (myTrainings.length > 0) {
+        s3UploadPromises.push(uploadAsJSON(
+          username,
+          establishmentId,
+          myTrainings.map(thisEstablishment => thisEstablishment.toJSON()),
+          `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`
+        ));
+      }
 
       // upload the intermediary entities as JSON to S3
-      const workersOnlyForJson = workersAsArray.map(thisWorker => thisWorker.toJSON());
-      const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
-      const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
-      establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`)) : true;
-      workersAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, workersOnlyForJson, `${establishmentId}/intermediary/worker.entities.json`)) : true;
-      trainingAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, trainingOnlyForJson, `${establishmentId}/intermediary/training.entities.json`)) : true;
-      qualificationsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, qualificationsOnlyForJson, `${establishmentId}/intermediary/qualification.entities.json`)) : true;
+      if (establishmentsAsArray.length > 0) {
+        s3UploadPromises.push(uploadAsJSON(
+          username,
+          establishmentId,
+          establishmentsOnlyForJson,
+          `${establishmentId}/intermediary/establishment.entities.json`
+        ));
+      }
+
+      if (workersAsArray.length > 0) {
+        s3UploadPromises.push(uploadAsJSON(
+          username,
+          establishmentId,
+          workersAsArray.map(thisWorker => thisWorker.toJSON()),
+          `${establishmentId}/intermediary/worker.entities.json`
+        ));
+      }
+
+      if (trainingAsArray.length > 0) {
+        s3UploadPromises.push(uploadAsJSON(
+          username,
+          establishmentId,
+          trainingAsArray.map(thisTraining => thisTraining.toJSON()),
+          `${establishmentId}/intermediary/training.entities.json`
+        ));
+      }
+
+      if (qualificationsAsArray.length > 0) {
+        s3UploadPromises.push(uploadAsJSON(
+          username,
+          establishmentId,
+          qualificationsAsArray.map(thisQualification => thisQualification.toJSON()),
+          `${establishmentId}/intermediary/qualification.entities.json`
+        ));
+      }
     }
 
     // before returning, wait for all uploads to complete
@@ -1307,16 +1462,15 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
 //  the establishments and workers will be deleted.
 // Only generate this validation difference report, if there are no errors.
 const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, currentEntities) => {
-  const status = true;
-  const newEntities = []; const updatedEntities = []; const deletedEntities = [];
+  const newEntities = [];
+  const updatedEntities = [];
+  const deletedEntities = [];
 
   if (!onloadEntities || !Array.isArray(onloadEntities)) {
     console.error('validationDifferenceReport: onload entities unexpected');
-    status = false;
   }
   if (!currentEntities || !Array.isArray(currentEntities)) {
     console.error('validationDifferenceReport: current entities unexpected');
-    status = false;
   }
 
   // determine new and updated establishments, by referencing the onload set against the current set
@@ -1328,20 +1482,22 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
       // for updated establishments, need to cross check the set of onload and current workers to identify the new, updated and deleted workers
       const currentWorkers = foundCurrentEstablishment.associatedWorkers;
       const onloadWorkers = thisOnloadEstablishment.associatedWorkers;
-      const newWorkers = []; const updatedWorkers = []; const deletedWorkers = [];
+      const newWorkers = [];
+      const updatedWorkers = [];
+      const deletedWorkers = [];
 
       // find new/updated/deleted workers
       onloadWorkers.forEach(thisOnloadWorker => {
-        const foundWorker = currentWorkers.find(thisCurrentWorker => {
-          return thisCurrentWorker === thisOnloadWorker;
-        });
+        const foundWorker = currentWorkers.find(thisCurrentWorker =>
+          thisCurrentWorker === thisOnloadWorker
+        );
 
         if (foundWorker) {
           const theWorker = foundCurrentEstablishment.theWorker(foundWorker);
           const theOnloadWorker = thisOnloadEstablishment.theWorker(thisOnloadWorker);
 
           // note - even though a worker has been found - and therefore it is obvious to update it
-          //        it may be marked for deletion
+          // it may be marked for deletion
           if (theOnloadWorker.status === 'DELETE') {
             deletedWorkers.push({
               key: thisOnloadWorker,
@@ -1440,7 +1596,8 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
               key: thisCurrentWorker,
               name: thisWorker.nameOrId,
               localId: thisWorker.localIdentifier,
-              status: 'DELETED' // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight this has been automatically detected
+              status: 'DELETED' // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight
+              // this has been automatically detected
             });
           });
 
@@ -1448,7 +1605,8 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
             key: thisCurrentEstablishment.key,
             name: thisCurrentEstablishment.name,
             localId: thisCurrentEstablishment.localIdentifier,
-            status: 'DELETED', // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight this has been automatically detected
+            status: 'DELETED', // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight
+            // this has been automatically detected
             workers: {
               deleted: deletedWorkers
             }
@@ -1475,9 +1633,7 @@ router.route('/report').get(async (req, res) => {
 });
 
 router.route('/report/:reportType').get(async (req, res) => {
-  const userAgent = UserAgentParser(req.headers['user-agent']);
-  const windowsTest = /windows/i;
-  const NEWLINE = windowsTest.test(userAgent.os.name) ? '\r\n' : '\n';
+  const NEWLINE = '\r\n';
   const reportTypes = ['training', 'establishments', 'workers'];
   const reportType = req.params.reportType;
   const readable = new Stream.Readable();
@@ -1520,7 +1676,10 @@ router.route('/report/:reportType').get(async (req, res) => {
       .reduce((acc, val) => acc.concat(val), [])
       .filter(msg => msg.errCode && msg.errType)
       .sort((a, b) => a.lineNumber - b.lineNumber)
-      .reduce((result, item) => ({ ...result, [item.error]: [...(result[item.error] || []), item] }), {});
+      .reduce((result, item) => ({
+        ...result,
+        [item.error]: [...(result[item.error] || []), item]
+      }), {});
 
     printLine(readable, reportType, errors, NEWLINE);
 
@@ -1541,7 +1700,9 @@ router.route('/report/:reportType').get(async (req, res) => {
       const laPadding = '*'.padStart(laTitle.length, '*');
       readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
 
-      entities ? entities.map(item => readable.push(`${item}${NEWLINE}`)) : true;
+      if (entities) {
+        entities.forEach(item => readable.push(`${item}${NEWLINE}`));
+      }
 
       // list all establishments that are being deleted
       if (differenceReport && differenceReport.deleted && Array.isArray(differenceReport.deleted) && differenceReport.deleted.length > 0) {
@@ -1560,9 +1721,10 @@ router.route('/report/:reportType').get(async (req, res) => {
     if (reportType === 'workers') {
       // list all workers that are being deleted
       if (differenceReport) {
-        const numberOfDeletedWorkersFromUpdatedEstablishments = differenceReport.updated.reduce((total, current) => total += current.workers.deleted.length, 0);
-        const numberOfDeletedWorkersFromDeletedEstablishments = differenceReport.deleted.reduce((total, current) => total += current.workers.deleted.length, 0);
-        const totalDeletedWorkers = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
+        const numberOfDeletedWorkersFromUpdatedEstablishments =
+          differenceReport.updated.reduce((total, current) => total + current.workers.deleted.length, 0);
+        const numberOfDeletedWorkersFromDeletedEstablishments =
+          differenceReport.deleted.reduce((total, current) => total + current.workers.deleted.length, 0);
 
         if (numberOfDeletedWorkersFromDeletedEstablishments) {
           const deletedTitle = '* Deleted Workplaces (the following Staff will be deleted) *';
@@ -1576,16 +1738,17 @@ router.route('/report/:reportType').get(async (req, res) => {
                 thisDeletedEstablishment.workers.deleted
                   .sort((x, y) => x.name > y.name)
                   .forEach(thisWorker => {
-                    console.log();
-                    readable.push(`"${thisDeletedEstablishment.name}" (LOCALSTID - ${thisDeletedEstablishment.localId}) - "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`);
+                    readable.push(
+                      `"${thisDeletedEstablishment.name}" (LOCALSTID - ${thisDeletedEstablishment.localId}) - "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`
+                    );
                   });
               }
             });
         }
 
         if (numberOfDeletedWorkersFromUpdatedEstablishments) {
-          deletedTitle = '* Existing Workplaces (the following Staff will be deleted) *';
-          deletedPadding = '*'.padStart(deletedTitle.length, '*');
+          const deletedTitle = '* Existing Workplaces (the following Staff will be deleted) *';
+          const deletedPadding = '*'.padStart(deletedTitle.length, '*');
           readable.push(`${NEWLINE}${deletedPadding}${NEWLINE}${deletedTitle}${NEWLINE}${deletedPadding}${NEWLINE}`);
 
           differenceReport.updated
@@ -1595,7 +1758,9 @@ router.route('/report/:reportType').get(async (req, res) => {
                 thisUpdatedEstablishment.workers.deleted
                   .sort((x, y) => x.name > y.name)
                   .forEach(thisWorker => {
-                    readable.push(`"${thisUpdatedEstablishment.name}" (LOCALSTID - ${thisUpdatedEstablishment.localId})- "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`);
+                    readable.push(
+                      `"${thisUpdatedEstablishment.name}" (LOCALSTID - ${thisUpdatedEstablishment.localId})- "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`
+                    );
                   });
               }
             });
@@ -1618,13 +1783,28 @@ const printLine = (readable, reportType, errors, sep) => {
   Object.keys(errors).forEach(key => {
     readable.push(`${sep}${key}${sep}`);
     errors[key].forEach(item => {
-      if (reportType === 'training') { return readable.push(`For worker with ${item.name} Subsidiary 3 and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`); } else if (reportType === 'establishments') { return readable.push(`For establishment called ${item.name} on line ${item.lineNumber}${sep}`); } else if (reportType === 'workers') { return readable.push(`For worker with LOCALESTID ${item.name} and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`); }
+      if (reportType === 'training') {
+        return readable.push(`For worker with ${item.name} Subsidiary 3 and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`);
+      } else if (reportType === 'establishments') {
+        return readable.push(`For establishment called ${item.name} on line ${item.lineNumber}${sep}`);
+      } else if (reportType === 'workers') {
+        return readable.push(`For worker with LOCALESTID ${item.name} and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`);
+      }
     });
   });
 };
 
-const getFileName = (reportType) => {
-  if (reportType === 'training') { return 'TrainingResults.txt'; } else if (reportType === 'establishments') { return 'WorkplaceResults.txt'; } else if (reportType === 'workers') { return 'StaffrecordsResults.txt'; }
+const getFileName = reportType => {
+  switch (reportType) {
+    case 'training':
+      return 'TrainingResults.txt';
+
+    case 'establishments':
+      return 'WorkplaceResults.txt';
+
+    case 'workers':
+      return 'StaffrecordsResults.txt';
+  }
 };
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
@@ -1645,7 +1825,8 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
         const newOnloadEstablishment = new EstablishmentEntity(loggedInUsername);
         onLoadEstablishments.push(newOnloadEstablishment);
 
-        newOnloadEstablishment.initialise(thisEntity.address1,
+        newOnloadEstablishment.initialise(
+          thisEntity.address1,
           thisEntity.address2,
           thisEntity.address3,
           thisEntity.town,
@@ -1653,7 +1834,8 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
           thisEntity.locationId,
           thisEntity.provId,
           thisEntity.postcode,
-          thisEntity.isRegulated);
+          thisEntity.isRegulated
+        );
         onloadPromises.push(newOnloadEstablishment.load(thisEntity, true));
       });
     }
@@ -1667,7 +1849,14 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
   }
 };
 
-const completeNewEstablishment = async (thisNewEstablishment, theLoggedInUser, transaction, onloadEstablishments, primaryEstablishmentId, primaryEstablishmentUid) => {
+const completeNewEstablishment = async (
+  thisNewEstablishment,
+  theLoggedInUser,
+  transaction,
+  onloadEstablishments,
+  primaryEstablishmentId,
+  primaryEstablishmentUid
+) => {
   try {
     const startTime = new Date();
 
@@ -1752,15 +1941,13 @@ router.route('/complete').post(async (req, res) => {
   const primaryEstablishmentUid = req.establishment.uid;
   const isParent = req.isParent;
 
-  // TODO: add traps to prevent completing without having ensure validation and just warnings not errors
-  const fetchPromises = [];
-
   try {
     // completing bulk upload must always work on the current set of known entities and not rely
     //  on any aspect of the current entities at the time of validation; there may be minutes/hours
     //  validating a bulk upload and completing it.
     const completeStartTime = new Date();
-    const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1); // association level is just 1 (we need Establishment's workers for completion, but not the Worker's associated training and qualification)
+    // association level is just 1 (we need Establishment's workers for completion, but not the Worker's associated training and qualification)
+    const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1);
 
     const restoredExistingStateTime = new Date();
     timerLog('CHECKPOINT - BU COMPLETE - have restored current state of establishments/workers', completeStartTime, restoredExistingStateTime);
@@ -1774,7 +1961,7 @@ router.route('/complete').post(async (req, res) => {
       timerLog('CHECKPOINT - BU COMPLETE - have restored onloaded state from validation stage', restoredExistingStateTime, restoredOnLoadStateTime);
 
       // sequential promise console logger
-      const log = result => result = null;
+      const log = result => result === null;
 
       // could look to parallel the three above tasks as each is relatively intensive - but happy path first
       // process the set of new, updated and deleted entities for bulk upload completion, within a single transaction
@@ -1782,25 +1969,52 @@ router.route('/complete').post(async (req, res) => {
       try {
         // all creates, updates and deletes (archive) are done in one transaction to ensure database integrity
         await dbmodels.sequelize.transaction(async t => {
-          const updatedEstablishments = [];
-
           // first create the new establishments - in sequence
           const starterNewPromise = Promise.resolve(null);
-          await validationDiferenceReport.new.reduce((p, thisNewEstablishment) => p.then(() => completeNewEstablishment(thisNewEstablishment, theLoggedInUser, t, onloadEstablishments, primaryEstablishmentId, primaryEstablishmentUid).then(log)), starterNewPromise);
+          await validationDiferenceReport
+            .new
+            .reduce((p, thisNewEstablishment) => p.then(() =>
+              completeNewEstablishment(
+                thisNewEstablishment,
+                theLoggedInUser,
+                t,
+                onloadEstablishments,
+                primaryEstablishmentId,
+                primaryEstablishmentUid
+              ).then(log)), starterNewPromise);
 
           // now update the updated
           const starterUpdatedPromise = Promise.resolve(null);
-          await validationDiferenceReport.updated.reduce((p, thisUpdatedEstablishment) => p.then(() => completeUpdateEstablishment(thisUpdatedEstablishment, theLoggedInUser, t, onloadEstablishments, myCurrentEstablishments).then(log)), starterUpdatedPromise);
+          await validationDiferenceReport
+            .updated
+            .reduce((p, thisUpdatedEstablishment) => p.then(() =>
+              completeUpdateEstablishment(
+                thisUpdatedEstablishment,
+                theLoggedInUser,
+                t,
+                onloadEstablishments,
+                myCurrentEstablishments
+              ).then(log)), starterUpdatedPromise);
 
           // and finally, delete the deleted
           const starterDeletedPromise = Promise.resolve(null);
-          await validationDiferenceReport.deleted.reduce((p, thisDeletedEstablishment) => p.then(() => completeDeleteEstablishment(thisDeletedEstablishment, theLoggedInUser, t, myCurrentEstablishments).then(log)), starterDeletedPromise);
+          await validationDiferenceReport
+            .deleted
+            .reduce((p, thisDeletedEstablishment) => p.then(() =>
+              completeDeleteEstablishment(
+                thisDeletedEstablishment,
+                theLoggedInUser,
+                t,
+                myCurrentEstablishments
+              ).then(log)), starterDeletedPromise);
 
           completeCommitTransactionTime = new Date();
         });
 
         const completeSaveTime = new Date();
-        completeCommitTransactionTime ? timerLog('CHECKPOINT - BU COMPLETE - commit transaction', completeCommitTransactionTime, completeSaveTime) : true;
+        if (completeCommitTransactionTime) {
+          timerLog('CHECKPOINT - BU COMPLETE - commit transaction', completeCommitTransactionTime, completeSaveTime);
+        }
         timerLog('CHECKPOINT - BU COMPLETE - have completed all establishments', restoredOnLoadStateTime, completeSaveTime);
 
         // gets here having successfully completed upon the bulk upload
@@ -1852,8 +2066,8 @@ const exportToCsv = async (NEWLINE, allMyEstablishemnts, primaryEstablishmentId)
       }
     );
 
-    if (determineMaxQuals && determineMaxQuals[0].maxqualifications && Number.isInteger(parseInt(determineMaxQuals[0].maxqualifications))) {
-      const MAX_QUALS = parseInt(determineMaxQuals[0].maxqualifications);
+    if (determineMaxQuals && determineMaxQuals[0].maxqualifications && Number.isInteger(parseInt(determineMaxQuals[0].maxqualifications, 10))) {
+      const MAX_QUALS = parseInt(determineMaxQuals[0].maxqualifications, 10);
 
       // first the header rows
       establishmentsCsvArray.push(new CsvEstablishmentValidator().headers);
@@ -1874,11 +2088,13 @@ const exportToCsv = async (NEWLINE, allMyEstablishemnts, primaryEstablishmentId)
           workersCsvArray.push(workerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS));
 
           // and for this Worker's training records
-          thisWorker.training ? thisWorker.training.forEach(thisTrainingRecord => {
-            const trainingCsvValidator = new CsvTrainingValidator();
+          if (thisWorker.training) {
+            thisWorker.training.forEach(thisTrainingRecord => {
+              const trainingCsvValidator = new CsvTrainingValidator();
 
-            trainingCsvArray.push(trainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord));
-          }) : true;
+              trainingCsvArray.push(trainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord));
+            });
+          }
         });
       });
     } else {
@@ -1891,20 +2107,17 @@ const exportToCsv = async (NEWLINE, allMyEstablishemnts, primaryEstablishmentId)
   return [establishmentsCsvArray.join(NEWLINE), workersCsvArray.join(NEWLINE), trainingCsvArray.join(NEWLINE)];
 };
 
-// TODO - note, regardless of which download type is requested, the way establishments, workers and training entities are restored, it is easy enough to create all three exports every time
-//  Ideally, the CSV content should be prepared and uploaded to S3, and then signed URLs returned for the browsers to download directly, thus not imposing the streaming of large data files through node.js API
+// TODO: Note, regardless of which download type is requested, the way establishments, workers and training
+// entities are restored, it is easy enough to create all three exports every time. Ideally the CSV content should
+// be prepared and uploaded to S3, and then signed URLs returned for the browsers to download directly, thus not
+// imposing the streaming of large data files through node.js API
 router.route('/download/:downloadType').get(async (req, res) => {
   req.setTimeout(config.get('bulkupload.download.timeout') * 1000);
 
-  // this report returns as plain text. The report line endings are dependent on not the
-  //  runtime platform, but on the requesting platform (99.9999% of the users will be on Windows)
-  const userAgent = UserAgentParser(req.headers['user-agent']);
-  const windowsTest = /windows/i;
-  const NEWLINE = windowsTest.test(userAgent.os.name) ? '\r\n' : '\n';
+  const NEWLINE = '\r\n';
 
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
-  const primaryEstablishmentUid = req.establishment.uid;
   const isParent = req.isParent;
 
   const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training'];
@@ -1924,13 +2137,29 @@ router.route('/download/:downloadType').get(async (req, res) => {
       }
 
       // before returning the response - upload to S3
-      const traceData = config.get('bulkupload.validation.storeIntermediaries');
-      if (traceData) {
+      if (config.get('bulkupload.validation.storeIntermediaries')) {
         const s3UploadPromises = [];
         // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
-        s3UploadPromises.push(uploadAsCSV(theLoggedInUser, primaryEstablishmentId, establishments, `${primaryEstablishmentId}/download/establishments.csv`));
-        s3UploadPromises.push(uploadAsCSV(theLoggedInUser, primaryEstablishmentId, workers, `${primaryEstablishmentId}/download/workers.csv`));
-        s3UploadPromises.push(uploadAsCSV(theLoggedInUser, primaryEstablishmentId, training, `${primaryEstablishmentId}/download/training.csv`));
+        s3UploadPromises.push(uploadAsCSV(
+          theLoggedInUser,
+          primaryEstablishmentId,
+          establishments,
+          `${primaryEstablishmentId}/download/establishments.csv`
+        ));
+
+        s3UploadPromises.push(uploadAsCSV(
+          theLoggedInUser,
+          primaryEstablishmentId,
+          workers,
+          `${primaryEstablishmentId}/download/workers.csv`
+        ));
+
+        s3UploadPromises.push(uploadAsCSV(
+          theLoggedInUser,
+          primaryEstablishmentId,
+          training,
+          `${primaryEstablishmentId}/download/training.csv`
+        ));
 
         await Promise.all(s3UploadPromises);
       }
@@ -1954,7 +2183,7 @@ router.route('/download/:downloadType').get(async (req, res) => {
 
       return res.send(response);
     } else {
-      console.error(`router.get(\'/bulkupload/download\').get: unexpected download type: ${downloadType}`, downloadType);
+      console.error(`router.get('/bulkupload/download').get: unexpected download type: ${downloadType}`, downloadType);
       return res.status(400).send({
         message: 'Unexpected download type'
       });
@@ -2013,9 +2242,9 @@ router.route('/trickle').post(async (req, res) => {
           return res.end(']}');
         }
       } else {
-        if (withError) {
-          E;
-        }
+        // if (withError) {
+        //  E;
+        // }
 
         return res.status(200).send(response);
       }
