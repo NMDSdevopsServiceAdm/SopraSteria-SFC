@@ -121,7 +121,10 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       this.registrationService
         .postRegistration(this.generatePayload())
         .subscribe(
-          () => this.router.navigate(['/registration/complete']),
+          registration =>
+            registration.active
+              ? this.router.navigate(['/registration/complete'])
+              : this.router.navigate(['/registration/awaiting-approval']),
           (error: HttpErrorResponse) => this.onError(error)
         )
     );
