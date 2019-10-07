@@ -59,11 +59,11 @@ class Training {
   }
 
   get completed () {
-    this._dateCompleted;
+    return this._dateCompleted;
   }
 
   get expiry () {
-    this._expiry;
+    return this._expiry;
   }
 
   get description () {
@@ -71,7 +71,7 @@ class Training {
   }
 
   get category () {
-    return _category;
+    return this._category;
   }
 
   get accredited () {
@@ -86,7 +86,7 @@ class Training {
     const myLocaleStId = this._currentLine.LOCALESTID;
     const MAX_LENGTH = 50;
 
-    if (!myLocaleStId || myLocaleStId.length == 0) {
+    if (!myLocaleStId || myLocaleStId.length === 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -118,7 +118,7 @@ class Training {
     const myUniqueId = this._currentLine.UNIQUEWORKERID;
     const MAX_LENGTH = 50;
 
-    if (!myUniqueId || myUniqueId.length == 0) {
+    if (!myUniqueId || myUniqueId.length === 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -250,7 +250,7 @@ class Training {
     const myDescription = this._currentLine.DESCRIPTION;
     const MAX_LENGTH = 120;
 
-    if (!myDescription || myDescription.length == 0) {
+    if (!myDescription || myDescription.length === 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
