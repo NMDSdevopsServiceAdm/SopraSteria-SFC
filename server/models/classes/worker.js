@@ -181,7 +181,7 @@ class Worker extends EntityValidator {
     get nationalInsuranceNumber() {
         return this._properties.get('NationalInsuranceNumber') ? this._properties.get('NationalInsuranceNumber').property : null;
     };
-    get dasteOfBirth() {
+    get dateOfBirth() {
         return this._properties.get('DateOfBirth') ? this._properties.get('DateOfBirth').property : null;
     };
     get gender() {
@@ -236,7 +236,7 @@ class Worker extends EntityValidator {
     get apprenticeship() {
       return this._properties.get('ApprenticeshipTraining') ? this._properties.get('ApprenticeshipTraining').property : null;
     };
-    get zeeroContractHours() {
+    get zeroContractHours() {
       return this._properties.get('ZeroHoursContract') ? this._properties.get('ZeroHoursContract').property : null;
     };
     get daysSick() {
