@@ -22,7 +22,7 @@ const generateJWT = require('../utils/security/generateJWT');
 const passwordCheck = require('../utils/security/passwordValidation').isPasswordValid;
 const usernameCheck = require('../utils/security/usernameValidation').isUsernameValid;
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
-const pCodeCheck = require('../utils/postcodeSanitizer');
+// const pCodeCheck = require('../utils/postcodeSanitizer');
 
 class RegistrationException {
   constructor(originalError, errCode, errMessage) {
@@ -516,7 +516,6 @@ router.route('/')
           slack.info("Registration", JSON.stringify(slackMsg, null, 2));
           // post through feedback topic - async method but don't wait for a responseThe
           sns.postToRegistrations(slackMsg);
-          console.log(Logindata);
           // gets here on success
           res.status(200);
           res.json({
