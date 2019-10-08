@@ -275,15 +275,15 @@ class Establishment extends EntityValidator {
     return this._status;
   }
 
-  get key() {
-    return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, "") : this.name).replace(/\s/g, "");
+  get key () {
+    return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, '') : this.name).replace(/\s/g, '');
   }
 
   get archived () {
     return this._archived;
   }
 
-  get dataOwnershipRequested(){
+  get dataOwnershipRequested () {
     return this._dataOwnershipRequested;
   }
 
@@ -832,8 +832,7 @@ class Establishment extends EntityValidator {
               username: savedBy.toLowerCase(),
               type: 'wdfEligible'
             };
-          }
-          else {
+          } else {
             // blank out establishmentWdfEligibility to indicate the
             // establishment is not currently wdf eligable, but preserve
             // the value in lastWdfEligibility as that field is audited
@@ -1907,9 +1906,12 @@ class Establishment extends EntityValidator {
     // The first result is the primary establishment. put it in a special field
     const primary = mappedResults.shift();
 
+    // Add a boolean flag to indicate the establishment is a parent
+    primary.isParent = !!(mappedResults.length);
+
     return {
       primary,
-      subsidaries: mappedResults.length ? {
+      subsidaries: primary.isParent ? {
         count: mappedResults.length,
         establishments: mappedResults
       } : undefined
