@@ -35,6 +35,7 @@ class User {
         this._id = null;
         this._uid = null;
         this._username = null;
+        this._status = null;
         this._active = false;
         this._created = null;
         this._updated = null;
@@ -109,6 +110,9 @@ class User {
     }
     get username() {
         return this._username;
+    }
+    get status() {
+      return this._status;
     }
     get fullname() {
         const prop = this._properties.get('Fullname');
@@ -217,6 +221,9 @@ class User {
             }
             if(document.isActive) {
               this._active = document.isActive;
+            }
+            if(document.status) {
+              this._status = document.status;
             }
         } catch (err) {
             this._log(User.LOG_ERROR, `User::load - failed: ${err}`);
@@ -383,6 +390,7 @@ class User {
                                 registrationId: this._id,
                                 username: this._username,
                                 Hash: passwordHash,
+                                status: this._status,
                                 isActive: this._active,
                                 invalidAttempt: 0,
                             },
@@ -478,6 +486,7 @@ class User {
                                 registrationId: this._id,
                                 username: this._username,
                                 Hash: passwordHash,
+                                status: this._status,
                                 isActive: this._active,
                                 invalidAttempt: 0,
                             },

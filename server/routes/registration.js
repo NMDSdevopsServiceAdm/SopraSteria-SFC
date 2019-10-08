@@ -342,55 +342,57 @@ router.route('/')
         EstablishmentID:0,
         AdminUser: true
       };
-      // Check if the user is allowed to be active based on wether they are CQC registered
-      let CQCpostcode = false;
-      let CQClocationID = false;
+      // Check if the user is allowed to be active based on wether they are CQC registered   - this does work but temporarily we don't want to auto approve anyone
+      // let CQCpostcode = false;
+      // let CQClocationID = false;
       // Check if the Postcode is in the CQC database
-      try {
-        console.log('AR - Checking if Postcode is CQC registered.');
-        let cleanPostcode= pCodeCheck.sanitisePostcode(Estblistmentdata.PostCode);
+      // try {
+      //   console.log('AR - Checking if Postcode is CQC registered.');
+      //   let cleanPostcode= pCodeCheck.sanitisePostcode(Estblistmentdata.PostCode);
 
-        if (cleanPostcode != null) {
-          //Find matching postcode data
-          let results = await models.location.findAll({
-            where: {
-              postalcode: cleanPostcode
-            }
-          });
-          if (results.length) {
-            CQCpostcode = true;
-            console.log('AR - Found matching CQC Postcode');
-          }
-        }
-      } catch(error) {
-        console.error(error)
-      }
-      // Check if the location ID is in the CQC database
-      try {
-        console.log('AR - Checking if Location ID is CQC registered.');
+      //   if (cleanPostcode != null) {
+      //     //Find matching postcode data
+      //     let results = await models.location.findAll({
+      //       where: {
+      //         postalcode: cleanPostcode
+      //       }
+      //     });
+      //     if (results.length) {
+      //       CQCpostcode = true;
+      //       console.log('AR - Found matching CQC Postcode');
+      //     }
+      //   }
+      // } catch(error) {
+      //   console.error(error)
+      // }
+      // // Check if the location ID is in the CQC database
+      // try {
+      //   console.log('AR - Checking if Location ID is CQC registered.');
 
-        if (Estblistmentdata.LocationID != null) {
-          //Find matching postcode data
-          let results = await models.location.findAll({
-            where: {
-              locationid: Estblistmentdata.LocationID
-            }
-          });
-          if (results.length) {
-            CQClocationID = true;
-            console.log('AR - Found matching CQC Location ID');
-          }
-        }
-      } catch(error) {
-        console.error(error)
-      }
+      //   if (Estblistmentdata.LocationID != null) {
+      //     //Find matching postcode data
+      //     let results = await models.location.findAll({
+      //       where: {
+      //         locationid: Estblistmentdata.LocationID
+      //       }
+      //     });
+      //     if (results.length) {
+      //       CQClocationID = true;
+      //       console.log('AR - Found matching CQC Location ID');
+      //     }
+      //   }
+      // } catch(error) {
+      //   console.error(error)
+      // }
 
       var Logindata = {
         RegistrationId:0,
         UserName: req.body[0].user.username,
         Password: escape(req.body[0].user.password),
-        Active: CQCpostcode && CQClocationID,
-        InvalidAttempt:0
+        // Active: CQCpostcode && CQClocationID,
+        Active: false,
+        InvalidAttempt:0,
+        Status: 'PENDING'
       };
 
       // there are multiple steps to regiastering a new user/establishment. They must be done in entirety (all or nothing).
@@ -489,7 +491,8 @@ router.route('/')
             username: Logindata.UserName.toLowerCase(),
             password: Logindata.Password,
             isPrimary: true,
-            isActive: Logindata.Active
+            isActive: Logindata.Active,
+            status: Logindata.Status
           });
           if (newUser.isValid) {
             await newUser.save(Logindata.UserName, 0, t);
@@ -523,7 +526,8 @@ router.route('/')
             "establishmentUid" : Estblistmentdata.eUID,
             "primaryUser" : Logindata.UserName,
             "nmdsId": Estblistmentdata.NmdsId ? Estblistmentdata.NmdsId : 'undefined',
-            "active": Logindata.Active
+            "active": Logindata.Active,
+            "userstatus": Logindata.Status
           });
         });
 
