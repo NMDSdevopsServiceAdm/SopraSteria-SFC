@@ -25,6 +25,13 @@ SET "approvalStatus" = :approvalStatus, "approvalReason" = :approvalReason, "upd
 WHERE "ownerChangeRequestUID" = :uid;
 `;
 
+const cancelOwnershipRequestQuery =
+`
+UPDATE cqc."OwnerChangeRequest"
+SET "approvalStatus" = :approvalStatus
+WHERE "ownerChangeRequestUID" = :uid;
+`;
+
 const lastOwnerChangeRequestQuery =
 `
 SELECT "ownerChangeRequestUID", "permissionRequest", "approvalStatus", created, "createdByUserUID"
@@ -123,6 +130,15 @@ exports.updateOwnershipRequest = async (params) =>
           approvalReason: params.approvalReason,
           approvalStatus: params.approvalStatus,
           userUid: params.userUid
+        },
+        type: db.QueryTypes.UPDATE
+  })
+
+exports.cancelOwnershipRequest = async (params) =>
+  db.query(cancelOwnershipRequestQuery, {
+      replacements: {
+          uid: params.ownerRequestChangeUid,
+          approvalStatus: params.approvalStatus
         },
         type: db.QueryTypes.UPDATE
   })
