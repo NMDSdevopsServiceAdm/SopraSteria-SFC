@@ -8,6 +8,7 @@ const walk = require('walk');
 const JsZip = new require('jszip');
 
 const Establishment = require('../../../models/classes/establishment').Establishment;
+const parentWDFData = rfr('server/data/parentWDFReport');
 
 // for database
 const models = require('../../../models');
@@ -76,18 +77,18 @@ const putStringTemplate = (
 const getReportData = async (date, thisEstablishment) => {
   // for the report
   const establishmentId = thisEstablishment.id;
-    
+
   // first run the report, which means running the `cqc.parentWdfReport` function.
   // this function runs in a single transaction
   // the function returns true or false; encapsulating any SQL exceptions.
   const params = {
-    replacements: {
-      givenEstablishmentId: establishmentId
-    },
-    type: models.sequelize.QueryTypes.SELECT
+    establishmentId: establishmentId
   };
-  
+
   debuglog('wdf parent excel report data started:', params);
+
+  const establishmentData = await parentWDFData.getEstablishmentData(params);
+  debugger;
 
   const reportData = {
     date: date.toISOString(),
@@ -470,10 +471,10 @@ const updateOverviewSheet = (
   // fix the dimensions tag value
   const dimension = overviewSheet.querySelector('dimension');
   dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndex);
-  
+
   // TODO: fix the bottom 2 merge cells
   /////////////////////////////////////
-  
+
   // fix the page footer timestamp
 
   // update the cell values
@@ -486,7 +487,7 @@ const updateOverviewSheet = (
     for (let column = 0; column < 11; column++) {
       const columnText = String.fromCharCode(column + 65);
       const isRed = false;
-      
+
       console.log(columnText);
 
       const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 11}']`);
@@ -565,7 +566,7 @@ const updateOverviewSheet = (
             );
         } break;
       }
-      
+
       //TODO: duplicate the hyperlinked fields
       ////////////////////////////////////////
 
@@ -1161,7 +1162,7 @@ const router = express.Router();
 router.route('/').get(async (req, res) => {
   // req.setTimeout(config.get('app.reports.parentWdf.timeout')*1000);
 
-  try {
+  try {debugger
     // first ensure this report can only be run by those establishments with a Local Authority employer type
     const thisEstablishment = new Establishment(req.username);
 
