@@ -718,21 +718,19 @@ async function uploadAsJSON (username, establishmentId, content, key) {
 }
 
 async function uploadAsCSV (username, establishmentId, content, key) {
-  const myEstablishmentId = Number.isInteger(establishmentId) ? establishmentId.toString() : establishmentId;
-
-  var params = {
-    Bucket: appConfig.get('bulkupload.bucketname').toString(),
-    Key: key,
-    Body: content,
-    ContentType: 'text/csv',
-    Metadata: {
-      username,
-      establishmentId: myEstablishmentId
-    }
-  };
+  const myEstablishmentId = String(establishmentId);
 
   try {
-    await s3.putObject(params).promise();
+    await s3.putObject({
+      Bucket: appConfig.get('bulkupload.bucketname').toString(),
+      Key: key,
+      Body: content,
+      ContentType: 'text/csv',
+      Metadata: {
+        username,
+        establishmentId: myEstablishmentId
+      }
+    }).promise();
   } catch (err) {
     console.error('uploadAsCSV: ', err);
     throw new Error(`Failed to upload S3 object: ${key}`);
@@ -2079,7 +2077,7 @@ router.route('/complete').post(async (req, res) => {
 });
 
 // takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
-const exportToCsv = async (NEWLINE, allMyEstablishemnts, primaryEstablishmentId) => {
+const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId) => {
   const establishmentsCsvArray = [];
   const workersCsvArray = [];
   const trainingCsvArray = [];
@@ -2105,7 +2103,7 @@ const exportToCsv = async (NEWLINE, allMyEstablishemnts, primaryEstablishmentId)
       workersCsvArray.push(new CsvWorkerValidator().headers(MAX_QUALS));
       trainingCsvArray.push(new CsvTrainingValidator().headers);
 
-      allMyEstablishemnts.forEach(thisEstablishment => {
+      allMyEstablishments.forEach(thisEstablishment => {
         const establishmentCsvValidator = new CsvEstablishmentValidator();
 
         establishmentsCsvArray.push(establishmentCsvValidator.toCSV(thisEstablishment));
@@ -2155,7 +2153,10 @@ router.route('/download/:downloadType').get(async (req, res) => {
   const downloadType = req.params.downloadType;
 
   try {
-    let establishments = []; let workers = []; let training = [];
+    let establishments = [];
+    let workers = [];
+    let training = [];
+
     if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
       try {
         const ENTITY_RESTORE_LEVEL = 2;
