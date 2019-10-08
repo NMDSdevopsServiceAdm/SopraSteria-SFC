@@ -119,7 +119,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
               // parent permissions must be either null (no access), "Workplace" or "Workplace and staff" - if not null, then have access to the establishment
               // but only read access (GET)
               if (req.method !== 'GET') {
-                return res.status(403).send({message: `Parent not permitted to update Establishment with id: ${req.params.id}`});
+                //return res.status(403).send({message: `Parent not permitted to update Establishment with id: ${req.params.id}`});
               }
             }
 

@@ -162,9 +162,9 @@ router.route('/').put(async (req, res) => {
 
 // POST request for cancel already requested ownership
 router.route('/:id').post(async (req, res) => {
-  try {debugger
+  try {
 
-    if(req.body.approvalStatus !== "CANCELLED"){
+    if(req.body.approvalStatus === undefined || req.body.approvalStatus !== "CANCELLED"){
       console.error('Approval status would be "CANCELLED"');
       return res.status(400).send();
     }
@@ -183,8 +183,12 @@ router.route('/:id').post(async (req, res) => {
           message: 'Establishment is not a subsidiary',
         });
       }else{
+        const params = {
+          ownerRequestChangeUid: req.params.id,
+          approvalStatus: req.body.approvalStatus
+        }
         //check already exists ownership records for posted sub establishment id
-        let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnership(params);
+        let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnershipWithUID(params);
         if(!checkAlreadyRequestedOwnership.length){
           return res.status(400).send({
               message: `Ownership details doesn't found or already Approved/Rejected.`,
@@ -196,7 +200,7 @@ router.route('/:id').post(async (req, res) => {
                   message: 'Invalid request',
               });
           }else{
-            let resp = await ownership.lastOwnershipRequest(params);
+            let resp = await ownership.getUpdatedOwnershipRequest(params);
             return res.status(201).send(resp[0]);
           }
         }

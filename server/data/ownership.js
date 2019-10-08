@@ -10,6 +10,13 @@ WHERE "subEstablishmentID" = :subEstId
 AND "approvalStatus" = :status;
 `;
 
+const checkAlreadyRequestedOwnershipWithUIDQuery =
+`
+SELECT "subEstablishmentID", "approvalStatus"
+FROM cqc."OwnerChangeRequest"
+WHERE "approvalStatus" = :status AND "ownerChangeRequestUID" = :id;
+`;
+
 const insertChangeOwnershipQuery =
 `
 INSERT INTO
@@ -82,6 +89,15 @@ exports.checkAlreadyRequestedOwnership = async(params) =>
         replacements: {
             subEstId: params.subEstablishmentId,
             status: 'REQUESTED'
+        },
+        type: db.QueryTypes.SELECT
+    })
+
+exports.checkAlreadyRequestedOwnershipWithUID = async(params) =>
+    db.query(checkAlreadyRequestedOwnershipWithUIDQuery, {
+        replacements: {
+            status: 'REQUESTED',
+            id: params.ownerRequestChangeUid
         },
         type: db.QueryTypes.SELECT
     })
