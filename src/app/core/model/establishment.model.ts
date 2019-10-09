@@ -77,6 +77,7 @@ export interface WDF {
 export interface Establishment {
   id: number;
   uid: string;
+  ownerChangeRequestUID?: string;
   name: string;
   address: string;
   postcode: string;
@@ -146,4 +147,8 @@ export interface LocalIdentifier {
 
 export interface ChangeOwner {
   permissionRequest: string;
+}
+
+export interface CancelOwnerShip {
+  approvalStatus: string;
 }
