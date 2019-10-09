@@ -32,7 +32,7 @@ router.route('/').post(async (req, res) => {
     if (await thisEstablishment.restore(req.establishmentId, false)) {
       if (thisEstablishment.isParent || thisEstablishment._parentId === null || thisEstablishment.archived) {
         return res.status(404).send({
-          message: 'Establishment is not a subsidiary',
+          message: 'Establishment is not a subsidiary'
         });
       } else {
         //check already exists ownership records for posted sub establishment id
@@ -77,7 +77,7 @@ router.route('/').post(async (req, res) => {
       }
     } else {
       return res.status(404).send({
-        message: 'Establishment is not found',
+        message: 'Establishment is not found'
       });
     }
   } catch (e) {
@@ -96,7 +96,7 @@ router.route('/').put(async (req, res) => {
     if (await thisEstablishment.restore(req.establishmentId, false)) {
       if (thisEstablishment.isParent || thisEstablishment.parentId === null || thisEstablishment.archived) {
         return res.status(404).send({
-          message: 'Establishment is not a subsidiary',
+          message: 'Establishment is not a subsidiary'
         });
       } else {
         const approvalStatusArr = ['APPROVED', 'DENIED'];
@@ -115,11 +115,11 @@ router.route('/').put(async (req, res) => {
         let ownershipDetails = await ownership.ownershipDetails(params);
         if (!ownershipDetails.length) {
           return res.status(404).send({
-            message: `Ownership is not requested`,
+            message: 'Ownership is not requested'
           });
         } else if (ownershipDetails[0].approvalStatus !== 'REQUESTED') {
           return res.status(400).send({
-            message: `Ownership is already approved/rejected`,
+            message: 'Ownership is already approved/rejected'
           });
         } else {
           params.parentId = thisEstablishment.parentId;
@@ -151,7 +151,7 @@ router.route('/').put(async (req, res) => {
       }
     } else {
       return res.status(404).send({
-        message: 'Establishment is not found',
+        message: 'Establishment is not found'
       });
     }
   } catch (e) {
