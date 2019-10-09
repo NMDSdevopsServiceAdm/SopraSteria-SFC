@@ -73,7 +73,7 @@ const changedDataOwnershipRequestedQuery =
 UPDATE cqc."Establishment"
 SET "DataOwnershipRequested" = NOW()
 WHERE "EstablishmentID" = :estId;
-`
+`;
 
 exports.getReipientUserDetails = async(params) =>
   db.query(getReipientUserDetailsQuery, {
@@ -167,3 +167,31 @@ exports.changedDataOwnershipRequested = async (params) =>
         type: db.QueryTypes.UPDATE
   })
 
+const getOwnershipNotificationDetailsQuery =
+`
+SELECT
+  parent."NameValue" as "parentEstablishmentName",
+  sub."NameValue" as "subEstablishmentName",
+  CASE
+      WHEN sub."DataOwner" = :parent THEN :workplace
+      WHEN sub."DataOwner" = :workplace THEN :parent
+      ELSE :unknown
+  END AS  "requestedOwnerType",
+  "permissionRequest",
+  "approvalStatus"
+FROM cqc."OwnerChangeRequest" as owner
+JOIN cqc."Establishment" as sub on sub."EstablishmentID" = owner."subEstablishmentID"
+JOIN cqc."Establishment" as parent on sub."ParentID" =  parent."EstablishmentID"
+WHERE "ownerChangeRequestUID" = :ownerChangeRequestUid;
+`;
+
+exports.getOwnershipNotificationDetails = async ({ ownerChangeRequestUid }) =>
+  db.query(getOwnershipNotificationDetailsQuery, {
+      replacements: {
+        ownerChangeRequestUid,
+        parent: 'Parent',
+        workplace: 'Workplace',
+        unknown: 'unknown'
+      },
+      type: db.QueryTypes.SELECT
+  });
