@@ -603,7 +603,8 @@ router.post('/requestPasswordReset', async (req, res) => {
           username: {
             [models.Sequelize.Op.iLike] : givenEmailOrUsername
           },
-          isActive: true
+          isActive: true,
+          status: null
       },
       include: [
         {
