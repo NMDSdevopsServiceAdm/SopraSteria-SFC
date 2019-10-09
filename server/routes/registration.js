@@ -625,7 +625,8 @@ router.post('/requestPasswordReset', async (req, res) => {
           model: models.login,
           attributes: ['id', 'username'],
           where: {
-            isActive: true
+            isActive: true,
+            status: null
           }
         }
       ]
