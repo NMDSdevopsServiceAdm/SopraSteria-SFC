@@ -160,4 +160,60 @@ router.route('/').put(async (req, res) => {
   }
 });
 
+// POST request for cancel already requested ownership
+router.route('/:id').post(async (req, res) => {
+  try {
+
+    if(req.body.approvalStatus === undefined || req.body.approvalStatus !== "CANCELLED"){
+      console.error('Approval status would be "CANCELLED"');
+      return res.status(400).send();
+    }
+
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+
+    if (!uuidRegex.test(req.params.id.toUpperCase())){
+      console.error('Invalid owner change request UUID');
+      return res.status(400).send();
+    }
+
+    const thisEstablishment = new Establishment.Establishment(req.username);
+    if (await thisEstablishment.restore(req.establishmentId, false)){
+      if(thisEstablishment.isParent || thisEstablishment._parentId === null || thisEstablishment.archived){
+        return res.status(404).send({
+          message: 'Establishment is not a subsidiary',
+        });
+      }else{
+        const params = {
+          ownerRequestChangeUid: req.params.id,
+          approvalStatus: req.body.approvalStatus
+        }
+        //check already exists ownership records for posted sub establishment id
+        let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnershipWithUID(params);
+        if(!checkAlreadyRequestedOwnership.length){
+          return res.status(400).send({
+              message: `Ownership details doesn't found or already Approved/Rejected.`,
+          });
+        }else{
+          let changeRequestResp = await ownership.cancelOwnershipRequest(params);
+          if(!changeRequestResp){
+              return res.status(400).send({
+                  message: 'Invalid request',
+              });
+          }else{
+            let resp = await ownership.getUpdatedOwnershipRequest(params);
+            return res.status(201).send(resp[0]);
+          }
+        }
+      }
+    }else{
+      return res.status(404).send({
+        message: 'Establishment is not found',
+      });
+    }
+  } catch(e) {
+    console.error("/establishment/:id/ownershipChange: ERR: ", e.message);
+    return res.status(503).send({});        // intentionally an empty JSON response
+  }
+});
+
 module.exports = router;

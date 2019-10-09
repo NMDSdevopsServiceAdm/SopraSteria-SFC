@@ -10,6 +10,13 @@ WHERE "subEstablishmentID" = :subEstId
 AND "approvalStatus" = :status;
 `;
 
+const checkAlreadyRequestedOwnershipWithUIDQuery =
+`
+SELECT "subEstablishmentID", "approvalStatus"
+FROM cqc."OwnerChangeRequest"
+WHERE "approvalStatus" = :status AND "ownerChangeRequestUID" = :id;
+`;
+
 const insertChangeOwnershipQuery =
 `
 INSERT INTO
@@ -22,6 +29,13 @@ const updateChangeOwnershipQuery =
 `
 UPDATE cqc."OwnerChangeRequest"
 SET "approvalStatus" = :approvalStatus, "approvalReason" = :approvalReason, "updatedByUserUID" = :userUid
+WHERE "ownerChangeRequestUID" = :uid;
+`;
+
+const cancelOwnershipRequestQuery =
+`
+UPDATE cqc."OwnerChangeRequest"
+SET "approvalStatus" = :approvalStatus
 WHERE "ownerChangeRequestUID" = :uid;
 `;
 
@@ -79,6 +93,15 @@ exports.checkAlreadyRequestedOwnership = async(params) =>
         type: db.QueryTypes.SELECT
     })
 
+exports.checkAlreadyRequestedOwnershipWithUID = async(params) =>
+    db.query(checkAlreadyRequestedOwnershipWithUIDQuery, {
+        replacements: {
+            status: 'REQUESTED',
+            id: params.ownerRequestChangeUid
+        },
+        type: db.QueryTypes.SELECT
+    })
+
 exports.changeOwnershipRequest = async (params) =>
     db.query(insertChangeOwnershipQuery, {
         replacements: {
@@ -123,6 +146,15 @@ exports.updateOwnershipRequest = async (params) =>
           approvalReason: params.approvalReason,
           approvalStatus: params.approvalStatus,
           userUid: params.userUid
+        },
+        type: db.QueryTypes.UPDATE
+  })
+
+exports.cancelOwnershipRequest = async (params) =>
+  db.query(cancelOwnershipRequestQuery, {
+      replacements: {
+          uid: params.ownerRequestChangeUid,
+          approvalStatus: params.approvalStatus
         },
         type: db.QueryTypes.UPDATE
   })
