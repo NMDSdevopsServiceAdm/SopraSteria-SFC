@@ -20,7 +20,12 @@ router.route('/').get(async (req, res) => {
           include: [
             {
               model: models.establishment,
-              attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'MainServiceFKValue']
+              attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID'],
+              include: [{
+                model: models.services,
+                as: 'mainService',
+                attributes: ['id', 'name']
+              }]
             }
           ]
         }
@@ -50,7 +55,7 @@ router.route('/').get(async (req, res) => {
             county: registration.user.establishment.County,
             locationId: registration.user.establishment.LocationID,
             provid: registration.user.establishment.ProvID,
-            mainService: registration.user.establishment.MainServiceFKValue
+            mainService: registration.user.establishment.mainService.name
           }
         };
       }));
