@@ -20,9 +20,18 @@
             Search Establishments
           </a>
         </li>
+        <li class="govuk-tabs__list-item">
+          <a
+            class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'registrations'"
+            [routerLink]="['/registrations']"
+          >
+            Registrations
+          </a>
+        </li>
       </ul>
 
-      <section class="govuk-tabs__panel has-border">
+      <section class="govuk-tabs__panel has-border" *ngIf="form.type !== 'registrations'">
         <form (ngSubmit)="onSubmit()" novalidate id="server-error">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -171,6 +180,147 @@
               {{ item.parent && item.parent.nmdsId ? item.parent.nmdsId : '' }}
             </td>
             <td class="govuk-table__cell">{{ item.address }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="form.type === 'registrations'">
+      <table class="govuk-table" *ngIf="registrations && registrations.length">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">Registration Details</th>
+            <th class="govuk-table__header" scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row" *ngFor="let registration of registrations; let i = index">
+            <td class="govuk-table__cell">
+              <table class="govuk-table" *ngIf="registrations && registrations.length">
+                <tbody class="govuk-table__body">
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Created</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.created }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Email</th>
+                    <td class="govuk-table__cell">
+                      <a href="mailto:{{ registration.email }}">{{ registration.email }}</a>
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Phone number</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.phone }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Security question</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.securityQuestion }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Security question answer</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.securityQuestionAnswer }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Username</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.username }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell" colspan="2">Establishment</th>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Name</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.name }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Regulated</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.isRegulated }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">NMDS ID</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.nmdsId }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row" *ngIf="registration.establishment.locationId">
+                    <th class="govuk-table__cell">Location ID</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.locationId }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row" *ngIf="registration.establishment.provId">
+                    <th class="govuk-table__cell">Provider ID</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.provId }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Address 1</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.address }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row" *ngIf="registration.establishment.address2">
+                    <th class="govuk-table__cell">Address 2</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.address2 }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row" *ngIf="registration.establishment.address3">
+                    <th class="govuk-table__cell">Address 3</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.address3 }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Postcode</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.postcode }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Town</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.town }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">County</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.county }}
+                    </td>
+                  </tr>
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__cell">Main Service</th>
+                    <td class="govuk-table__cell">
+                      {{ registration.establishment.mainService }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td class="gov-uk-table__cell">
+              <button class="govuk-button" (click)="approveUser(registration.username, true, i)">
+                Approve
+              </button>
+              <br />
+              <button class="govuk-button govuk-button--link" (click)="approveUser(registration.username, false, i)">
+                Reject
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
