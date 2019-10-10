@@ -56,8 +56,9 @@ if (appConfig.get('db.client_ssl.status')) {
 
 // setup connection pool
 config.pool = {
-  max: appConfig.get('db.pool'),
-  min: appConfig.get('db.pool'),
+  max: appConfig.get('db.pool.max'),
+  min: appConfig.get('db.pool.min'),
+  acquire: appConfig.get('db.pool.acquire')
   //idle: 10000,
 };
 

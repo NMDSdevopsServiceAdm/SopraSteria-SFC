@@ -1285,76 +1285,86 @@ class Establishment extends EntityValidator {
   }
 
   async delete (deletedBy, externalTransaction = null, associatedEntities = false) {
+    let t;
     try {
       const updatedTimestamp = new Date();
 
-      await models.sequelize.transaction(async t => {
-        // the saving of an Establishment can be initiated within
-        //  an external transaction
-        const thisTransaction = externalTransaction || t;
 
-        const updateDocument = {
-          archived: true,
-          updated: updatedTimestamp,
-          updatedBy: deletedBy,
-          LocalIdentifierValue: null
-        };
+      // the saving of an Establishment can be initiated within
+      //  an external transaction
+      t = externalTransaction === null ? await models.sequelize.transaction() : null;
+      const thisTransaction = externalTransaction || t;
 
-        const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument,
-          {
-            returning: true,
-            where: {
-              uid: this.uid
-            },
-            attributes: ['id', 'updated'],
-            transaction: thisTransaction
-          });
+      const updateDocument = {
+        archived: true,
+        updated: updatedTimestamp,
+        updatedBy: deletedBy,
+        LocalIdentifierValue: null
+      };
 
-        if (updatedRecordCount === 1) {
-          const updatedRecord = updatedRows[0].get({ plain: true });
-
-          this._updated = updatedRecord.updated;
-          this._updatedBy = deletedBy;
-
-          const allAuditEvents = [{
-            establishmentFk: this._id,
-            username: deletedBy,
-            type: 'deleted'
-          }];
-
-          await models.establishmentAudit.bulkCreate(allAuditEvents, { transaction: thisTransaction });
-
-          // if deleting this establishment, and if requested, then delete all the associated entities (workers) too
-          if (associatedEntities) {
-            if (this._workerEntities) {
-              const associatedWorkersArray = Object.values(this._workerEntities);
-              await Promise.all(associatedWorkersArray.map(thisWorker => {
-                return thisWorker.archive(deletedBy, thisTransaction);
-              }));
-            }
-          }
-
-          // always recalculate WDF - if not bulk upload (this._status)
-          if (this._status === null) {
-            await WdfCalculator.calculate(deletedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_DELETE, false);
-          }
-
-          // this is an async method - don't wait for it to return
-          AWSKinesis.establishmentPump(AWSKinesis.DELETED, this.toJSON());
-
-          this._log(Establishment.LOG_INFO, `Archived Establishment with uid (${this._uid}) and id (${this._id})`);
-        } else {
-          const nameId = this._properties.get('NameOrId');
-
-          throw new EstablishmentExceptions.EstablishmentDeleteException(null,
-            this.uid,
-            nameId ? nameId.property : null,
-            '',
-            `Failed to update (archive) estabalishment record with uid: ${this._uid}`
-          );
+      const [updatedRecordCount, updatedRows] = await models.establishment.update(
+        updateDocument,
+        {
+          returning: true,
+          where: {
+            uid: this.uid
+          },
+          attributes: ['id', 'updated'],
+          transaction: thisTransaction
         }
-      });
+      );
+
+      if (updatedRecordCount === 1) {
+        const updatedRecord = updatedRows[0].get({ plain: true });
+
+        this._updated = updatedRecord.updated;
+        this._updatedBy = deletedBy;
+
+        const allAuditEvents = [{
+          establishmentFk: this._id,
+          username: deletedBy,
+          type: 'deleted'
+        }];
+
+        await models.establishmentAudit.bulkCreate(allAuditEvents, { transaction: thisTransaction });
+
+        // if deleting this establishment, and if requested, then delete all the associated entities (workers) too
+        if (associatedEntities && this._workerEntities) {
+          await Promise.all(Object.values(this._workerEntities).map(thisWorker =>
+            thisWorker.archive(deletedBy, thisTransaction)
+          ));
+        }
+
+        // always recalculate WDF - if not bulk upload (this._status)
+        if (this._status === null) {
+          await WdfCalculator.calculate(deletedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_DELETE, false);
+        }
+
+        // this is an async method - don't wait for it to return
+        AWSKinesis.establishmentPump(AWSKinesis.DELETED, this.toJSON());
+
+        if (t) {
+          t.commit();
+        }
+
+        this._log(Establishment.LOG_INFO, `Archived Establishment with uid (${this._uid}) and id (${this._id})`);
+      } else {
+        const nameId = this._properties.get('NameOrId');
+
+        throw new EstablishmentExceptions.EstablishmentDeleteException(null,
+          this.uid,
+          nameId ? nameId.property : null,
+          '',
+          `Failed to update (archive) estabalishment record with uid: ${this._uid}`
+        );
+      }
     } catch (err) {
+      if(t) {
+        t.rollback();
+      }
+      else {
+        externalTransaction.rollback();
+      }
       console.log('throwing error');
       console.log(err);
       const nameId = this._properties.get('NameOrId');
