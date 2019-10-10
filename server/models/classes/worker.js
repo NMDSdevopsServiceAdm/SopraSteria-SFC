@@ -35,7 +35,7 @@ const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
 class Worker extends EntityValidator {
-  constructor (establishmentId) {
+  constructor (establishmentId, bulkUploadStatus = null) {
     super();
 
     this._establishmentId = establishmentId;
@@ -70,7 +70,7 @@ class Worker extends EntityValidator {
     this._trainingEntities = [];
 
     // bulk upload status - this is never stored in database
-    this._status = null;
+    this._status = bulkUploadStatus;
   }
 
   // returns true if valid establishment id
@@ -530,7 +530,9 @@ class Worker extends EntityValidator {
           }
 
           // always recalculate WDF - if not bulk upload (this._status)
-          this._status === null ? await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_ADD, false) : true;
+          if (this._status === null) {
+            await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_ADD, false);
+          }
 
           // this is an async method - don't wait for it to return
           AWSKinesis.workerPump(AWSKinesis.CREATED, this.toJSON());
@@ -667,7 +669,9 @@ class Worker extends EntityValidator {
             await Promise.all(createMmodelPromises);
 
             // always recalculate WDF - if not bulk upload (this._status)
-            this._status === null ? await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_UPDATE, false) : true;
+            if(this._status === null) {
+              await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_UPDATE, false);
+            }
 
             if (associatedEntities) {
               await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
@@ -1101,7 +1105,7 @@ class Worker extends EntityValidator {
       myDefaultJSON.updatedBy = this.updatedBy ? this.updatedBy : null;
 
       // bulk upload status
-      if (this._status) {
+      if (this._status !== null) {
         myDefaultJSON.status = this._status;
       }
 
