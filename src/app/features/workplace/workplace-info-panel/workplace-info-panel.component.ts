@@ -70,6 +70,17 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
           if (data) {
             this.ownershipChangeRequestId = data.ownerChangeRequestUID;
             this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
+            const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
+            dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
+              if (cancelDataOwnerConfirmed) {
+                this.changeDataOwner();
+                this.router.navigate(['/dashboard']);
+                this.alertService.addAlert({
+                  type: 'success',
+                  message: 'Request to change data owner has been cancelled ',
+                });
+              }
+            });
           }
         },
         error => {
@@ -77,17 +88,6 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         }
       )
     );
-    const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
-      if (cancelDataOwnerConfirmed) {
-        this.changeDataOwner();
-        this.router.navigate(['/dashboard']);
-        this.alertService.addAlert({
-          type: 'success',
-          message: `Request to change data owner has been cancelled `,
-        });
-      }
-    });
   }
 
   private changeDataOwner(): void {
