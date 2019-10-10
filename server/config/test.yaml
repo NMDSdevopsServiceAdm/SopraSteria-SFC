@@ -14,7 +14,9 @@ aws:
       feedback: arn:aws:sns:eu-west-1:364648107127:feedback-staging
 
 db:
-    pool: 15
+    pool:
+        min: 15
+        max: 15
     ssl: true
     username: sfcapp
     database: sfctstdb

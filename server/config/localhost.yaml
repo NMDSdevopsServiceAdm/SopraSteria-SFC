@@ -20,7 +20,9 @@ jwt:
     ttl:
         login: 60
 db:
-    pool: 15
+    pool:
+        min: 15
+        max: 15
     ssl: false
     username: sfcadmin
     client_ssl:
