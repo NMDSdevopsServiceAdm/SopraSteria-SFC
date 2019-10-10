@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
+const moment = require('moment');
 
 router.route('/').get(async (req, res) => {
   try {
@@ -36,7 +37,7 @@ router.route('/').get(async (req, res) => {
           securityQuestionAnswer: registration.user.SecurityQuestionAnswerValue,
           email: registration.user.EmailValue,
           phone: registration.user.PhoneValue,
-          created: registration.user.created,
+          created: moment(registration.user.created).fromNow(),
           establishment: {
             name: registration.user.establishment.NameValue,
             isRegulated: registration.user.establishment.IsRegulated,
