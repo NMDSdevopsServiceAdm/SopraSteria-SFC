@@ -139,7 +139,7 @@ const config = convict({
         }
       }
     },
-    pool:
+    pool: {
       min: {
         doc: 'Minimum number of connections in the pool',
         format: 'int',
@@ -155,6 +155,7 @@ const config = convict({
         format: 'int',
         default: 60000
       }
+    }
   },
   notify: {
       key: {
