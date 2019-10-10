@@ -42,7 +42,7 @@ const CapacitiesCache = require('../cache/singletons/capacities').CapacitiesCach
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
 class Establishment extends EntityValidator {
-  constructor (username) {
+  constructor (username, bulkUploadStatus = null) {
     super();
 
     this._username = username;
@@ -93,7 +93,7 @@ class Establishment extends EntityValidator {
     this._readyForDeletionWorkers = null;
 
     // bulk upload status - this is never stored in database
-    this._status = null;
+    this._status = bulkUploadStatus;
 
     // default logging level - errors only
     // TODO: INFO logging on User; change to LOG_ERROR only
@@ -1260,7 +1260,7 @@ class Establishment extends EntityValidator {
 
           if (myWorkerSet && Array.isArray(myWorkerSet)) {
             await Promise.all(myWorkerSet.map(async thisWorker => {
-              const newWorker = new Worker(this._id);
+              const newWorker = new Worker(this._id, this._status);
               await newWorker.restore(thisWorker.uid, false, associatedLevel > 1 ? associatedEntities : false, associatedLevel);
 
               // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
