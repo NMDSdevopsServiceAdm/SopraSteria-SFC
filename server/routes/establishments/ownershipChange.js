@@ -20,7 +20,7 @@ router.route('/').post(async (req, res) => {
       ownerRequestChangeUid: uuid.v4(),
       userUid: req.userUid,
       subEstablishmentId: req.establishmentId,
-      permissionRequest: req.body.permissionRequest
+      permissionRequest: req.body.permissionRequest,
     };
 
     if (!uuidRegex.test(params.ownerRequestChangeUid.toUpperCase())) {
@@ -35,29 +35,30 @@ router.route('/').post(async (req, res) => {
           message: 'Establishment is not a subsidiary'
         });
       } else {
-        // check already exists ownership records for posted sub establishment id
-        const checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnership(params);
+        //check already exists ownership records for posted sub establishment id
+        let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnership(params);
         if (checkAlreadyRequestedOwnership.length) {
           return res.status(400).send({
-            message: 'Ownership is already requested for posted establishment id'
+            message: `Ownership is already requested for posted establishment id`,
           });
         }
 
         params.parentId = thisEstablishment._parentId;
-        const getRecipientUserDetails = await ownership.getReipientUserDetails(params);
+        let getRecipientUserDetails = await ownership.getReipientUserDetails(params);
         if (getRecipientUserDetails.length) {
-          // save records
+          //save records
           params.recipientUserUid = getRecipientUserDetails[0].UserUID;
-          const saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
+          params.timeValue = 'NOW()';
+          let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
           if (!saveDataOwnershipRequested) {
             return res.status(400).send({
-              message: 'Invalid request'
+              message: 'Invalid request',
             });
           }
-          const changeRequestResp = await ownership.changeOwnershipRequest(params);
+          let changeRequestResp = await ownership.changeOwnershipRequest(params);
           if (!changeRequestResp) {
             return res.status(400).send({
-              message: 'Invalid request'
+              message: 'Invalid request',
             });
           } else {
             params.notificationUid = uuid.v4();
@@ -66,9 +67,9 @@ router.route('/').post(async (req, res) => {
               return res.status(400).send();
             }
 
-            const addNotificationResp = await notifications.insertNewNotification(params);
+            let addNotificationResp = await notifications.insertNewNotification(params);
             if (addNotificationResp) {
-              const resp = await ownership.lastOwnershipRequest(params);
+              let resp = await ownership.lastOwnershipRequest(params);
               return res.status(201).send(resp[0]);
             }
           }
@@ -108,10 +109,10 @@ router.route('/').put(async (req, res) => {
           userUid: req.userUid,
           subEstablishmentId: req.establishmentId,
           approvalStatus: req.body.approvalStatus,
-          approvalReason: req.body.approvalReason
+          approvalReason: req.body.approvalReason,
         };
-        // check already exists ownership records for posted sub establishment id with status: "REQUESTED"
-        const ownershipDetails = await ownership.ownershipDetails(params);
+        //check already exists ownership records for posted sub establishment id with status: "REQUESTED"
+        let ownershipDetails = await ownership.ownershipDetails(params);
         if (!ownershipDetails.length) {
           return res.status(404).send({
             message: 'Ownership is not requested'
@@ -122,15 +123,15 @@ router.route('/').put(async (req, res) => {
           });
         } else {
           params.parentId = thisEstablishment.parentId;
-          const getRecipientUserDetails = await ownership.getReipientUserDetails(params);
+          let getRecipientUserDetails = await ownership.getReipientUserDetails(params);
           if (getRecipientUserDetails.length) {
-            // save records
+            //save records
             params.recipientUserUid = getRecipientUserDetails[0].UserUID;
             params.ownerRequestChangeUid = ownershipDetails[0].ownerChangeRequestUID;
-            const changeRequestResp = await ownership.updateOwnershipRequest(params);
+            let changeRequestResp = await ownership.updateOwnershipRequest(params);
             if (!changeRequestResp) {
               return res.status(400).send({
-                message: 'Invalid request'
+                message: 'Invalid request',
               });
             } else {
               params.notificationUid = uuid.v4();
@@ -139,9 +140,9 @@ router.route('/').put(async (req, res) => {
                 return res.status(400).send();
               }
 
-              const addNotificationResp = await notifications.insertNewNotification(params);
+              let addNotificationResp = await notifications.insertNewNotification(params);
               if (addNotificationResp) {
-                const resp = await ownership.getUpdatedOwnershipRequest(params);
+                let resp = await ownership.getUpdatedOwnershipRequest(params);
                 return res.status(201).send(resp[0]);
               }
             }
@@ -162,57 +163,98 @@ router.route('/').put(async (req, res) => {
 // POST request for cancel already requested ownership
 router.route('/:id').post(async (req, res) => {
   try {
-
-    if(req.body.approvalStatus === undefined || req.body.approvalStatus !== "CANCELLED"){
+    if (req.body.approvalStatus === undefined || req.body.approvalStatus !== 'CANCELLED') {
       console.error('Approval status would be "CANCELLED"');
       return res.status(400).send();
     }
 
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
 
-    if (!uuidRegex.test(req.params.id.toUpperCase())){
+    if (!uuidRegex.test(req.params.id.toUpperCase())) {
       console.error('Invalid owner change request UUID');
       return res.status(400).send();
     }
 
     const thisEstablishment = new Establishment.Establishment(req.username);
-    if (await thisEstablishment.restore(req.establishmentId, false)){
-      if(thisEstablishment.isParent || thisEstablishment._parentId === null || thisEstablishment.archived){
+    if (await thisEstablishment.restore(req.establishmentId, false)) {
+      if (thisEstablishment.isParent || thisEstablishment._parentId === null || thisEstablishment.archived) {
         return res.status(404).send({
           message: 'Establishment is not a subsidiary',
         });
-      }else{
+      } else {
         const params = {
           ownerRequestChangeUid: req.params.id,
-          approvalStatus: req.body.approvalStatus
-        }
+          approvalStatus: req.body.approvalStatus,
+          subEstablishmentId: req.establishmentId
+        };
         //check already exists ownership records for posted sub establishment id
         let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnershipWithUID(params);
-        if(!checkAlreadyRequestedOwnership.length){
+        if (!checkAlreadyRequestedOwnership.length) {
           return res.status(400).send({
-              message: `Ownership details doesn't found or already Approved/Rejected.`,
+            message: `Ownership details doesn't found or already Approved/Rejected.`,
           });
-        }else{
+        } else {
           let changeRequestResp = await ownership.cancelOwnershipRequest(params);
-          if(!changeRequestResp){
+          if (!changeRequestResp) {
+            return res.status(400).send({
+              message: 'Invalid request',
+            });
+          } else {
+            params.timeValue = null;
+            let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
+            if (!saveDataOwnershipRequested) {
               return res.status(400).send({
-                  message: 'Invalid request',
+                message: 'Invalid request',
               });
-          }else{
+            }
             let resp = await ownership.getUpdatedOwnershipRequest(params);
             return res.status(201).send(resp[0]);
           }
         }
       }
-    }else{
+    } else {
       return res.status(404).send({
         message: 'Establishment is not found',
       });
     }
-  } catch(e) {
-    console.error("/establishment/:id/ownershipChange: ERR: ", e.message);
-    return res.status(503).send({});        // intentionally an empty JSON response
+  } catch (e) {
+    console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
+    return res.status(503).send({}); // intentionally an empty JSON response
   }
 });
 
+// GET request to fetch changeownership request Id
+
+router.route('/details').get(async (req, res) => {
+  try {
+    const thisEstablishment = new Establishment.Establishment(req.username);
+    if (await thisEstablishment.restore(req.establishmentId, false)) {
+      if (thisEstablishment.isParent || thisEstablishment._parentId === null || thisEstablishment.archived) {
+        return res.status(404).send({
+          message: 'Establishment is not a subsidiary',
+        });
+      } else {
+        const params = {
+          subEstablishmentId: req.establishmentId,
+        }
+        let owenershipChangeRequestDetails = await ownership.ownershipDetails(params);
+
+        if (!owenershipChangeRequestDetails.length) {
+          return res.status(400).send({
+            message: `Ownership change request details not found.`,
+          });
+        } else {
+          return res.status(200).send(owenershipChangeRequestDetails[0]);
+        }
+      }
+    } else {
+      return res.status(404).send({
+        message: 'Establishment is not found',
+      });
+    }
+  } catch (e) {
+    console.error(' : ERR: ', e.message);
+    return res.status(503).send({}); //intentionally an empty JSON response
+  }
+});
 module.exports = router;

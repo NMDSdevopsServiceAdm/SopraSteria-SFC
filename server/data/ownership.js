@@ -58,7 +58,7 @@ const ownershipDetailsQuery =
 `
 SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus"
 FROM cqc."OwnerChangeRequest"
-WHERE "subEstablishmentID" = :subEstId;
+WHERE "subEstablishmentID" = :subEstId ORDER BY "created" DESC LIMIT :limit;
 `;
 
 const getUpdatedOwnershipRequestQuery =
@@ -71,7 +71,7 @@ WHERE "ownerChangeRequestUID" = :ownerChangeId;
 const changedDataOwnershipRequestedQuery =
 `
 UPDATE cqc."Establishment"
-SET "DataOwnershipRequested" = NOW()
+SET "DataOwnershipRequested" = :timestamp
 WHERE "EstablishmentID" = :estId;
 `;
 
@@ -126,7 +126,8 @@ exports.lastOwnershipRequest = async (params) =>
 exports.ownershipDetails = async(params) =>
   db.query(ownershipDetailsQuery, {
       replacements: {
-          subEstId: params.subEstablishmentId
+          subEstId: params.subEstablishmentId,
+          limit: 1
       },
       type: db.QueryTypes.SELECT
   })
@@ -162,7 +163,8 @@ exports.cancelOwnershipRequest = async (params) =>
 exports.changedDataOwnershipRequested = async (params) =>
   db.query(changedDataOwnershipRequestedQuery, {
       replacements: {
-          estId: params.subEstablishmentId
+          estId: params.subEstablishmentId,
+          timestamp: params.timeValue
         },
         type: db.QueryTypes.UPDATE
   })
