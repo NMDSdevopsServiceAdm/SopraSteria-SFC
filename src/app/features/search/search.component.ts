@@ -181,7 +181,6 @@ export class SearchComponent implements OnInit {
   }
 
   public approveUser(username: string, approved: boolean, index: number) {
-    console.log('approveUser()');
     const data = {
       username,
       approve: approved,
