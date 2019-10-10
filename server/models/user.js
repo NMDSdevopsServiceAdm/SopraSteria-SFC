@@ -15,6 +15,11 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"UserUID"'
     },
+    status: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Status"'
+    },
     establishmentId: {
       type: DataTypes.INTEGER,
       allowNull: true,

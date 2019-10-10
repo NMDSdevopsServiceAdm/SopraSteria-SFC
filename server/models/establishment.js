@@ -15,6 +15,11 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"EstablishmentUID"'
     },
+    status: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Status"'
+    },
     address1: {
       type: DataTypes.TEXT,
       allowNull: true,
@@ -547,7 +552,7 @@ module.exports = function(sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'auditEvents'
     });
-    Establishment.hasMany(models.worker, {  
+    Establishment.hasMany(models.worker, {
       foreignKey: 'establishmentFk',
       sourceKey: 'id',
       as: 'workers'
