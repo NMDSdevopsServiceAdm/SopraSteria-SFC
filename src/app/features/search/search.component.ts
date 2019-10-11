@@ -59,6 +59,10 @@ export class SearchComponent implements OnInit {
     } else {
       this.form.type = 'registrations';
     }
+    this.getRegistrations();
+  }
+
+  public getRegistrations() {
     this.registrationsService.getRegistrations().subscribe(
       data => {
         this.registrations = data;
