@@ -15,7 +15,7 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"EstablishmentUID"'
     },
-    status: {
+    ustatus: {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"Status"'
