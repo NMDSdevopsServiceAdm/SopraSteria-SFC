@@ -48,6 +48,7 @@ class Establishment extends EntityValidator {
     this._username = username;
     this._id = null;
     this._uid = null;
+    this._ustatus = null;
     this._created = null;
     this._updated = null;
     this._updatedBy = null;
@@ -126,6 +127,10 @@ class Establishment extends EntityValidator {
 
   get uid () {
     return this._uid;
+  }
+
+  get ustatus () {
+    return this._ustatus;
   }
 
   get username () {
@@ -405,6 +410,9 @@ class Establishment extends EntityValidator {
         document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
 
         await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+        if (document.ustatus) {
+          this._ustatus = document.ustatus;
+        }
 
         // CQC reugulated/location ID
         if (hasProp(document, 'isRegulated')) {
@@ -665,7 +673,8 @@ class Establishment extends EntityValidator {
           shareWithCQC: false,
           shareWithLA: false,
           source: bulkUploaded ? 'Bulk' : 'Online',
-          attributes: ['id', 'created', 'updated']
+          attributes: ['id', 'created', 'updated'],
+          ustatus: this._ustatus
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -814,7 +823,8 @@ class Establishment extends EntityValidator {
             postcode: this._postcode,
             reasonsForLeaving: this._reasonsForLeaving,
             updated: updatedTimestamp,
-            updatedBy: savedBy.toLowerCase()
+            updatedBy: savedBy.toLowerCase(),
+            ustatus: this._ustatus
           };
 
           // Every time the establishment is saved, need to calculate
@@ -982,6 +992,7 @@ class Establishment extends EntityValidator {
         this._isNew = false;
         this._id = fetchResults.id;
         this._uid = fetchResults.uid;
+        this._ustatus = fetchResults.ustatus;
         this._created = fetchResults.created;
         this._updated = fetchResults.updated;
         this._updatedBy = fetchResults.updatedBy;
@@ -1445,6 +1456,10 @@ class Establishment extends EntityValidator {
         myDefaultJSON.dataOwner = this.dataOwner;
         myDefaultJSON.dataPermissions = this.isParent ? undefined : this.dataPermissions;
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
+      }
+
+      if (this._ustatus) {
+        myDefaultJSON.ustatus = this._ustatus;
       }
 
       // bulk upload status
