@@ -49,7 +49,8 @@ module.exports = function(sequelize, DataTypes) {
   AddUSerTracking.associate = (models) => {
     AddUSerTracking.belongsTo(models.user, {
       foreignKey : 'userFk',
-      targetKey: 'id'
+      targetKey: 'id',
+      onDelete: 'CASCADE'
     });
   };
 
