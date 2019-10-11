@@ -140,9 +140,21 @@ const config = convict({
       }
     },
     pool: {
-      doc: 'Number of connections in the pool',
-      format: 'int',
-      default: 5
+      min: {
+        doc: 'Minimum number of connections in the pool',
+        format: 'int',
+        default: 5
+      },
+      max: {
+        doc: 'Maximum number of connections in the pool',
+        format: 'int',
+        default: 5
+      },
+      acquire: {
+        doc: 'How long to wait for a connection to become available in the pool',
+        format: 'int',
+        default: 60000
+      }
     }
   },
   notify: {

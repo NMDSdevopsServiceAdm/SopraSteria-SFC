@@ -22,7 +22,9 @@ jwt:
         login: 5
 
 db:
-    pool: 10
+    pool:
+        min: 10
+        max: 10
     ssl: true
     username: sfcapp
     client_ssl:
