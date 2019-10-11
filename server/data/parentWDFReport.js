@@ -2,71 +2,95 @@
 
 const db = rfr('server/utils/datastore');
 
-
 const getEstablishmentDataQuery =
 `
 SELECT
 		"Establishment"."EstablishmentID",
 		"NmdsID",
-		"NameValue",
+		"NameValue" AS "SubsidiaryName",
 		"EmployerTypeValue",
     "EmployerTypeSavedAt",
-    "CurrentWdfEligibiity",
-		"EstablishmentWdfEligibility",
+    "CurrentWdfEligibiity" AS "CurrentWdfEligibilityStatus",
+		"EstablishmentWdfEligibility" AS "DateEligibilityAchieved",
 		MainService.name AS "MainService",
 		"MainServiceFKValue",
-		(select count(:zero) from cqc."EstablishmentServiceUsers" where "EstablishmentServiceUsers"."EstablishmentID" = "Establishment"."EstablishmentID") AS "ServiceUsersCount",
-		"ServiceUsersSavedAt",
-		"VacanciesValue",
-		(select sum("Total") from cqc."EstablishmentJobs" where "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND "EstablishmentJobs"."JobType" = :vacancies) AS "Vacancies",
-		"VacanciesSavedAt",
+    (select count(:zero) from cqc."Worker" where "Worker"."EstablishmentFK" = "Establishment"."EstablishmentID") AS "TotalIndividualWorkerRecord",
+    (SELECT COUNT(:zero) FROM cqc."Worker" WHERE "EstablishmentFK" = "Establishment"."EstablishmentID"
+    AND "CompletedSavedAt" IS NOT NULL AND EXTRACT(YEAR FROM "CompletedSavedAt") = :currentYear) AS "CompletedWorkerRecords",
+    array_to_string(array(SELECT b."name" FROM cqc."EstablishmentServices" a
+    JOIN cqc."services" b ON a."ServiceID" = b.id
+    JOIN cqc."Establishment" c ON a."EstablishmentID" = c."EstablishmentID"
+    WHERE c."EstablishmentID" = "Establishment"."EstablishmentID"), :sepaerator) AS "OtherServices",
+    array_to_string(array(SELECT b."ServiceGroup" FROM cqc."EstablishmentServiceUsers" a JOIN cqc."ServiceUsers" b
+    ON a."ServiceUserID" = b."ID" WHERE a."EstablishmentID" = "Establishment"."EstablishmentID"), :sepaerator) AS "ServiceUsers",
+    "VacanciesValue",
 		"StartersValue",
-		(select sum("Total") from cqc."EstablishmentJobs" where "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND "EstablishmentJobs"."JobType" = :starters) AS "Starters",
-		"StartersSavedAt",
 		"LeaversValue",
-		(select sum("Total") from cqc."EstablishmentJobs" where "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND "EstablishmentJobs"."JobType" = 'leavers') AS "Leavers",
-		"LeaversSavedAt",
-		"NumberOfStaffValue",
 		"EstablishmentMainServicesWithCapacitiesVW"."CAPACITY" AS "Capacities",
 		"EstablishmentMainServicesWithCapacitiesVW"."UTILISATION" AS "Utilisations",
 		"NumberOfStaffValue",
 		updated,
-		to_char(updated, :timeFormat) AS lastupdateddate,
-    "NumberOfIndividualStaffRecords",
-    "NumberOfStaffRecordsCompleted"
-    FROM
-      cqc."Establishment"
-	  	LEFT JOIN cqc.services as MainService on "Establishment"."MainServiceFKValue" = MainService.id
+		to_char(updated, :timeFormat) AS "LastUpdatedDate",
+    "ShareDataWithCQC",
+    "ShareDataWithLA",
+    "ReasonsForLeaving"
+FROM
+    cqc."Establishment"
+	  LEFT JOIN cqc.services as MainService on "Establishment"."MainServiceFKValue" = MainService.id
 		LEFT JOIN cqc."EstablishmentMainServicesWithCapacitiesVW" on "EstablishmentMainServicesWithCapacitiesVW"."EstablishmentID" = "Establishment"."EstablishmentID"
-		LEFT JOIN (
-			SELECT
-				"EstablishmentFK",
-				"WorkplaceFK",
-        count("ParentWDFReportWorker"."WorkerFK") AS "NumberOfIndividualStaffRecords",
-        count("ParentWDFReportWorker"."WorkerFK") FILTER (WHERE "ParentWDFReportWorker"."StaffRecordComplete" = :flag) AS "NumberOfStaffRecordsCompleted"
-			FROM cqc."ParentWDFReportWorker"
-			WHERE
-				"ParentWDFReportWorker"."EstablishmentFK" = :estID
-			GROUP BY
-				"EstablishmentFK", "WorkplaceFK"
-		) "EstablishmentWorkers" ON "EstablishmentWorkers"."WorkplaceFK" = "Establishment"."EstablishmentID"
-    WHERE
+WHERE
 		("Establishment"."EstablishmentID" = :estID OR "Establishment"."ParentID" = :estID) AND
 		"Archived" = :falseFlag
-	ORDER BY
+ORDER BY
 		"EstablishmentID";
 `;
+
+const getWorkerDataQuery =
+`
+SELECT
+		"Worker"."NameOrIdValue",
+		"Worker"."GenderValue",
+		"Worker"."DateOfBirthValue",
+		"NationalityValue",
+    "Job"."JobName" AS "MainJobRole",
+    "MainJobStartDateValue",
+    "RecruitedFromValue",
+    "ContractValue",
+    "WeeklyHoursContractedValue",
+    "ZeroHoursContractValue",
+    "DaysSickValue",
+    "AnnualHourlyPayValue",
+    "AnnualHourlyPayRate",
+    "CareCertificateValue",
+    array_to_string(array(SELECT b."From" FROM cqc."Worker" a
+    JOIN cqc."Qualifications" b ON a."HighestQualificationFKValue"  = b."ID"
+    WHERE "EstablishmentFK" = "Establishment"."EstablishmentID"), :seperator) AS "HighestQualificationHeld"
+	FROM cqc."Worker"
+		INNER JOIN cqc."Establishment" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK" AND "Establishment"."Archived" = false AND ("Establishment"."EstablishmentID" = establishmentID OR "Establishment"."ParentID" = establishmentID)
+		LEFT JOIN cqc."Job" on "Worker"."MainJobFKValue" = "Job"."JobID"
+		LEFT JOIN cqc."Qualification" on "Worker"."SocialCareQualificationFKValue" = "Qualification"."ID"
+	WHERE
+		"Worker"."Archived" = false;
+`
 
 exports.getEstablishmentData = async(params) =>
   db.query(getEstablishmentDataQuery, {
     replacements: {
       zero: 0,
-      vacancies: 'Vacancies',
-      starters: 'Starters',
-      leavers: 'Leavers',
-      flag: true,
+      falseFlag: false,
       timeFormat: 'DD/MM/YYYY',
-      estID: params.establishmentId
+      estID: params.establishmentId,
+      sepaerator: ', ',
+      currentYear: new Date().getFullYear()
+    },
+    type: db.QueryTypes.SELECT
+  })
+
+exports.getWorkerData = async(params) =>
+  db.query(getWorkerDataQuery, {
+    replacements: {
+      estID: params.establishmentId,
+      seperator: ', ',
     },
     type: db.QueryTypes.SELECT
   })
