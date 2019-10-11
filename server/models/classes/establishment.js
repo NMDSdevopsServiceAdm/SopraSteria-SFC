@@ -992,7 +992,7 @@ class Establishment extends EntityValidator {
         this._isNew = false;
         this._id = fetchResults.id;
         this._uid = fetchResults.uid;
-        this._status = fetchResults.ustatus;
+        this._ustatus = fetchResults.ustatus;
         this._created = fetchResults.created;
         this._updated = fetchResults.updated;
         this._updatedBy = fetchResults.updatedBy;
