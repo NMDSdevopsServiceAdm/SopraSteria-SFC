@@ -1087,7 +1087,7 @@ const updateStaffRecordsSheet = (
     sharedStrings,
     sst,
     sharedStringsUniqueCount
-) => {;
+) => {
   debuglog("updating staff sheet");
 
   const putString = putStringTemplate.bind(null, staffRecordsSheet, sharedStrings, sst, sharedStringsUniqueCount);
