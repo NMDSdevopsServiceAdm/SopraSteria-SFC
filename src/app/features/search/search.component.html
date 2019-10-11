@@ -53,7 +53,12 @@
             </div>
 
             <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-half">
+              <div
+                [ngClass]="{
+                  'govuk-grid-column-one-half': form.type === 'users',
+                  'govuk-grid-column-one-third': form.type === 'establishments'
+                }"
+              >
                 <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
                   <label class="govuk-label" for="username">
                     {{ form.usernameLabel }}
@@ -70,7 +75,12 @@
                 </div>
               </div>
 
-              <div class="govuk-grid-column-one-half">
+              <div
+                [ngClass]="{
+                  'govuk-grid-column-one-half': form.type === 'users',
+                  'govuk-grid-column-one-third': form.type === 'establishments'
+                }"
+              >
                 <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
                   <label class="govuk-label" for="name">
                     {{ form.nameLabel }}
@@ -81,6 +91,22 @@
                     [ngModelOptions]="{ standalone: true }"
                     id="name"
                     name="name"
+                    [class.govuk-input--error]="form.errors && form.errors.length"
+                    type="text"
+                  />
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-third" *ngIf="form.type === 'establishments'">
+                <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
+                  <label class="govuk-label" for="locationid">
+                    Location ID
+                  </label>
+                  <input
+                    class="govuk-input govuk-input--width-20"
+                    [(ngModel)]="form.locationid"
+                    [ngModelOptions]="{ standalone: true }"
+                    id="locationid"
+                    name="locationid"
                     [class.govuk-input--error]="form.errors && form.errors.length"
                     type="text"
                   />
