@@ -24,6 +24,7 @@ export class SearchComponent implements OnInit {
     usernameLabel: '',
     name: '',
     nameLabel: '',
+    locationid: '',
     errors: [],
   };
 
@@ -79,8 +80,7 @@ export class SearchComponent implements OnInit {
     this.form.errors = [];
     this.form.submitted = true;
     // this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    if (this.form.username.length === 0 && this.form.name.length === 0) {
+    if (this.form.username.length === 0 && this.form.name.length === 0 && this.form.locationid.length === 0) {
       this.form.errors.push({
         error: 'Please enter at least 1 search value',
         id: 'username',
@@ -98,6 +98,7 @@ export class SearchComponent implements OnInit {
         data = {
           postcode: this.form.username,
           nmdsId: this.form.name,
+          locationid: this.form.locationid,
         };
       }
 
