@@ -35,6 +35,7 @@ const FileValidationStatusEnum = { Pending: 'pending', Validating: 'validating',
 
 const ignoreMetaDataObjects = /.*metadata.json$/;
 const ignoreRoot = /.*\/$/;
+const completionBulkUploadStatus = 'COMPLETE';
 
 router.route('/uploaded').get(async (req, res) => {
   try {
@@ -1462,14 +1463,14 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
     const restoreEntityPromises = [];
 
     // first add the primary establishment entity
-    const primaryEstablishment = new EstablishmentEntity(loggedInUsername);
+    const primaryEstablishment = new EstablishmentEntity(loggedInUsername, completionBulkUploadStatus);
     currentEntities.push(primaryEstablishment);
     restoreEntityPromises.push(primaryEstablishment.restore(myEstablishments.primary.uid, false, true, assocationLevel));
 
     if (myEstablishments.subsidaries && myEstablishments.subsidaries.establishments && Array.isArray(myEstablishments.subsidaries.establishments)) {
       myEstablishments.subsidaries.establishments.forEach(thisSubsidairy => {
         if (!onlyMine || (onlyMine && thisSubsidairy.dataOwner === 'Parent')) {
-          const newSub = new EstablishmentEntity(loggedInUsername);
+          const newSub = new EstablishmentEntity(loggedInUsername, completionBulkUploadStatus);
           currentEntities.push(newSub);
           restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true, assocationLevel));
         }
