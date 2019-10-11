@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
+const moment = require('moment');
 
 router.route('/').get(async (req, res) => {
   try {
@@ -19,7 +20,12 @@ router.route('/').get(async (req, res) => {
           include: [
             {
               model: models.establishment,
-              attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'MainServiceFKValue']
+              attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID'],
+              include: [{
+                model: models.services,
+                as: 'mainService',
+                attributes: ['id', 'name']
+              }]
             }
           ]
         }
@@ -36,7 +42,7 @@ router.route('/').get(async (req, res) => {
           securityQuestionAnswer: registration.user.SecurityQuestionAnswerValue,
           email: registration.user.EmailValue,
           phone: registration.user.PhoneValue,
-          created: registration.user.created,
+          created: moment(registration.user.created).fromNow(),
           establishment: {
             name: registration.user.establishment.NameValue,
             isRegulated: registration.user.establishment.IsRegulated,
@@ -49,7 +55,7 @@ router.route('/').get(async (req, res) => {
             county: registration.user.establishment.County,
             locationId: registration.user.establishment.LocationID,
             provid: registration.user.establishment.ProvID,
-            mainService: registration.user.establishment.MainServiceFKValue
+            mainService: registration.user.establishment.mainService.name
           }
         };
       }));

@@ -5,6 +5,7 @@ import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { RegistrationsService } from '@core/services/registrations.service';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -13,6 +14,7 @@ import { take } from 'rxjs/operators';
 })
 export class SearchComponent implements OnInit {
   public results = [];
+  public registrations = [];
   public form = {
     type: '',
     title: '',
@@ -33,7 +35,8 @@ export class SearchComponent implements OnInit {
     private http: HttpClient,
     private establishmentService: EstablishmentService,
     private authService: AuthService,
-    private permissionsService: PermissionsService
+    private permissionsService: PermissionsService,
+    private registrationsService: RegistrationsService
   ) {}
 
   ngOnInit() {
@@ -46,14 +49,26 @@ export class SearchComponent implements OnInit {
       this.form.subTitle = 'User Search';
       this.form.title = 'Define your search criteria';
       this.form.buttonText = 'Search Users';
-    } else {
+    } else if (this.router.url === '/search-establishments') {
       this.form.type = 'establishments';
       this.form.usernameLabel = 'Postcode';
       this.form.nameLabel = 'NDMS ID';
       this.form.subTitle = 'Establishment Search';
       this.form.title = 'Define your search criteria';
       this.form.buttonText = 'Search Establishments';
+    } else {
+      this.form.type = 'registrations';
     }
+    this.getRegistrations();
+  }
+
+  public getRegistrations() {
+    this.registrationsService.getRegistrations().subscribe(
+      data => {
+        this.registrations = data;
+      },
+      error => this.onError(error)
+    );
   }
 
   public searchType(data, type) {
@@ -134,5 +149,14 @@ export class SearchComponent implements OnInit {
 
   protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/dashboard'] });
+  }
+
+  public approveUser(username: string, approved: boolean, index: number) {
+    const data = {
+      username,
+      approve: approved,
+    };
+    this.registrations.splice(index, 1);
+    this.registrationsService.userApproval(data).subscribe();
   }
 }
