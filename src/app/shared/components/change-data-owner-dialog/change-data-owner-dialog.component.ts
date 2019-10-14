@@ -27,6 +27,7 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   public isOwnershipError: boolean;
   public serverError: string;
   public final: string;
+  public requesterName: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
@@ -39,9 +40,6 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   }
 
   ngOnInit() {
-    this.establishmentService.getEstablishment(this.data.parentUid).subscribe(val => {
-      console.log(val);
-    });
     this.setWorkplaces();
     this.setDataPermissions();
     this.setupSummaryList();
@@ -51,14 +49,12 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
 
   private setWorkplaces(): void {
     this.workplace = this.data;
-    // if (this.workplace.uid === this.establishmentService.primaryWorkplace.uid) {
-    //   this.establishmentService.getEstablishment(this.workplace.parentUid).subscribe(value => {
-    //     this.final = value;
-    //     console.log(value);
-    //   });
-    // } else {
     this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
-    //  }
+    if (this.workplace.uid === this.establishmentService.primaryWorkplace.uid) {
+      this.requesterName = this.workplace.parentName || this.dataPermissionsRequester.name;
+    } else {
+      this.requesterName = this.dataPermissionsRequester.name;
+    }
   }
 
   private setDataPermissions(): void {
@@ -73,7 +69,7 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
       },
       {
         label: 'To',
-        data: this.workplace.name,
+        data: this.requesterName,
       },
     ];
   }
