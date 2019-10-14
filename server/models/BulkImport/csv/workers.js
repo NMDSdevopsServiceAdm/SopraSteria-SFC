@@ -1424,6 +1424,20 @@ class Worker {
     const strContHours = String(this._currentLine.CONTHOURS);
     const fltContHours = parseFloat(this._currentLine.CONTHOURS);
     const intEmplStatus = parseInt(this._currentLine.EMPLSTATUS, 10);
+    const intZeroHoursType = parseInt(this._currentLine.ZEROHRCONT, 10);
+
+    if(intZeroHoursType === 1) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.CONT_HOURS_WARNING,
+        warnType: 'CONT_HOURS_WARNING',
+        warning: `CONTHOURS will be ignored as ZEROHRCONT is ${intZeroHoursType}`,
+        source: strContHours
+      });
+      return false;
+    }
 
     // If it's one of the employment statuses that shouldn't have a
     // contract hours and it does then that's a validation failure
@@ -1501,10 +1515,12 @@ class Worker {
     const strAvgHours = String(this._currentLine.AVGHOURS);
     const fltAvgHours = parseFloat(this._currentLine.AVGHOURS);
     const intEmplStatus = parseInt(this._currentLine.EMPLSTATUS, 10);
+    const intZeroHoursType = parseInt(this._currentLine.ZEROHRCONT, 10);
 
     // If it's one of the employment statuses that shouldn't have an
     // average hours and it does then that's a validation failure
-    if (EMPL_STATUSES.includes(intEmplStatus) && strAvgHours !== '') {
+    // if zero Hours is set to 'yes' then this rule doesn't apply
+    if (intZeroHoursType !== 1 && EMPL_STATUSES.includes(intEmplStatus) && strAvgHours !== '') {
       let contractType;
       switch (intEmplStatus) {
         case 1:
