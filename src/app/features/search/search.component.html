@@ -272,14 +272,12 @@
             <tr class="govuk-table__row">
               <th class="govuk-table__cell">Address</th>
               <td class="govuk-table__cell" colspan="3">
-                <address>
-                  {{ registration.establishment.name }}<br />
-                  {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
-                  {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
-                  {{ registration.establishment.address3 }}<br />
-                  {{ registration.establishment.town }}<br />
-                  {{ registration.establishment.postcode }}
-                </address>
+                {{ registration.establishment.name }}<br />
+                {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
+                {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
+                {{ registration.establishment.address3 }}<br />
+                {{ registration.establishment.town }}<br />
+                {{ registration.establishment.postcode }}
               </td>
             </tr>
             <tr class="govuk-table__row">
