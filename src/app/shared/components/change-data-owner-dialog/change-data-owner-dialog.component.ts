@@ -51,11 +51,7 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   }
 
   private setDataPermissions(): void {
-    this.dataPermissions = [
-      DataPermissions.Workplace,
-      DataPermissions.WorkplaceAndStaff,
-      DataPermissions.None,
-    ];
+    this.dataPermissions = [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff, DataPermissions.None];
   }
 
   private setupSummaryList(): void {
@@ -118,17 +114,19 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
         permissionRequest: this.permissionType,
       };
       this.subscriptions.add(
-        this.establishmentService
-          .changeOwnership(this.workplace.uid, requestedPermission)
-          .subscribe(data => {
+        this.establishmentService.changeOwnership(this.workplace.uid, requestedPermission).subscribe(
+          data => {
             if (data) {
               this.close(true);
             }
           },
-            error => {
-              this.isOwnershipError = true;
+          error => {
+            this.isOwnershipError = true;
+            if (error.error.message) {
               this.serverError = error.error.message;
-            })
+            }
+          }
+        )
       );
     }
   }

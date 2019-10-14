@@ -5,7 +5,8 @@ import {
   LocalIdentifiersRequest,
   LocalIdentifiersResponse,
   UpdateJobsRequest,
-  ChangeOwner
+  ChangeOwner,
+  CancelOwnerShip,
 } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
@@ -58,7 +59,7 @@ export class EstablishmentService {
   public isSameLoggedInUser: boolean;
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   private _establishmentId: string = null;
 
@@ -221,5 +222,15 @@ export class EstablishmentService {
 
   public changeOwnership(establishmentId, data: ChangeOwner): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/ownershipChange`, data);
+  }
+  public changeOwnershipDetails(establishmentId): Observable<Establishment> {
+    return this.http.get<Establishment>(`/api/establishment/${establishmentId}/ownershipChange/details`);
+  }
+
+  public cancelOwnership(establishmentId, ownershipChangeId, data: CancelOwnerShip): Observable<Establishment> {
+    return this.http.post<Establishment>(
+      `/api/establishment/${establishmentId}/ownershipChange/${ownershipChangeId}`,
+      data
+    );
   }
 }

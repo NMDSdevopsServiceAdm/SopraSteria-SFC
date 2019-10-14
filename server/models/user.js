@@ -242,16 +242,22 @@ module.exports = function(sequelize, DataTypes) {
   User.associate = (models) => {
     User.belongsTo(models.establishment, {
       foreignKey : 'establishmentId',
-      targetKey: 'id'
+      targetKey: 'id',
+      hooks:true,
+      onDelete: 'CASCADE'
     });
     User.hasOne(models.login, {
       foreignKey : 'registrationId',
-      targetKey: 'id'
+      targetKey: 'id',
+      hooks:true,
+      onDelete: 'CASCADE'
     });
     User.hasMany(models.userAudit, {
       foreignKey: 'userFk',
       sourceKey: 'id',
-      as: 'auditEvents'
+      as: 'auditEvents',
+      hooks: true,
+      onDelete: 'CASCADE'
     });
   };
   return User;

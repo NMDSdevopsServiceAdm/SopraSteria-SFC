@@ -1,0 +1,25 @@
+<app-error-summary *ngIf="isCancelOwnershipError" [serverError]="serverError" [form]="form"> </app-error-summary>
+
+<div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <h1 id="dialogHeading" class="govuk-fieldset__heading">
+        Your request to change ownership of data is pending
+      </h1>
+    </legend>
+    <app-summary-list [wrapBorder]="true" [summaryList]="summaryList"></app-summary-list>
+
+    <span *ngIf="submitted && form.get('dataPermission').invalid" id="dataPermission-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('dataPermission') }}
+    </span>
+  </fieldset>
+</div>
+
+<p>
+  <strong>{{ dataPermissionsRequester.name }} will need to approve your request.</strong>
+</p>
+
+<button type="button" (click)="close(null)" class="govuk-button">Cancel</button>
+<button type="button" (click)="cancelChangeOwnership()" class="govuk-button govuk-button--link govuk-util__float-right">
+  Cancel data owner request
+</button>
