@@ -15,6 +15,9 @@ import {
 import {
   FindWorkplaceAddressComponent,
 } from '@features/registration/find-workplace-address/find-workplace-address.component';
+import {
+  RegistrationAwaitingApprovalComponent,
+} from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
 import { SecurityQuestionComponent } from '@features/registration/security-question/security-question.component';
@@ -92,6 +95,12 @@ const routes: Routes = [
     component: RegistrationCompleteComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Complete' },
+  },
+  {
+    path: 'awaiting-approval',
+    component: RegistrationAwaitingApprovalComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Awaiting Approval' },
   },
   {
     path: 'find-workplace-address',

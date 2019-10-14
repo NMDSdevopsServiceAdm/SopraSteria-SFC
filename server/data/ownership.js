@@ -58,7 +58,7 @@ const ownershipDetailsQuery =
 `
 SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus"
 FROM cqc."OwnerChangeRequest"
-WHERE "subEstablishmentID" = :subEstId;
+WHERE "subEstablishmentID" = :subEstId ORDER BY "created" DESC LIMIT :limit;
 `;
 
 const getUpdatedOwnershipRequestQuery =
@@ -71,9 +71,9 @@ WHERE "ownerChangeRequestUID" = :ownerChangeId;
 const changedDataOwnershipRequestedQuery =
 `
 UPDATE cqc."Establishment"
-SET "DataOwnershipRequested" = NOW()
+SET "DataOwnershipRequested" = :timestamp
 WHERE "EstablishmentID" = :estId;
-`
+`;
 
 exports.getReipientUserDetails = async(params) =>
   db.query(getReipientUserDetailsQuery, {
@@ -126,7 +126,8 @@ exports.lastOwnershipRequest = async (params) =>
 exports.ownershipDetails = async(params) =>
   db.query(ownershipDetailsQuery, {
       replacements: {
-          subEstId: params.subEstablishmentId
+          subEstId: params.subEstablishmentId,
+          limit: 1
       },
       type: db.QueryTypes.SELECT
   })
@@ -162,8 +163,37 @@ exports.cancelOwnershipRequest = async (params) =>
 exports.changedDataOwnershipRequested = async (params) =>
   db.query(changedDataOwnershipRequestedQuery, {
       replacements: {
-          estId: params.subEstablishmentId
+          estId: params.subEstablishmentId,
+          timestamp: params.timeValue
         },
         type: db.QueryTypes.UPDATE
   })
 
+const getOwnershipNotificationDetailsQuery =
+`
+SELECT
+  parent."NameValue" as "parentEstablishmentName",
+  sub."NameValue" as "subEstablishmentName",
+  CASE
+      WHEN sub."DataOwner" = :parent THEN :workplace
+      WHEN sub."DataOwner" = :workplace THEN :parent
+      ELSE :unknown
+  END AS  "requestedOwnerType",
+  "permissionRequest",
+  "approvalStatus"
+FROM cqc."OwnerChangeRequest" as owner
+JOIN cqc."Establishment" as sub on sub."EstablishmentID" = owner."subEstablishmentID"
+JOIN cqc."Establishment" as parent on sub."ParentID" =  parent."EstablishmentID"
+WHERE "ownerChangeRequestUID" = :ownerChangeRequestUid;
+`;
+
+exports.getOwnershipNotificationDetails = async ({ ownerChangeRequestUid }) =>
+  db.query(getOwnershipNotificationDetailsQuery, {
+      replacements: {
+        ownerChangeRequestUid,
+        parent: 'Parent',
+        workplace: 'Workplace',
+        unknown: 'unknown'
+      },
+      type: db.QueryTypes.SELECT
+  });

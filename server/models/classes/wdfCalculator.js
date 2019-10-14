@@ -351,7 +351,7 @@ class WdfCalculator {
     let t;
 
     try {
-      t = await models.sequelize.transaction();
+      t = externalTransaction === null ? await models.sequelize.transaction() : null;
 
       const where = establishmentUID ? { uid: establishmentUID } : { id: establishmentID };
 
@@ -425,7 +425,9 @@ class WdfCalculator {
         });
       }
 
-      t.commit();
+      if (t) {
+        t.commit();
+      }
 
       if (wdf) {
         console.log('WA DEBUG - WDF: ', wdf, wdf.reasons ? wdf.reasons : null);
@@ -436,6 +438,10 @@ class WdfCalculator {
       if(t) {
         t.rollback();
       }
+      else {
+        externalTransaction.rollback();
+      }
+
       console.error('WdfCalculator::calculate - Failed to fetch establishment/workers: ', err);
     }
 

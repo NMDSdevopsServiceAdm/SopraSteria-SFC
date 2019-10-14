@@ -6,12 +6,13 @@ const moment = require('moment');
 const fs = require('fs');
 const walk = require('walk');
 const JsZip = new require('jszip');
+const path = require('path');
 
 //Constants string needed by this file in several places
 const folderName = 'template';
-const workplacesSheetName = 'xl/worksheets/sheet1.xml';
-const staffRecordsSheetName = 'xl/worksheets/sheet2.xml';
-const sharedStringsName = 'xl/sharedStrings.xml';
+const workplacesSheetName = path.join('xl', 'worksheets', 'sheet1.xml');
+const staffRecordsSheetName = path.join('xl', 'worksheets', 'sheet2.xml');
+const sharedStringsName = path.join('xl', 'sharedStrings.xml');
 const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 //const debuglog = console.log.bind(console);
@@ -1058,11 +1059,18 @@ const updateWorkplacesSheet = (
   return workplacesSheet;
 };
 
-const redIifMissing = (putString, cellToChange, value, columnText, rowType) => {
+const redIifMissing = (putString, cellToChange, value, columnText, rowType, columnObj = {}) => {
   let isRed = false;
-
   if(String(value) === 'Missing') {
     isRed = true;
+  }
+  if(Object.keys(columnObj).length !== 0){
+    let currentRowObj = columnObj.reportObj[columnObj.index];
+    if(currentRowObj.employmentStatus === 'Pool/Bank' || currentRowObj.employmentStatus === 'Agency'){
+      if(currentRowObj.sickDays === 'Missing'){
+        isRed = false;
+      }
+    }
   }
 
   putString(
@@ -1243,7 +1251,8 @@ const updateStaffRecordsSheet = (
               cellToChange,
               reportData.workers[row].sickDays,
               columnText,
-              rowType
+              rowType,
+              {reportObj: reportData.workers, index: row}
             );
         } break;
 
@@ -1360,7 +1369,7 @@ const getReport = async (date, thisEstablishment) => {
   }
 
   return (new Promise(resolve => {
-      const thePath = `${__dirname}/${folderName}`
+      const thePath = path.join(__dirname, folderName);
       const walker = walk.walk(thePath);
       const outputZip = new JsZip();
 
@@ -1369,12 +1378,13 @@ const getReport = async (date, thisEstablishment) => {
       debuglog("iterating filesystem", thePath);
 
       walker.on("file", (root, fileStats, next) => {
-        const pathName = root.replace(thePath, '').replace(/^\//, "");
-        const zipPath = (pathName === '' ? '' : pathName + '/') + fileStats.name;
+        const pathName = root.replace(thePath, '').replace('\\', '/').replace(/^\//, "");
+        const zipPath = (pathName === '' ? fileStats.name : path.join(pathName, fileStats.name));
+        const readPath = path.join(thePath, zipPath);
 
-        debuglog("file found", `${thePath}/${zipPath}`);
+        debuglog("file found", readPath);
 
-        fs.readFile(`${thePath}/${zipPath}`, (err, fileContent) => {
+        fs.readFile(`${readPath}`, (err, fileContent) => {
           debuglog("content read", zipPath);
 
           if(!err) {
