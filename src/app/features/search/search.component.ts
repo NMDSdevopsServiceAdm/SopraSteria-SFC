@@ -53,7 +53,7 @@ export class SearchComponent implements OnInit {
     } else if (this.router.url === '/search-establishments') {
       this.form.type = 'establishments';
       this.form.usernameLabel = 'Postcode';
-      this.form.nameLabel = 'NDMS ID';
+      this.form.nameLabel = 'Workplace ID';
       this.form.subTitle = 'Establishment Search';
       this.form.title = 'Define your search criteria';
       this.form.buttonText = 'Search Establishments';

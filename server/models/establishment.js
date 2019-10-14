@@ -550,12 +550,15 @@ module.exports = function(sequelize, DataTypes) {
     Establishment.hasMany(models.establishmentAudit, {
       foreignKey: 'establishmentFk',
       sourceKey: 'id',
-      as: 'auditEvents'
+      as: 'auditEvents',
+      hooks:true,
+      onDelete: 'CASCADE'
     });
     Establishment.hasMany(models.worker, {
       foreignKey: 'establishmentFk',
       sourceKey: 'id',
-      as: 'workers'
+      as: 'workers',
+      onDelete: 'CASCADE'
     });
   };
 
