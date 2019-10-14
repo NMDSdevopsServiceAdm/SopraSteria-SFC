@@ -147,6 +147,15 @@ const routes: Routes = [
         },
       },
       {
+        path: 'registrations',
+        loadChildren: '@features/search/search.module#SearchModule',
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Registrations',
+        },
+      },
+      {
         path: 'notifications',
         loadChildren: '@features/notifications/notifications.module#NotificationsModule',
       },

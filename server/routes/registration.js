@@ -329,7 +329,8 @@ router.route('/')
         MainService: req.body[0].mainService,
         MainServiceId : null,
         MainServiceOther: req.body[0].mainServiceOther,
-        IsRegulated: req.body[0].isRegulated
+        IsRegulated: req.body[0].isRegulated,
+        Status: 'PENDING'
       };
       const Userdata = {
         FullName : req.body[0].user.fullname,
@@ -461,7 +462,8 @@ router.route('/')
             mainService: {
               id: Estblistmentdata.MainServiceId,
               other : Estblistmentdata.MainServiceOther
-            }
+            },
+            ustatus: Estblistmentdata.Status
           });    // no Establishment properties on registration
           if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
             await newEstablishment.save(Logindata.UserName, false, 0, t);

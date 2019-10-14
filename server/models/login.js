@@ -107,7 +107,8 @@ module.exports = function(sequelize, DataTypes) {
   Login.associate = (models) => {
     Login.belongsTo(models.user, {
       foreignKey: 'registrationId',
-      targetKey: 'id'
+      targetKey: 'id',
+      onDelete: 'CASCADE'
     });
   };
 
