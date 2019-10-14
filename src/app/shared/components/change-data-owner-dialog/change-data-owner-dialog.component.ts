@@ -39,6 +39,9 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   }
 
   ngOnInit() {
+    this.establishmentService.getEstablishment(this.data.parentUid).subscribe(val => {
+      console.log(val);
+    });
     this.setWorkplaces();
     this.setDataPermissions();
     this.setupSummaryList();
@@ -48,14 +51,14 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
 
   private setWorkplaces(): void {
     this.workplace = this.data;
-    if (this.workplace.uid === this.establishmentService.primaryWorkplace.uid) {
-      this.establishmentService.getEstablishment(this.workplace.parentUid).subscribe(value => {
-        this.final = value;
-        console.log(value);
-      });
-    } else {
-      this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
-    }
+    // if (this.workplace.uid === this.establishmentService.primaryWorkplace.uid) {
+    //   this.establishmentService.getEstablishment(this.workplace.parentUid).subscribe(value => {
+    //     this.final = value;
+    //     console.log(value);
+    //   });
+    // } else {
+    this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
+    //  }
   }
 
   private setDataPermissions(): void {
