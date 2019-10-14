@@ -20,9 +20,18 @@
             Search Establishments
           </a>
         </li>
+        <li class="govuk-tabs__list-item">
+          <a
+            class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'registrations'"
+            [routerLink]="['/registrations']"
+          >
+            Registrations
+          </a>
+        </li>
       </ul>
 
-      <section class="govuk-tabs__panel has-border">
+      <section class="govuk-tabs__panel has-border" *ngIf="form.type !== 'registrations'">
         <form (ngSubmit)="onSubmit()" novalidate id="server-error">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -53,7 +62,12 @@
             </div>
 
             <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-half">
+              <div
+                [ngClass]="{
+                  'govuk-grid-column-one-half': form.type === 'users',
+                  'govuk-grid-column-one-third': form.type === 'establishments'
+                }"
+              >
                 <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
                   <label class="govuk-label" for="username">
                     {{ form.usernameLabel }}
@@ -70,7 +84,12 @@
                 </div>
               </div>
 
-              <div class="govuk-grid-column-one-half">
+              <div
+                [ngClass]="{
+                  'govuk-grid-column-one-half': form.type === 'users',
+                  'govuk-grid-column-one-third': form.type === 'establishments'
+                }"
+              >
                 <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
                   <label class="govuk-label" for="name">
                     {{ form.nameLabel }}
@@ -81,6 +100,22 @@
                     [ngModelOptions]="{ standalone: true }"
                     id="name"
                     name="name"
+                    [class.govuk-input--error]="form.errors && form.errors.length"
+                    type="text"
+                  />
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-third" *ngIf="form.type === 'establishments'">
+                <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
+                  <label class="govuk-label" for="locationid">
+                    Location ID
+                  </label>
+                  <input
+                    class="govuk-input govuk-input--width-20"
+                    [(ngModel)]="form.locationid"
+                    [ngModelOptions]="{ standalone: true }"
+                    id="locationid"
+                    name="locationid"
                     [class.govuk-input--error]="form.errors && form.errors.length"
                     type="text"
                   />
@@ -174,6 +209,105 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div *ngIf="form.type === 'registrations'">
+      <h1 class="govuk-heading-xl">
+        Registrations
+      </h1>
+      <div *ngFor="let registration of registrations; let i = index">
+        <h2 class="govuk-heading-l">Registration from {{ registration.establishment.name }}</h2>
+        <table class="govuk-table" *ngIf="registrations && registrations.length">
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__cell">Created</th>
+              <td class="govuk-table__cell">
+                {{ registration.created }}
+              </td>
+              <th class="govuk-table__cell">Username</th>
+              <td class="govuk-table__cell">
+                {{ registration.username }}
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__cell">Email</th>
+              <td class="govuk-table__cell">
+                <a href="mailto:{{ registration.email }}">{{ registration.email }}</a>
+              </td>
+              <th class="govuk-table__cell">Phone number</th>
+              <td class="govuk-table__cell">
+                {{ registration.phone }}
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__cell">Security question</th>
+              <td class="govuk-table__cell">
+                {{ registration.securityQuestion }}
+              </td>
+              <th class="govuk-table__cell">Security question answer</th>
+              <td class="govuk-table__cell">
+                {{ registration.securityQuestionAnswer }}
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__cell">Regulated</th>
+              <td class="govuk-table__cell">
+                {{ registration.establishment.isRegulated }}
+              </td>
+              <th class="govuk-table__cell">Provider ID</th>
+              <td class="govuk-table__cell">
+                {{ registration.establishment.provId }}
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__cell">Workplace ID</th>
+              <td class="govuk-table__cell">
+                {{ registration.establishment.nmdsId }}
+              </td>
+              <th class="govuk-table__cell">Location ID</th>
+              <td class="govuk-table__cell">
+                {{ registration.establishment.locationId }}
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__cell">Address</th>
+              <td class="govuk-table__cell" colspan="3">
+                {{ registration.establishment.name }}<br />
+                {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
+                {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
+                {{ registration.establishment.address3 }}<br />
+                {{ registration.establishment.town }}<br />
+                {{ registration.establishment.postcode }}
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__cell">County</th>
+              <td class="govuk-table__cell">
+                {{ registration.establishment.county }}
+              </td>
+              <th class="govuk-table__cell">Main Service</th>
+              <td class="govuk-table__cell">
+                {{ registration.establishment.mainService }}
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <td class="gov-uk-table__cell" colspan="4">
+                <div class="govuk-button-group">
+                  <button
+                    class="govuk-button govuk-button--warning govuk-util__float-right"
+                    (click)="approveUser(registration.username, false, i)"
+                  >
+                    Reject
+                  </button>
+                  <button class="govuk-button" (click)="approveUser(registration.username, true, i)">
+                    Approve
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

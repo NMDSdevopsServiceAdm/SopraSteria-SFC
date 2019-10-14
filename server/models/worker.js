@@ -593,7 +593,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"ZeroHoursContractChangedBy"'
-    },    
+    },
     WeeklyHoursAverageValue : {
       type: DataTypes.ENUM,
       allowNull: true,
@@ -978,7 +978,7 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Worker.associate = (models) => {
-    Worker.belongsTo(models.establishment, {  
+    Worker.belongsTo(models.establishment, {
       foreignKey: 'establishmentFk',
       targetKey: 'id',
       as: 'establishment'
@@ -991,7 +991,8 @@ module.exports = function(sequelize, DataTypes) {
     Worker.hasMany(models.workerAudit, {
       foreignKey: 'workerFk',
       sourceKey: 'id',
-      as: 'auditEvents'
+      as: 'auditEvents',
+      onDelete: 'CASCADE'
     });
     Worker.belongsTo(models.ethnicity, {
       foreignKey: 'EthnicityFkValue',

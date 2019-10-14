@@ -12,6 +12,9 @@ import { CreateUsernameComponent } from '@features/registration/create-username/
 import {
   EnterWorkplaceAddressComponent,
 } from '@features/registration/enter-workplace-address/enter-workplace-address.component';
+import {
+  RegistrationAwaitingApprovalComponent,
+} from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
@@ -38,6 +41,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     EnterWorkplaceAddressComponent,
     FindWorkplaceAddressComponent,
     RegistrationCompleteComponent,
+    RegistrationAwaitingApprovalComponent,
     RegulatedByCqcComponent,
     SecurityQuestionComponent,
     SelectMainServiceComponent,

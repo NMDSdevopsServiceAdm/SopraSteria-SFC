@@ -17,6 +17,7 @@ const uuid = require('uuid');
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
 const notifications = rfr('server/data/notifications');
+const ownershipChangeRequests = rfr('server/data/ownership');
 
 // default route
 router.route('/').get(async (req, res) => {
@@ -766,6 +767,52 @@ router.route('/my/notifications').get(async (req, res) => {
   }
 });
 
+const addTypeContent = async notification => {
+  notification.typeContent = {};
+
+  switch (notification.type) {
+    case 'OWNERCHANGE':
+      const subQuery = await ownershipChangeRequests.getOwnershipNotificationDetails({
+        ownerChangeRequestUid: notification.typeUid
+      });
+
+      if (subQuery.length === 1) {
+        notification.typeContent = subQuery[0];
+      }
+      break;
+  }
+
+  delete notification.typeUid;
+}
+
+router.route('/my/notifications/:notificationUid').get(async (req, res) => {
+  try {
+    const params = {
+      userUid: req.userUid, // pull the user's uuid out of JWT
+      notificationUid: req.params.notificationUid // and the notificationUid from the url
+    };
+
+    console.log('/my/notifications/:notificationUid (GET)', params);
+
+    const notification = await notifications.getOne(params);
+
+    if (notification.length !== 1) {
+      return res.status(404).send({
+        message: 'Not found'
+      });
+    }
+
+    await addTypeContent(notification[0]);
+
+    // return the item
+    return res.status(200).send(notification[0]);
+  } catch (e) {
+    return res.status(500).send({
+      message: e.message
+    });
+  }
+});
+
 router.route('/my/notifications/:notificationUid').post(async (req, res) => {
   try {
     if (req.body.isViewed !== true) {
@@ -790,7 +837,7 @@ router.route('/my/notifications/:notificationUid').post(async (req, res) => {
       });
     }
 
-    notification[0].typeContent = {};
+    await addTypeContent(notification[0]);
 
     //return the list
     return res.status(200).send(notification[0]);

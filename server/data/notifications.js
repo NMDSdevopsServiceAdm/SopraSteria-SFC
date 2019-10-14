@@ -30,6 +30,7 @@ const getOneQuery =
   SELECT
     "notificationUid",
     type,
+    "typeUid",
     created,
     "isViewed"
   FROM cqc."Notifications"
