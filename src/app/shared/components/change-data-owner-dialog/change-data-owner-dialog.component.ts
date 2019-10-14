@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -26,6 +26,7 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   public permissionType: string;
   public isOwnershipError: boolean;
   public serverError: string;
+  public final: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
@@ -47,7 +48,14 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
 
   private setWorkplaces(): void {
     this.workplace = this.data;
-    this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
+    if (this.workplace.uid === this.establishmentService.primaryWorkplace.uid) {
+      this.establishmentService.getEstablishment(this.workplace.parentUid).subscribe(value => {
+        this.final = value;
+        console.log(value);
+      });
+    } else {
+      this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
+    }
   }
 
   private setDataPermissions(): void {
@@ -62,7 +70,7 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
       },
       {
         label: 'To',
-        data: this.dataPermissionsRequester.name,
+        data: this.workplace.name,
       },
     ];
   }
