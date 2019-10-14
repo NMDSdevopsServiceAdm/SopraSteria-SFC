@@ -1426,7 +1426,9 @@ class Worker {
     const intEmplStatus = parseInt(this._currentLine.EMPLSTATUS, 10);
     const intZeroHoursType = parseInt(this._currentLine.ZEROHRCONT, 10);
 
-    if(intZeroHoursType === 1) {
+    // if zero hours contract is 'Yes' then any non blank
+    // contract hours value is invalid
+    if(intZeroHoursType === 1 && strContHours !== '') {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1518,8 +1520,8 @@ class Worker {
     const intZeroHoursType = parseInt(this._currentLine.ZEROHRCONT, 10);
 
     // If it's one of the employment statuses that shouldn't have an
-    // average hours and it does then that's a validation failure
-    // if zero Hours is set to 'yes' then this rule doesn't apply
+    // average hours and it does then that's a validation failure.
+    // If zero Hours is set to 'yes' then this rule doesn't apply
     if (intZeroHoursType !== 1 && EMPL_STATUSES.includes(intEmplStatus) && strAvgHours !== '') {
       let contractType;
       switch (intEmplStatus) {
