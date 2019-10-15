@@ -7,6 +7,7 @@ export interface GetWorkplacesResponse {
 }
 
 export interface Workplace {
+  parentName: string;
   dataOwner: WorkplaceDataOwner;
   dataPermissions: DataPermissions;
   dataOwnerPermissions: string;

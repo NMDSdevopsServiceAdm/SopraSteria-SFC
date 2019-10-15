@@ -75,6 +75,7 @@ export interface WDF {
 }
 
 export interface Establishment {
+  ownershipChangeRequestId?: string;
   id: number;
   uid: string;
   ownerChangeRequestUID?: string;

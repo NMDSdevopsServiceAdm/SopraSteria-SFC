@@ -98,7 +98,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         data => {
           if (data) {
             this.ownershipChangeRequestId = data.ownerChangeRequestUID;
-            //this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
+            this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
             const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
             dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
               if (cancelDataOwnerConfirmed) {
