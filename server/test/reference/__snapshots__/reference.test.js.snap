@@ -1,0 +1,3541 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Expected reference services should fetch CQC main services by category 1`] = `
+Array [
+  Object {
+    "category": "Adult community care",
+    "services": Array [
+      Object {
+        "id": 19,
+        "isCQC": true,
+        "name": "Shared lives",
+      },
+    ],
+  },
+  Object {
+    "category": "Adult domiciliary",
+    "services": Array [
+      Object {
+        "id": 20,
+        "isCQC": true,
+        "name": "Domiciliary care services",
+      },
+      Object {
+        "id": 21,
+        "isCQC": true,
+        "name": "Extra care housing services",
+      },
+      Object {
+        "id": 22,
+        "isCQC": true,
+        "name": "Nurses agency",
+      },
+      Object {
+        "id": 23,
+        "isCQC": true,
+        "name": "Supported living services",
+      },
+    ],
+  },
+  Object {
+    "category": "Adult residential",
+    "services": Array [
+      Object {
+        "id": 24,
+        "isCQC": true,
+        "name": "Care home services with nursing",
+      },
+      Object {
+        "id": 25,
+        "isCQC": true,
+        "name": "Care home services without nursing",
+      },
+    ],
+  },
+  Object {
+    "category": "Healthcare",
+    "services": Array [
+      Object {
+        "id": 26,
+        "isCQC": true,
+        "name": "Community based services for people who misuse substances",
+      },
+      Object {
+        "id": 27,
+        "isCQC": true,
+        "name": "Community based services for people with a learning disability",
+      },
+      Object {
+        "id": 28,
+        "isCQC": true,
+        "name": "Community based services for people with mental health needs",
+      },
+      Object {
+        "id": 29,
+        "isCQC": true,
+        "name": "Community healthcare services",
+      },
+      Object {
+        "id": 30,
+        "isCQC": true,
+        "name": "Hospice services",
+      },
+      Object {
+        "id": 31,
+        "isCQC": true,
+        "name": "Hospital services for people with mental health needs, learning disabilities and/or problems with substance misuse",
+      },
+      Object {
+        "id": 32,
+        "isCQC": true,
+        "name": "Long term conditions services",
+      },
+      Object {
+        "id": 33,
+        "isCQC": true,
+        "name": "Rehabilitation services",
+      },
+      Object {
+        "id": 34,
+        "isCQC": true,
+        "name": "Residential substance misuse treatment/ rehabilitation services",
+      },
+    ],
+  },
+  Object {
+    "category": "Other",
+    "services": Array [
+      Object {
+        "id": 36,
+        "isCQC": true,
+        "name": "Specialist college services",
+      },
+    ],
+  },
+]
+`;
+
+exports[`Expected reference services should fetch Ethnicities 1`] = `
+Object {
+  "ethnicities": Object {
+    "byGroup": Object {
+      "": Array [
+        Object {
+          "ethnicity": "English / Welsh / Scottish / Northern Irish / British",
+          "id": 1,
+        },
+        Object {
+          "ethnicity": "Don't know",
+          "id": 2,
+        },
+      ],
+      "Asian / Asian British": Array [
+        Object {
+          "ethnicity": "Indian",
+          "id": 10,
+        },
+        Object {
+          "ethnicity": "Pakistani",
+          "id": 11,
+        },
+        Object {
+          "ethnicity": "Bangladeshi",
+          "id": 12,
+        },
+        Object {
+          "ethnicity": "Chinese",
+          "id": 13,
+        },
+        Object {
+          "ethnicity": "Any other Asian background",
+          "id": 14,
+        },
+      ],
+      "Black / African / Caribbean / Black British": Array [
+        Object {
+          "ethnicity": "African",
+          "id": 15,
+        },
+        Object {
+          "ethnicity": "Caribbean",
+          "id": 16,
+        },
+        Object {
+          "ethnicity": "Any other Black / African / Caribbean background",
+          "id": 17,
+        },
+      ],
+      "Mixed / multiple ethnic groups": Array [
+        Object {
+          "ethnicity": "White and Black Caribbean",
+          "id": 6,
+        },
+        Object {
+          "ethnicity": "White and Black African",
+          "id": 7,
+        },
+        Object {
+          "ethnicity": "White and Asian",
+          "id": 8,
+        },
+        Object {
+          "ethnicity": "Any other Mixed/ multiple ethnic background",
+          "id": 9,
+        },
+      ],
+      "Other ethnic group": Array [
+        Object {
+          "ethnicity": "Arab",
+          "id": 18,
+        },
+        Object {
+          "ethnicity": "Any other ethnic group",
+          "id": 19,
+        },
+      ],
+      "White": Array [
+        Object {
+          "ethnicity": "Irish",
+          "id": 3,
+        },
+        Object {
+          "ethnicity": "Gypsy or Irish Traveller",
+          "id": 4,
+        },
+        Object {
+          "ethnicity": "Any other White background",
+          "id": 5,
+        },
+      ],
+    },
+    "list": Array [
+      Object {
+        "ethnicity": "English / Welsh / Scottish / Northern Irish / British",
+        "group": "",
+        "id": 1,
+      },
+      Object {
+        "ethnicity": "Don't know",
+        "group": "",
+        "id": 2,
+      },
+      Object {
+        "ethnicity": "Irish",
+        "group": "White",
+        "id": 3,
+      },
+      Object {
+        "ethnicity": "Gypsy or Irish Traveller",
+        "group": "White",
+        "id": 4,
+      },
+      Object {
+        "ethnicity": "Any other White background",
+        "group": "White",
+        "id": 5,
+      },
+      Object {
+        "ethnicity": "White and Black Caribbean",
+        "group": "Mixed / multiple ethnic groups",
+        "id": 6,
+      },
+      Object {
+        "ethnicity": "White and Black African",
+        "group": "Mixed / multiple ethnic groups",
+        "id": 7,
+      },
+      Object {
+        "ethnicity": "White and Asian",
+        "group": "Mixed / multiple ethnic groups",
+        "id": 8,
+      },
+      Object {
+        "ethnicity": "Any other Mixed/ multiple ethnic background",
+        "group": "Mixed / multiple ethnic groups",
+        "id": 9,
+      },
+      Object {
+        "ethnicity": "Indian",
+        "group": "Asian / Asian British",
+        "id": 10,
+      },
+      Object {
+        "ethnicity": "Pakistani",
+        "group": "Asian / Asian British",
+        "id": 11,
+      },
+      Object {
+        "ethnicity": "Bangladeshi",
+        "group": "Asian / Asian British",
+        "id": 12,
+      },
+      Object {
+        "ethnicity": "Chinese",
+        "group": "Asian / Asian British",
+        "id": 13,
+      },
+      Object {
+        "ethnicity": "Any other Asian background",
+        "group": "Asian / Asian British",
+        "id": 14,
+      },
+      Object {
+        "ethnicity": "African",
+        "group": "Black / African / Caribbean / Black British",
+        "id": 15,
+      },
+      Object {
+        "ethnicity": "Caribbean",
+        "group": "Black / African / Caribbean / Black British",
+        "id": 16,
+      },
+      Object {
+        "ethnicity": "Any other Black / African / Caribbean background",
+        "group": "Black / African / Caribbean / Black British",
+        "id": 17,
+      },
+      Object {
+        "ethnicity": "Arab",
+        "group": "Other ethnic group",
+        "id": 18,
+      },
+      Object {
+        "ethnicity": "Any other ethnic group",
+        "group": "Other ethnic group",
+        "id": 19,
+      },
+    ],
+  },
+}
+`;
+
+exports[`Expected reference services should fetch Local Authorities 1`] = `
+Array [
+  Object {
+    "custodianCode": 716,
+    "name": "Barking & Dagenham",
+  },
+  Object {
+    "custodianCode": 717,
+    "name": "Barnet",
+  },
+  Object {
+    "custodianCode": 204,
+    "name": "Barnsley",
+  },
+  Object {
+    "custodianCode": 908,
+    "name": "Bath and North East Somerset",
+  },
+  Object {
+    "custodianCode": 996,
+    "name": "Bedford",
+  },
+  Object {
+    "custodianCode": 718,
+    "name": "Bexley",
+  },
+  Object {
+    "custodianCode": 406,
+    "name": "Birmingham",
+  },
+  Object {
+    "custodianCode": 324,
+    "name": "Blackburn with Darwen",
+  },
+  Object {
+    "custodianCode": 325,
+    "name": "Blackpool",
+  },
+  Object {
+    "custodianCode": 304,
+    "name": "Bolton",
+  },
+  Object {
+    "custodianCode": 810,
+    "name": "Bournemouth",
+  },
+  Object {
+    "custodianCode": 614,
+    "name": "Bracknell Forest",
+  },
+  Object {
+    "custodianCode": 209,
+    "name": "Bradford",
+  },
+  Object {
+    "custodianCode": 719,
+    "name": "Brent",
+  },
+  Object {
+    "custodianCode": 816,
+    "name": "Brighton & Hove",
+  },
+  Object {
+    "custodianCode": 909,
+    "name": "Bristol",
+  },
+  Object {
+    "custodianCode": 720,
+    "name": "Bromley",
+  },
+  Object {
+    "custodianCode": 612,
+    "name": "Buckinghamshire",
+  },
+  Object {
+    "custodianCode": 305,
+    "name": "Bury",
+  },
+  Object {
+    "custodianCode": 210,
+    "name": "Calderdale",
+  },
+  Object {
+    "custodianCode": 623,
+    "name": "Cambridgeshire",
+  },
+  Object {
+    "custodianCode": 702,
+    "name": "Camden",
+  },
+  Object {
+    "custodianCode": 997,
+    "name": "Central Bedfordshire",
+  },
+  Object {
+    "custodianCode": 998,
+    "name": "Cheshire East",
+  },
+  Object {
+    "custodianCode": 999,
+    "name": "Cheshire West & Chester",
+  },
+  Object {
+    "custodianCode": 714,
+    "name": "City of London",
+  },
+  Object {
+    "custodianCode": 902,
+    "name": "Cornwall",
+  },
+  Object {
+    "custodianCode": 407,
+    "name": "Coventry",
+  },
+  Object {
+    "custodianCode": 721,
+    "name": "Croydon",
+  },
+  Object {
+    "custodianCode": 102,
+    "name": "Cumbria",
+  },
+  Object {
+    "custodianCode": 117,
+    "name": "Darlington",
+  },
+  Object {
+    "custodianCode": 507,
+    "name": "Derby",
+  },
+  Object {
+    "custodianCode": 506,
+    "name": "Derbyshire",
+  },
+  Object {
+    "custodianCode": 912,
+    "name": "Devon",
+  },
+  Object {
+    "custodianCode": 205,
+    "name": "Doncaster",
+  },
+  Object {
+    "custodianCode": 809,
+    "name": "Dorset",
+  },
+  Object {
+    "custodianCode": 408,
+    "name": "Dudley",
+  },
+  Object {
+    "custodianCode": 116,
+    "name": "Durham",
+  },
+  Object {
+    "custodianCode": 722,
+    "name": "Ealing",
+  },
+  Object {
+    "custodianCode": 214,
+    "name": "East Riding of Yorkshire",
+  },
+  Object {
+    "custodianCode": 815,
+    "name": "East Sussex",
+  },
+  Object {
+    "custodianCode": 723,
+    "name": "Enfield",
+  },
+  Object {
+    "custodianCode": 620,
+    "name": "Essex",
+  },
+  Object {
+    "custodianCode": 106,
+    "name": "Gateshead",
+  },
+  Object {
+    "custodianCode": 904,
+    "name": "Gloucestershire",
+  },
+  Object {
+    "custodianCode": 703,
+    "name": "Greenwich",
+  },
+  Object {
+    "custodianCode": 704,
+    "name": "Hackney",
+  },
+  Object {
+    "custodianCode": 321,
+    "name": "Halton",
+  },
+  Object {
+    "custodianCode": 705,
+    "name": "Hammersmith & Fulham",
+  },
+  Object {
+    "custodianCode": 812,
+    "name": "Hampshire",
+  },
+  Object {
+    "custodianCode": 724,
+    "name": "Haringey",
+  },
+  Object {
+    "custodianCode": 725,
+    "name": "Harrow",
+  },
+  Object {
+    "custodianCode": 111,
+    "name": "Hartlepool",
+  },
+  Object {
+    "custodianCode": 726,
+    "name": "Havering",
+  },
+  Object {
+    "custodianCode": 415,
+    "name": "Herefordshire",
+  },
+  Object {
+    "custodianCode": 606,
+    "name": "Hertfordshire",
+  },
+  Object {
+    "custodianCode": 727,
+    "name": "Hillingdon",
+  },
+  Object {
+    "custodianCode": 728,
+    "name": "Hounslow",
+  },
+  Object {
+    "custodianCode": 803,
+    "name": "Isle of Wight",
+  },
+  Object {
+    "custodianCode": 906,
+    "name": "Isles of Scilly",
+  },
+  Object {
+    "custodianCode": 706,
+    "name": "Islington",
+  },
+  Object {
+    "custodianCode": 707,
+    "name": "Kensington & Chelsea",
+  },
+  Object {
+    "custodianCode": 820,
+    "name": "Kent",
+  },
+  Object {
+    "custodianCode": 215,
+    "name": "Kingston upon Hull",
+  },
+  Object {
+    "custodianCode": 729,
+    "name": "Kingston upon Thames",
+  },
+  Object {
+    "custodianCode": 211,
+    "name": "Kirklees",
+  },
+  Object {
+    "custodianCode": 315,
+    "name": "Knowsley",
+  },
+  Object {
+    "custodianCode": 708,
+    "name": "Lambeth",
+  },
+  Object {
+    "custodianCode": 323,
+    "name": "Lancashire",
+  },
+  Object {
+    "custodianCode": 212,
+    "name": "Leeds",
+  },
+  Object {
+    "custodianCode": 509,
+    "name": "Leicester",
+  },
+  Object {
+    "custodianCode": 508,
+    "name": "Leicestershire",
+  },
+  Object {
+    "custodianCode": 709,
+    "name": "Lewisham",
+  },
+  Object {
+    "custodianCode": 503,
+    "name": "Lincolnshire",
+  },
+  Object {
+    "custodianCode": 316,
+    "name": "Liverpool",
+  },
+  Object {
+    "custodianCode": 611,
+    "name": "Luton",
+  },
+  Object {
+    "custodianCode": 306,
+    "name": "Manchester",
+  },
+  Object {
+    "custodianCode": 821,
+    "name": "Medway",
+  },
+  Object {
+    "custodianCode": 730,
+    "name": "Merton",
+  },
+  Object {
+    "custodianCode": 112,
+    "name": "Middlesbrough",
+  },
+  Object {
+    "custodianCode": 613,
+    "name": "Milton Keynes",
+  },
+  Object {
+    "custodianCode": 107,
+    "name": "Newcastle upon Tyne",
+  },
+  Object {
+    "custodianCode": 731,
+    "name": "Newham",
+  },
+  Object {
+    "custodianCode": 607,
+    "name": "Norfolk",
+  },
+  Object {
+    "custodianCode": 216,
+    "name": "North East Lincolnshire",
+  },
+  Object {
+    "custodianCode": 217,
+    "name": "North Lincolnshire",
+  },
+  Object {
+    "custodianCode": 910,
+    "name": "North Somerset",
+  },
+  Object {
+    "custodianCode": 108,
+    "name": "North Tyneside",
+  },
+  Object {
+    "custodianCode": 218,
+    "name": "North Yorkshire",
+  },
+  Object {
+    "custodianCode": 504,
+    "name": "Northamptonshire",
+  },
+  Object {
+    "custodianCode": 104,
+    "name": "Northumberland",
+  },
+  Object {
+    "custodianCode": 512,
+    "name": "Nottingham",
+  },
+  Object {
+    "custodianCode": 511,
+    "name": "Nottinghamshire",
+  },
+  Object {
+    "custodianCode": 307,
+    "name": "Oldham",
+  },
+  Object {
+    "custodianCode": 608,
+    "name": "Oxfordshire",
+  },
+  Object {
+    "custodianCode": 624,
+    "name": "Peterborough",
+  },
+  Object {
+    "custodianCode": 913,
+    "name": "Plymouth",
+  },
+  Object {
+    "custodianCode": 811,
+    "name": "Poole",
+  },
+  Object {
+    "custodianCode": 813,
+    "name": "Portsmouth",
+  },
+  Object {
+    "custodianCode": 616,
+    "name": "Reading",
+  },
+  Object {
+    "custodianCode": 732,
+    "name": "Redbridge",
+  },
+  Object {
+    "custodianCode": 113,
+    "name": "Redcar & Cleveland",
+  },
+  Object {
+    "custodianCode": 733,
+    "name": "Richmond upon Thames",
+  },
+  Object {
+    "custodianCode": 308,
+    "name": "Rochdale",
+  },
+  Object {
+    "custodianCode": 206,
+    "name": "Rotherham",
+  },
+  Object {
+    "custodianCode": 510,
+    "name": "Rutland",
+  },
+  Object {
+    "custodianCode": 309,
+    "name": "Salford",
+  },
+  Object {
+    "custodianCode": 409,
+    "name": "Sandwell",
+  },
+  Object {
+    "custodianCode": 317,
+    "name": "Sefton",
+  },
+  Object {
+    "custodianCode": 207,
+    "name": "Sheffield",
+  },
+  Object {
+    "custodianCode": 417,
+    "name": "Shropshire",
+  },
+  Object {
+    "custodianCode": 617,
+    "name": "Slough",
+  },
+  Object {
+    "custodianCode": 410,
+    "name": "Solihull",
+  },
+  Object {
+    "custodianCode": 905,
+    "name": "Somerset",
+  },
+  Object {
+    "custodianCode": 911,
+    "name": "South Gloucestershire",
+  },
+  Object {
+    "custodianCode": 109,
+    "name": "South Tyneside",
+  },
+  Object {
+    "custodianCode": 814,
+    "name": "Southampton",
+  },
+  Object {
+    "custodianCode": 621,
+    "name": "Southend on Sea",
+  },
+  Object {
+    "custodianCode": 710,
+    "name": "Southwark",
+  },
+  Object {
+    "custodianCode": 318,
+    "name": "St Helens",
+  },
+  Object {
+    "custodianCode": 413,
+    "name": "Staffordshire",
+  },
+  Object {
+    "custodianCode": 310,
+    "name": "Stockport",
+  },
+  Object {
+    "custodianCode": 114,
+    "name": "Stockton on Tees",
+  },
+  Object {
+    "custodianCode": 414,
+    "name": "Stoke on Trent",
+  },
+  Object {
+    "custodianCode": 609,
+    "name": "Suffolk",
+  },
+  Object {
+    "custodianCode": 110,
+    "name": "Sunderland",
+  },
+  Object {
+    "custodianCode": 805,
+    "name": "Surrey",
+  },
+  Object {
+    "custodianCode": 734,
+    "name": "Sutton",
+  },
+  Object {
+    "custodianCode": 819,
+    "name": "Swindon",
+  },
+  Object {
+    "custodianCode": 311,
+    "name": "Tameside",
+  },
+  Object {
+    "custodianCode": 418,
+    "name": "Telford & Wrekin",
+  },
+  Object {
+    "custodianCode": 622,
+    "name": "Thurrock",
+  },
+  Object {
+    "custodianCode": 914,
+    "name": "Torbay",
+  },
+  Object {
+    "custodianCode": 711,
+    "name": "Tower Hamlets",
+  },
+  Object {
+    "custodianCode": 312,
+    "name": "Trafford",
+  },
+  Object {
+    "custodianCode": 213,
+    "name": "Wakefield",
+  },
+  Object {
+    "custodianCode": 411,
+    "name": "Walsall",
+  },
+  Object {
+    "custodianCode": 735,
+    "name": "Waltham Forest",
+  },
+  Object {
+    "custodianCode": 712,
+    "name": "Wandsworth",
+  },
+  Object {
+    "custodianCode": 322,
+    "name": "Warrington",
+  },
+  Object {
+    "custodianCode": 404,
+    "name": "Warwickshire",
+  },
+  Object {
+    "custodianCode": 615,
+    "name": "West Berkshire",
+  },
+  Object {
+    "custodianCode": 807,
+    "name": "West Sussex",
+  },
+  Object {
+    "custodianCode": 713,
+    "name": "Westminster",
+  },
+  Object {
+    "custodianCode": 313,
+    "name": "Wigan",
+  },
+  Object {
+    "custodianCode": 817,
+    "name": "Wiltshire",
+  },
+  Object {
+    "custodianCode": 618,
+    "name": "Windsor & Maidenhead",
+  },
+  Object {
+    "custodianCode": 319,
+    "name": "Wirral",
+  },
+  Object {
+    "custodianCode": 619,
+    "name": "Wokingham",
+  },
+  Object {
+    "custodianCode": 412,
+    "name": "Wolverhampton",
+  },
+  Object {
+    "custodianCode": 416,
+    "name": "Worcestershire",
+  },
+  Object {
+    "custodianCode": 219,
+    "name": "York",
+  },
+]
+`;
+
+exports[`Expected reference services should fetch Nationalities 1`] = `
+Object {
+  "nationalities": Array [
+    Object {
+      "id": 1,
+      "nationality": "Afghan",
+    },
+    Object {
+      "id": 2,
+      "nationality": "Albanian",
+    },
+    Object {
+      "id": 3,
+      "nationality": "Algerian",
+    },
+    Object {
+      "id": 4,
+      "nationality": "American",
+    },
+    Object {
+      "id": 5,
+      "nationality": "Andorran",
+    },
+    Object {
+      "id": 6,
+      "nationality": "Angolan",
+    },
+    Object {
+      "id": 7,
+      "nationality": "Anguillan",
+    },
+    Object {
+      "id": 8,
+      "nationality": "Citizen of Antigua and Barbuda",
+    },
+    Object {
+      "id": 9,
+      "nationality": "Argentine",
+    },
+    Object {
+      "id": 10,
+      "nationality": "Armenian",
+    },
+    Object {
+      "id": 11,
+      "nationality": "Australian",
+    },
+    Object {
+      "id": 12,
+      "nationality": "Austrian",
+    },
+    Object {
+      "id": 13,
+      "nationality": "Azerbaijani",
+    },
+    Object {
+      "id": 14,
+      "nationality": "Bahamian",
+    },
+    Object {
+      "id": 15,
+      "nationality": "Bahraini",
+    },
+    Object {
+      "id": 16,
+      "nationality": "Bangladeshi",
+    },
+    Object {
+      "id": 17,
+      "nationality": "Barbadian",
+    },
+    Object {
+      "id": 18,
+      "nationality": "Belarusian",
+    },
+    Object {
+      "id": 19,
+      "nationality": "Belgian",
+    },
+    Object {
+      "id": 20,
+      "nationality": "Belizean",
+    },
+    Object {
+      "id": 21,
+      "nationality": "Beninese",
+    },
+    Object {
+      "id": 22,
+      "nationality": "Bermudian",
+    },
+    Object {
+      "id": 23,
+      "nationality": "Bhutanese",
+    },
+    Object {
+      "id": 24,
+      "nationality": "Bolivian",
+    },
+    Object {
+      "id": 25,
+      "nationality": "Citizen of Bosnia and Herzegovina",
+    },
+    Object {
+      "id": 26,
+      "nationality": "Botswanan",
+    },
+    Object {
+      "id": 27,
+      "nationality": "Brazilian",
+    },
+    Object {
+      "id": 29,
+      "nationality": "British Virgin Islander",
+    },
+    Object {
+      "id": 30,
+      "nationality": "Bruneian",
+    },
+    Object {
+      "id": 31,
+      "nationality": "Bulgarian",
+    },
+    Object {
+      "id": 32,
+      "nationality": "Burkinan",
+    },
+    Object {
+      "id": 33,
+      "nationality": "Burmese",
+    },
+    Object {
+      "id": 34,
+      "nationality": "Burundian",
+    },
+    Object {
+      "id": 35,
+      "nationality": "Cambodian",
+    },
+    Object {
+      "id": 36,
+      "nationality": "Cameroonian",
+    },
+    Object {
+      "id": 37,
+      "nationality": "Canadian",
+    },
+    Object {
+      "id": 38,
+      "nationality": "Cape Verdean",
+    },
+    Object {
+      "id": 39,
+      "nationality": "Cayman Islander",
+    },
+    Object {
+      "id": 40,
+      "nationality": "Central African",
+    },
+    Object {
+      "id": 41,
+      "nationality": "Chadian",
+    },
+    Object {
+      "id": 42,
+      "nationality": "Chilean",
+    },
+    Object {
+      "id": 43,
+      "nationality": "Chinese",
+    },
+    Object {
+      "id": 44,
+      "nationality": "Colombian",
+    },
+    Object {
+      "id": 45,
+      "nationality": "Comoran",
+    },
+    Object {
+      "id": 46,
+      "nationality": "Congolese (Congo)",
+    },
+    Object {
+      "id": 47,
+      "nationality": "Congolese (DRC)",
+    },
+    Object {
+      "id": 48,
+      "nationality": "Cook Islander",
+    },
+    Object {
+      "id": 49,
+      "nationality": "Costa Rican",
+    },
+    Object {
+      "id": 50,
+      "nationality": "Croatian",
+    },
+    Object {
+      "id": 51,
+      "nationality": "Cuban",
+    },
+    Object {
+      "id": 52,
+      "nationality": "Cymraes",
+    },
+    Object {
+      "id": 53,
+      "nationality": "Cymro",
+    },
+    Object {
+      "id": 54,
+      "nationality": "Cypriot",
+    },
+    Object {
+      "id": 55,
+      "nationality": "Czech",
+    },
+    Object {
+      "id": 56,
+      "nationality": "Danish",
+    },
+    Object {
+      "id": 57,
+      "nationality": "Djiboutian",
+    },
+    Object {
+      "id": 58,
+      "nationality": "Dominican",
+    },
+    Object {
+      "id": 59,
+      "nationality": "Citizen of the Dominican Republic",
+    },
+    Object {
+      "id": 60,
+      "nationality": "Dutch",
+    },
+    Object {
+      "id": 61,
+      "nationality": "East Timorese",
+    },
+    Object {
+      "id": 62,
+      "nationality": "Ecuadorean",
+    },
+    Object {
+      "id": 63,
+      "nationality": "Egyptian",
+    },
+    Object {
+      "id": 64,
+      "nationality": "Emirati",
+    },
+    Object {
+      "id": 65,
+      "nationality": "English",
+    },
+    Object {
+      "id": 66,
+      "nationality": "Equatorial Guinean",
+    },
+    Object {
+      "id": 67,
+      "nationality": "Eritrean",
+    },
+    Object {
+      "id": 68,
+      "nationality": "Estonian",
+    },
+    Object {
+      "id": 69,
+      "nationality": "Ethiopian",
+    },
+    Object {
+      "id": 70,
+      "nationality": "Faroese",
+    },
+    Object {
+      "id": 71,
+      "nationality": "Fijian",
+    },
+    Object {
+      "id": 72,
+      "nationality": "Filipino",
+    },
+    Object {
+      "id": 73,
+      "nationality": "Finnish",
+    },
+    Object {
+      "id": 74,
+      "nationality": "French",
+    },
+    Object {
+      "id": 75,
+      "nationality": "Gabonese",
+    },
+    Object {
+      "id": 76,
+      "nationality": "Gambian",
+    },
+    Object {
+      "id": 77,
+      "nationality": "Georgian",
+    },
+    Object {
+      "id": 78,
+      "nationality": "German",
+    },
+    Object {
+      "id": 79,
+      "nationality": "Ghanaian",
+    },
+    Object {
+      "id": 80,
+      "nationality": "Gibraltarian",
+    },
+    Object {
+      "id": 81,
+      "nationality": "Greek",
+    },
+    Object {
+      "id": 82,
+      "nationality": "Greenlandic",
+    },
+    Object {
+      "id": 83,
+      "nationality": "Grenadian",
+    },
+    Object {
+      "id": 84,
+      "nationality": "Guamanian",
+    },
+    Object {
+      "id": 85,
+      "nationality": "Guatemalan",
+    },
+    Object {
+      "id": 86,
+      "nationality": "Citizen of Guinea-Bissau",
+    },
+    Object {
+      "id": 87,
+      "nationality": "Guinean",
+    },
+    Object {
+      "id": 88,
+      "nationality": "Guyanese",
+    },
+    Object {
+      "id": 89,
+      "nationality": "Haitian",
+    },
+    Object {
+      "id": 90,
+      "nationality": "Honduran",
+    },
+    Object {
+      "id": 91,
+      "nationality": "Hong Konger",
+    },
+    Object {
+      "id": 92,
+      "nationality": "Hungarian",
+    },
+    Object {
+      "id": 93,
+      "nationality": "Icelandic",
+    },
+    Object {
+      "id": 94,
+      "nationality": "Indian",
+    },
+    Object {
+      "id": 95,
+      "nationality": "Indonesian",
+    },
+    Object {
+      "id": 96,
+      "nationality": "Iranian",
+    },
+    Object {
+      "id": 97,
+      "nationality": "Iraqi",
+    },
+    Object {
+      "id": 98,
+      "nationality": "Irish",
+    },
+    Object {
+      "id": 99,
+      "nationality": "Israeli",
+    },
+    Object {
+      "id": 100,
+      "nationality": "Italian",
+    },
+    Object {
+      "id": 101,
+      "nationality": "Ivorian",
+    },
+    Object {
+      "id": 102,
+      "nationality": "Jamaican",
+    },
+    Object {
+      "id": 103,
+      "nationality": "Japanese",
+    },
+    Object {
+      "id": 104,
+      "nationality": "Jordanian",
+    },
+    Object {
+      "id": 105,
+      "nationality": "Kazakh",
+    },
+    Object {
+      "id": 106,
+      "nationality": "Kenyan",
+    },
+    Object {
+      "id": 107,
+      "nationality": "Kittitian",
+    },
+    Object {
+      "id": 108,
+      "nationality": "Citizen of Kiribati",
+    },
+    Object {
+      "id": 109,
+      "nationality": "Kosovan",
+    },
+    Object {
+      "id": 110,
+      "nationality": "Kuwaiti",
+    },
+    Object {
+      "id": 111,
+      "nationality": "Kyrgyz",
+    },
+    Object {
+      "id": 112,
+      "nationality": "Lao",
+    },
+    Object {
+      "id": 113,
+      "nationality": "Latvian",
+    },
+    Object {
+      "id": 114,
+      "nationality": "Lebanese",
+    },
+    Object {
+      "id": 115,
+      "nationality": "Liberian",
+    },
+    Object {
+      "id": 116,
+      "nationality": "Libyan",
+    },
+    Object {
+      "id": 117,
+      "nationality": "Liechtenstein citizen",
+    },
+    Object {
+      "id": 118,
+      "nationality": "Lithuanian",
+    },
+    Object {
+      "id": 119,
+      "nationality": "Luxembourger",
+    },
+    Object {
+      "id": 120,
+      "nationality": "Macanese",
+    },
+    Object {
+      "id": 121,
+      "nationality": "Macedonian",
+    },
+    Object {
+      "id": 122,
+      "nationality": "Malagasy",
+    },
+    Object {
+      "id": 123,
+      "nationality": "Malawian",
+    },
+    Object {
+      "id": 124,
+      "nationality": "Malaysian",
+    },
+    Object {
+      "id": 125,
+      "nationality": "Maldivian",
+    },
+    Object {
+      "id": 126,
+      "nationality": "Malian",
+    },
+    Object {
+      "id": 127,
+      "nationality": "Maltese",
+    },
+    Object {
+      "id": 128,
+      "nationality": "Marshallese",
+    },
+    Object {
+      "id": 129,
+      "nationality": "Martiniquais",
+    },
+    Object {
+      "id": 130,
+      "nationality": "Mauritanian",
+    },
+    Object {
+      "id": 131,
+      "nationality": "Mauritian",
+    },
+    Object {
+      "id": 132,
+      "nationality": "Mexican",
+    },
+    Object {
+      "id": 133,
+      "nationality": "Micronesian",
+    },
+    Object {
+      "id": 134,
+      "nationality": "Moldovan",
+    },
+    Object {
+      "id": 135,
+      "nationality": "Monegasque",
+    },
+    Object {
+      "id": 136,
+      "nationality": "Mongolian",
+    },
+    Object {
+      "id": 137,
+      "nationality": "Montenegrin",
+    },
+    Object {
+      "id": 138,
+      "nationality": "Montserratian",
+    },
+    Object {
+      "id": 139,
+      "nationality": "Moroccan",
+    },
+    Object {
+      "id": 140,
+      "nationality": "Mosotho",
+    },
+    Object {
+      "id": 141,
+      "nationality": "Mozambican",
+    },
+    Object {
+      "id": 142,
+      "nationality": "Namibian",
+    },
+    Object {
+      "id": 143,
+      "nationality": "Nauruan",
+    },
+    Object {
+      "id": 144,
+      "nationality": "Nepalese",
+    },
+    Object {
+      "id": 145,
+      "nationality": "New Zealander",
+    },
+    Object {
+      "id": 146,
+      "nationality": "Nicaraguan",
+    },
+    Object {
+      "id": 147,
+      "nationality": "Nigerian",
+    },
+    Object {
+      "id": 148,
+      "nationality": "Nigerien",
+    },
+    Object {
+      "id": 149,
+      "nationality": "Niuean",
+    },
+    Object {
+      "id": 150,
+      "nationality": "North Korean",
+    },
+    Object {
+      "id": 151,
+      "nationality": "Northern Irish",
+    },
+    Object {
+      "id": 152,
+      "nationality": "Norwegian",
+    },
+    Object {
+      "id": 153,
+      "nationality": "Omani",
+    },
+    Object {
+      "id": 154,
+      "nationality": "Pakistani",
+    },
+    Object {
+      "id": 155,
+      "nationality": "Palauan",
+    },
+    Object {
+      "id": 156,
+      "nationality": "Palestinian",
+    },
+    Object {
+      "id": 157,
+      "nationality": "Panamanian",
+    },
+    Object {
+      "id": 158,
+      "nationality": "Papua New Guinean",
+    },
+    Object {
+      "id": 159,
+      "nationality": "Paraguayan",
+    },
+    Object {
+      "id": 160,
+      "nationality": "Peruvian",
+    },
+    Object {
+      "id": 161,
+      "nationality": "Pitcairn Islander",
+    },
+    Object {
+      "id": 162,
+      "nationality": "Polish",
+    },
+    Object {
+      "id": 163,
+      "nationality": "Portuguese",
+    },
+    Object {
+      "id": 164,
+      "nationality": "Prydeinig",
+    },
+    Object {
+      "id": 165,
+      "nationality": "Puerto Rican",
+    },
+    Object {
+      "id": 166,
+      "nationality": "Qatari",
+    },
+    Object {
+      "id": 167,
+      "nationality": "Romanian",
+    },
+    Object {
+      "id": 168,
+      "nationality": "Russian",
+    },
+    Object {
+      "id": 169,
+      "nationality": "Rwandan",
+    },
+    Object {
+      "id": 170,
+      "nationality": "Salvadorean",
+    },
+    Object {
+      "id": 171,
+      "nationality": "Sammarinese",
+    },
+    Object {
+      "id": 172,
+      "nationality": "Samoan",
+    },
+    Object {
+      "id": 173,
+      "nationality": "Sao Tomean",
+    },
+    Object {
+      "id": 174,
+      "nationality": "Saudi Arabian",
+    },
+    Object {
+      "id": 175,
+      "nationality": "Scottish",
+    },
+    Object {
+      "id": 176,
+      "nationality": "Senegalese",
+    },
+    Object {
+      "id": 177,
+      "nationality": "Serbian",
+    },
+    Object {
+      "id": 178,
+      "nationality": "Citizen of Seychelles",
+    },
+    Object {
+      "id": 179,
+      "nationality": "Sierra Leonean",
+    },
+    Object {
+      "id": 180,
+      "nationality": "Singaporean",
+    },
+    Object {
+      "id": 181,
+      "nationality": "Slovak",
+    },
+    Object {
+      "id": 182,
+      "nationality": "Slovenian",
+    },
+    Object {
+      "id": 183,
+      "nationality": "Solomon Islander",
+    },
+    Object {
+      "id": 184,
+      "nationality": "Somali",
+    },
+    Object {
+      "id": 185,
+      "nationality": "South African",
+    },
+    Object {
+      "id": 186,
+      "nationality": "South Korean",
+    },
+    Object {
+      "id": 187,
+      "nationality": "South Sudanese",
+    },
+    Object {
+      "id": 188,
+      "nationality": "Spanish",
+    },
+    Object {
+      "id": 189,
+      "nationality": "Sri Lankan",
+    },
+    Object {
+      "id": 190,
+      "nationality": "St Helenian",
+    },
+    Object {
+      "id": 191,
+      "nationality": "St Lucian",
+    },
+    Object {
+      "id": 192,
+      "nationality": "Stateless",
+    },
+    Object {
+      "id": 193,
+      "nationality": "Sudanese",
+    },
+    Object {
+      "id": 194,
+      "nationality": "Surinamese",
+    },
+    Object {
+      "id": 195,
+      "nationality": "Swazi",
+    },
+    Object {
+      "id": 196,
+      "nationality": "Swedish",
+    },
+    Object {
+      "id": 197,
+      "nationality": "Swiss",
+    },
+    Object {
+      "id": 198,
+      "nationality": "Syrian",
+    },
+    Object {
+      "id": 199,
+      "nationality": "Taiwanese",
+    },
+    Object {
+      "id": 200,
+      "nationality": "Tajik",
+    },
+    Object {
+      "id": 201,
+      "nationality": "Tanzanian",
+    },
+    Object {
+      "id": 202,
+      "nationality": "Thai",
+    },
+    Object {
+      "id": 203,
+      "nationality": "Togolese",
+    },
+    Object {
+      "id": 204,
+      "nationality": "Tongan",
+    },
+    Object {
+      "id": 205,
+      "nationality": "Trinidadian",
+    },
+    Object {
+      "id": 206,
+      "nationality": "Tristanian",
+    },
+    Object {
+      "id": 207,
+      "nationality": "Tunisian",
+    },
+    Object {
+      "id": 208,
+      "nationality": "Turkish",
+    },
+    Object {
+      "id": 209,
+      "nationality": "Turkmen",
+    },
+    Object {
+      "id": 210,
+      "nationality": "Turks and Caicos Islander",
+    },
+    Object {
+      "id": 211,
+      "nationality": "Tuvaluan",
+    },
+    Object {
+      "id": 212,
+      "nationality": "Ugandan",
+    },
+    Object {
+      "id": 213,
+      "nationality": "Ukrainian",
+    },
+    Object {
+      "id": 214,
+      "nationality": "Uruguayan",
+    },
+    Object {
+      "id": 215,
+      "nationality": "Uzbek",
+    },
+    Object {
+      "id": 216,
+      "nationality": "Vatican citizen",
+    },
+    Object {
+      "id": 217,
+      "nationality": "Citizen of Vanuatu",
+    },
+    Object {
+      "id": 218,
+      "nationality": "Venezuelan",
+    },
+    Object {
+      "id": 219,
+      "nationality": "Vietnamese",
+    },
+    Object {
+      "id": 220,
+      "nationality": "Vincentian",
+    },
+    Object {
+      "id": 221,
+      "nationality": "Wallisian",
+    },
+    Object {
+      "id": 222,
+      "nationality": "Welsh",
+    },
+    Object {
+      "id": 223,
+      "nationality": "Yemeni",
+    },
+    Object {
+      "id": 224,
+      "nationality": "Zambian",
+    },
+    Object {
+      "id": 225,
+      "nationality": "Zimbabwean",
+    },
+  ],
+}
+`;
+
+exports[`Expected reference services should fetch Non-CQC main services by category 1`] = `
+Array [
+  Object {
+    "category": "Adult community care",
+    "services": Array [
+      Object {
+        "id": 1,
+        "isCQC": false,
+        "name": "Carers support",
+      },
+      Object {
+        "id": 2,
+        "isCQC": false,
+        "name": "Community support and outreach",
+      },
+      Object {
+        "id": 3,
+        "isCQC": false,
+        "name": "Disability adaptations / assistive technology services",
+      },
+      Object {
+        "id": 4,
+        "isCQC": false,
+        "name": "Information and advice services",
+      },
+      Object {
+        "id": 5,
+        "isCQC": false,
+        "name": "Occupational / employment-related services",
+      },
+      Object {
+        "id": 6,
+        "isCQC": false,
+        "name": "Other adult community care service",
+        "other": true,
+      },
+      Object {
+        "id": 7,
+        "isCQC": false,
+        "name": "Short breaks / respite care",
+      },
+      Object {
+        "id": 8,
+        "isCQC": false,
+        "name": "Social work and care management",
+      },
+    ],
+  },
+  Object {
+    "category": "Adult day",
+    "services": Array [
+      Object {
+        "id": 9,
+        "isCQC": false,
+        "name": "Day care and day services",
+      },
+      Object {
+        "id": 10,
+        "isCQC": false,
+        "name": "Other adult day care services",
+        "other": true,
+      },
+    ],
+  },
+  Object {
+    "category": "Adult domiciliary",
+    "services": Array [
+      Object {
+        "id": 11,
+        "isCQC": false,
+        "name": "Domestic services and home help",
+      },
+      Object {
+        "id": 18,
+        "isCQC": false,
+        "name": "Other adult domiciliary care service",
+        "other": true,
+      },
+    ],
+  },
+  Object {
+    "category": "Adult residential",
+    "services": Array [
+      Object {
+        "id": 12,
+        "isCQC": false,
+        "name": "Other adult residential care services",
+        "other": true,
+      },
+      Object {
+        "id": 13,
+        "isCQC": false,
+        "name": "Sheltered housing",
+      },
+    ],
+  },
+  Object {
+    "category": "Other",
+    "services": Array [
+      Object {
+        "id": 14,
+        "isCQC": false,
+        "name": "Any childrens / young peoples services",
+        "other": true,
+      },
+      Object {
+        "id": 15,
+        "isCQC": false,
+        "name": "Any other services",
+        "other": true,
+      },
+      Object {
+        "id": 16,
+        "isCQC": false,
+        "name": "Head office services",
+      },
+      Object {
+        "id": 17,
+        "isCQC": false,
+        "name": "Other healthcare service",
+        "other": true,
+      },
+    ],
+  },
+]
+`;
+
+exports[`Expected reference services should fetch Primary Authority 1`] = `
+Object {
+  "id": 721,
+  "name": "Croydon",
+}
+`;
+
+exports[`Expected reference services should fetch countries 1`] = `
+Object {
+  "countries": Array [
+    Object {
+      "country": "Afghanistan",
+      "id": 1,
+    },
+    Object {
+      "country": "Aland Islands",
+      "id": 2,
+    },
+    Object {
+      "country": "Albania",
+      "id": 3,
+    },
+    Object {
+      "country": "Algeria",
+      "id": 4,
+    },
+    Object {
+      "country": "American Samoa",
+      "id": 5,
+    },
+    Object {
+      "country": "Andorra",
+      "id": 6,
+    },
+    Object {
+      "country": "Angola",
+      "id": 7,
+    },
+    Object {
+      "country": "Anguilla",
+      "id": 8,
+    },
+    Object {
+      "country": "Antarctica",
+      "id": 9,
+    },
+    Object {
+      "country": "Antigua and Barbuda",
+      "id": 10,
+    },
+    Object {
+      "country": "Argentina",
+      "id": 11,
+    },
+    Object {
+      "country": "Armenia",
+      "id": 12,
+    },
+    Object {
+      "country": "Aruba",
+      "id": 13,
+    },
+    Object {
+      "country": "Australia",
+      "id": 14,
+    },
+    Object {
+      "country": "Austria",
+      "id": 15,
+    },
+    Object {
+      "country": "Azerbaijan",
+      "id": 16,
+    },
+    Object {
+      "country": "Bahamas",
+      "id": 17,
+    },
+    Object {
+      "country": "Bahrain",
+      "id": 18,
+    },
+    Object {
+      "country": "Bangladesh",
+      "id": 19,
+    },
+    Object {
+      "country": "Barbados",
+      "id": 20,
+    },
+    Object {
+      "country": "Belarus",
+      "id": 21,
+    },
+    Object {
+      "country": "Belgium",
+      "id": 22,
+    },
+    Object {
+      "country": "Belize",
+      "id": 23,
+    },
+    Object {
+      "country": "Benin",
+      "id": 24,
+    },
+    Object {
+      "country": "Bermuda",
+      "id": 25,
+    },
+    Object {
+      "country": "Bhutan",
+      "id": 26,
+    },
+    Object {
+      "country": "Bolivia",
+      "id": 27,
+    },
+    Object {
+      "country": "Bosnia and Herzegovina",
+      "id": 28,
+    },
+    Object {
+      "country": "Botswana",
+      "id": 29,
+    },
+    Object {
+      "country": "Bonaire, Sint Eustatius and Saba",
+      "id": 262,
+    },
+    Object {
+      "country": "Bouvet Island",
+      "id": 30,
+    },
+    Object {
+      "country": "Brazil",
+      "id": 31,
+    },
+    Object {
+      "country": "British Indian Ocean Territory",
+      "id": 32,
+    },
+    Object {
+      "country": "Brunei Darussalam",
+      "id": 33,
+    },
+    Object {
+      "country": "Bulgaria",
+      "id": 34,
+    },
+    Object {
+      "country": "Burkina Faso",
+      "id": 35,
+    },
+    Object {
+      "country": "Burundi",
+      "id": 36,
+    },
+    Object {
+      "country": "Cambodia",
+      "id": 37,
+    },
+    Object {
+      "country": "Cameroon",
+      "id": 38,
+    },
+    Object {
+      "country": "Canada",
+      "id": 39,
+    },
+    Object {
+      "country": "Cape Verde",
+      "id": 40,
+    },
+    Object {
+      "country": "Cayman Islands",
+      "id": 41,
+    },
+    Object {
+      "country": "Central African Republic",
+      "id": 42,
+    },
+    Object {
+      "country": "Chad",
+      "id": 43,
+    },
+    Object {
+      "country": "Chile",
+      "id": 44,
+    },
+    Object {
+      "country": "China",
+      "id": 45,
+    },
+    Object {
+      "country": "Christmas Island",
+      "id": 46,
+    },
+    Object {
+      "country": "Cocos (Keeling) Islands",
+      "id": 47,
+    },
+    Object {
+      "country": "Colombia",
+      "id": 48,
+    },
+    Object {
+      "country": "Comoros",
+      "id": 49,
+    },
+    Object {
+      "country": "Congo",
+      "id": 50,
+    },
+    Object {
+      "country": "Congo Democratic Republic of the",
+      "id": 51,
+    },
+    Object {
+      "country": "Cook Islands",
+      "id": 52,
+    },
+    Object {
+      "country": "Costa Rica",
+      "id": 53,
+    },
+    Object {
+      "country": "Cote d'Ivoire",
+      "id": 54,
+    },
+    Object {
+      "country": "Croatia",
+      "id": 55,
+    },
+    Object {
+      "country": "Curacao",
+      "id": 265,
+    },
+    Object {
+      "country": "Cuba",
+      "id": 56,
+    },
+    Object {
+      "country": "Cyprus",
+      "id": 57,
+    },
+    Object {
+      "country": "Czech Republic",
+      "id": 58,
+    },
+    Object {
+      "country": "Denmark",
+      "id": 59,
+    },
+    Object {
+      "country": "Djibouti",
+      "id": 60,
+    },
+    Object {
+      "country": "Dominica",
+      "id": 61,
+    },
+    Object {
+      "country": "Dominican Republic",
+      "id": 62,
+    },
+    Object {
+      "country": "Ecuador",
+      "id": 63,
+    },
+    Object {
+      "country": "Egypt",
+      "id": 64,
+    },
+    Object {
+      "country": "El Salvador",
+      "id": 65,
+    },
+    Object {
+      "country": "Equatorial Guinea",
+      "id": 66,
+    },
+    Object {
+      "country": "Eritrea",
+      "id": 67,
+    },
+    Object {
+      "country": "Estonia",
+      "id": 68,
+    },
+    Object {
+      "country": "Ethiopia",
+      "id": 69,
+    },
+    Object {
+      "country": "Falkland Islands (Malvinas)",
+      "id": 70,
+    },
+    Object {
+      "country": "Faroe Islands",
+      "id": 71,
+    },
+    Object {
+      "country": "Fiji",
+      "id": 72,
+    },
+    Object {
+      "country": "Finland",
+      "id": 73,
+    },
+    Object {
+      "country": "France",
+      "id": 74,
+    },
+    Object {
+      "country": "French Guiana",
+      "id": 75,
+    },
+    Object {
+      "country": "French Polynesia",
+      "id": 76,
+    },
+    Object {
+      "country": "French Southern Territories",
+      "id": 77,
+    },
+    Object {
+      "country": "Gabon",
+      "id": 78,
+    },
+    Object {
+      "country": "Gambia",
+      "id": 79,
+    },
+    Object {
+      "country": "Georgia",
+      "id": 80,
+    },
+    Object {
+      "country": "Germany",
+      "id": 81,
+    },
+    Object {
+      "country": "Ghana",
+      "id": 82,
+    },
+    Object {
+      "country": "Gibraltar",
+      "id": 83,
+    },
+    Object {
+      "country": "Greece",
+      "id": 84,
+    },
+    Object {
+      "country": "Greenland",
+      "id": 85,
+    },
+    Object {
+      "country": "Grenada",
+      "id": 86,
+    },
+    Object {
+      "country": "Guadeloupe",
+      "id": 87,
+    },
+    Object {
+      "country": "Guam",
+      "id": 88,
+    },
+    Object {
+      "country": "Guatemala",
+      "id": 89,
+    },
+    Object {
+      "country": "Guernsey",
+      "id": 90,
+    },
+    Object {
+      "country": "Guinea",
+      "id": 91,
+    },
+    Object {
+      "country": "Guinea-Bissau",
+      "id": 92,
+    },
+    Object {
+      "country": "Guyana",
+      "id": 93,
+    },
+    Object {
+      "country": "Haiti",
+      "id": 94,
+    },
+    Object {
+      "country": "Heard Island and McDonald Islands",
+      "id": 107,
+    },
+    Object {
+      "country": "Holy See (Vatican City State)",
+      "id": 108,
+    },
+    Object {
+      "country": "Honduras",
+      "id": 109,
+    },
+    Object {
+      "country": "Hong Kong",
+      "id": 110,
+    },
+    Object {
+      "country": "Hungary",
+      "id": 111,
+    },
+    Object {
+      "country": "Iceland",
+      "id": 112,
+    },
+    Object {
+      "country": "India",
+      "id": 113,
+    },
+    Object {
+      "country": "Indonesia",
+      "id": 114,
+    },
+    Object {
+      "country": "Iran Islamic Republic of",
+      "id": 115,
+    },
+    Object {
+      "country": "Iraq",
+      "id": 116,
+    },
+    Object {
+      "country": "Ireland",
+      "id": 117,
+    },
+    Object {
+      "country": "Israel",
+      "id": 118,
+    },
+    Object {
+      "country": "Italy",
+      "id": 119,
+    },
+    Object {
+      "country": "Isle of Man",
+      "id": 260,
+    },
+    Object {
+      "country": "Jamaica",
+      "id": 120,
+    },
+    Object {
+      "country": "Japan",
+      "id": 121,
+    },
+    Object {
+      "country": "Jersey",
+      "id": 122,
+    },
+    Object {
+      "country": "Jordan",
+      "id": 123,
+    },
+    Object {
+      "country": "Kazakhstan",
+      "id": 124,
+    },
+    Object {
+      "country": "Kenya",
+      "id": 125,
+    },
+    Object {
+      "country": "Kiribati",
+      "id": 126,
+    },
+    Object {
+      "country": "Korea Democratic People's Republic of",
+      "id": 127,
+    },
+    Object {
+      "country": "Korea Republic of",
+      "id": 128,
+    },
+    Object {
+      "country": "Kosovo",
+      "id": 263,
+    },
+    Object {
+      "country": "Kuwait",
+      "id": 129,
+    },
+    Object {
+      "country": "Kyrgyzstan",
+      "id": 130,
+    },
+    Object {
+      "country": "Lao People's Democratic People",
+      "id": 261,
+    },
+    Object {
+      "country": "Latvia",
+      "id": 131,
+    },
+    Object {
+      "country": "Lebanon",
+      "id": 132,
+    },
+    Object {
+      "country": "Lesotho",
+      "id": 133,
+    },
+    Object {
+      "country": "Liberia",
+      "id": 134,
+    },
+    Object {
+      "country": "Libyan Arab Jamahiriya",
+      "id": 135,
+    },
+    Object {
+      "country": "Liechtenstein",
+      "id": 136,
+    },
+    Object {
+      "country": "Lithuania",
+      "id": 137,
+    },
+    Object {
+      "country": "Luxembourg",
+      "id": 138,
+    },
+    Object {
+      "country": "Macao",
+      "id": 139,
+    },
+    Object {
+      "country": "Macedonia the former Yugoslav Republic of",
+      "id": 140,
+    },
+    Object {
+      "country": "Madagascar",
+      "id": 141,
+    },
+    Object {
+      "country": "Malawi",
+      "id": 142,
+    },
+    Object {
+      "country": "Malaysia",
+      "id": 143,
+    },
+    Object {
+      "country": "Maldives",
+      "id": 144,
+    },
+    Object {
+      "country": "Mali",
+      "id": 145,
+    },
+    Object {
+      "country": "Malta",
+      "id": 146,
+    },
+    Object {
+      "country": "Marshall Islands",
+      "id": 147,
+    },
+    Object {
+      "country": "Martinique",
+      "id": 148,
+    },
+    Object {
+      "country": "Mauritania",
+      "id": 149,
+    },
+    Object {
+      "country": "Mauritius",
+      "id": 150,
+    },
+    Object {
+      "country": "Mayotte",
+      "id": 151,
+    },
+    Object {
+      "country": "Mexico",
+      "id": 152,
+    },
+    Object {
+      "country": "Micronesia Federated States of",
+      "id": 153,
+    },
+    Object {
+      "country": "Moldova",
+      "id": 154,
+    },
+    Object {
+      "country": "Monaco",
+      "id": 155,
+    },
+    Object {
+      "country": "Mongolia",
+      "id": 156,
+    },
+    Object {
+      "country": "Montenegro",
+      "id": 157,
+    },
+    Object {
+      "country": "Montserrat",
+      "id": 158,
+    },
+    Object {
+      "country": "Morocco",
+      "id": 159,
+    },
+    Object {
+      "country": "Mozambique",
+      "id": 160,
+    },
+    Object {
+      "country": "Myanmar",
+      "id": 161,
+    },
+    Object {
+      "country": "Namibia",
+      "id": 162,
+    },
+    Object {
+      "country": "Nauru",
+      "id": 163,
+    },
+    Object {
+      "country": "Nepal",
+      "id": 164,
+    },
+    Object {
+      "country": "Netherlands",
+      "id": 165,
+    },
+    Object {
+      "country": "Netherlands Antilles",
+      "id": 166,
+    },
+    Object {
+      "country": "New Caledonia",
+      "id": 167,
+    },
+    Object {
+      "country": "New Zealand",
+      "id": 168,
+    },
+    Object {
+      "country": "Nicaragua",
+      "id": 169,
+    },
+    Object {
+      "country": "Niger",
+      "id": 170,
+    },
+    Object {
+      "country": "Nigeria",
+      "id": 171,
+    },
+    Object {
+      "country": "Niue",
+      "id": 172,
+    },
+    Object {
+      "country": "Norfolk Island",
+      "id": 173,
+    },
+    Object {
+      "country": "Northern Mariana Islands",
+      "id": 174,
+    },
+    Object {
+      "country": "Norway",
+      "id": 175,
+    },
+    Object {
+      "country": "Oman",
+      "id": 176,
+    },
+    Object {
+      "country": "Pakistan",
+      "id": 177,
+    },
+    Object {
+      "country": "Palau",
+      "id": 178,
+    },
+    Object {
+      "country": "Palestinian Territory Occupied",
+      "id": 179,
+    },
+    Object {
+      "country": "Panama",
+      "id": 180,
+    },
+    Object {
+      "country": "Papua New Guinea",
+      "id": 181,
+    },
+    Object {
+      "country": "Paraguay",
+      "id": 182,
+    },
+    Object {
+      "country": "Peru",
+      "id": 183,
+    },
+    Object {
+      "country": "Philippines",
+      "id": 184,
+    },
+    Object {
+      "country": "Pitcairn",
+      "id": 185,
+    },
+    Object {
+      "country": "Poland",
+      "id": 186,
+    },
+    Object {
+      "country": "Portugal",
+      "id": 187,
+    },
+    Object {
+      "country": "Puerto Rico",
+      "id": 188,
+    },
+    Object {
+      "country": "Qatar",
+      "id": 189,
+    },
+    Object {
+      "country": "Reunion",
+      "id": 190,
+    },
+    Object {
+      "country": "Romania",
+      "id": 191,
+    },
+    Object {
+      "country": "Russian Federation",
+      "id": 192,
+    },
+    Object {
+      "country": "Rwanda",
+      "id": 193,
+    },
+    Object {
+      "country": "Saint Barthelemy",
+      "id": 194,
+    },
+    Object {
+      "country": "Saint Helena",
+      "id": 195,
+    },
+    Object {
+      "country": "Saint Kitts and Nevis",
+      "id": 196,
+    },
+    Object {
+      "country": "Saint Lucia",
+      "id": 197,
+    },
+    Object {
+      "country": "Saint Martin (French part)",
+      "id": 198,
+    },
+    Object {
+      "country": "Saint Pierre and Miquelon",
+      "id": 199,
+    },
+    Object {
+      "country": "Saint Vincent and the Grenadines",
+      "id": 200,
+    },
+    Object {
+      "country": "Samoa",
+      "id": 201,
+    },
+    Object {
+      "country": "San Marino",
+      "id": 202,
+    },
+    Object {
+      "country": "Sao Tome and Principe",
+      "id": 203,
+    },
+    Object {
+      "country": "Saudi Arabia",
+      "id": 204,
+    },
+    Object {
+      "country": "Senegal",
+      "id": 205,
+    },
+    Object {
+      "country": "Serbia",
+      "id": 206,
+    },
+    Object {
+      "country": "Seychelles",
+      "id": 207,
+    },
+    Object {
+      "country": "Sierra Leone",
+      "id": 208,
+    },
+    Object {
+      "country": "Singapore",
+      "id": 209,
+    },
+    Object {
+      "country": "Sint Maarten",
+      "id": 264,
+    },
+    Object {
+      "country": "Slovakia",
+      "id": 210,
+    },
+    Object {
+      "country": "Slovenia",
+      "id": 211,
+    },
+    Object {
+      "country": "Solomon Islands",
+      "id": 212,
+    },
+    Object {
+      "country": "Somalia",
+      "id": 213,
+    },
+    Object {
+      "country": "South Africa",
+      "id": 214,
+    },
+    Object {
+      "country": "South Georgia and the South Sandwich Islands",
+      "id": 215,
+    },
+    Object {
+      "country": "South Sudan",
+      "id": 216,
+    },
+    Object {
+      "country": "Spain",
+      "id": 217,
+    },
+    Object {
+      "country": "Sri Lanka",
+      "id": 218,
+    },
+    Object {
+      "country": "Sudan",
+      "id": 219,
+    },
+    Object {
+      "country": "Suriname",
+      "id": 220,
+    },
+    Object {
+      "country": "Svalbard and Jan Mayen",
+      "id": 221,
+    },
+    Object {
+      "country": "Swaziland",
+      "id": 222,
+    },
+    Object {
+      "country": "Sweden",
+      "id": 223,
+    },
+    Object {
+      "country": "Switzerland",
+      "id": 224,
+    },
+    Object {
+      "country": "Syrian Arab Republic",
+      "id": 225,
+    },
+    Object {
+      "country": "Taiwan Province of China",
+      "id": 226,
+    },
+    Object {
+      "country": "Tajikistan",
+      "id": 227,
+    },
+    Object {
+      "country": "Tanzania United Republic of",
+      "id": 228,
+    },
+    Object {
+      "country": "Thailand",
+      "id": 229,
+    },
+    Object {
+      "country": "Timor-Leste",
+      "id": 230,
+    },
+    Object {
+      "country": "Togo",
+      "id": 231,
+    },
+    Object {
+      "country": "Tokelau",
+      "id": 232,
+    },
+    Object {
+      "country": "Tonga",
+      "id": 233,
+    },
+    Object {
+      "country": "Trinidad and Tobago",
+      "id": 234,
+    },
+    Object {
+      "country": "Tunisia",
+      "id": 235,
+    },
+    Object {
+      "country": "Turkey",
+      "id": 236,
+    },
+    Object {
+      "country": "Turkmenistan",
+      "id": 237,
+    },
+    Object {
+      "country": "Turks and Caicos Islands",
+      "id": 238,
+    },
+    Object {
+      "country": "Tuvalu",
+      "id": 239,
+    },
+    Object {
+      "country": "Uganda",
+      "id": 240,
+    },
+    Object {
+      "country": "Ukraine",
+      "id": 241,
+    },
+    Object {
+      "country": "United Arab Emirates",
+      "id": 242,
+    },
+    Object {
+      "country": "United States",
+      "id": 244,
+    },
+    Object {
+      "country": "United States Minor Outlying Islands",
+      "id": 245,
+    },
+    Object {
+      "country": "Uruguay",
+      "id": 246,
+    },
+    Object {
+      "country": "Uzbekistan",
+      "id": 247,
+    },
+    Object {
+      "country": "Vanuatu",
+      "id": 248,
+    },
+    Object {
+      "country": "Venezuela",
+      "id": 249,
+    },
+    Object {
+      "country": "Viet Nam",
+      "id": 250,
+    },
+    Object {
+      "country": "Virgin Islands British",
+      "id": 251,
+    },
+    Object {
+      "country": "Virgin Islands U.S.",
+      "id": 252,
+    },
+    Object {
+      "country": "Wallis and Futuna",
+      "id": 253,
+    },
+    Object {
+      "country": "Western Sahara",
+      "id": 254,
+    },
+    Object {
+      "country": "Yemen",
+      "id": 255,
+    },
+    Object {
+      "country": "Zambia",
+      "id": 256,
+    },
+    Object {
+      "country": "Zimbabwe",
+      "id": 257,
+    },
+  ],
+}
+`;
+
+exports[`Expected reference services should fetch jobs 1`] = `
+Object {
+  "jobs": Array [
+    Object {
+      "id": 1,
+      "title": "Activities worker or co-ordinator",
+    },
+    Object {
+      "id": 2,
+      "title": "Administrative / office staff not care-providing",
+    },
+    Object {
+      "id": 3,
+      "title": "Advice, Guidance and Advocacy",
+    },
+    Object {
+      "id": 4,
+      "title": "Allied Health Professional (not Occupational Therapist)",
+    },
+    Object {
+      "id": 5,
+      "title": "Ancillary staff not care-providing",
+    },
+    Object {
+      "id": 6,
+      "title": "Any childrens / young people's job role",
+    },
+    Object {
+      "id": 7,
+      "title": "Assessment Officer",
+    },
+    Object {
+      "id": 8,
+      "title": "Care Coordinator",
+    },
+    Object {
+      "id": 9,
+      "title": "Care Navigator",
+    },
+    Object {
+      "id": 10,
+      "title": "Care Worker",
+    },
+    Object {
+      "id": 11,
+      "title": "Community, Support and Outreach Work",
+    },
+    Object {
+      "id": 12,
+      "title": "Employment Support",
+    },
+    Object {
+      "id": 13,
+      "title": "First Line Manager",
+    },
+    Object {
+      "id": 14,
+      "title": "Managers and staff care-related but not care-providing",
+    },
+    Object {
+      "id": 15,
+      "title": "Middle Management",
+    },
+    Object {
+      "id": 16,
+      "title": "Nursing Assistant",
+    },
+    Object {
+      "id": 17,
+      "title": "Nursing Associate",
+    },
+    Object {
+      "id": 18,
+      "title": "Occupational Therapist",
+    },
+    Object {
+      "id": 19,
+      "title": "Occupational Therapist Assistant",
+    },
+    Object {
+      "id": 20,
+      "other": true,
+      "title": "Other job roles directly involved in providing care",
+    },
+    Object {
+      "id": 21,
+      "other": true,
+      "title": "Other job roles not directly involved in providing care",
+    },
+    Object {
+      "id": 22,
+      "title": "Registered Manager",
+    },
+    Object {
+      "id": 23,
+      "title": "Registered Nurse",
+    },
+    Object {
+      "id": 24,
+      "title": "Safeguarding & Reviewing Officer",
+    },
+    Object {
+      "id": 25,
+      "title": "Senior Care Worker",
+    },
+    Object {
+      "id": 26,
+      "title": "Senior Management",
+    },
+    Object {
+      "id": 27,
+      "title": "Social Worker",
+    },
+    Object {
+      "id": 28,
+      "title": "Supervisor",
+    },
+    Object {
+      "id": 29,
+      "title": "Technician",
+    },
+  ],
+}
+`;
+
+exports[`Expected reference services should fetch qualifications 1`] = `
+Object {
+  "qualifications": Array [
+    Object {
+      "id": 1,
+      "level": "Entry level",
+    },
+    Object {
+      "id": 2,
+      "level": "Level 1",
+    },
+    Object {
+      "id": 3,
+      "level": "Level 2",
+    },
+    Object {
+      "id": 4,
+      "level": "Level 3",
+    },
+    Object {
+      "id": 5,
+      "level": "Level 4",
+    },
+    Object {
+      "id": 6,
+      "level": "Level 5",
+    },
+    Object {
+      "id": 7,
+      "level": "Level 6",
+    },
+    Object {
+      "id": 8,
+      "level": "Level 7",
+    },
+    Object {
+      "id": 9,
+      "level": "Level 8 or above",
+    },
+    Object {
+      "id": 10,
+      "level": "Don't know",
+    },
+  ],
+}
+`;
+
+exports[`Expected reference services should fetch qualifications 2`] = `
+Object {
+  "recruitedFrom": Array [
+    Object {
+      "from": "Adult care sector: Local Authority",
+      "id": 1,
+    },
+    Object {
+      "from": "Adult care sector: private or voluntary sector",
+      "id": 2,
+    },
+    Object {
+      "from": "Health sector",
+      "id": 3,
+    },
+    Object {
+      "from": "Childrens/young people's social care",
+      "id": 4,
+    },
+    Object {
+      "from": "Other sector",
+      "id": 5,
+    },
+    Object {
+      "from": "Internal promotion or transfer or career development",
+      "id": 6,
+    },
+    Object {
+      "from": "Not previously employed",
+      "id": 7,
+    },
+    Object {
+      "from": "Agency",
+      "id": 8,
+    },
+    Object {
+      "from": "First role after education",
+      "id": 9,
+    },
+    Object {
+      "from": "Other sources",
+      "id": 10,
+    },
+  ],
+}
+`;
+
+exports[`Expected reference services should fetch service users 1`] = `
+Array [
+  Object {
+    "group": "Older people",
+    "services": Array [
+      Object {
+        "id": 1,
+        "service": "Older people with dementia",
+      },
+      Object {
+        "id": 2,
+        "service": "Older people with mental disorders or infirmities, excluding learning disability or dementia",
+      },
+      Object {
+        "id": 3,
+        "service": "Older people detained under the Mental Health Act",
+      },
+      Object {
+        "id": 4,
+        "service": "Older people with learning disabilities and/or autism",
+      },
+      Object {
+        "id": 5,
+        "service": "Older people with physical disabilities",
+      },
+      Object {
+        "id": 6,
+        "service": "Older people with sensory impairment(s)",
+      },
+      Object {
+        "id": 7,
+        "service": "Older people who misuse alcohol/drugs",
+      },
+      Object {
+        "id": 8,
+        "service": "Older people with an eating disorder",
+      },
+      Object {
+        "id": 9,
+        "other": true,
+        "service": "Older people not in above categories",
+      },
+    ],
+  },
+  Object {
+    "group": "Adults",
+    "services": Array [
+      Object {
+        "id": 10,
+        "service": "Adults with dementia",
+      },
+      Object {
+        "id": 11,
+        "service": "Adults with mental disorders or infirmities, excluding learning disability or dementia",
+      },
+      Object {
+        "id": 12,
+        "service": "Adults detained under the Mental Health Act",
+      },
+      Object {
+        "id": 13,
+        "service": "Adults with learning disabilities and/or autism",
+      },
+      Object {
+        "id": 14,
+        "service": "Adults with physical disabilities",
+      },
+      Object {
+        "id": 15,
+        "service": "Adults with sensory impairments",
+      },
+      Object {
+        "id": 16,
+        "service": "Adults who misuse alcohol/drugs",
+      },
+      Object {
+        "id": 17,
+        "service": "Adults with an eating disorder",
+      },
+      Object {
+        "id": 18,
+        "other": true,
+        "service": "Adults not in above categories",
+      },
+    ],
+  },
+  Object {
+    "group": "Children and young people",
+    "services": Array [
+      Object {
+        "id": 19,
+        "service": "Any children and young people",
+      },
+    ],
+  },
+  Object {
+    "group": "Carers",
+    "services": Array [
+      Object {
+        "id": 20,
+        "service": "Carers of older people",
+      },
+      Object {
+        "id": 21,
+        "service": "Carers of adults",
+      },
+      Object {
+        "id": 22,
+        "service": "Carers of children and young people",
+      },
+    ],
+  },
+  Object {
+    "group": "Other",
+    "services": Array [
+      Object {
+        "id": 23,
+        "other": true,
+        "service": "Any others not in above categories",
+      },
+    ],
+  },
+]
+`;
+
+exports[`Expected reference services should fetch services 1`] = `
+Array [
+  Object {
+    "category": "Adult community care",
+    "name": "Carers support",
+    "serviceId": 1,
+  },
+  Object {
+    "category": "Adult community care",
+    "name": "Community support and outreach",
+    "serviceId": 2,
+  },
+  Object {
+    "category": "Adult community care",
+    "name": "Disability adaptations / assistive technology services",
+    "serviceId": 3,
+  },
+  Object {
+    "category": "Adult community care",
+    "name": "Information and advice services",
+    "serviceId": 4,
+  },
+  Object {
+    "category": "Adult community care",
+    "name": "Occupational / employment-related services",
+    "serviceId": 5,
+  },
+  Object {
+    "category": "Adult community care",
+    "name": "Other adult community care service",
+    "other": true,
+    "serviceId": 6,
+  },
+  Object {
+    "category": "Adult community care",
+    "name": "Short breaks / respite care",
+    "serviceId": 7,
+  },
+  Object {
+    "category": "Adult community care",
+    "name": "Social work and care management",
+    "serviceId": 8,
+  },
+  Object {
+    "category": "Adult day",
+    "name": "Day care and day services",
+    "serviceId": 9,
+  },
+  Object {
+    "category": "Adult day",
+    "name": "Other adult day care services",
+    "other": true,
+    "serviceId": 10,
+  },
+  Object {
+    "category": "Adult domiciliary",
+    "name": "Domestic services and home help",
+    "serviceId": 11,
+  },
+  Object {
+    "category": "Adult residential",
+    "name": "Other adult residential care services",
+    "other": true,
+    "serviceId": 12,
+  },
+  Object {
+    "category": "Adult residential",
+    "name": "Sheltered housing",
+    "serviceId": 13,
+  },
+  Object {
+    "category": "Other",
+    "name": "Any childrens / young peoples services",
+    "other": true,
+    "serviceId": 14,
+  },
+  Object {
+    "category": "Other",
+    "name": "Any other services",
+    "other": true,
+    "serviceId": 15,
+  },
+  Object {
+    "category": "Other",
+    "name": "Head office services",
+    "serviceId": 16,
+  },
+  Object {
+    "category": "Other",
+    "name": "Other healthcare service",
+    "other": true,
+    "serviceId": 17,
+  },
+  Object {
+    "category": "Adult domiciliary",
+    "name": "Other adult domiciliary care service",
+    "other": true,
+    "serviceId": 18,
+  },
+  Object {
+    "category": "Adult community care",
+    "name": "Shared lives",
+    "serviceId": 19,
+  },
+  Object {
+    "category": "Adult domiciliary",
+    "name": "Domiciliary care services",
+    "serviceId": 20,
+  },
+  Object {
+    "category": "Adult domiciliary",
+    "name": "Extra care housing services",
+    "serviceId": 21,
+  },
+  Object {
+    "category": "Adult domiciliary",
+    "name": "Nurses agency",
+    "serviceId": 22,
+  },
+  Object {
+    "category": "Adult domiciliary",
+    "name": "Supported living services",
+    "serviceId": 23,
+  },
+  Object {
+    "category": "Adult residential",
+    "name": "Care home services with nursing",
+    "serviceId": 24,
+  },
+  Object {
+    "category": "Adult residential",
+    "name": "Care home services without nursing",
+    "serviceId": 25,
+  },
+  Object {
+    "category": "Healthcare",
+    "name": "Community based services for people who misuse substances",
+    "serviceId": 26,
+  },
+  Object {
+    "category": "Healthcare",
+    "name": "Community based services for people with a learning disability",
+    "serviceId": 27,
+  },
+  Object {
+    "category": "Healthcare",
+    "name": "Community based services for people with mental health needs",
+    "serviceId": 28,
+  },
+  Object {
+    "category": "Healthcare",
+    "name": "Community healthcare services",
+    "serviceId": 29,
+  },
+  Object {
+    "category": "Healthcare",
+    "name": "Hospice services",
+    "serviceId": 30,
+  },
+  Object {
+    "category": "Healthcare",
+    "name": "Hospital services for people with mental health needs, learning disabilities and/or problems with substance misuse",
+    "serviceId": 31,
+  },
+  Object {
+    "category": "Healthcare",
+    "name": "Long term conditions services",
+    "serviceId": 32,
+  },
+  Object {
+    "category": "Healthcare",
+    "name": "Rehabilitation services",
+    "serviceId": 33,
+  },
+  Object {
+    "category": "Healthcare",
+    "name": "Residential substance misuse treatment/ rehabilitation services",
+    "serviceId": 34,
+  },
+  Object {
+    "category": "Other",
+    "name": "Specialist college services",
+    "serviceId": 36,
+  },
+]
+`;
+
+exports[`Expected reference services should fetch worker leave reasons 1`] = `
+Object {
+  "reasons": Array [
+    Object {
+      "id": 1,
+      "reason": "They moved to another adult social care employer",
+    },
+    Object {
+      "id": 2,
+      "reason": "They moved to a role in the health sector",
+    },
+    Object {
+      "id": 3,
+      "reason": "They moved to a different sector (e.g. retail)",
+    },
+    Object {
+      "id": 4,
+      "reason": "They moved to another role in this organisation",
+    },
+    Object {
+      "id": 5,
+      "reason": "The worker chose to leave (destination unknown)",
+    },
+    Object {
+      "id": 6,
+      "reason": "The worker retired",
+    },
+    Object {
+      "id": 7,
+      "reason": "Employer terminated their employment",
+    },
+    Object {
+      "id": 8,
+      "reason": "Other",
+    },
+    Object {
+      "id": 9,
+      "reason": "Not known",
+    },
+  ],
+}
+`;
