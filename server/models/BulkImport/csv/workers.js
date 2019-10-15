@@ -1763,21 +1763,35 @@ class Worker {
 
     const isSocialWorkerRole = this._mainJobRole === SOCIAL_WORKER_ROLE ||
       (Array.isArray(this._otherJobs) && this._otherJobs.includes(SOCIAL_WORKER_ROLE));
+    
+    if(isSocialWorkerRole) {
+      if (strAmhp === '') {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.AMHP_WARNING,
+          warnType: 'AMHP_WARNING',
+          warning: 'AMHP has not been supplied',
+          source: this._currentLine.AMHP
+        });
+        return false;
+      }
 
-    if (isSocialWorkerRole && strAmhp === '') {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.AMHP_WARNING,
-        warnType: 'AMHP_WARNING',
-        warning: 'AMHP has not been supplied',
-        source: this._currentLine.AMHP
-      });
-      return false;
+      if (!amhpValues.includes(intAmhp)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.AMHP_WARNING,
+          warnType: 'AMHP_WARNING',
+          warning: 'The code you have entered for AMHP is incorrect and will be ignored',
+          source: this._currentLine.AMHP
+        });
+        return false;
+      }
     }
-
-    if (!isSocialWorkerRole && strAmhp !== '') {
+    else if (strAmhp !== '') {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1785,19 +1799,6 @@ class Worker {
         warnCode: Worker.AMHP_WARNING,
         warnType: 'AMHP_WARNING',
         warning: 'The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE/OTHERJOBROLE',
-        source: this._currentLine.AMHP
-      });
-      return false;
-    }
-
-    if (!amhpValues.includes(intAmhp)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.AMHP_WARNING,
-        warnType: 'AMHP_WARNING',
-        warning: 'The code you have entered for AMHP is incorrect and will be ignored',
         source: this._currentLine.AMHP
       });
       return false;

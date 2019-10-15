@@ -33,23 +33,23 @@ const OTHER_MAX_LENGTH = 120;
 const responseErrors = {
   unexpectedMainServiceId: {
     errCode: -300,
-    errMessage: 'Unexpected main service'
+    errMessage: 'Unexpected main service',
   },
   invalidEstablishment: {
     errCode: -700,
-    errMessage: 'Establishment data is invalid'
-  }
+    errMessage: 'Establishment data is invalid',
+  },
 };
 
 // Errors for initialise and registration error - this needs to be refactored out DB
 class RegistrationException {
-  constructor (originalError, errCode, errMessage) {
+  constructor(originalError, errCode, errMessage) {
     this.err = originalError;
     this.errCode = errCode;
     this.errMessage = errMessage;
   }
 
-  toString () {
+  toString() {
     return `${this.errCode}: ${this.errMessage}`;
   }
 }
@@ -93,7 +93,7 @@ router.route('/:id').post(async (req, res) => {
     MainService: req.body.mainService,
     MainServiceId: null,
     MainServiceOther: req.body.mainServiceOther,
-    IsRegulated: req.body.isRegulated
+    IsRegulated: req.body.isRegulated,
   };
 
   try {
@@ -104,20 +104,20 @@ router.route('/:id').post(async (req, res) => {
         serviceResults = await models.services.findOne({
           where: {
             name: establishmentData.MainService,
-            isMain: true
-          }
+            isMain: true,
+          },
         });
       } else {
         serviceResults = await models.services.findOne({
           where: {
             name: establishmentData.MainService,
             iscqcregistered: false,
-            isMain: true
-          }
+            isMain: true,
+          },
         });
       }
 
-      if (serviceResults && serviceResults.id && (establishmentData.MainService === serviceResults.name)) {
+      if (serviceResults && serviceResults.id && establishmentData.MainService === serviceResults.name) {
         establishmentData.MainServiceId = serviceResults.id;
       } else {
         throw new RegistrationException(
@@ -127,7 +127,11 @@ router.route('/:id').post(async (req, res) => {
         );
       }
 
-      if (serviceResults.other && establishmentData.MainServiceOther && establishmentData.MainServiceOther.length > OTHER_MAX_LENGTH) {
+      if (
+        serviceResults.other &&
+        establishmentData.MainServiceOther &&
+        establishmentData.MainServiceOther.length > OTHER_MAX_LENGTH
+      ) {
         throw new RegistrationException(
           `Other field value of '${establishmentData.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
           responseErrors.unexpectedMainServiceId.errCode,
@@ -154,8 +158,8 @@ router.route('/:id').post(async (req, res) => {
         name: establishmentData.Name,
         mainService: {
           id: establishmentData.MainServiceId,
-          other: establishmentData.MainServiceOther
-        }
+          other: establishmentData.MainServiceOther,
+        },
       });
 
       // no Establishment properties on registration
@@ -178,7 +182,7 @@ router.route('/:id').post(async (req, res) => {
         message: 'Establishment successfully created',
         establishmentId: establishmentData.id,
         establishmentUid: establishmentData.eUID,
-        nmdsId: newEstablishment.nmdsId ? newEstablishment.nmdsId : 'undefined'
+        nmdsId: newEstablishment.nmdsId ? newEstablishment.nmdsId : 'undefined',
       });
     });
   } catch (err) {
@@ -197,7 +201,7 @@ router.route('/:id').post(async (req, res) => {
     }
     res.json({
       status: err.errCode,
-      message: err.errMessage
+      message: err.errMessage,
     });
   }
 });
@@ -207,12 +211,12 @@ router.route('/:id').post(async (req, res) => {
 router.route('/:id').get(async (req, res) => {
   const establishmentId = req.params.id;
 
-  const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline';
+  const showHistory =
+    req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline';
   const showHistoryTime = req.query.history === 'timeline';
   const showPropertyHistoryOnly = req.query.history === 'property';
 
   const thisEstablishment = new Establishment.Establishment(req.username);
-
   try {
     if (await thisEstablishment.restore(establishmentId, showHistory && req.query.history !== 'property')) {
       // the property based framework for "other services" and "capacity services"
@@ -221,7 +225,15 @@ router.route('/:id').get(async (req, res) => {
       //  direct GET endpoints "establishment/:eid/service" and
       //  establishment/:eid/service respectively
 
-      const jsonResponse = thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, true, null, false);
+      const jsonResponse = thisEstablishment.toJSON(
+        showHistory,
+        showPropertyHistoryOnly,
+        showHistoryTime,
+        false,
+        true,
+        null,
+        false
+      );
       delete jsonResponse.allOtherServices;
       delete jsonResponse.allServiceCapacities;
 
@@ -230,8 +242,10 @@ router.route('/:id').get(async (req, res) => {
         jsonResponse.wdf = await thisEstablishment.wdfToJson();
         jsonResponse.totalWorkers = await thisEstablishment.getTotalWorkers();
       }
-
-      // need also to return the WDF eligibility
+      if (!jsonResponse.isParent && jsonResponse.parentUid !== null) {
+        const parentEstablishmentName = await thisEstablishment.fetchParentName(jsonResponse.parentUid);
+        jsonResponse.parentName = parentEstablishmentName;
+      }
       return res.status(200).json(jsonResponse);
     } else {
       // not found worker
@@ -272,7 +286,7 @@ router.route('/:id').delete(async (req, res) => {
       null,
       err,
       null,
-        `Failed to delete Establishment with id/uid: ${establishmentId}`
+      `Failed to delete Establishment with id/uid: ${establishmentId}`
     );
 
     console.error('establishment::DELETE/:eID - failed', thisError.message);
