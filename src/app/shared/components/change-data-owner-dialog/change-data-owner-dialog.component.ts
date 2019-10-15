@@ -50,8 +50,8 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   private setWorkplaces(): void {
     this.workplace = this.data;
     this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
-    if (this.workplace.uid === this.establishmentService.primaryWorkplace.uid) {
-      //this.requesterName = this.workplace.parentName || this.dataPermissionsRequester.name;
+    if (!this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid) {
+      //this.requesterName = this.workplace.parentName;
       this.requesterName = 'PS Testing Home 1'; //for testing purpose only
     } else {
       this.requesterName = this.dataPermissionsRequester.name;
