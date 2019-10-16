@@ -38,7 +38,7 @@
         <a [routerLink]="['/notifications']" class="notification-alert">You have no new notifications</a>
       </p>
     </ng-template>
-    <ng-container *ngIf="canBulkUpload || canViewWorkplaces || canViewReports">
+    <ng-container *ngIf="canBulkUpload || canViewWorkplaces || canViewReports || canViewChangeDataOwner">
       <h3 class="govuk-heading-s govuk-!-margin-top-6">Other things you can do</h3>
       <ul *ngIf="workplace" class="govuk-list">
         <li *ngIf="canBulkUpload">
@@ -48,6 +48,14 @@
           <a [routerLink]="['/workplace', 'view-all-workplaces']">View all workplaces</a>
         </li>
         <li *ngIf="canViewReports"><a [routerLink]="['/reports']">View reports</a></li>
+        <li *ngIf="canViewChangeDataOwner">
+          <ng-container *ngIf="workplace.dataOwnershipRequested; else changeDataOwner">
+            <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
+          </ng-container>
+          <ng-template #changeDataOwner>
+            <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>
+          </ng-template>
+        </li>
       </ul>
     </ng-container>
     <ul *ngIf="[adminRole].includes(user.role)" class="govuk-list">
