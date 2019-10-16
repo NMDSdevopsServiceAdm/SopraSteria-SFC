@@ -1428,7 +1428,7 @@ class Worker {
 
     // if zero hours contract is 'Yes' then any non blank
     // contract hours value is invalid
-    if(intZeroHoursType === 1 && strContHours !== '') {
+    if (intZeroHoursType === 1 && strContHours !== '') {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1763,8 +1763,8 @@ class Worker {
 
     const isSocialWorkerRole = this._mainJobRole === SOCIAL_WORKER_ROLE ||
       (Array.isArray(this._otherJobs) && this._otherJobs.includes(SOCIAL_WORKER_ROLE));
-    
-    if(isSocialWorkerRole) {
+
+    if (isSocialWorkerRole) {
       if (strAmhp === '') {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -1790,8 +1790,7 @@ class Worker {
         });
         return false;
       }
-    }
-    else if (strAmhp !== '') {
+    } else if (strAmhp !== '') {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -3681,7 +3680,12 @@ class Worker {
     // if no contracted hours, then output empty (null)
     // if no contract type, or contract type is not contractedHoursContract, then always empty (null)
     let contHours = '';
-    if (entity.contract && ['Permanent', 'Temporary'].includes(entity.contract) && entity.contractedHours) {
+    if (
+      entity.contract &&
+      ['Permanent', 'Temporary'].includes(entity.contract) &&
+      entity.zeroContractHours !== 'Yes' &&
+      entity.contractedHours
+    ) {
       switch (entity.contractedHours.value) {
         case 'Yes':
           // if contracted hours is 'Yes', then the contracted hours value - which itself could still be empty (null)
@@ -3698,7 +3702,11 @@ class Worker {
 
     // "AVGHOURS"
     let avgHours = ''; // if no average hours, then output empty (null)
-    if (entity.contract && ['Pool/Bank', 'Agency', 'Other'].includes(entity.contract) && entity.averageHours) {
+    if (
+      ((entity.contract && ['Pool/Bank', 'Agency', 'Other'].includes(entity.contract)) ||
+      entity.zeroContractHours === 'Yes') &&
+      entity.averageHours
+    ) {
       switch (entity.averageHours.value) {
         case 'Yes':
           // if average hours is 'Yes', then the average hours value - which itself could still be empty (null)
