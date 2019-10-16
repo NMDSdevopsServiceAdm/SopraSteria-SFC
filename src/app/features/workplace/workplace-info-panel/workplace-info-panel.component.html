@@ -34,7 +34,7 @@
           {{ workplace.dataPermissions | dataViewPermissions }}
           <span class="govuk-util__float-right" *ngIf=false>
             <ng-container *ngIf="workplace.dataOwnershipRequested; else dataPermissions">
-              <a href="#">Data request pending</a>
+              <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
             </ng-container>
             <ng-template #dataPermissions>
               <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">

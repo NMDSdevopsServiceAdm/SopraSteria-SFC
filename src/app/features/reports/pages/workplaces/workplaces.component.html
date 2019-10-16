@@ -5,7 +5,25 @@
       Workplaces
     </h1>
   </div>
+  <div class="govuk-grid-column-one-third contact-col" *ngIf="primaryWorkplace?.isParent">
+    <ul class="govuk-list govuk-list--inline govuk-list">
+      <li>
+        <a href="#">Workforce Development Fund</a>
+      </li>
+    </ul>
+    <ul class="govuk-list govuk-list--inline govuk-list--download">
+      <li>
+        <a
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-parent-report.xls"
+          (click)="downloadWdfParentReport($event)"
+          >Download report</a
+        >
+      </li>
+    </ul>
+  </div>
 </div>
+
+<!-- -->
 
 <dl class="govuk-list--definition">
   <dt><app-eligibility-icon [num]="totalEligible" [eligible]="true"></app-eligibility-icon></dt>

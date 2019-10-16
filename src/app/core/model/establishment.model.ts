@@ -77,6 +77,7 @@ export interface WDF {
 export interface Establishment {
   id: number;
   uid: string;
+  ownerChangeRequestUID?: string;
   name: string;
   address: string;
   postcode: string;
@@ -112,6 +113,7 @@ export interface Establishment {
   dataOwner: WorkplaceDataOwner;
   dataPermissions: DataPermissions;
   dataOwnershipRequested: string;
+  ownershipChangeRequestId?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -146,4 +148,8 @@ export interface LocalIdentifier {
 
 export interface ChangeOwner {
   permissionRequest: string;
+}
+
+export interface CancelOwnerShip {
+  approvalStatus: string;
 }

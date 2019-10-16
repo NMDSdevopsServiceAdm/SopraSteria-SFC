@@ -118,7 +118,8 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
 
               // parent permissions must be either null (no access), "Workplace" or "Workplace and staff" - if not null, then have access to the establishment
               // but only read access (GET)
-              if (req.method !== 'GET') {
+              if (req.method !== 'GET' && !(req.path.split('/')[1] === 'ownershipChange')) {
+
                 return res.status(403).send({message: `Parent not permitted to update Establishment with id: ${req.params.id}`});
               }
             }
@@ -173,7 +174,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
           }
 
           req.username = claim.sub;
-          req.userUId = claim.userUid;
+          req.userUid = claim.userUid;
           req.isParent = claim.isParent;
           req.role = claim.role;
           req.establishment = {

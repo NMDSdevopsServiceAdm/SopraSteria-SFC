@@ -28,6 +28,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"Active"'
     },
+    status: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Status"'
+    },
     invalidAttempt: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -71,7 +76,7 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: false
   });
 
-  // uses the current 
+  // uses the current
   Login.prototype.hashPassword = function () {
     return bcrypt.hashSync(this.password, bcrypt.genSaltSync(10), null);
   };
@@ -102,7 +107,8 @@ module.exports = function(sequelize, DataTypes) {
   Login.associate = (models) => {
     Login.belongsTo(models.user, {
       foreignKey: 'registrationId',
-      targetKey: 'id'
+      targetKey: 'id',
+      onDelete: 'CASCADE'
     });
   };
 

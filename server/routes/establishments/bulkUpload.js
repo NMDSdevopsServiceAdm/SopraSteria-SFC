@@ -419,20 +419,18 @@ router.route('/uploaded').put(async (req, res) => {
         } else {
           const fileNameElements = myFile.Key.split('/');
           const fileName = fileNameElements[fileNameElements.length - 1];
-          returnData.push(
-            generateReturnData(
-              {
-                filename: fileName,
-                uploaded: myFile.LastModified,
-                username: myFile.username,
-                records: 0,
-                errors: 0,
-                warnings: 0,
-                fileType: null,
-                size: myFile.size,
-                key: myFile.Key
-              })
-          );
+
+          returnData.push(generateReturnData({
+            filename: fileName,
+            uploaded: myFile.LastModified,
+            username: myFile.username,
+            records: 0,
+            errors: 0,
+            warnings: 0,
+            fileType: null,
+            size: myFile.size,
+            key: myFile.Key
+          }));
         }
       }
     });
@@ -446,7 +444,16 @@ router.route('/uploaded').put(async (req, res) => {
 
 router.route('/validate').put(async (req, res) => {
   // manage the request timeout
-  req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
+  // req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
+
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Transfer-Encoding': 'chunked'
+  });
+
+  const keepAlive = () => {
+    res.write(' ');
+  };
 
   const establishments = {
     imported: null,
@@ -479,12 +486,16 @@ router.route('/validate').put(async (req, res) => {
 
       // download the contents of the appropriate ones we find
         .then(data => Promise.all(data.Contents.reduce((arr, myFileStats) => {
+          keepAlive(); // keep connection alive
+
           if (!(/.*metadata.json$/.test(myFileStats.Key) || /.*\/$/.test(myFileStats.Key))) {
             arr.push(
               downloadContent(myFileStats.Key)
 
               // for each downloaded file, test its type then update the closure variables
                 .then(myFile => {
+                  keepAlive(); // keep connection alive
+
                   let obj = null;
                   let metadata = null;
 
@@ -521,7 +532,10 @@ router.route('/validate').put(async (req, res) => {
                   }
                   // parse the file contents as csv then return the data
                   return csv().fromString(myFile.data).then(imported => {
+                    keepAlive(); // keep connection alive
+
                     obj.imported = imported;
+
                     return true;
                   });
                 })
@@ -539,26 +553,31 @@ router.route('/validate').put(async (req, res) => {
           req.isParent,
           establishments,
           workers,
-          trainings
+          trainings,
+          keepAlive
         ));
 
     // handle parsing errors
     if (!validationResponse.status) {
-      return res.status(400).send({
+      res.write(JSON.stringify({
         establishment: validationResponse.metaData.establishments.toJSON(),
         workers: validationResponse.metaData.workers.toJSON(),
         training: validationResponse.metaData.training.toJSON()
-      });
+      }));
+    } else {
+      res.write(JSON.stringify({
+        establishment: validationResponse.metaData.establishments.toJSON(),
+        workers: validationResponse.metaData.workers.toJSON(),
+        training: validationResponse.metaData.training.toJSON()
+      }));
     }
-    return res.status(200).send({
-      establishment: validationResponse.metaData.establishments.toJSON(),
-      workers: validationResponse.metaData.workers.toJSON(),
-      training: validationResponse.metaData.training.toJSON()
-    });
   } catch (err) {
     console.error(err);
-    return res.status(503).send({});
+
+    res.write('{}'); // keep connection alive
   }
+
+  res.end();
 });
 
 // alternative (testable) route, which passes the establishment, worker and training CSV as content
@@ -672,24 +691,23 @@ router.route('/validate').post(async (req, res) => {
   }
 });
 
+const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
+
 async function downloadContent (key, objectSize, lastModified) {
-  var params = {
-    Bucket: appConfig.get('bulkupload.bucketname').toString(),
-    Key: key
-  };
-
-  const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
-
   try {
-    const objData = await s3.getObject(params).promise();
-    return {
-      key: key,
-      data: objData.Body.toString(),
-      filename: key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3],
-      username: objData.Metadata.username,
-      size: objectSize,
-      lastModified: lastModified
-    };
+    return await s3.getObject({
+      Bucket: appConfig.get('bulkupload.bucketname').toString(),
+      Key: key
+    })
+      .promise()
+      .then(objData => ({
+        key,
+        data: objData.Body.toString(),
+        filename: key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3],
+        username: objData.Metadata.username,
+        size: objectSize,
+        lastModified
+      }));
   } catch (err) {
     console.error(`api/establishment/bulkupload/downloadFile: ${key})\n`, err);
     throw new Error(`Failed to download S3 object: ${key}`);
@@ -744,7 +762,8 @@ const _validateEstablishmentCsv = async (
   csvEstablishmentSchemaErrors,
   myEstablishments,
   myAPIEstablishments,
-  myCurrentEstablishments
+  myCurrentEstablishments,
+  keepAlive = () => {}
 ) => {
   const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber, myCurrentEstablishments);
 
@@ -769,6 +788,7 @@ const _validateEstablishmentCsv = async (
     );
 
     await thisApiEstablishment.load(thisEstablishmentAsAPI);
+    keepAlive();
 
     const isValid = thisApiEstablishment.validate();
 
@@ -801,10 +821,11 @@ const _validateEstablishmentCsv = async (
   myEstablishments.push(lineValidator);
 };
 
-const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications) => {
+const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications, keepAlive = () => {}) => {
   const thisApiQualification = new QualificationEntity();
   // load while ignoring the "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
   const isValid = await thisApiQualification.load(thisQual);
+  keepAlive();
 
   if (isValid) {
     // no validation errors in the entity itself, so add it ready for completion
@@ -834,7 +855,8 @@ const _validateWorkerCsv = async (
   myWorkers,
   myAPIWorkers,
   myAPIQualifications,
-  myCurrentEstablishments
+  myCurrentEstablishments,
+  keepAlive = () => {}
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber, myCurrentEstablishments);
@@ -846,6 +868,7 @@ const _validateWorkerCsv = async (
 
   try {
     await thisApiWorker.load(lineValidator.toAPI());
+    keepAlive();
 
     if (thisApiWorker.validate()) {
       // no validation errors in the entity itself, so add it ready for completion
@@ -857,7 +880,8 @@ const _validateWorkerCsv = async (
         lineValidator,
         thisQual,
         thisApiWorker,
-        myAPIQualifications
+        myAPIQualifications,
+        keepAlive
       )));
     } else {
       const errors = thisApiWorker.errors;
@@ -881,7 +905,7 @@ const _validateWorkerCsv = async (
   myWorkers.push(lineValidator);
 };
 
-const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings) => {
+const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings, keepAlive = () => {}) => {
   const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber);
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
@@ -892,6 +916,8 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
   const thisApiTraining = new TrainingEntity();
   try {
     const isValid = await thisApiTraining.load(thisTrainingAsAPI);
+
+    keepAlive();
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
       myAPITrainings[currentLineNumber] = thisApiTraining;
@@ -918,9 +944,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
 };
 
 // if commit is false, then the results of validation are not uploaded to S3
-const validateBulkUploadFiles = async (commit, username, establishmentId, isParent, establishments, workers, training) => {
-  let status = true;
-
+const validateBulkUploadFiles = async (commit, username, establishmentId, isParent, establishments, workers, training, keepAlive = () => {}) => {
   const csvEstablishmentSchemaErrors = [];
   const csvWorkerSchemaErrors = [];
   const csvTrainingSchemaErrors = [];
@@ -934,7 +958,9 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   // restore the current known state this primary establishment (including all subs)
   const RESTORE_ASSOCIATION_LEVEL = 1;
-  const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent, RESTORE_ASSOCIATION_LEVEL, false);
+  keepAlive(); // keep connection alive
+
+  const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent, RESTORE_ASSOCIATION_LEVEL, false, keepAlive);
 
   const validateRestoredStateTime = new Date();
 
@@ -966,7 +992,8 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
       csvEstablishmentSchemaErrors,
       myEstablishments,
       myAPIEstablishments,
-      myCurrentEstablishments
+      myCurrentEstablishments,
+      keepAlive
     )));
 
     // having parsed all establishments, check for duplicates
@@ -986,7 +1013,6 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
     });
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no establishment records');
-    status = false;
   }
 
   const validateEstablishmentsTime = new Date();
@@ -1005,8 +1031,11 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
       myWorkers,
       myAPIWorkers,
       myAPIQualifications,
-      myCurrentEstablishments
+      myCurrentEstablishments,
+      keepAlive
     )));
+
+    keepAlive(); // keep connection alive
 
     // having parsed all workers, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
@@ -1082,7 +1111,6 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
     });
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no workers records');
-    status = false;
   }
   workers.workerMetadata.records = myWorkers.length;
 
@@ -1093,11 +1121,15 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   // parse and process Training CSV
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType === 'Training') {
-    await Promise.all(
-      training.imported.map((thisLine, currentLineNumber) => {
-        return _validateTrainingCsv(thisLine, currentLineNumber + 2, csvTrainingSchemaErrors, myTrainings, myAPITrainings);
-      })
-    );
+    await Promise.all(training.imported.map((thisLine, currentLineNumber) => _validateTrainingCsv(
+      thisLine,
+      currentLineNumber + 2,
+      csvTrainingSchemaErrors,
+      myTrainings,
+      myAPITrainings
+    )));
+
+    keepAlive();
 
     // note - there is no uniqueness test for a training record
 
@@ -1149,8 +1181,8 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
     });
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no training records');
-    status = false;
   }
+
   training.trainingMetadata.records = myTrainings.length;
 
   const validateTrainingTime = new Date();
@@ -1199,18 +1231,18 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   if (isParent) {
     // must be a parent
     // check for trying to upload against subsidaries for which this parent does not own (if a parent) - ignore the primary (self) establishment of course
-    const allLoadedEstablishments = Object.values(myAPIEstablishments);
-    allLoadedEstablishments.forEach(thisOnloadEstablishment => {
+    Object.values(myAPIEstablishments).forEach(thisOnloadEstablishment => {
       if (thisOnloadEstablishment.key !== primaryEstablishment.key) {
         // we're not the primary
-        const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrentEstablishment => {
-          if (thisCurrentEstablishment.key === thisOnloadEstablishment.key) {
-            return thisCurrentEstablishment;
-          }
-        });
+        const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrentEstablishment =>
+          thisCurrentEstablishment.key === thisOnloadEstablishment.key
+        );
 
         if (foundCurrentEstablishment && foundCurrentEstablishment.dataOwner !== 'Parent') {
-          const lineValidator = myEstablishments.find(thisLineValidator => thisLineValidator.key === foundCurrentEstablishment.key);
+          const lineValidator = myEstablishments.find(thisLineValidator =>
+            thisLineValidator.key === foundCurrentEstablishment.key
+          );
+
           csvEstablishmentSchemaErrors.unshift(lineValidator.addNotOwner());
         }
       }
@@ -1414,7 +1446,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   timerLog('CHECKPOINT - BU Validate - total', validateStartTime, validateS3UploadTime);
 
-  status = !(csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0 || csvTrainingSchemaErrors.length > 0);
+  const status = !(csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0 || csvTrainingSchemaErrors.length > 0);
 
   return {
     status,
@@ -1449,13 +1481,16 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment
 // the "onlyMine" parameter is used to remove those subsidiary establishments where the parent is not the owner
-const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent, assocationLevel = 1, onlyMine = false) => {
+const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent, assocationLevel = 1, onlyMine = false, keepAlive = () => {}) => {
   try {
     const thisUser = new UserEntity(primaryEstablishmentId);
     await thisUser.restore(null, loggedInUsername, false);
 
+    keepAlive(); // keep connection alive
+
     // gets a list of "my establishments", which if a parent, includes all known subsidaries too, and this "parent's" access permissions to those subsidaries
     const myEstablishments = await thisUser.myEstablishments(isParent, null);
+    keepAlive(); // keep connection alive
 
     // having got this list of establishments, now need to fully restore each establishment as entities.
     //  using an object adding entities by a known key to make lookup comparisions easier.
@@ -1465,14 +1500,25 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
     // first add the primary establishment entity
     const primaryEstablishment = new EstablishmentEntity(loggedInUsername, completionBulkUploadStatus);
     currentEntities.push(primaryEstablishment);
-    restoreEntityPromises.push(primaryEstablishment.restore(myEstablishments.primary.uid, false, true, assocationLevel));
+
+    restoreEntityPromises.push(primaryEstablishment.restore(myEstablishments.primary.uid, false, true, assocationLevel).then(data => {
+      keepAlive(); // keep connection alive
+
+      return data;
+    }));
 
     if (myEstablishments.subsidaries && myEstablishments.subsidaries.establishments && Array.isArray(myEstablishments.subsidaries.establishments)) {
       myEstablishments.subsidaries.establishments.forEach(thisSubsidairy => {
         if (!onlyMine || (onlyMine && thisSubsidairy.dataOwner === 'Parent')) {
           const newSub = new EstablishmentEntity(loggedInUsername, completionBulkUploadStatus);
+
           currentEntities.push(newSub);
-          restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true, assocationLevel));
+
+          restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true, assocationLevel).then(data => {
+            keepAlive(); // keep connection alive
+
+            return data;
+          }));
         }
       });
     }

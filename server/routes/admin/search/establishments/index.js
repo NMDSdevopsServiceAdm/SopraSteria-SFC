@@ -10,6 +10,7 @@ router.route('/').post(async function (req, res) {
   let searchFilter = null;
   const postcodeSearchField = establishmentSearchFields.postcode ? establishmentSearchFields.postcode.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
   const nmdsIdSearchField = establishmentSearchFields.nmdsId ? establishmentSearchFields.nmdsId.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
+  const locationIdSearchField = establishmentSearchFields.locationid ? establishmentSearchFields.locationid.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
 
   try {
     let results = null;
@@ -25,12 +26,14 @@ router.route('/').post(async function (req, res) {
           e1."NameValue" AS "EstablishmentName",
           e1.updated AS "EstablishmentUpdated",
           e1."ParentID" AS "ParentID",
+          e1."Status" AS "Status",
           p1."NmdsID" AS "ParentNmdsID",
           p1."PostCode" AS "ParentPostCode",
           p1."NameValue" AS "ParentName"
         from cqc."Establishment" e1
           left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
         where e1."Archived"=false
+          and e1."Status" is NULL
           and e1."PostCode" ilike :searchPostcode
         order by e1."NameValue" ASC`;
       results = await models.sequelize.query(sqlQuery, { replacements: { searchPostcode: postcodeSearchField },type: models.sequelize.QueryTypes.SELECT });
@@ -46,15 +49,40 @@ router.route('/').post(async function (req, res) {
           e1."NameValue" AS "EstablishmentName",
           e1.updated AS "EstablishmentUpdated",
           e1."ParentID" AS "ParentID",
+          e1."Status" AS "Status",
           p1."NmdsID" AS "ParentNmdsID",
           p1."PostCode" AS "ParentPostCode",
           p1."NameValue" AS "ParentName"
         from cqc."Establishment" e1
           left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
         where e1."Archived"=false
+          and e1."Status" is NULL
           and e1."NmdsID" ilike :searchNmdsID
         order by e1."NameValue" ASC`;
       results = await models.sequelize.query(sqlQuery, { replacements: { searchNmdsID: nmdsIdSearchField },type: models.sequelize.QueryTypes.SELECT });
+    } else if (establishmentSearchFields && establishmentSearchFields.locationid) {
+      const sqlQuery = `select
+        e1."EstablishmentUID" AS "EstablishmentUID",
+        e1."LocationID" AS "LocationID",
+        e1."NmdsID" AS "NmdsID",
+        e1."PostCode" AS "PostCode",
+        e1."IsRegulated" AS "IsRegulated",
+        e1."Address1" AS "Address",
+        e1."IsParent" AS "IsParent",
+        e1."NameValue" AS "EstablishmentName",
+        e1.updated AS "EstablishmentUpdated",
+        e1."ParentID" AS "ParentID",
+        e1."Status" AS "Status",
+        p1."NmdsID" AS "ParentNmdsID",
+        p1."PostCode" AS "ParentPostCode",
+        p1."NameValue" AS "ParentName"
+      from cqc."Establishment" e1
+        left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
+      where e1."Archived"=false
+        and e1."Status" is NULL
+        and e1."LocationID" ilike :searchLocationID
+      order by e1."NameValue" ASC`;
+      results = await models.sequelize.query(sqlQuery, { replacements: { searchLocationID: locationIdSearchField },type: models.sequelize.QueryTypes.SELECT });
     } else {
       // no search
       return res.status(200).send({});
