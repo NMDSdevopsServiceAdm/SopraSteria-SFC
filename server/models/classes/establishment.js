@@ -74,6 +74,7 @@ class Establishment extends EntityValidator {
     this._isParent = false;
     this._parentUid = null;
     this._parentId = null;
+    this._parentName = null;
     this._dataOwner = null;
     this._dataPermissions = null;
     this._archived = null;
@@ -262,6 +263,10 @@ class Establishment extends EntityValidator {
 
   get parentUid () {
     return this._parentUid;
+  }
+
+  get parentName() {
+  return this._parentName;
   }
 
   get dataOwner () {
@@ -956,7 +961,44 @@ class Establishment extends EntityValidator {
 
     return mustSave;
   }
+  //This method will fetch parent name
+  async fetchParentName(id) {
+    if (!id) {
+      throw new EstablishmentExceptions.EstablishmentRestoreException(null,
+        null,
+        null,
+        'User::restore failed: Missing id or uid',
+        null,
+        'Unexpected Error');
+      }
+        try {
+          // restore establishment based on id as an integer (primary key or uid)
+          let fetchQuery = {
+            where: {
+              id: id
+            }
+          };
 
+          if (!Number.isInteger(id)) {
+            fetchQuery = {
+              where: {
+                uid: id,
+                archived: false
+              }
+            };
+          }
+          const fetchName = await models.establishment.findOne(fetchQuery);
+          if (fetchName && fetchName.id && Number.isInteger(fetchName.id)) {
+              this._parentName = fetchName.NameValue;
+          }
+          return this._parentName;
+        }catch (err) {
+          // typically errors when making changes to model or database schema!
+          this._log(Establishment.LOG_ERROR, err);
+
+          throw new EstablishmentExceptions.EstablishmentRestoreException(null, this.uid, null, err, null);
+        }
+  }
   // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
   // returns true on success; false if no User
   // Can throw EstablishmentRestoreException exception.
