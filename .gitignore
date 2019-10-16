@@ -4,6 +4,7 @@
 /dist
 /tmp
 /out-tsc
+/server/coverage
 
 # dependencies
 /node_modules
@@ -17,6 +18,7 @@
 *.launch
 .settings/
 *.sublime-workspace
+test-report.html
 
 
 
@@ -54,3 +56,4 @@ Thumbs.db
 
 // nodemon localisations
 nodemon.json
+.nyc_output/

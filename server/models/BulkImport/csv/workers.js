@@ -1424,6 +1424,22 @@ class Worker {
     const strContHours = String(this._currentLine.CONTHOURS);
     const fltContHours = parseFloat(this._currentLine.CONTHOURS);
     const intEmplStatus = parseInt(this._currentLine.EMPLSTATUS, 10);
+    const intZeroHoursType = parseInt(this._currentLine.ZEROHRCONT, 10);
+
+    // if zero hours contract is 'Yes' then any non blank
+    // contract hours value is invalid
+    if (intZeroHoursType === 1 && strContHours !== '') {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.CONT_HOURS_WARNING,
+        warnType: 'CONT_HOURS_WARNING',
+        warning: `CONTHOURS will be ignored as ZEROHRCONT is ${intZeroHoursType}`,
+        source: strContHours
+      });
+      return false;
+    }
 
     // If it's one of the employment statuses that shouldn't have a
     // contract hours and it does then that's a validation failure
@@ -1501,10 +1517,12 @@ class Worker {
     const strAvgHours = String(this._currentLine.AVGHOURS);
     const fltAvgHours = parseFloat(this._currentLine.AVGHOURS);
     const intEmplStatus = parseInt(this._currentLine.EMPLSTATUS, 10);
+    const intZeroHoursType = parseInt(this._currentLine.ZEROHRCONT, 10);
 
     // If it's one of the employment statuses that shouldn't have an
-    // average hours and it does then that's a validation failure
-    if (EMPL_STATUSES.includes(intEmplStatus) && strAvgHours !== '') {
+    // average hours and it does then that's a validation failure.
+    // If zero Hours is set to 'yes' then this rule doesn't apply
+    if (intZeroHoursType !== 1 && EMPL_STATUSES.includes(intEmplStatus) && strAvgHours !== '') {
       let contractType;
       switch (intEmplStatus) {
         case 1:
@@ -1737,30 +1755,42 @@ class Worker {
   }
 
   _validateAmhp () {
-    const amhpValues = [1, 2, 999];
-    const myAmhp = parseInt(this._currentLine.AMHP, 10);
     const SOCIAL_WORKER_ROLE = 6;
+    const amhpValues = [1, 2, 999];
 
-    const otherJobRoleIsSocialWorker = this._otherJobs !== null && this._otherJobs.includes(SOCIAL_WORKER_ROLE);
-    const mainJobRoleIsSocialWorker = this._mainJobRole === SOCIAL_WORKER_ROLE;
-    const notSocialWorkerRole = !(otherJobRoleIsSocialWorker || mainJobRoleIsSocialWorker);
+    const strAmhp = String(this._currentLine.AMHP);
+    const intAmhp = parseInt(this._currentLine.AMHP, 10);
 
-    if (
-      (this._mainJobRole === SOCIAL_WORKER_ROLE ||
-      (this._otherJobs !== null && this._otherJobs.includes(SOCIAL_WORKER_ROLE))) &&
-      isNaN(myAmhp)
-    ) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.AMHP_WARNING,
-        warnType: 'AMHP_WARNING',
-        warning: 'AMHP has not been supplied',
-        source: this._currentLine.AMHP
-      });
-      return false;
-    } else if (this._currentLine.AMHP && this._currentLine.AMHP.length > 0 && notSocialWorkerRole) {
+    const isSocialWorkerRole = this._mainJobRole === SOCIAL_WORKER_ROLE ||
+      (Array.isArray(this._otherJobs) && this._otherJobs.includes(SOCIAL_WORKER_ROLE));
+
+    if (isSocialWorkerRole) {
+      if (strAmhp === '') {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.AMHP_WARNING,
+          warnType: 'AMHP_WARNING',
+          warning: 'AMHP has not been supplied',
+          source: this._currentLine.AMHP
+        });
+        return false;
+      }
+
+      if (!amhpValues.includes(intAmhp)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.AMHP_WARNING,
+          warnType: 'AMHP_WARNING',
+          warning: 'The code you have entered for AMHP is incorrect and will be ignored',
+          source: this._currentLine.AMHP
+        });
+        return false;
+      }
+    } else if (strAmhp !== '') {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1771,32 +1801,24 @@ class Worker {
         source: this._currentLine.AMHP
       });
       return false;
-    } else if (!isNaN(myAmhp) && (myAmhp === 0 || !amhpValues.includes(myAmhp))) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.AMHP_WARNING,
-        warnType: 'AMHP_WARNING',
-        warning: 'The code you have entered for AMHP is incorrect and will be ignored',
-        source: this._currentLine.AMHP
-      });
-      return false;
-    } else {
-      this._amhp = myAmhp;
-      switch (myAmhp) {
-        case 1:
-          this._amhp = 'Yes';
-          break;
-        case 2:
-          this._amhp = 'No';
-          break;
-        case 999:
-          this._amhp = 'Don\'t know';
-          break;
-      }
-      return true;
     }
+
+    this._amhp = strAmhp;
+    switch (intAmhp) {
+      case 1:
+        this._amhp = 'Yes';
+        break;
+
+      case 2:
+        this._amhp = 'No';
+        break;
+
+      case 999:
+        this._amhp = 'Don\'t know';
+        break;
+    }
+
+    return true;
   }
 
   _validateNationality () {
@@ -2725,7 +2747,7 @@ class Worker {
       nurseSpecialism: this._nursingSpecialist ? {
         id: this._nursingSpecialist
       } : undefined,
-      amhp: this._amhp ? this._amhp : undefined,
+      approvedMentalHealthWorker: this._amhp ? this._amhp : undefined,
       completed: true // on bulk upload, every Worker record is naturally completed!
     };
 
@@ -3658,7 +3680,12 @@ class Worker {
     // if no contracted hours, then output empty (null)
     // if no contract type, or contract type is not contractedHoursContract, then always empty (null)
     let contHours = '';
-    if (entity.contract && ['Permanent', 'Temporary'].includes(entity.contract) && entity.contractedHours) {
+    if (
+      entity.contract &&
+      ['Permanent', 'Temporary'].includes(entity.contract) &&
+      entity.zeroContractHours !== 'Yes' &&
+      entity.contractedHours
+    ) {
       switch (entity.contractedHours.value) {
         case 'Yes':
           // if contracted hours is 'Yes', then the contracted hours value - which itself could still be empty (null)
@@ -3675,7 +3702,11 @@ class Worker {
 
     // "AVGHOURS"
     let avgHours = ''; // if no average hours, then output empty (null)
-    if (entity.contract && ['Pool/Bank', 'Agency', 'Other'].includes(entity.contract) && entity.averageHours) {
+    if (
+      ((entity.contract && ['Pool/Bank', 'Agency', 'Other'].includes(entity.contract)) ||
+      entity.zeroContractHours === 'Yes') &&
+      entity.averageHours
+    ) {
       switch (entity.averageHours.value) {
         case 'Yes':
           // if average hours is 'Yes', then the average hours value - which itself could still be empty (null)
@@ -3721,21 +3752,21 @@ class Worker {
     );
 
     // "AMHP"
-    let ahmp = '';
+    let amhp = '';
     switch (entity.approvedMentalHealthWorker) {
       case 'Yes':
-        ahmp = 1;
+        amhp = 1;
         break;
 
       case 'No':
-        ahmp = 2;
+        amhp = 2;
         break;
 
       case 'Don\'t know':
-        ahmp = 999;
+        amhp = 999;
         break;
     }
-    columns.push(ahmp);
+    columns.push(amhp);
 
     // "SCQUAL"
     let scqual = '';

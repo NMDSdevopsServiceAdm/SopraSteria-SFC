@@ -1,9 +1,12 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-l">
-      <span class="govuk-caption-xl">{{ workplace.name }}</span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+      <span class="govuk-caption-xl govuk-!-margin-bottom-3">{{ workplace.name }}</span>
       Workplace
     </h1>
+    <p class="govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-0">
+      Workplace ID: {{ workplace?.nmdsId }}
+    </p>
   </div>
 
   <div class="govuk-grid-column-one-third-from-desktop govuk-util__align-right">
