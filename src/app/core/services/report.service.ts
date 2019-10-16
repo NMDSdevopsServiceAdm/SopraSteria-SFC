@@ -42,7 +42,7 @@ export class ReportService {
     });
   }
 
-  public getPatrentWDFReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
+  getPatrentWDFReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/wdf/establishment/${workplaceUid}`, {
       observe: 'response',
       responseType: 'blob' as 'json',
