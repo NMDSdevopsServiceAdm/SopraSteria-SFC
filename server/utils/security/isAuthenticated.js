@@ -174,7 +174,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
           }
 
           req.username = claim.sub;
-          req.userUId = claim.userUid;
+          req.userUid = claim.userUid;
           req.isParent = claim.isParent;
           req.role = claim.role;
           req.establishment = {
