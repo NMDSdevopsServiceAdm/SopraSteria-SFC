@@ -41,6 +41,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public user: UserDetails;
   public canViewChangeDataOwner: boolean;
   public ownershipChangeRequestId;
+  public isOwnershipRequested = false;
   public primaryWorkplace: Establishment;
 
   constructor(
@@ -74,6 +75,9 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         })
       );
     }
+    if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
+      this.isOwnershipRequested = true;
+    }
   }
 
   public onChangeDataOwner($event: Event) {
@@ -81,7 +85,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     const dialog = this.dialogService.open(ChangeDataOwnerDialogComponent, this.workplace);
     dialog.afterClosed.subscribe(changeDataOwnerConfirmed => {
       if (changeDataOwnerConfirmed) {
-        this.changeDataOwner();
+        this.changeDataOwnerLink();
         this.router.navigate(['/dashboard']);
         this.alertService.addAlert({
           type: 'success',
@@ -102,7 +106,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
             const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
             dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
               if (cancelDataOwnerConfirmed) {
-                this.changeDataOwner();
+                this.changeDataOwnerLink();
                 this.router.navigate(['/dashboard']);
                 this.alertService.addAlert({
                   type: 'success',
@@ -119,8 +123,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     );
   }
 
-  private changeDataOwner(): void {
-    this.changeOwnershipEvent.emit(true);
+  private changeDataOwnerLink(): void {
+    this.isOwnershipRequested = !this.isOwnershipRequested;
   }
 
   public setReturn(): void {
