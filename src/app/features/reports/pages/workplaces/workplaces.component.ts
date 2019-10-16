@@ -55,7 +55,7 @@ export class WorkplacesComponent implements OnInit {
     event.preventDefault();
     this.subscriptions.add(
       this.reportService
-        .getPatrentWDFReport(this.primaryWorkplace.uid)
+        .getParentWDFReport(this.primaryWorkplace.uid)
         .subscribe(response => this.saveFile(response), () => {})
     );
   }
