@@ -113,6 +113,7 @@ export interface Establishment {
   dataOwner: WorkplaceDataOwner;
   dataPermissions: DataPermissions;
   dataOwnershipRequested: string;
+  ownershipChangeRequestId?: string;
 }
 
 export interface UpdateJobsRequest {
