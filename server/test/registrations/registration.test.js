@@ -105,15 +105,37 @@ describe("Registrations", () => {
     let nonCQCSite = null;
     let cqcSite = null;
     let duplicateCqcSite = null;
+
     it("should create a non-CQC registation", async () => {
-        nonCQCSite = registrationUtils.newNonCqcSite(postcodes[0], nonCqcServices);
+        nonCQCSite = registrationUtils.newNonCqcSite(postcodes[2], nonCqcServices);
         const registeredEstablishment = await apiEndpoint.post('/registration')
             .send([nonCQCSite])
             .expect('Content-Type', /json/)
             .expect(200);
         expect(registeredEstablishment.body.status).toEqual(1);
+        expect(registeredEstablishment.body.message).toEqual('Establishment and primary user successfully created');
         expect(Number.isInteger(registeredEstablishment.body.establishmentId)).toEqual(true);
+        expect(uuidV4Regex.test(registeredEstablishment.body.establishmentUid)).toEqual(true);
+        expect(registeredEstablishment.body.primaryUser).toEqual(nonCQCSite.user.username);
+        expect(registeredEstablishment.body.nmdsId.length).toEqual(8);
+        expect(registeredEstablishment.body.active).toEqual(false);
+        expect(registeredEstablishment.body.userstatus).toEqual('PENDING');
     });
+
+    it("should not be able to login because the account is pending", async() => {
+      const registeredEstablishment = await apiEndpoint.post('/registration').send([nonCQCSite]);
+      if(registeredEstablishment) {
+        const loginResponse = await apiEndpoint.post('/login')
+          .send({
+              username: nonCQCSite.user.username,
+              password: nonCQCSite.user.password
+          })
+          .expect('Content-Type', /json/)
+          .expect(401);
+        expect(loginResponse.body.message).toEqual('Authentication failed.');
+      }
+    });
+  });
 
 
     it("should create a CQC registation of known location id", async () => {
