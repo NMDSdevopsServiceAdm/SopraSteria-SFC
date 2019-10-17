@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // security
-const Authorization = require('../../../utils/security/isAuthenticated');
+const isAuthorisedEstablishment = require('../../../utils/security/isAuthenticated').hasAuthorisedEstablishment;
 const isLocal = require('../../../utils/security/isLocalTest').isLocal;
 
 // all user functionality is encapsulated
@@ -11,9 +11,11 @@ const Establishment = require('../../../models/classes/establishment').Establish
 const Worker = require('../../../models/classes/worker').Worker;
 const WdfCalculator = require('../../../models/classes/wdfCalculator').WdfCalculator;
 
+const parentReport = require('./parent');
+
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
-router.use('/establishment/:id', Authorization.hasAuthorisedEstablishment);
+router.use('/establishment/:id', isAuthorisedEstablishment);
 router.route('/establishment/:id').get(async (req, res) => {
     const establishmentId = req.establishmentId;
 
@@ -48,6 +50,9 @@ router.route('/establishment/:id').get(async (req, res) => {
         return res.status(503).send();
     }
 });
+
+// gets the parent wdf report in excel xlsx spreadsheet format
+router.use('/establishment/:id/parent', [isAuthorisedEstablishment, parentReport]);
 
 router.route('/establishment/:id/override').get(async (req, res) => {
   const establishmentId = req.establishmentId;

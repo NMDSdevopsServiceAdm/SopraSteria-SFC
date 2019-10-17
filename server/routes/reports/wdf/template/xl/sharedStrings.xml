@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="451" uniqueCount="178">
+    <si>
+        <r>
+            <t xml:space="preserve">Parent name : </t>
+        </r>
+        <r>
+            <rPr>
+                <b />
+                <sz val="10" />
+                <color indexed="8" />
+                <rFont val="Arial" />
+                <charset val="1" />
+            </rPr>
+            <t>Skills for Care</t>
+        </r>
+    </si>
+    <si>
+        <r>
+            <t xml:space="preserve">A contract must be in place with the organisation or lead partner.
+</t>
+        </r>
+        <r>
+            <rPr>
+                <sz val="10" />
+                <color indexed="10" />
+                <rFont val="Arial" />
+                <charset val="1" />
+            </rPr>
+            <t xml:space="preserve">Members of partnerships must have completed a membership form.
+</t>
+        </r>
+        <r>
+            <rPr>
+                <sz val="10" />
+                <color indexed="10" />
+                <rFont val="Arial" />
+                <charset val="1" />
+            </rPr>
+            <t xml:space="preserve">Organisations contracting directly with Skills for Care must have completed an organisation details forms.
+</t>
+        </r>
+        <r>
+            <rPr>
+                <sz val="10" />
+                <color indexed="10" />
+                <rFont val="Arial" />
+                <charset val="1" />
+            </rPr>
+            <t>Evidence requirements for eligible units must be met and submitted in line with contract milestones for Skills for Care by the required dates (either directly or for partnership members via the lead partner).</t>
+        </r>
+    </si>
+    <si>
+        <t>Parent workforce development fund nmds-sc requirements report</t>
+    </si>
+    <si>
+        <t>Overview</t>
+    </si>
+    <si>
+        <t>Date: 28/01/2019</t>
+    </si>
+    <si>
+        <t>Permissions</t>
+    </si>
+    <si>
+        <t>Eligibility status</t>
+    </si>
+    <si>
+        <t>Establishment record completion</t>
+    </si>
+    <si>
+        <t>Worker record completion</t>
+    </si>
+    <si>
+        <t>Subsidiary name</t>
+    </si>
+    <si>
+        <t>Subsidiary sharing permissions</t>
+    </si>
+    <si>
+        <t>Current WDF eligibility status</t>
+    </si>
+    <si>
+        <t>Date achieved eligibility</t>
+    </si>
+    <si>
+        <t>Establishment data fully completed?</t>
+    </si>
+    <si>
+        <t>Establishment data created/updated with the financial year?</t>
+    </si>
+    <si>
+        <t>Number of workers at the establishment</t>
+    </si>
+    <si>
+        <t>Number of individual worker records</t>
+    </si>
+    <si>
+        <t>Number of fully completed and updated worker records</t>
+    </si>
+    <si>
+        <t>Percentage of fully completed and updated worker records</t>
+    </si>
+    <si>
+        <t>Grace Street</t>
+    </si>
+    <si>
+        <t>All</t>
+    </si>
+    <si>
+        <t>Not Eligible</t>
+    </si>
+    <si>
+        <t>No</t>
+    </si>
+    <si>
+        <t>Yes</t>
+    </si>
+    <si>
+        <t>Skills for Care</t>
+    </si>
+    <si>
+        <t>Subsidiary 2</t>
+    </si>
+    <si>
+        <t>Subsidiary 3</t>
+    </si>
+    <si>
+        <t>Support</t>
+    </si>
+    <si>
+        <t>rachel home</t>
+    </si>
+    <si>
+        <t>Compliance in terms of NMDS-SC is only one aspect of the WDF eligibility criteria. The points below must also be met:</t>
+    </si>
+    <si>
+        <t>Establishment level data</t>
+    </si>
+    <si>
+        <t>Establishment details</t>
+    </si>
+    <si>
+        <t>Worker record coverage</t>
+    </si>
+    <si>
+        <t>Starters, leavers and vacancies</t>
+    </si>
+    <si>
+        <t>Data quality assurance</t>
+    </si>
+    <si>
+        <t>Establishment type</t>
+    </si>
+    <si>
+        <t>Main service</t>
+    </si>
+    <si>
+        <t>Capacity of main service</t>
+    </si>
+    <si>
+        <t>Utilisation of main service</t>
+    </si>
+    <si>
+        <t>Other service(s)</t>
+    </si>
+    <si>
+        <t>Service users</t>
+    </si>
+    <si>
+        <t>Investors in people status</t>
+    </si>
+    <si>
+        <t>Date establishment data was last updated</t>
+    </si>
+    <si>
+        <t>Total number of workers</t>
+    </si>
+    <si>
+        <t>Total number of individual worker records</t>
+    </si>
+    <si>
+        <t>Percentage of worker records</t>
+    </si>
+    <si>
+        <t>Number of starters in the past 12 months</t>
+    </si>
+    <si>
+        <t>Number of leavers in the past 12 months</t>
+    </si>
+    <si>
+        <t>Number of vacancies on completion date</t>
+    </si>
+    <si>
+        <t>Reasons for leaving equals the total number of leavers</t>
+    </si>
+    <si>
+        <t>Destination of leavers equals the total number of leavers</t>
+    </si>
+    <si>
+        <t>Starters by job role equals the total number of starters</t>
+    </si>
+    <si>
+        <t>Leavers by job role equals the total number of leavers</t>
+    </si>
+    <si>
+        <t>Vacancies by job role equals the total number of vacancies</t>
+    </si>
+    <si>
+        <t xml:space="preserve"> Is total number of workers equal or greater than individual worker records</t>
+    </si>
+    <si>
+        <t>Private sector</t>
+    </si>
+    <si>
+        <t>Other adult domiciliary care service</t>
+    </si>
+    <si>
+        <t>Missing</t>
+    </si>
+    <si>
+        <t>Information and advice services (adults)</t>
+    </si>
+    <si>
+        <t>Adults with mental disorders or infirmities, excluding learning disability or dementia, Older people who misuse alcohol or drugs, Older people with learning disabilities</t>
+    </si>
+    <si>
+        <t>Recognised</t>
+    </si>
+    <si>
+        <t>10/09/2018</t>
+    </si>
+    <si>
+        <t>none</t>
+    </si>
+    <si>
+        <t>Older people with dementia, Older people with mental disorders or infirmities, excluding learning disability or dementia</t>
+    </si>
+    <si>
+        <t>Neither</t>
+    </si>
+    <si>
+        <t>Sheltered housing</t>
+    </si>
+    <si>
+        <t>Social work and care management (adults), Day care and day services, Any other Services, Other adult community care service</t>
+    </si>
+    <si>
+        <t>Older people with dementia, Other adults not in above categories, Other older people not in above categories</t>
+    </si>
+    <si>
+        <t>Community support and outreach</t>
+    </si>
+    <si>
+        <t>n/a</t>
+    </si>
+    <si>
+        <t>Other adult day care services</t>
+    </si>
+    <si>
+        <t>Adults with physical disabilities, Adults with sensory impairments</t>
+    </si>
+    <si>
+        <t>Committed</t>
+    </si>
+    <si>
+        <t>Older people with dementia, Older people receiving end of life care</t>
+    </si>
+    <si>
+        <t>Head office services</t>
+    </si>
+    <si>
+        <t>Community support and outreach, Any other Services, Information and advice services (adults)</t>
+    </si>
+    <si>
+        <t>Adults with learning disabilities, Adults with dementia, Older people with learning disabilities</t>
+    </si>
+    <si>
+        <t>Social work and care management (adults)</t>
+    </si>
+    <si>
+        <t>Other adult community care service</t>
+    </si>
+    <si>
+        <t>Adults with physical disabilities, Older people with physical disabilities</t>
+    </si>
+    <si>
+        <t>Worker level data</t>
+    </si>
+    <si>
+        <t>Local ID</t>
+    </si>
+    <si>
+        <t>Gender</t>
+    </si>
+    <si>
+        <t>DOB</t>
+    </si>
+    <si>
+        <t>Nationality</t>
+    </si>
+    <si>
+        <t>Main Job Role</t>
+    </si>
+    <si>
+        <t>Date started main job</t>
+    </si>
+    <si>
+        <t>Recruitment Source</t>
+    </si>
+    <si>
+        <t>Employment Status</t>
+    </si>
+    <si>
+        <t>Contracted Hours</t>
+    </si>
+    <si>
+        <t>Additional Hours</t>
+    </si>
+    <si>
+        <t>Full Time Status</t>
+    </si>
+    <si>
+        <t>Zero-hours Contract</t>
+    </si>
+    <si>
+        <t>Sickness Days</t>
+    </si>
+    <si>
+        <t>Pay Interval</t>
+    </si>
+    <si>
+        <t>Rate of pay</t>
+    </si>
+    <si>
+        <t>Induction Status</t>
+    </si>
+    <si>
+        <t>Care Certificate</t>
+    </si>
+    <si>
+        <t>Highest Qualification held</t>
+    </si>
+    <si>
+        <t>Last fully updated date (both sections)**</t>
+    </si>
+    <si>
+        <t>12345</t>
+    </si>
+    <si>
+        <t>Female</t>
+    </si>
+    <si>
+        <t>03-May-1999</t>
+    </si>
+    <si>
+        <t>Andorra</t>
+    </si>
+    <si>
+        <t>Social Worker</t>
+    </si>
+    <si>
+        <t>15/01/2019</t>
+    </si>
+    <si>
+        <t>Other sector</t>
+    </si>
+    <si>
+        <t>Permanently employed</t>
+    </si>
+    <si>
+        <t>27.5</t>
+    </si>
+    <si>
+        <t>0</t>
+    </si>
+    <si>
+        <t>Part-time</t>
+    </si>
+    <si>
+        <t>.5</t>
+    </si>
+    <si>
+        <t>Hourly</t>
+    </si>
+    <si>
+        <t>Achieved</t>
+    </si>
+    <si>
+        <t>In Progress</t>
+    </si>
+    <si>
+        <t>No Qualifications Held</t>
+    </si>
+    <si>
+        <t>31/10/2018</t>
+    </si>
+    <si>
+        <t>NMDS2</t>
+    </si>
+    <si>
+        <t>04-Oct-1964</t>
+    </si>
+    <si>
+        <t>United Kingdom</t>
+    </si>
+    <si>
+        <t>Registered Nurse</t>
+    </si>
+    <si>
+        <t>01/05/2018</t>
+    </si>
+    <si>
+        <t>Retail sector</t>
+    </si>
+    <si>
+        <t>1</t>
+    </si>
+    <si>
+        <t>Level 4</t>
+    </si>
+    <si>
+        <t>reg manager</t>
+    </si>
+    <si>
+        <t>Male</t>
+    </si>
+    <si>
+        <t>17-Jun-1954</t>
+    </si>
+    <si>
+        <t>Not known</t>
+    </si>
+    <si>
+        <t>Middle Management</t>
+    </si>
+    <si>
+        <t>37</t>
+    </si>
+    <si>
+        <t>Full-time</t>
+    </si>
+    <si>
+        <t>Annual</t>
+    </si>
+    <si>
+        <t>Not applicable</t>
+    </si>
+    <si>
+        <t>test</t>
+    </si>
+    <si>
+        <t>Supervisor</t>
+    </si>
+    <si>
+        <t>11/12/2018</t>
+    </si>
+    <si>
+        <t>Testing</t>
+    </si>
+    <si>
+        <t>13-Apr-1936</t>
+    </si>
+    <si>
+        <t>10/07/2013</t>
+    </si>
+    <si>
+        <t>Not Known</t>
+    </si>
+    <si>
+        <t>456</t>
+    </si>
+    <si>
+        <t>06-Aug-1957</t>
+    </si>
+    <si>
+        <t>First Line Manager</t>
+    </si>
+    <si>
+        <t>14/08/2013</t>
+    </si>
+    <si>
+        <t>Adult care sector: private or voluntary sector</t>
+    </si>
+    <si>
+        <t>34</t>
+    </si>
+    <si>
+        <t>Level 3</t>
+    </si>
+    <si>
+        <t>06/09/2018</t>
+    </si>
+    <si>
+        <t>linking test</t>
+    </si>
+    <si>
+        <t>06-Dec-1964</t>
+    </si>
+    <si>
+        <t>Care Worker</t>
+    </si>
+    <si>
+        <t>test 2</t>
+    </si>
+    <si>
+        <t>12-Sep-1974</t>
+    </si>
+    <si>
+        <t>01/04/2005</t>
+    </si>
+    <si>
+        <t>Temporarily employed or casual</t>
+    </si>
+    <si>
+        <t>25</t>
+    </si>
+    <si>
+        <t>5</t>
+    </si>
+    <si>
+        <t>test3</t>
+    </si>
+    <si>
+        <t>04-Nov-1985</t>
+    </si>
+    <si>
+        <t>07/01/2015</t>
+    </si>
+    <si>
+        <t>20</t>
+    </si>
+    <si>
+        <t>worker4</t>
+    </si>
+    <si>
+        <t>09-Aug-1970</t>
+    </si>
+    <si>
+        <t>10/08/2014</t>
+    </si>
+    <si>
+        <t>Adult care sector: local authority</t>
+    </si>
+    <si>
+        <t>Bank or pool</t>
+    </si>
+    <si>
+        <t>Rachel</t>
+    </si>
+    <si>
+        <t>27-Apr-1988</t>
+    </si>
+    <si>
+        <t>Advice, Guidance and Advocacy</t>
+    </si>
+    <si>
+        <t>02/05/2017</t>
+    </si>
+    <si>
+        <t>Agency</t>
+    </si>
+    <si>
+        <t>40</t>
+    </si>
+    <si>
+        <t>la</t>
+    </si>
+    <si>
+        <t>23-Oct-1952</t>
+    </si>
+    <si>
+        <t>01/09/2011</t>
+    </si>
+    <si>
+        <t>Other</t>
+    </si>
+    <si>
+        <t>Unpaid</t>
+    </si>
+</sst>
