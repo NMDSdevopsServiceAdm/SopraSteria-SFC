@@ -961,6 +961,7 @@ class Establishment extends EntityValidator {
 
     return mustSave;
   }
+
   //This method will fetch parent name
   async fetchParentName(id) {
     if (!id) {
@@ -1066,7 +1067,6 @@ class Establishment extends EntityValidator {
         this._reasonsForLeaving = fetchResults.reasonsForLeaving;
         this._archived = fetchResults.archived;
         this._dataOwnershipRequested = fetchResults.dataOwnershipRequested;
-
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1488,7 +1488,8 @@ class Establishment extends EntityValidator {
       const myDefaultJSON = {
         id: this.id,
         uid: this.uid,
-        name: this.name
+        name: this.name,
+        dataOwnershipRequested: this.dataOwnershipRequested
       };
 
       if (fullDescription) {
@@ -1506,6 +1507,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.isParent = this.isParent;
         myDefaultJSON.parentUid = this.parentUid;
         myDefaultJSON.dataOwner = this.dataOwner;
+        myDefaultJSON.dataOwnershipRequested = this.dataOwnershipRequested;
         myDefaultJSON.dataPermissions = this.isParent ? undefined : this.dataPermissions;
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
       }
