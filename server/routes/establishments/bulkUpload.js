@@ -2179,7 +2179,7 @@ router.route('/complete').post(async (req, res) => {
   } catch (err) {
     console.error(err);
     res.write(JSON.stringify({
-      message: err.message
+      message: 'Service Unavailable'
     }));
   }
 
