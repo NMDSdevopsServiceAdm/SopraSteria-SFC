@@ -112,8 +112,9 @@ class Worker extends EntityValidator {
         throw new WorkerExceptions.WorkerSaveException(null,
           this._uid,
           this._nameId,
-                                                               `Unexpected Establishment Id (${this._establishmentId})`,
-                                                               'Unknown Establishment');
+         `Unexpected Establishment Id (${this._establishmentId})`,
+         'Unknown Establishment'
+        );
       }
 
       // note, do not initialise the id as this will be returned by database
