@@ -150,7 +150,10 @@ export class BulkUploadService {
   }
 
   public complete(workplaceUid: string) {
-    return this.http.post(`/api/establishment/${workplaceUid}/bulkupload/complete`, null);
+    return this.http.post(`/api/establishment/${workplaceUid}/bulkupload/complete`, {
+      observe: 'body',
+      responseType: 'json',
+    });
   }
 
   public resetBulkUpload(): void {

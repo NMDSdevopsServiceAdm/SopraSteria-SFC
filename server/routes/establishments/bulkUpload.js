@@ -788,6 +788,7 @@ const _validateEstablishmentCsv = async (
     );
 
     await thisApiEstablishment.load(thisEstablishmentAsAPI);
+
     keepAlive();
 
     const isValid = thisApiEstablishment.validate();
@@ -1885,12 +1886,17 @@ const getFileName = reportType => {
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment
-const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) => {
+const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId, keepAlive = () => {}) => {
   try {
     // the result of validation is to make available an S3 object outlining ALL entities ready to be uploaded
     const allEntitiesKey = `${primaryEstablishmentId}/intermediary/all.entities.json`;
 
-    const onLoadEntitiesJSON = await downloadContent(allEntitiesKey);
+    const onLoadEntitiesJSON = await downloadContent(allEntitiesKey).then(myFile => {
+      keepAlive();
+
+      return myFile;
+    });
+
     const onLoadEntities = JSON.parse(onLoadEntitiesJSON.data);
 
     // now create/load establishment entities from each of the establishments, including all associated entities (full depth including training/quals)
@@ -1912,7 +1918,11 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
           thisEntity.postcode,
           thisEntity.isRegulated
         );
-        onloadPromises.push(newOnloadEstablishment.load(thisEntity, true));
+        onloadPromises.push(newOnloadEstablishment.load(thisEntity, true).then(data => {
+          keepAlive();
+
+          return data;
+        }));
       });
     }
     // wait here for the loading of all establishments from entities to complete
@@ -1931,7 +1941,8 @@ const completeNewEstablishment = async (
   transaction,
   onloadEstablishments,
   primaryEstablishmentId,
-  primaryEstablishmentUid
+  primaryEstablishmentUid,
+  keepAlive = () => {}
 ) => {
   try {
     const startTime = new Date();
@@ -1943,8 +1954,11 @@ const completeNewEstablishment = async (
     if (foundOnloadEstablishment) {
       // as this new establishment is created from a parent, it automatically becomes a sub
       foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
+      keepAlive();
       await foundOnloadEstablishment.save(theLoggedInUser, true, 0, transaction, true);
+      keepAlive();
       await foundOnloadEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
+      keepAlive();
     }
 
     const endTime = new Date();
@@ -1956,7 +1970,14 @@ const completeNewEstablishment = async (
   }
 };
 
-const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedInUser, transaction, onloadEstablishments, myCurrentEstablishments) => {
+const completeUpdateEstablishment = async (
+  thisUpdatedEstablishment,
+  theLoggedInUser,
+  transaction,
+  onloadEstablishments,
+  myCurrentEstablishments,
+  keepAlive = () => {}
+) => {
   try {
     const startTime = new Date();
 
@@ -1973,9 +1994,13 @@ const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedIn
       const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false, false, false, false, true, null, true);
       delete thisEstablishmentJSON.localIdentifier;
 
+      keepAlive();
       await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
+      keepAlive();
       await foundCurrentEstablishment.save(theLoggedInUser, true, 0, transaction, true);
+      keepAlive();
       await foundCurrentEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
+      keepAlive();
 
       const endTime = new Date();
       const numberOfWorkers = foundCurrentEstablishment.workers.length;
@@ -2010,7 +2035,16 @@ const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedIn
 
 router.route('/complete').post(async (req, res) => {
   // manage the request timeout
-  req.setTimeout(config.get('bulkupload.completion.timeout') * 1000);
+  // req.setTimeout(config.get('bulkupload.completion.timeout') * 1000);
+
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Transfer-Encoding': 'chunked'
+  });
+
+  const keepAlive = () => {
+    res.write(' ');
+  };
 
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
@@ -2023,14 +2057,20 @@ router.route('/complete').post(async (req, res) => {
     //  validating a bulk upload and completing it.
     const completeStartTime = new Date();
     // association level is just 1 (we need Establishment's workers for completion, but not the Worker's associated training and qualification)
-    const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1);
+    const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1, keepAlive);
+
+    keepAlive();
 
     const restoredExistingStateTime = new Date();
     timerLog('CHECKPOINT - BU COMPLETE - have restored current state of establishments/workers', completeStartTime, restoredExistingStateTime);
 
     try {
-      const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId);
-      const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null);
+      const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId, keepAlive);
+      const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null).then(data => {
+        keepAlive();
+
+        return data;
+      });
       const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
 
       const restoredOnLoadStateTime = new Date();
@@ -2056,8 +2096,13 @@ router.route('/complete').post(async (req, res) => {
                 t,
                 onloadEstablishments,
                 primaryEstablishmentId,
-                primaryEstablishmentUid
-              ).then(log)), starterNewPromise);
+                primaryEstablishmentUid,
+                keepAlive
+              ).then(data => {
+                keepAlive();
+
+                return data;
+              }).then(log)), starterNewPromise);
 
           // now update the updated
           const starterUpdatedPromise = Promise.resolve(null);
@@ -2069,8 +2114,13 @@ router.route('/complete').post(async (req, res) => {
                 theLoggedInUser,
                 t,
                 onloadEstablishments,
-                myCurrentEstablishments
-              ).then(log)), starterUpdatedPromise);
+                myCurrentEstablishments,
+                keepAlive
+              ).then(data => {
+                keepAlive();
+
+                return data;
+              }).then(log)), starterUpdatedPromise);
 
           // and finally, delete the deleted
           const starterDeletedPromise = Promise.resolve(null);
@@ -2081,8 +2131,13 @@ router.route('/complete').post(async (req, res) => {
                 thisDeletedEstablishment,
                 theLoggedInUser,
                 t,
-                myCurrentEstablishments
-              ).then(log)), starterDeletedPromise);
+                myCurrentEstablishments,
+                keepAlive
+              ).then(data => {
+                keepAlive();
+
+                return data;
+              }).then(log)), starterDeletedPromise);
 
           completeCommitTransactionTime = new Date();
         });
@@ -2097,30 +2152,38 @@ router.route('/complete').post(async (req, res) => {
         //  clean up the S3 objects
         await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
 
+        keepAlive();
+
         // confirm success against the primary establishment
         await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
+
+        keepAlive();
 
         const completeEndTime = new Date();
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);
         timerLog('CHECKPOINT - BU COMPLETE - overall', completeStartTime, completeEndTime);
 
-        return res.status(200).send({});
+        res.write(JSON.stringify({}));
       } catch (err) {
         console.error("route('/complete') err: ", err);
-        return res.status(503).send({
+        res.write(JSON.stringify({
           message: 'Failed to save'
-        });
+        }));
       }
     } catch (err) {
       console.error('router.route(\'/complete\').post: failed to download entities intermediary - atypical that the object does not exist because not yet validated: ', err);
-      return res.status(400).send({
-        message: 'Validation has not ran'
-      });
+      res.write(JSON.stringify({
+        message: 'Validation has not run'
+      }));
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send({});
+    res.write(JSON.stringify({
+      message: err.message
+    }));
   }
+
+  res.end();
 });
 
 // takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV

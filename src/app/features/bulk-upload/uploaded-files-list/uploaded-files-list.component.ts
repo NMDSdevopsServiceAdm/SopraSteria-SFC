@@ -171,9 +171,17 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       .complete(this.establishmentService.primaryWorkplace.uid)
       .pipe(take(1))
       .subscribe(
-        () => {
-          this.router.navigate(['/dashboard']);
-          this.alertService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
+        (response: any) => {
+          const hasProp = (obj, prop) =>
+            Object.prototype.hasOwnProperty.bind(obj)(prop);
+
+          if (hasProp(response, 'message')) {
+            this.bulkUploadService.serverError$.next(response.message);
+          }
+          else {
+            this.router.navigate(['/dashboard']);
+            this.alertService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
+          }
         },
         response => {
           this.bulkUploadService.serverError$.next(response.error.message);
