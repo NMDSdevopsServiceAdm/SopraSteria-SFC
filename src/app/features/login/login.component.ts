@@ -78,8 +78,6 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
         name: 401,
         message:
           'Please Note<br>' +
-          'Your registration request is awaiting approval (contact support)<br>' +
-          'Or<br>' +
           'Your username / password is incorrect ' +
           '(please consider resetting your password now, 5 incorrect attempts will lock your account)',
       },
