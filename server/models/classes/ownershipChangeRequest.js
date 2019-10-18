@@ -52,12 +52,7 @@ class OwnershipChangeRequest {
           params.subEstablishmentID = checkownerChangeRequest[0].subEstablishmentID;
         }
         if (params.subEstablishmentID) {
-          const checkParent = await ownership.getParentDetails(params);
-          if (checkParent && !checkParent[0].IsParent) {
-            params.parentId = checkParent[0].ParentID;
-          } else {
             params.parentId = this._ownerChangeRequest.establishment.id;
-          }
         }
 
         let getRecipientUserDetails = await ownership.getReipientUserDetails(params);

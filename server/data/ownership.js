@@ -69,22 +69,11 @@ UPDATE cqc."Establishment"
 SET "DataOwnershipRequested" = :timestamp
 WHERE "EstablishmentID" = :estId;
 `;
- const getParentDetailsQuery = `
- SELECT "IsParent","ParentID", "ParentUID" FROM cqc."Establishment"
- WHERE "EstablishmentID" = :estId;
- `;
+
 exports.getReipientUserDetails = async params =>
   db.query(getReipientUserDetailsQuery, {
     replacements: {
       estID: params.parentId,
-    },
-    type: db.QueryTypes.SELECT,
-  });
-
-  exports.getParentDetails = async params =>
-  db.query(getParentDetailsQuery, {
-    replacements: {
-      estId: params.subEstablishmentID,
     },
     type: db.QueryTypes.SELECT,
   });
