@@ -30,6 +30,7 @@ var postcodes = require('./server/routes/postcodes');
 var services = require('./server/routes/services');
 var registration = require('./server/routes/registration');
 var establishments = require('./server/routes/establishments');
+var ownershipRequest = require('./server/routes/ownershipRequest')
 var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
@@ -189,6 +190,7 @@ app.use('/api/postcodes', [cacheMiddleware.nocache, postcodes]);
 app.use('/api/registration', [cacheMiddleware.nocache, registration]);
 app.use('/api/login', [cacheMiddleware.nocache, login]);
 app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
+app.use('/api/ownershipRequest', [cacheMiddleware.nocache,ownershipRequest]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
