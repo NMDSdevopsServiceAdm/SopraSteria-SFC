@@ -83,5 +83,33 @@ describe('Bulk upload', () => {
         expect(workplace.missing).toEqual(true);
         expect(workplace.workers).toEqual(0);
     });
+    it('should fail if trying to request local identifiers with no authorization token passed ', async () => {
+      await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid)}/localIdentifiers`)
+        .expect(401);
+    });
+    it('should fail if trying to request another users establishment ', async () => {
+      await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid) + 1}/localIdentifiers`)
+        .set('Authorization', loginAuth)
+        .expect(403);
+    });
+  });
+  describe('/api/establishment/:establishmentuid/bulkupload/uploaded', () => {
+    it('should return an empty list of files for the establishment', async () => {
+      const uploaded = await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
+        .set('Authorization', loginAuth)
+        .expect(200);
+      expect(uploaded.body.establishment.uid).toEqual(establishmentId);
+      expect(Array.isArray(uploaded.body.files)).toEqual(true);
+      expect(uploaded.body.files.length).toEqual(0);
+    });
+    it('should fail if trying to request uploaded files with no authorization token passed ', async () => {
+      await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
+        .expect(401);
+    });
+    it('should fail if trying to request another users establishment ', async () => {
+      await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/uploaded`)
+        .set('Authorization', loginAuth)
+        .expect(403);
+    });
   });
 });
