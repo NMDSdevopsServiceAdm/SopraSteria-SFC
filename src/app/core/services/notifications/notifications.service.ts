@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Notification } from '@core/model/notifications.model';
-import { BehaviorSubject } from 'rxjs';
 import { filter } from 'lodash';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -25,5 +25,9 @@ export class NotificationsService {
 
   get notifications(): Notification[] {
     return this.notifications$.value;
+  }
+
+  public setNoticationViewed(notificationUid: string): Observable<Notification> {
+    return this.http.post<any>(`/api/user/my/notifications/${notificationUid}`, { isViewed: true });
   }
 }

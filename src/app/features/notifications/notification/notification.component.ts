@@ -3,9 +3,10 @@ import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Notification } from '@core/model/notifications.model';
-import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { NotificationsService } from '@core/services/notifications/notifications.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-notification',
@@ -15,6 +16,7 @@ export class NotificationComponent implements OnInit {
   public workplace: Establishment;
   public notification: Notification;
   public status: 'pending' | 'approved' | 'rejected' = 'pending';
+  protected subscriptions: Subscription = new Subscription();
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -27,10 +29,23 @@ export class NotificationComponent implements OnInit {
     this.workplace = this.establishmentService.primaryWorkplace;
     const notificationUid = this.route.snapshot.params.notificationuid;
     this.notification = this.notificationsService.getNotification(notificationUid);
+    this.setNotificationViewed(notificationUid);
   }
 
-  public approveRequest() {
-    this.status = 'approved';
+  protected setNotificationViewed(notificationUid) {
+    this.subscriptions.add(
+      this.notificationsService.setNoticationViewed(notificationUid).subscribe(
+        resp => {
+          this.notificationsService.notifications.forEach((notification, i) => {
+            if (notification.notificationUid === resp.notificationUid) {
+              this.notificationsService.notifications[i] = resp;
+            }
+          });
+          this.notificationsService.notifications$.next(this.notificationsService.notifications);
+        },
+        error => console.log('Could not update notification.')
+      )
+    );
   }
 
   public rejectRequest() {
