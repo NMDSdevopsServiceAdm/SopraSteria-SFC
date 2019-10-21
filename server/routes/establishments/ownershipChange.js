@@ -44,7 +44,7 @@ router.route('/').post(async (req, res) => {
         }
 
         params.parentId = thisEstablishment._parentId;
-        let getRecipientUserDetails = await ownership.getReipientUserDetails(params);
+        let getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
         if (getRecipientUserDetails.length) {
           //save records
           params.recipientUserUid = getRecipientUserDetails[0].UserUID;
@@ -123,7 +123,7 @@ router.route('/').put(async (req, res) => {
           });
         } else {
           params.parentId = thisEstablishment.parentId;
-          let getRecipientUserDetails = await ownership.getReipientUserDetails(params);
+          let getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
           if (getRecipientUserDetails.length) {
             //save records
             params.recipientUserUid = getRecipientUserDetails[0].UserUID;
