@@ -13,6 +13,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 export class NotificationListComponent implements OnInit {
   workplace: Establishment;
   notifications: Notification[];
+  public ownerChangeRequestUID;
   constructor(
     private establishmentService: EstablishmentService,
     private notificationService: NotificationsService,

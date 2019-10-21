@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { Notification } from '@core/model/notifications.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
@@ -14,13 +14,14 @@ import { Subscription } from 'rxjs';
 })
 export class NotificationComponent implements OnInit {
   public workplace: Establishment;
-  public notification: Notification;
-  public status: 'pending' | 'approved' | 'rejected' = 'pending';
-  protected subscriptions: Subscription = new Subscription();
+  public notification;
+  private subscriptions: Subscription = new Subscription();
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
+    private router: Router,
+    private alertService: AlertService,
     private notificationsService: NotificationsService
   ) {}
 
@@ -28,8 +29,38 @@ export class NotificationComponent implements OnInit {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
     const notificationUid = this.route.snapshot.params.notificationuid;
-    this.notification = this.notificationsService.getNotification(notificationUid);
-    this.setNotificationViewed(notificationUid);
+    this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
+      this.notification = details;
+    });
+  }
+
+  public approveRequest() {
+    if (this.notification) {
+      let requestParameter = {
+        ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
+        approvalStatus: 'APPROVED',
+        approvalReason: '',
+      };
+      this.subscriptions.add(
+        this.notificationsService
+          .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+          .subscribe(
+            request => {
+              if (request) {
+                this.router.navigate(['/dashboard']);
+                this.alertService.addAlert({
+                  type: 'success',
+                  message: `Your decision to transfer ownership of data has been sent to
+                  ${this.notification.typeContent.subEstablishmentName} `,
+                });
+              }
+            },
+            error => {
+              console.error(error.error.message);
+            }
+          )
+      );
+    }
   }
 
   protected setNotificationViewed(notificationUid) {
@@ -48,7 +79,5 @@ export class NotificationComponent implements OnInit {
     );
   }
 
-  public rejectRequest() {
-    this.status = 'rejected';
-  }
+  public rejectRequest() {}
 }

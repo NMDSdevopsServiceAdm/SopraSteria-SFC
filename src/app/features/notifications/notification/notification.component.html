@@ -9,15 +9,17 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-2">From:</h2>
-    <p class="govuk-util__inline-block">Waverley Grange, {{ notification.created | longDate }}</p>
-    <h2 class="govuk-heading-s">Subject</h2>
-    <p>{{ notification.type | notificationType }}</p>
+    <p class="govuk-util__inline-block" *ngIf="notification">
+      {{ notification.typeContent.subEstablishmentName }}, {{ notification.created | longDate }}
+    </p>
+    <h2 class="govuk-heading-s" *ngIf="notification">Subject</h2>
+    <p>{{ notification?.type | notificationType }}</p>
   </div>
 </div>
-<ng-container *ngIf="status === 'pending'">
+<ng-container *ngIf="notification">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <p>You have requested to transfer ownership of data to Waverley Grange.</p>
+      <p>You have requested to transfer ownership of data to {{ notification.typeContent.subEstablishmentName }}.</p>
       <p>Approve the request to set the following permissions:</p>
 
       <table class="govuk-table govuk-table__with-action">
@@ -40,9 +42,9 @@
             </td>
             <td class="govuk-table__cell">None, linked only</td>
           </tr>
-          <tr class="govuk-table__row govuk-error-table__row--no-border">
+          <tr class="govuk-table__row govuk-error-table__row--no-border" *ngIf="notification">
             <td class="govuk-table__cell">
-              Waverley Grange
+              {{ notification.typeContent.subEstablishmentName }}
             </td>
             <td class="govuk-table__cell">
               <strong class="notification-tag notification-tag--edit">
@@ -71,11 +73,11 @@
     </div>
   </div>
 </ng-container>
-
+<!--
 <ng-container *ngIf="status === 'approved'">
   NOTIFICATION APPROVED <a routerLink="/dashboard">Back to dashboard</a>
-</ng-container>
+</ng-container> -->
 
-<ng-container *ngIf="status === 'rejected'">
+<!-- <ng-container *ngIf="status === 'rejected'">
   NOTIFICATION REJECTED <a routerLink="/dashboard">Back to dashboard</a>
-</ng-container>
+</ng-container> -->
