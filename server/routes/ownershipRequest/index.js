@@ -19,6 +19,7 @@ router.route('/:id').put(async (req, res) => {
       userUid: req.userUid,
       approvalStatus: req.body.approvalStatus,
       approvalReason: req.body.approvalReason,
+      type: req.body.type,
     };
     if (!id) {
       console.error('Missing id or uid');
@@ -41,7 +42,7 @@ router.route('/:id').put(async (req, res) => {
       } else {
         params.subEstablishmentID = checkOwnerChangeRequest[0].subEstablishmentID;
         if (params.subEstablishmentID) {
-          params.parentId = req.establishment.id;
+          params.establishmentId = req.establishment.id;
         }
         let getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
         if (getRecipientUserDetails.length) {

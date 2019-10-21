@@ -1,21 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { Notification } from '@core/model/notifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { Subscription } from 'rxjs';
+const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
+// This will be used when reject api is integrated
+const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
 
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
 })
-export class NotificationComponent implements OnInit {
+export class NotificationComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
-  public notification: Notification;
+  public notification;
   private subscriptions: Subscription = new Subscription();
   constructor(
     private route: ActivatedRoute,
@@ -42,6 +44,7 @@ export class NotificationComponent implements OnInit {
         ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
         approvalStatus: 'APPROVED',
         approvalReason: '',
+        type: OWNERSHIP_APPROVED,
       };
       this.subscriptions.add(
         this.notificationsService
@@ -79,6 +82,10 @@ export class NotificationComponent implements OnInit {
       )
     );
   }
-
+  //This is left blank intentionally
   public rejectRequest() {}
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 }
