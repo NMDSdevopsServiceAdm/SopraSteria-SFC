@@ -736,26 +736,6 @@ async function uploadAsJSON (username, establishmentId, content, key) {
   }
 }
 
-async function uploadAsCSV (username, establishmentId, content, key) {
-  const myEstablishmentId = String(establishmentId);
-
-  try {
-    await s3.putObject({
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
-      Key: key,
-      Body: content,
-      ContentType: 'text/csv',
-      Metadata: {
-        username,
-        establishmentId: myEstablishmentId
-      }
-    }).promise();
-  } catch (err) {
-    console.error('uploadAsCSV: ', err);
-    throw new Error(`Failed to upload S3 object: ${key}`);
-  }
-}
-
 const _validateEstablishmentCsv = async (
   thisLine,
   currentLineNumber,
@@ -2187,13 +2167,10 @@ router.route('/complete').post(async (req, res) => {
 });
 
 // takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
-const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId) => {
-  const establishmentsCsvArray = [];
-  const workersCsvArray = [];
-  const trainingCsvArray = [];
-
+const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, responseSend) => {
   // before being able to write the worker header, we need to know the maximum number of qualifications
-  //  columns across all workers
+  // columns across all workers
+
   try {
     const determineMaxQuals = await dbmodels.sequelize.query(
       'select cqc.maxQualifications(:givenPrimaryEstablishment);',
@@ -2209,41 +2186,48 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId)
       const MAX_QUALS = parseInt(determineMaxQuals[0].maxqualifications, 10);
 
       // first the header rows
-      establishmentsCsvArray.push(new CsvEstablishmentValidator().headers);
-      workersCsvArray.push(new CsvWorkerValidator().headers(MAX_QUALS));
-      trainingCsvArray.push(new CsvTrainingValidator().headers);
+      let headers = '';
+
+      switch (downloadType) {
+        case 'establishments':
+          headers = (new CsvEstablishmentValidator()).headers;
+          break;
+
+        case 'workers':
+          headers = (new CsvWorkerValidator()).headers(MAX_QUALS);
+          break;
+
+        case 'training':
+          headers = (new CsvTrainingValidator()).headers;
+          break;
+      }
+
+      responseSend(headers);
 
       allMyEstablishments.forEach(thisEstablishment => {
-        const establishmentCsvValidator = new CsvEstablishmentValidator();
-
-        establishmentsCsvArray.push(establishmentCsvValidator.toCSV(thisEstablishment));
-
-        // for each worker on this establishment
-        const thisEstablishmentWorkers = thisEstablishment.workers;
-        thisEstablishmentWorkers.forEach(thisWorker => {
-          const workerCsvValidator = new CsvWorkerValidator();
-
-          // note - thisEstablishment.name will need to be local identifier once available
-          workersCsvArray.push(workerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS));
-
-          // and for this Worker's training records
-          if (thisWorker.training) {
-            thisWorker.training.forEach(thisTrainingRecord => {
-              const trainingCsvValidator = new CsvTrainingValidator();
-
-              trainingCsvArray.push(trainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord));
-            });
-          }
-        });
+        if (downloadType === 'establishments') {
+          responseSend(NEWLINE + (new CsvEstablishmentValidator()).toCSV(thisEstablishment));
+        } else {
+          // for each worker on this establishment
+          thisEstablishment.workers.forEach(thisWorker => {
+            // note - thisEstablishment.name will need to be local identifier once available
+            if (downloadType === 'workers') {
+              responseSend(NEWLINE + (new CsvWorkerValidator()).toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS));
+            } else if (thisWorker.training) { // or for this Worker's training records
+              thisWorker.training.forEach(thisTrainingRecord => {
+                responseSend(NEWLINE + (new CsvTrainingValidator()).toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord));
+              });
+            }
+          });
+        }
       });
     } else {
       console.error('bulk upload exportToCsv - max quals error: ', determineMaxQuals);
+      throw new Error('max quals error: determineMaxQuals');
     }
-  } catch (err) {
-    console.error('bulk upload exportToCsv error: ', err);
+  } catch (e) {
+    console.log(e);
   }
-
-  return [establishmentsCsvArray.join(NEWLINE), workersCsvArray.join(NEWLINE), trainingCsvArray.join(NEWLINE)];
 };
 
 // TODO: Note, regardless of which download type is requested, the way establishments, workers and training
@@ -2251,7 +2235,7 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId)
 // be prepared and uploaded to S3, and then signed URLs returned for the browsers to download directly, thus not
 // imposing the streaming of large data files through node.js API
 router.route('/download/:downloadType').get(async (req, res) => {
-  req.setTimeout(config.get('bulkupload.download.timeout') * 1000);
+  // req.setTimeout(config.get('bulkupload.download.timeout') * 1000);
 
   const NEWLINE = '\r\n';
 
@@ -2262,77 +2246,54 @@ router.route('/download/:downloadType').get(async (req, res) => {
   const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training'];
   const downloadType = req.params.downloadType;
 
-  try {
-    let establishments = [];
-    let workers = [];
-    let training = [];
+  const ENTITY_RESTORE_LEVEL = 2;
 
-    if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
-      try {
-        const ENTITY_RESTORE_LEVEL = 2;
-        // only restore those subs that this primary establishment owns
-        const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true);
-        [establishments, workers, training] = await exportToCsv(NEWLINE, myCurrentEstablishments, primaryEstablishmentId);
-      } catch (err) {
-        console.error('router.get(\'/bulkupload/download\').get: failed to restore my establishments and all associated entities (workers, qualifications and training: ', err);
-        return res.status(503).send({});
-      }
+  let headWritten = false;
 
-      // before returning the response - upload to S3
-      if (config.get('bulkupload.validation.storeIntermediaries')) {
-        const s3UploadPromises = [];
-        // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
-        s3UploadPromises.push(uploadAsCSV(
-          theLoggedInUser,
-          primaryEstablishmentId,
-          establishments,
-          `${primaryEstablishmentId}/download/establishments.csv`
-        ));
+  const responseSend = async text => {
+    if (!headWritten) {
+      headWritten = true;
 
-        s3UploadPromises.push(uploadAsCSV(
-          theLoggedInUser,
-          primaryEstablishmentId,
-          workers,
-          `${primaryEstablishmentId}/download/workers.csv`
-        ));
-
-        s3UploadPromises.push(uploadAsCSV(
-          theLoggedInUser,
-          primaryEstablishmentId,
-          training,
-          `${primaryEstablishmentId}/download/training.csv`
-        ));
-
-        await Promise.all(s3UploadPromises);
-      }
-
-      const date = new Date().toISOString().split('T')[0];
-      res.setHeader('Content-disposition', 'attachment; filename=' + `${date}-sfc-bulk-upload-${downloadType}.csv`);
-      res.set('Content-Type', 'text/csv').status(200);
-
-      let response = null;
-      switch (downloadType) {
-        case 'establishments':
-          response = establishments;
-          break;
-        case 'workers':
-          response = workers;
-          break;
-        case 'training':
-          response = training;
-          break;
-      }
-
-      return res.send(response);
-    } else {
-      console.error(`router.get('/bulkupload/download').get: unexpected download type: ${downloadType}`, downloadType);
-      return res.status(400).send({
-        message: 'Unexpected download type'
+      res.writeHead(200, {
+        'Content-Type': 'text/csv',
+        'Content-disposition': `attachment; filename=${new Date().toISOString().split('T')[0]}-sfc-bulk-upload-${downloadType}.csv`,
+        'Transfer-Encoding': 'chunked'
       });
     }
-  } catch (err) {
-    console.error('router.get(\'/bulkupload/download\').get: error: ', err);
-    return res.status(503).send({});
+
+    res.write(text);
+  };
+
+  if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
+    try {
+      await exportToCsv(
+        NEWLINE,
+        // only restore those subs that this primary establishment owns
+        await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true),
+        primaryEstablishmentId,
+        downloadType,
+        responseSend
+      );
+    } catch (err) {
+      console.error('router.get(\'/bulkupload/download\').get: failed to restore my establishments and all associated entities (workers, qualifications and training: ', err);
+
+      if (!headWritten) {
+        // This is iffy,b ut what else can we do if something fails while streaming csv data?
+        res.writeHead(503, {
+          'Content-Type': 'application/json'
+        });
+        headWritten = true;
+
+        responseSend('{ "message": "Failed to retrieve establishment data" }');
+      }
+    }
+
+    res.end();
+  } else {
+    console.error(`router.get('/bulkupload/download').get: unexpected download type: ${downloadType}`, downloadType);
+    res.status(400).send({
+      message: `Unexpected download type: ${downloadType}`
+    });
   }
 });
 
