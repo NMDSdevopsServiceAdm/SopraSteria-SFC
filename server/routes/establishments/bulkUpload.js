@@ -444,7 +444,6 @@ router.route('/uploaded').put(async (req, res) => {
 
 router.route('/validate').put(async (req, res) => {
   // manage the request timeout
-  // req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
 
   res.writeHead(200, {
     'Content-Type': 'application/json',
@@ -2015,7 +2014,6 @@ const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedIn
 
 router.route('/complete').post(async (req, res) => {
   // manage the request timeout
-  // req.setTimeout(config.get('bulkupload.completion.timeout') * 1000);
 
   res.writeHead(200, {
     'Content-Type': 'application/json',
@@ -2231,8 +2229,6 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
 // be prepared and uploaded to S3, and then signed URLs returned for the browsers to download directly, thus not
 // imposing the streaming of large data files through node.js API
 router.route('/download/:downloadType').get(async (req, res) => {
-  // req.setTimeout(config.get('bulkupload.download.timeout') * 1000);
-
   const NEWLINE = '\r\n';
 
   const theLoggedInUser = req.username;
