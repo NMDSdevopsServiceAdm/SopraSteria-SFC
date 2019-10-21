@@ -79,7 +79,7 @@ exports.markOneAsRead = async ({ userUid, notificationUid }) =>
     db.query(insertNotificationQuery, {
         replacements: {
             nuid: params.notificationUid,
-            type: "OWNERCHANGE",
+            type: params.type,
             typUid: params.ownerRequestChangeUid,
             recipientUserUid: params.recipientUserUid,
             isViewed: false
