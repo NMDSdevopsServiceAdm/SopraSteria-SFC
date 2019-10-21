@@ -7,6 +7,8 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { Subscription } from 'rxjs';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { Router } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-notification',
@@ -20,6 +22,8 @@ export class NotificationComponent implements OnInit {
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
+    private router: Router,
+    private alertService: AlertService,
     private notificationsService: NotificationsService
   ) {}
 
@@ -45,7 +49,12 @@ export class NotificationComponent implements OnInit {
           .subscribe(
             request => {
               if (request) {
-                console.log('do something');
+                this.router.navigate(['/dashboard']);
+                this.alertService.addAlert({
+                  type: 'success',
+                  message: `Your decision to transfer ownership of data has been sent to
+                  ${this.notification.typeContent.subEstablishmentName} `,
+                });
               }
             },
             error => {

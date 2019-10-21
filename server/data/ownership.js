@@ -42,7 +42,7 @@ ORDER BY cqc."OwnerChangeRequest"."created" DESC
 LIMIT :limit;
 `;
 
-const getReipientUserDetailsQuery = `
+const getRecipientUserDetailsQuery = `
 select "UserUID" from cqc."Establishment" a JOIN
 cqc."User" b ON a."EstablishmentID" = b."EstablishmentID"  where a."EstablishmentID" = :estID AND b."IsPrimary" = true;
 `;
@@ -52,7 +52,7 @@ SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus"
 FROM cqc."OwnerChangeRequest"
 WHERE "subEstablishmentID" = :subEstId ORDER BY "created" DESC LIMIT :limit;
 `;
-const checkOwnershipRquestIdQuery = `
+const checkOwnershipRequestIdQuery = `
 SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus"
 FROM cqc."OwnerChangeRequest"
 WHERE "ownerChangeRequestUID" = :ownerChangeRequestUID ORDER BY "created" DESC LIMIT :limit;
@@ -70,8 +70,8 @@ SET "DataOwnershipRequested" = :timestamp
 WHERE "EstablishmentID" = :estId;
 `;
 
-exports.getReipientUserDetails = async params =>
-  db.query(getReipientUserDetailsQuery, {
+exports.getRecipientUserDetails = async params =>
+  db.query(getRecipientUserDetailsQuery, {
     replacements: {
       estID: params.parentId,
     },
@@ -127,7 +127,7 @@ exports.ownershipDetails = async params =>
   });
 
 exports.checkOwnershipRquestId = async params =>
-  db.query(checkOwnershipRquestIdQuery, {
+  db.query(checkOwnershipRequestIdQuery, {
     replacements: {
       ownerChangeRequestUID: params.ownerChangeRequestUID,
       limit: 1,
