@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Notification, NotificationRequest } from '@core/model/notifications.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'lodash';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -30,5 +31,8 @@ export class NotificationsService {
   }
   public approveOwnership(ownershipChangeRequestId, data): Observable<NotificationRequest> {
     return this.http.put<any>(`/api/ownershipRequest/${ownershipChangeRequestId}`, data);
+  }
+  public setNoticationViewed(notificationUid: string): Observable<Notification> {
+    return this.http.post<any>(`/api/user/my/notifications/${notificationUid}`, { isViewed: true });
   }
 }

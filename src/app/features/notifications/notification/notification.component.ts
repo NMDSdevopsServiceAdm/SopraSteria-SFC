@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Notification } from '@core/model/notifications.model';
-import { NotificationsService } from '@core/services/notifications/notifications.service';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { Subscription } from 'rxjs';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -11,6 +11,9 @@ import { Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
 const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
+import { NotificationsService } from '@core/services/notifications/notifications.service';
+import { Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
@@ -35,6 +38,7 @@ export class NotificationComponent implements OnInit {
     this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
       this.notification = details;
     });
+    this.setNotificationViewed(notificationUid);
   }
 
   public approveRequest() {
@@ -67,7 +71,21 @@ export class NotificationComponent implements OnInit {
     }
   }
 
-  public rejectRequest() {
-    //use type OWNERSHIP_REJECTED
+  protected setNotificationViewed(notificationUid) {
+    this.subscriptions.add(
+      this.notificationsService.setNoticationViewed(notificationUid).subscribe(
+        resp => {
+          this.notificationsService.notifications.forEach((notification, i) => {
+            if (notification.notificationUid === resp.notificationUid) {
+              this.notificationsService.notifications[i] = resp;
+            }
+          });
+          this.notificationsService.notifications$.next(this.notificationsService.notifications);
+        },
+        error => console.log('Could not update notification.')
+      )
+    );
   }
+
+  public rejectRequest() {}
 }
