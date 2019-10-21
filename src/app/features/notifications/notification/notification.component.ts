@@ -9,7 +9,8 @@ import { Subscription } from 'rxjs';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
-
+const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
+const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
@@ -42,6 +43,7 @@ export class NotificationComponent implements OnInit {
         ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
         approvalStatus: 'APPROVED',
         approvalReason: '',
+        type: OWNERSHIP_APPROVED,
       };
       this.subscriptions.add(
         this.notificationsService
@@ -65,5 +67,7 @@ export class NotificationComponent implements OnInit {
     }
   }
 
-  public rejectRequest() {}
+  public rejectRequest() {
+    //use type OWNERSHIP_REJECTED
+  }
 }
