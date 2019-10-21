@@ -1,14 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Notification } from '@core/model/notifications.model';
+import { Notification, NotificationRequest } from '@core/model/notifications.model';
 import { filter } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-<<<<<<< HEAD
-=======
-import { Notification, NotificationRequest } from '@core/model/notifications.model';
-import { BehaviorSubject, Observable } from 'rxjs';
->>>>>>> develop
 @Injectable({
   providedIn: 'root',
 })

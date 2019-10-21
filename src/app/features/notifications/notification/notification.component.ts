@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { Notification } from '@core/model/notifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -14,7 +15,7 @@ import { Subscription } from 'rxjs';
 })
 export class NotificationComponent implements OnInit {
   public workplace: Establishment;
-  public notification;
+  public notification: Notification;
   private subscriptions: Subscription = new Subscription();
   constructor(
     private route: ActivatedRoute,
@@ -32,6 +33,7 @@ export class NotificationComponent implements OnInit {
     this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
       this.notification = details;
     });
+    this.setNotificationViewed(notificationUid);
   }
 
   public approveRequest() {
@@ -62,7 +64,6 @@ export class NotificationComponent implements OnInit {
       );
     }
   }
-
   protected setNotificationViewed(notificationUid) {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
