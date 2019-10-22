@@ -1,10 +1,8 @@
 const supertest = require('supertest');
 const baseEndpoint = require('../utils/baseUrl').baseurl;
 const apiEndpoint = supertest(baseEndpoint);
-const uuid = require('uuid');
-const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
 
-const randomString = require('../utils/random').randomString;
+const fs = require('fs');
 
 // mocked real postcode/location data
 // http://localhost:3000/api/test/locations/random?limit=5
@@ -12,19 +10,40 @@ const postcodes = require('../mockdata/postcodes').data;
 const registrationUtils = require('../utils/registration');
 const admin = require('../utils/admin').admin;
 
-// change history validation
-const validatePropertyChangeHistory = require('../utils/changeHistory').validatePropertyChangeHistory;
-let MIN_TIME_TOLERANCE = process.env.TEST_DEV ? 1000 : 400;
-let MAX_TIME_TOLERANCE = process.env.TEST_DEV ? 3000 : 1000;
-const PropertiesResponses = {};
-
 describe('Bulk upload', () => {
+  const files = {
+    files: [
+      {
+        filename: 'org-test.csv',
+      },
+      {
+        filename: 'staff-test.csv',
+      },
+    ],
+  };
+  let awsLinkOrg = null;
+  let awsLinkStaff = null;
+  let orgCsv = null;
+  let staffCsv = null;
   let nonCqcServices = null;
   let nonCQCSite = null;
   let loginAuth = null;
   let establishmentId = null;
   let establishmentUid = null;
+
   beforeAll(async () => {
+    fs.readFile('./server/test/mockdata/testCSV/org-test.csv', 'utf8', (error, contents) => {
+      orgCsv = contents;
+      if (error) {
+        console.error(error);
+      }
+    });
+    fs.readFile('./server/test/mockdata/testCSV/staff-test.csv', 'utf8', (error, contents) => {
+      staffCsv = contents;
+      if (error) {
+        console.error(error);
+      }
+    });
     const nonCqcServicesResults = await apiEndpoint
       .get('/services/byCategory?cqc=false')
       .expect('Content-Type', /json/)
@@ -71,31 +90,33 @@ describe('Bulk upload', () => {
   beforeEach(async () => {});
 
   describe('/establishment/:establishmentuid/localIdentifiers', () => {
-    it('should return an  if all workers and establishments have a local identifier', async () => {
-      const localidentifiers = await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid)}/localIdentifiers`)
+    it('should return an array if all workers and establishments have a local identifier', async () => {
+      const localidentifiers = await apiEndpoint
+        .get(`/establishment/${encodeURIComponent(establishmentUid)}/localIdentifiers`)
         .set('Authorization', loginAuth)
         .expect(200);
-        const workplace = localidentifiers.body.establishments[0];
-        expect(Array.isArray(localidentifiers.body.establishments)).toEqual(true);
-        expect(localidentifiers.body.establishments.length).toEqual(1);
-        expect(workplace.uid).toEqual(establishmentUid);
-        expect(workplace.name).toEqual(nonCQCSite.locationName);
-        expect(workplace.missing).toEqual(true);
-        expect(workplace.workers).toEqual(0);
+      const workplace = localidentifiers.body.establishments[0];
+      expect(Array.isArray(localidentifiers.body.establishments)).toEqual(true);
+      expect(localidentifiers.body.establishments.length).toEqual(1);
+      expect(workplace.uid).toEqual(establishmentUid);
+      expect(workplace.name).toEqual(nonCQCSite.locationName);
+      expect(workplace.missing).toEqual(true);
+      expect(workplace.workers).toEqual(0);
     });
     it('should fail if trying to request local identifiers with no authorization token passed ', async () => {
-      await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid)}/localIdentifiers`)
-        .expect(401);
+      await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid)}/localIdentifiers`).expect(401);
     });
     it('should fail if trying to request another users establishment ', async () => {
-      await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid) + 1}/localIdentifiers`)
+      await apiEndpoint
+        .get(`/establishment/${encodeURIComponent(establishmentUid) + 1}/localIdentifiers`)
         .set('Authorization', loginAuth)
         .expect(403);
     });
   });
   describe('/api/establishment/:establishmentuid/bulkupload/uploaded', () => {
     it('should return an empty list of files for the establishment', async () => {
-      const uploaded = await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
+      const uploaded = await apiEndpoint
+        .get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
         .set('Authorization', loginAuth)
         .expect(200);
       expect(uploaded.body.establishment.uid).toEqual(establishmentId);
@@ -103,13 +124,100 @@ describe('Bulk upload', () => {
       expect(uploaded.body.files.length).toEqual(0);
     });
     it('should fail if trying to request uploaded files with no authorization token passed ', async () => {
-      await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
-        .expect(401);
+      await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`).expect(401);
     });
     it('should fail if trying to request another users establishment ', async () => {
-      await apiEndpoint.get(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/uploaded`)
+      await apiEndpoint
+        .get(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/uploaded`)
         .set('Authorization', loginAuth)
         .expect(403);
     });
   });
+    describe('[POST] /api/establishment/:establishmentuid/bulkupload/uploaded', () => {
+      it('should return an an array of presigned upload links for the files requested', async () => {
+        const uploaded = await apiEndpoint
+          .post(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
+          .send(files)
+          .set('Authorization', loginAuth)
+          .expect(200);
+        expect(Array.isArray(uploaded.body)).toEqual(true);
+        expect(uploaded.body[0].filename).toEqual('org-test.csv');
+        expect(uploaded.body[0].signedUrl).toContain('amazonaws');
+        awsLinkOrg = uploaded.body[0].signedUrl;
+        expect(uploaded.body[1].filename).toEqual('staff-test.csv');
+        expect(uploaded.body[1].signedUrl).toContain('amazonaws');
+        awsLinkStaff = uploaded.body[1].signedUrl;
+        expect(uploaded.body.length).toEqual(2);
+      });
+      it('should fail if request has no files in payload to get upload links', async () => {
+        await apiEndpoint
+          .post(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
+          .set('Authorization', loginAuth)
+          .expect(400);
+      });
+      it('should fail if trying to request upload links with no authorization token passed ', async () => {
+        await apiEndpoint
+          .post(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
+          .send(files)
+          .expect(401);
+      });
+      it('should fail if trying to request another users upload links ', async () => {
+        await apiEndpoint
+          .post(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/uploaded`)
+          .send(files)
+          .set('Authorization', loginAuth)
+          .expect(403);
+      });
+    });
+    describe('[PUT] bulkupload.amazonaws.com/:presigned', () => {
+      it('should upload org csv to S3 bucket', async () => {
+        await supertest('')
+          .put(awsLinkOrg)
+          .send(orgCsv)
+          .expect(200);
+      });
+      it('should upload staff csv to S3 bucket', async () => {
+         await supertest('')
+          .put(awsLinkStaff)
+          .send(orgCsv)
+          .expect(200);
+      });
+    });
+    describe('[PUT] /api/establishment/:establishmentuid/bulkupload/uploaded', () => {
+      it('should return an an array of uploaded file information', async () => {
+        const uploaded = await apiEndpoint
+          .put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
+          .set('Authorization', loginAuth)
+          .expect(200);
+        expect(Array.isArray(uploaded.body)).toEqual(true);
+        expect(uploaded.body[0].filename).toEqual('org-test.csv');
+        expect(uploaded.body[0].uploaded).toEqual(new Date(uploaded.body[0].uploaded).toISOString());
+        expect(uploaded.body[0].username).toEqual(nonCQCSite.user.username);
+        expect(uploaded.body[0].records).toEqual(6);
+        expect(uploaded.body[0].errors).toEqual(0);
+        expect(uploaded.body[0].warnings).toEqual(0);
+        expect(uploaded.body[0].fileType).toEqual('Establishment');
+        expect(uploaded.body[0].fileType).toEqual(1096);
+        expect(uploaded.body[0]).toHaveProperty('key');
+        expect(uploaded.body[1].filename).toEqual('staff-test.csv');
+        expect(uploaded.body[1]).toHaveProperty(new Date(uploaded.body[1].uploaded).toISOString());
+        expect(uploaded.body[1].username).toEqual(nonCQCSite.user.username);
+        expect(uploaded.body[1].records).toEqual(11);
+        expect(uploaded.body[1].errors).toEqual(0);
+        expect(uploaded.body[1].warnings).toEqual(0);
+        expect(uploaded.body[1].fileType).toEqual('Worker');
+        expect(uploaded.body[1].fileType).toEqual(1781);
+        expect(uploaded.body[1]).toHaveProperty('key');
+        expect(uploaded.body.files.length).toEqual(2);
+      });
+      it('should fail if trying to request upload links with no authorization token passed ', async () => {
+        await apiEndpoint.put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`).expect(401);
+      });
+      it('should fail if trying to request another users upload links ', async () => {
+        await apiEndpoint
+          .put(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/uploaded`)
+          .set('Authorization', loginAuth)
+          .expect(403);
+      });
+    });
 });
