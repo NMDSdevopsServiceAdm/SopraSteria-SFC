@@ -64,11 +64,11 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
     this.summaryList = [
       {
         label: 'From',
-        data: this.workplace.name,
+        data: this.requesterName,
       },
       {
         label: 'To',
-        data: this.requesterName,
+        data: this.workplace.name,
       },
     ];
   }
