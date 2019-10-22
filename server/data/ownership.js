@@ -169,7 +169,7 @@ exports.updateChangeRequest = async params =>
 exports.cancelOwnershipRequest = async params =>
   db.query(cancelOwnershipRequestQuery, {
     replacements: {
-      uid: params.ownerChangeRequestUID,
+      uid: params.ownerRequestChangeUid,
       approvalStatus: params.approvalStatus,
     },
     type: db.QueryTypes.UPDATE,
