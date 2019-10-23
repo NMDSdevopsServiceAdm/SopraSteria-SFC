@@ -670,6 +670,8 @@ router.route('/add').post(async (req, res) => {
                 //   the additional role property - ovverwrites against that could be passed in the body
                 const newUserProperties = {
                     ...req.body,
+                    isActive: true,
+                    status: null,
                     role: trackingResponse.user.UserRoleValue
                 };
 
