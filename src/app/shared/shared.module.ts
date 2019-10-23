@@ -9,8 +9,8 @@ import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplac
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
-import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { CharacterCountComponent } from './components/character-count/character-count.component';
 import { DatePickerComponent } from './components/date-picker/date-picker.component';
 import { DetailsComponent } from './components/details/details.component';
@@ -21,6 +21,7 @@ import { MessagesComponent } from './components/messages/messages.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
+import { RejectRequestDialogComponent } from './Components/reject-request-dialog/reject-request-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
 import { PersonalDetailsComponent } from './components/staff-record-summary/personal-details/personal-details.component';
@@ -102,6 +103,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkplaceTabComponent,
     OrderOtherPipe,
     LongDatePipe,
+    RejectRequestDialogComponent,
   ],
   exports: [
     AlertComponent,
@@ -149,7 +151,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkplaceTabComponent,
     OrderOtherPipe,
     LongDatePipe,
+    RejectRequestDialogComponent,
   ],
-  entryComponents: [ChangeDataOwnerDialogComponent, CancelDataOwnerDialogComponent],
+  entryComponents: [ChangeDataOwnerDialogComponent, CancelDataOwnerDialogComponent, RejectRequestDialogComponent],
 })
-export class SharedModule { }
+export class SharedModule {}

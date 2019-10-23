@@ -1,3 +1,4 @@
+import { Overlay } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
@@ -5,13 +6,16 @@ import { Establishment } from '@core/model/establishment.model';
 import { Notification } from '@core/model/notifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
+import { RejectRequestDialogComponent } from '@shared/Components/reject-request-dialog/reject-request-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
+  providers: [DialogService, Overlay],
 })
 export class NotificationComponent implements OnInit {
   public workplace: Establishment;
@@ -23,7 +27,8 @@ export class NotificationComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private router: Router,
     private alertService: AlertService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit() {
@@ -80,5 +85,18 @@ export class NotificationComponent implements OnInit {
     );
   }
 
-  public rejectRequest() {}
+  public rejectRequest($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
+    dialog.afterClosed.subscribe(requestRejected => {
+      if (requestRejected) {
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({
+          type: 'success',
+          message: `Your decision to transfer ownership of data has been sent to
+                  ${this.notification.typeContent.subEstablishmentName} `,
+        });
+      }
+    });
+  }
 }
