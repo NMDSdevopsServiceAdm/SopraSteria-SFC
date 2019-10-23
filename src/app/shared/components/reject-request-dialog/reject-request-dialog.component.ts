@@ -73,12 +73,9 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
-
     if (this.form.invalid) {
       this.errorSummaryService.scrollToErrorSummary();
       return;
-    } else {
-      this.rejectPermissionRequest();
     }
   }
 
