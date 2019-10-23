@@ -38,6 +38,6 @@ export interface WorkPlaceReference {
 }
 
 export enum RejectOptions {
-  NO = 'No, continue with no reason',
+  NO = 'No, continue without providing a reason',
   YES = 'Yes, provide reason',
 }
