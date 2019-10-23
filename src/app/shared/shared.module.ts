@@ -21,7 +21,7 @@ import { MessagesComponent } from './components/messages/messages.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
-import { RejectRequestDialogComponent } from './Components/reject-request-dialog/reject-request-dialog.component';
+import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
 import { PersonalDetailsComponent } from './components/staff-record-summary/personal-details/personal-details.component';

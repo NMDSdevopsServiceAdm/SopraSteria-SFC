@@ -8,7 +8,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
-import { RejectRequestDialogComponent } from '@shared/Components/reject-request-dialog/reject-request-dialog.component';
+import { RejectRequestDialogComponent } from '@shared/components/reject-request-dialog/reject-request-dialog.component';
 import { Subscription } from 'rxjs';
 
 const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
