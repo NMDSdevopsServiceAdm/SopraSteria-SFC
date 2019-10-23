@@ -8,6 +8,8 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { Subscription } from 'rxjs';
 
+const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
+
 @Component({
   selector: 'app-reject-request-dialog',
   templateUrl: './reject-request-dialog.component.html',
@@ -104,6 +106,10 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
         name: 503,
         message: 'We could not submit your reason for rejecting. You can try again or contact us',
       },
+      {
+        name: 400,
+        message: 'Unable to update notification.',
+      },
     ];
   }
 
@@ -126,6 +132,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
       ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
       approvalStatus: 'REJECT',
       approvalReason: this.form.value.reason,
+      type: OWNERSHIP_REJECTED,
     };
     this.subscriptions.add(
       this.notificationsService
