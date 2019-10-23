@@ -43,8 +43,10 @@ LIMIT :limit;
 `;
 
 const getRecipientUserDetailsQuery = `
-select "UserUID" from cqc."Establishment" a JOIN
-cqc."User" b ON a."EstablishmentID" = b."EstablishmentID"  where a."EstablishmentID" = :estID AND b."IsPrimary" = true;
+select "UserUID" from cqc."Establishment" est
+LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
+JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
+WHERE :estID = est."EstablishmentID" AND individual."IsPrimary" = true
 `;
 
 const ownershipDetailsQuery = `
@@ -73,7 +75,7 @@ WHERE "EstablishmentID" = :estId;
 exports.getRecipientUserDetails = async params =>
   db.query(getRecipientUserDetailsQuery, {
     replacements: {
-      estID: params.parentId,
+      estID: params.establishmentId,
     },
     type: db.QueryTypes.SELECT,
   });
@@ -167,7 +169,7 @@ exports.updateChangeRequest = async params =>
 exports.cancelOwnershipRequest = async params =>
   db.query(cancelOwnershipRequestQuery, {
     replacements: {
-      uid: params.ownerChangeRequestUID,
+      uid: params.ownerRequestChangeUid,
       approvalStatus: params.approvalStatus,
     },
     type: db.QueryTypes.UPDATE,

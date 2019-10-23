@@ -1,9 +1,8 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { Notification } from '@core/model/notifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -12,14 +11,16 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { RejectRequestDialogComponent } from '@shared/Components/reject-request-dialog/reject-request-dialog.component';
 import { Subscription } from 'rxjs';
 
+const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
+
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
   providers: [DialogService, Overlay],
 })
-export class NotificationComponent implements OnInit {
+export class NotificationComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
-  public notification: Notification;
+  public notification;
   private subscriptions: Subscription = new Subscription();
   constructor(
     private route: ActivatedRoute,
@@ -47,6 +48,7 @@ export class NotificationComponent implements OnInit {
         ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
         approvalStatus: 'APPROVED',
         approvalReason: '',
+        type: OWNERSHIP_APPROVED,
       };
       this.subscriptions.add(
         this.notificationsService
@@ -98,5 +100,9 @@ export class NotificationComponent implements OnInit {
         });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
