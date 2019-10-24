@@ -4,7 +4,6 @@
 /dist
 /tmp
 /out-tsc
-/server/coverage
 
 # dependencies
 /node_modules
@@ -18,9 +17,6 @@
 *.launch
 .settings/
 *.sublime-workspace
-test-report.html
-
-
 
 # IDE - VSCode
 .vscode/*
@@ -33,7 +29,6 @@ test-report.html
 # misc
 /.sass-cache
 /connect.lock
-/coverage
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
@@ -47,6 +42,7 @@ Thumbs.db
 
 # node v10+ c8 coverage reporting
 /coverage
+/.nyc_output
 
 ./package-lock.json
 */package-lock.json
@@ -57,4 +53,3 @@ Thumbs.db
 
 // nodemon localisations
 nodemon.json
-.nyc_output/

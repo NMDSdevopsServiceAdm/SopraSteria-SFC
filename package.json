@@ -18,7 +18,8 @@
         "api:proxy": "node proxy.js",
         "api:server": "node server.js",
         "server": "npm-run-all -p -l build:watch api:server",
-        "server:test": "mocha server/test/**/*.spec.js"
+        "server:test": "mocha server/test/**/*.js",
+        "nyc": "nyc --reporter=html mocha server/test/**/*.js"
     },
     "private": true,
     "dependencies": {
@@ -116,5 +117,16 @@
     "engines": {
         "node": "10.10.0",
         "npm": "6.4.1"
+    },
+    "nyc": {
+        "extends": "@istanbuljs/nyc-config-typescript",
+        "all": true,
+        "check-coverage": true,
+        "include": [
+            "server/**/*.js"
+        ],
+        "exclude": [
+            "server/test/**/*"
+        ]
     }
 }
