@@ -183,11 +183,18 @@ describe('Bulk upload', () => {
         });
     });
     describe('[PUT] /api/establishment/:establishmentuid/bulkupload/uploaded', () => {
+        before((done) => {
+            setTimeout(function() {
+                done();
+            }, 2000);
+        });
+
         it('should return an an array of uploaded file information', async() => {
             const uploaded = await apiEndpoint
                 .put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
                 .set('Authorization', loginAuth)
                 .expect(200);
+            console.log(uploaded.body);
             expect(Array.isArray(uploaded.body)).to.equal(true);
             expect(uploaded.body[0].filename).to.equal('org-test.csv');
             expect(uploaded.body[0].uploaded).to.equal(new Date(uploaded.body[0].uploaded).toISOString());
@@ -261,35 +268,29 @@ describe('Bulk upload', () => {
         });
     });
     describe('/api/establishment/:establishmentuid/bulkupload/uploaded/:establishmentid/latest/:filename', () => {
-        it('should return an an object file information including errors, warnings etc.', async() => {
+        it('should return an an object file information for establishment including errors, warnings etc.', async() => {
             const download = await apiEndpoint
-                .put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded/${encodeURIComponent(establishmentId)}/org-test.csv`)
+                .get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded/${encodeURIComponent(establishmentId)}/latest/org-test.csv`)
                 .set('Authorization', loginAuth)
                 .expect(200);
-            expect(uploaded.body).to.have.property('establishment');
-            expect(uploaded.body).to.have.property('workers');
-            expect(uploaded.body).to.have.property('training');
-            expect(uploaded.body.establishment.username).to.equal(nonCQCSite.user.username.toLowerCase());
-            expect(uploaded.body.establishment.filename).to.equal('org-test.csv');
-            expect(uploaded.body.establishment.fileType).to.equal('Establishment');
-            expect(uploaded.body.establishment.records).to.equal(6);
-            expect(uploaded.body.establishment.errors).to.equal(8);
-            expect(uploaded.body.establishment.warnings).to.equal(4);
-            expect(uploaded.body.establishment.deleted).to.equal(0);
-            expect(uploaded.body.workers.username).to.equal(nonCQCSite.user.username.toLowerCase());
-            expect(uploaded.body.workers.filename).to.equal('staff-test.csv');
-            expect(uploaded.body.workers.fileType).to.equal('Worker');
-            expect(uploaded.body.workers.records).to.equal(11);
-            expect(uploaded.body.workers.errors).to.equal(11);
-            expect(uploaded.body.workers.warnings).to.equal(21);
-            expect(uploaded.body.workers.deleted).to.equal(0);
-            expect(uploaded.body.training.username).to.equal(null);
-            expect(uploaded.body.training.filename).to.equal(null);
-            expect(uploaded.body.training.fileType).to.equal(null);
-            expect(uploaded.body.training.records).to.equal(0);
-            expect(uploaded.body.training.errors).to.equal(0);
-            expect(uploaded.body.training.warnings).to.equal(0);
-            expect(uploaded.body.training.deleted).to.equal(0);
+            expect(download.body.file.filename).to.equal('org-test.csv');
+            expect(download.body.file.uploaded).to.equal(new Date(download.body.file.uploaded).toISOString());
+            expect(download.body.file.username).to.equal(nonCQCSite.user.username.toLowerCase());
+            expect(download.body.file).to.have.property('size');
+            expect(download.body.file.key).to.equal(establishmentId + '/latest/org-test.csv');
+            expect(download.body.file.signedUrl).to.contain('amazonaws');
+        });
+        it('should return an an object file information for workers including errors, warnings etc.', async() => {
+            const download = await apiEndpoint
+                .get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded/${encodeURIComponent(establishmentId)}/latest/staff-test.csv`)
+                .set('Authorization', loginAuth)
+                .expect(200);
+            expect(download.body.file.filename).to.equal('staff-test.csv');
+            expect(download.body.file.uploaded).to.equal(new Date(download.body.file.uploaded).toISOString());
+            expect(download.body.file.username).to.equal(nonCQCSite.user.username.toLowerCase());
+            expect(download.body.file).to.have.property('size');
+            expect(download.body.file.key).to.equal(establishmentId + '/latest/staff-test.csv');
+            expect(download.body.file.signedUrl).to.contain('amazonaws');
         });
         it('should fail if trying to validate files with no authorization token passed ', async() => {
             await apiEndpoint.put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/validate`).expect(401);
