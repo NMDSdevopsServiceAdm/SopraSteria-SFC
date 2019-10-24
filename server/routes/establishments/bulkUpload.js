@@ -444,15 +444,19 @@ router.route('/uploaded').put(async (req, res) => {
 
 router.route('/validate').put(async (req, res) => {
   // manage the request timeout
-  // req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
+  req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
 
   res.writeHead(200, {
     'Content-Type': 'application/json',
     'Transfer-Encoding': 'chunked'
   });
+  res.flushHeaders();
 
-  const keepAlive = () => {
+  const keepAlive = (stepName = '', stepId = '') => {
     res.write(' ');
+    res.flush();
+
+    console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
   };
 
   const establishments = {
@@ -486,7 +490,7 @@ router.route('/validate').put(async (req, res) => {
 
       // download the contents of the appropriate ones we find
         .then(data => Promise.all(data.Contents.reduce((arr, myFileStats) => {
-          keepAlive(); // keep connection alive
+          keepAlive('bucket listed'); // keep connection alive
 
           if (!(/.*metadata.json$/.test(myFileStats.Key) || /.*\/$/.test(myFileStats.Key))) {
             arr.push(
@@ -494,7 +498,7 @@ router.route('/validate').put(async (req, res) => {
 
               // for each downloaded file, test its type then update the closure variables
                 .then(myFile => {
-                  keepAlive(); // keep connection alive
+                  keepAlive('file downloaded', `${myFileStats.Key}`); // keep connection alive
 
                   let obj = null;
                   let metadata = null;
@@ -532,7 +536,7 @@ router.route('/validate').put(async (req, res) => {
                   }
                   // parse the file contents as csv then return the data
                   return csv().fromString(myFile.data).then(imported => {
-                    keepAlive(); // keep connection alive
+                    keepAlive('csv parsed', myFileStats.Key); // keep connection alive
 
                     obj.imported = imported;
 
@@ -736,26 +740,6 @@ async function uploadAsJSON (username, establishmentId, content, key) {
   }
 }
 
-async function uploadAsCSV (username, establishmentId, content, key) {
-  const myEstablishmentId = String(establishmentId);
-
-  try {
-    await s3.putObject({
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
-      Key: key,
-      Body: content,
-      ContentType: 'text/csv',
-      Metadata: {
-        username,
-        establishmentId: myEstablishmentId
-      }
-    }).promise();
-  } catch (err) {
-    console.error('uploadAsCSV: ', err);
-    throw new Error(`Failed to upload S3 object: ${key}`);
-  }
-}
-
 const _validateEstablishmentCsv = async (
   thisLine,
   currentLineNumber,
@@ -789,7 +773,7 @@ const _validateEstablishmentCsv = async (
 
     await thisApiEstablishment.load(thisEstablishmentAsAPI);
 
-    keepAlive();
+    keepAlive('establishment loaded', currentLineNumber);
 
     const isValid = thisApiEstablishment.validate();
 
@@ -826,7 +810,7 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker,
   const thisApiQualification = new QualificationEntity();
   // load while ignoring the "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
   const isValid = await thisApiQualification.load(thisQual);
-  keepAlive();
+  keepAlive('qualification loaded', lineValidator.lineNumber);
 
   if (isValid) {
     // no validation errors in the entity itself, so add it ready for completion
@@ -869,7 +853,7 @@ const _validateWorkerCsv = async (
 
   try {
     await thisApiWorker.load(lineValidator.toAPI());
-    keepAlive();
+    keepAlive('worker loaded', currentLineNumber);
 
     if (thisApiWorker.validate()) {
       // no validation errors in the entity itself, so add it ready for completion
@@ -918,7 +902,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
   try {
     const isValid = await thisApiTraining.load(thisTrainingAsAPI);
 
-    keepAlive();
+    keepAlive('training loaded', currentLineNumber);
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
       myAPITrainings[currentLineNumber] = thisApiTraining;
@@ -959,7 +943,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   // restore the current known state this primary establishment (including all subs)
   const RESTORE_ASSOCIATION_LEVEL = 1;
-  keepAlive(); // keep connection alive
+  keepAlive('begin validate files', establishmentId); // keep connection alive
 
   const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent, RESTORE_ASSOCIATION_LEVEL, false, keepAlive);
 
@@ -1036,7 +1020,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
       keepAlive
     )));
 
-    keepAlive(); // keep connection alive
+    keepAlive('workers validated'); // keep connection alive
 
     // having parsed all workers, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
@@ -1130,7 +1114,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
       myAPITrainings
     )));
 
-    keepAlive();
+    keepAlive('trainings processed');
 
     // note - there is no uniqueness test for a training record
 
@@ -1487,11 +1471,11 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
     const thisUser = new UserEntity(primaryEstablishmentId);
     await thisUser.restore(null, loggedInUsername, false);
 
-    keepAlive(); // keep connection alive
+    keepAlive('begin restore entities'); // keep connection alive
 
     // gets a list of "my establishments", which if a parent, includes all known subsidaries too, and this "parent's" access permissions to those subsidaries
     const myEstablishments = await thisUser.myEstablishments(isParent, null);
-    keepAlive(); // keep connection alive
+    keepAlive('establishments retrieved'); // keep connection alive
 
     // having got this list of establishments, now need to fully restore each establishment as entities.
     //  using an object adding entities by a known key to make lookup comparisions easier.
@@ -1503,7 +1487,7 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
     currentEntities.push(primaryEstablishment);
 
     restoreEntityPromises.push(primaryEstablishment.restore(myEstablishments.primary.uid, false, true, assocationLevel).then(data => {
-      keepAlive(); // keep connection alive
+      keepAlive('establishment restored', myEstablishments.primary.uid); // keep connection alive
 
       return data;
     }));
@@ -1516,7 +1500,7 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
           currentEntities.push(newSub);
 
           restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true, assocationLevel).then(data => {
-            keepAlive(); // keep connection alive
+            keepAlive('sub establishment restored', thisSubsidairy.uid); // keep connection alive
 
             return data;
           }));
@@ -1892,7 +1876,7 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId, k
     const allEntitiesKey = `${primaryEstablishmentId}/intermediary/all.entities.json`;
 
     const onLoadEntitiesJSON = await downloadContent(allEntitiesKey).then(myFile => {
-      keepAlive();
+      keepAlive('restoreOnloadEntities');
 
       return myFile;
     });
@@ -1919,7 +1903,7 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId, k
           thisEntity.isRegulated
         );
         onloadPromises.push(newOnloadEstablishment.load(thisEntity, true).then(data => {
-          keepAlive();
+          keepAlive('newOnloadEstablishment loaded');
 
           return data;
         }));
@@ -1954,11 +1938,11 @@ const completeNewEstablishment = async (
     if (foundOnloadEstablishment) {
       // as this new establishment is created from a parent, it automatically becomes a sub
       foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
-      keepAlive();
+      keepAlive('foundOnloadEstablishment initialised');
       await foundOnloadEstablishment.save(theLoggedInUser, true, 0, transaction, true);
-      keepAlive();
+      keepAlive('foundOnloadEstablishment saved');
       await foundOnloadEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
-      keepAlive();
+      keepAlive('foundOnloadEstablishment wdf calculated');
     }
 
     const endTime = new Date();
@@ -1994,13 +1978,13 @@ const completeUpdateEstablishment = async (
       const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false, false, false, false, true, null, true);
       delete thisEstablishmentJSON.localIdentifier;
 
-      keepAlive();
+      keepAlive('complete upload');
       await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
-      keepAlive();
+      keepAlive('complete upload loaded');
       await foundCurrentEstablishment.save(theLoggedInUser, true, 0, transaction, true);
-      keepAlive();
+      keepAlive('complete upload saved');
       await foundCurrentEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
-      keepAlive();
+      keepAlive('complete upload wdf');
 
       const endTime = new Date();
       const numberOfWorkers = foundCurrentEstablishment.workers.length;
@@ -2035,15 +2019,19 @@ const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedIn
 
 router.route('/complete').post(async (req, res) => {
   // manage the request timeout
-  // req.setTimeout(config.get('bulkupload.completion.timeout') * 1000);
+  req.setTimeout(config.get('bulkupload.completion.timeout') * 1000);
 
   res.writeHead(200, {
     'Content-Type': 'application/json',
     'Transfer-Encoding': 'chunked'
   });
+  res.flushHeaders();
 
-  const keepAlive = () => {
+  const keepAlive = (stepName = '', stepId = '') => {
     res.write(' ');
+    res.flush();
+
+    console.log(`Bulk Upload /complete keep alive: ${new Date()} ${stepName} ${stepId}`);
   };
 
   const theLoggedInUser = req.username;
@@ -2059,7 +2047,7 @@ router.route('/complete').post(async (req, res) => {
     // association level is just 1 (we need Establishment's workers for completion, but not the Worker's associated training and qualification)
     const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1, keepAlive);
 
-    keepAlive();
+    keepAlive('restore existing entities', primaryEstablishmentId);
 
     const restoredExistingStateTime = new Date();
     timerLog('CHECKPOINT - BU COMPLETE - have restored current state of establishments/workers', completeStartTime, restoredExistingStateTime);
@@ -2067,7 +2055,7 @@ router.route('/complete').post(async (req, res) => {
     try {
       const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId, keepAlive);
       const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null).then(data => {
-        keepAlive();
+        keepAlive('differences downloaded');
 
         return data;
       });
@@ -2099,7 +2087,7 @@ router.route('/complete').post(async (req, res) => {
                 primaryEstablishmentUid,
                 keepAlive
               ).then(data => {
-                keepAlive();
+                keepAlive('complete new establishment');
 
                 return data;
               }).then(log)), starterNewPromise);
@@ -2117,7 +2105,7 @@ router.route('/complete').post(async (req, res) => {
                 myCurrentEstablishments,
                 keepAlive
               ).then(data => {
-                keepAlive();
+                keepAlive('completeUpdateEstablishment');
 
                 return data;
               }).then(log)), starterUpdatedPromise);
@@ -2134,7 +2122,7 @@ router.route('/complete').post(async (req, res) => {
                 myCurrentEstablishments,
                 keepAlive
               ).then(data => {
-                keepAlive();
+                keepAlive('completeDeleteEstablishment');
 
                 return data;
               }).then(log)), starterDeletedPromise);
@@ -2152,12 +2140,12 @@ router.route('/complete').post(async (req, res) => {
         //  clean up the S3 objects
         await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
 
-        keepAlive();
+        keepAlive('purgeBulkUploadS3Obbejcts');
 
         // confirm success against the primary establishment
         await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
 
-        keepAlive();
+        keepAlive('bulkUploadSuccess');
 
         const completeEndTime = new Date();
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);
@@ -2187,63 +2175,63 @@ router.route('/complete').post(async (req, res) => {
 });
 
 // takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
-const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId) => {
-  const establishmentsCsvArray = [];
-  const workersCsvArray = [];
-  const trainingCsvArray = [];
-
+const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, responseSend) => {
   // before being able to write the worker header, we need to know the maximum number of qualifications
-  //  columns across all workers
-  try {
-    const determineMaxQuals = await dbmodels.sequelize.query(
-      'select cqc.maxQualifications(:givenPrimaryEstablishment);',
-      {
-        replacements: {
-          givenPrimaryEstablishment: primaryEstablishmentId
-        },
-        type: dbmodels.sequelize.QueryTypes.SELECT
-      }
-    );
+  // columns across all workers
 
-    if (determineMaxQuals && determineMaxQuals[0].maxqualifications && Number.isInteger(parseInt(determineMaxQuals[0].maxqualifications, 10))) {
-      const MAX_QUALS = parseInt(determineMaxQuals[0].maxqualifications, 10);
+  const determineMaxQuals = await dbmodels.sequelize.query(
+    'select cqc.maxQualifications(:givenPrimaryEstablishment);',
+    {
+      replacements: {
+        givenPrimaryEstablishment: primaryEstablishmentId
+      },
+      type: dbmodels.sequelize.QueryTypes.SELECT
+    }
+  );
 
-      // first the header rows
-      establishmentsCsvArray.push(new CsvEstablishmentValidator().headers);
-      workersCsvArray.push(new CsvWorkerValidator().headers(MAX_QUALS));
-      trainingCsvArray.push(new CsvTrainingValidator().headers);
+  if (determineMaxQuals && determineMaxQuals[0].maxqualifications && Number.isInteger(parseInt(determineMaxQuals[0].maxqualifications, 10))) {
+    const MAX_QUALS = parseInt(determineMaxQuals[0].maxqualifications, 10);
 
-      allMyEstablishments.forEach(thisEstablishment => {
-        const establishmentCsvValidator = new CsvEstablishmentValidator();
+    // first the header rows
+    let columnNames = '';
 
-        establishmentsCsvArray.push(establishmentCsvValidator.toCSV(thisEstablishment));
+    switch (downloadType) {
+      case 'establishments':
+        columnNames = (new CsvEstablishmentValidator()).headers;
+        break;
 
+      case 'workers':
+        columnNames = (new CsvWorkerValidator()).headers(MAX_QUALS);
+        break;
+
+      case 'training':
+        columnNames = (new CsvTrainingValidator()).headers;
+        break;
+    }
+
+    responseSend(columnNames, 'column names');
+
+    allMyEstablishments.forEach(thisEstablishment => {
+      if (downloadType === 'establishments') {
+        responseSend(NEWLINE + (new CsvEstablishmentValidator()).toCSV(thisEstablishment), 'establishment');
+      } else {
         // for each worker on this establishment
-        const thisEstablishmentWorkers = thisEstablishment.workers;
-        thisEstablishmentWorkers.forEach(thisWorker => {
-          const workerCsvValidator = new CsvWorkerValidator();
-
+        thisEstablishment.workers.forEach(thisWorker => {
           // note - thisEstablishment.name will need to be local identifier once available
-          workersCsvArray.push(workerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS));
-
-          // and for this Worker's training records
-          if (thisWorker.training) {
+          if (downloadType === 'workers') {
+            responseSend(NEWLINE + (new CsvWorkerValidator()).toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
+          } else if (thisWorker.training) { // or for this Worker's training records
             thisWorker.training.forEach(thisTrainingRecord => {
-              const trainingCsvValidator = new CsvTrainingValidator();
-
-              trainingCsvArray.push(trainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord));
+              responseSend(NEWLINE + (new CsvTrainingValidator()).toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord), 'training');
             });
           }
         });
-      });
-    } else {
-      console.error('bulk upload exportToCsv - max quals error: ', determineMaxQuals);
-    }
-  } catch (err) {
-    console.error('bulk upload exportToCsv error: ', err);
+      }
+    });
+  } else {
+    console.error('bulk upload exportToCsv - max quals error: ', determineMaxQuals);
+    throw new Error('max quals error: determineMaxQuals');
   }
-
-  return [establishmentsCsvArray.join(NEWLINE), workersCsvArray.join(NEWLINE), trainingCsvArray.join(NEWLINE)];
 };
 
 // TODO: Note, regardless of which download type is requested, the way establishments, workers and training
@@ -2251,7 +2239,8 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId)
 // be prepared and uploaded to S3, and then signed URLs returned for the browsers to download directly, thus not
 // imposing the streaming of large data files through node.js API
 router.route('/download/:downloadType').get(async (req, res) => {
-  req.setTimeout(config.get('bulkupload.download.timeout') * 1000);
+  // manage the request timeout
+  req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
 
   const NEWLINE = '\r\n';
 
@@ -2262,77 +2251,61 @@ router.route('/download/:downloadType').get(async (req, res) => {
   const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training'];
   const downloadType = req.params.downloadType;
 
-  try {
-    let establishments = [];
-    let workers = [];
-    let training = [];
+  const ENTITY_RESTORE_LEVEL = 2;
 
-    if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
-      try {
-        const ENTITY_RESTORE_LEVEL = 2;
-        // only restore those subs that this primary establishment owns
-        const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true);
-        [establishments, workers, training] = await exportToCsv(NEWLINE, myCurrentEstablishments, primaryEstablishmentId);
-      } catch (err) {
-        console.error('router.get(\'/bulkupload/download\').get: failed to restore my establishments and all associated entities (workers, qualifications and training: ', err);
-        return res.status(503).send({});
-      }
+  let headWritten = false;
 
-      // before returning the response - upload to S3
-      if (config.get('bulkupload.validation.storeIntermediaries')) {
-        const s3UploadPromises = [];
-        // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
-        s3UploadPromises.push(uploadAsCSV(
-          theLoggedInUser,
-          primaryEstablishmentId,
-          establishments,
-          `${primaryEstablishmentId}/download/establishments.csv`
-        ));
+  const responseSend = async (text, stepName = '') => {
+    if (!headWritten) {
+      headWritten = true;
 
-        s3UploadPromises.push(uploadAsCSV(
-          theLoggedInUser,
-          primaryEstablishmentId,
-          workers,
-          `${primaryEstablishmentId}/download/workers.csv`
-        ));
-
-        s3UploadPromises.push(uploadAsCSV(
-          theLoggedInUser,
-          primaryEstablishmentId,
-          training,
-          `${primaryEstablishmentId}/download/training.csv`
-        ));
-
-        await Promise.all(s3UploadPromises);
-      }
-
-      const date = new Date().toISOString().split('T')[0];
-      res.setHeader('Content-disposition', 'attachment; filename=' + `${date}-sfc-bulk-upload-${downloadType}.csv`);
-      res.set('Content-Type', 'text/csv').status(200);
-
-      let response = null;
-      switch (downloadType) {
-        case 'establishments':
-          response = establishments;
-          break;
-        case 'workers':
-          response = workers;
-          break;
-        case 'training':
-          response = training;
-          break;
-      }
-
-      return res.send(response);
-    } else {
-      console.error(`router.get('/bulkupload/download').get: unexpected download type: ${downloadType}`, downloadType);
-      return res.status(400).send({
-        message: 'Unexpected download type'
+      res.writeHead(200, {
+        'Content-Type': 'text/csv',
+        'Content-disposition': `attachment; filename=${new Date().toISOString().split('T')[0]}-sfc-bulk-upload-${downloadType}.csv`,
+        'Transfer-Encoding': 'chunked'
       });
+
+      res.flushHeaders();
     }
-  } catch (err) {
-    console.error('router.get(\'/bulkupload/download\').get: error: ', err);
-    return res.status(503).send({});
+
+    res.write(text);
+    res.flush();
+
+    console.log(`Bulk upload /download/${downloadType}: ${new Date()} ${stepName}`);
+  };
+
+  if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
+    try {
+      await exportToCsv(
+        NEWLINE,
+        // only restore those subs that this primary establishment owns
+        await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true),
+        primaryEstablishmentId,
+        downloadType,
+        responseSend
+      );
+    } catch (err) {
+      console.error('router.get(\'/bulkupload/download\').get: failed to restore my establishments and all associated entities (workers, qualifications and training: ', err);
+
+      if (!headWritten) {
+        // This is iffy,b ut what else can we do if something fails while streaming csv data?
+        res.writeHead(503, {
+          'Content-Type': 'application/json'
+        });
+        res.flushHeaders();
+
+        headWritten = true;
+
+        responseSend('{ "message": "Failed to retrieve establishment data" }', 'failed to retrieve');
+      }
+    }
+
+    res.end();
+  } else {
+    console.error(`router.get('/bulkupload/download').get: unexpected download type: ${downloadType}`, downloadType);
+    res.status(400).send({
+      message: `Unexpected download type: ${downloadType}`
+    });
   }
 });
 
