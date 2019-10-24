@@ -62,7 +62,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
-    this.canViewChangeDataOwner = this.workplace && this.workplace.parentUid != null;
+    this.canViewChangeDataOwner =
+      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner !== 'Workplace';
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.canViewReports =
       this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
@@ -89,7 +90,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         this.router.navigate(['/dashboard']);
         this.alertService.addAlert({
           type: 'success',
-          message: `Request to change data owner has been sent to ${this.workplace.name} `,
+          message: `Request to change data owner has been sent to ${this.workplace.parentName} `,
         });
       }
     });
