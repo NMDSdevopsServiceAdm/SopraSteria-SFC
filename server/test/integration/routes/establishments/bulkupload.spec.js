@@ -1,14 +1,14 @@
 const supertest = require('supertest');
-const baseEndpoint = require('../utils/baseUrl').baseurl;
+const baseEndpoint = require('../../utils/baseUrl').baseurl;
 const apiEndpoint = supertest(baseEndpoint);
 const expect = require('chai').expect;
 const fs = require('fs');
 
 // mocked real postcode/location data
 // http://localhost:3000/api/test/locations/random?limit=5
-const postcodes = require('../mockdata/postcodes').data;
-const registrationUtils = require('../utils/registration');
-const admin = require('../utils/admin').admin;
+const postcodes = require('../../mockdata/postcodes').data;
+const registrationUtils = require('../../utils/registration');
+const admin = require('../../utils/admin').admin;
 
 describe('Bulk upload', () => {
     const files = {
@@ -215,6 +215,88 @@ describe('Bulk upload', () => {
         it('should fail if trying to request another users upload links ', async() => {
             await apiEndpoint
                 .put(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/uploaded`)
+                .set('Authorization', loginAuth)
+                .expect(403);
+        });
+    });
+    describe('[PUT] /api/establishment/:establishmentuid/bulkupload/validate', () => {
+        it('should return an an object file information including errors, warnings etc.', async() => {
+            const uploaded = await apiEndpoint
+                .put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/validate`)
+                .set('Authorization', loginAuth)
+                .expect(200);
+            expect(uploaded.body).to.have.property('establishment');
+            expect(uploaded.body).to.have.property('workers');
+            expect(uploaded.body).to.have.property('training');
+            expect(uploaded.body.establishment.username).to.equal(nonCQCSite.user.username.toLowerCase());
+            expect(uploaded.body.establishment.filename).to.equal('org-test.csv');
+            expect(uploaded.body.establishment.fileType).to.equal('Establishment');
+            expect(uploaded.body.establishment.records).to.equal(6);
+            expect(uploaded.body.establishment.errors).to.equal(8);
+            expect(uploaded.body.establishment.warnings).to.equal(4);
+            expect(uploaded.body.establishment.deleted).to.equal(0);
+            expect(uploaded.body.workers.username).to.equal(nonCQCSite.user.username.toLowerCase());
+            expect(uploaded.body.workers.filename).to.equal('staff-test.csv');
+            expect(uploaded.body.workers.fileType).to.equal('Worker');
+            expect(uploaded.body.workers.records).to.equal(11);
+            expect(uploaded.body.workers.errors).to.equal(11);
+            expect(uploaded.body.workers.warnings).to.equal(21);
+            expect(uploaded.body.workers.deleted).to.equal(0);
+            expect(uploaded.body.training.username).to.equal(null);
+            expect(uploaded.body.training.filename).to.equal(null);
+            expect(uploaded.body.training.fileType).to.equal(null);
+            expect(uploaded.body.training.records).to.equal(0);
+            expect(uploaded.body.training.errors).to.equal(0);
+            expect(uploaded.body.training.warnings).to.equal(0);
+            expect(uploaded.body.training.deleted).to.equal(0);
+        });
+        it('should fail if trying to validate files with no authorization token passed ', async() => {
+            await apiEndpoint.put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/validate`).expect(401);
+        });
+        it('should fail if trying to validate somone elses ', async() => {
+            await apiEndpoint
+                .put(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/validate`)
+                .set('Authorization', loginAuth)
+                .expect(403);
+        });
+    });
+    describe('/api/establishment/:establishmentuid/bulkupload/uploaded/:establishmentid/latest/:filename', () => {
+        it('should return an an object file information including errors, warnings etc.', async() => {
+            const download = await apiEndpoint
+                .put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded/${encodeURIComponent(establishmentId)}/org-test.csv`)
+                .set('Authorization', loginAuth)
+                .expect(200);
+            expect(uploaded.body).to.have.property('establishment');
+            expect(uploaded.body).to.have.property('workers');
+            expect(uploaded.body).to.have.property('training');
+            expect(uploaded.body.establishment.username).to.equal(nonCQCSite.user.username.toLowerCase());
+            expect(uploaded.body.establishment.filename).to.equal('org-test.csv');
+            expect(uploaded.body.establishment.fileType).to.equal('Establishment');
+            expect(uploaded.body.establishment.records).to.equal(6);
+            expect(uploaded.body.establishment.errors).to.equal(8);
+            expect(uploaded.body.establishment.warnings).to.equal(4);
+            expect(uploaded.body.establishment.deleted).to.equal(0);
+            expect(uploaded.body.workers.username).to.equal(nonCQCSite.user.username.toLowerCase());
+            expect(uploaded.body.workers.filename).to.equal('staff-test.csv');
+            expect(uploaded.body.workers.fileType).to.equal('Worker');
+            expect(uploaded.body.workers.records).to.equal(11);
+            expect(uploaded.body.workers.errors).to.equal(11);
+            expect(uploaded.body.workers.warnings).to.equal(21);
+            expect(uploaded.body.workers.deleted).to.equal(0);
+            expect(uploaded.body.training.username).to.equal(null);
+            expect(uploaded.body.training.filename).to.equal(null);
+            expect(uploaded.body.training.fileType).to.equal(null);
+            expect(uploaded.body.training.records).to.equal(0);
+            expect(uploaded.body.training.errors).to.equal(0);
+            expect(uploaded.body.training.warnings).to.equal(0);
+            expect(uploaded.body.training.deleted).to.equal(0);
+        });
+        it('should fail if trying to validate files with no authorization token passed ', async() => {
+            await apiEndpoint.put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/validate`).expect(401);
+        });
+        it('should fail if trying to validate somone elses ', async() => {
+            await apiEndpoint
+                .put(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/validate`)
                 .set('Authorization', loginAuth)
                 .expect(403);
         });
