@@ -31,13 +31,13 @@ describe('Bulk upload', () => {
     let establishmentUid = null;
 
     before(async() => {
-        fs.readFile('./server/test/mockdata/testCSV/org-test.csv', 'utf8', (error, contents) => {
+        fs.readFile('./server/test/integration/mockdata/testCSV/org-test.csv', 'utf8', (error, contents) => {
             orgCsv = contents;
             if (error) {
                 console.error(error);
             }
         });
-        fs.readFile('./server/test/mockdata/testCSV/staff-test.csv', 'utf8', (error, contents) => {
+        fs.readFile('./server/test/integration/mockdata/testCSV/staff-test.csv', 'utf8', (error, contents) => {
             staffCsv = contents;
             if (error) {
                 console.error(error);
