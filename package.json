@@ -123,7 +123,8 @@
         "all": true,
         "check-coverage": true,
         "include": [
-            "server/**/*.js"
+            "server/**/*.js",
+            "server.js"
         ],
         "exclude": [
             "server/test/**/*"
