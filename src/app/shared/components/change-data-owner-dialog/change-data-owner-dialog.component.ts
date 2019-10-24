@@ -26,7 +26,9 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   public permissionType: string;
   public isOwnershipError: boolean;
   public serverError: string;
-  public requesterName: string;
+  public ownershipToName: string;
+  public ownershipfromName: string;
+  public isSubWorkplace: boolean;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
@@ -49,10 +51,15 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   private setWorkplaces(): void {
     this.workplace = this.data;
     this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
-    if (!this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid) {
-      this.requesterName = this.workplace.parentName;
+    this.isSubWorkplace =
+      !this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
+
+    if (this.workplace.dataOwner === 'Workplace') {
+      this.ownershipToName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
+      this.ownershipfromName = this.workplace.name;
     } else {
-      this.requesterName = this.dataPermissionsRequester.name;
+      this.ownershipToName = this.workplace.name;
+      this.ownershipfromName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
     }
   }
 
@@ -64,11 +71,11 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
     this.summaryList = [
       {
         label: 'From',
-        data: this.requesterName,
+        data: this.ownershipfromName,
       },
       {
         label: 'To',
-        data: this.workplace.name,
+        data: this.ownershipToName,
       },
     ];
   }
