@@ -3,7 +3,7 @@ export interface Notification {
   isViewed: boolean;
   notificationUid: string;
   type: NotificationType;
-  typeContent?: any;
+  typeContent: any;
 }
 export interface NotificationRequest {
   ownerRequestChangeUid: string;
