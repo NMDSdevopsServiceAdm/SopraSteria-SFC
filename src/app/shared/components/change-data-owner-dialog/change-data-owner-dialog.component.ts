@@ -27,8 +27,9 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   public isOwnershipError: boolean;
   public serverError: string;
   public ownershipToName: string;
-  public ownershipfromName: string;
+  public ownershipFromName: string;
   public isSubWorkplace: boolean;
+  public ownershipToUid: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
@@ -56,10 +57,12 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
 
     if (this.workplace.dataOwner === 'Workplace') {
       this.ownershipToName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
-      this.ownershipfromName = this.workplace.name;
+      this.ownershipToUid = this.isSubWorkplace ? this.workplace.uid : this.dataPermissionsRequester.uid;
+      this.ownershipFromName = this.workplace.name;
     } else {
       this.ownershipToName = this.workplace.name;
-      this.ownershipfromName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
+      this.ownershipToUid = this.workplace.uid;
+      this.ownershipFromName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
     }
   }
 
@@ -71,7 +74,7 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
     this.summaryList = [
       {
         label: 'From',
-        data: this.ownershipfromName,
+        data: this.ownershipFromName,
       },
       {
         label: 'To',
@@ -123,8 +126,9 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   public changeOwnership() {
     if (this.form.valid) {
       this.permissionType = this.form.value.dataPermission;
-      let requestedPermission = {
+      const requestedPermission = {
         permissionRequest: this.permissionType,
+        notificationRecipientUid: this.ownershipToUid,
       };
       this.subscriptions.add(
         this.establishmentService.changeOwnership(this.workplace.uid, requestedPermission).subscribe(

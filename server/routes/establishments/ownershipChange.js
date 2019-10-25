@@ -120,7 +120,7 @@ router.route('/:id').post(async (req, res) => {
         let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnershipWithUID(params);
         if (!checkAlreadyRequestedOwnership.length) {
           return res.status(400).send({
-            message: `Ownership details doesn't found or already Approved/Rejected.`,
+            message: `Ownership details cannot be found or already Approved/Rejected.`,
           });
         } else {
           let changeRequestResp = await ownership.cancelOwnershipRequest(params);
