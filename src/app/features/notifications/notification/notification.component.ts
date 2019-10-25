@@ -1,19 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Overlay } from '@angular/cdk/overlay';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
+import { RejectRequestDialogComponent } from '@shared/components/reject-request-dialog/reject-request-dialog.component';
 import { Subscription } from 'rxjs';
+
 const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
-// This will be used when reject api is integrated
-const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
 
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
+  providers: [DialogService, Overlay],
 })
 export class NotificationComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
@@ -25,7 +28,8 @@ export class NotificationComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private router: Router,
     private alertService: AlertService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit() {
@@ -82,8 +86,21 @@ export class NotificationComponent implements OnInit, OnDestroy {
       )
     );
   }
-  //This is left blank intentionally
-  public rejectRequest() {}
+
+  public rejectRequest($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
+    dialog.afterClosed.subscribe(requestRejected => {
+      if (requestRejected) {
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({
+          type: 'success',
+          message: `Your decision to transfer ownership of data has been sent to
+                  ${this.notification.typeContent.subEstablishmentName} `,
+        });
+      }
+    });
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
