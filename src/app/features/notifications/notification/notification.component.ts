@@ -22,6 +22,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public notification;
   private subscriptions: Subscription = new Subscription();
+  public displayActionButtons;
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -38,6 +39,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
     const notificationUid = this.route.snapshot.params.notificationuid;
     this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
       this.notification = details;
+      this.displayActionButtons = details.typeContent.approvalStatus === 'REQUESTED';
     });
     this.setNotificationViewed(notificationUid);
   }
