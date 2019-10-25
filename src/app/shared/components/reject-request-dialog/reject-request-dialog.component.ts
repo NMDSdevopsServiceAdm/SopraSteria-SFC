@@ -24,7 +24,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
   public reasonCharacterLimit = 500;
   private serverErrorsMap: Array<ErrorDefinition>;
   public reason = '';
-  public notification: Notification;
+  public notification;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
@@ -127,7 +127,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
   public rejectPermissionRequest() {
     let requestParameter = {
       ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
-      approvalStatus: 'REJECT',
+      approvalStatus: 'DENIED',
       approvalReason: this.form.value.reason,
       type: OWNERSHIP_REJECTED,
     };
