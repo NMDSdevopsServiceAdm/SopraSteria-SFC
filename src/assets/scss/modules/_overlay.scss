@@ -12,8 +12,12 @@ $backdrop-animation-duration: 0ms !default;
   @include govuk-responsive-padding(2, 'bottom');
   @include govuk-responsive-padding(7, 'right');
   max-width: calc(100vh - 30px);
+  max-height: calc(100vh - 30px);
+  overflow-y: auto;
 
   @include govuk-media-query($from: tablet) {
     max-width: 640px;
+    max-height: calc(100vh - 30px);
+    overflow-y: auto;
   }
 }
