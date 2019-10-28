@@ -23,6 +23,8 @@ export class NotificationComponent implements OnInit, OnDestroy {
   public notification;
   private subscriptions: Subscription = new Subscription();
   public displayActionButtons;
+  public isDataOwner: boolean;
+
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -39,6 +41,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
     const notificationUid = this.route.snapshot.params.notificationuid;
     this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
       this.notification = details;
+      this.isDataOwner = true; //To do once correct response from DB.
       this.displayActionButtons = details.typeContent.approvalStatus === 'REQUESTED';
     });
     this.setNotificationViewed(notificationUid);

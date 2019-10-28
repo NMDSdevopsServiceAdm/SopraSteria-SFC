@@ -19,10 +19,44 @@
 <ng-container *ngIf="notification">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <p>You have requested to transfer ownership of data to {{ notification.typeContent.subEstablishmentName }}.</p>
-      <p>Approve the request to set the following permissions:</p>
+      <div [ngSwitch]="notification.typeContent.approvalStatus">
+        <span *ngSwitchCase="'PENDING'">
+          You have requested to transfer ownership of data to {{ notification.typeContent.subEstablishmentName }}.
+        </span>
+        <span *ngSwitchCase="'PENDING'">Approve the request to set the following permissions:</span>
+        <span *ngSwitchCase="'DENIED'">
+          <span *ngIf="isDataOwner" else nonDataOwner>
+            <p>
+              {{ notification.typeContent.subEstablishmentName }} has rejected your request to become the owner of its
+              data.
+            </p>
+            <h2 class="govuk-heading-s">Reason</h2>
+            <p *ngIf="notification.typeContent.reason != null" else noReason>
+              {{ notification.typeContent.reason }}
+            </p>
+            <ng-template #noReason>
+              No reason provided.
+            </ng-template>
+          </span>
+          <ng-template #nonDataOwner>
+            You rejected the request to transfer ownership of data to
+            {{ notification.typeContent.subEstablishmentName }}
+          </ng-template>
+        </span>
+        <span *ngSwitchCase="'APPROVED'">
+          <p *ngIf="isDataOwner" else nonDataOwner>
+            {{ notification.typeContent.subEstablishmentName }} has approved your request to become the owner of its
+            data. You are now free to edit workplace and staff data.
+          </p>
+          <ng-template #nonDataOwner>
+            You rejected the request to transfer ownership of data to
+            {{ notification.typeContent.subEstablishmentName }}
+          </ng-template>
+        </span>
+        <span *ngSwitchDefault></span>
+      </div>
 
-      <table class="govuk-table govuk-table__with-action">
+      <table class="govuk-table govuk-table__with-action" *ngIf="notification.typeContent.approvalStatus !== 'DENIED'">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header">Workplace</th>
@@ -34,7 +68,7 @@
             <td class="govuk-table__cell">
               Hollywood Care
             </td>
-            <td class="govuk-table__cell">None, linked only</td>
+            <td class="govuk-table__cell">No access to data, linked only</td>
           </tr>
           <tr class="govuk-table__row govuk-error-table__row--no-border" *ngIf="notification">
             <td class="govuk-table__cell">
