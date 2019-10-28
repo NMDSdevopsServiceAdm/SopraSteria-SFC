@@ -1,78 +1,266 @@
 const expect = require('chai').expect;
-const bulkupload = require('../../../../../models/BulkImport/csv/establishments').Establishment;
 const establishments = require('../../../mockdata/establishment').data;
 const knownHeaders = require('../../../mockdata/establishment').knownHeaders;
 
-function mapCsvToEstablishment(establishment, headers) {
-  const mapped = {};
-  headers.forEach((header, index) => {
+const testUtils = require('../../../../../utils/testUtils');
+const csv = require('csvtojson');
+
+const mapCsvToEstablishment = (establishment, headers) =>
+  headers.reduce((mapped, header, index) => {
     mapped[header] = establishment[index];
-  });
-  return mapped;
-}
+
+    return mapped;
+  }, {});
+
+const getUnitInstance = () => {
+  const ALL_CAPACITIES = null;
+  const ALL_UTILISATIONS = null;
+  const BUDI_TO_ASC = 100;
+
+  const bulkUpload = testUtils.sandBox(
+    'server/models/BulkImport/csv/establishments.js',
+    {
+      locals: {
+        require: testUtils.wrapRequire({
+          '../BUDI': {
+            BUDI: {
+              services: (direction, originalCode) => {
+                const fixedMapping = [
+                  { ASC: 24, BUDI: 1 },
+                  { ASC: 25, BUDI: 2 },
+                  { ASC: 13, BUDI: 53 },
+                  { ASC: 12, BUDI: 5 },
+                  { ASC: 9, BUDI: 6 },
+                  { ASC: 10, BUDI: 7 },
+                  { ASC: 20, BUDI: 8 },
+                  { ASC: 35, BUDI: 73 },
+                  { ASC: 11, BUDI: 10 },
+                  { ASC: 21, BUDI: 54 },
+                  { ASC: 23, BUDI: 55 },
+                  { ASC: 18, BUDI: 12 },
+                  { ASC: 22, BUDI: 74 },
+                  { ASC: 1, BUDI: 13 },
+                  { ASC: 7, BUDI: 14 },
+                  { ASC: 2, BUDI: 15 },
+                  { ASC: 8, BUDI: 16 },
+                  { ASC: 19, BUDI: 17 },
+                  { ASC: 3, BUDI: 18 },
+                  { ASC: 5, BUDI: 19 },
+                  { ASC: 4, BUDI: 20 },
+                  { ASC: 6, BUDI: 21 },
+                  { ASC: 27, BUDI: 61 },
+                  { ASC: 28, BUDI: 62 },
+                  { ASC: 26, BUDI: 63 },
+                  { ASC: 29, BUDI: 64 },
+                  { ASC: 30, BUDI: 66 },
+                  { ASC: 32, BUDI: 67 },
+                  { ASC: 31, BUDI: 68 },
+                  { ASC: 33, BUDI: 69 },
+                  { ASC: 34, BUDI: 70 },
+                  { ASC: 17, BUDI: 71 },
+                  { ASC: 15, BUDI: 52 },
+                  { ASC: 16, BUDI: 72 },
+                  { ASC: 36, BUDI: 60 },
+                  { ASC: 14, BUDI: 75 }
+                ];
+
+                if (direction === BUDI_TO_ASC) {
+                  const found = fixedMapping.find(thisService => thisService.BUDI === originalCode);
+                  return found ? found.ASC : null;
+                } else {
+                  const found = fixedMapping.find(thisService => thisService.ASC === originalCode);
+                  return found ? found.BUDI : null;
+                }
+              },
+              serviceFromCapacityId: () => {
+                if (ALL_CAPACITIES) {
+                  const foundCapacity = ALL_CAPACITIES.find(thisCapacity => {
+                    if (thisCapacity.serviceCapacityId === serviceCapacityId) {
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  });
+
+                  // foundCapacity will be undefined if not found
+                  return foundCapacity ? foundCapacity.serviceId : null;
+                } else {
+                  return null;
+                }
+              },
+              serviceFromUtilisationId: () => {
+                if (ALL_UTILISATIONS) {
+                  const foundCapacity = ALL_UTILISATIONS.find(thisCapacity => {
+                    if (thisCapacity.serviceCapacityId === serviceCapacityId) {
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  });
+
+                  // foundCapacity will be undefined if not found
+                  return foundCapacity ? foundCapacity.serviceId : null;
+                } else {
+                  return null;
+                }
+              },
+              serviceUsers: (direction, originalCode) => {
+                const fixedMapping = [
+                  { ASC: 1, BUDI: 1 },
+                  { ASC: 2, BUDI: 2 },
+                  { ASC: 3, BUDI: 22 },
+                  { ASC: 4, BUDI: 23 },
+                  { ASC: 5, BUDI: 25 },
+                  { ASC: 6, BUDI: 26 },
+                  { ASC: 8, BUDI: 46 },
+                  { ASC: 7, BUDI: 27 },
+                  { ASC: 9, BUDI: 3 },
+                  { ASC: 10, BUDI: 28 },
+                  { ASC: 11, BUDI: 6 },
+                  { ASC: 12, BUDI: 29 },
+                  { ASC: 13, BUDI: 5 },
+                  { ASC: 14, BUDI: 4 },
+                  { ASC: 15, BUDI: 7 },
+                  { ASC: 16, BUDI: 8 },
+                  { ASC: 17, BUDI: 31 },
+                  { ASC: 18, BUDI: 9 },
+                  { ASC: 19, BUDI: 45 },
+                  { ASC: 20, BUDI: 18 },
+                  { ASC: 21, BUDI: 19 },
+                  { ASC: 22, BUDI: 20 },
+                  { ASC: 23, BUDI: 21 }
+                ];
+
+                if (direction === BUDI_TO_ASC) {
+                  const found = fixedMapping.find(thisService => thisService.BUDI === originalCode);
+                  return found ? found.ASC : null;
+                } else {
+                  const found = fixedMapping.find(thisService => thisService.ASC === originalCode);
+                  return found ? found.BUDI : null;
+                }
+              },
+              jobRoles: (direction, originalCode) => {
+                const fixedMapping = [
+                  { ASC: 26, BUDI: 1 },
+                  { ASC: 15, BUDI: 2 },
+                  { ASC: 13, BUDI: 3 },
+                  { ASC: 22, BUDI: 4 },
+                  { ASC: 28, BUDI: 5 },
+                  { ASC: 27, BUDI: 6 },
+                  { ASC: 25, BUDI: 7 },
+                  { ASC: 10, BUDI: 8 },
+                  { ASC: 11, BUDI: 9 },
+                  { ASC: 12, BUDI: 10 },
+                  { ASC: 3, BUDI: 11 },
+                  { ASC: 18, BUDI: 15 },
+                  { ASC: 23, BUDI: 16 },
+                  { ASC: 4, BUDI: 17 },
+                  { ASC: 29, BUDI: 22 },
+                  { ASC: 20, BUDI: 23 },
+                  { ASC: 14, BUDI: 24 },
+                  { ASC: 2, BUDI: 25 },
+                  { ASC: 5, BUDI: 26 },
+                  { ASC: 21, BUDI: 27 },
+                  { ASC: 1, BUDI: 34 },
+                  { ASC: 24, BUDI: 35 },
+                  { ASC: 19, BUDI: 36 },
+                  { ASC: 17, BUDI: 37 },
+                  { ASC: 16, BUDI: 38 },
+                  { ASC: 7, BUDI: 39 },
+                  { ASC: 8, BUDI: 40 },
+                  { ASC: 9, BUDI: 41 },
+                  { ASC: 6, BUDI: 42 }
+                ];
+
+                if (direction === BUDI_TO_ASC) {
+                  const found = fixedMapping.find(thisJob => thisJob.BUDI === originalCode);
+                  return found ? found.ASC : null;
+                } else {
+                  const found = fixedMapping.find(thisJob => thisJob.ASC === originalCode);
+                  return found ? found.BUDI : null;
+                }
+              }
+            }
+          }
+        })
+      }
+    }
+  );
+
+  expect(bulkUpload).to.have.property('Establishment');
+
+  expect(bulkUpload.Establishment).to.be.a('function');
+
+  return new (bulkUpload.Establishment)();
+};
 
 describe('/server/models/Bulkimport/csv/establishment.js', () => {
-  const establishmenttoCSV = new bulkupload();
-  let columnHeaders = null;
   describe('get headers', () => {
-    it('should return a string of headers seperated by a comma', () => {
-      columnHeaders = establishmenttoCSV.headers;
-      expect(typeof columnHeaders).to.equal('string');
-    });
-    it('should split on commas to create an array of headers', () => {
-      columnHeaders = columnHeaders.split(',');
-      expect(Array.isArray(columnHeaders)).to.equal(true);
-    });
-    it('should be the same length of known headers', () => {
-      expect(columnHeaders.length).to.equal(knownHeaders.length);
-    });
-    it('should return the list of known headers', () => {
-      columnHeaders.forEach((name, index) => {
-        expect(name).to.equal(knownHeaders[index]);
-      });
+    it('should return the correct list of headers', () => {
+      const bulkUpload = getUnitInstance();
+
+      expect(bulkUpload).to.have.property('headers');
+
+      const columnHeaders = bulkUpload.headers;
+
+      expect(columnHeaders).to.be.a('string');
+
+      expect(columnHeaders.split(',')).to.deep.equal(knownHeaders);
     });
   });
+
   establishments.forEach((establishment, index) => {
     describe('toCSV(entity) with establishment ' + index, () => {
-      let establishmentCSV = null;
-      it('should return a string of values for the establishment seperated by a comma', () => {
-        establishmentCSV = establishmenttoCSV.toCSV(establishment);
-        expect(typeof establishmentCSV).to.equal('string');
-      });
-      it('should split on commas to create an array of values', () => {
-        establishmentCSV = establishmentCSV.split(',');
-        expect(Array.isArray(establishmentCSV)).to.equal(true);
-      });
-      it('should be the same length of known headers', () => {
-        expect(establishmentCSV.length).to.equal(knownHeaders.length);
-      });
-      it('should match the header values', () => {
+      it('should match the header values', async () => {
         let otherservices = '';
         let localauthorities = '';
         let capacities = '';
         let serviceDesc = '';
         let serviceUsers = '';
         let otherServiceUsers = '';
-        let jobs = [];
+        const jobs = [];
         let alljobs = '';
         let allStarters = '';
         let allLeavers = '';
         let allVacancies = '';
         let reasons = '';
         let reasonCount = '';
-        if (establishment.otherServices) {
+
+        const bulkImportEstablishment = getUnitInstance();
+
+        expect(bulkImportEstablishment).to.have.property('toCSV');
+        expect(bulkImportEstablishment.toCSV).to.be.a('function');
+
+        const establishmentCSV = bulkImportEstablishment.toCSV(establishment);
+
+        expect(establishmentCSV).to.be.a('string');
+
+        const foundValues = (await csv({
+          noheader: true,
+          output: 'csv'
+        }).fromString(establishmentCSV))[0];
+
+        expect(foundValues.length).to.equal(knownHeaders.length);
+
+        if (Array.isArray(establishment.otherServices)) {
           establishment.otherServices.forEach((service, index) => {
             otherservices += service.budi;
             index < (establishment.otherServices.length - 1) ? otherservices += ';' : otherservices += '';
           });
+        } else {
+          expect(establishment.otherServices).to.equal(null);
         }
-        if (establishment.shareWithLA) {
+
+        if (Array.isArray(establishment.shareWithLA)) {
           establishment.shareWithLA.forEach((la, index) => {
             localauthorities += la.cssrId;
             index < (establishment.shareWithLA.length - 1) ? localauthorities += ';' : localauthorities += '';
           });
+        } else {
+          expect(establishment.shareWithLA).to.equal(null);
         }
-        if (establishment.capacities) {
+
+        if (Array.isArray(establishment.capacities)) {
           establishment.capacities.forEach((capacity, index) => {
             if (capacity.reference.other) {
               serviceDesc += capacity.reference.other;
@@ -85,8 +273,11 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
               serviceDesc += '';
             }
           });
+        } else {
+          expect(establishment.capacities).to.equal(null);
         }
-        if (establishment.serviceUsers) {
+
+        if (Array.isArray(establishment.serviceUsers)) {
           establishment.serviceUsers.forEach((sUser, index) => {
             if (sUser.other) {
               otherServiceUsers += sUser.other;
@@ -100,46 +291,48 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
               otherServiceUsers += '';
             }
           });
+        } else {
+          expect(establishment.serviceUsers).to.equal(null);
         }
-        if (establishment.starters) {
+
+        if (Array.isArray(establishment.starters)) {
           establishment.starters.forEach(job => {
-            if(!jobs.includes(job.budi)) {
+            if (!jobs.includes(job.budi)) {
               jobs.push(job.budi);
             }
           });
+        } else {
+          expect(establishment.starters).to.equal(null);
         }
-        if (establishment.leavers) {
+
+        if (Array.isArray(establishment.leavers)) {
           establishment.leavers.forEach(job => {
-            if(!jobs.includes(job.budi)) {
+            if (!jobs.includes(job.budi)) {
               jobs.push(job.budi);
             }
           });
+        } else {
+          expect(establishment.leavers).to.equal(null);
         }
-        if (establishment.vacancies) {
+
+        if (Array.isArray(establishment.vacancies)) {
           establishment.vacancies.forEach(job => {
-            if(!jobs.includes(job.budi)) {
+            if (!jobs.includes(job.budi)) {
               jobs.push(job.budi);
             }
           });
+        } else {
+          expect(establishment.vacancies).to.equal(null);
         }
+
         jobs.forEach((job, index) => {
           alljobs += job;
-          let starterFound = false;
-          establishment.starters.forEach(starters => {
-            if (job === starters.budi) starterFound = true;
-          });
-          starterFound ? allStarters += '' : allStarters += '0';
-          let leaverFound = false;
-          establishment.leavers.forEach(leavers => {
-            if (job === leavers.budi) leaverFound = true;
-          });
-          leaverFound ? allLeavers += '' : allLeavers += '0';
-          let vacancyFound = false;
-          establishment.vacancies.forEach(vacancies => {
-            if(job === vacancies.budi) vacancyFound = true;
-          });
-          vacancyFound ? allVacancies += '' : allVacancies += '0';
-          if(index < (jobs.length - 1)) {
+
+          allStarters += (establishment.starters.findIndex(starters => job === starters.budi) !== -1 ? '' : '0');
+          allLeavers += (establishment.leavers.findIndex(leavers => job === leavers.budi) !== -1 ? '' : '0');
+          allVacancies += (establishment.vacancies.findIndex(vacancies => job === vacancies.budi) !== -1 ? '' : '0');
+
+          if (index < (jobs.length - 1)) {
             alljobs += ';';
             allStarters += ';';
             allLeavers += ';';
@@ -151,13 +344,16 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             allVacancies += '';
           }
         });
+
         if (establishment.reasonsForLeaving) {
           const reasonsForLeaving = establishment.reasonsForLeaving.split('|');
+
           reasonsForLeaving.forEach((reason, index) => {
-            let reasonarray = reason.split(':');
+            const reasonarray = reason.split(':');
             reasons += reasonarray[0];
             reasonCount += reasonarray[1];
-            if(index < (reasonsForLeaving.length - 1)) {
+
+            if (index < (reasonsForLeaving.length - 1)) {
               reasons += ';';
               reasonCount += ';';
             } else {
@@ -166,7 +362,9 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             }
           });
         }
-        const mappedCsv = mapCsvToEstablishment(establishmentCSV, columnHeaders);
+
+        const mappedCsv = mapCsvToEstablishment(foundValues, knownHeaders);
+
         expect(mappedCsv.LOCALESTID).to.equal(establishment.localIdentifier);
         expect(mappedCsv.STATUS).to.equal('UNCHECKED');
         expect(mappedCsv.ESTNAME).to.equal(establishment.name);
@@ -175,12 +373,14 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
         expect(mappedCsv.ADDRESS3).to.equal(establishment.address3);
         expect(mappedCsv.POSTTOWN).to.equal(establishment.town);
         expect(mappedCsv.POSTCODE).to.equal(establishment.postcode);
+
         if (establishment.employerType.id) {
           expect(parseInt(mappedCsv.ESTTYPE)).to.equal(establishment.employerType.id);
           expect(mappedCsv.OTHERTYPE).to.equal('');
         } else {
           expect(mappedCsv.OTHERTYPE).to.equal('');
         }
+
         expect(mappedCsv.PERMCQC).to.equal(establishment.shareWith.enabled && establishment.shareWith.with.indexOf('CQC') > -1 ? '1' : '');
         expect(mappedCsv.PERMLA).to.equal(establishment.shareWith.enabled && establishment.shareWith.with.indexOf('Local Authority') > -1 ? '1' : '');
         expect(mappedCsv.SHARELA).to.equal(localauthorities);

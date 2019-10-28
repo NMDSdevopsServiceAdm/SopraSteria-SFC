@@ -4,7 +4,7 @@ exports.data = [
     "name": "Sunset health care",
     "isRegulated": true,
     "nmdsId": "H1002354",
-    "address1": "Sunset House",
+    "address1": "Unit 1A, Sunset House",
     "address2": "Sunset Lane",
     "address3": '',
     "postcode": "LS1 1AA",
