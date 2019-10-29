@@ -42,13 +42,18 @@ export class NotificationComponent implements OnInit, OnDestroy {
     this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
       this.notification = details;
       this.isDataOwner = true; //To do once correct response from DB.
-      this.displayActionButtons = details.typeContent.approvalStatus === 'REQUESTED';
+      this.displayActionButtons =
+        details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });
     this.setNotificationViewed(notificationUid);
   }
 
   public approveRequest() {
     if (this.notification) {
+      if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
+        this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
+        return true;
+      }
       let requestParameter = {
         ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
         approvalStatus: 'APPROVED',
@@ -93,18 +98,24 @@ export class NotificationComponent implements OnInit, OnDestroy {
   }
 
   public rejectRequest($event: Event) {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
-    dialog.afterClosed.subscribe(requestRejected => {
-      if (requestRejected) {
-        this.router.navigate(['/dashboard']);
-        this.alertService.addAlert({
-          type: 'success',
-          message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.subEstablishmentName} `,
-        });
+    if (this.notification) {
+      if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
+        this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
+        return true;
       }
-    });
+      $event.preventDefault();
+      const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
+      dialog.afterClosed.subscribe(requestRejected => {
+        if (requestRejected) {
+          this.router.navigate(['/dashboard']);
+          this.alertService.addAlert({
+            type: 'success',
+            message: `Your decision to transfer ownership of data has been sent to
+                  ${this.notification.typeContent.subEstablishmentName} `,
+          });
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {

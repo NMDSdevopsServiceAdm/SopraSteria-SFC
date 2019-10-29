@@ -21,9 +21,18 @@
     <div class="govuk-grid-column-two-thirds">
       <div [ngSwitch]="notification.typeContent.approvalStatus">
         <span *ngSwitchCase="'PENDING'">
-          You have requested to transfer ownership of data to {{ notification.typeContent.subEstablishmentName }}.
+          <p>
+            You have requested to transfer ownership of data to {{ notification.typeContent.subEstablishmentName }}.
+          </p>
+          <p>Approve the request to set the following permissions:</p>
         </span>
-        <span *ngSwitchCase="'PENDING'">Approve the request to set the following permissions:</span>
+        <span *ngSwitchCase="'CANCELLED'">
+          <p>
+            You have requested to transfer ownership of data to {{ notification.typeContent.subEstablishmentName }}.
+          </p>
+          <p>Approve the request to set the following permissions:</p>
+        </span>
+
         <span *ngSwitchCase="'DENIED'">
           <span *ngIf="isDataOwner" else nonDataOwner>
             <p>
@@ -49,7 +58,7 @@
             data. You are now free to edit workplace and staff data.
           </p>
           <ng-template #nonDataOwner>
-            You rejected the request to transfer ownership of data to
+            You approved the request to transfer ownership of data to
             {{ notification.typeContent.subEstablishmentName }}
           </ng-template>
         </span>
