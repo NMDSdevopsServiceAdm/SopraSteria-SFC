@@ -1,14 +1,11 @@
 const axios = require('axios');
-const axiosRetry = require('axios-retry');
-axiosRetry(axios, { retries: 3 });
-
 const models = require('./models/index');
 //CQC Endpoint
 const url = 'https://api.cqc.org.uk/public/v1';
 
 const BULK_UPLOAD=0;
 const REFRESH=1;
-const METHOD=REFRESH;
+const METHOD=BULK_UPLOAD;
 
 module.exports.handler =  async (event, context) => {
 
@@ -31,14 +28,14 @@ module.exports.handler =  async (event, context) => {
           }).then(function(entries){
             startDate = entries[0].dataValues.lastUpdatedAt;
           });
-
+    
           // Set end date for query to now. Regex to remove milliseconds from ISO Date String
           const endDate=new Date().toISOString().split('.')[0]+"Z";
-
+    
           let locations = await getIndividualLocations(await getChangedIds(startDate,endDate));
-
+    
           await writeToLocationsTable(locations);
-
+    
           // Log Successful API and DB population with last update date and time
           await models.cqclog.create({
             success: true,
@@ -73,7 +70,6 @@ module.exports.handler =  async (event, context) => {
         let changeUrl = url + nextPage;
 
         let response = await axios.get(changeUrl);
-        console.log("Got changes from page " + nextPage);
         nextPage = response.data.nextPageUri;
 
         for (let i=0, len=response.data.changes.length; i<len; i++) {
@@ -90,8 +86,7 @@ module.exports.handler =  async (event, context) => {
 
       for (let i=0, len=locationIds.length; i<len; i++){
         let individualLocation = await axios.get(url+'/locations/'+locationIds[i]);
-        console.log('Got more information about ' + locationIds[i] );
-
+        
         if (!individualLocation.data.deregistrationDate) {
           // not deregistered so must exist
           locations.push(individualLocation.data);
@@ -130,20 +125,20 @@ module.exports.handler =  async (event, context) => {
   //
   async function populateAllLocations(url){
     let response;
-    let nextPage='/locations?page=1&perPage=1000';
-
+    let nextPage='/locations?page=22&perPage=1000';
+  
     do{
       let locationIds = [];
       console.log("Fetching remote data: ", url+nextPage)
       response = await axios.get(url+nextPage);
       nextPage = response.data.nextPageUri;
-
+  
       for (let i=0, len=response.data.locations.length; i<len; i++){
         locationIds.push(response.data.locations[i].locationId)
       }
-
+  
       let locations = await getIndividualLocations(locationIds);
-
+  
       for (let i=0, len=locations.length; i<len; i++){
         await models.location.create({
           locationid:locations[i].locationId,

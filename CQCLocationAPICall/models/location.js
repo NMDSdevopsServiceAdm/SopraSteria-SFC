@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true
     }
   }, {
-    schema: 'cqcref',
+    schema: 'cqc',
     createdAt: 'createdat',
     updatedAt: 'updatedat',
     freezeTableName: true

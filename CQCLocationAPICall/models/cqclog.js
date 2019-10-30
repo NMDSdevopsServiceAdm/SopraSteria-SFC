@@ -6,7 +6,6 @@ module.exports = (sequelize, DataTypes) => {
     lastUpdatedAt: DataTypes.STRING
   }, {
     schema: 'cqc',
-    tableName: 'CqcLog',
     createdAt: 'createdat',
     updatedAt: false,
     freezeTableName: true
