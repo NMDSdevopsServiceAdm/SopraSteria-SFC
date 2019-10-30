@@ -22,5 +22,13 @@
     "host": "35.178.185.248",
     "port": 5432,
     "dialect": "postgres"
+  },
+  "localhost": {
+    "username": "sfcadmin",
+    "password": "unknown",
+    "database": "sfcdevdb",
+    "host": "localhost",
+    "port": 5432,
+    "dialect": "postgres"
   }
 }

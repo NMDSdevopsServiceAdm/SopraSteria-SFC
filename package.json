@@ -64,6 +64,8 @@
         "passport-jwt": "^4.0.0",
         "pg": "^7.12.1",
         "pg-hstore": "^2.3.2",
+        "request": "^2.88.0",
+        "request-promise": "^4.2.4",
         "rxjs": "^6.5.2",
         "rxjs-compat": "^6.5.2",
         "sequelize": "^4.44.3",
