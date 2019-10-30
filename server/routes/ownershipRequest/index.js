@@ -52,18 +52,14 @@ router.route('/:id').put(async (req, res) => {
         const updateChangeRequest = await ownership.updateChangeRequest(params);
         if (!updateChangeRequest) {
           return res.status(400).send('Invalid request');
-        } else {
-          params.notificationUid = uuid.v4();
-          if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
-            console.error('Invalid notification UUID');
-            return res.status(400).send('Invalid notification UUID');
-          }
         }
-        let addNotificationResp = await notifications.insertNewNotification(params);
-        if (addNotificationResp) {
+        params.exsistingNotificationUid = req.body.exsistingNotificationUid;
+        let updatedNotificationResp = await notifications.updateNotification(params);
+        if (updatedNotificationResp) {
           let resp = await ownership.getUpdatedOwnershipRequest(params);
           return res.status(201).send(resp[0]);
-        } else {
+        }
+        else {
           return res.status(400).send('Invalid request');
         }
       }

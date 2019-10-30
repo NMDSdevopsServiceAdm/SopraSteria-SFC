@@ -64,7 +64,13 @@ cqc."Notifications"
 ("notificationUid", "type", "typeUid", "recipientUserUid", "isViewed")
 VALUES (:nuid, :type, :typUid, :recipientUserUid, :isViewed);
 `;
-
+const updateNotificationQuery =
+`
+  UPDATE cqc."Notifications"
+  SET "isViewed" = :isViewed
+  WHERE "Notifications"."notificationUid" = :nuid
+  AND "Notifications"."recipientUserUid" = :recipientUserUid;
+`;
 exports.markOneAsRead = async ({ userUid, notificationUid }) =>
   db.query(markOneAsReadQuery, {
     replacements: {
@@ -85,4 +91,15 @@ exports.markOneAsRead = async ({ userUid, notificationUid }) =>
             isViewed: false
         },
         type: db.QueryTypes.INSERT
-    })
+    });
+    exports.updateNotification = async (params) =>
+    db.query(updateNotificationQuery, {
+        replacements: {
+            nuid: params.exsistingNotificationUid,
+            type: 'OWNERSHIPCHANGE',
+            typUid: params.ownerRequestChangeUid,
+            recipientUserUid: params.recipientUserUid,
+            isViewed: false
+        },
+        type: db.QueryTypes.UPDATE
+    });

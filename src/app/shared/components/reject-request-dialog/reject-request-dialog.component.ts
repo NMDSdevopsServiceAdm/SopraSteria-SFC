@@ -130,6 +130,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
       approvalStatus: 'DENIED',
       approvalReason: this.form.value.reason,
       type: OWNERSHIP_REJECTED,
+      exsistingNotificationUid: this.notification.notificationUid,
     };
     this.subscriptions.add(
       this.notificationsService
