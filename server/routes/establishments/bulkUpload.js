@@ -1234,6 +1234,82 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
     });
   }
 
+  //ensure worker jobs tally up on TOTALPERMTEMP field
+  const establishmentTotals = establishmentsAsArray.forEach(thisEstablishment => {
+    const nonDirectCareJobRoles = [2, 5, 14, 21];
+    const managerialProfessionalJobRoles = [13, 14, 15, 21, 22, 26];
+    const localAuthorityEmployerTypes = [1, 3];
+    const permanantContractStatusId = 1;
+
+    const isCQCRegulated = thisEstablishment.isRegulated;
+    const employerType = thisEstablishment.employerType;
+    const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => employerType === type) !== -1;
+
+    const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, '');
+    const lineNumber = allEstablishmentsByKey[keyNoWhitespace];
+
+    let directCareWorkers = 0;
+    let nonDirectCareWorkers = 0;
+    let managerialProfessionalWorkers = 0;
+
+    let permanantWorkers = 0;
+    let temporaryWorkers = 0;
+
+    thisEstablishment.workers.forEach(thisWorker => {
+      //get the full list of the workers job roles, by cloning the array of other job roles then adding the main job role
+      const allRoles = thisWorker.otherJobs.map(role => role).push(thisWorker.otherJobs);
+
+      //Is the worker involved in direct care? If any job roles are found that aren't non direct care ones then the worker is involved in direct care
+      if (allRoles.findIndex(role => !nonDirectCareJobRoles.includes(role)) === -1) {
+        nonDirectCareWorkers++;
+      }
+      else {
+        directCareWorkers++;
+      }
+
+      //Is the worker on a permanant contract? Any workers that are not permanant are considered temporary for validation purposes
+      if(thisWorker.contract === permanantContractStatusId) {
+        permanantWorkers++;
+      }
+      else {
+        temporaryWorkers++;
+      }
+
+      if(allRoles.findIndex(role => managerialProfessionalJobRoles.includes(role)) !== -1) {
+        managerialProfessionalWorkers++;
+      }
+    });
+
+    const allServices = thisEstablishment.otherServices.map(service => service).push(thisEstablishment.mainService);
+
+    //is establishment only shared lives (code 19)?
+    const notSharedLivesOnly = allServices.findIndex(service => service !== 19) !== -1;
+
+    //is establishment only head office services (code 16)?
+    const notHeadOfficeOnly = allServices.findIndex(service => service !== 16) !== -1;
+
+
+    if(thisEstablishment.numberOfStaff === permanantWorkers + temporaryWorkers) {
+      if(notHeadOfficeOnly) {
+        if(temporaryWorkers > permanantWorkers) {
+          // warning: "The number of employed staff is less than the number of non-employed staff please check your staff records"
+        }
+
+        if(permanantWorkers + temporaryWorkers === 0) {
+          // warning: "The number of employed staff is 0 please check your staff records"
+        }
+      }
+
+      if(isCQCRegulated && notSharedLivesOnly && notHeadOfficeOnly && directCareWorkers === 0) {
+        // warning: "The number of direct care staff is 0 please check your staff records"
+      }
+
+      if(isLocalAuthority && managerialProfessionalWorkers === 0) {
+        //warning: "The number of non-direct care staff is 0 please check your staff records"
+      }
+    }
+  });
+
   // update CSV metadata error/warning counts
   establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
   establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
