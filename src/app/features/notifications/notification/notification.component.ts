@@ -24,7 +24,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public displayActionButtons;
   public isDataOwner: boolean;
-
+  public notificationUid: string;
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -38,14 +38,14 @@ export class NotificationComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
-    const notificationUid = this.route.snapshot.params.notificationuid;
-    this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
+    this.notificationUid = this.route.snapshot.params.notificationuid;
+    this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
       this.notification = details;
       this.isDataOwner = true; //To do once correct response from DB.
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });
-    this.setNotificationViewed(notificationUid);
+    this.setNotificationViewed(this.notificationUid);
   }
 
   public approveRequest() {
@@ -59,6 +59,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
         approvalStatus: 'APPROVED',
         approvalReason: '',
         type: OWNERSHIP_APPROVED,
+        exsistingNotificationUid: this.notificationUid,
       };
       this.subscriptions.add(
         this.notificationsService
@@ -67,6 +68,9 @@ export class NotificationComponent implements OnInit, OnDestroy {
             request => {
               if (request) {
                 this.router.navigate(['/dashboard']);
+                this.notificationsService.getAllNotifications().subscribe(notify => {
+                  this.notificationsService.notifications$.next(notify);
+                });
                 this.alertService.addAlert({
                   type: 'success',
                   message: `Your decision to transfer ownership of data has been sent to
