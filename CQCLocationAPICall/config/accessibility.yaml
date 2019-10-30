@@ -1,0 +1,13 @@
+aws:
+    region: eu-west-1
+    secrets:
+        use: true
+        wallet: demo/api
+
+db:
+    ssl: true
+    username: sfcdemoadmin
+    database: sfcdemodb
+    client_ssl:
+        status: true
+        usingFiles: false
