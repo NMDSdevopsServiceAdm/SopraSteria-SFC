@@ -53,7 +53,7 @@ router.route('/').post(async (req, res) => {
               status: null
           });
           const updatedestablishment = await establishment.update({
-            status: null
+            ustatus: null
           });
           if (updateduser && updatedestablishment) {
             return res.status(200).json({status: '0', message: 'User has been set as active'})
