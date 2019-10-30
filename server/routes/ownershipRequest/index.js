@@ -57,9 +57,23 @@ router.route('/:id').put(async (req, res) => {
         let updatedNotificationResp = await notifications.updateNotification(params);
         if (updatedNotificationResp) {
           let resp = await ownership.getUpdatedOwnershipRequest(params);
+          if (resp) {
+            // requester useruid to send notification in case his request for swap ownership gets approved or rejected
+            params.recipientUserUid = resp[0].createdByUserUID;
+            params.notificationUid = uuid.v4();
+            params.type = 'OWNERCHANGE';
+            if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
+              console.error('Invalid notification UUID');
+              return res.status(400).send();
+            }
+            //inserting new notification for requester to let him know his request is Approved or Denied
+            let addNotificationResp = await notifications.insertNewNotification(params);
+            if (!addNotificationResp) {
+              return res.status(400).send('Invalid request');
+            }
+          }
           return res.status(201).send(resp[0]);
-        }
-        else {
+        } else {
           return res.status(400).send('Invalid request');
         }
       }
