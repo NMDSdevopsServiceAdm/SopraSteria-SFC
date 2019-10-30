@@ -67,8 +67,10 @@ export class NotificationComponent implements OnInit, OnDestroy {
           .subscribe(
             request => {
               if (request) {
-                this.notificationsService.getAllNotifications().subscribe;
                 this.router.navigate(['/dashboard']);
+                this.notificationsService.getAllNotifications().subscribe(notify => {
+                  this.notificationsService.notifications$.next(notify);
+                });
                 this.alertService.addAlert({
                   type: 'success',
                   message: `Your decision to transfer ownership of data has been sent to

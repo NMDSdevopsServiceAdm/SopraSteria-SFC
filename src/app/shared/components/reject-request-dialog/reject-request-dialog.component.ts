@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { RejectOptions } from '@core/model/my-workplaces.model';
+import { Router } from '@angular/router';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
@@ -31,7 +32,8 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: FormBuilder,
     public dialog: Dialog<RejectRequestDialogComponent>,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private router: Router
   ) {
     super(data, dialog);
   }
@@ -139,6 +141,10 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
           request => {
             if (request) {
               this.close(true);
+              this.router.navigate(['/dashboard']);
+              this.notificationsService.getAllNotifications().subscribe(notify => {
+                this.notificationsService.notifications$.next(notify);
+              });
             }
           },
           error => {
