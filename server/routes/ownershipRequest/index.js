@@ -40,8 +40,8 @@ router.route('/:id').put(async (req, res) => {
       } else if (checkOwnerChangeRequest[0].approvalStatus !== 'REQUESTED') {
         return res.status(400).send('Ownership is already approved/rejected');
       } else {
-        params.subEstablishmentID = checkOwnerChangeRequest[0].subEstablishmentID;
-        if (params.subEstablishmentID) {
+        params.subEstablishmentId = checkOwnerChangeRequest[0].subEstablishmentID;
+        if (params.subEstablishmentId) {
           params.establishmentId = req.establishment.id;
         }
         let getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
@@ -74,7 +74,7 @@ router.route('/:id').put(async (req, res) => {
               //clearing ownership requested column
               let clearOwnershipParam = {
                 timeValue :null,
-                subEstablishmentId: params.subEstablishmentID
+                subEstablishmentId: params.subEstablishmentId
               };
               let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
               if (!saveDataOwnershipRequested) {
