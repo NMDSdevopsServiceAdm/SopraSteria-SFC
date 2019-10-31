@@ -6,6 +6,7 @@ const Stream = require('stream');
 const moment = require('moment');
 const dbmodels = require('../../models');
 const config = require('../../config/config');
+const db = rfr('server/utils/datastore');
 
 const timerLog = require('../../utils/timerLog');
 
@@ -20,6 +21,8 @@ const s3 = new AWS.S3({
 
 const CsvEstablishmentValidator = require('../../models/BulkImport/csv/establishments').Establishment;
 const CsvWorkerValidator = require('../../models/BulkImport/csv/workers').Worker;
+const BUDI = require('../../models/BulkImport/BUDI').BUDI;
+
 const CsvTrainingValidator = require('../../models/BulkImport/csv/training').Training;
 const MetaData = require('../../models/BulkImport/csv/metaData').MetaData;
 
@@ -1234,81 +1237,158 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
     });
   }
 
-  //ensure worker jobs tally up on TOTALPERMTEMP field
-  const establishmentTotals = establishmentsAsArray.forEach(thisEstablishment => {
-    const nonDirectCareJobRoles = [2, 5, 14, 21];
-    const managerialProfessionalJobRoles = [13, 14, 15, 21, 22, 26];
-    const localAuthorityEmployerTypes = [1, 3];
+  const updateTotals = (totals, worker) => {
+    const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
     const permanantContractStatusId = 1;
 
-    const isCQCRegulated = thisEstablishment.isRegulated;
-    const employerType = thisEstablishment.employerType;
-    const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => employerType === type) !== -1;
+    const allRoles = worker.otherJobIds;
+    if (worker.mainJobRoleId !== null) {
+      allRoles.unshift(worker.mainJobRoleId);
+    }
 
-    const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, '');
-    const lineNumber = allEstablishmentsByKey[keyNoWhitespace];
+    // Is the worker involved in direct care? If any job roles are found that aren't non direct care ones then the worker is involved in direct care
+    if (allRoles.findIndex(role => !nonDirectCareJobRoles.includes(role)) !== -1) {
+      totals.directCareWorkers++;
+    } else {
+      totals.managerialProfessionalWorkers++;
+    }
 
-    let directCareWorkers = 0;
-    let nonDirectCareWorkers = 0;
-    let managerialProfessionalWorkers = 0;
+    // Is the worker on a permanant contract? Any workers that are not permanant are considered temporary for validation purposes
+    if (worker.contractTypeId === permanantContractStatusId) {
+      totals.permanantWorkers++;
+    } else {
+      totals.temporaryWorkers++;
+    }
+  };
 
-    let permanantWorkers = 0;
-    let temporaryWorkers = 0;
+  // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
+  const localAuthorityEmployerTypes = [1, 3];
+  const updatedEsts = myEstablishments.reduce((updatedEsts, est) => {
+    if (['NEW', 'UPDATE'].includes(est.status)) {
+      const establishmentType = parseInt(est.establishmentTypeId, 10);
 
-    thisEstablishment.workers.forEach(thisWorker => {
-      //get the full list of the workers job roles, by cloning the array of other job roles then adding the main job role
-      const allRoles = thisWorker.otherJobs.map(role => role).push(thisWorker.otherJobs);
+      // All services already includes the main service
+      const allServices = Array.isArray(est.allServices) ? est.allServices : [];
 
-      //Is the worker involved in direct care? If any job roles are found that aren't non direct care ones then the worker is involved in direct care
-      if (allRoles.findIndex(role => !nonDirectCareJobRoles.includes(role)) === -1) {
-        nonDirectCareWorkers++;
-      }
-      else {
-        directCareWorkers++;
-      }
+      updatedEsts[est.key] = {
+        key: est.key,
+        lineNumber: est.lineNumber,
+        numberOfStaff: est.totalPermTemp,
 
-      //Is the worker on a permanant contract? Any workers that are not permanant are considered temporary for validation purposes
-      if(thisWorker.contract === permanantContractStatusId) {
-        permanantWorkers++;
-      }
-      else {
-        temporaryWorkers++;
-      }
+        isCQCRegulated: est.regType === 2,
+        isLocalAuthority: localAuthorityEmployerTypes.findIndex(type => establishmentType === type) !== -1,
 
-      if(allRoles.findIndex(role => managerialProfessionalJobRoles.includes(role)) !== -1) {
-        managerialProfessionalWorkers++;
+        // Is the establishment only shared lives (code 19)?
+        notSharedLivesOnly: allServices.findIndex(service => service !== 19) !== -1,
+
+        // Is the establishment only head office services (code 16)?
+        notHeadOfficeOnly: allServices.findIndex(service => service !== 16) !== -1,
+
+        directCareWorkers: 0,
+        managerialProfessionalWorkers: 0,
+        permanantWorkers: 0,
+        temporaryWorkers: 0,
+        ignoreDBWorkers: Object.create(null)
+      };
+    }
+
+    return updatedEsts;
+  }, Object.create(null));
+
+  const estKeys = Object.values(updatedEsts).map(totals => totals.key);
+
+  if (estKeys.length !== 0) {
+    myWorkers.forEach(worker => {
+      if (hasProp(updatedEsts, worker.establishmentKey)) {
+        const estTotals = updatedEsts[worker.establishmentKey];
+
+        switch (worker.status) {
+          case 'NEW':
+          case 'UPDATE': {
+            /* update totals */
+            updateTotals(estTotals, worker);
+          }
+          /* fall through */
+
+          case 'DELETE':
+            estTotals.ignoreDBWorkers[worker.uniqueWorker] = true;
+            break;
+        }
       }
     });
 
-    const allServices = thisEstablishment.otherServices.map(service => service).push(thisEstablishment.mainService);
+    // get all the other records that may already exist in the db but aren't being updated or deleted
+    (await db.query(
+      `SELECT
+        "Establishment"."LocalIdentifierValue" "establishmentKey",
+        "Worker"."LocalIdentifierValue" "uniqueWorker",
+        "Worker"."ContractValue" "contractTypeId",
+        "Worker"."MainJobFKValue" "mainJobRoleId",
+        array_to_string(array_agg("WorkerJobs"."JobFK"), :sep) "otherJobIds"
+      FROM cqc."Establishment"
+      JOIN cqc."Worker" on "Worker"."EstablishmentFK" = "Establishment"."EstablishmentID"
+      LEFT JOIN cqc."WorkerJobs" on "WorkerJobs"."WorkerFK" = "Worker"."ID"
+      WHERE "Worker"."LocalIdentifierValue" IS NOT NULL AND
+      "Establishment"."LocalIdentifierValue" IN(:estKeys)
+      AND "Establishment"."EstablishmentID" IN (:estIds)
+      GROUP BY "establishmentKey", "uniqueWorker", "contractTypeId", "mainJobRoleId"`,
+      {
+        replacements: {
+          estKeys,
+          estIds: myCurrentEstablishments.map(x => x.id),
+          sep: ';'
+        },
+        type: db.QueryTypes.SELECT
+      }
+    ))
+      .forEach(worker => {
+        const estTotals = updatedEsts[worker.establishmentKey];
+        worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
+        worker.otherJobIds = worker.otherJobIds.length ? worker.otherJobIds.split(';') : [];
 
-    //is establishment only shared lives (code 19)?
-    const notSharedLivesOnly = allServices.findIndex(service => service !== 19) !== -1;
+        // if a record is updated or deleted it can't count towards the totals twice
+        if (!hasProp(estTotals.ignoreDBWorkers, worker.uniqueWorker)) {
+        // update totals
+          updateTotals(estTotals, worker);
+        }
+      });
 
-    //is establishment only head office services (code 16)?
-    const notHeadOfficeOnly = allServices.findIndex(service => service !== 16) !== -1;
+    Object.values(updatedEsts).forEach(({
+      key,
+      lineNumber,
+      isCQCRegulated,
+      isLocalAuthority,
+      notHeadOfficeOnly,
+      notSharedLivesOnly,
+      numberOfStaff,
+      permanantWorkers,
+      temporaryWorkers,
+      directCareWorkers,
+      managerialProfessionalWorkers
+    }) => {
+      if (numberOfStaff === permanantWorkers + temporaryWorkers) {
+        if (notHeadOfficeOnly) {
+          if (permanantWorkers + temporaryWorkers === 0) {
+            // warning: "The number of employed staff is 0 please check your staff records"
+            csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.noWorkersWarning(lineNumber, numberOfStaff, key));
+          } else if (temporaryWorkers > permanantWorkers) {
+            // warning: "The number of employed staff is less than the number of non-employed staff please check your staff records"
+            csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.moreTempWorkersWarning(lineNumber, numberOfStaff, key));
+          }
 
-
-    if(thisEstablishment.numberOfStaff === permanantWorkers + temporaryWorkers) {
-      if(notHeadOfficeOnly) {
-        if(temporaryWorkers > permanantWorkers) {
-          // warning: "The number of employed staff is less than the number of non-employed staff please check your staff records"
+          if (isCQCRegulated && notSharedLivesOnly && directCareWorkers === 0) {
+            // warning: "The number of direct care staff is 0 please check your staff records"
+            csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.noDirectCareWorkersWarning(lineNumber, numberOfStaff, key));
+          }
         }
 
-        if(permanantWorkers + temporaryWorkers === 0) {
-          // warning: "The number of employed staff is 0 please check your staff records"
+        if (isLocalAuthority && managerialProfessionalWorkers === 0) {
+          // warning: "The number of non-direct care staff is 0 please check your staff records"
+          csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.noNonDirectCareWorkersWarning(lineNumber, numberOfStaff, key));
         }
       }
-
-      if(isCQCRegulated && notSharedLivesOnly && notHeadOfficeOnly && directCareWorkers === 0) {
-        // warning: "The number of direct care staff is 0 please check your staff records"
-      }
-
-      if(isLocalAuthority && managerialProfessionalWorkers === 0) {
-        //warning: "The number of non-direct care staff is 0 please check your staff records"
-      }
-    }
-  });
+    });
+  }
 
   // update CSV metadata error/warning counts
   establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;

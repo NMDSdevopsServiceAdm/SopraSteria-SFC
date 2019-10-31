@@ -141,6 +141,10 @@ class Establishment {
   }
 
   get establishmentType () {
+    return BUDI.establishmentType(BUDI.TO_ASC, this._establishmentType) || this._establishmentType;
+  }
+
+  get establishmentTypeId () {
     return this._establishmentType;
   }
 
@@ -731,7 +735,7 @@ class Establishment {
     const provIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
     const myprovID = this._currentLine.PROVNUM;
 
-    if (this._regType && this._regType === 2 && (!myprovID || myprovID.length === 0)) {
+    if (this._regType === 2 && (!myprovID || myprovID.length === 0)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.PROV_ID_ERROR,
@@ -741,7 +745,7 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if (this._regType && this._regType === 2 && !provIDRegex.test(myprovID)) {
+    } else if (this._regType === 2 && !provIDRegex.test(myprovID)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.PROV_ID_ERROR,
@@ -751,10 +755,10 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if (this._regType !== null && this._regType === 2) {
+    } else if (this._regType === 2) {
       this._provID = myprovID;
       return true;
-    } else if (this._regType !== null && this._regType === 0 && myprovID && myprovID.length > 0) {
+    } else if (this._regType === 0 && myprovID && myprovID.length > 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         warnCode: Establishment.PROV_ID_WARNING,
@@ -775,7 +779,7 @@ class Establishment {
     // do not use
     const mainServiceIsHeadOffice = !!(this._currentLine.MAINSERVICE && parseInt(this._currentLine.MAINSERVICE, 10) === 72);
 
-    if (this._regType !== null && this._regType === 2) {
+    if (this._regType === 2) {
       // ignore location i
       if (!mainServiceIsHeadOffice) {
         if (!myLocationID || myLocationID.length === 0) {
@@ -803,7 +807,7 @@ class Establishment {
 
       this._locationID = myLocationID;
       return true;
-    } else if (this._regType !== null && this._regType === 0 && myLocationID && myLocationID.length > 0) {
+    } else if (this._regType === 0 && myLocationID && myLocationID.length > 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         warnCode: Establishment.LOCATION_ID_WARNING,
@@ -1482,9 +1486,7 @@ class Establishment {
   _transformEstablishmentType () {
     // integer in source; enum in target
     if (this._establishmentType) {
-      const mappedType = BUDI.establishmentType(BUDI.TO_ASC, this._establishmentType);
-
-      if (mappedType === null) {
+      if (BUDI.establishmentType(BUDI.TO_ASC, this._establishmentType) === null) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
@@ -1493,8 +1495,6 @@ class Establishment {
           source: this._currentLine.ESTTYPE,
           name: this._currentLine.LOCALESTID
         });
-      } else {
-        this._establishmentType = mappedType.type;
       }
     }
   }
@@ -1797,6 +1797,54 @@ class Establishment {
     };
   }
 
+  static moreTempWorkersWarning (lineNumber, TOTALPERMTEMP, LOCALESTID) {
+    return {
+      origin: 'Establishments',
+      lineNumber,
+      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
+      warnType: 'TOTAL_PERM_TEMP_WARNING',
+      warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records',
+      source: TOTALPERMTEMP,
+      name: LOCALESTID
+    };
+  }
+
+  static noWorkersWarning (lineNumber, TOTALPERMTEMP, LOCALESTID) {
+    return {
+      origin: 'Establishments',
+      lineNumber,
+      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
+      warnType: 'TOTAL_PERM_TEMP_WARNING',
+      warning: 'The number of employed staff is 0 please check your staff records',
+      source: TOTALPERMTEMP,
+      name: LOCALESTID
+    };
+  }
+
+  static noDirectCareWorkersWarning (lineNumber, TOTALPERMTEMP, LOCALESTID) {
+    return {
+      origin: 'Establishments',
+      lineNumber,
+      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
+      warnType: 'TOTAL_PERM_TEMP_WARNING',
+      warning: 'The number of direct care staff is 0 please check your staff records',
+      source: TOTALPERMTEMP,
+      name: LOCALESTID
+    };
+  }
+
+  static noNonDirectCareWorkersWarning (lineNumber, TOTALPERMTEMP, LOCALESTID) {
+    return {
+      origin: 'Establishments',
+      lineNumber,
+      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
+      warnType: 'TOTAL_PERM_TEMP_WARNING',
+      warning: 'The number of non-direct care staff is 0 please check your staff records',
+      source: TOTALPERMTEMP,
+      name: LOCALESTID
+    };
+  }
+
   // returns true on success, false is any attribute of Establishment fails
   validate () {
     let status = true;
@@ -1865,7 +1913,7 @@ class Establishment {
       address3: this._address3,
       town: this._town,
       postcode: this._postcode,
-      employerType: this._establishmentType,
+      employerType: this.establishmentType,
       employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
       shareWithCQC: this._shareWithCqc,
       shareWithLA: this._shareWithLA,
@@ -1930,7 +1978,7 @@ class Establishment {
       Postcode: this._postcode ? this._postcode : '',
       LocationId: this._regType ? this._locationID : undefined,
       ProvId: this._regType ? this._provID : undefined,
-      IsCQCRegulated: !!(this._regType !== null & this._regType === 2)
+      IsCQCRegulated: this._regType === 2
     };
 
     // interim solution for reasons for leaving
@@ -1946,7 +1994,7 @@ class Establishment {
       localIdentifier: this._localId,
       isRegulated: this._regType === 2,
       employerType: {
-        value: this._establishmentType,
+        value: this.establishmentType,
         other: this._establishmentTypeOther ? this._establishmentTypeOther : undefined
       },
       localAuthorities: this._localAuthorities ? this._localAuthorities : [],

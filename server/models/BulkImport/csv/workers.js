@@ -56,6 +56,7 @@ class Worker {
 
     this._otherJobs = null;
     this._otherJobsOther = null;
+    this._mappedOtherJobs = null;
 
     this._registeredNurse = null;
     this._nursingSpecialist = null;
@@ -212,6 +213,10 @@ class Worker {
   }
 
   get contractType () {
+    return BUDI.contractType(BUDI.TO_ASC, this._contractType) || this._contractType;
+  }
+
+  get contractTypeId () {
     return this._contractType;
   }
 
@@ -304,11 +309,20 @@ class Worker {
   }
 
   get mainJobRole () {
-    return this._mainJobRole;
+    return BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole) || this._mainJobRole;
   }
 
   get mainJobDesc () {
     return this._mainJobDesc;
+  }
+
+  get mainJobRoleId () {
+    return this._mainJobRole;
+  }
+
+  get otherJobIds () {
+    //return a clone of the array to prevent modifications to it
+    return Array.isArray(this._otherJobs) ? this._otherJobs.map(x => x) : [];
   }
 
   get contHours () {
@@ -453,9 +467,9 @@ class Worker {
     } else {
       // helper which returns true if the given LOCALESTID
       const thisWorkerExists = (establishmentKey, workerKey) => {
-        const foundEstablishment = this._allCurrentEstablishments.find(currentEstablishment => {
-          return currentEstablishment.key === establishmentKey;
-        });
+
+        const foundEstablishment = this._allCurrentEstablishments.find(currentEstablishment =>
+          currentEstablishment.key === establishmentKey);
 
         // having found the establishment, find the worker within the establishment
         if (foundEstablishment) {
@@ -1585,10 +1599,10 @@ class Worker {
   }
 
   _validateOtherJobs () {
-    const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
-    const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
+    const listOfOtherJobs = this._currentLine.OTHERJOBROLE.split(';');
+    const listOfOtherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
     const localValidationErrors = [];
-    const isValid = listOfotherJobs.every(job => !Number.isNaN(parseInt(job, 10)));
+    const isValid = listOfOtherJobs.every(job => !Number.isNaN(parseInt(job, 10)));
 
     if (this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
       if (!isValid) {
@@ -1601,7 +1615,7 @@ class Worker {
           error: 'The code you have entered for OTHERJOBROLE is incorrect',
           source: this._currentLine.OTHERJOBROLE
         });
-      } else if (listOfotherJobs.length !== listOfotherJobsDescriptions.length) {
+      } else if (listOfOtherJobs.length !== listOfOtherJobsDescriptions.length) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1613,13 +1627,13 @@ class Worker {
         });
       } else {
         const myJobDescriptions = [];
-        this._otherJobs = listOfotherJobs.map((thisJob, index) => {
+        this._otherJobs = listOfOtherJobs.map((thisJob, index) => {
           const thisJobIndex = parseInt(thisJob, 10);
 
           // if the job is one of the many "other" job roles, then need to validate the "other description"
           const otherJobs = [23, 27]; // these are the original budi codes
           if (otherJobs.includes(thisJobIndex)) {
-            const myJobOther = listOfotherJobsDescriptions[index];
+            const myJobOther = listOfOtherJobsDescriptions[index];
             const MAX_LENGTH = 120;
             if (!myJobOther || myJobOther.length === 0) {
               localValidationErrors.push({
@@ -1629,7 +1643,7 @@ class Worker {
                 errCode: Worker.OTHER_JR_DESC_ERROR,
                 errType: 'OTHER_JR_DESC_ERROR',
                 error: `OTHERJRDESC (${index + 1}) has not been supplied`,
-                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`
+                source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`
               });
               myJobDescriptions.push(null);
             } else if (myJobOther.length > MAX_LENGTH) {
@@ -1640,12 +1654,12 @@ class Worker {
                 errCode: Worker.OTHER_JR_DESC_ERROR,
                 errType: 'OTHER_JR_DESC_ERROR',
                 error: 'OTHERJRDESC is longer than 120 characters',
-                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`
+                source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`
               });
             } else {
-              myJobDescriptions.push(listOfotherJobsDescriptions[index]);
+              myJobDescriptions.push(listOfOtherJobsDescriptions[index]);
             }
-          } else if (listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
+          } else if (listOfOtherJobsDescriptions[index] && listOfOtherJobsDescriptions[index].length > 0) {
             localValidationErrors.push({
               worker: this._currentLine.UNIQUEWORKERID,
               name: this._currentLine.LOCALESTID,
@@ -1653,7 +1667,7 @@ class Worker {
               warnCode: Worker.OTHER_JR_DESC_WARNING,
               warnType: 'OTHER_JR_DESC_WARNING',
               warning: 'OTHERJRDESC will be ignored as not required for OTHERJOBROLE',
-              source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`
+              source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`
             });
           } else {
             myJobDescriptions.push(null);
@@ -1662,6 +1676,7 @@ class Worker {
           return thisJobIndex;
         });
 
+        this._mappedOtherJobs = this._otherJobs;
         this._otherJobsOther = myJobDescriptions;
       }
 
@@ -1677,13 +1692,13 @@ class Worker {
   _validateRegisteredNurse () {
     const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
     const NURSING_ROLE = 16;
-    const otherJobRoleIsNurse = this._otherJobs !== null && this._otherJobs.includes(NURSING_ROLE);
+    const otherJobRoleIsNurse = Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE);
     const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
     const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
 
     if (
       (this._mainJobRole === NURSING_ROLE ||
-      (this._otherJobs !== null && this._otherJobs.includes(NURSING_ROLE))) &&
+      (Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE))) &&
       myRegisteredNurse !== 0 &&
       isNaN(myRegisteredNurse)
     ) {
@@ -1717,13 +1732,13 @@ class Worker {
   _validateNursingSpecialist () {
     const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
     const NURSING_ROLE = 16;
-    const otherJobRoleIsNurse = this._otherJobs !== null && this._otherJobs.includes(NURSING_ROLE);
+    const otherJobRoleIsNurse = Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE);
     const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
     const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
 
     if (
       (this._mainJobRole === NURSING_ROLE ||
-      (this._otherJobs !== null && this._otherJobs.includes(NURSING_ROLE))) &&
+      (Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE))) &&
       myNursingSpecialist !== 0 &&
       isNaN(myNursingSpecialist)
     ) {
@@ -2141,9 +2156,7 @@ class Worker {
   // transform related
   _transformContractType () {
     if (this._contractType) {
-      const myValidatedContractType = BUDI.contractType(BUDI.TO_ASC, this._contractType);
-
-      if (!myValidatedContractType) {
+      if (!BUDI.contractType(BUDI.TO_ASC, this._contractType)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -2153,8 +2166,6 @@ class Worker {
           error: 'The code you have entered for EMPLSTATUS is incorrect',
           source: this._currentLine.EMPLSTATUS
         });
-      } else {
-        this._contractType = myValidatedContractType;
       }
     }
   }
@@ -2218,9 +2229,7 @@ class Worker {
         source: this._currentLine.MAINJOBROLE
       });
     } else if (this._mainJobRole || this._mainJobRole === 0) {
-      const myValidatedJobRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
-
-      if (!myValidatedJobRole) {
+      if (!BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -2230,8 +2239,6 @@ class Worker {
           error: 'The code you have entered for MAINJOBROLE is incorrect',
           source: this._currentLine.MAINJOBROLE
         });
-      } else {
-        this._mainJobRole = myValidatedJobRole;
       }
     }
   }
@@ -2258,7 +2265,7 @@ class Worker {
         }
       });
 
-      this._otherJobs = mappedJobs;
+      this._mappedOtherJobs = mappedJobs;
     }
   }
 
@@ -2672,14 +2679,14 @@ class Worker {
       salary: this._salary ? this._salary : undefined,
       hourlyRate: this._hourlyRate ? this._hourlyRate : undefined,
       mainJob: {
-        role: this._mainJobRole,
+        role: this.mainJobRole,
         other: this._mainJobDesc ? this._mainJobDesc : undefined
       },
       hours: {
         contractedHours: this._contHours !== null ? this._contHours : undefined,
         additionalHours: this._avgHours !== null ? this._avgHours : undefined
       },
-      otherJobs: this._otherJobs !== null ? this._otherJobs.map((thisJob, index) => {
+      otherJobs: this._mappedOtherJobs !== null ? this._mappedOtherJobs.map((thisJob, index) => {
         return {
           job: thisJob,
           other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined
@@ -2722,7 +2729,7 @@ class Worker {
         jobId: this._mainJobRole,
         other: this._mainJobDesc
       },
-      otherJobs: this._otherJobs !== null ? this._otherJobs.map((thisJob, index) => ({
+      otherJobs: this._mappedOtherJobs !== null ? this._mappedOtherJobs.map((thisJob, index) => ({
         jobId: thisJob,
         other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined
       })) : undefined,
