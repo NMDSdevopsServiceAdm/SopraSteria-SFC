@@ -50,6 +50,7 @@ provider:
 include:
   - config/*
   - models/*
+  - aws/*
   - changes.js
   - update.js
 #  exclude:
