@@ -50,7 +50,7 @@ WHERE :estID = est."EstablishmentID" AND individual."IsPrimary" = true
 `;
 
 const ownershipDetailsQuery = `
-SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus"
+SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus", "createdByUserUID"
 FROM cqc."OwnerChangeRequest"
 WHERE "subEstablishmentID" = :subEstId ORDER BY "created" DESC LIMIT :limit;
 `;
