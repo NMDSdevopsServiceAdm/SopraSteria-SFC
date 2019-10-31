@@ -17,7 +17,7 @@ export class NotificationCancelledComponent implements OnInit {
   ngOnInit() {
     const notificationUid = this.route.snapshot.params.notificationuid;
     this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
-      this.requestFrom = details.typeContent.subEstablishmentName || '';
+      this.requestFrom = details.typeContent.requestorName || '';
     });
   }
 
