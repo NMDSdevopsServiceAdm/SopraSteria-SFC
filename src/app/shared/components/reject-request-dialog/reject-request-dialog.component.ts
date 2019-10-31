@@ -141,11 +141,10 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
           .subscribe(
             request => {
               if (request) {
-                this.close(true);
-                this.router.navigate(['/dashboard']);
                 this.notificationsService.getAllNotifications().subscribe(notify => {
                   this.notificationsService.notifications$.next(notify);
                 });
+                this.close(true);
               }
             },
             error => {
