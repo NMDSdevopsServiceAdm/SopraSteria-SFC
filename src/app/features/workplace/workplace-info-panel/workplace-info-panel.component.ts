@@ -5,13 +5,10 @@ import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UserService } from '@core/services/user.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import {
-  CancelDataOwnerDialogComponent,
-} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import {
-  ChangeDataOwnerDialogComponent,
-} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -25,6 +22,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public canChangePermissionsForSubsidiary: boolean;
   public primaryWorkplace: Establishment;
   public dataOwner = WorkplaceDataOwner;
+  public loggedInUser: string;
   private subscriptions: Subscription = new Subscription();
   public ownershipChangeRequestId;
 
@@ -33,6 +31,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private router: Router,
     private permissionsService: PermissionsService,
+    private userService: UserService,
     private alertService: AlertService
   ) {}
 
@@ -72,19 +71,26 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
       this.establishmentService.changeOwnershipDetails(this.workplace.uid).subscribe(
         data => {
           if (data) {
+            this.userService.loggedInUser$.subscribe(user => {
+              this.loggedInUser = user.uid;
+            });
             this.ownershipChangeRequestId = data.ownerChangeRequestUID;
             this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
-            const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
-            dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
-              if (cancelDataOwnerConfirmed) {
-                this.changeDataOwner();
-                this.router.navigate(['/dashboard']);
-                this.alertService.addAlert({
-                  type: 'success',
-                  message: 'Request to change data owner has been cancelled ',
-                });
-              }
-            });
+            if (data.createdByUserUID === this.loggedInUser) {
+              const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
+              dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
+                if (cancelDataOwnerConfirmed) {
+                  this.changeDataOwner();
+                  this.router.navigate(['/dashboard']);
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: 'Request to change data owner has been cancelled ',
+                  });
+                }
+              });
+            } else {
+              this.router.navigate(['/notifications']);
+            }
           }
         },
         error => {
