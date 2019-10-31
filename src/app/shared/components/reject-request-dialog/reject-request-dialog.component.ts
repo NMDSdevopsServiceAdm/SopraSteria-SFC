@@ -1,9 +1,9 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { RejectOptions } from '@core/model/my-workplaces.model';
-import { Router } from '@angular/router';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
@@ -127,31 +127,33 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
   }
 
   public rejectPermissionRequest() {
-    let requestParameter = {
-      ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
-      approvalStatus: 'DENIED',
-      approvalReason: this.form.value.reason,
-      type: OWNERSHIP_REJECTED,
-      exsistingNotificationUid: this.notification.notificationUid,
-    };
-    this.subscriptions.add(
-      this.notificationsService
-        .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
-        .subscribe(
-          request => {
-            if (request) {
-              this.close(true);
-              this.router.navigate(['/dashboard']);
-              this.notificationsService.getAllNotifications().subscribe(notify => {
-                this.notificationsService.notifications$.next(notify);
-              });
+    if (this.form.valid) {
+      let requestParameter = {
+        ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
+        approvalStatus: 'DENIED',
+        approvalReason: this.form.value.reason,
+        type: OWNERSHIP_REJECTED,
+        exsistingNotificationUid: this.notification.notificationUid,
+      };
+      this.subscriptions.add(
+        this.notificationsService
+          .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+          .subscribe(
+            request => {
+              if (request) {
+                this.close(true);
+                this.router.navigate(['/dashboard']);
+                this.notificationsService.getAllNotifications().subscribe(notify => {
+                  this.notificationsService.notifications$.next(notify);
+                });
+              }
+            },
+            error => {
+              console.error(error.error.message);
             }
-          },
-          error => {
-            console.error(error.error.message);
-          }
-        )
-    );
+          )
+      );
+    }
   }
 
   public ngOnDestroy(): void {
