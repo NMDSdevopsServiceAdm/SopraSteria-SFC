@@ -187,6 +187,7 @@ exports.changedDataOwnershipRequested = async params =>
 const getOwnershipNotificationDetailsQuery = `
 SELECT
   "ownerChangeRequestUID",
+  "createdByUserUID",
   parent."NameValue" as "parentEstablishmentName",
   sub."NameValue" as "subEstablishmentName",
   CASE
@@ -209,6 +210,20 @@ exports.getOwnershipNotificationDetails = async ({ ownerChangeRequestUid }) =>
       parent: 'Parent',
       workplace: 'Workplace',
       unknown: 'unknown',
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+  const getRequesterNameQuery = `
+  select "NameValue" from cqc."User" as individual
+  JOIN cqc."Establishment" as est on est."EstablishmentID" = individual."EstablishmentID"
+  WHERE "UserUID" = :userUid;
+  `;
+
+  exports.getRequesterName = async (params) =>
+  db.query(getRequesterNameQuery, {
+    replacements: {
+      userUid: params,
     },
     type: db.QueryTypes.SELECT,
   });
