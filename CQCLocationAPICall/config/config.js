@@ -119,7 +119,17 @@ const config = convict({
     region: {
       doc: 'AWS region',
       format: '*',
-      default: 'eu-west-2',
+      default: 'eu-west-1'
+    },
+    bucketname: {
+      doc: 'Bucket used to upload all CQC changes',
+      format: '*',
+      default: 'cqcchanges'
+    },
+    sqsqueue: {
+      doc: 'SQS queue to send location changes',
+      format: '*',
+      default: 'https://sqs.eu-west-1.amazonaws.com/624216394565/cqctest'
     },
     secrets: {
       use: {
