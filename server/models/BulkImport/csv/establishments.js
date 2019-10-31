@@ -2358,7 +2358,7 @@ class Establishment {
     columns.push(otherServices.map(thisService => BUDI.services(BUDI.FROM_ASC, thisService.id)).join(';'));
 
     // capacities and utilisations - these are semi colon delimited in the order of ALLSERVICES (so main service and other services) - empty if not a capacity or a utilisation
-    const entityCapacities = entity.capacities ? entity.capacities.map(thisCap => {
+    const entityCapacities = Array.isArray(entity.capacities) ? entity.capacities.map(thisCap => {
       const isCapacity = BUDI.serviceFromCapacityId(thisCap.reference.id);
       const isUtilisation = BUDI.serviceFromUtilisationId(thisCap.reference.id);
 
