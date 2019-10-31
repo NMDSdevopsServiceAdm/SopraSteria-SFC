@@ -77,7 +77,6 @@ module.exports.handler =  async (event, context) => {
           changes.push(response.data.changes[i]);
         }
       } while (nextPage != null);
-      console.log('There are ' + changes.length + ' changes');
       return changes;
     }
 
