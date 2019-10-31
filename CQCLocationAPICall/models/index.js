@@ -1,3 +1,5 @@
+'use strict';
+
 const EventEmitter = require('events');
 const AppConfig = require('../config/appConfig');
 const appConfig = require('../config/config');
