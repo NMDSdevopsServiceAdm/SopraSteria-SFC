@@ -10,7 +10,7 @@
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-2">From:</h2>
     <p class="govuk-util__inline-block" *ngIf="notification">
-      {{ notification.typeContent.subEstablishmentName }}, {{ notification.created | longDate }}
+      {{ notification.typeContent.requestorName }}, {{ notification.created | longDate }}
     </p>
     <h2 class="govuk-heading-s" *ngIf="notification">Subject</h2>
     <p>{{ notification?.type | notificationType }}</p>
@@ -21,23 +21,18 @@
     <div class="govuk-grid-column-two-thirds">
       <div [ngSwitch]="notification.typeContent.approvalStatus">
         <div *ngSwitchCase="'REQUESTED'">
-          <p>
-            You have requested to transfer ownership of data to {{ notification.typeContent.subEstablishmentName }}.
-          </p>
+          <p>You have requested to transfer ownership of data to {{ notification.typeContent.requestorName }}.</p>
           <p>Approve the request to set the following permissions:</p>
         </div>
         <div *ngSwitchCase="'CANCELLED'">
-          <p>
-            You have requested to transfer ownership of data to {{ notification.typeContent.subEstablishmentName }}.
-          </p>
+          <p>You have requested to transfer ownership of data to {{ notification.typeContent.requestorName }}.</p>
           <p>Approve the request to set the following permissions:</p>
         </div>
 
         <div *ngSwitchCase="'DENIED'">
           <div *ngIf="isDataOwner" else nonDataOwner>
             <p>
-              {{ notification.typeContent.subEstablishmentName }} has rejected your request to become the owner of its
-              data.
+              {{ notification.typeContent.requestorName }} has rejected your request to become the owner of its data.
             </p>
             <h2 class="govuk-heading-s">Reason</h2>
             <p *ngIf="notification.typeContent.reason != null" else noReason>
@@ -49,17 +44,17 @@
           </div>
           <ng-template #nonDataOwner>
             You rejected the request to transfer ownership of data to
-            {{ notification.typeContent.subEstablishmentName }}
+            {{ notification.typeContent.requestorName }}
           </ng-template>
         </div>
         <div *ngSwitchCase="'APPROVED'">
           <p *ngIf="isDataOwner" else nonDataOwner>
-            {{ notification.typeContent.subEstablishmentName }} has approved your request to become the owner of its
-            data. You are now free to edit workplace and staff data.
+            {{ notification.typeContent.requestorName }} has approved your request to become the owner of its data. You
+            are now free to edit workplace and staff data.
           </p>
           <ng-template #nonDataOwner>
             You approved the request to transfer ownership of data to
-            {{ notification.typeContent.subEstablishmentName }}
+            {{ notification.typeContent.requestorName }}
           </ng-template>
         </div>
         <div *ngSwitchDefault></div>
@@ -81,9 +76,9 @@
           </tr>
           <tr class="govuk-table__row govuk-error-table__row--no-border" *ngIf="notification">
             <td class="govuk-table__cell">
-              {{ notification.typeContent.subEstablishmentName }}
+              {{ notification.typeContent.requestorName }}
             </td>
-            <td class="govuk-table__cell">Workplace and staff</td>
+            <td class="govuk-table__cell">{{ notification.typeContent.permissionRequest }}</td>
           </tr>
         </tbody>
       </table>
