@@ -70,6 +70,15 @@ router.route('/:id').put(async (req, res) => {
             let addNotificationResp = await notifications.insertNewNotification(params);
             if (!addNotificationResp) {
               return res.status(400).send('Invalid request');
+            } else {
+              //clearing ownership requested column
+              params.timeValue = null;
+              let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
+              if (!saveDataOwnershipRequested) {
+                return res.status(400).send({
+                  message: 'Invalid request',
+                });
+              }
             }
           }
           return res.status(201).send(resp[0]);

@@ -72,7 +72,9 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         data => {
           if (data) {
             this.userService.loggedInUser$.subscribe(user => {
-              this.loggedInUser = user.uid;
+              if (user) {
+                this.loggedInUser = user.uid;
+              }
             });
             this.ownershipChangeRequestId = data.ownerChangeRequestUID;
             this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
