@@ -1,8 +1,8 @@
 const AWS = require('aws-sdk');
-const appConfig = require('../config/config');
+const appConfig = require('./config/config');
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
-const models = require('../models/index');
+const models = require('./models/index');
 
 //CQC Endpoint
 const url = 'https://api.cqc.org.uk/public/v1';
@@ -45,7 +45,7 @@ async function uploadToS3(locationIds, startdate, enddate) {
 
   await s3.putObject({
     Bucket: appConfig.get('aws.bucketname').toString(),
-    Key: `cqcChanges-${enddate}`,
+    Key: `cqcChanges-${startdate}`,
     Body: JSON.stringify(locations),
     ContentType: 'application/json; charset=utf-8'
   }).promise();

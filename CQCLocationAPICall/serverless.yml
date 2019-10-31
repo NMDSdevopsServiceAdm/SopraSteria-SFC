@@ -19,11 +19,11 @@ service: cqc-location-call # NOTE: update this with your service name
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
 
 # you can overwrite defaults here
 #  stage: dev
-  region: eu-west-2
+  region: eu-west-1
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -47,17 +47,27 @@ provider:
 
 # you can add packaging information here
 #package:
-#  include:
-#    - include-me.js
-#    - include-me-dir/**
+include:
+  - config/*
+  - models/*
+  - changes.js
+  - update.js
 #  exclude:
 #    - exclude-me.js
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.handler
-    name: postBook
+  changes:
+    handler: changes.handler
+    name: cqc-changes
+    timeout: 900
+    events:
+      - http:
+          path: /
+          method: get
+  update:
+    handler: update.handler
+    name: cqc-update
     timeout: 900
     events:
       - http:
@@ -108,5 +118,3 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
-plugins:
-  - serverless-offline
