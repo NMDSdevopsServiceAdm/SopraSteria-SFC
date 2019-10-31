@@ -777,7 +777,7 @@ class Establishment {
     const myLocationID = this._currentLine.LOCATIONID;
 
     // do not use
-    const mainServiceIsHeadOffice = !!(this._currentLine.MAINSERVICE && parseInt(this._currentLine.MAINSERVICE, 10) === 72);
+    const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
 
     if (this._regType === 2) {
       // ignore location i
