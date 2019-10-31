@@ -178,7 +178,7 @@ exports.cancelOwnershipRequest = async params =>
 exports.changedDataOwnershipRequested = async params =>
   db.query(changedDataOwnershipRequestedQuery, {
     replacements: {
-      estId: params.subEstablishmentId ? params.subEstablishmentId : params.subEstablishmentID,
+      estId: params.subEstablishmentId,
       timestamp: params.timeValue,
     },
     type: db.QueryTypes.UPDATE,

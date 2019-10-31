@@ -72,8 +72,11 @@ router.route('/:id').put(async (req, res) => {
               return res.status(400).send('Invalid request');
             } else {
               //clearing ownership requested column
-              params.timeValue = null;
-              let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
+              let clearOwnershipParam = {
+                timeValue :null,
+                subEstablishmentId: params.subEstablishmentID
+              };
+              let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
               if (!saveDataOwnershipRequested) {
                 return res.status(400).send({
                   message: 'Invalid request',
