@@ -45,7 +45,7 @@ module.exports.handler =  async (event, context) => {
           });
           break;
       }
-      process.exit();
+      models.sequelize.close();
       return {status: 200,
         body: "Call Successful"};
 
@@ -58,7 +58,7 @@ module.exports.handler =  async (event, context) => {
         });
       }
       console.error(e);
-      process.exit();
+      models.sequelize.close();
       return  e.message;
     }
 
