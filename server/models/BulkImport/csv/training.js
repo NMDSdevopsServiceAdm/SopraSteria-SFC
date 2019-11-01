@@ -1,12 +1,13 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 
+const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
+
 class Training {
   constructor (currentLine, lineNumber) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
-    this._headers_v1 = ['LOCALESTID', 'UNIQUEWORKERID', 'CATEGORY', 'DESCRIPTION', 'DATECOMPLETED', 'EXPIRYDATE', 'ACCREDITED', 'NOTES'];
 
     this._localeStId = null;
     this._uniqueWorkerId = null;
@@ -38,8 +39,8 @@ class Training {
   static get ACCREDITED_WARNING () { return 2060; }
   static get NOTES_WARNING () { return 2070; }
 
-  get headers () {
-    return this._headers_v1.join(',');
+  static get headers () {
+    return _headers_v1;
   }
 
   get lineNumber () {
@@ -380,14 +381,14 @@ class Training {
 
   _validateHeaders (headers) {
     // only run once for first line, so check _lineNumber
-    if (this._headers_v1.join(',') !== headers) {
+    if (_headers_v1 !== headers) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: 1,
         errCode: Training.HEADERS_ERROR,
         errType: 'HEADERS_ERROR',
-        error: `Training headers (HEADERS) can contain, ${this._headers_v1}`,
+        error: `Training headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
         source: headers
       });
       return false;
@@ -495,109 +496,6 @@ class Training {
         ...thisValidation
       };
     });
-  }
-
-  // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
-  addAPIValidations (errors, warnings) {
-    /*     errors.forEach(thisError => {
-      thisError.properties ? thisError.properties.forEach(thisProp => {
-        const validationError = {
-          lineNumber: this._lineNumber,
-          error: thisError.message,
-          name: this._currentLine.LOCALESTID,
-          worker: this._currentLine.UNIQUEWORKERID,
-        };
-
-        switch (thisProp) {
-          case 'TrainingCategory':
-            // this generates multiple errors, which are already covered in validation above
-            // validationError.errCode = Training.CATEGORY_ERROR;
-            // validationError.errType = 'CATEGORY_ERROR';
-            // validationError.source  = `${this._currentLine.CATEGORY}`;
-            break;
-          case 'Title':
-            validationError.errCode = Training.DESCRIPTION_ERROR;
-            validationError.errType = 'DESCRIPTION_ERROR';
-            validationError.source  = `${this._currentLine.DESCRIPTION}`;
-            break;
-          case 'Accredited':
-            validationError.errCode = Training.ACCREDITED_ERROR;
-            validationError.errType = 'ACCREDITED_ERROR';
-            validationError.source  = `${this._currentLine.ACCREDITED}`;
-            break;
-          case 'Completed':
-            validationError.errCode = Training.DATE_COMPLETED_ERROR;
-            validationError.errType = 'DATE_COMPLETED_ERROR';
-            validationError.source  = `${this._currentLine.DATECOMPLETED}`;
-            break;
-          case 'Expires':
-            validationError.errCode = Training.EXPIRY_DATE_ERROR;
-            validationError.errType = 'EXPIRY_DATE_ERROR';
-            validationError.source  = `${this._currentLine.EXPIRYDATE}`;
-            break;
-          case 'Notes':
-            validationError.errCode = Training.NOTES_ERROR;
-            validationError.errType = 'NOTES_ERROR';
-            validationError.source  = `${this._currentLine.NOTES}`;
-            break;
-          default:
-            validationError.errCode = thisError.code;
-            validationError.errType = 'Undefined';
-            validationError.source  = thisProp;
-        }
-        this._validationErrors.push(validationError);
-      }) : true;
-    });
-
-    warnings.forEach(thisWarning => {
-      thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
-        const validationWarning = {
-          lineNumber: this._lineNumber,
-          warning: thisWarning.message,
-          name: this._currentLine.LOCALESTID,
-          worker: this._currentLine.UNIQUEWORKERID,
-        };
-
-        switch (thisProp) {
-          case 'TrainingCategory':
-            validationWarning.warnCode = Training.CATEGORY_WARNING;
-            validationWarning.warnType = 'CATEGORY_WARNING';
-            validationWarning.source  = `${this._currentLine.CATEGORY}`;
-            break;
-          case 'Title':
-            validationWarning.warnCode = Training.DESCRIPTION_WARNING;
-            validationWarning.warnType = 'DESCRIPTION_WARNING';
-            validationWarning.source  = `${this._currentLine.DESCRIPTION}`;
-            break;
-          case 'Accredited':
-            validationWarning.warnCode = Training.ACCREDITED_WARNING;
-            validationWarning.warnType = 'ACCREDITED_WARNING';
-            validationWarning.source  = `${this._currentLine.ACCREDITED}`;
-            break;
-          case 'Completed':
-            validationWarning.warnCode = Training.DATE_COMPLETED_WARNING;
-            validationWarning.warnType = 'DATE_COMPLETED_WARNING';
-            validationWarning.source  = `${this._currentLine.DATECOMPLETED}`;
-            break;
-          case 'Expires':
-            validationWarning.warnCode = Training.EXPIRY_DATE_WARNING;
-            validationWarning.warnType = 'EXPIRY_DATE_WARNING';
-            validationWarning.source  = `${this._currentLine.EXPIRYDATE}`;
-            break;
-          case 'Notes':
-            validationWarning.warnCode = Training.NOTES_WARNING;
-            validationWarning.warnType = 'NOTES_WARNING';
-            validationWarning.source  = `${this._currentLine.NOTES}`;
-            break;
-          default:
-            validationWarning.warnCode = thisWarning.code;
-            validationWarning.warnType = 'Undefined';
-            validationWarning.source  = thisProp;
-        }
-
-        this._validationErrors.push(validationWarning);
-      }) : true;
-    }); */
   }
 
   _csvQuote (toCsv) {

@@ -1,6 +1,37 @@
+// Shorthand for hasOwnProperty that also works with bare objects
+const hasProp = (obj, prop) =>
+  Object.prototype.hasOwnProperty.bind(obj)(prop);
+
 const BUDI = require('../BUDI').BUDI;
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
+
+const localAuthorityEmployerTypes = [1, 3];
+const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
+const permanantContractStatusId = 1;
+
+function updateWorkerTotalsTemplate(worker) {
+  const allRoles = worker.otherJobIds;
+  if (worker.mainJobRoleId !== null) {
+    allRoles.unshift(worker.mainJobRoleId);
+  }
+
+  // Is the worker involved in direct care? If any job roles are found that aren't non direct care ones then the worker is involved in direct care
+  if (allRoles.findIndex(role => !nonDirectCareJobRoles.includes(role)) !== -1) {
+    this.directCareWorkers++;
+  } else {
+    this.managerialProfessionalWorkers++;
+  }
+
+  // Is the worker on a permanant contract? Any workers that are not permanant are considered temporary for validation purposes
+  if (worker.contractTypeId === permanantContractStatusId) {
+    this.permanantWorkers++;
+  } else {
+    this.temporaryWorkers++;
+  }
+}
+
+const _headers_v1 = 'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,PERMCQC,PERMLA,SHARELA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS';
 
 class Establishment {
   constructor (currentLine, lineNumber, allCurrentEstablishments) {
@@ -9,7 +40,6 @@ class Establishment {
     this._allCurrentEstablishments = allCurrentEstablishments;
 
     this._validationErrors = [];
-    this._headers_v1 = ['LOCALESTID', 'STATUS', 'ESTNAME', 'ADDRESS1', 'ADDRESS2', 'ADDRESS3', 'POSTTOWN', 'POSTCODE', 'ESTTYPE', 'OTHERTYPE', 'PERMCQC', 'PERMLA', 'SHARELA', 'REGTYPE', 'PROVNUM', 'LOCATIONID', 'MAINSERVICE', 'ALLSERVICES', 'CAPACITY', 'UTILISATION', 'SERVICEDESC', 'SERVICEUSERS', 'OTHERUSERDESC', 'TOTALPERMTEMP', 'ALLJOBROLES', 'STARTERS', 'LEAVERS', 'VACANCIES', 'REASONS', 'REASONNOS'];
 
     // CSV properties
     this._localId = null;
@@ -104,8 +134,8 @@ class Establishment {
 
   static get REASONS_FOR_LEAVING_WARNING () { return 2360; }
 
-  get headers () {
-    return this._headers_v1.join(',');
+  static get headers () {
+    return _headers_v1;
   }
 
   get lineNumber () {
@@ -157,7 +187,8 @@ class Establishment {
   }
 
   get allServices () {
-    return this._allServices;
+    // return a clone of the services array to prevent outside modifications
+    return Array.isArray(this._allServices) ? this._allServices.map(x => x) : [];
   }
 
   get allServicesOther () {
@@ -1166,6 +1197,62 @@ class Establishment {
     }
   }
 
+  _crossValidateTotalPermTemp({
+    csvEstablishmentSchemaErrors,
+    totals
+  }) {
+    if (numberOfStaff === permanantWorkers + temporaryWorkers) {
+      if (notHeadOfficeOnly) {
+        if (permanantWorkers + temporaryWorkers === 0) {
+          csvEstablishmentSchemaErrors.unshift({
+            origin: 'Establishments',
+            this.lineNumber,
+            warnCode: this.TOTAL_PERM_TEMP_WARNING,
+            warnType: 'TOTAL_PERM_TEMP_WARNING',
+            warning: 'The number of employed staff is 0 please check your staff records',
+            source: this.TOTALPERMTEMP,
+            name: this.LOCALESTID
+          });
+        } else if (permanantWorkers < temporaryWorkers) {
+          csvEstablishmentSchemaErrors.unshift({
+            origin: 'Establishments',
+            this.lineNumber,
+            warnCode: this.TOTAL_PERM_TEMP_WARNING,
+            warnType: 'TOTAL_PERM_TEMP_WARNING',
+            warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records',
+            source: this.TOTALPERMTEMP,
+            name: this.LOCALESTID
+          });
+        }
+
+        if (isCQCRegulated && notSharedLivesOnly && directCareWorkers === 0) {
+          csvEstablishmentSchemaErrors.unshift({
+            origin: 'Establishments',
+            this.lineNumber,
+            warnCode: this.TOTAL_PERM_TEMP_WARNING,
+            warnType: 'TOTAL_PERM_TEMP_WARNING',
+            warning: 'The number of direct care staff is 0 please check your staff records',
+            source: this.TOTALPERMTEMP,
+            name: this.LOCALESTID
+          }));
+        }
+      }
+
+      if (isLocalAuthority && managerialProfessionalWorkers === 0) {
+        csvEstablishmentSchemaErrors.unshift({
+          origin: 'Establishments',
+          this.lineNumber,
+          warnCode: this.TOTAL_PERM_TEMP_WARNING,
+          warnType: 'TOTAL_PERM_TEMP_WARNING',
+          warning: 'The number of non-direct care staff is 0 please check your staff records',
+          source: this.TOTALPERMTEMP,
+          name: this.LOCALESTID
+        });
+      }
+    }
+    
+  }
+
   _validateAllJobs () {
     // optional
     const allJobs = this._currentLine.ALLJOBROLES.split(';');
@@ -1722,12 +1809,12 @@ class Establishment {
 
   _validateHeaders (headers) {
     // only run once for first line, so check _lineNumber
-    if (this._headers_v1.join(',') !== headers) {
+    if (_headers_v1 !== headers) {
       this._validationErrors.push({
         lineNumber: 1,
         errCode: Establishment.HEADERS_ERROR,
         errType: 'HEADERS_ERROR',
-        error: `Establishment headers (HEADERS) can contain, ${this._headers_v1}`,
+        error: `Establishment headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
         source: headers,
         name: this._currentLine.LOCALESTID
       });
@@ -1797,54 +1884,6 @@ class Establishment {
     };
   }
 
-  static moreTempWorkersWarning (lineNumber, TOTALPERMTEMP, LOCALESTID) {
-    return {
-      origin: 'Establishments',
-      lineNumber,
-      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
-      warnType: 'TOTAL_PERM_TEMP_WARNING',
-      warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records',
-      source: TOTALPERMTEMP,
-      name: LOCALESTID
-    };
-  }
-
-  static noWorkersWarning (lineNumber, TOTALPERMTEMP, LOCALESTID) {
-    return {
-      origin: 'Establishments',
-      lineNumber,
-      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
-      warnType: 'TOTAL_PERM_TEMP_WARNING',
-      warning: 'The number of employed staff is 0 please check your staff records',
-      source: TOTALPERMTEMP,
-      name: LOCALESTID
-    };
-  }
-
-  static noDirectCareWorkersWarning (lineNumber, TOTALPERMTEMP, LOCALESTID) {
-    return {
-      origin: 'Establishments',
-      lineNumber,
-      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
-      warnType: 'TOTAL_PERM_TEMP_WARNING',
-      warning: 'The number of direct care staff is 0 please check your staff records',
-      source: TOTALPERMTEMP,
-      name: LOCALESTID
-    };
-  }
-
-  static noNonDirectCareWorkersWarning (lineNumber, TOTALPERMTEMP, LOCALESTID) {
-    return {
-      origin: 'Establishments',
-      lineNumber,
-      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
-      warnType: 'TOTAL_PERM_TEMP_WARNING',
-      warning: 'The number of non-direct care staff is 0 please check your staff records',
-      source: TOTALPERMTEMP,
-      name: LOCALESTID
-    };
-  }
-
   // returns true on success, false is any attribute of Establishment fails
   validate () {
     let status = true;
@@ -1879,6 +1918,74 @@ class Establishment {
     }
 
     return status;
+  }
+
+  // Adds items to csvEstablishmentSchemaErrors if validations that depend on
+  // worker totals give errors or warnings
+  crossValidate({
+    myEstablishment,
+    csvEstablishmentSchemaErrors,
+    myWorkers
+  }) {
+    //if establishment isn't being added or updated then exit early
+    if (!['NEW', 'UPDATE'].includes(est.status) {
+      return;
+    }
+    
+    const updateWorkerTotals = updateWorkerTotalsTemplate.bind(this);
+    const directCareWorkers = 0;
+    const managerialProfessionalWorkers = 0;
+    const permanantWorkers = 0;
+    const temporaryWorkers = 0;
+    const ignoreDBWorkers = Object.create(null);
+    const isCQCRegulated = this._regType === 2;
+    const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
+
+    // All services already includes the main service
+    const allServices = this.allServices;
+
+    // Is the establishment only shared lives (code 19)?
+    const notSharedLivesOnly = allServices.findIndex(service => service !== 19) !== -1;
+
+    // Is the establishment only head office services (code 16)?
+    const notHeadOfficeOnly = allServices.findIndex(service => service !== 16) !== -1;
+    
+    myWorkers.forEach(worker => {
+      if (hasProp(updatedEsts, worker.establishmentKey)) {
+        const estTotals = updatedEsts[worker.establishmentKey];
+
+        switch (worker.status) {
+          case 'NEW':
+          case 'UPDATE': {
+            /* update totals */
+            updateTotals(estTotals, worker);
+          }
+          /* fall through */
+
+          case 'DELETE':
+            estTotals.ignoreDBWorkers[worker.uniqueWorker] = true;
+            break;
+        }
+      }
+    });
+
+    // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
+
+    // get all the other records that may already exist in the db but aren't being updated or deleted
+    (await fetchMyEstablishmentsWorkers([this.id], [this.key]))
+      .forEach(worker => {
+        const estTotals = updatedEsts[worker.establishmentKey];
+        worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
+        worker.otherJobIds = worker.otherJobIds.length ? worker.otherJobIds.split(';') : [];
+
+        // if a record is updated or deleted it can't count towards the totals twice
+        if (!hasProp(estTotals.ignoreDBWorkers, worker.uniqueWorker)) {
+        // update totals
+          updateTotals(estTotals, worker);
+        }
+      });
+      
+    _crossValidateTotalPermTemp();
   }
 
   // returns true on success, false is any attribute of Establishment fails
@@ -2084,206 +2191,6 @@ class Establishment {
       ...fixedProperties,
       ...changeProperties
     };
-  }
-
-  // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
-  addAPIValidations (errors, warnings) {
-    // disable the integration of any API errors - they can't be propertly matched to bulk upload validations
-    /*     errors.forEach(thisError => {
-      thisError.properties ? thisError.properties.forEach(thisProp => {
-        const validationError = {
-          lineNumber: this._lineNumber,
-          error: thisError.message,
-          name: this._currentLine.LOCALESTID,
-        };
-
-        switch (thisProp) {
-          case 'Capacity':
-            validationError.errCode = Establishment.CAPACITY_UTILISATION_ERROR;
-            validationError.errType = 'CAPACITY_UTILISATION_ERROR';
-            validationError.source  = `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`;
-            break;
-          case 'EmployerType':
-            validationError.errCode = Establishment.ESTABLISHMENT_TYPE_ERROR;
-            validationError.errType = 'ESTABLISHMENT_TYPE_ERROR';
-            validationError.source  = `${this._currentLine.ESTTYPE}`;
-            break;
-          case 'Leavers':
-            validationError.errCode = Establishment.LEAVERS_ERROR;
-            validationError.errType = 'LEAVERS_ERROR';
-            validationError.source  = `${this._currentLine.LEAVERS}`;
-            break;
-          case 'Starters':
-            validationError.errCode = Establishment.STARTERS_ERROR;
-            validationError.errType = 'STARTERS_ERROR';
-            validationError.source  = `${this._currentLine.STARTERS}`;
-            break;
-          case 'Vacancies':
-            validationError.errCode = Establishment.VACANCIES_ERROR;
-            validationError.errType = 'VACANCIES_ERROR';
-            validationError.source  = `${this._currentLine.VACANCIES}`;
-            break;
-          case 'MainService':
-            validationError.errCode = Establishment.MAIN_SERVICE_ERROR;
-            validationError.errType = 'MAIN_SERVICE_ERROR';
-            validationError.source  = `${this._currentLine.MAINSERVICE}`;
-            break;
-          case 'Name':
-            validationError.errCode = Establishment.NAME_ERROR;
-            validationError.errType = 'NAME_ERROR';
-            validationError.source  = `${this._currentLine.ESTNAME}`;
-            break;
-          case 'Services':
-            validationError.errCode = Establishment.ALL_SERVICES_ERROR;
-            validationError.errType = 'ALL_SERVICES_ERROR';
-            validationError.source  = `${this._currentLine.ALLSERVICES} - ${this._currentLine.SERVICEDESC}`;
-            break;
-          case 'ServiceUsers':
-            validationError.errCode = Establishment.SERVICE_USERS_ERROR;
-            validationError.errType = 'SERVICE_USERS_ERROR';
-            validationError.source  = `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`;
-            break;
-          case 'ShareWithLA':
-            validationError.errCode = Establishment.LOCAL_AUTHORITIES_ERROR;
-            validationError.errType = 'LOCAL_AUTHORITIES_ERROR';
-            validationError.source  = `${this._currentLine.SHARELA}`;
-            break;
-          case 'ShareWith':
-            validationError.errCode = Establishment.SHARE_WITH;
-            validationError.errType = 'SHARE_WITH_ERROR';
-            validationError.source  = `${this._currentLine.PERMCQC} - ${this._currentLine.PERMLA}`;
-            break;
-          case 'Staff':
-            validationError.errCode = Establishment.TOTAL_PERM_TEMP_ERROR;
-            validationError.errType = 'TOTAL_PERM_TEMP_ERROR';
-            validationError.source  = `${this._currentLine.TOTALPERMTEMP}`;
-            break;
-          case 'Address':
-          case 'Postcode':
-            // validationError.errCode = Establishment.ADDRESS_ERROR;
-            // validationError.errType = 'ADDRESS_ERROR';
-            // validationError.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
-            validationError.errCode = null; // ignore
-            break;
-          case 'CQCRegistered':
-            validationError.errCode = Establishment.REGTYPE_ERROR;
-            validationError.errType = 'REGTYPE_ERROR';
-            validationError.source  = `${this._currentLine.REGTYPE}`;
-            break;
-          case 'LocationID':
-            validationError.errCode = Establishment.LOCATION_ID_ERROR;
-            validationError.errType = 'LOCATION_ID_ERROR';
-            validationError.source  = `${this._currentLine.LOCATIONID}`;
-            break;
-          case 'NMDSID':
-              // where to map NMDSID error?????
-          default:
-            validationError.errCode = thisError.code;
-            validationError.errType = 'Undefined';
-            validationError.source  = thisProp;
-        }
-
-        validationError.errCode ? this._validationErrors.push(validationError) : true;
-      }) : true;
-    });
-
-    warnings.forEach(thisWarning => {
-      thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
-        const validationWarning = {
-          lineNumber: this._lineNumber,
-          warning: thisWarning.message,
-          name: this._currentLine.LOCALESTID,
-        };
-
-        switch (thisProp) {
-          case 'Capacity':
-            validationWarning.warnCode = Establishment.CAPACITY_UTILISATION_WARNING;
-            validationWarning.warnType = 'CAPACITY_UTILISATION_WARNING';
-            validationWarning.source  = `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`;
-            break;
-          case 'EmployerType':
-            validationWarning.warnCode = Establishment.ESTABLISHMENT_TYPE_WARNING;
-            validationWarning.warnType = 'ESTABLISHMENT_TYPE_WARNING';
-            validationWarning.source  = `${this._currentLine.ESTTYPE}`;
-            break;
-          case 'Leavers':
-            validationWarning.warnCode = Establishment.LEAVERS_WARNING;
-            validationWarning.warnType = 'LEAVERS_WARNING';
-            validationWarning.source  = `${this._currentLine.LEAVERS}`;
-            break;
-          case 'Starters':
-            validationWarning.warnCode = Establishment.STARTERS_WARNING;
-            validationWarning.warnType = 'STARTERS_WARNING';
-            validationWarning.source  = `${this._currentLine.STARTERS}`;
-            break;
-          case 'Vacancies':
-            validationWarning.warnCode = Establishment.VACANCIES_WARNING;
-            validationWarning.warnType = 'VACANCIES_WARNING';
-            validationWarning.source  = `${this._currentLine.VACANCIES}`;
-            break;
-          case 'MainService':
-            validationWarning.warnCode = Establishment.MAIN_SERVICE_WARNING;
-            validationWarning.warnType = 'MAIN_SERVICE_WARNING';
-            validationWarning.source  = `${this._currentLine.MAINSERVICE}`;
-            break;
-          case 'Name':
-            validationWarning.warnCode = Establishment.NAME_WARNING;
-            validationWarning.warnType = 'NAME_WARNING';
-            validationWarning.source  = `${this._currentLine.ESTNAME}`;
-            break;
-          case 'Services':
-            validationWarning.warnCode = Establishment.ALL_SERVICES_WARNING;
-            validationWarning.warnType = 'ALL_SERVICES_WARNING';
-            validationWarning.source  = `${this._currentLine.ALLSERVICES} - ${this._currentLine.SERVICEDESC}`;
-            break;
-          case 'ServiceUsers':
-            validationWarning.warnCode = Establishment.SERVICE_USERS_WARNING;
-            validationWarning.warnType = 'SERVICE_USERS_WARNING';
-            validationWarning.source  = `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`;
-            break;
-          case 'ShareWithLA':
-            validationWarning.warnCode = Establishment.LOCAL_AUTHORITIES_WARNING;
-            validationWarning.warnType = 'LOCAL_AUTHORITIES_WARNING';
-            validationWarning.source  = `${this._currentLine.SHARELA}`;
-            break;
-          case 'ShareWith':
-            validationWarning.warnCode = Establishment.SHARE_WITH;
-            validationWarning.warnType = 'SHARE_WITH';
-            validationWarning.source  = `${this._currentLine.PERMCQC} - ${this._currentLine.PERMLA}`;
-            break;
-          case 'Staff':
-            validationWarning.warnCode = Establishment.TOTAL_PERM_TEMP_WARNING;
-            validationWarning.warnType = 'TOTAL_PERM_TEMP_WARNING';
-            validationWarning.source  = `${this._currentLine.TOTALPERMTEMP}`;
-            break;
-          case 'Address':
-          case 'Postcode':
-            validationWarning.warnCode = Establishment.ADDRESS_WARNING;
-            validationWarning.warnType = 'ADDRESS_WARNING';
-            validationWarning.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
-            break;
-          case 'CQCRegistered':
-            validationWarning.warnCode = Establishment.REGTYPE_WARNING;
-            validationWarning.warnType = 'REGTYPE_WARNING';
-            validationWarning.source  = `${this._currentLine.REGTYPE}`;
-            break;
-          case 'LocationID':
-            validationWarning.warnCode = Establishment.LOCATION_ID_WARNING;
-            validationWarning.warnType = 'LOCATION_ID_WARNING';
-            validationWarning.source  = `${this._currentLine.LOCATIONID}`;
-            break;
-          case 'NMDSID':
-              // where to map NMDSID error?????
-          default:
-            validationWarning.warnCode = thisWarning.code;
-            validationWarning.warnType = 'Undefined';
-            validationWarning.source  = thisProp;
-        }
-
-        validationWarning.warnCode ? this._validationErrors.push(validationWarning) : true;
-      }) : true;
-    }); */
-
   }
 
   _csvQuote (toCsv) {
