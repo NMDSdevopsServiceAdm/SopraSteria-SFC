@@ -1,9 +1,14 @@
 const expect = require('chai').expect;
-const bulkupload = require('../../../../../models/BulkImport/csv/workers').Worker;
 const workers = require('../../../mockdata/workers').data;
 const establishmentId = require('../../../mockdata/workers').establishmentId;
 const maxquals = require('../../../mockdata/workers').maxquals;
 const knownHeaders = require('../../../mockdata/workers').knownHeaders;
+const moment = require('moment');
+
+const testUtils = require('../../../../../utils/testUtils');
+const csv = require('csvtojson');
+
+const BUDI_TO_ASC = 100;
 
 function mapCsvToWorker(worker, headers) {
   const mapped = {};
@@ -13,48 +18,335 @@ function mapCsvToWorker(worker, headers) {
   return mapped;
 }
 
+const getUnitInstance = () => {
+  const ALL_CAPACITIES = null;
+  const ALL_UTILISATIONS = null;
+  const BUDI_TO_ASC = 100;
+
+  const bulkUpload = testUtils.sandBox(
+    'server/models/BulkImport/csv/workers.js',
+    {
+      locals: {
+        require: testUtils.wrapRequire({
+          '../BUDI': {
+            BUDI: {
+
+              ethnicity: (direction, originalCode) => {
+                const fixedMapping = [
+                  { ASC: 1, BUDI: 31 },
+                  { ASC: 3, BUDI: 32 },
+                  { ASC: 4, BUDI: 33 },
+                  { ASC: 5, BUDI: 34 },
+                  { ASC: 6, BUDI: 35 },
+                  { ASC: 7, BUDI: 36 },
+                  { ASC: 8, BUDI: 37 },
+                  { ASC: 9, BUDI: 38 },
+                  { ASC: 10, BUDI: 39 },
+                  { ASC: 11, BUDI: 40 },
+                  { ASC: 12, BUDI: 41 },
+                  { ASC: 13, BUDI: 42 },
+                  { ASC: 14, BUDI: 43 },
+                  { ASC: 15, BUDI: 44 },
+                  { ASC: 16, BUDI: 45 },
+                  { ASC: 17, BUDI: 46 },
+                  { ASC: 18, BUDI: 47 },
+                  { ASC: 19, BUDI: 98 },
+                  { ASC: 2, BUDI: 99 }
+                ];
+
+                if (direction === BUDI_TO_ASC) {
+                  const found = fixedMapping.find(thisEthnicity => thisEthnicity.BUDI === originalCode);
+                  return found ? found.ASC : null;
+                }
+
+                const found = fixedMapping.find(thisEthnicity => thisEthnicity.ASC === originalCode);
+                return found ? found.BUDI : null;
+              },
+
+              jobRoles: (direction, originalCode) => {
+                const fixedMapping = [
+                  { ASC: 26, BUDI: 1 },
+                  { ASC: 15, BUDI: 2 },
+                  { ASC: 13, BUDI: 3 },
+                  { ASC: 22, BUDI: 4 },
+                  { ASC: 28, BUDI: 5 },
+                  { ASC: 27, BUDI: 6 },
+                  { ASC: 25, BUDI: 7 },
+                  { ASC: 10, BUDI: 8 },
+                  { ASC: 11, BUDI: 9 },
+                  { ASC: 12, BUDI: 10 },
+                  { ASC: 3, BUDI: 11 },
+                  { ASC: 18, BUDI: 15 },
+                  { ASC: 23, BUDI: 16 },
+                  { ASC: 4, BUDI: 17 },
+                  { ASC: 29, BUDI: 22 },
+                  { ASC: 20, BUDI: 23 },
+                  { ASC: 14, BUDI: 24 },
+                  { ASC: 2, BUDI: 25 },
+                  { ASC: 5, BUDI: 26 },
+                  { ASC: 21, BUDI: 27 },
+                  { ASC: 1, BUDI: 34 },
+                  { ASC: 24, BUDI: 35 },
+                  { ASC: 19, BUDI: 36 },
+                  { ASC: 17, BUDI: 37 },
+                  { ASC: 16, BUDI: 38 },
+                  { ASC: 7, BUDI: 39 },
+                  { ASC: 8, BUDI: 40 },
+                  { ASC: 9, BUDI: 41 },
+                  { ASC: 6, BUDI: 42 }
+                ];
+
+                if (direction === BUDI_TO_ASC) {
+                  const found = fixedMapping.find(thisJob => thisJob.BUDI === originalCode);
+                  return found ? found.ASC : null;
+                }
+
+                const found = fixedMapping.find(thisJob => thisJob.ASC === originalCode);
+                return found ? found.BUDI : null;
+              },
+              nursingSpecialist: (direction, originalCode) => {
+                const fixedMapping = [
+                  { BUDI: 1, ASC: 1 },
+                  { BUDI: 2, ASC: 2 },
+                  { BUDI: 3, ASC: 3 },
+                  { BUDI: 4, ASC: 4 },
+                  { BUDI: 5, ASC: 5 },
+                  { BUDI: 6, ASC: 6 },
+                  { BUDI: 7, ASC: 7 },
+                  { BUDI: 8, ASC: 8 }
+                ];
+
+                if (direction === BUDI_TO_ASC) {
+                  const found = fixedMapping.find(thisSpecialist => thisSpecialist.BUDI === originalCode);
+                  return found ? found.ASC : null;
+                }
+
+                const found = fixedMapping.find(thisSpecialist => thisSpecialist.ASC === originalCode);
+                return found ? found.BUDI : null;
+              },
+              qualificationLevels: (direction, originalCode) => {
+                const fixedMapping = [
+                  { BUDI: 0, ASC: 1 },
+                  { BUDI: 1, ASC: 2 },
+                  { BUDI: 2, ASC: 3 },
+                  { BUDI: 3, ASC: 4 },
+                  { BUDI: 4, ASC: 5 },
+                  { BUDI: 5, ASC: 6 },
+                  { BUDI: 6, ASC: 7 },
+                  { BUDI: 7, ASC: 8 },
+                  { BUDI: 8, ASC: 9 },
+                  { BUDI: 999, ASC: 10 }
+                ];
+
+                if (direction === BUDI_TO_ASC) {
+                  const found = fixedMapping.find(thisSpecialist => thisSpecialist.BUDI === originalCode);
+                  return found ? found.ASC : null;
+                }
+
+                const found = fixedMapping.find(thisSpecialist => thisSpecialist.ASC === originalCode);
+                return found ? found.BUDI : null;
+              },
+              qualifications: (direction, originalCode) => {
+                const fixedMapping = [
+                  { BUDI: 1, ASC: 97 },
+                  { BUDI: 2, ASC: 98 },
+                  { BUDI: 3, ASC: 96 },
+                  { BUDI: 4, ASC: 93 },
+                  { BUDI: 5, ASC: 94 },
+                  { BUDI: 6, ASC: 95 },
+                  { BUDI: 8, ASC: 24 },
+                  { BUDI: 9, ASC: 99 },
+                  { BUDI: 10, ASC: 100 },
+                  { BUDI: 12, ASC: 25 },
+                  { BUDI: 13, ASC: 102 },
+                  { BUDI: 14, ASC: 107 },
+                  { BUDI: 15, ASC: 106 },
+                  { BUDI: 16, ASC: 72 },
+                  { BUDI: 17, ASC: 89 },
+                  { BUDI: 18, ASC: 71 },
+                  { BUDI: 19, ASC: 16 },
+                  { BUDI: 20, ASC: 1 },
+                  { BUDI: 22, ASC: 14 },
+                  { BUDI: 25, ASC: 15 },
+                  { BUDI: 26, ASC: 26 },
+                  { BUDI: 27, ASC: 114 },
+                  { BUDI: 28, ASC: 116 },
+                  { BUDI: 32, ASC: 115 },
+                  { BUDI: 33, ASC: 113 },
+                  { BUDI: 34, ASC: 111 },
+                  { BUDI: 35, ASC: 109 },
+                  { BUDI: 36, ASC: 110 },
+                  { BUDI: 37, ASC: 117 },
+                  { BUDI: 38, ASC: 118 },
+                  { BUDI: 39, ASC: 119 },
+                  { BUDI: 41, ASC: 20 },
+                  { BUDI: 42, ASC: 30 },
+                  { BUDI: 48, ASC: 4 },
+                  { BUDI: 49, ASC: 5 },
+                  { BUDI: 50, ASC: 60 },
+                  { BUDI: 51, ASC: 61 },
+                  { BUDI: 52, ASC: 10 },
+                  { BUDI: 53, ASC: 80 },
+                  { BUDI: 54, ASC: 81 },
+                  { BUDI: 55, ASC: 82 },
+                  { BUDI: 56, ASC: 83 },
+                  { BUDI: 57, ASC: 84 },
+                  { BUDI: 58, ASC: 85 },
+                  { BUDI: 62, ASC: 86 },
+                  { BUDI: 63, ASC: 87 },
+                  { BUDI: 64, ASC: 88 },
+                  { BUDI: 67, ASC: 21 },
+                  { BUDI: 68, ASC: 22 },
+                  { BUDI: 72, ASC: 23 },
+                  { BUDI: 73, ASC: 32 },
+                  { BUDI: 74, ASC: 19 },
+                  { BUDI: 76, ASC: 64 },
+                  { BUDI: 77, ASC: 65 },
+                  { BUDI: 82, ASC: 103 },
+                  { BUDI: 83, ASC: 104 },
+                  { BUDI: 84, ASC: 105 },
+                  { BUDI: 85, ASC: 17 },
+                  { BUDI: 86, ASC: 2 },
+                  { BUDI: 87, ASC: 45 },
+                  { BUDI: 88, ASC: 9 },
+                  { BUDI: 89, ASC: 69 },
+                  { BUDI: 90, ASC: 12 },
+                  { BUDI: 91, ASC: 18 },
+                  { BUDI: 92, ASC: 130 },
+                  { BUDI: 93, ASC: 62 },
+                  { BUDI: 94, ASC: 66 },
+                  { BUDI: 95, ASC: 67 },
+                  { BUDI: 96, ASC: 11 },
+                  { BUDI: 98, ASC: 59 },
+                  { BUDI: 99, ASC: 6 },
+                  { BUDI: 100, ASC: 7 },
+                  { BUDI: 101, ASC: 68 },
+                  { BUDI: 102, ASC: 63 },
+                  { BUDI: 103, ASC: 8 },
+                  { BUDI: 104, ASC: 75 },
+                  { BUDI: 105, ASC: 76 },
+                  { BUDI: 107, ASC: 3 },
+                  { BUDI: 108, ASC: 47 },
+                  { BUDI: 109, ASC: 74 },
+                  { BUDI: 110, ASC: 31 },
+                  { BUDI: 111, ASC: 27 },
+                  { BUDI: 112, ASC: 28 },
+                  { BUDI: 113, ASC: 134 },
+                  { BUDI: 114, ASC: 135 },
+                  { BUDI: 115, ASC: 90 },
+                  { BUDI: 116, ASC: 91 },
+                  { BUDI: 92, ASC: 13 },
+                  { BUDI: 119, ASC: 33 },
+                  { BUDI: 121, ASC: 34 },
+                  { BUDI: 136, ASC: 35 },
+                  { BUDI: 123, ASC: 36 },
+                  { BUDI: 124, ASC: 37 },
+                  { BUDI: 125, ASC: 38 },
+                  { BUDI: 118, ASC: 39 },
+                  { BUDI: 137, ASC: 40 },
+                  { BUDI: 131, ASC: 41 },
+                  { BUDI: 134, ASC: 42 },
+                  { BUDI: 138, ASC: 43 },
+                  { BUDI: 143, ASC: 44 },
+                  { BUDI: 141, ASC: 48 },
+                  { BUDI: 120, ASC: 49 },
+                  { BUDI: 122, ASC: 50 },
+                  { BUDI: 126, ASC: 51 },
+                  { BUDI: 128, ASC: 52 },
+                  { BUDI: 127, ASC: 53 },
+                  { BUDI: 142, ASC: 54 },
+                  { BUDI: 133, ASC: 55 },
+                  { BUDI: 135, ASC: 56 },
+                  { BUDI: 139, ASC: 57 },
+                  { BUDI: 140, ASC: 58 },
+                  { BUDI: 129, ASC: 77 },
+                  { BUDI: 130, ASC: 78 },
+                  { BUDI: 132, ASC: 79 },
+                  { BUDI: 117, ASC: 112 },
+                  { BUDI: 302, ASC: 121 },
+                  { BUDI: 304, ASC: 122 },
+                  { BUDI: 303, ASC: 123 },
+                  { BUDI: 310, ASC: 124 },
+                  { BUDI: 308, ASC: 125 },
+                  { BUDI: 306, ASC: 126 },
+                  { BUDI: 301, ASC: 127 },
+                  { BUDI: 305, ASC: 128 },
+                  { BUDI: 307, ASC: 129 },
+                  { BUDI: 312, ASC: 131 },
+                  { BUDI: 313, ASC: 132 },
+                  { BUDI: 311, ASC: 133 }
+                ];
+
+                if (direction === BUDI_TO_ASC) {
+                  const found = fixedMapping.find(thisQualification => thisQualification.BUDI === originalCode);
+                  return found ? found.ASC : null;
+                }
+
+                const found = fixedMapping.find(thisQualification => thisQualification.ASC === originalCode);
+                return found ? found.BUDI : null;
+              }
+
+
+            }
+          },
+          moment
+        })
+      }
+    }
+  );
+
+  expect(bulkUpload).to.have.property('Worker');
+
+  expect(bulkUpload.Worker).to.be.a('function');
+
+  return new (bulkUpload.Worker)();
+};
 describe('/server/models/Bulkimport/csv/workers.js', () => {
-  const workertoCSV = new bulkupload();
+  const workertoCSV = getUnitInstance();
   let columnHeaders = null;
   describe('get headers', () => {
     it('should return a string of headers seperated by a comma', () => {
-      columnHeaders = workertoCSV.headers(maxquals);
-      expect(typeof columnHeaders).to.equal('string');
-    });
-    it('should split on commas to create an array of headers', () => {
-      columnHeaders = columnHeaders.split(',');
-      expect(Array.isArray(columnHeaders)).to.equal(true);
-    });
-    it('should be the same length of known headers', () => {
-      expect(columnHeaders.length).to.equal(knownHeaders.length);
-    });
-    it('should return the list of known headers', () => {
-      columnHeaders.forEach((name, index) => {
-        expect(name).to.equal(knownHeaders[index]);
-      });
+      const bulkUpload = getUnitInstance();
+
+      expect(bulkUpload).to.have.property('headers');
+
+      const columnHeaders = bulkUpload.headers;
+
+      expect(columnHeaders).to.be.a('function');
+
+      const result = columnHeaders(maxquals);
+
+      expect(result).to.be.a('string');
+
+      expect(result.split(',')).to.deep.equal(knownHeaders);
+
     });
   });
+
   workers.forEach((worker, index) => {
     describe('toCSV(establishmentId, entity, MAX_QUALIFICATIONS) with worker ' + index, () => {
-      let workerCSV = null;
-      it('should return a string of values for the worker seperated by a comma', () => {
-        workerCSV = workertoCSV.toCSV(establishmentId, worker, maxquals);
+      it('should match the header values', async () => {
+
+      let workerCSV = getUnitInstance();
+        const columnHeaders = workerCSV.headers(maxquals).split(',');
+        workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
         expect(typeof workerCSV).to.equal('string');
-      });
-      it('should split on commas to create an array of values', () => {
-        workerCSV = workerCSV.split(',');
+
+        workerCSV = (await csv({
+          noheader: true,
+          output: 'csv'
+        }).fromString(workerCSV))[0];
+
         expect(Array.isArray(workerCSV)).to.equal(true);
-      });
-      it('should be the same length of known headers', () => {
+
         expect(workerCSV.length).to.equal(knownHeaders.length);
-      });
-      it('should match the header values', () => {
+
         let otherJobs = '';
         let otherJobsDesc = '';
         let scqual = '';
         let nonscqual = '';
         const mappedCsv = mapCsvToWorker(workerCSV, columnHeaders);
-        console.log(mappedCsv);
+
         if (Array.isArray(worker.otherJobs.otherJobs)) {
           worker.otherJobs.otherJobs.forEach((job, index) => {
             otherJobs += job.budi;
@@ -68,6 +360,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           expect(establishment.otherServices).to.equal(null);
           expect(worker.otherJobs.otherJobs).to.equal(null);
         }
+
         if (worker.socialCareQualification) {
           scqual += worker.socialCareQualificationId;
         }
@@ -83,9 +376,9 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           nonscqual += worker.nonSocialCareQualificationLevel.budi;
         }
         expect(mappedCsv.LOCALESTID).to.equal(establishmentId);
-        expect(mappedCsv.UNIQUEWORKERID).to.equal(workertoCSV._csvQuote(worker.localIdentifier));
+        expect(mappedCsv.UNIQUEWORKERID).to.equal(worker.localIdentifier);
         expect(mappedCsv.STATUS).to.equal('UNCHECKED');
-        expect(mappedCsv.DISPLAYID).to.equal(workertoCSV._csvQuote(worker.nameOrId));
+        expect(mappedCsv.DISPLAYID).to.equal(worker.nameOrId);
         if (worker.nationalInsuranceNumber) {
           expect(mappedCsv.NINUMBER).to.equal(worker.nationalInsuranceNumber.replace(/\s+/g, ''));
         } else {
@@ -114,18 +407,18 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         }
         // Needs sandbox
         if (worker.nationality) {
-          expect(parseInt(mappedCsv.NATIONALITY)).to.equal(workertoCSV._maptoCSVnationality(worker.nationality));
+          expect(parseInt(mappedCsv.NATIONALITY)).to.deep.equal(826);
         } else {
           expect(mappedCsv.NATIONALITY).to.equal('');
         }
         if (worker.britishCitizenship) {
-          expect(parseInt(mappedCsv.BRITISHCITIZENSHIP)).to.equal(worker.britishCitizenshipId);
+          expect(parseInt(mappedCsv.BRITISHCITIZENSHIP)).to.deep.equal(2);
         } else {
           expect(mappedCsv.BRITISHCITIZENSHIP).to.equal('');
         }
         // Needs sandbox
         if (worker.countryOfBirth) {
-          expect(parseInt(mappedCsv.COUNTRYOFBIRTH)).to.equal(workertoCSV._maptoCSVcountry(worker.countryOfBirth));
+          expect(parseInt(mappedCsv.COUNTRYOFBIRTH)).to.equal(999);
         } else {
           expect(mappedCsv.COUNTRYOFBIRTH).to.equal('');
         }
@@ -152,7 +445,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           expect(mappedCsv.STARTDATE).to.equal('');
         }
         if (worker.socialCareStartDate) {
-          expect(parseInt(mappedCsv.STARTINSECT)).to.equal(workertoCSV._maptoCSVStartedInSector(worker.socialCareStartDate));
+          expect(parseInt(mappedCsv.STARTINSECT)).to.equal(2019);
         } else {
           expect(mappedCsv.STARTINSECT).to.equal('');
         }
@@ -173,12 +466,12 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         }
         // Needs sandbox
         if (worker.daysSick) {
-          expect(parseInt(mappedCsv.DAYSSICK)).to.equal(workertoCSV._maptoCSVDaysSick(worker.daysSick));
+          expect(parseInt(mappedCsv.DAYSSICK)).to.equal(worker.daysSick.days);
         } else {
           expect(mappedCsv.DAYSSICK).to.equal('');
         }
         if (worker.annualHourlyPay) {
-          const salaryMap = workertoCSV._maptoCSVslary(worker.annualHourlyPay);
+          const salaryMap = [1,worker.annualHourlyPay.rate,''];
           expect(mappedCsv.SALARYINT).to.equal(String(salaryMap[0]));
           expect(mappedCsv.SALARY).to.equal(String(salaryMap[1]));
           expect(mappedCsv.HOURLYRATE).to.equal(String(salaryMap[2]));

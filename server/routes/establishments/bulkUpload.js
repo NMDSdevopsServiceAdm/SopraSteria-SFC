@@ -1107,12 +1107,13 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   }
 
   // Run validations that require information about workers
-  myEstablishments.forEach(establishment => {
-    establishment.crossValidations({
+  await Promise.all(myEstablishments.map(async establishment => {
+    await establishment.crossValidate({
       csvEstablishmentSchemaErrors,
-      myWorkers
+      myWorkers,
+      fetchMyEstablishmentsWorkers: Establishment.fetchMyEstablishmentsWorkers
     });
-  });
+  }));
 
   // /////////////////////////
   // Prepare validation results
@@ -2108,7 +2109,7 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
         thisEstablishment.workers.forEach(thisWorker => {
           // note - thisEstablishment.name will need to be local identifier once available
           if (downloadType === 'workers') {
-            responseSend(NEWLINE + (new WorkerCsvValidator()).toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
+            responseSend(NEWLINE + WorkerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
           } else if (thisWorker.training) { // or for this Worker's training records
             thisWorker.training.forEach(thisTrainingRecord => {
               responseSend(NEWLINE + TrainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord), 'training');

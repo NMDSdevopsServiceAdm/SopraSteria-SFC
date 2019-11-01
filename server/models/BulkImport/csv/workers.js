@@ -200,7 +200,7 @@ class Worker {
 
   static get NI_WORKER_DUPLICATE_ERROR () { return 5570; }
 
-  static headers (MAX_QUALS) {
+  headers (MAX_QUALS) {
     const extraHeaders = [];
 
     for (let additionalHeaders = 0; additionalHeaders < MAX_QUALS - DEFAULT_NUMBER_OF_QUALS; additionalHeaders++) {
@@ -210,7 +210,11 @@ class Worker {
     }
 
     // default headers includes three quals
-    return _headers_v1_without_chgUnique + ',' + extraHeaders.join(',');
+    if(extraHeaders.length !== 0) {
+      return _headers_v1_without_chgUnique + ',' + extraHeaders.join(',');
+    }
+
+    return _headers_v1_without_chgUnique;
   }
 
   get lineNumber () {
@@ -355,7 +359,7 @@ class Worker {
   }
 
   _validateContractType () {
-    const myContractType = this._currentLine.EMPLSTATUS;
+    const myContractType = parseInt(this._currentLine.EMPLSTATUS, 10);
 
     if (!myContractType) {
       this._validationErrors.push({
@@ -3531,7 +3535,7 @@ class Worker {
 
     return columns.join(',');
   }
-  
+
   toCSV (establishmentId, entity, MAX_QUALIFICATIONS) {
     return Worker.toCSV(establishmentId, entity, MAX_QUALIFICATIONS);
   }

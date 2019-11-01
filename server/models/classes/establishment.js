@@ -1992,7 +1992,7 @@ class Establishment extends EntityValidator {
   }
 
   //used by bulk upload to fetch a list of the worker
-  static async fetchMyEstablishmentsWorkers (establishmentIds, establishmentKeys) {
+  static async fetchMyEstablishmentsWorkers (establishmentId, establishmentKey) {
     return await db.query(
       `SELECT
         "Establishment"."LocalIdentifierValue" "establishmentKey",
@@ -2004,13 +2004,13 @@ class Establishment extends EntityValidator {
       JOIN cqc."Worker" on "Worker"."EstablishmentFK" = "Establishment"."EstablishmentID"
       LEFT JOIN cqc."WorkerJobs" on "WorkerJobs"."WorkerFK" = "Worker"."ID"
       WHERE "Worker"."LocalIdentifierValue" IS NOT NULL AND
-      "Establishment"."LocalIdentifierValue" IN (:establishmentKeys)
-      AND "Establishment"."EstablishmentID" IN (:establishmentIds)
+      "Establishment"."LocalIdentifierValue" = :establishmentKey
+      AND "Establishment"."EstablishmentID" = :establishmentId
       GROUP BY "establishmentKey", "uniqueWorker", "contractTypeId", "mainJobRoleId"`,
       {
         replacements: {
-          establishmentKeys,
-          establishmentIds,
+          establishmentKey,
+          establishmentId,
           sep: ';'
         },
         type: db.QueryTypes.SELECT

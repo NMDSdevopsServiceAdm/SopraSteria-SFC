@@ -89,6 +89,8 @@ class Establishment {
     this._leavers = null;
     this._reasonsForLeaving = null;
 
+    this._id = null;
+
     // console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   }
 
@@ -143,6 +145,18 @@ class Establishment {
   static get LEAVERS_WARNING () { return 2320; }
 
   static get REASONS_FOR_LEAVING_WARNING () { return 2360; }
+
+  get id () {
+    if(this._id === null) {
+      const est = this._allCurrentEstablishments.find(currentEstablishment => currentEstablishment.key === this._key);
+
+      if(typeof est !== 'undefined') {
+        this._id = est._id;
+      }
+    }
+
+    return this._id;
+  }
 
   get headers () {
     return _headers_v1;
@@ -330,13 +344,12 @@ class Establishment {
       return false;
     } else {
       // helper which returns true if the given LOCALESTID exists
-      const thisEstablishmentExists = key =>
-        this._allCurrentEstablishments.findIndex(currentEstablishment => currentEstablishment.key === key) !== -1;
+      const thisEstablishmentId = this.id;
 
       // we have a known status - now validate the status against the known set of all current establishments
       switch (myStatus) {
         case 'NEW':
-          if (thisEstablishmentExists(this._key)) {
+          if (thisEstablishmentId !== null) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
@@ -349,7 +362,7 @@ class Establishment {
           break;
 
         case 'DELETE':
-          if (!thisEstablishmentExists(this._key)) {
+          if (thisEstablishmentId === null) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
@@ -362,7 +375,7 @@ class Establishment {
           break;
 
         case 'UNCHECKED':
-          if (!thisEstablishmentExists(this._key)) {
+          if (thisEstablishmentId === null) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
@@ -375,7 +388,7 @@ class Establishment {
           break;
 
         case 'NOCHANGE':
-          if (!thisEstablishmentExists(this._key)) {
+          if (thisEstablishmentId === null) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
@@ -388,7 +401,7 @@ class Establishment {
           break;
 
         case 'UPDATE':
-          if (!thisEstablishmentExists(this._key)) {
+          if (thisEstablishmentId === null) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
@@ -1223,10 +1236,10 @@ class Establishment {
       source: this._currentLine.TOTALPERMTEMP,
       name: this._currentLine.LOCALESTID
     };
-    
+
     // Is the establishment CQC regulated?
     const isCQCRegulated = this._regType === 2;
-    
+
     // Is the establishment a local authority?
     const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
 
@@ -1238,7 +1251,7 @@ class Establishment {
 
     // Is the establishment only head office services (code 16)?
     const notHeadOfficeOnly = allServices.findIndex(service => service !== 16) !== -1;
-  
+
     if (this._totalPermTemp === permanantWorkers + temporaryWorkers) {
       if (notHeadOfficeOnly) {
         if (permanantWorkers + temporaryWorkers === 0) {
@@ -1263,7 +1276,7 @@ class Establishment {
           warning: 'The number of non-direct care staff is 0 please check your staff records',
         }));
       }
-    }    
+    }
   }
 
   _validateAllJobs () {
@@ -1935,16 +1948,16 @@ class Establishment {
 
   // Adds items to csvEstablishmentSchemaErrors if validations that depend on
   // worker totals give errors or warnings
-  crossValidate({
-    myEstablishment,
+  async crossValidate({
     csvEstablishmentSchemaErrors,
-    myWorkers
+    myWorkers,
+    fetchMyEstablishmentsWorkers
   }) {
     //if establishment isn't being added or updated then exit early
-    if (!(['NEW', 'UPDATE'].includes(est.status))) {
+    if (!(['NEW', 'UPDATE'].includes(this._status))) {
       return;
     }
-    
+
     const totals = {
       directCareWorkers: 0,
       managerialProfessionalWorkers: 0,
@@ -1953,7 +1966,7 @@ class Establishment {
     };
 
     const ignoreDBWorkers = Object.create(null);
-    
+
     myWorkers.forEach(worker => {
       if (this.key === worker.establishmentKey) {
         switch (worker.status) {
@@ -1972,7 +1985,7 @@ class Establishment {
     });
 
     // get all the other records that may already exist in the db but aren't being updated or deleted
-    /*(await fetchMyEstablishmentsWorkers(this._id, this._key))
+    (await fetchMyEstablishmentsWorkers(this.id, this._key))
       .forEach(worker => {
         worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
         worker.otherJobIds = worker.otherJobIds.length ? worker.otherJobIds.split(';') : [];
@@ -1982,10 +1995,10 @@ class Establishment {
         // update totals
           updateWorkerTotals(totals, worker);
         }
-      });*/
-      
+      });
+
     // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
-    _crossValidateTotalPermTemp(csvEstablishmentSchemaErrors);
+    this._crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, totals);
   }
 
   // returns true on success, false is any attribute of Establishment fails
