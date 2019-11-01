@@ -1,6 +1,25 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 
+const csvQuote = toCsv => {
+  if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+    return '"' + toCsv.replace(/"/g, '""') + '"';
+  }
+
+  return toCsv;
+};
+
+// input is a string date in format "YYYY-MM-DD"
+const fromDateToCsv = convertThis => {
+  if (convertThis) {
+    const dateParts = String(convertThis).split('-');
+
+    return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+  }
+
+  return '';
+}
+
 const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
 
 class Training {
@@ -498,55 +517,39 @@ class Training {
     });
   }
 
-  _csvQuote (toCsv) {
-    if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
-      return '"' + toCsv.replace(/"/g, '""') + '"';
-    } else {
-      return toCsv;
-    }
-  }
-
-  // input is a string date in format "YYYY-MM-DD"
-  _fromDateToCsv (convertThis) {
-    if (convertThis) {
-      const dateParts = convertThis.split('-');
-
-      return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-    } else {
-      return '';
-    }
-  }
-
   // takes the given Training entity and writes it out to CSV string (one line)
-  toCSV (establishmentId, workerId, entity) {
+  static toCSV (establishmentId, workerId, entity) {
     // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
     const columns = [];
-    columns.push(this._csvQuote(establishmentId));
-    columns.push(this._csvQuote(workerId));
+    columns.push(csvQuote(establishmentId));
+    columns.push(csvQuote(workerId));
 
     columns.push(BUDI.trainingCaterogy(BUDI.FROM_ASC, entity.category.id));
-    columns.push(entity.title ? this._csvQuote(entity.title) : '');
+    columns.push(entity.title ? csvQuote(entity.title) : '');
 
-    columns.push(this._fromDateToCsv(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
-    columns.push(this._fromDateToCsv(entity.expires)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
+    columns.push(fromDateToCsv(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
+    columns.push(fromDateToCsv(entity.expires)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
 
+    let accredited = '';
     switch (entity.accredited) {
-      case null:
-        columns.push('');
-        break;
       case 'Yes':
-        columns.push(1);
+        accredited = 1;
         break;
       case 'No':
-        columns.push(0);
+        accredited = 0;
         break;
       case 'Don\'t know':
-        columns.push(999);
+        accredited = 999;
         break;
     }
-    columns.push(entity.notes ? this._csvQuote(entity.notes) : '');
+    columns.push(accredited);
+    columns.push(entity.notes ? csvQuote(entity.notes) : '');
 
     return columns.join(',');
+  }
+  
+  toCSV(establishmentId, workerId, entity) {
+    return Training.toCSV(establishmentId, workerId, entity);
   }
 }
 

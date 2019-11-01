@@ -10,6 +10,14 @@ const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
 const permanantContractStatusId = 1;
 
+const csvQuote = toCsv => {
+  if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+    return '"' + toCsv.replace(/"/g, '""') + '"';
+  } else {
+    return toCsv;
+  }
+};
+
 function updateWorkerTotals(totals, worker) {
   const allRoles = worker.otherJobIds;
   if (worker.mainJobRoleId !== null) {
@@ -2185,25 +2193,17 @@ class Establishment {
     };
   }
 
-  _csvQuote (toCsv) {
-    if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
-      return '"' + toCsv.replace(/"/g, '""') + '"';
-    } else {
-      return toCsv;
-    }
-  }
-
   // takes the given establishment entity and writes it out to CSV string (one line)
-  toCSV (entity) {
+  static toCSV (entity) {
     // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
     const columns = [];
-    columns.push(this._csvQuote(entity.localIdentifier)); // todo - this will be local identifier
+    columns.push(csvQuote(entity.localIdentifier)); // todo - this will be local identifier
     columns.push('UNCHECKED');
-    columns.push(this._csvQuote(entity.name));
-    columns.push(this._csvQuote(entity.address1));
-    columns.push(this._csvQuote(entity.address2));
-    columns.push(this._csvQuote(entity.address3));
-    columns.push(this._csvQuote(entity.town));
+    columns.push(csvQuote(entity.name));
+    columns.push(csvQuote(entity.address1));
+    columns.push(csvQuote(entity.address2));
+    columns.push(csvQuote(entity.address3));
+    columns.push(csvQuote(entity.town));
     columns.push(entity.postcode);
 
     let employerType = '';
@@ -2212,7 +2212,7 @@ class Establishment {
       employerType = BUDI.establishmentType(BUDI.FROM_ASC, entity.employerType.value);
 
       if (entity.employerType.other) {
-        employerTypeOther = this._csvQuote(entity.employerType.other);
+        employerTypeOther = csvQuote(entity.employerType.other);
       }
     }
     columns.push(employerType);
@@ -2389,6 +2389,10 @@ class Establishment {
     }
 
     return columns.join(',');
+  }
+
+  toCSV (entity) {
+    return Establishment.toCSV(entity);
   }
 }
 

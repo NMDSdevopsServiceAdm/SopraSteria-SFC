@@ -19,6 +19,14 @@ const _headers_v1_without_chgUnique = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYI
 
 const DEFAULT_NUMBER_OF_QUALS = 3;
 
+const csvQuote = toCsv => {
+  if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+    return '"' + toCsv.replace(/"/g, '""') + '"';
+  }
+
+  return toCsv;
+};
+
 class Worker {
   constructor (currentLine, lineNumber, allCurrentEstablishments) {
     this._currentLine = currentLine;
@@ -3037,16 +3045,8 @@ class Worker {
     });
   }
 
-  _csvQuote (toCsv) {
-    if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
-      return '"' + toCsv.replace(/"/g, '""') + '"';
-    } else {
-      return toCsv;
-    }
-  }
-
   // returns the BUDI mapped nationality
-  _maptoCSVnationality (nationality) {
+  static _maptoCSVnationality (nationality) {
     if (nationality) {
       if (nationality.value === 'British') {
         return 826;
@@ -3067,7 +3067,7 @@ class Worker {
   }
 
   // returns the BUDI mapped country
-  _maptoCSVcountry (country) {
+  static _maptoCSVcountry (country) {
     if (country) {
       if (country.value === 'United Kingdom') {
         return 826;
@@ -3089,7 +3089,7 @@ class Worker {
   }
 
   // returns the BUDI mapped recruitment source
-  _maptoCSVrecruitedFrom (source) {
+  static _maptoCSVrecruitedFrom (source) {
     if (source) {
       if (source.value === 'No') {
         return 16;
@@ -3103,7 +3103,7 @@ class Worker {
   }
 
   // returns the BUDI mapped started in sector
-  _maptoCSVStartedInSector (started) {
+  static _maptoCSVStartedInSector (started) {
     if (started) {
       if (started.value === 'No') {
         return '';
@@ -3116,7 +3116,7 @@ class Worker {
   }
 
   // returns the BUDI mapped days sick
-  _maptoCSVDaysSick (daysSick) {
+  static _maptoCSVDaysSick (daysSick) {
     if (daysSick) {
       if (daysSick.value === 'No') {
         return 999;
@@ -3129,7 +3129,7 @@ class Worker {
   }
 
   // returns the BUDI mapped days sick
-  _maptoCSVslary (annualHourlyPay) {
+  static _maptoCSVsalary (annualHourlyPay) {
     if (annualHourlyPay) {
       if (annualHourlyPay.value === 'Annually') {
         return [1, annualHourlyPay.rate, ''];
@@ -3141,7 +3141,7 @@ class Worker {
     }
   }
 
-  _maptoCSVregsiterNurse (registeredNurse) {
+  static _maptoCSVregisteredNurse (registeredNurse) {
     let mappedValue = '';
     switch (registeredNurse) {
       case 'Adult Nurse':
@@ -3165,7 +3165,7 @@ class Worker {
   }
 
   // takes the given Worker entity and writes it out to CSV string (one line)
-  toCSV (establishmentId, entity, MAX_QUALIFICATIONS) {
+  static toCSV (establishmentId, entity, MAX_QUALIFICATIONS) {
     // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
     //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
@@ -3175,13 +3175,13 @@ class Worker {
     columns.push(establishmentId);
 
     // "UNIQUEWORKERID"
-    columns.push(this._csvQuote(entity.localIdentifier)); // todo - this will be local identifier
+    columns.push(csvQuote(entity.localIdentifier)); // todo - this will be local identifier
 
     // "STATUS"
     columns.push('UNCHECKED');
 
     // "DISPLAYID"
-    columns.push(this._csvQuote(entity.nameOrId));
+    columns.push(csvQuote(entity.nameOrId));
 
     // "NINUMBER"
     columns.push(entity.nationalInsuranceNumber ? entity.nationalInsuranceNumber.replace(/\s+/g, '') : ''); // remove whitespace
@@ -3218,7 +3218,7 @@ class Worker {
     columns.push(entity.ethnicity ? BUDI.ethnicity(BUDI.FROM_ASC, entity.ethnicity.ethnicityId) : '');
 
     // "NATIONALITY"
-    columns.push(entity.nationality ? this._maptoCSVnationality(entity.nationality) : '');
+    columns.push(entity.nationality ? Worker._maptoCSVnationality(entity.nationality) : '');
 
     // "BRITISHCITIZENSHIP"
     let britishCitizenship = '';
@@ -3238,7 +3238,7 @@ class Worker {
     columns.push(britishCitizenship);
 
     // "COUNTRYOFBIRTH"
-    columns.push(entity.countryOfBirth ? this._maptoCSVcountry(entity.countryOfBirth) : '');
+    columns.push(entity.countryOfBirth ? Worker._maptoCSVcountry(entity.countryOfBirth) : '');
 
     // "YEAROFENTRY"
     columns.push(entity.yearArrived ? entity.yearArrived.year : '');
@@ -3282,14 +3282,14 @@ class Worker {
     columns.push(careCert);
 
     // "RECSOURCE"
-    columns.push(entity.recruitmentSource ? this._maptoCSVrecruitedFrom(entity.recruitmentSource) : '');
+    columns.push(entity.recruitmentSource ? Worker._maptoCSVrecruitedFrom(entity.recruitmentSource) : '');
 
     // "STARTDATE"
     const mainJobStartDateParts = entity.mainJobStartDate ? entity.mainJobStartDate.split('-') : null;
     columns.push(mainJobStartDateParts ? `${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}` : ''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
 
     // "STARTINSECT"
-    columns.push(this._maptoCSVStartedInSector(entity.socialCareStartDate));
+    columns.push(Worker._maptoCSVStartedInSector(entity.socialCareStartDate));
 
     // "APPRENTICE"
     let apprenticeship = '';
@@ -3352,9 +3352,9 @@ class Worker {
     columns.push(zeroHours);
 
     // "DAYSSICK"
-    columns.push(this._maptoCSVDaysSick(entity.daysSick));
+    columns.push(Worker._maptoCSVDaysSick(entity.daysSick));
 
-    const salaryMap = this._maptoCSVslary(entity.annualHourlyPay);
+    const salaryMap = Worker._maptoCSVsalary(entity.annualHourlyPay);
 
     // "SALARYINT"
     columns.push(salaryMap[0]);
@@ -3435,7 +3435,7 @@ class Worker {
     // "NMCREG"
     columns.push(
       entity.mainJob.jobId === NURSE_JOB_ID && entity.registeredNurse
-        ? this._maptoCSVregsiterNurse(entity.registeredNurse)
+        ? Worker._maptoCSVregisteredNurse(entity.registeredNurse)
         : ''
     );
 
@@ -3530,6 +3530,10 @@ class Worker {
     }
 
     return columns.join(',');
+  }
+  
+  toCSV (establishmentId, entity, MAX_QUALIFICATIONS) {
+    return Worker.toCSV(establishmentId, entity, MAX_QUALIFICATIONS);
   }
 }
 
