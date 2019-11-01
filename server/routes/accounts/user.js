@@ -787,6 +787,16 @@ const addTypeContent = async notification => {
                     element.requestorName = requestorName[0].NameValue;
                   });
               }
+              // fetch reject reason if available
+              let rejectionReasonParam = {
+                ownerRequestChangeUid : subQuery[0].ownerChangeRequestUID,
+              }
+              let rejectionReason = await ownershipChangeRequests.getUpdatedOwnershipRequest(rejectionReasonParam);
+              if(rejectionReason.length === 1 && rejectionReason[0].approvalStatus === 'DENIED') {
+                subQuery.forEach(function (element) {
+                    element.rejectionReason = rejectionReason[0].approvalReason;
+                  });
+              }
           }
         notification.typeContent = subQuery[0];
       }

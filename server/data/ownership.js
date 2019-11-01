@@ -61,7 +61,7 @@ WHERE "ownerChangeRequestUID" = :ownerChangeRequestUID ORDER BY "created" DESC L
 `;
 
 const getUpdatedOwnershipRequestQuery = `
-SELECT "ownerChangeRequestUID", "approvalStatus", "permissionRequest", "createdByUserUID", "created", "updatedByUserUID", "updated"
+SELECT "ownerChangeRequestUID", "approvalStatus", "permissionRequest", "approvalReason", "createdByUserUID", "created", "updatedByUserUID", "updated"
 FROM cqc."OwnerChangeRequest"
 WHERE "ownerChangeRequestUID" = :ownerChangeId;
 `;
