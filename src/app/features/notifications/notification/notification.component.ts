@@ -23,8 +23,8 @@ export class NotificationComponent implements OnInit, OnDestroy {
   public notification;
   private subscriptions: Subscription = new Subscription();
   public displayActionButtons;
-  public isDataOwner: boolean;
   public notificationUid: string;
+  public isWorkPlaceIsRequester: boolean;
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -41,7 +41,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
     this.notificationUid = this.route.snapshot.params.notificationuid;
     this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
       this.notification = details;
-      this.isDataOwner = true; //To do once correct response from DB.
+      this.isWorkPlaceIsRequester = this.workplace.name === details.typeContent.requestorName;
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });
@@ -74,7 +74,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
                 this.alertService.addAlert({
                   type: 'success',
                   message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.subEstablishmentName} `,
+                  ${this.notification.typeContent.requestorName} `,
                 });
               }
             },
@@ -115,7 +115,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
           this.alertService.addAlert({
             type: 'success',
             message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.subEstablishmentName} `,
+                  ${this.notification.typeContent.requestorName} `,
           });
         }
       });
