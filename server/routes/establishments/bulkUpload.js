@@ -40,15 +40,17 @@ const completionBulkUploadStatus = 'COMPLETE';
 
 router.route('/uploaded').get(async (req, res) => {
   try {
+    const Bucket = appConfig.get('bulkupload.bucketname').toString();
+
     const data = await s3.listObjects({
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
+      Bucket,
       Prefix: `${req.establishmentId}/latest/`
     }).promise();
 
     const returnData = await Promise.all(data.Contents.filter(myFile => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key))
-      .map(async (file) => {
+      .map(async file => {
         const elements = file.Key.split('/');
-        const objData = await s3.headObject({ Bucket: params.Bucket, Key: file.Key }).promise();
+        const objData = await s3.headObject({ Bucket, Key: file.Key }).promise();
         const returnData = {
           filename: elements[elements.length - 1],
           uploaded: file.LastModified,
@@ -73,7 +75,12 @@ router.route('/uploaded').get(async (req, res) => {
 
         return returnData;
       }));
-    return res.status(200).send({ establishment: { uid: req.establishmentId }, files: returnData });
+    return res.status(200).send({
+      establishment: {
+        uid: req.establishmentId
+      },
+      files: returnData
+    });
   } catch (err) {
     console.error(err);
     return res.status(503).send({});
@@ -89,7 +96,7 @@ router.route('/uploaded/*').get(async (req, res) => {
     const objHeadData = await s3.headObject({
       Bucket,
       Key
-      }).promise();
+    }).promise();
 
     return res.status(200).send({
       file: {
@@ -227,7 +234,7 @@ router.route('/uploaded').post(async function (req, res) {
 router.route('/signedUrl').get(async function (req, res) {
   try {
     const establishmentId = String(req.establishmentId);
-    
+
     res.json({
       urls: s3.getSignedUrl('putObject', {
         Bucket: appConfig.get('bulkupload.bucketname').toString(),
@@ -261,11 +268,12 @@ router.route('/uploaded').put(async (req, res) => {
   try {
     // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
     const createModelPromises = [];
-
-    (await s3.listObjects({
+    const data = await s3.listObjects({
       Bucket: appConfig.get('bulkupload.bucketname').toString(),
       Prefix: `${req.establishmentId}/latest/`
-    }).promise()).Contents.forEach(myFile => {
+    }).promise();
+
+    data.Contents.forEach(myFile => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
       if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
@@ -661,7 +669,6 @@ const validateEstablishmentCsv = async (
       myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
     } else {
       const errors = thisApiEstablishment.errors;
-      const warnings = thisApiEstablishment.warnings;
 
       if (errors.length === 0) {
         myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
@@ -752,7 +759,6 @@ const validateWorkerCsv = async (
       )));
     } else {
       const errors = thisApiWorker.errors;
-      const warnings = thisApiWorker.warnings;
 
       if (errors.length === 0) {
         myAPIWorkers[currentLineNumber] = thisApiWorker;
@@ -1099,7 +1105,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
       }
     });
   }
-  
+
   // Run validations that require information about workers
   myEstablishments.forEach(establishment => {
     establishment.crossValidations({
@@ -1110,7 +1116,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   // /////////////////////////
   // Prepare validation results
-  
+
   // prepare entities ready for upload/return
   const establishmentsAsArray = Object.values(myAPIEstablishments);
   const workersAsArray = Object.values(myAPIWorkers);
@@ -2096,7 +2102,7 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
 
     allMyEstablishments.forEach(thisEstablishment => {
       if (downloadType === 'establishments') {
-        responseSend(NEWLINE + (new CsvEstablishmentValidator()).toCSV(thisEstablishment), 'establishment');
+        responseSend(NEWLINE + EstablishmentCsvValidator.toCSV(thisEstablishment), 'establishment');
       } else {
         // for each worker on this establishment
         thisEstablishment.workers.forEach(thisWorker => {
@@ -2105,7 +2111,7 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
             responseSend(NEWLINE + (new WorkerCsvValidator()).toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
           } else if (thisWorker.training) { // or for this Worker's training records
             thisWorker.training.forEach(thisTrainingRecord => {
-              responseSend(NEWLINE + (new TrainingCsvValidator()).toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord), 'training');
+              responseSend(NEWLINE + TrainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord), 'training');
             });
           }
         });
