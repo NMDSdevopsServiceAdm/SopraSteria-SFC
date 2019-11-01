@@ -48,6 +48,9 @@ LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID
 JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
 WHERE :estID = est."EstablishmentID" AND individual."IsPrimary" = true
 `;
+const getRecipientSubUserDetailsQuery = `select "UserUID" from cqc."Establishment" est
+JOIN cqc."User" individual ON individual."EstablishmentID" = est."EstablishmentID"
+WHERE est."EstablishmentID"= :estID AND individual."IsPrimary" = true`;
 
 const ownershipDetailsQuery = `
 SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus", "createdByUserUID"
@@ -72,6 +75,13 @@ SET "DataOwnershipRequested" = :timestamp
 WHERE "EstablishmentID" = :estId;
 `;
 
+exports.getRecipientSubUserDetails = async params =>
+  db.query(getRecipientSubUserDetailsQuery, {
+    replacements: {
+      estID: params.establishmentId,
+    },
+    type: db.QueryTypes.SELECT,
+  });
 exports.getRecipientUserDetails = async params =>
   db.query(getRecipientUserDetailsQuery, {
     replacements: {
