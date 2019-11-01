@@ -64,16 +64,17 @@ functions:
     timeout: 900
     events:
       - http:
-          path: /
-          method: get
+        path: changes
+        method: get
+      - schedule: rate(24 hours)
   update:
     handler: update.handler
     name: cqc-update
     timeout: 900
     events:
-      - http:
-          path: /
-          method: get
+      - sqs:
+        arn: arn:aws:sqs:eu-west-1:624216394565:cqctest
+        batchSize: 1
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -119,3 +120,19 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+resources:
+  Resources:
+    cqctest:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: cqctest
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline-sqs:
+    endpoint: http://0.0.0.0:9324
+    region: ${self:provider.region}
+    accessKeyId: root
+    secretAccessKey: root

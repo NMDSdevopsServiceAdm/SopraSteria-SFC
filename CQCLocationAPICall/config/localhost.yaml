@@ -3,6 +3,7 @@ aws:
     secrets:
         use: false
         wallet: dev/api
+    sqsqueue: http://0.0.0.0:9324/updates
 
 db:
     ssl: false
