@@ -200,7 +200,7 @@ class Worker {
 
   static get NI_WORKER_DUPLICATE_ERROR () { return 5570; }
 
-  headers (MAX_QUALS) {
+  static headers (MAX_QUALS) {
     const extraHeaders = [];
 
     for (let additionalHeaders = 0; additionalHeaders < MAX_QUALS - DEFAULT_NUMBER_OF_QUALS; additionalHeaders++) {
@@ -215,6 +215,10 @@ class Worker {
     }
 
     return _headers_v1_without_chgUnique;
+  }
+  
+  get headers (MAX_QUALS) {
+    retuen Worker.headers(MAX_QUALS);
   }
 
   get lineNumber () {

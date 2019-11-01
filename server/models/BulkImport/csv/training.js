@@ -58,7 +58,11 @@ class Training {
   static get ACCREDITED_WARNING () { return 2060; }
   static get NOTES_WARNING () { return 2070; }
 
-  static get headers () {
+  static headers () {
+    return _headers_v1;
+  }
+
+  get headers () {
     return _headers_v1;
   }
 

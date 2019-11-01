@@ -158,6 +158,10 @@ class Establishment {
     return this._id;
   }
 
+  static headers () {
+    return _headers_v1;
+  }
+
   get headers () {
     return _headers_v1;
   }
@@ -2179,13 +2183,13 @@ class Establishment {
 
     // capacities - we combine both capacities and utilisations
     changeProperties.capacities = [];
-    if (this._capacities && Array.isArray(this._capacities)) {
+    if (Array.isArray(this._capacities)) {
       this._capacities.forEach(thisCapacity => {
         changeProperties.capacities.push(thisCapacity);
       });
     }
 
-    if (this._utilisations && Array.isArray(this._utilisations)) {
+    if (Array.isArray(this._utilisations)) {
       this._utilisations.forEach(thisUtilisation => {
         changeProperties.capacities.push(thisUtilisation);
       });
