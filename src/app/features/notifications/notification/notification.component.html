@@ -30,31 +30,33 @@
         </div>
 
         <div *ngSwitchCase="'DENIED'">
-          <div *ngIf="isDataOwner" else nonDataOwner>
+          <ng-container *ngIf="isWorkPlaceIsRequester; else nonWorkPlaceRequester">
+            <p>{{ notification.recieverName }} has rejected your request to become the owner of its data.</p>
+          </ng-container>
+          <ng-template #nonWorkPlaceRequester>
             <p>
-              {{ notification.typeContent.requestorName }} has rejected your request to become the owner of its data.
+              You rejected the request to transfer ownership of data to {{ notification.typeContent.requestorName }}
             </p>
             <h2 class="govuk-heading-s">Reason</h2>
-            <p *ngIf="notification.typeContent.reason != null" else noReason>
-              {{ notification.typeContent.reason }}
-            </p>
+            <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
+              <p>{{ notification.typeContent.rejectionReason }}</p>
+            </ng-container>
             <ng-template #noReason>
-              No reason provided.
+              <p>No reason provided.</p>
             </ng-template>
-          </div>
-          <ng-template #nonDataOwner>
-            You rejected the request to transfer ownership of data to
-            {{ notification.typeContent.requestorName }}
           </ng-template>
         </div>
         <div *ngSwitchCase="'APPROVED'">
-          <p *ngIf="isDataOwner" else nonDataOwner>
-            {{ notification.typeContent.requestorName }} has approved your request to become the owner of its data. You
-            are now free to edit workplace and staff data.
-          </p>
-          <ng-template #nonDataOwner>
-            You approved the request to transfer ownership of data to
-            {{ notification.typeContent.requestorName }}
+          <ng-container *ngIf="isWorkPlaceIsRequester; else nonWorkPlaceRequester">
+            <p>
+              {{ notification.recieverName }} has approved your request to become the owner of its data. You are now
+              free to edit workplace and staff data.
+            </p>
+          </ng-container>
+          <ng-template #nonWorkPlaceRequester>
+            <p>
+              You approved the request to transfer ownership of data to {{ notification.typeContent.requestorName }}
+            </p>
           </ng-template>
         </div>
         <div *ngSwitchDefault></div>
@@ -70,7 +72,7 @@
         <tbody class="govuk-tab">
           <tr class="govuk-table__row govuk-error-table__row--no-border">
             <td class="govuk-table__cell">
-              Hollywood Care
+              {{ notification.recieverName }}
             </td>
             <td class="govuk-table__cell">No access to data, linked only</td>
           </tr>
