@@ -8,8 +8,6 @@ let ALL_CAPACITIES = null;
 let ALL_UTILISATIONS = null;
 
 class BUDI {
-  constructor() {}
-
   static async initialize () {
     const cssrFetch = await dbmodels.cssr.findAll({
       attributes: ['id', 'name'],
