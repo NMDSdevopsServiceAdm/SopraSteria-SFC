@@ -10,7 +10,7 @@ const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
 const permanantContractStatusId = 1;
 
-function updateWorkerTotalsTemplate(worker) {
+function updateWorkerTotals(totals, worker) {
   const allRoles = worker.otherJobIds;
   if (worker.mainJobRoleId !== null) {
     allRoles.unshift(worker.mainJobRoleId);
@@ -18,20 +18,22 @@ function updateWorkerTotalsTemplate(worker) {
 
   // Is the worker involved in direct care? If any job roles are found that aren't non direct care ones then the worker is involved in direct care
   if (allRoles.findIndex(role => !nonDirectCareJobRoles.includes(role)) !== -1) {
-    this.directCareWorkers++;
+    totals.directCareWorkers++;
   } else {
-    this.managerialProfessionalWorkers++;
+    totals.managerialProfessionalWorkers++;
   }
 
   // Is the worker on a permanant contract? Any workers that are not permanant are considered temporary for validation purposes
   if (worker.contractTypeId === permanantContractStatusId) {
-    this.permanantWorkers++;
+    totals.permanantWorkers++;
   } else {
-    this.temporaryWorkers++;
+    totals.temporaryWorkers++;
   }
 }
 
-const _headers_v1 = 'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,PERMCQC,PERMLA,SHARELA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS';
+const _headers_v1 = 'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
+'PERMCQC,PERMLA,SHARELA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
+'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS';
 
 class Establishment {
   constructor (currentLine, lineNumber, allCurrentEstablishments) {
@@ -134,7 +136,7 @@ class Establishment {
 
   static get REASONS_FOR_LEAVING_WARNING () { return 2360; }
 
-  static get headers () {
+  get headers () {
     return _headers_v1;
   }
 
@@ -1197,60 +1199,63 @@ class Establishment {
     }
   }
 
-  _crossValidateTotalPermTemp({
+  _crossValidateTotalPermTemp(
     csvEstablishmentSchemaErrors,
-    totals
-  }) {
-    if (numberOfStaff === permanantWorkers + temporaryWorkers) {
+    {
+      permanantWorkers = 0,
+      temporaryWorkers = 0,
+      directCareWorkers = 0,
+      managerialProfessionalWorkers = 0
+    }) {
+    const template = {
+      origin: 'Establishments',
+      lineNumber: this._lineNumber,
+      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
+      warnType: 'TOTAL_PERM_TEMP_WARNING',
+      source: this._currentLine.TOTALPERMTEMP,
+      name: this._currentLine.LOCALESTID
+    };
+    
+    // Is the establishment CQC regulated?
+    const isCQCRegulated = this._regType === 2;
+    
+    // Is the establishment a local authority?
+    const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
+
+    // All services already includes the main service
+    const allServices = this.allServices;
+
+    // Is the establishment only shared lives (code 19)?
+    const notSharedLivesOnly = allServices.findIndex(service => service !== 19) !== -1;
+
+    // Is the establishment only head office services (code 16)?
+    const notHeadOfficeOnly = allServices.findIndex(service => service !== 16) !== -1;
+  
+    if (this._totalPermTemp === permanantWorkers + temporaryWorkers) {
       if (notHeadOfficeOnly) {
         if (permanantWorkers + temporaryWorkers === 0) {
-          csvEstablishmentSchemaErrors.unshift({
-            origin: 'Establishments',
-            this.lineNumber,
-            warnCode: this.TOTAL_PERM_TEMP_WARNING,
-            warnType: 'TOTAL_PERM_TEMP_WARNING',
+          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
             warning: 'The number of employed staff is 0 please check your staff records',
-            source: this.TOTALPERMTEMP,
-            name: this.LOCALESTID
-          });
+          }));
         } else if (permanantWorkers < temporaryWorkers) {
-          csvEstablishmentSchemaErrors.unshift({
-            origin: 'Establishments',
-            this.lineNumber,
-            warnCode: this.TOTAL_PERM_TEMP_WARNING,
-            warnType: 'TOTAL_PERM_TEMP_WARNING',
+          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
             warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records',
-            source: this.TOTALPERMTEMP,
-            name: this.LOCALESTID
-          });
+          }));
         }
 
         if (isCQCRegulated && notSharedLivesOnly && directCareWorkers === 0) {
-          csvEstablishmentSchemaErrors.unshift({
-            origin: 'Establishments',
-            this.lineNumber,
-            warnCode: this.TOTAL_PERM_TEMP_WARNING,
-            warnType: 'TOTAL_PERM_TEMP_WARNING',
+          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
             warning: 'The number of direct care staff is 0 please check your staff records',
-            source: this.TOTALPERMTEMP,
-            name: this.LOCALESTID
           }));
         }
       }
 
       if (isLocalAuthority && managerialProfessionalWorkers === 0) {
-        csvEstablishmentSchemaErrors.unshift({
-          origin: 'Establishments',
-          this.lineNumber,
-          warnCode: this.TOTAL_PERM_TEMP_WARNING,
-          warnType: 'TOTAL_PERM_TEMP_WARNING',
+        csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
           warning: 'The number of non-direct care staff is 0 please check your staff records',
-          source: this.TOTALPERMTEMP,
-          name: this.LOCALESTID
-        });
+        }));
       }
-    }
-    
+    }    
   }
 
   _validateAllJobs () {
@@ -1928,64 +1933,51 @@ class Establishment {
     myWorkers
   }) {
     //if establishment isn't being added or updated then exit early
-    if (!['NEW', 'UPDATE'].includes(est.status) {
+    if (!(['NEW', 'UPDATE'].includes(est.status))) {
       return;
     }
     
-    const updateWorkerTotals = updateWorkerTotalsTemplate.bind(this);
-    const directCareWorkers = 0;
-    const managerialProfessionalWorkers = 0;
-    const permanantWorkers = 0;
-    const temporaryWorkers = 0;
+    const totals = {
+      directCareWorkers: 0,
+      managerialProfessionalWorkers: 0,
+      permanantWorkers: 0,
+      temporaryWorkers: 0
+    };
+
     const ignoreDBWorkers = Object.create(null);
-    const isCQCRegulated = this._regType === 2;
-    const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
-
-    // All services already includes the main service
-    const allServices = this.allServices;
-
-    // Is the establishment only shared lives (code 19)?
-    const notSharedLivesOnly = allServices.findIndex(service => service !== 19) !== -1;
-
-    // Is the establishment only head office services (code 16)?
-    const notHeadOfficeOnly = allServices.findIndex(service => service !== 16) !== -1;
     
     myWorkers.forEach(worker => {
-      if (hasProp(updatedEsts, worker.establishmentKey)) {
-        const estTotals = updatedEsts[worker.establishmentKey];
-
+      if (this.key === worker.establishmentKey) {
         switch (worker.status) {
           case 'NEW':
           case 'UPDATE': {
             /* update totals */
-            updateTotals(estTotals, worker);
+            updateWorkerTotals(totals, worker);
           }
           /* fall through */
 
           case 'DELETE':
-            estTotals.ignoreDBWorkers[worker.uniqueWorker] = true;
+            ignoreDBWorkers[worker.uniqueWorker] = true;
             break;
         }
       }
     });
 
-    // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
-
     // get all the other records that may already exist in the db but aren't being updated or deleted
-    (await fetchMyEstablishmentsWorkers([this.id], [this.key]))
+    /*(await fetchMyEstablishmentsWorkers(this._id, this._key))
       .forEach(worker => {
-        const estTotals = updatedEsts[worker.establishmentKey];
         worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
         worker.otherJobIds = worker.otherJobIds.length ? worker.otherJobIds.split(';') : [];
 
         // if a record is updated or deleted it can't count towards the totals twice
-        if (!hasProp(estTotals.ignoreDBWorkers, worker.uniqueWorker)) {
+        if (!hasProp(ignoreDBWorkers, worker.uniqueWorker)) {
         // update totals
-          updateTotals(estTotals, worker);
+          updateWorkerTotals(totals, worker);
         }
-      });
+      });*/
       
-    _crossValidateTotalPermTemp();
+    // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
+    _crossValidateTotalPermTemp(csvEstablishmentSchemaErrors);
   }
 
   // returns true on success, false is any attribute of Establishment fails
@@ -2214,33 +2206,17 @@ class Establishment {
     columns.push(this._csvQuote(entity.town));
     columns.push(entity.postcode);
 
+    let employerType = '';
+    let employerTypeOther = '';
     if (entity.employerType) {
-      switch (entity.employerType.value) {
-        case 'Private Sector':
-          columns.push(6);
-          break;
-        case 'Voluntary / Charity':
-          columns.push(7);
-          break;
-        case 'Other':
-          columns.push(8);
-          break;
-        case 'Local Authority (generic/other)':
-          columns.push(3);
-          break;
-        case 'Local Authority (adult services)':
-          columns.push(1);
-          break;
-      }
+      employerType = BUDI.establishmentType(BUDI.FROM_ASC, entity.employerType.value);
+
       if (entity.employerType.other) {
-        columns.push(this._csvQuote(entity.employerType.other));
-      } else {
-        columns.push('');
+        employerTypeOther = this._csvQuote(entity.employerType.other);
       }
-    } else {
-      columns.push('');
-      columns.push('');
     }
+    columns.push(employerType);
+    columns.push(employerTypeOther);
 
     // share with CQC/LA, LAs sharing with
     const shareWith = entity.shareWith;
@@ -2306,12 +2282,15 @@ class Establishment {
     // all job roles, starters, leavers and vacancies
 
     const allJobs = [];
+
     if (entity.starters && Array.isArray(entity.starters)) {
       entity.starters.forEach(thisStarter => allJobs.push(thisStarter));
     }
+
     if (entity.leavers && Array.isArray(entity.leavers)) {
       entity.leavers.forEach(thisLeaver => allJobs.push(thisLeaver));
     }
+
     if (entity.vacancies && Array.isArray(entity.vacancies)) {
       entity.vacancies.forEach(thisVacancy => allJobs.push(thisVacancy));
     }
@@ -2326,68 +2305,69 @@ class Establishment {
     });
 
     columns.push(uniqueJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob)).join(';'));
+
+    let starters = '';
     if (entity.starters && !Array.isArray(entity.starters)) {
       if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        columns.push('0');
+        starters = '0';
       } else if (entity.starters === 'None') {
-        columns.push(uniqueJobs.length ? uniqueJobs.map(x => 0).join(';') : '0');
+        starters = uniqueJobs.length ? uniqueJobs.map(x => 0).join(';') : '0';
       } else if (entity.starters === 'Don\'t know') {
-        columns.push(999);
-      } else {
-        columns.push('');
+        starters = 999;
       }
     } else if (entity.starters !== null) {
-      columns.push(uniqueJobs.map(thisJob => {
+      starters = uniqueJobs.map(thisJob => {
         const isThisJobAStarterJob = entity.starters ? entity.starters.find(myStarter => myStarter.jobId === thisJob) : false;
         if (isThisJobAStarterJob) {
           return isThisJobAStarterJob.total;
         } else {
           return 0;
         }
-      }).join(';'));
+      }).join(';');
     }
+    columns.push(starters);
 
+    let leavers = '';
     if (entity.leavers && !Array.isArray(entity.leavers)) {
       if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        columns.push('0');
+        leavers = '0';
       } else if (entity.leavers === 'None') {
-        columns.push(uniqueJobs.length ? uniqueJobs.map(x => 0).join(';') : '0');
+        leavers = uniqueJobs.length ? uniqueJobs.map(x => 0).join(';') : '0';
       } else if (entity.leavers === 'Don\'t know') {
-        columns.push(999);
-      } else {
-        columns.push('');
+        leavers = 999;
       }
     } else if (entity.leavers !== null) {
-      columns.push(uniqueJobs.map(thisJob => {
+      leavers = uniqueJobs.map(thisJob => {
         const isThisJobALeaverJob = entity.leavers ? entity.leavers.find(myLeaver => myLeaver.jobId === thisJob) : false;
         if (isThisJobALeaverJob) {
           return isThisJobALeaverJob.total;
         } else {
           return 0;
         }
-      }).join(';'));
+      }).join(';');
     }
+    columns.push(leavers);
 
+    let vacancies = '';
     if (entity.vacancies && !Array.isArray(entity.vacancies)) {
       if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        columns.push('0');
+        vacancies = '0';
       } else if (entity.vacancies === 'None') {
-        columns.push(uniqueJobs.length ? uniqueJobs.map(x => 0).join(';') : '0');
+        vacancies = uniqueJobs.length ? uniqueJobs.map(x => 0).join(';') : '0';
       } else if (entity.vacancies === 'Don\'t know') {
-        columns.push(999);
-      } else {
-        columns.push('');
+        vacancies = 999;
       }
     } else {
-      columns.push(uniqueJobs.map(thisJob => {
+      vacancies = uniqueJobs.map(thisJob => {
         const isThisJobAVacancyJob = entity.vacancies ? entity.vacancies.find(myVacancy => myVacancy.jobId === thisJob) : false;
         if (isThisJobAVacancyJob) {
           return isThisJobAVacancyJob.total;
         } else {
           return 0;
         }
-      }).join(';'));
+      }).join(';');
     }
+    columns.push(vacancies);
 
     // reasons for leaving - currently can't be mapped - interim solution is a string of "reasonID:count|reasonId:count" (without BUDI mapping)
     if (entity.reasonsForLeaving && entity.reasonsForLeaving.length > 0) {

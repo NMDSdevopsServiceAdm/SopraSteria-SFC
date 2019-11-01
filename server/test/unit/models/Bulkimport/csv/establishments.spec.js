@@ -72,37 +72,48 @@ const getUnitInstance = () => {
                   return found ? found.BUDI : null;
                 }
               },
-              serviceFromCapacityId: () => {
-                if (ALL_CAPACITIES) {
-                  const foundCapacity = ALL_CAPACITIES.find(thisCapacity => {
-                    if (thisCapacity.serviceCapacityId === serviceCapacityId) {
-                      return true;
-                    } else {
-                      return false;
-                    }
-                  });
+              serviceFromCapacityId: (serviceCapacityId) => {
+                if (Array.isArray(ALL_CAPACITIES)) {
+                  const foundCapacity = ALL_CAPACITIES.find(thisCapacity => thisCapacity.serviceCapacityId === serviceCapacityId);
 
                   // foundCapacity will be undefined if not found
-                  return foundCapacity ? foundCapacity.serviceId : null;
-                } else {
-                  return null;
+                  if (typeof foundCapacity !== 'undefined') {
+                    return foundCapacity.serviceId;
+                  }
                 }
+
+                return null;
               },
-              serviceFromUtilisationId: () => {
-                if (ALL_UTILISATIONS) {
-                  const foundCapacity = ALL_UTILISATIONS.find(thisCapacity => {
-                    if (thisCapacity.serviceCapacityId === serviceCapacityId) {
-                      return true;
-                    } else {
-                      return false;
-                    }
-                  });
+
+              serviceFromUtilisationId: (serviceCapacityId) => {
+                if (Array.isArray(ALL_UTILISATIONS)) {
+                  const foundCapacity = ALL_UTILISATIONS.find(thisCapacity => thisCapacity.serviceCapacityId === serviceCapacityId);
 
                   // foundCapacity will be undefined if not found
-                  return foundCapacity ? foundCapacity.serviceId : null;
-                } else {
-                  return null;
+                  if (typeof foundCapacity !== 'undefined') {
+                    return foundCapacity.serviceId;
+                  }
                 }
+
+                return null;
+              },
+
+              establishmentType: (direction, originalCode) => {
+                const fixedMapping = [
+                  { ASC: 'Local Authority (adult services)', BUDI: 1 },
+                  { ASC: 'Local Authority (generic/other)', BUDI: 3 },
+                  { ASC: 'Private Sector', BUDI: 6 },
+                  { ASC: 'Voluntary / Charity', BUDI: 7 },
+                  { ASC: 'Other', BUDI: 8 }
+                ];
+
+                if (direction === BUDI_TO_ASC) {
+                  const found = fixedMapping.find(thisTrainingCategory => thisTrainingCategory.BUDI === originalCode);
+                  return found ? { type: found.ASC } : null;
+                }
+
+                const found = fixedMapping.find(thisType => thisType.ASC === originalCode);
+                return found ? found.BUDI : 8;
               },
               serviceUsers: (direction, originalCode) => {
                 const fixedMapping = [

@@ -1053,7 +1053,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   // Cross Entity Validations
 
   // If the logged in account performing this validation is not a parent, then
-  //  there should be just one establishment, and that establishment should the primary establishment
+  // there should be just one establishment, and that establishment should the primary establishment
   if (!isParent) {
     const MAX_ESTABLISHMENTS = 1;
 
