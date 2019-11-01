@@ -42,10 +42,15 @@ router.route('/').post(async (req, res) => {
             message: `Ownership is already requested for posted establishment id`,
           });
         }
-
+        let getRecipientUserDetails;
         params.parentId = thisEstablishment._parentId;
         params.establishmentId = params.subEstablishmentId;
-        let getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
+
+        if(thisEstablishment._dataOwner !== 'Parent'){
+           getRecipientUserDetails = await ownership.getRecipientSubUserDetails(params);
+        } else {
+           getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
+        }
         if (getRecipientUserDetails.length) {
           //save records
           params.recipientUserUid = getRecipientUserDetails[0].UserUID;
