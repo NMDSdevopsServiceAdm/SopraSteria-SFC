@@ -7,6 +7,8 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
+const SequelizeMock = require('sequelize-mock');
+const dbMock = new SequelizeMock();
 const db = {};
 
 

@@ -77,8 +77,16 @@ async function updateS3(location, status) {
   }
 }
 
+async function deleteSQSMessage(ReceiptHandle) {
+  await sqs.deleteMessage({
+    QueueUrl: appConfig.get('aws.sqsqueue').toString(),
+    ReceiptHandle: ReceiptHandle
+  }).promise();
+}
+
 module.exports.handler =  async (event, context) => {
-  const location = JSON.parse(event.body);
+  console.log(event);
+  const location = JSON.parse(event.Body);
   try {
     const individualLocation = await axios.get(url+'/locations/'+ location.locationId);
     if (!individualLocation.data.deregistrationDate) {
@@ -95,6 +103,7 @@ module.exports.handler =  async (event, context) => {
       });
     }
     await updateS3(location, 'success');
+    // await deleteSQSMessage(event.ReceiptHandle);
     models.sequelize.close();
 
     return {
