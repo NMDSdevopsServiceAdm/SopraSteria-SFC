@@ -511,7 +511,7 @@ class Establishment {
   }
 
   _validateEstablishmentType () {
-    const myEstablishmentType = parseInt(this._currentLine.ESTTYPE);
+    const myEstablishmentType = parseInt(this._currentLine.ESTTYPE, 10);
     const myOtherEstablishmentType = this._currentLine.OTHERTYPE;
 
     const localValidationErrors = [];
@@ -589,7 +589,7 @@ class Establishment {
 
   _validateShareWithCQC () {
     const ALLOWED_VALUES = [0, 1];
-    const myShareWithCqc = parseInt(this._currentLine.PERMCQC);
+    const myShareWithCqc = parseInt(this._currentLine.PERMCQC, 10);
 
     if (!this._currentLine.PERMCQC || this._currentLine.PERMCQC.length === 0) {
       this._validationErrors.push({
@@ -629,7 +629,7 @@ class Establishment {
 
   _validateShareWithLA () {
     const ALLOWED_VALUES = [0, 1];
-    const myShareWithLa = parseInt(this._currentLine.PERMLA);
+    const myShareWithLa = parseInt(this._currentLine.PERMLA, 10);
 
     if (!this._currentLine.PERMLA || this._currentLine.PERMLA.length === 0) {
       this._validationErrors.push({
@@ -671,7 +671,7 @@ class Establishment {
     // local authorities is optional or is a semi colon delimited list of integers
     if (this._currentLine.SHARELA && this._currentLine.SHARELA.length > 0) {
       const listOfLAs = this._currentLine.SHARELA.split(';');
-      const isValid = listOfLAs.every(thisLA => !Number.isNaN(parseInt(thisLA)));
+      const isValid = listOfLAs.every(thisLA => !Number.isNaN(parseInt(thisLA, 10)));
 
       if (!isValid) {
         this._validationErrors.push({
@@ -821,7 +821,7 @@ class Establishment {
   }
 
   _validateMainService () {
-    const myMainService = parseInt(this._currentLine.MAINSERVICE);
+    const myMainService = parseInt(this._currentLine.MAINSERVICE, 10);
 
     if (!this._currentLine.MAINSERVICE || this._currentLine.MAINSERVICE.length === 0) {
       this._validationErrors.push({
@@ -872,7 +872,7 @@ class Establishment {
     const listOfServiceDescriptions = this._currentLine.SERVICEDESC.split(';');
 
     const localValidationErrors = [];
-    const isValid = listOfServices.every(thisService => !Number.isNaN(parseInt(thisService)));
+    const isValid = listOfServices.every(thisService => !Number.isNaN(parseInt(thisService, 10)));
 
     if (!isValid) {
       localValidationErrors.push({
@@ -940,7 +940,7 @@ class Establishment {
 
     const localValidationErrors = [];
     if (this._currentLine.SERVICEUSERS && this._currentLine.SERVICEUSERS.length > 0) {
-      const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService))) : true;
+      const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService, 10))) : true;
       if (!isValid) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
@@ -1069,7 +1069,7 @@ class Establishment {
     const MAX_CAP_UTIL = 999999999;
 
     const areCapacitiesValid = listOfCapacities.every(thisCapacity =>
-      thisCapacity === null || thisCapacity.length === 0 || (!Number.isNaN(parseInt(thisCapacity)) && parseInt(thisCapacity) < MAX_CAP_UTIL)
+      thisCapacity === null || thisCapacity.length === 0 || (!Number.isNaN(parseInt(thisCapacity, 10)) && parseInt(thisCapacity, 10) < MAX_CAP_UTIL)
     );
 
     if (!areCapacitiesValid) {
@@ -1084,7 +1084,7 @@ class Establishment {
     }
 
     const areUtilisationsValid = listOfUtilisations.every(thisUtilisation =>
-      thisUtilisation === null || thisUtilisation.length === 0 || (!Number.isNaN(parseInt(thisUtilisation)) && parseInt(thisUtilisation) < MAX_CAP_UTIL)
+      thisUtilisation === null || thisUtilisation.length === 0 || (!Number.isNaN(parseInt(thisUtilisation, 10)) && parseInt(thisUtilisation, 10) < MAX_CAP_UTIL)
     );
 
     if (!areUtilisationsValid) {
@@ -1127,7 +1127,7 @@ class Establishment {
   _validateTotalPermTemp () {
     // mandatory
     const MAX_TOTAL = 999;
-    const myTotalPermTemp = parseInt(this._currentLine.TOTALPERMTEMP);
+    const myTotalPermTemp = parseInt(this._currentLine.TOTALPERMTEMP, 10);
     const HEAD_OFFICE_MAIN_SERVICE = 72;
 
     if (Number.isNaN(myTotalPermTemp)) {
@@ -1183,13 +1183,13 @@ class Establishment {
       });
     } else if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0) {
       // all jobs are integers
-      const isValid = allJobs.every(thisJob => !Number.isNaN(parseInt(thisJob)));
+      const isValid = allJobs.every(thisJob => !Number.isNaN(parseInt(thisJob, 10)));
       if (!isValid) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Establishment.ALL_JOBS_ERROR,
           errType: 'ALL_JOBS_ERROR',
-          error: 'All Job Roles (ALLJOBROLES)  must be integers',
+          error: 'All Job Roles (ALLJOBROLES) must be integers',
           source: this._currentLine.ALLJOBROLES,
           name: this._currentLine.LOCALESTID
         });
@@ -1263,7 +1263,7 @@ class Establishment {
     const MIN_COUNT = 0;
     const MAX_COUNT = 999999999;
 
-    if (!vacancies.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT && parseInt(thisCount) <= MAX_COUNT)) {
+    if (!vacancies.every(thisCount => !Number.isNaN(parseInt(thisCount, 10)) && parseInt(thisCount, 10) >= MIN_COUNT && parseInt(thisCount, 10) <= MAX_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.VACANCIES_ERROR,
@@ -1274,7 +1274,7 @@ class Establishment {
       });
     }
 
-    if (!starters.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT && parseInt(thisCount) <= MAX_COUNT)) {
+    if (!starters.every(thisCount => !Number.isNaN(parseInt(thisCount, 10)) && parseInt(thisCount, 10) >= MIN_COUNT && parseInt(thisCount, 10) <= MAX_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STARTERS_ERROR,
@@ -1285,7 +1285,7 @@ class Establishment {
       });
     }
 
-    if (!leavers.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT && parseInt(thisCount) <= MAX_COUNT)) {
+    if (!leavers.every(thisCount => !Number.isNaN(parseInt(thisCount, 10)) && parseInt(thisCount, 10) >= MIN_COUNT && parseInt(thisCount, 10) <= MAX_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.LEAVERS_ERROR,
@@ -1323,7 +1323,7 @@ class Establishment {
 
       const localValidationErrors = [];
 
-      if (!allReasons.every(thisCount => !Number.isNaN(parseInt(thisCount)))) {
+      if (!allReasons.every(thisCount => !Number.isNaN(parseInt(thisCount, 10)))) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
@@ -1347,7 +1347,7 @@ class Establishment {
 
       const MIN_COUNT = 0;
 
-      if (!allReasonsCounts.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      if (!allReasonsCounts.every(thisCount => !Number.isNaN(parseInt(thisCount, 10)) || parseInt(thisCount, 10) < MIN_COUNT)) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
@@ -1392,7 +1392,7 @@ class Establishment {
       this._reasonsForLeaving = allReasons.map((thisReason, index) => {
         return {
           id: parseInt(thisReason, 10),
-          count: parseInt(allReasonsCounts[index])
+          count: parseInt(allReasonsCounts[index], 10)
         };
       });
 

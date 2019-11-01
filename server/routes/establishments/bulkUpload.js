@@ -42,12 +42,11 @@ const completionBulkUploadStatus = 'COMPLETE';
 
 router.route('/uploaded').get(async (req, res) => {
   try {
-    const params = {
+    const data = await s3.listObjects({
       Bucket: appConfig.get('bulkupload.bucketname').toString(),
       Prefix: `${req.establishmentId}/latest/`
-    };
+    }).promise();
 
-    const data = await s3.listObjects(params).promise();
     const returnData = await Promise.all(data.Contents.filter(myFile => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key))
       .map(async (file) => {
         const elements = file.Key.split('/');
@@ -119,7 +118,7 @@ router.route('/uploaded/*').get(async (req, res) => {
   }
 });
 
-const purgeBulkUploadS3Obbejcts = async (establishmentId) => {
+const purgeBulkUploadS3Objects = async (establishmentId) => {
   // drop all in latest
   const listParams = {
     Bucket: appConfig.get('bulkupload.bucketname').toString(),
@@ -190,14 +189,20 @@ router.route('/uploaded').post(async function (req, res) {
   const MINIMUM_NUMBER_OF_FILES = 2;
   const MAXIMUM_NUMBER_OF_FILES = 3;
 
-  if (!uploadedFiles || !Array.isArray(uploadedFiles) || uploadedFiles.length < MINIMUM_NUMBER_OF_FILES || uploadedFiles.length > MAXIMUM_NUMBER_OF_FILES) {
+  if (
+    !uploadedFiles ||
+    !Array.isArray(uploadedFiles) ||
+    uploadedFiles.length < MINIMUM_NUMBER_OF_FILES ||
+    uploadedFiles.length > MAXIMUM_NUMBER_OF_FILES
+  ) {
     return res.status(400).send({});
   }
 
-  const signedUrls = [];
   try {
     // clean up existing bulk upload objects
-    await purgeBulkUploadS3Obbejcts(myEstablishmentId);
+    await purgeBulkUploadS3Objects(myEstablishmentId);
+
+    const signedUrls = [];
 
     uploadedFiles.forEach(thisFile => {
       if (thisFile.filename) {
@@ -587,120 +592,9 @@ router.route('/validate').put(async (req, res) => {
   res.end();
 });
 
-// alternative (testable) route, which passes the establishment, worker and training CSV as content
-// return the validation errors as the response
-router.route('/validate').post(async (req, res) => {
-  const establishmentId = req.establishmentId;
-  const username = req.username;
-  const isParent = req.isParent;
-  const establishmentMetadata = new MetaData();
-  const workerMetadata = new MetaData();
-  const trainingMetadata = new MetaData();
-
-  const establishmentRegex = /LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES/;
-  const trainingRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
-  const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
-
-  try {
-    const importedEstablishments = await csv().fromString(req.body.establishments.csv);
-    const importedWorkers = await csv().fromString(req.body.workers.csv);
-    const importedTraining = await csv().fromString(req.body.training.csv);
-
-    if (establishmentRegex.test(req.body.establishments.csv.substring(0, 50))) {
-      const key = req.body.establishments.filename;
-      establishmentMetadata.filename = key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3];
-      establishmentMetadata.fileType = 'Establishment';
-    }
-    if (trainingRegex.test(req.body.training.csv.substring(0, 50))) {
-      const key = req.body.training.filename;
-      trainingMetadata.filename = key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3];
-      trainingMetadata.fileType = 'Training';
-    }
-
-    const validationResponse = await validateBulkUploadFiles(
-      false,
-      username,
-      establishmentId,
-      isParent,
-      {
-        imported: importedEstablishments,
-        establishmentMetadata: establishmentMetadata
-      },
-      {
-        imported: importedWorkers,
-        workerMetadata: workerMetadata
-      },
-      {
-        imported: importedTraining,
-        trainingMetadata: trainingMetadata
-      }
-    );
-
-    // handle parsing errors
-    if (!validationResponse.status) {
-      return res.status(400).send({
-        report: validationResponse.report,
-        establishments: {
-          filename: null,
-          records: importedEstablishments.length,
-          deleted: validationResponse.metaData.establishments.deleted,
-          errors: validationResponse.validation.establishments
-            .filter(thisVal => hasProp(thisVal, 'errCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          warnings: validationResponse.validation.establishments
-            .filter(thisVal => hasProp(thisVal, 'warnCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          data: {
-            csv: validationResponse.data.csv.establishments,
-            entities: validationResponse.data.entities.establishments
-          }
-        },
-        workers: {
-          filename: null,
-          records: importedWorkers.length,
-          deleted: validationResponse.metaData.workers.deleted,
-          errors: validationResponse.validation.workers
-            .filter(thisVal => hasProp(thisVal, 'errCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          warnings: validationResponse.validation.workers
-            .filter(thisVal => hasProp(thisVal, 'warnCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          data: {
-            csv: validationResponse.data.csv.workers,
-            entities: {
-              workers: validationResponse.data.entities.workers,
-              qualifications: validationResponse.data.entities.qualifications
-            }
-          }
-        },
-        training: {
-          filename: null,
-          records: importedTraining.length,
-          errors: validationResponse.validation.training
-            .filter(thisVal => hasProp(thisVal, 'errCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          warnings: validationResponse.validation.training
-            .filter(thisVal => hasProp(thisVal, 'warnCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          data: {
-            csv: validationResponse.data.csv.training,
-            entities: validationResponse.data.entities.training
-          }
-        },
-        all: validationResponse.data.resulting
-      });
-    } else {
-      return res.status(200).send(validationResponse.data.resulting);
-    }
-  } catch (err) {
-    console.error(err);
-    return res.status(503).send({});
-  }
-});
-
 const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
 
-async function downloadContent (key, objectSize, lastModified) {
+const downloadContent = async (key, size, lastModified) => {
   try {
     return await s3.getObject({
       Bucket: appConfig.get('bulkupload.bucketname').toString(),
@@ -712,38 +606,34 @@ async function downloadContent (key, objectSize, lastModified) {
         data: objData.Body.toString(),
         filename: key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3],
         username: objData.Metadata.username,
-        size: objectSize,
+        size,
         lastModified
       }));
   } catch (err) {
     console.error(`api/establishment/bulkupload/downloadFile: ${key})\n`, err);
     throw new Error(`Failed to download S3 object: ${key}`);
   }
-}
+};
 
-async function uploadAsJSON (username, establishmentId, content, key) {
-  const myEstablishmentId = Number.isInteger(establishmentId) ? establishmentId.toString() : establishmentId;
-
-  var params = {
-    Bucket: appConfig.get('bulkupload.bucketname').toString(),
-    Key: key,
-    Body: JSON.stringify(content, null, 2),
-    ContentType: 'application/json',
-    Metadata: {
-      username,
-      establishmentId: myEstablishmentId
-    }
-  };
-
+const uploadAsJSON = async (username, establishmentId, content, key) => {
   try {
-    await s3.putObject(params).promise();
+    await s3.putObject({
+      Bucket: appConfig.get('bulkupload.bucketname').toString(),
+      Key: key,
+      Body: JSON.stringify(content, null, 2),
+      ContentType: 'application/json',
+      Metadata: {
+        username,
+        establishmentId: String(establishmentId)
+      }
+    }).promise();
   } catch (err) {
     console.error('uploadAsJSON: ', err);
     throw new Error(`Failed to upload S3 object: ${key}`);
   }
-}
+};
 
-const _validateEstablishmentCsv = async (
+const validateEstablishmentCsv = async (
   thisLine,
   currentLineNumber,
   csvEstablishmentSchemaErrors,
@@ -809,7 +699,7 @@ const _validateEstablishmentCsv = async (
   myEstablishments.push(lineValidator);
 };
 
-const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications, keepAlive = () => {}) => {
+const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications, keepAlive = () => {}) => {
   const thisApiQualification = new QualificationEntity();
   // load while ignoring the "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
   const isValid = await thisApiQualification.load(thisQual);
@@ -836,7 +726,7 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker,
   }
 };
 
-const _validateWorkerCsv = async (
+const validateWorkerCsv = async (
   thisLine,
   currentLineNumber,
   csvWorkerSchemaErrors,
@@ -864,7 +754,7 @@ const _validateWorkerCsv = async (
 
       // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
       //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
-      await Promise.all(lineValidator.toQualificationAPI().map(thisQual => _loadWorkerQualifications(
+      await Promise.all(lineValidator.toQualificationAPI().map(thisQual => loadWorkerQualifications(
         lineValidator,
         thisQual,
         thisApiWorker,
@@ -893,7 +783,7 @@ const _validateWorkerCsv = async (
   myWorkers.push(lineValidator);
 };
 
-const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings, keepAlive = () => {}) => {
+const validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings, keepAlive = () => {}) => {
   const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber);
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
@@ -974,7 +864,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   // parse and process Establishments CSV
   if (Array.isArray(establishments.imported) && establishments.imported.length > 0 && establishments.establishmentMetadata.fileType === 'Establishment') {
     // validate all establishment rows
-    await Promise.all(establishments.imported.map((thisLine, currentLineNumber) => _validateEstablishmentCsv(
+    await Promise.all(establishments.imported.map((thisLine, currentLineNumber) => validateEstablishmentCsv(
       thisLine,
       currentLineNumber + 2,
       csvEstablishmentSchemaErrors,
@@ -1012,7 +902,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   // parse and process Workers CSV
   if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType === 'Worker') {
-    await Promise.all(workers.imported.map((thisLine, currentLineNumber) => _validateWorkerCsv(
+    await Promise.all(workers.imported.map((thisLine, currentLineNumber) => validateWorkerCsv(
       thisLine,
       currentLineNumber + 2,
       csvWorkerSchemaErrors,
@@ -1109,7 +999,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   // parse and process Training CSV
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType === 'Training') {
-    await Promise.all(training.imported.map((thisLine, currentLineNumber) => _validateTrainingCsv(
+    await Promise.all(training.imported.map((thisLine, currentLineNumber) => validateTrainingCsv(
       thisLine,
       currentLineNumber + 2,
       csvTrainingSchemaErrors,
@@ -1329,7 +1219,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
       JOIN cqc."Worker" on "Worker"."EstablishmentFK" = "Establishment"."EstablishmentID"
       LEFT JOIN cqc."WorkerJobs" on "WorkerJobs"."WorkerFK" = "Worker"."ID"
       WHERE "Worker"."LocalIdentifierValue" IS NOT NULL AND
-      "Establishment"."LocalIdentifierValue" IN(:estKeys)
+      "Establishment"."LocalIdentifierValue" IN (:estKeys)
       AND "Establishment"."EstablishmentID" IN (:estIds)
       GROUP BY "establishmentKey", "uniqueWorker", "contractTypeId", "mainJobRoleId"`,
       {
@@ -1844,11 +1734,6 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
   };
 };
 
-// deprecated
-router.route('/report').get(async (req, res) => {
-  return res.status(410).send('Deprecated');
-});
-
 router.route('/report/:reportType').get(async (req, res) => {
   const NEWLINE = '\r\n';
   const reportTypes = ['training', 'establishments', 'workers'];
@@ -2152,7 +2037,12 @@ const completeUpdateEstablishment = async (
   }
 };
 
-const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedInUser, transaction, myCurrentEstablishments) => {
+const completeDeleteEstablishment = async (
+  thisDeletedEstablishment,
+  theLoggedInUser,
+  transaction,
+  myCurrentEstablishments
+) => {
   try {
     const startTime = new Date();
 
@@ -2294,9 +2184,9 @@ router.route('/complete').post(async (req, res) => {
 
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects
-        await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
+        await purgeBulkUploadS3Objects(primaryEstablishmentId);
 
-        keepAlive('purgeBulkUploadS3Obbejcts');
+        keepAlive('purgeBulkUploadS3Objects');
 
         // confirm success against the primary establishment
         await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
@@ -2463,73 +2353,6 @@ router.route('/download/:downloadType').get(async (req, res) => {
       message: `Unexpected download type: ${downloadType}`
     });
   }
-});
-
-// demo API to showcase how trickle feed responses would work for the client
-//  no parameter validation and no error handling and no security
-router.route('/trickle').post(async (req, res) => {
-  const retries = parseInt(req.query.retries, 10);
-  const withError = !(!req.query.error || req.query.error !== 'true');
-  const withTrickle = !!(!req.query.trickle || req.query.trickle !== 'false');
-
-  const RETRY_TIMEOUT_SECS = 15;
-  const RETRY_TIMEOUT = RETRY_TIMEOUT_SECS * 1000; // milliseconds
-  let currentRetries = 0;
-  let firstStatusFlush = true;
-
-  const response = {
-    status: []
-  };
-
-  const statusMsg = () => {
-    currentRetries++;
-    const timestamp = new Date().toISOString();
-
-    response.status.push({
-      message: `${currentRetries}`,
-      duration: `${RETRY_TIMEOUT} seconds`,
-      timestamp
-    });
-
-    if (withTrickle) {
-      if (firstStatusFlush) {
-        console.log(`WA DEBUG - timed out: ${currentRetries} - ${timestamp}`);
-        res.write(`{ "message": "${currentRetries}", "duration":"${RETRY_TIMEOUT} seconds", "timestamp":"${timestamp}" }`);
-        firstStatusFlush = false;
-      } else {
-        console.log(`WA DEBUG - comma timed out: ${currentRetries} - ${timestamp}`);
-        res.write(`,{ "message": "${currentRetries}", "duration":"${RETRY_TIMEOUT} seconds", "timestamp":"${timestamp}" }`);
-      }
-      res.flush();
-    }
-
-    if (currentRetries < retries) {
-      setTimeout(statusMsg, RETRY_TIMEOUT);
-    } else {
-      if (withTrickle) {
-        if (withError) {
-          res.end('],"error": "Forced Failure"}');
-        } else {
-          return res.end(']}');
-        }
-      } else {
-        // if (withError) {
-        //  E;
-        // }
-
-        return res.status(200).send(response);
-      }
-    }
-  };
-
-  if (withTrickle) {
-    res.status(200);
-    res.header('Content-Type', 'application/json');
-    res.write('{"status": [');
-    res.flush();
-  }
-
-  setTimeout(statusMsg, RETRY_TIMEOUT);
 });
 
 module.exports = router;
