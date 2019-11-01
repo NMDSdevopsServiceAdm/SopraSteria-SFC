@@ -32,19 +32,20 @@
         <div *ngSwitchCase="'DENIED'">
           <div *ngIf="isDataOwner" else nonDataOwner>
             <p>
+              You rejected the request to transfer ownership of data to {{ notification.typeContent.requestorName }}
+            </p>
+          </div>
+          <ng-template #nonDataOwner>
+            <p>
               {{ notification.typeContent.requestorName }} has rejected your request to become the owner of its data.
             </p>
             <h2 class="govuk-heading-s">Reason</h2>
-            <p *ngIf="notification.typeContent.reason != null" else noReason>
-              {{ notification.typeContent.reason }}
+            <p *ngIf="notification.typeContent.rejectionReason" else noReason>
+              {{ notification.typeContent.rejectionReason }}
             </p>
             <ng-template #noReason>
               No reason provided.
             </ng-template>
-          </div>
-          <ng-template #nonDataOwner>
-            You rejected the request to transfer ownership of data to
-            {{ notification.typeContent.requestorName }}
           </ng-template>
         </div>
         <div *ngSwitchCase="'APPROVED'">
