@@ -131,7 +131,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
       let requestParameter = {
         ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
         approvalStatus: 'DENIED',
-        approvalReason: this.form.value.reason,
+        rejectionReason: this.form.value.reason,
         type: OWNERSHIP_REJECTED,
         exsistingNotificationUid: this.notification.notificationUid,
       };
