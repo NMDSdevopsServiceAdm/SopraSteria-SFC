@@ -224,16 +224,30 @@ exports.getOwnershipNotificationDetails = async ({ ownerChangeRequestUid }) =>
     type: db.QueryTypes.SELECT,
   });
 
-  const getRequesterNameQuery = `
+const getRequesterNameQuery = `
   select "NameValue" from cqc."User" as individual
   JOIN cqc."Establishment" as est on est."EstablishmentID" = individual."EstablishmentID"
   WHERE "UserUID" = :userUid;
   `;
 
-  exports.getRequesterName = async (params) =>
+exports.getRequesterName = async params =>
   db.query(getRequesterNameQuery, {
     replacements: {
       userUid: params,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const getNotificationRecieverNameQuery = `
+  select "NameValue" from cqc."User" as use
+  JOIN cqc."Notifications" as individual on individual."recipientUserUid" = use."UserUID"
+  JOIN cqc."Establishment" as sub on sub."EstablishmentID" = use."EstablishmentID"
+    WHERE "notificationUid" = :notificationUid;
+  `;
+exports.getNotificationRecieverName = async params =>
+  db.query(getNotificationRecieverNameQuery, {
+    replacements: {
+      notificationUid: params.notificationUid,
     },
     type: db.QueryTypes.SELECT,
   });
