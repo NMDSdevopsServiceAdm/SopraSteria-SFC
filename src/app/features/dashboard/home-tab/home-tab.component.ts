@@ -1,5 +1,5 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
@@ -18,6 +18,9 @@ import {
 import {
   ChangeDataOwnerDialogComponent,
 } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import {
+  SetDataPermissionDialogComponent,
+} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -28,7 +31,6 @@ import { filter } from 'rxjs/operators';
 })
 export class HomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
-  @Output() public changeOwnershipEvent = new EventEmitter();
 
   private subscriptions: Subscription = new Subscription();
   public adminRole: Roles = Roles.Admin;
@@ -40,6 +42,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public updateStaffRecords: boolean;
   public user: UserDetails;
   public canViewChangeDataOwner: boolean;
+  public canViewDataPermissionsLink: boolean;
   public ownershipChangeRequestId;
   public isOwnershipRequested = false;
   public primaryWorkplace: Establishment;
@@ -64,6 +67,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =
       this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner !== 'Workplace';
+    this.canViewDataPermissionsLink =
+      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner === 'Workplace';
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.canViewReports =
       this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
@@ -122,6 +127,20 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         }
       )
     );
+  }
+
+  public setDataPermissions($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(SetDataPermissionDialogComponent, this.workplace);
+    dialog.afterClosed.subscribe(setPermissionConfirmed => {
+      if (setPermissionConfirmed) {
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({
+          type: 'success',
+          message: `Data permissions for ${this.workplace.name} have been set.`,
+        });
+      }
+    });
   }
 
   private changeDataOwnerLink(): void {

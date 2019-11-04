@@ -26,6 +26,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
   private serverErrorsMap: Array<ErrorDefinition>;
   public reason = '';
   public notification;
+  public serverError: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
@@ -148,7 +149,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
               }
             },
             error => {
-              console.error(error.error.message);
+              this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
             }
           )
       );

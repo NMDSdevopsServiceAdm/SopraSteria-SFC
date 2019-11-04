@@ -155,3 +155,7 @@ export interface ChangeOwner {
 export interface CancelOwnerShip {
   approvalStatus: string;
 }
+
+export interface setPermission {
+  permissionToSet: string;
+}

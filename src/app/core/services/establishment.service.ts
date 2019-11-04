@@ -1,12 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import {
+  CancelOwnerShip,
+  ChangeOwner,
   Establishment,
   LocalIdentifiersRequest,
   LocalIdentifiersResponse,
+  setPermission,
   UpdateJobsRequest,
-  ChangeOwner,
-  CancelOwnerShip,
 } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
@@ -232,5 +233,9 @@ export class EstablishmentService {
       `/api/establishment/${establishmentId}/ownershipChange/${ownershipChangeId}`,
       data
     );
+  }
+
+  public setDataPermission(establishmentId, data: setPermission): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/setDataPermission`, data);
   }
 }
