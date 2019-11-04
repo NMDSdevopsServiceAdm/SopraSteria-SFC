@@ -3,7 +3,9 @@ const establishments = require('../../../mockdata/establishment').data;
 const knownHeaders = require('../../../mockdata/establishment').knownHeaders;
 
 const testUtils = require('../../../../../utils/testUtils');
+const sinon = require('sinon');
 const csv = require('csvtojson');
+const filename = 'server/models/BulkImport/csv/establishments.js';
 
 const mapCsvToEstablishment = (establishment, headers) =>
   headers.reduce((mapped, header, index) => {
@@ -18,7 +20,7 @@ const getUnitInstance = () => {
   const BUDI_TO_ASC = 100;
 
   const bulkUpload = testUtils.sandBox(
-    'server/models/BulkImport/csv/establishments.js',
+    filename,
     {
       locals: {
         require: testUtils.wrapRequire({
@@ -412,6 +414,50 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
         expect(mappedCsv.VACANCIES).to.equal(allVacancies);
         expect(mappedCsv.REASONS).to.equal(reasons);
         expect(mappedCsv.REASONNOS).to.equal(reasonCount);
+      });
+    });
+  });
+
+
+  describe('cross entity validations', () => {
+    it('should emit a warning if there are fewer permanent staff than non permanant staff', async () => {
+      const bulkUpload = testUtils.sandBox(
+        filename,
+        {
+          locals: {
+            require: testUtils.wrapRequire({
+
+            })
+          }
+        }
+      );
+
+      const csvEstablishmentSchemaErrors = [];
+
+      const myWorkers = [];
+     
+      //the real version of this code is in the api Establishment business object and runs a sql query.
+      //We just return a 'fake result set'
+      const fetchMyEstablishmentsWorkers = sinon.spy((establishmentId, establishmentKey) => {
+        
+        
+      });
+            
+      //call the method
+      await crossValidate({
+        csvEstablishmentSchemaErrors,
+        myWorkers,
+        fetchMyEstablishmentsWorkers
+      });
+      
+      //assert the fetchMyEstalishmentsWorkers function was called
+      expect(fetchMyEstablishmentsWorkers.callCount).to.equal(2);
+      
+      //assert a warning was returned
+      expect(csvEstablishmentSchemaErrors.length).to.equal(2);
+      
+      expect(csvEstablishmentSchemaErrors[0]).to.deep.equal({
+        
       });
     });
   });
