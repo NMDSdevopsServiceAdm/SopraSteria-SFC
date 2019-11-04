@@ -30,7 +30,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private userService: UserService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
@@ -66,7 +66,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     );
   }
 
-  public changeOwnershipRequest($event) {
+  public changeOwnershipAndPermissions($event) {
     if ($event) {
       this.getEstablishments();
     }

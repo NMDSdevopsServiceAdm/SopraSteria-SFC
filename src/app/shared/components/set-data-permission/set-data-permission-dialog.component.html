@@ -1,0 +1,35 @@
+<app-error-summary *ngIf="submitted && serverError" [form]="form" [serverError]="serverError"> </app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h1 id="dialogHeading" class="govuk-fieldset__heading">
+          Set data permissions
+        </h1>
+      </legend>
+      <p class="govuk">Select what data {{ readOnlyPermissionTo }} will have read only access to:</p>
+      <div class="govuk-radios">
+        <div class="govuk-radios__item" *ngFor="let dataPermission of dataPermissions; let i = index">
+          <input
+            class="govuk-radios__input"
+            id="dataPermission-{{ i }}"
+            name="dataPermission"
+            [formControlName]="'dataPermission'"
+            type="radio"
+            [value]="dataPermission"
+            [checked]="dataPermission === workplace.dataPermissions"
+          />
+          <label class="govuk-label govuk-radios__label" for="dataPermission-{{ i }}">
+            {{ dataPermission | dataViewPermissions }}
+          </label>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <button type="submit" (click)="setPermissions()" class="govuk-button">Set Permissions</button>
+  <button type="button" (click)="close(null)" class="govuk-button govuk-button--secondary govuk-util__float-right">
+    Cancel
+  </button>
+</form>

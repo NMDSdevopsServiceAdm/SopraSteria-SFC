@@ -5,10 +5,17 @@ import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UserService } from '@core/services/user.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { UserService } from '@core/services/user.service';
+import {
+  CancelDataOwnerDialogComponent,
+} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import {
+  ChangeDataOwnerDialogComponent,
+} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import {
+  SetDataPermissionDialogComponent,
+} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -16,7 +23,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './workplace-info-panel.component.html',
 })
 export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
-  @Output() public changeOwnershipEvent = new EventEmitter();
+  @Output() public changeOwnershipAndPermissionsEvent = new EventEmitter();
   @Input() public workplace: Workplace;
   public canViewEstablishment: boolean;
   public canChangePermissionsForSubsidiary: boolean;
@@ -50,12 +57,16 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     );
   }
 
+  private changeOwnershipAndPermissions(): void {
+    this.changeOwnershipAndPermissionsEvent.emit(true);
+  }
+
   public onChangeDataOwner($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(ChangeDataOwnerDialogComponent, this.workplace);
     dialog.afterClosed.subscribe(changeDataOwnerConfirmed => {
       if (changeDataOwnerConfirmed) {
-        this.changeDataOwner();
+        this.changeOwnershipAndPermissions();
         this.router.navigate(['/dashboard']);
         this.alertService.addAlert({
           type: 'success',
@@ -82,7 +93,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
               const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
               dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
                 if (cancelDataOwnerConfirmed) {
-                  this.changeDataOwner();
+                  this.changeOwnershipAndPermissions();
                   this.router.navigate(['/dashboard']);
                   this.alertService.addAlert({
                     type: 'success',
@@ -102,8 +113,19 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     );
   }
 
-  private changeDataOwner(): void {
-    this.changeOwnershipEvent.emit(true);
+  public setDataPermissions($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(SetDataPermissionDialogComponent, this.workplace);
+    dialog.afterClosed.subscribe(setPermissionConfirmed => {
+      if (setPermissionConfirmed) {
+        this.changeOwnershipAndPermissions();
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({
+          type: 'success',
+          message: `Data permissions for ${this.workplace.name} have been set.`,
+        });
+      }
+    });
   }
 
   ngOnDestroy(): void {
