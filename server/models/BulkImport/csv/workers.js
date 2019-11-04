@@ -217,8 +217,8 @@ class Worker {
     return _headers_v1_without_chgUnique;
   }
   
-  get headers (MAX_QUALS) {
-    retuen Worker.headers(MAX_QUALS);
+  headers (MAX_QUALS) {
+    return Worker.headers(MAX_QUALS);
   }
 
   get lineNumber () {
