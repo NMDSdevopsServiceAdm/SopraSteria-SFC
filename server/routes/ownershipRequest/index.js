@@ -18,7 +18,7 @@ router.route('/:id').put(async (req, res) => {
       ownerRequestChangeUid: id,
       userUid: req.userUid,
       approvalStatus: req.body.approvalStatus,
-      approvalReason: req.body.approvalReason,
+      rejectionReason: req.body.rejectionReason,
       type: req.body.type,
     };
     if (!id) {

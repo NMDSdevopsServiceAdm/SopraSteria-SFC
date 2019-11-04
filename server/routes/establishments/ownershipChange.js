@@ -45,7 +45,6 @@ router.route('/').post(async (req, res) => {
         let getRecipientUserDetails;
         params.parentId = thisEstablishment._parentId;
         params.establishmentId = params.subEstablishmentId;
-
         if(thisEstablishment._dataOwner !== 'Parent'){
            getRecipientUserDetails = await ownership.getRecipientSubUserDetails(params);
         } else {
