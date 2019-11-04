@@ -24,7 +24,7 @@ VALUES (:uid, :subEstId, :permReq, :appStatus, :userUid, :userUid);
 
 const updateChangeOwnershipQuery = `
 UPDATE cqc."OwnerChangeRequest"
-SET "approvalStatus" = :approvalStatus, "approvalReason" = :approvalReason, "updatedByUserUID" = :userUid
+SET "approvalStatus" = :approvalStatus, "approvalReason" = :rejectionReason, "updatedByUserUID" = :userUid
 WHERE "ownerChangeRequestUID" = :uid;
 `;
 
@@ -158,7 +158,7 @@ exports.updateOwnershipRequest = async params =>
   db.query(updateChangeOwnershipQuery, {
     replacements: {
       uid: params.ownerRequestChangeUid,
-      approvalReason: params.approvalReason,
+      rejectionReason: params.rejectionReason,
       approvalStatus: params.approvalStatus,
       userUid: params.userUid,
     },
@@ -169,7 +169,7 @@ exports.updateChangeRequest = async params =>
   db.query(updateChangeOwnershipQuery, {
     replacements: {
       uid: params.ownerRequestChangeUid,
-      approvalReason: params.approvalReason,
+      rejectionReason: params.rejectionReason,
       approvalStatus: params.approvalStatus,
       userUid: params.userUid,
     },
@@ -220,20 +220,6 @@ exports.getOwnershipNotificationDetails = async ({ ownerChangeRequestUid }) =>
       parent: 'Parent',
       workplace: 'Workplace',
       unknown: 'unknown',
-    },
-    type: db.QueryTypes.SELECT,
-  });
-
-const getRequesterNameQuery = `
-  select "NameValue" from cqc."User" as individual
-  JOIN cqc."Establishment" as est on est."EstablishmentID" = individual."EstablishmentID"
-  WHERE "UserUID" = :userUid;
-  `;
-
-exports.getRequesterName = async params =>
-  db.query(getRequesterNameQuery, {
-    replacements: {
-      userUid: params,
     },
     type: db.QueryTypes.SELECT,
   });

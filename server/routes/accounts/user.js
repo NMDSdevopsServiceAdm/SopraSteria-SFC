@@ -782,7 +782,7 @@ const addTypeContent = async notification => {
       if (subQuery.length === 1) {
         if (subQuery[0].createdByUserUID) {
           let params = subQuery[0].createdByUserUID;
-          const requestorName = await ownershipChangeRequests.getRequesterName(params);
+          const requestorName = await notifications.getRequesterName(notification.createdByUserUID);
           if (requestorName) {
             subQuery.forEach(function(element) {
               element.requestorName = requestorName[0].NameValue;
