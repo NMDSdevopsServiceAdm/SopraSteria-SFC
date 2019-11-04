@@ -1082,7 +1082,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.CAPACITY_UTILISATION_ERROR,
         errType: 'CAPACITY_UTILISATION_ERROR',
-        error: 'Capacities (CAPACITY) must be a semi-colon delimited list of integers',
+        error: 'Capacities (CAPACITY) must be a semi-colon delimited list of whole numbers',
         source: this._currentLine.CAPACITY,
         name: this._currentLine.LOCALESTID
       });
@@ -1093,7 +1093,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.CAPACITY_UTILISATION_ERROR,
         errType: 'CAPACITY_UTILISATION_ERROR',
-        error: 'Utilisations (UTILISATION) must be a semi-colon delimited list of integers',
+        error: 'Utilisations (UTILISATION) must be a semi-colon delimited list of whole numbers',
         source: this._currentLine.UTILISATION,
         name: this._currentLine.LOCALESTID
       });
@@ -1135,7 +1135,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.CAPACITY_UTILISATION_ERROR,
         errType: 'CAPACITY_UTILISATION_ERROR',
-        error: `All capacities (CAPACITY) must be integers and less than ${MAX_CAP_UTIL}`,
+        error: `All capacities (CAPACITY) must be whole numbers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.CAPACITY,
         name: this._currentLine.LOCALESTID
       });
@@ -1150,7 +1150,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.CAPACITY_UTILISATION_ERROR,
         errType: 'CAPACITY_UTILISATION_ERROR',
-        error: `All utilisations (UTILISATION) must be integers and less than ${MAX_CAP_UTIL}`,
+        error: `All utilisations (UTILISATION) must be whole numbers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.UTILISATION,
         name: this._currentLine.LOCALESTID
       });
@@ -1193,7 +1193,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
-        error: 'Total Permanent and Temporary (TOTALPERMTEMP) must be an integer',
+        error: 'Total Permanent and Temporary (TOTALPERMTEMP) must be an whole number',
         source: this._currentLine.PERMCQC,
         name: this._currentLine.LOCALESTID
       });
@@ -1306,7 +1306,7 @@ class Establishment {
           lineNumber: this._lineNumber,
           errCode: Establishment.ALL_JOBS_ERROR,
           errType: 'ALL_JOBS_ERROR',
-          error: 'All Job Roles (ALLJOBROLES) must be integers',
+          error: 'All Job Roles (ALLJOBROLES) must be whole numbers',
           source: this._currentLine.ALLJOBROLES,
           name: this._currentLine.LOCALESTID
         });
@@ -1385,7 +1385,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.VACANCIES_ERROR,
         errType: 'VACANCIES_ERROR',
-        error: `Vacancies (VACANCIES) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
+        error: `Vacancies (VACANCIES) values must be whole numbers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.VACANCIES}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1396,7 +1396,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.STARTERS_ERROR,
         errType: 'STARTERS_ERROR',
-        error: `Starters (STARTERS) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
+        error: `Starters (STARTERS) values must be whole numbers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.STARTERS}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1407,7 +1407,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.LEAVERS_ERROR,
         errType: 'LEAVERS_ERROR',
-        error: `Leavers (LEAVERS) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
+        error: `Leavers (LEAVERS) values must be whole numbers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.LEAVERS}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1469,7 +1469,7 @@ class Establishment {
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
           errType: 'REASONS_FOR_LEAVING_ERROR',
-          error: `Reasons for Leaving Counts (REASONNOS) values must be integers and ${MIN_COUNT} or more`,
+          error: `Reasons for Leaving Counts (REASONNOS) values must be whole numbers and ${MIN_COUNT} or more`,
           source: `${this._currentLine.REASONNOS}`,
           name: this._currentLine.LOCALESTID
         });
