@@ -581,7 +581,7 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
     _logLevel: 300
   },
 ]);
-      
+
       expect(bulkUpload).to.have.property('crossValidate');
 
       const csvEstablishmentSchemaErrors = [];
@@ -594,7 +594,7 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
           mainJobRoleId: 10,
           otherJobIds: []
         }];
-     
+
       //the real version of this code is in the api Establishment business object and runs a sql query.
       //We just return a 'fake result set'
       const fetchMyEstablishmentsWorkers = sinon.spy(async (establishmentId, establishmentKey) => {
@@ -670,22 +670,22 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
         }];
       });
 
-      //Regular validation has to run first for the establishment to populate the internal properties correctly   
+      //Regular validation has to run first for the establishment to populate the internal properties correctly
       await bulkUpload.validate();
-      
+
       //call the method
       await bulkUpload.crossValidate({
         csvEstablishmentSchemaErrors,
         myWorkers,
         fetchMyEstablishmentsWorkers
       });
-      
+
       //assert the fetchMyEstalishmentsWorkers function was called
       expect(fetchMyEstablishmentsWorkers.callCount).to.equal(1);
-      
+
       //assert a warning was returned
       expect(csvEstablishmentSchemaErrors.length).to.equal(1);
-      
+
       expect(csvEstablishmentSchemaErrors[0]).to.deep.equal({
         "lineNumber": 2,
         "name": "omar3",
