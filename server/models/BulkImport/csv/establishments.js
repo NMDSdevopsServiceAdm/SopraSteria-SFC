@@ -1341,7 +1341,7 @@ class Establishment {
 
     // all counts must have the same number of entries as all job roles
     //  - except starters, leavers and vacancies can be a single value of 999
-    const DONT_KNOW = '999'; // NUST BE A STRING VALUE!!!!!
+    const DONT_KNOW = '999'; // MUST BE A STRING VALUE!!!!!
 
     if (!((vacancies.length === 1 && vacancies[0] === DONT_KNOW) || (vacancies.length === allJobsCount))) {
       localValidationErrors.push({
@@ -1969,6 +1969,12 @@ class Establishment {
       temporaryWorkers: 0
     };
 
+    // ignoreDBWorkers is used as a hashmap of workers that are being modified
+    // as part of this bulk upload process. It allows us to prevent a worker's
+    // details
+    // being counted twice in the totals if is being modified at the same as
+    // the establishment
+    // i.e. ignore the worker record that comes back from the database result set.
     const ignoreDBWorkers = Object.create(null);
 
     myWorkers.forEach(worker => {

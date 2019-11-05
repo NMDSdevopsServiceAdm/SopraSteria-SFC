@@ -10,9 +10,9 @@ const csvQuote = toCsv => {
 };
 
 // input is a string date in format "YYYY-MM-DD"
-const fromDateToCsv = convertThis => {
-  if (convertThis) {
-    const dateParts = String(convertThis).split('-');
+const convertIso8601ToUkDate = dateText => {
+  if (dateText) {
+    const dateParts = String(dateText).split('-');
 
     return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
   }
@@ -531,8 +531,8 @@ class Training {
     columns.push(BUDI.trainingCaterogy(BUDI.FROM_ASC, entity.category.id));
     columns.push(entity.title ? csvQuote(entity.title) : '');
 
-    columns.push(fromDateToCsv(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
-    columns.push(fromDateToCsv(entity.expires)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
+    columns.push(convertIso8601ToUkDate(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
+    columns.push(convertIso8601ToUkDate(entity.expires)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
 
     let accredited = '';
     switch (entity.accredited) {
