@@ -30,7 +30,8 @@ provider:
       Resource:
         Fn::Join:
           - ""
-          - - arn:aws:s3:::cqcchanges
+          - - arn:aws:s3:::*
+
     - Effect: "Allow"
       Action:
         - "sqs:sendMessage"
@@ -82,6 +83,7 @@ functions:
     timeout: 900
     events:
       - schedule: rate(24 hours)
+
   update:
     handler: update.handler
     name: cqc-update
