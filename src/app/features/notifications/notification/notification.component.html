@@ -74,13 +74,13 @@
             <td class="govuk-table__cell">
               {{ notification.recieverName }}
             </td>
-            <td class="govuk-table__cell">No access to data, linked only</td>
+            <td class="govuk-table__cell">{{ notification.typeContent.permissionRequest }}</td>
           </tr>
           <tr class="govuk-table__row govuk-error-table__row--no-border" *ngIf="notification">
             <td class="govuk-table__cell">
               {{ notification.typeContent.requestorName }}
             </td>
-            <td class="govuk-table__cell">{{ notification.typeContent.permissionRequest }}</td>
+            <td class="govuk-table__cell">Workplace and staff</td>
           </tr>
         </tbody>
       </table>
