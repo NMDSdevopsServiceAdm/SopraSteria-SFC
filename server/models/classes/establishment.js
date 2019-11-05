@@ -39,6 +39,9 @@ const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 const ServiceCache = require('../cache/singletons/services').ServiceCache;
 const CapacitiesCache = require('../cache/singletons/capacities').CapacitiesCache;
 
+// Bulk upload helpers
+const db = rfr('server/utils/datastore');
+
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
 class Establishment extends EntityValidator {
@@ -1000,6 +1003,7 @@ class Establishment extends EntityValidator {
           throw new EstablishmentExceptions.EstablishmentRestoreException(null, this.uid, null, err, null);
         }
   }
+
   // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
   // returns true on success; false if no User
   // Can throw EstablishmentRestoreException exception.
@@ -1985,6 +1989,33 @@ class Establishment extends EntityValidator {
         establishments: mappedResults
       } : undefined
     };
+  }
+
+  //used by bulk upload to fetch a list of the worker
+  static async fetchMyEstablishmentsWorkers (establishmentId, establishmentKey) {
+    return await db.query(
+      `SELECT
+        "Establishment"."LocalIdentifierValue" "establishmentKey",
+        "Worker"."LocalIdentifierValue" "uniqueWorker",
+        "Worker"."ContractValue" "contractTypeId",
+        "Worker"."MainJobFKValue" "mainJobRoleId",
+        array_to_string(array_agg("WorkerJobs"."JobFK"), :sep) "otherJobIds"
+      FROM cqc."Establishment"
+      JOIN cqc."Worker" on "Worker"."EstablishmentFK" = "Establishment"."EstablishmentID"
+      LEFT JOIN cqc."WorkerJobs" on "WorkerJobs"."WorkerFK" = "Worker"."ID"
+      WHERE "Worker"."LocalIdentifierValue" IS NOT NULL AND
+      "Establishment"."LocalIdentifierValue" = :establishmentKey
+      AND "Establishment"."EstablishmentID" = :establishmentId
+      GROUP BY "establishmentKey", "uniqueWorker", "contractTypeId", "mainJobRoleId"`,
+      {
+        replacements: {
+          establishmentKey,
+          establishmentId,
+          sep: ';'
+        },
+        type: db.QueryTypes.SELECT
+      }
+    );
   }
 
   // a helper function that updates the establishment and adds the necessary audit events

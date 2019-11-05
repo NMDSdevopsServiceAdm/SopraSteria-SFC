@@ -194,7 +194,6 @@ describe('Bulk upload', () => {
                 .put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/uploaded`)
                 .set('Authorization', loginAuth)
                 .expect(200);
-            console.log(uploaded.body);
             expect(Array.isArray(uploaded.body)).to.equal(true);
             expect(uploaded.body[0].filename).to.equal('org-test.csv');
             expect(uploaded.body[0].uploaded).to.equal(new Date(uploaded.body[0].uploaded).toISOString());
@@ -298,6 +297,57 @@ describe('Bulk upload', () => {
         it('should fail if trying to validate somone elses ', async() => {
             await apiEndpoint
                 .put(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/validate`)
+                .set('Authorization', loginAuth)
+                .expect(403);
+        });
+    });
+    describe('/api/establishment/:establishmentuid/bulkupload/report/establishments', () => {
+        it('should return an an empty object', async() => {
+            const download = await apiEndpoint
+                .get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/report/establishments`)
+                .set('Authorization', loginAuth)
+                .expect(200);
+        });
+        it('should fail if trying to validate files with no authorization token passed ', async() => {
+            await apiEndpoint.put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/report/establishments`).expect(401);
+        });
+        it('should fail if trying to validate somone elses ', async() => {
+            await apiEndpoint
+                .put(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/report/establishments`)
+                .set('Authorization', loginAuth)
+                .expect(403);
+        });
+    });
+    describe('/api/establishment/:establishmentuid/bulkupload/report/workers', () => {
+        it('should return an an empty object', async() => {
+            const download = await apiEndpoint
+                .get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/report/workers`)
+                .set('Authorization', loginAuth)
+                .expect(200);
+        });
+        it('should fail if trying to validate files with no authorization token passed ', async() => {
+            await apiEndpoint.put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/report/workers`).expect(401);
+        });
+        it('should fail if trying to validate somone elses ', async() => {
+            await apiEndpoint
+                .put(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/report/workers`)
+                .set('Authorization', loginAuth)
+                .expect(403);
+        });
+    });
+    describe('/api/establishment/:establishmentuid/bulkupload/report/training', () => {
+        it('should return an an empty object', async() => {
+            const download = await apiEndpoint
+                .get(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/report/training`)
+                .set('Authorization', loginAuth)
+                .expect(200);
+        });
+        it('should fail if trying to validate files with no authorization token passed ', async() => {
+            await apiEndpoint.put(`/establishment/${encodeURIComponent(establishmentUid)}/bulkupload/report/training`).expect(401);
+        });
+        it('should fail if trying to validate somone elses ', async() => {
+            await apiEndpoint
+                .put(`/establishment/${encodeURIComponent(establishmentUid) + 1}/bulkupload/report/training`)
                 .set('Authorization', loginAuth)
                 .expect(403);
         });
