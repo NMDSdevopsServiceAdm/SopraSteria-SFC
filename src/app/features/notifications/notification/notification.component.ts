@@ -58,8 +58,10 @@ export class NotificationComponent implements OnInit, OnDestroy {
         ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
         approvalStatus: 'APPROVED',
         approvalReason: '',
+        rejectionReason: null,
         type: OWNERSHIP_APPROVED,
         exsistingNotificationUid: this.notificationUid,
+        requestedOwnership: this.notification.typeContent.permissionRequest,
       };
       this.subscriptions.add(
         this.notificationsService
