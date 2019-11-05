@@ -20,11 +20,11 @@ const sqs = new AWS.SQS({
 async function getChangedIds(startTimestamp, endTimestamp) {
   let changes = [];
   let nextPage='/changes/location?page=1&perPage=1000&startTimestamp=' + startTimestamp + '&endTimestamp=' + endTimestamp;
+  console.log('Getting the changes');
   do {
     let changeUrl = url + nextPage;
     let response = await axios.get(changeUrl);
     nextPage = response.data.nextPageUri;
-
     for (let i=0, len=response.data.changes.length; i<len; i++) {
       changes.push({
         "locationId": response.data.changes[i],
@@ -32,6 +32,7 @@ async function getChangedIds(startTimestamp, endTimestamp) {
       });
     }
   } while (nextPage != null);
+  console.log('There are ' + changes.length + ' changes');
   return changes;
 }
 
@@ -42,35 +43,45 @@ async function uploadToS3(locationIds, startdate, enddate) {
     "startDate": startdate,
     "endDate": enddate
   };
-
-  await s3.putObject({
-    Bucket: appConfig.get('aws.bucketname').toString(),
-    Key: `cqcChanges-${startdate}`,
-    Body: JSON.stringify(locations),
-    ContentType: 'application/json; charset=utf-8'
-  }).promise();
+  console.log('Putting the JSON onto S3');
+  try {
+    await s3.putObject({
+      Bucket: appConfig.get('aws.bucketname').toString(),
+      Key: `cqcChanges-${startdate}`,
+      Body: JSON.stringify(locations),
+      ContentType: 'application/json; charset=utf-8'
+    }).promise();
+  } catch(error) {
+    console.error(error);
+  }
 }
 
 // Send each of the location ID's to SQS for them to run a SQS
 async function sendMessages(locationIds, startdate, enddate) {
+  console.log('Adding messages to SQS');
   await locationIds.forEach(async (locationId) => {
     const location = {
       ...locationId,
       "startDate": startdate,
       "endDate": enddate
     };
-    await sqs.sendMessage({
-      MessageBody: JSON.stringify(location),
-      QueueUrl: appConfig.get('aws.sqsqueue').toString(),
-    }).promise();
+    try {
+      await sqs.sendMessage({
+        MessageBody: JSON.stringify(location),
+        QueueUrl: appConfig.get('aws.sqsqueue').toString(),
+      }).promise();
+    } catch(error) {
+      console.error(error);
+    }
   });
 }
 
 module.exports.handler =  async (event, context) => {
   const endDate=new Date().toISOString().split('.')[0]+"Z";
   let startDate = null;
+  console.log('Looking for latest run');
   try {
-    const log = await models.cqclog.findAll({
+    const log = await models.LogMock.findAll({
       limit: 1,
       where: {
         success:true
@@ -80,6 +91,7 @@ module.exports.handler =  async (event, context) => {
     if (log) {
       startDate = log[0].dataValues.lastUpdatedAt;
     }
+    console.log('Was last ran on ' + startDate);
     const locations = await getChangedIds(startDate, endDate);
     await uploadToS3(locations, startDate, endDate);
     await sendMessages(locations, startDate, endDate);

@@ -20,7 +20,25 @@ service: cqc-location-call # NOTE: update this with your service name
 provider:
   name: aws
   runtime: nodejs10.x
-
+  memorySize: 512
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+        - "s3:GetObject"
+        - "s3:DeleteObject"
+      Resource:
+        Fn::Join:
+          - ""
+          - - arn:aws:s3:::cqcchanges
+    - Effect: "Allow"
+      Action:
+        - "sqs:sendMessage"
+        - "sqs:deleteMessage"
+      Resource:
+        Fn::Join:
+          - ""
+          - - arn:aws:sqs:eu-west-1:624216394565:cqctest
 # you can overwrite defaults here
 #  stage: dev
   region: eu-west-1
@@ -63,9 +81,6 @@ functions:
     name: cqc-changes
     timeout: 900
     events:
-      - http:
-        path: changes
-        method: get
       - schedule: rate(24 hours)
   update:
     handler: update.handler
@@ -110,29 +125,20 @@ functions:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-#resources:
+# resources:
 #  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
+#   cqcchanges:
+#     Type: AWS::S3::Bucket
+#     Properties:
+#       BucketName: cqcchanges
+#   cqctest:
+#     Type: AWS::SQS::Queue
+#     Properties:
+#       QueueName: cqctest
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
-resources:
-  Resources:
-    cqctest:
-      Type: AWS::SQS::Queue
-      Properties:
-        QueueName: cqctest
 
 plugins:
   - serverless-offline
-
-custom:
-  serverless-offline-sqs:
-    endpoint: http://0.0.0.0:9324
-    region: ${self:provider.region}
-    accessKeyId: root
-    secretAccessKey: root

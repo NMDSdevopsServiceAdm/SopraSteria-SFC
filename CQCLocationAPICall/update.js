@@ -63,10 +63,10 @@ async function updateS3(location, status) {
     });
   }
   if (await updateComplete(locationJSON)) {
-    await s3.deleteObject({
-      Bucket: appConfig.get('aws.bucketname').toString(),
-      Key: `cqcChanges-${location.startDate}`
-    }).promise();
+    // await s3.deleteObject({
+    //   Bucket: appConfig.get('aws.bucketname').toString(),
+    //   Key: `cqcChanges-${location.startDate}`
+    // }).promise();
   } else {
     await s3.putObject({
       Bucket: appConfig.get('aws.bucketname').toString(),

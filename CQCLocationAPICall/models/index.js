@@ -11,6 +11,18 @@ const SequelizeMock = require('sequelize-mock');
 const dbMock = new SequelizeMock();
 const db = {};
 
+db.LogMock = dbMock.define('cqclog', {
+  'success': true,
+  'message': 'Call Successful',
+  'createdAt': '2019-10-31 05:12:20.736+00',
+  'lastUpdatedAt': '2019-10-30T18:20:10Z'
+}, {
+  instanceMethods: {
+      myTestFunc: function () {
+          return 'Test User';
+      }
+  }
+});
 
 class DBEmitter extends EventEmitter {
   constructor() {
