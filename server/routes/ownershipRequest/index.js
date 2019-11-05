@@ -21,6 +21,7 @@ router.route('/:id').put(async (req, res) => {
       rejectionReason: req.body.rejectionReason,
       type: req.body.type,
     };
+
     if (!id) {
       console.error('Missing id or uid');
       return res.status(400).send();
@@ -53,6 +54,7 @@ router.route('/:id').put(async (req, res) => {
         if (!updateChangeRequest) {
           return res.status(400).send('Invalid request');
         }
+
         params.exsistingNotificationUid = req.body.exsistingNotificationUid;
         let updatedNotificationResp = await notifications.updateNotification(params);
         if (updatedNotificationResp) {
