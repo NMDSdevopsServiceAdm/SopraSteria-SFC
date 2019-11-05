@@ -93,6 +93,7 @@ export class SetDataPermissionDialogComponent extends DialogComponent implements
       this.establishmentService.setDataPermission(this.workplace.uid, setPermission).subscribe(
         data => {
           if (data) {
+            this.workplace.dataPermissions = data.dataPermissions;
             this.close(true);
           }
         },
