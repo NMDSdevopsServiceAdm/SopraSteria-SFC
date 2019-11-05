@@ -137,7 +137,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         this.router.navigate(['/dashboard']);
         this.alertService.addAlert({
           type: 'success',
-          message: `Data permissions for ${this.workplace.name} have been set.`,
+          message: `Data permissions for ${this.workplace.parentName} have been set.`,
         });
       }
     });

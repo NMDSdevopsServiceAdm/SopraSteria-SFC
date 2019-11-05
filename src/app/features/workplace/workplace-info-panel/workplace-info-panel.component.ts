@@ -118,8 +118,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     const dialog = this.dialogService.open(SetDataPermissionDialogComponent, this.workplace);
     dialog.afterClosed.subscribe(setPermissionConfirmed => {
       if (setPermissionConfirmed) {
-        this.changeOwnershipAndPermissions();
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/workplace/view-all-workplaces']);
         this.alertService.addAlert({
           type: 'success',
           message: `Data permissions for ${this.workplace.name} have been set.`,
