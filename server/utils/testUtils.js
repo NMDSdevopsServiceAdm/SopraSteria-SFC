@@ -7,13 +7,13 @@ const hasProp = (obj, prop) =>
   Object.prototype.hasOwnProperty.bind(obj)(prop);
 
 const maybeCoverage = () =>
-  Object.keys(require.cache).some(path => /node_modules\/nyc/.test(path));
+  Object.keys(require.cache).some(path => /node_modules[\/\\]nyc/.test(path));
 
 // Supply a set of mock objects to a node js module in a sandbox.
 // This means the module's functionality can't leak out onto the
 //   filesystem or network whilst being tested.
 module.exports.sandBox = (fileName, params, ...args) => {
-  const resolvedFileName = path.resolve(__dirname, '../../', fileName);
+  const resolvedFileName = path.resolve(__dirname, '..', '..', fileName);
 
   // Voodoo magic to support nyc.
   if (maybeCoverage()) {
