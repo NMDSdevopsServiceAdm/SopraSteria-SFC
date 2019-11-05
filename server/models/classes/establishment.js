@@ -2231,6 +2231,46 @@ class Establishment extends EntityValidator {
       return false;
     }
   }
+
+  //method to fetch all establishment details by establishment id
+  static async fetchAndUpdateEstablishmentDetails(id, data) {
+    if (!id) {
+      throw new EstablishmentExceptions.EstablishmentRestoreException(null,
+        null,
+        null,
+        'User::restore failed: Missing id or uid',
+        null,
+        'Unexpected Error');
+      }
+        try {
+          // restore establishment based on id as an integer (primary key or uid)
+          let fetchQuery = {
+            where: {
+              id: id
+            }
+          };
+
+          if (!Number.isInteger(id)) {
+            fetchQuery = {
+              where: {
+                uid: id,
+                archived: false
+              }
+            };
+          }
+          let establishment = await models.establishment.findOne(fetchQuery)
+          if (establishment) {
+            let responseToReturn = await establishment.update(data)
+            .then(function (establishmentDetails) {
+              return establishmentDetails;
+            })
+            return responseToReturn;
+          }
+        }catch (err) {
+          console.error('Establishment::fetch error: ', err);
+          return false;
+        }
+  }
 }
 
 module.exports.Establishment = Establishment;

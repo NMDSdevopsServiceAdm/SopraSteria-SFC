@@ -24,6 +24,7 @@ const LocalIdentifier = require('./localIdentifier');
 const LocalIdentifiers = require('./localIdentifiers');
 const Permissions = require('./permissions');
 const OwnershipChange = require('./ownershipChange');
+const DataPermissions = require('./dataPermissions');
 
 const Approve = require('./approve');
 const Reject = require('./reject');
@@ -76,6 +77,7 @@ router.use('/:id/localIdentifier', LocalIdentifier);
 router.use('/:id/localIdentifiers', LocalIdentifiers);
 router.use('/:id/permissions', Permissions);
 router.use('/:id/ownershipChange', OwnershipChange);
+router.use('/:id/dataPermissions', DataPermissions);
 
 router.route('/:id').post(async (req, res) => {
   if (!req.body.isRegulated) {

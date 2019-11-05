@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../models');
 const uuid = require('uuid');
+const Establishment = require('../../models/classes/establishment');
 const ownership = rfr('server/data/ownership');
 const notifications = rfr('server/data/notifications');
 const Authorization = require('../../utils/security/isAuthenticated');
@@ -55,40 +56,59 @@ router.route('/:id').put(async (req, res) => {
           return res.status(400).send('Invalid request');
         }
 
-        params.exsistingNotificationUid = req.body.exsistingNotificationUid;
-        let updatedNotificationResp = await notifications.updateNotification(params);
-        if (updatedNotificationResp) {
-          let resp = await ownership.getUpdatedOwnershipRequest(params);
-          if (resp) {
-            // requester useruid to send notification in case his request for swap ownership gets approved or rejected
-            params.recipientUserUid = resp[0].createdByUserUID;
-            params.notificationUid = uuid.v4();
-            params.type = 'OWNERCHANGE';
-            if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
-              console.error('Invalid notification UUID');
-              return res.status(400).send();
-            }
-            //inserting new notification for requester to let him know his request is Approved or Denied
-            let addNotificationResp = await notifications.insertNewNotification(params);
-            if (!addNotificationResp) {
-              return res.status(400).send('Invalid request');
-            } else {
-              //clearing ownership requested column
-              let clearOwnershipParam = {
-                timeValue :null,
-                subEstablishmentId: params.subEstablishmentId
-              };
-              let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
-              if (!saveDataOwnershipRequested) {
-                return res.status(400).send({
-                  message: 'Invalid request',
-                });
+        //update establishment dataOwner and dataPermissions property for ownership transfer
+
+        //updating requester establishment details
+        let objToUpdate = {
+          dataOwner: 'Parent',
+          dataPermissions: "Workplace and Staff"
+        }
+        let requesterUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(checkOwnerChangeRequest[0].subEstablishmentID, objToUpdate);
+        if(requesterUpdate){
+          //updating reciever establishment details
+          objToUpdate = {
+            dataOwner: 'Workplace',
+            dataPermissions: checkOwnerChangeRequest[0].permissionRequest
+          };
+
+          let recieverUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(req.establishment.id, objToUpdate);
+          if(recieverUpdate){
+            params.exsistingNotificationUid = req.body.exsistingNotificationUid;
+            let updatedNotificationResp = await notifications.updateNotification(params);
+            if (updatedNotificationResp) {
+              let resp = await ownership.getUpdatedOwnershipRequest(params);
+              if (resp) {
+                // requester useruid to send notification in case his request for swap ownership gets approved or rejected
+                params.recipientUserUid = resp[0].createdByUserUID;
+                params.notificationUid = uuid.v4();
+                params.type = 'OWNERCHANGE';
+                if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
+                  console.error('Invalid notification UUID');
+                  return res.status(400).send();
+                }
+                //inserting new notification for requester to let him know his request is Approved or Denied
+                let addNotificationResp = await notifications.insertNewNotification(params);
+                if (!addNotificationResp) {
+                  return res.status(400).send('Invalid request');
+                } else {
+                  //clearing ownership requested column
+                  let clearOwnershipParam = {
+                    timeValue :null,
+                    subEstablishmentId: params.subEstablishmentId
+                  };
+                  let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
+                  if (!saveDataOwnershipRequested) {
+                    return res.status(400).send({
+                      message: 'Invalid request',
+                    });
+                  }
+                }
               }
+              return res.status(201).send(resp[0]);
+            } else {
+              return res.status(400).send('Invalid request');
             }
           }
-          return res.status(201).send(resp[0]);
-        } else {
-          return res.status(400).send('Invalid request');
         }
       }
     }

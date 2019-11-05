@@ -236,6 +236,6 @@ export class EstablishmentService {
   }
 
   public setDataPermission(establishmentId, data: setPermission): Observable<Establishment> {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/setDataPermission`, data);
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/dataPermissions`, data);
   }
 }

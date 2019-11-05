@@ -58,7 +58,7 @@ FROM cqc."OwnerChangeRequest"
 WHERE "subEstablishmentID" = :subEstId ORDER BY "created" DESC LIMIT :limit;
 `;
 const checkOwnershipRequestIdQuery = `
-SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus"
+SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus", "permissionRequest"
 FROM cqc."OwnerChangeRequest"
 WHERE "ownerChangeRequestUID" = :ownerChangeRequestUID ORDER BY "created" DESC LIMIT :limit;
 `;
