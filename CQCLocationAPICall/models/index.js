@@ -16,12 +16,8 @@ db.LogMock = dbMock.define('cqclog', {
   'message': 'Call Successful',
   'createdAt': '2019-10-31 05:12:20.736+00',
   'lastUpdatedAt': '2019-10-30T18:20:10Z'
-}, {
-  instanceMethods: {
-      myTestFunc: function () {
-          return 'Test User';
-      }
-  }
+});
+db.LocationMock = dbMock.define('location', {
 });
 
 class DBEmitter extends EventEmitter {

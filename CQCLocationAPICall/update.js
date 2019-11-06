@@ -30,13 +30,13 @@ async function updateComplete(locations) {
   });
   if (completionCount === locations.changes.length) {
     if (failed) {
-      await models.cqclog.create({
+      await models.logMock.create({
         success:false,
         message: e.message
       });
       return false;
     } else {
-      await models.cqclog.create({
+      await models.logMock.create({
         success: true,
         message: "Call Successful",
         lastUpdatedAt: endDate
@@ -86,7 +86,7 @@ async function deleteSQSMessage(ReceiptHandle) {
 
 module.exports.handler =  async (event, context) => {
   console.log(event);
-  const location = JSON.parse(event.Body);
+  const location = JSON.parse(event.body);
   try {
     const individualLocation = await axios.get(url+'/locations/'+ location.locationId);
     if (!individualLocation.data.deregistrationDate) {

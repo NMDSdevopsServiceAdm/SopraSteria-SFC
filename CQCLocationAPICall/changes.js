@@ -66,10 +66,12 @@ async function sendMessages(locationIds, startdate, enddate) {
       "endDate": enddate
     };
     try {
-      await sqs.sendMessage({
+      console.log('Pushing new item onto ' + appConfig.get('aws.sqsqueue').toString());
+      const sqsReq = await sqs.sendMessage({
         MessageBody: JSON.stringify(location),
         QueueUrl: appConfig.get('aws.sqsqueue').toString(),
       }).promise();
+      console.log(sqsReq);
     } catch(error) {
       console.error(error);
     }
