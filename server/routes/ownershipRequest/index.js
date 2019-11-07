@@ -59,7 +59,7 @@ router.route('/:id').put(async (req, res) => {
 
         //updating requester establishment details
         let objToUpdate = {
-          dataOwner: 'Parent',
+          dataOwner: 'Workplace',
           dataPermissions: "Workplace and Staff"
         }
         let requesterUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(checkOwnerChangeRequest[0].subEstablishmentID, objToUpdate);
@@ -70,7 +70,7 @@ router.route('/:id').put(async (req, res) => {
             dataPermissions: checkOwnerChangeRequest[0].permissionRequest
           };
 
-          let recieverUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(req.establishment.id, objToUpdate);
+          let recieverUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(req.establishment.id, objToUpdate, 'owershipTransfer');
           if(recieverUpdate){
             params.exsistingNotificationUid = req.body.exsistingNotificationUid;
             let updateNotificationParam = {
