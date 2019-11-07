@@ -1,280 +1,226 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac">
-    <dimension ref="A1:X10" />
-    <sheetViews>
-        <sheetView showGridLines="0" workbookViewId="0">
-            <pane ySplit="3" topLeftCell="A4" activePane="bottomLeft" state="frozenSplit" />
-            <selection pane="bottomLeft" activeCell="B7" sqref="B7" />
-        </sheetView>
-    </sheetViews>
-    <sheetFormatPr defaultRowHeight="12.5" x14ac:dyDescent="0.25" />
-    <cols>
-        <col min="1" max="1" width="1.26953125" customWidth="1" />
-        <col min="2" max="2" width="13.453125" customWidth="1" />
-        <col min="3" max="3" width="39.1796875" customWidth="1" />
-        <col min="4" max="6" width="13.453125" customWidth="1" />
-        <col min="7" max="7" width="35.1796875" customWidth="1" />
-        <col min="8" max="8" width="16" customWidth="1" />
-        <col min="9" max="9" width="32.26953125" customWidth="1" />
-        <col min="10" max="10" width="17.26953125" customWidth="1" />
-        <col min="11" max="13" width="13.453125" customWidth="1" />
-        <col min="14" max="14" width="36.54296875" customWidth="1" />
-        <col min="15" max="17" width="13.453125" customWidth="1" />
-        <col min="18" max="18" width="26.81640625" customWidth="1" />
-        <col min="19" max="19" width="13.453125" customWidth="1" />
-        <col min="20" max="20" width="26.81640625" customWidth="1" />
-        <col min="21" max="21" width="12.453125" customWidth="1" />
-        <col min="22" max="22" width="6.81640625" customWidth="1" />
-        <col min="23" max="23" width="0" hidden="1" customWidth="1" />
-        <col min="24" max="24" width="56.1796875" customWidth="1" />
-        <col min="25" max="25" width="1.26953125" customWidth="1" />
-    </cols>
-    <sheetData>
-        <row r="1" spans="1:24" ht="1.4" customHeight="1" x14ac:dyDescent="0.25" />
-        <row r="2" spans="1:24" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
-            <c r="A2" s="47" t="s">
-                <v>2</v>
-            </c>
-            <c r="B2" s="48" />
-            <c r="C2" s="48" />
-            <c r="D2" s="48" />
-            <c r="E2" s="48" />
-            <c r="F2" s="48" />
-            <c r="G2" s="48" />
-            <c r="H2" s="48" />
-            <c r="I2" s="48" />
-            <c r="J2" s="48" />
-            <c r="K2" s="48" />
-            <c r="L2" s="48" />
-            <c r="M2" s="48" />
-            <c r="N2" s="48" />
-            <c r="O2" s="48" />
-            <c r="P2" s="48" />
-            <c r="Q2" s="48" />
-            <c r="R2" s="48" />
-            <c r="S2" s="48" />
-            <c r="T2" s="48" />
-            <c r="U2" s="48" />
-            <c r="V2" s="48" />
-            <c r="W2" s="48" />
-            <c r="X2" s="49" />
-        </row>
-        <row r="3" spans="1:24" ht="1.5" customHeight="1" x14ac:dyDescent="0.25" />
-        <row r="4" spans="1:24" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
-            <c r="B4" s="50" t="s">
-                <v>80</v>
-            </c>
-            <c r="C4" s="51" />
-            <c r="D4" s="51" />
-            <c r="E4" s="51" />
-            <c r="F4" s="51" />
-            <c r="G4" s="51" />
-            <c r="H4" s="51" />
-            <c r="I4" s="51" />
-            <c r="J4" s="51" />
-            <c r="K4" s="51" />
-            <!-- <c r="L4" s="51" />
-            <c r="M4" s="51" /> -->
-            <c r="L4" s="51" />
-            <c r="M4" s="51" />
-            <c r="N4" s="51" />
-            <c r="O4" s="51" />
-            <!-- <c r="R4" s="51" /> -->
-            <c r="P4" s="51" />
-            <c r="Q4" s="51" />
-            <!-- <c r="U4" s="52" /> -->
-        </row>
-        <row r="5" spans="1:24" ht="5.9" customHeight="1" x14ac:dyDescent="0.25" />
-        <row r="6" spans="1:24" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
-            <c r="B6" s="53" t="s">
-                <v>0</v>
-            </c>
-            <c r="C6" s="54" />
-            <c r="D6" s="54" />
-            <c r="E6" s="54" />
-            <c r="F6" s="54" />
-            <c r="G6" s="54" />
-            <c r="H6" s="54" />
-            <c r="I6" s="54" />
-            <c r="J6" s="54" />
-            <c r="K6" s="54" />
-            <c r="L6" s="54" />
-            <c r="M6" s="54" />
-            <c r="N6" s="54" />
-            <c r="O6" s="54" />
-            <c r="P6" s="54" />
-            <c r="Q6" s="54" />
-            <c r="R6" s="54" />
-            <c r="S6" s="54" />
-            <c r="T6" s="54" />
-            <c r="U6" s="54" />
-        </row>
-        <row r="7" spans="1:24" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
-            <c r="B7" s="55" t="s">
-                <v>4</v>
-            </c>
-            <c r="C7" s="54" />
-            <c r="D7" s="54" />
-            <c r="E7" s="54" />
-            <c r="F7" s="54" />
-            <c r="G7" s="54" />
-            <c r="H7" s="54" />
-            <c r="I7" s="54" />
-            <c r="J7" s="54" />
-            <c r="K7" s="54" />
-            <c r="L7" s="54" />
-            <c r="M7" s="54" />
-            <c r="N7" s="54" />
-            <c r="O7" s="54" />
-            <c r="P7" s="54" />
-            <c r="Q7" s="54" />
-            <c r="R7" s="54" />
-            <c r="S7" s="54" />
-            <c r="T7" s="54" />
-            <c r="U7" s="54" />
-        </row>
-        <row r="8" spans="1:24" ht="11.9" customHeight="1" x14ac:dyDescent="0.25" />
-        <row r="9" spans="1:24" ht="25" x14ac:dyDescent="0.25">
-            <c r="B9" s="36" t="s">
-                <v>81</v>
-            </c>
-            <c r="C9" s="37" t="s">
-                <v>9</v>
-            </c>
-            <c r="D9" s="37" t="s">
-                <v>82</v>
-            </c>
-            <c r="E9" s="37" t="s">
-                <v>83</v>
-            </c>
-            <c r="F9" s="37" t="s">
-                <v>84</v>
-            </c>
-            <c r="G9" s="37" t="s">
-                <v>85</v>
-            </c>
-            <c r="H9" s="37" t="s">
-                <v>86</v>
-            </c>
-            <c r="I9" s="37" t="s">
-                <v>87</v>
-            </c>
-            <c r="J9" s="37" t="s">
-                <v>88</v>
-            </c>
-            <c r="K9" s="37" t="s">
-                <v>89</v>
-            </c>
-            <!-- <c r="L9" s="37" t="s">
-                <v>90</v>
-            </c>
-            <c r="M9" s="37" t="s">
-                <v>91</v>
-            </c> -->
-            <c r="L9" s="37" t="s">
-                <v>92</v>
-            </c>
-            <c r="M9" s="37" t="s">
-                <v>93</v>
-            </c>
-            <c r="N9" s="37" t="s">
-                <v>94</v>
-            </c>
-            <c r="O9" s="37" t="s">
-                <v>95</v>
-            </c>
-            <!-- <c r="R9" s="37" t="s">
-                <v>96</v>
-            </c> -->
-            <c r="P9" s="37" t="s">
-                <v>97</v>
-            </c>
-            <c r="Q9" s="37" t="s">
-                <v>98</v>
-            </c>
-            <!-- <c r="U9" s="64" t="s">
-                <v>99</v>
-            </c>
-            <c r="V9" s="59" /> -->
-        </row>
-        <row r="10" spans="1:24" x14ac:dyDescent="0.25">
-            <c r="B10" s="38" t="s">
-                <v>100</v>
-            </c>
-            <c r="C10" s="15" t="s">
-                <v>24</v>
-            </c>
-            <c r="D10" s="15" t="s">
-                <v>101</v>
-            </c>
-            <c r="E10" s="15" t="s">
-                <v>102</v>
-            </c>
-            <c r="F10" s="15" t="s">
-                <v>103</v>
-            </c>
-            <c r="G10" s="15" t="s">
-                <v>104</v>
-            </c>
-            <c r="H10" s="15" t="s">
-                <v>105</v>
-            </c>
-            <c r="I10" s="15" t="s">
-                <v>106</v>
-            </c>
-            <c r="J10" s="15" t="s">
-                <v>107</v>
-            </c>
-            <c r="K10" s="12" t="s">
-                <v>108</v>
-            </c>
-            <!-- <c r="L10" s="12" t="s">
-                <v>109</v>
-            </c> -->
-            <!-- <c r="M10" s="15" t="s">
-                <v>110</v>
-            </c> -->
-            <c r="L10" s="39" t="s">
-                <v>22</v>
-            </c>
-            <c r="M10" s="12" t="s">
-                <v>111</v>
-            </c>
-            <c r="N10" s="15" t="s">
-                <v>112</v>
-            </c>
-            <c r="O10" s="12">
-                <v>10</v>
-            </c>
-            <!-- <c r="R10" s="15" t="s">
-                <v>113</v>
-            </c> -->
-            <c r="P10" s="15" t="s">
-                <v>114</v>
-            </c>
-            <c r="Q10" s="15" t="s">
-                <v>115</v>
-            </c>
-            <!-- <c r="U10" s="60" t="s">
-                <v>116</v>
-            </c>
-            <c r="V10" s="61" /> -->
-        </row>
-    </sheetData>
-    <mergeCells count="17">
-        <mergeCell ref="A2:X2" />
-        <mergeCell ref="B4:U4" />
-        <mergeCell ref="B6:U6" />
-        <mergeCell ref="B7:U7" />
-        <mergeCell ref="U9:V9" />
-    </mergeCells>
-    <phoneticPr fontId="0" type="noConversion" />
-    <hyperlinks>
-        <hyperlink ref="B10" r:id="rId1" />
-    </hyperlinks>
-    <pageMargins left="0.19685039370078741" right="0.19685039370078741" top="0.19685039370078741" bottom="0.63900393700787406" header="0.19685039370078741" footer="0.19685039370078741" />
-    <pageSetup paperSize="9" orientation="landscape" horizontalDpi="0" verticalDpi="0" />
-    <headerFooter alignWithMargins="0">
-        <oddFooter>&amp;L&amp;"Arial"&amp;8&amp;I28/01/2019 09:00:29&amp;I &amp;C&amp;R</oddFooter>
-    </headerFooter>
+  <dimension ref="A1:Q10" />
+  <sheetViews>
+    <sheetView showGridLines="0" topLeftCell="A1" workbookViewId="0">
+      <pane ySplit="3" topLeftCell="A4" activePane="bottomLeft" state="frozenSplit" />
+      <selection pane="bottomLeft" activeCell="B7" sqref="B7" />
+    </sheetView>
+  </sheetViews>
+  <sheetFormatPr defaultRowHeight="12.5" x14ac:dyDescent="0.25" />
+  <cols>
+    <col min="1" max="1" width="1.26953125" customWidth="1" />
+    <col min="2" max="2" width="13.453125" customWidth="1" />
+    <col min="3" max="3" width="39.1796875" customWidth="1" />
+    <col min="4" max="6" width="13.453125" customWidth="1" />
+    <col min="7" max="7" width="35.1796875" customWidth="1" />
+    <col min="8" max="8" width="16" customWidth="1" />
+    <col min="9" max="9" width="32.26953125" customWidth="1" />
+    <col min="10" max="10" width="17.26953125" customWidth="1" />
+    <col min="11" max="13" width="13.453125" customWidth="1" />
+    <col min="14" max="14" width="36.54296875" customWidth="1" />
+    <col min="15" max="17" width="13.453125" customWidth="1" />
+  </cols>
+  <sheetData>
+    <row r="1" spans="1:24" ht="1.4" customHeight="1" x14ac:dyDescent="0.25" />
+    <row r="2" spans="1:24" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
+      <c r="A2" s="47" t="s">
+        <v>2</v>
+      </c>
+      <c r="B2" s="48" />
+      <c r="C2" s="48" />
+      <c r="D2" s="48" />
+      <c r="E2" s="48" />
+      <c r="F2" s="48" />
+      <c r="G2" s="48" />
+      <c r="H2" s="48" />
+      <c r="I2" s="48" />
+      <c r="J2" s="48" />
+      <c r="K2" s="48" />
+      <c r="L2" s="48" />
+      <c r="M2" s="48" />
+      <c r="N2" s="48" />
+      <c r="O2" s="48" />
+      <c r="P2" s="48" />
+      <c r="Q2" s="48" />
+    </row>
+    <row r="3" spans="1:24" ht="1.5" customHeight="1" x14ac:dyDescent="0.25" />
+    <row r="4" spans="1:24" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+      <c r="B4" s="50" t="s">
+        <v>80</v>
+      </c>
+      <c r="C4" s="51" />
+      <c r="D4" s="51" />
+      <c r="E4" s="51" />
+      <c r="F4" s="51" />
+      <c r="G4" s="51" />
+      <c r="H4" s="51" />
+      <c r="I4" s="51" />
+      <c r="J4" s="51" />
+      <c r="K4" s="51" />
+      <c r="L4" s="51" />
+      <c r="M4" s="51" />
+      <c r="N4" s="51" />
+      <c r="O4" s="51" />
+      <c r="P4" s="51" />
+      <c r="Q4" s="51" />
+    </row>
+    <row r="5" spans="1:24" ht="5.9" customHeight="1" x14ac:dyDescent="0.25" />
+    <row r="6" spans="1:24" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+      <c r="B6" s="53" t="s">
+        <v>0</v>
+      </c>
+      <c r="C6" s="54" />
+      <c r="D6" s="54" />
+      <c r="E6" s="54" />
+      <c r="F6" s="54" />
+      <c r="G6" s="54" />
+      <c r="H6" s="54" />
+      <c r="I6" s="54" />
+      <c r="J6" s="54" />
+      <c r="K6" s="54" />
+      <c r="L6" s="54" />
+      <c r="M6" s="54" />
+      <c r="N6" s="54" />
+      <c r="O6" s="54" />
+      <c r="P6" s="54" />
+      <c r="Q6" s="54" />
+    </row>
+    <row r="7" spans="1:24" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+      <c r="B7" s="55" t="s">
+        <v>4</v>
+      </c>
+      <c r="C7" s="54" />
+      <c r="D7" s="54" />
+      <c r="E7" s="54" />
+      <c r="F7" s="54" />
+      <c r="G7" s="54" />
+      <c r="H7" s="54" />
+      <c r="I7" s="54" />
+      <c r="J7" s="54" />
+      <c r="K7" s="54" />
+      <c r="L7" s="54" />
+      <c r="M7" s="54" />
+      <c r="N7" s="54" />
+      <c r="O7" s="54" />
+      <c r="P7" s="54" />
+      <c r="Q7" s="54" />
+    </row>
+    <row r="8" spans="1:24" ht="11.9" customHeight="1" x14ac:dyDescent="0.25" />
+    <row r="9" spans="1:24" ht="25" x14ac:dyDescent="0.25">
+      <c r="B9" s="36" t="s">
+        <v>81</v>
+      </c>
+      <c r="C9" s="37" t="s">
+        <v>9</v>
+      </c>
+      <c r="D9" s="37" t="s">
+        <v>82</v>
+      </c>
+      <c r="E9" s="37" t="s">
+        <v>83</v>
+      </c>
+      <c r="F9" s="37" t="s">
+        <v>84</v>
+      </c>
+      <c r="G9" s="37" t="s">
+        <v>85</v>
+      </c>
+      <c r="H9" s="37" t="s">
+        <v>86</v>
+      </c>
+      <c r="I9" s="37" t="s">
+        <v>87</v>
+      </c>
+      <c r="J9" s="37" t="s">
+        <v>88</v>
+      </c>
+      <c r="K9" s="37" t="s">
+        <v>89</v>
+      </c>
+      <c r="L9" s="37" t="s">
+        <v>90</v>
+      </c>
+      <c r="M9" s="37" t="s">
+        <v>91</v>
+      </c>
+      <c r="N9" s="37" t="s">
+        <v>92</v>
+      </c>
+      <c r="O9" s="37" t="s">
+        <v>93</v>
+      </c>
+      <c r="P9" s="37" t="s">
+        <v>94</v>
+      </c>
+      <c r="Q9" s="37" t="s">
+        <v>95</v>
+      </c>
+    </row>
+    <row r="10" spans="1:24" x14ac:dyDescent="0.25">
+      <c r="B10" s="38" t="s">
+        <v>100</v>
+      </c>
+      <c r="C10" s="15" t="s">
+        <v>24</v>
+      </c>
+      <c r="D10" s="15" t="s">
+        <v>101</v>
+      </c>
+      <c r="E10" s="15" t="s">
+        <v>102</v>
+      </c>
+      <c r="F10" s="15" t="s">
+        <v>103</v>
+      </c>
+      <c r="G10" s="15" t="s">
+        <v>104</v>
+      </c>
+      <c r="H10" s="15" t="s">
+        <v>105</v>
+      </c>
+      <c r="I10" s="15" t="s">
+        <v>106</v>
+      </c>
+      <c r="J10" s="15" t="s">
+        <v>107</v>
+      </c>
+      <c r="K10" s="12" t="s">
+        <v>108</v>
+      </c>
+      <c r="L10" s="12" t="s">
+        <v>109</v>
+      </c>
+      <c r="M10" s="15" t="s">
+        <v>110</v>
+      </c>
+      <c r="N10" s="39" t="s">
+        <v>22</v>
+      </c>
+      <c r="O10" s="12" t="s">
+        <v>111</v>
+      </c>
+      <c r="P10" s="15" t="s">
+        <v>112</v>
+      </c>
+      <c r="Q10" s="12">
+        <v>10</v>
+      </c>
+    </row>
+  </sheetData>
+  <mergeCells count="4">
+    <mergeCell ref="A2:Q2" />
+    <mergeCell ref="B4:Q4" />
+    <mergeCell ref="B6:Q6" />
+    <mergeCell ref="B7:Q7" />
+  </mergeCells>
+  <phoneticPr fontId="0" type="noConversion" />
+  <hyperlinks>
+    <hyperlink ref="B10" r:id="rId1" />
+  </hyperlinks>
+  <pageMargins left="0.19685039370078741" right="0.19685039370078741" top="0.19685039370078741" bottom="0.63900393700787406" header="0.19685039370078741" footer="0.19685039370078741" />
+  <pageSetup paperSize="9" orientation="landscape" horizontalDpi="0" verticalDpi="0" />
+  <headerFooter alignWithMargins="0">
+    <oddFooter>&amp;L&amp;"Arial"&amp;8&amp;I28/01/2019 09:00:29&amp;I &amp;C&amp;R</oddFooter>
+  </headerFooter>
 </worksheet>
