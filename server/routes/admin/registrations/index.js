@@ -13,6 +13,9 @@ router.route('/').get(async (req, res) => {
           isActive: false,
           status: 'PENDING'
       },
+      order: [
+        ['id', 'DESC']
+      ],
       include: [
         {
           model: models.user,
@@ -42,7 +45,7 @@ router.route('/').get(async (req, res) => {
           securityQuestionAnswer: registration.user.SecurityQuestionAnswerValue,
           email: registration.user.EmailValue,
           phone: registration.user.PhoneValue,
-          created: moment(registration.user.created).fromNow(),
+          created: moment(registration.user.created).format('D/M/YYYY h:mma'),
           establishment: {
             name: registration.user.establishment.NameValue,
             isRegulated: registration.user.establishment.IsRegulated,
