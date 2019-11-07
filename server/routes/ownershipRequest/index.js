@@ -70,7 +70,7 @@ router.route('/:id').put(async (req, res) => {
             dataPermissions: checkOwnerChangeRequest[0].permissionRequest
           };
 
-          let recieverUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(req.establishment.id, objToUpdate, 'owershipTransfer');
+          let recieverUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(req.establishment.id, objToUpdate, true);
           if(recieverUpdate){
             params.exsistingNotificationUid = req.body.exsistingNotificationUid;
             let updateNotificationParam = {
