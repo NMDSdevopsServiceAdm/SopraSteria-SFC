@@ -10,7 +10,7 @@ SELECT
   "NameValue" AS "SubsidiaryName",
   "EmployerTypeValue",
   "EmployerTypeSavedAt",
-  "CurrentWdfEligibiity" AS "CurrentWdfEligibilityStatus",
+  "CurrentWdfEligibility" AS "CurrentWdfEligibilityStatus",
   to_char("EstablishmentWdfEligibility", :timeFormat) AS "DateEligibilityAchieved",
   MainService.name AS "MainService",
   "MainServiceFKValue",
@@ -135,10 +135,6 @@ LEFT JOIN
   cqc.services as MainService
 ON
   "Establishment"."MainServiceFKValue" = MainService.id
-LEFT JOIN
-  cqc."EstablishmentMainServicesWithCapacitiesVW"
-ON
-  "EstablishmentMainServicesWithCapacitiesVW"."EstablishmentID" = "Establishment"."EstablishmentID"
 WHERE
   ("Establishment"."EstablishmentID" = :establishmentId OR "Establishment"."ParentID" = :establishmentId) AND
   "Archived" = :falseFlag
