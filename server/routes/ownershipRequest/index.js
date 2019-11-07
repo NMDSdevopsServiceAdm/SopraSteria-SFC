@@ -1,7 +1,6 @@
 // default route for accepting/rejecting change ownership request
 const express = require('express');
 const router = express.Router();
-const models = require('../../models');
 const uuid = require('uuid');
 const Establishment = require('../../models/classes/establishment');
 const ownership = rfr('server/data/ownership');
@@ -74,7 +73,12 @@ router.route('/:id').put(async (req, res) => {
           let recieverUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(req.establishment.id, objToUpdate);
           if(recieverUpdate){
             params.exsistingNotificationUid = req.body.exsistingNotificationUid;
-            let updatedNotificationResp = await notifications.updateNotification(params);
+            let updateNotificationParam = {
+              exsistingNotificationUid :params.exsistingNotificationUid,
+              ownerRequestChangeUid : params.ownerRequestChangeUid,
+              recipientUserUid: recieverUpdate.dataOwner !== 'Parent' ? req.userUid : params.recipientUserUid,
+            };
+            let updatedNotificationResp = await notifications.updateNotification(updateNotificationParam);
             if (updatedNotificationResp) {
               let resp = await ownership.getUpdatedOwnershipRequest(params);
               if (resp) {
