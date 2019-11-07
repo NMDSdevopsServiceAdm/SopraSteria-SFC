@@ -20,7 +20,9 @@ const sqs = new AWS.SQS({
 async function updateComplete(locations) {
   let completionCount = 0;
   let failed = false;
-  await locations.changes.forEach(location => {
+  console.log('Update Complete');
+  console.log('Checking to see failure status');
+  locations.changes.forEach(location => {
     if (location.status !== '') {
       completionCount++;
     }
@@ -28,14 +30,17 @@ async function updateComplete(locations) {
       failed = true;
     }
   });
+  console.log('Checked ' + completionCount);
   if (completionCount === locations.changes.length) {
     if (failed) {
+      console.log('One or more updates failed');
       await models.logMock.create({
         success:false,
         message: e.message
       });
       return false;
     } else {
+      console.log('All went successfully');
       await models.logMock.create({
         success: true,
         message: "Call Successful",
@@ -50,14 +55,17 @@ async function updateComplete(locations) {
 
 // Upload a list of all the changed location ID's along with timings to S3
 async function updateS3(location, status) {
+  console.log('Getting S3 object');
   const locations = await s3.getObject({
     Bucket: appConfig.get('aws.bucketname').toString(),
     Key: `cqcChanges-${location.startDate}`
   }).promise();
   const locationJSON = JSON.parse(locations.Body.toString());
   if (locationJSON) {
+    console.log('Looking for location in array');
     await locationJSON.changes.forEach(async (item) => {
       if (item.locationId === location.locationId) {
+        console.log('Updating status');
         item.status = status;
       }
     });
@@ -68,6 +76,7 @@ async function updateS3(location, status) {
     //   Key: `cqcChanges-${location.startDate}`
     // }).promise();
   } else {
+    console.log('Putting object back into S3');
     await s3.putObject({
       Bucket: appConfig.get('aws.bucketname').toString(),
       Key: `cqcChanges-${location.startDate}`,
@@ -85,13 +94,14 @@ async function deleteSQSMessage(ReceiptHandle) {
 }
 
 module.exports.handler =  async (event, context) => {
-  console.log(event);
-  const location = JSON.parse(event.body);
+  const location = JSON.parse(event.Records[0].body);
   try {
+    console.log('Getting information about ' + location.locationId + ' from CQC');
     const individualLocation = await axios.get(url+'/locations/'+ location.locationId);
     if (!individualLocation.data.deregistrationDate) {
       // not deregistered so must exist
-      await models.location.upsert({
+      console.log('Updating/Inserting information into database');
+      await models.LocationMock.upsert({
         locationid:individualLocation.data.locationId,
         locationname: individualLocation.data.name,
         addressline1: individualLocation.data.postalAddressLine1,
@@ -104,7 +114,7 @@ module.exports.handler =  async (event, context) => {
     }
     await updateS3(location, 'success');
     // await deleteSQSMessage(event.ReceiptHandle);
-    models.sequelize.close();
+    // models.sequelize.close();
 
     return {
       status: 200,

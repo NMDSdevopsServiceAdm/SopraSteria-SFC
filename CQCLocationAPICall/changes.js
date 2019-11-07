@@ -6,6 +6,8 @@ const models = require('./models/index');
 
 //CQC Endpoint
 const url = 'https://api.cqc.org.uk/public/v1';
+
+const QueueUrl = appConfig.get('aws.sqsqueue').toString();
 axiosRetry(axios, { retries: 3 });
 
 const s3 = new AWS.S3({
@@ -59,23 +61,23 @@ async function uploadToS3(locationIds, startdate, enddate) {
 // Send each of the location ID's to SQS for them to run a SQS
 async function sendMessages(locationIds, startdate, enddate) {
   console.log('Adding messages to SQS');
-  await locationIds.forEach(async (locationId) => {
+  await Promise.all(locationIds.map(async locationId => {
     const location = {
       ...locationId,
       "startDate": startdate,
       "endDate": enddate
     };
     try {
-      console.log('Pushing new item onto ' + appConfig.get('aws.sqsqueue').toString());
+      console.log('Pushing new item onto ' + QueueUrl);
       const sqsReq = await sqs.sendMessage({
         MessageBody: JSON.stringify(location),
-        QueueUrl: appConfig.get('aws.sqsqueue').toString(),
+        QueueUrl
       }).promise();
       console.log(sqsReq);
     } catch(error) {
       console.error(error);
     }
-  });
+  }));
 }
 
 module.exports.handler =  async (event, context) => {

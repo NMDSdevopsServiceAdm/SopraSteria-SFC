@@ -92,6 +92,7 @@ functions:
       - sqs:
         arn: arn:aws:sqs:eu-west-1:624216394565:cqctest
         batchSize: 1
+        reservedConcurrency: 1
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
