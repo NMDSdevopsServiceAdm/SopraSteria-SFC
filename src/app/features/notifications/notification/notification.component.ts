@@ -25,6 +25,9 @@ export class NotificationComponent implements OnInit, OnDestroy {
   public displayActionButtons;
   public notificationUid: string;
   public isWorkPlaceIsRequester: boolean;
+  public ownerShipRequestedFrom: string;
+  public ownerShipRequestedTo: string;
+  public isSubWorkplace: boolean;
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -39,9 +42,27 @@ export class NotificationComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
     this.notificationUid = this.route.snapshot.params.notificationuid;
+
     this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
       this.notification = details;
-      this.isWorkPlaceIsRequester = this.workplace.name === details.typeContent.requestorName;
+
+      this.isSubWorkplace =
+        this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
+
+      this.ownerShipRequestedFrom =
+        details.typeContent.requestedOwnerType === 'Workplace'
+          ? details.typeContent.parentEstablishmentName
+          : details.typeContent.subEstablishmentName;
+      this.ownerShipRequestedTo =
+        details.typeContent.requestedOwnerType === 'Workplace'
+          ? details.typeContent.subEstablishmentName
+          : details.typeContent.parentEstablishmentName;
+
+      if (details.typeContent.approvalStatus === 'APPROVED' || details.typeContent.approvalStatus === 'DENIED') {
+        this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
+      } else {
+        this.isWorkPlaceIsRequester = this.workplace.name === this.ownerShipRequestedFrom;
+      }
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });
