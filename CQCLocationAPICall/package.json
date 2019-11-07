@@ -10,6 +10,7 @@
   "license": "ISC",
   "keywords": [],
   "devDependencies": {
+    "aws-sdk-mock": "^4.5.0",
     "serverless-offline": "^5.12.0",
     "serverless-offline-sqs": "^3.0.1",
     "serverless-webpack": "^5.3.1"

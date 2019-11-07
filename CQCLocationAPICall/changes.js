@@ -10,14 +10,6 @@ const url = 'https://api.cqc.org.uk/public/v1';
 const QueueUrl = appConfig.get('aws.sqsqueue').toString();
 axiosRetry(axios, { retries: 3 });
 
-const s3 = new AWS.S3({
-  region: appConfig.get('aws.region').toString()
-});
-
-const sqs = new AWS.SQS({
-  region: appConfig.get('aws.region').toString()
-});
-
 // Get a list of all the CQC Location ID's that jhave changed between 2 timestamps
 async function getChangedIds(startTimestamp, endTimestamp) {
   let changes = [];
@@ -40,6 +32,9 @@ async function getChangedIds(startTimestamp, endTimestamp) {
 
 // Upload a list of all the changed location ID's along with timings to S3
 async function uploadToS3(locationIds, startdate, enddate) {
+  const s3 = new AWS.S3({
+    region: appConfig.get('aws.region').toString()
+  });
   const locations ={
     "changes": locationIds,
     "startDate": startdate,
@@ -60,6 +55,9 @@ async function uploadToS3(locationIds, startdate, enddate) {
 
 // Send each of the location ID's to SQS for them to run a SQS
 async function sendMessages(locationIds, startdate, enddate) {
+  const sqs = new AWS.SQS({
+    region: appConfig.get('aws.region').toString()
+  });
   console.log('Adding messages to SQS');
   await Promise.all(locationIds.map(async locationId => {
     const location = {

@@ -7,18 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
-const SequelizeMock = require('sequelize-mock');
-const dbMock = new SequelizeMock();
 const db = {};
-
-db.LogMock = dbMock.define('cqclog', {
-  'success': true,
-  'message': 'Call Successful',
-  'createdAt': '2019-10-31 05:12:20.736+00',
-  'lastUpdatedAt': '2019-10-30T18:20:10Z'
-});
-db.LocationMock = dbMock.define('location', {
-});
 
 class DBEmitter extends EventEmitter {
   constructor() {
