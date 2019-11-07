@@ -2264,7 +2264,7 @@ class Establishment extends EntityValidator {
   }
 
   //method to fetch all establishment details by establishment id
-  static async fetchAndUpdateEstablishmentDetails(id, data, flag = '') {
+  static async fetchAndUpdateEstablishmentDetails(id, data, flag = false) {
     if (!id) {
       throw new EstablishmentExceptions.EstablishmentRestoreException(null,
         null,
@@ -2291,7 +2291,7 @@ class Establishment extends EntityValidator {
           }
           let establishment = await models.establishment.findOne(fetchQuery)
           if (establishment) {
-            if(flag !== ''){
+            if(flag !== false){
               data.dataOwner = establishment.isParent === false ? 'Parent' : 'Workplace';
             }
             let responseToReturn = await establishment.update(data)
