@@ -85,7 +85,7 @@ module.exports.handler =  async (event, context) => {
   let startDate = null;
   console.log('Looking for latest run');
   try {
-    const log = await models.LogMock.findAll({
+    const log = await models.cqclog.findAll({
       limit: 1,
       where: {
         success:true

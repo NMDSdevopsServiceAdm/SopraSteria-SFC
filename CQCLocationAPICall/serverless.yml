@@ -26,7 +26,6 @@ provider:
       Action:
         - "s3:PutObject"
         - "s3:GetObject"
-        - "s3:DeleteObject"
       Resource:
         Fn::Join:
           - ""
@@ -35,7 +34,6 @@ provider:
     - Effect: "Allow"
       Action:
         - "sqs:sendMessage"
-        - "sqs:deleteMessage"
       Resource:
         Fn::Join:
           - ""
