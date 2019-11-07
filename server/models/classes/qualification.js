@@ -774,6 +774,26 @@ class Qualification extends EntityValidator {
       });
     }
   }
+
+/**
+ * Function used to get all qualification counts for a worker id
+ * @param {number} establishmentId
+ * @param {object} workerRecords
+ * @return {array} Modified worker records while adding qualifications count for each worker object
+ */
+  static async getQualsCounts(establishmentId, workerRecords){
+    if(workerRecords.length !== 0){
+      for(let i = 0; i < workerRecords.length; i++){
+        const allQualRecords = await Qualification.fetch(establishmentId, workerRecords[i].uid);
+        if(allQualRecords){
+          workerRecords[i].qualificationCount = allQualRecords.qualifications.length;
+        }else{
+          workerRecords[i].qualificationCount = 0;
+        }
+      }
+      return workerRecords;
+    }
+  }
 }
 
 module.exports.Qualification = Qualification;
