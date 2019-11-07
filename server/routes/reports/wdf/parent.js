@@ -107,7 +107,7 @@ const getEstablishmentReportData = async (date, establishmentId) => {
       }
     });
 
-    value.CurrentWdfEligibilityStatus = (value.CurrentWdfEligibilityStatus === false) ? 'Not Eligible' : 'Eligible';
+    value.CurrentWdfEligibilityStatus = (value.CurrentWdfEligibilityStatus === false || value.CurrentWdfEligibilityStatus === null) ? 'Not Eligible' : 'Eligible';
 
     if (value.DateEligibilityAchieved === null) {
       value.DateEligibilityAchieved = '';
@@ -119,7 +119,7 @@ const getEstablishmentReportData = async (date, establishmentId) => {
       (value.TotalIndividualWorkerRecord !== 0 || value.TotalIndividualWorkerRecord !== null)) {
       value.PercentageOfWorkerRecords = `${parseFloat(+value.NumberOfStaffValue * +value.TotalIndividualWorkerRecord / 100).toFixed(1)}%`;
     } else {
-      value.PercentageOfWorkerRecords = '0%';
+      value.PercentageOfWorkerRecords = '0.0%';
     }
 
     if (value.Capacities === null) {
@@ -152,7 +152,7 @@ const getEstablishmentReportData = async (date, establishmentId) => {
 
     value.CompletedWorkerRecordsPercentage =
       (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
-        ? '0%'
+        ? '0.0%'
         : `${parseFloat(+value.NumberOfStaffValue * +value.CompletedWorkerRecords / 100).toFixed(1)}%`;
   });
 
