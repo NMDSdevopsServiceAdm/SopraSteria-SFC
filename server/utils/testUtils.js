@@ -43,3 +43,10 @@ module.exports.wrapRequire = modules =>
       return modules[moduleName];
     }
   });
+
+module.exports.mockDate = (year, month, day) =>
+  new Proxy(Date, {
+    construct(Target, args) {
+      return new Target(year, month, day);
+    }
+  });
