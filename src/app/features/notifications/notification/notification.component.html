@@ -21,17 +21,17 @@
     <div class="govuk-grid-column-two-thirds">
       <div [ngSwitch]="notification.typeContent.approvalStatus">
         <div *ngSwitchCase="'REQUESTED'">
-          <p>You have requested to transfer ownership of data to {{ notification.typeContent.requestorName }}.</p>
+          <p>You have a request to transfer ownership of data to {{ ownerShipRequestedTo }}.</p>
           <p>Approve the request to set the following permissions:</p>
         </div>
         <div *ngSwitchCase="'CANCELLED'">
-          <p>You have requested to transfer ownership of data to {{ notification.typeContent.requestorName }}.</p>
+          <p>You have a request to transfer ownership of data to {{ ownerShipRequestedTo }}.</p>
           <p>Approve the request to set the following permissions:</p>
         </div>
 
         <div *ngSwitchCase="'DENIED'">
           <ng-container *ngIf="isWorkPlaceIsRequester; else nonWorkPlaceRequester">
-            <p>{{ notification.recieverName }} has rejected your request to become the owner of its data.</p>
+            <p>You rejected the request to transfer ownership of data to {{ ownerShipRequestedFrom }}</p>
 
             <h2 class="govuk-heading-s">Reason</h2>
             <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
@@ -42,9 +42,7 @@
             </ng-template>
           </ng-container>
           <ng-template #nonWorkPlaceRequester>
-            <p>
-              You rejected the request to transfer ownership of data to {{ notification.typeContent.requestorName }}
-            </p>
+            <p>{{ ownerShipRequestedTo }} has rejected your request to become the owner of its data.</p>
             <h2 class="govuk-heading-s">Reason</h2>
             <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
               <p>{{ notification.typeContent.rejectionReason }}</p>
@@ -56,14 +54,12 @@
         </div>
         <div *ngSwitchCase="'APPROVED'">
           <ng-container *ngIf="isWorkPlaceIsRequester; else nonWorkPlaceRequester">
-            <p>
-              {{ notification.recieverName }} has approved your request to become the owner of its data. You are now
-              free to edit workplace and staff data.
-            </p>
+            <p>You approved the request to transfer ownership of data to {{ ownerShipRequestedFrom }}</p>
           </ng-container>
           <ng-template #nonWorkPlaceRequester>
             <p>
-              You approved the request to transfer ownership of data to {{ notification.typeContent.requestorName }}
+              {{ ownerShipRequestedTo }} has approved your request to become the owner of its data. You are now free to
+              edit workplace and staff data.
             </p>
           </ng-template>
         </div>
@@ -78,18 +74,54 @@
           </tr>
         </thead>
         <tbody class="govuk-tab">
-          <tr class="govuk-table__row govuk-error-table__row--no-border">
-            <td class="govuk-table__cell">
-              {{ notification.recieverName }}
-            </td>
-            <td class="govuk-table__cell">{{ notification.typeContent.permissionRequest | dataViewPermissions }}</td>
-          </tr>
-          <tr class="govuk-table__row govuk-error-table__row--no-border" *ngIf="notification">
-            <td class="govuk-table__cell">
-              {{ notification.typeContent.requestorName }}
-            </td>
-            <td class="govuk-table__cell">Workplace and Staff</td>
-          </tr>
+          <ng-container *ngIf="notification.typeContent.approvalStatus !== 'APPROVED'; else approved">
+            <tr class="govuk-table__row govuk-error-table__row--no-border">
+              <td class="govuk-table__cell">
+                {{ ownerShipRequestedFrom }}
+              </td>
+
+              <ng-container *ngIf="notification.typeContent.permissionRequest === 'None'; else notNone">
+                <td class="govuk-table__cell">
+                  {{ notification.typeContent.permissionRequest | dataViewPermissions }}
+                </td>
+              </ng-container>
+              <ng-template #notNone>
+                <td class="govuk-table__cell">
+                  View {{ notification.typeContent.permissionRequest | dataViewPermissions }}
+                </td>
+              </ng-template>
+            </tr>
+            <tr class="govuk-table__row govuk-error-table__row--no-border" *ngIf="notification">
+              <td class="govuk-table__cell">
+                {{ ownerShipRequestedTo }}
+              </td>
+              <td class="govuk-table__cell">Edit workplace and Staff</td>
+            </tr>
+          </ng-container>
+          <ng-template #approved>
+            <tr class="govuk-table__row govuk-error-table__row--no-border">
+              <td class="govuk-table__cell">
+                {{ ownerShipRequestedTo }}
+              </td>
+
+              <ng-container *ngIf="notification.typeContent.permissionRequest === 'None'; else notNone">
+                <td class="govuk-table__cell">
+                  {{ notification.typeContent.permissionRequest | dataViewPermissions }}
+                </td>
+              </ng-container>
+              <ng-template #notNone>
+                <td class="govuk-table__cell">
+                  View {{ notification.typeContent.permissionRequest | dataViewPermissions }}
+                </td>
+              </ng-template>
+            </tr>
+            <tr class="govuk-table__row govuk-error-table__row--no-border" *ngIf="notification">
+              <td class="govuk-table__cell">
+                {{ ownerShipRequestedFrom }}
+              </td>
+              <td class="govuk-table__cell">Edit Workplace and Staff</td>
+            </tr>
+          </ng-template>
         </tbody>
       </table>
     </div>
