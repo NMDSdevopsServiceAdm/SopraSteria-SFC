@@ -58,24 +58,45 @@ router.route('/:id').put(async (req, res) => {
         //update establishment dataOwner and dataPermissions property for ownership transfer
 
         //updating requester establishment details
-        let objToUpdate = {
-          dataOwner: 'Workplace',
-          dataPermissions: "Workplace and Staff"
-        }
-        let requesterUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(checkOwnerChangeRequest[0].subEstablishmentID, objToUpdate);
-        if(requesterUpdate){
-          //updating reciever establishment details
-          objToUpdate = {
+        let requesterUpdate;
+        if (params.approvalStatus !== 'DENIED') {
+          let objToUpdate = {
             dataOwner: 'Workplace',
-            dataPermissions: checkOwnerChangeRequest[0].permissionRequest
+            dataPermissions: 'Workplace and Staff',
           };
+          requesterUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(
+            checkOwnerChangeRequest[0].subEstablishmentID,
+            objToUpdate
+          );
+        } else {
+          requesterUpdate = true;
+        }
+        if (requesterUpdate) {
+          let recieverUpdate;
+          if (params.approvalStatus !== 'DENIED') {
+            //updating reciever establishment details
+            objToUpdate = {
+              dataOwner: 'Workplace',
+              dataPermissions: checkOwnerChangeRequest[0].permissionRequest,
+            };
 
-          let recieverUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(req.establishment.id, objToUpdate, true);
-          if(recieverUpdate){
+            recieverUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(
+              req.establishment.id,
+              objToUpdate,
+              true
+            );
+          } else {
+            let recieverEstablishmentDetails = new Establishment.Establishment(req.username);
+            if (await recieverEstablishmentDetails.restore(req.establishment.id, false)) {
+              recieverUpdate = recieverEstablishmentDetails;
+            }
+          }
+
+          if (recieverUpdate) {
             params.exsistingNotificationUid = req.body.exsistingNotificationUid;
             let updateNotificationParam = {
-              exsistingNotificationUid :params.exsistingNotificationUid,
-              ownerRequestChangeUid : params.ownerRequestChangeUid,
+              exsistingNotificationUid: params.exsistingNotificationUid,
+              ownerRequestChangeUid: params.ownerRequestChangeUid,
               recipientUserUid: recieverUpdate.dataOwner !== 'Parent' ? req.userUid : params.recipientUserUid,
             };
             let updatedNotificationResp = await notifications.updateNotification(updateNotificationParam);
@@ -97,8 +118,8 @@ router.route('/:id').put(async (req, res) => {
                 } else {
                   //clearing ownership requested column
                   let clearOwnershipParam = {
-                    timeValue :null,
-                    subEstablishmentId: params.subEstablishmentId
+                    timeValue: null,
+                    subEstablishmentId: params.subEstablishmentId,
                   };
                   let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
                   if (!saveDataOwnershipRequested) {
