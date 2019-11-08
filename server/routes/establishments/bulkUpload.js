@@ -2087,7 +2087,7 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
 
     switch (downloadType) {
       case 'establishments':
-        columnNames = EstablishmentCsvValidator.headers;
+        columnNames = EstablishmentCsvValidator.headers();
         break;
 
       case 'workers':
@@ -2095,7 +2095,7 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
         break;
 
       case 'training':
-        columnNames = TrainingCsvValidator.headers;
+        columnNames = TrainingCsvValidator.headers();
         break;
     }
 
