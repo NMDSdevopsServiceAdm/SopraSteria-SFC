@@ -58,7 +58,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
           ? details.typeContent.subEstablishmentName
           : details.typeContent.parentEstablishmentName;
 
-      if (details.typeContent.approvalStatus === 'APPROVED' || details.typeContent.approvalStatus === 'DENIED') {
+      if (details.typeContent.approvalStatus === 'APPROVED') {
         this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
       } else {
         this.isWorkPlaceIsRequester = this.workplace.name === this.ownerShipRequestedFrom;
