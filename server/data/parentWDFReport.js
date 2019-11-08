@@ -127,7 +127,7 @@ SELECT
   ) AS "Utilisations",
   "NumberOfStaffValue",
   updated,
-  to_char(updated, :timeFormat) AS "LastUpdatedDate",
+  CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
   "ShareDataWithCQC",
   "ShareDataWithLA",
   "ReasonsForLeaving"
@@ -144,7 +144,7 @@ ORDER BY
   "EstablishmentID";
 `;
 
-exports.getEstablishmentData = async (date, establishmentId) =>
+exports.getEstablishmentData = async establishmentId =>
   db.query(getEstablishmentDataQuery, {
     replacements: {
       zero: 0,
