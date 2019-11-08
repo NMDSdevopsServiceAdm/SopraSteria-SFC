@@ -24,6 +24,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   public isParent: boolean;
   public isLocalAuthority: boolean;
   public now: Date = new Date();
+  public workplaceUid: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -42,11 +43,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
       this.establishmentService.establishment$.pipe(take(1)).subscribe(workplace => {
         this.workplace = workplace;
         this.isParent = this.primaryWorkplace ? this.primaryWorkplace.isParent : workplace.isParent;
+        this.workplaceUid = this.primaryWorkplace ? this.primaryWorkplace.uid : workplace.uid;
         this.isLocalAuthority = workplace.employerType && workplace.employerType.value.startsWith('Local Authority');
         this.canRunLocalAuthorityReport =
           this.isParent &&
           this.isLocalAuthority &&
-          this.permissionsService.can(workplace.uid, 'canRunLocalAuthorityReport');
+          this.permissionsService.can(this.workplaceUid, 'canRunLocalAuthorityReport');
       })
     );
   }
