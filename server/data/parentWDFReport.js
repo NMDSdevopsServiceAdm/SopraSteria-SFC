@@ -2,6 +2,8 @@
 
 const db = rfr('server/utils/datastore');
 
+const effectiveDate = rfr('server/models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
+
 const getEstablishmentDataQuery =
 `
 SELECT
@@ -10,8 +12,8 @@ SELECT
   "NameValue" AS "SubsidiaryName",
   "EmployerTypeValue",
   "EmployerTypeSavedAt",
-  "CurrentWdfEligibiity" AS "CurrentWdfEligibilityStatus",
-  to_char("EstablishmentWdfEligibility", :timeFormat) AS "DateEligibilityAchieved",
+  CASE WHEN "OverallWdfEligibility" > :effectiveDate THEN "OverallWdfEligibility" ELSE NULL END AS "CurrentWdfEligibilityStatus",
+  CASE WHEN "OverallWdfEligibility" > :effectiveDate THEN to_char("OverallWdfEligibility", :timeFormat) ELSE NULL END AS "DateEligibilityAchieved",
   MainService.name AS "MainService",
   "MainServiceFKValue",
   (
@@ -29,8 +31,8 @@ SELECT
       cqc."Worker"
     WHERE
       "EstablishmentFK" = "Establishment"."EstablishmentID" AND
-      "CompletedSavedAt" IS NOT NULL AND
-      EXTRACT(YEAR FROM "CompletedSavedAt") = :currentYear
+      "LastWdfEligibility" IS NOT NULL AND
+      "LastWdfEligibility" > :effectiveDate
   ) AS "CompletedWorkerRecords",
   array_to_string(array(
     SELECT
@@ -150,7 +152,7 @@ exports.getEstablishmentData = async (date, establishmentId) =>
       timeFormat: 'DD/MM/YYYY',
       establishmentId,
       separator: ', ',
-      currentYear: date.getFullYear(),
+      effectiveDate,
       Vacancies: 'Vacancies',
       Starters: 'Starters',
       Leavers: 'Leavers',
