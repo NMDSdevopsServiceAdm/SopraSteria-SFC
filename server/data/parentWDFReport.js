@@ -10,7 +10,7 @@ SELECT
   "NameValue" AS "SubsidiaryName",
   "EmployerTypeValue",
   "EmployerTypeSavedAt",
-  "CurrentWdfEligibility" AS "CurrentWdfEligibilityStatus",
+  "CurrentWdfEligibiity" AS "CurrentWdfEligibilityStatus",
   to_char("EstablishmentWdfEligibility", :timeFormat) AS "DateEligibilityAchieved",
   MainService.name AS "MainService",
   "MainServiceFKValue",
