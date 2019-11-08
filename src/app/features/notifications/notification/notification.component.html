@@ -31,8 +31,7 @@
 
         <div *ngSwitchCase="'DENIED'">
           <ng-container *ngIf="isWorkPlaceIsRequester; else nonWorkPlaceRequester">
-            <p>You rejected the request to transfer ownership of data to {{ ownerShipRequestedFrom }}</p>
-
+            <p>You rejected the request to transfer ownership of data to {{ ownerShipRequestedTo }}</p>
             <h2 class="govuk-heading-s">Reason</h2>
             <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
               <p>{{ notification.typeContent.rejectionReason }}</p>
@@ -42,7 +41,7 @@
             </ng-template>
           </ng-container>
           <ng-template #nonWorkPlaceRequester>
-            <p>{{ ownerShipRequestedTo }} has rejected your request to become the owner of its data.</p>
+            <p>{{ ownerShipRequestedFrom }} has rejected your request to become the owner of its data.</p>
             <h2 class="govuk-heading-s">Reason</h2>
             <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
               <p>{{ notification.typeContent.rejectionReason }}</p>
