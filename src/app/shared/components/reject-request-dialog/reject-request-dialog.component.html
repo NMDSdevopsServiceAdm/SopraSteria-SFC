@@ -1,0 +1,69 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h1 id="dialogHeading" class="govuk-fieldset__heading">
+          Do you want to provide a reason for rejecting?
+        </h1>
+      </legend>
+      <div class="govuk-radios">
+        <div class="govuk-radios__item" *ngFor="let rejectOption of rejectOptions | keyvalue; let i = index">
+          <input
+            class="govuk-radios__input"
+            id="rejectOption-{{ rejectOption.key }}"
+            name="rejectOption"
+            [formControlName]="'rejectOption'"
+            [value]="rejectOption.key"
+            (change)="handleChange($event)"
+            type="radio"
+            [checked]="i === 0"
+          />
+          <label class="govuk-label govuk-radios__label" for="rejectOption-{{ rejectOption.key }}">
+            {{ rejectOption.value }}
+          </label>
+        </div>
+      </div>
+      <div
+        class="govuk-form-group govuk-form-group"
+        [class.govuk-form-group--error]="submitted && form.get('reason').errors"
+      >
+        <span *ngIf="submitted" id="reason-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <ng-container *ngIf="form.get('reason').hasError('required') && displayReason">
+            {{ getFormErrorMessage('reason', 'required') }}
+          </ng-container>
+          <ng-container *ngIf="form.get('reason').hasError('maxlength') && displayReason">
+            {{ getFormErrorMessage('reason', 'maxlength') }}
+          </ng-container>
+        </span>
+        <textarea
+          class="govuk-textarea govuk-textarea govuk-!-margin-top-4  govuk-!-margin-bottom-2"
+          id="reason"
+          [class.govuk-textarea--error]="submitted && form.get('reason').errors"
+          name="reason"
+          rows="6"
+          aria-describedby="more-detail-hint more-detail-error"
+          [formControlName]="'reason'"
+          *ngIf="displayReason"
+        ></textarea>
+        <app-character-count
+          [max]="reasonCharacterLimit"
+          [control]="form.get('reason')"
+          *ngIf="displayReason"
+        ></app-character-count>
+      </div>
+    </fieldset>
+  </div>
+  <button type="submit" (click)="rejectPermissionRequest()" class="govuk-button">Continue</button>
+  <button type="button" (click)="close(null)" class="govuk-button govuk-button--link govuk-util__float-right">
+    Exit
+  </button>
+</form>
