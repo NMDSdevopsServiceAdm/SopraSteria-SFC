@@ -107,7 +107,7 @@ const getEstablishmentReportData = async (date, establishmentId) => {
       }
     });
 
-    value.CurrentWdfEligibilityStatus = (value.CurrentWdfEligibilityStatus === false || value.CurrentWdfEligibilityStatus === null) ? 'Not Eligible' : 'Eligible';
+    value.CurrentWdfEligibilityStatus = value.CurrentWdfEligibilityStatus === null ? 'Not Eligible' : 'Eligible';
 
     if (value.DateEligibilityAchieved === null) {
       value.DateEligibilityAchieved = '';
