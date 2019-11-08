@@ -44,7 +44,7 @@ const validateXML = async (zip, filename, reference) => {
 
 describe('/server/routes/reports/wdf/parent', () => {
   describe('get report', () => {
-    it('should *****************', async () => {
+    it('should produce the proper xml files for the spreadsheet', async () => {
       let getReport;
 
       testUtils.sandBox(

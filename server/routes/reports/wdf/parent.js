@@ -77,7 +77,7 @@ const getReportData = async (date, thisEstablishment) => {
   return {
     date: date.toISOString(),
     parentName: thisEstablishment.name,
-    establishments: await getEstablishmentReportData(date, thisEstablishment.id),
+    establishments: await getEstablishmentReportData(thisEstablishment.id),
     workers: await getWorkersReportData(thisEstablishment.id)
   };
 };
@@ -85,8 +85,8 @@ const getReportData = async (date, thisEstablishment) => {
 const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,ServiceUsers,' +
 'StartersValue,LeaversValue,VacanciesValue,NumberOfStaffValue').split(',');
 
-const getEstablishmentReportData = async (date, establishmentId) => {
-  const establishmentData = await getEstablishmentData(date, establishmentId);
+const getEstablishmentReportData = async establishmentId => {
+  const establishmentData = await getEstablishmentData(establishmentId);
 
   establishmentData.forEach((value, key) => {
     if (value.ShareDataWithCQC && value.ShareDataWithLA) {
@@ -145,10 +145,7 @@ const getEstablishmentReportData = async (date, establishmentId) => {
     value.LeavingReasonsCountEqualsLeavers = (value.ReasonsForLeaving === value.LeaversValue) ? 'Yes' : 'No';
     value.TotalWorkersCountGTEWorkerRecords = (value.NumberOfStaffValue >= value.TotalIndividualWorkerRecord) ? 'Yes' : 'No';
 
-    const currentYear = date.getFullYear();
-    const establishmentYear = value.LastUpdatedDate.split('/')[2];
-
-    value.UpdatedInCurrentFinancialYear = (currentYear === establishmentYear) ? 'Yes' : 'No';
+    value.UpdatedInCurrentFinancialYear = value.LastUpdatedDate !== null ? 'Yes' : 'No';
 
     value.CompletedWorkerRecordsPercentage =
       (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
