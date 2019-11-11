@@ -1,24 +1,29 @@
-const express = require('express');
-const appConfig = require('../../config/config');
-const AWS = require('aws-sdk');
+'use strict';
+
+const moment = require('moment');
 const csv = require('csvtojson');
 const Stream = require('stream');
-const moment = require('moment');
-const dbmodels = require('../../models');
-const config = require('../../config/config');
 
-const timerLog = require('../../utils/timerLog');
+const config = rfr('server/config/config');
+const db = rfr('server/utils/datastore');
+const dbModels = rfr('server/models');
+const timerLog = rfr('server/utils/timerLog');
 
-const router = express.Router();
-const s3 = new AWS.S3({
-  region: appConfig.get('bulkupload.region').toString()
+const s3 = new (require('aws-sdk')).S3({
+  region: String(config.get('bulkupload.region'))
 });
+const Bucket = String(config.get('bulkupload.bucketname'));
 
-const EstablishmentCsvValidator = require('../../models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = require('../../models/BulkImport/csv/workers').Worker;
-const TrainingCsvValidator = require('../../models/BulkImport/csv/training').Training;
+const EstablishmentCsvValidator = rfr('server/models/BulkImport/csv/establishments').Establishment;
+const WorkerCsvValidator = rfr('server/models/BulkImport/csv/workers').Worker;
+const TrainingCsvValidator = rfr('server/models/BulkImport/csv/training').Training;
+const { MetaData } = rfr('server/models/BulkImport/csv/metaData');
 
-const MetaData = require('../../models/BulkImport/csv/metaData').MetaData;
+const { Establishment } = rfr('server/models/classes/establishment');
+const { Worker } = rfr('server/models/classes/worker');
+const { Qualification } = rfr('server/models/classes/qualification');
+const { Training } = rfr('server/models/classes/training');
+const { User } = rfr('server/models/classes/user');
 
 const FileStatuses = {
   Latest: 'latest',
@@ -26,55 +31,179 @@ const FileStatuses = {
   Imported: 'imported'
 };
 
-const Establishment = require('../../models/classes/establishment').Establishment;
-const Worker = require('../../models/classes/worker').Worker;
-const Qualification = require('../../models/classes/qualification').Qualification;
-const Training = require('../../models/classes/training').Training;
-const User = require('../../models/classes/user').User;
+const FileValidationStatuses = {
+  Pending: 'pending',
+  Validating: 'validating',
+  Pass: 'pass',
+  PassWithWarnings: 'pass with warnings',
+  Fail: 'fail'
+};
 
-const FileValidationStatusEnum = { Pending: 'pending', Validating: 'validating', Pass: 'pass', PassWithWarnings: 'pass with warnings', Fail: 'fail' };
+const completionBulkUploadStatus = 'COMPLETE';
 
 const ignoreMetaDataObjects = /.*metadata.json$/;
 const ignoreRoot = /.*\/$/;
-const completionBulkUploadStatus = 'COMPLETE';
+const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
 
-router.route('/uploaded').get(async (req, res) => {
+// Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
+// This function can't be an express middleware as it needs to run both before and after the regular logic
+const acquireLock = async function (logic, req, res) {
+  const establishmentId = req.establishmentId;
+
+  // attempt to acquire the lock
+  const currentLockState = await db.query(`
+    UPDATE
+      cqc."Establishment"
+    SET
+      "bulkUploadLockHeld" = true
+    WHERE
+      "EstablishmentID" = :establishmentId AND
+      "bulkUploadLockHeld" = false
+  `, {
+    replacements: {
+      establishmentId
+    },
+    type: db.QueryTypes.UPDATE
+  });
+
+  console.log(`Acquiring lock for establishment ${establishmentId}.`);
+
+  // if no records were updated the lock could not be acquired
+  // Just respond with a 409 http code and don't call the regular logic
+  // close the response either way and continue processing in the background
+  if (currentLockState[1] === 0) {
+    console.log('Lock *NOT* acquired.');
+    res
+      .status(409)
+      .send({
+        message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`
+      });
+
+    return;
+  } else {
+    console.log('Lock acquired.');
+
+    /* res
+      .status(200)
+      .send({
+        message: `Lock for establishment ${establishmentId} acquired.`
+      }); */
+  }
+
+  // run whatever the original logic was
   try {
-    const Bucket = appConfig.get('bulkupload.bucketname').toString();
+    await logic(req, res);
+  } catch (e) {
 
+  }
+
+  // release the lock
+  await releaseLock(req);
+};
+
+const lockStatusGet = async (req, res) => {
+  const { establishmentId } = req;
+
+  const currentLockState = await db.query(`
+      SELECT
+        "EstablishmentID" AS "establishmentId",
+        "bulkUploadLockHeld"
+      FROM
+        cqc."Establishment"
+      WHERE
+        "EstablishmentID" = :establishmentId
+    `, {
+    replacements: {
+      establishmentId
+    },
+    type: db.QueryTypes.SELECT
+  });
+
+  res
+    .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
+    .send(
+      currentLockState.length === 0
+        ? {
+          establishmentId,
+          bulkUploadLockHeld: true
+        } : currentLockState[0]
+    );
+};
+
+const releaseLock = async (req, res) => {
+  const establishmentId = req.params.subEstId || req.establishmentId;
+
+  if (Number.isInteger(establishmentId)) {
+    await db.query(`
+      UPDATE
+        cqc."Establishment"
+      SET
+        "bulkUploadLockHeld" = false
+      WHERE
+        "EstablishmentID" = :establishmentId
+      `, {
+      replacements: {
+        establishmentId
+      },
+      type: db.QueryTypes.UPDATE
+    });
+
+    console.log(`Lock released for establishment ${establishmentId}`);
+  }
+
+  if (res) {
+    res
+      .status(200)
+      .send({
+        establishmentId
+      });
+  }
+};
+
+const uploadedGet = async (req, res) => {
+  try {
     const data = await s3.listObjects({
       Bucket,
       Prefix: `${req.establishmentId}/latest/`
     }).promise();
 
-    const returnData = await Promise.all(data.Contents.filter(myFile => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key))
-      .map(async file => {
-        const elements = file.Key.split('/');
-        const objData = await s3.headObject({ Bucket, Key: file.Key }).promise();
-        const returnData = {
-          filename: elements[elements.length - 1],
-          uploaded: file.LastModified,
-          username: objData.Metadata.username,
-          records: 0,
-          errors: 0,
-          warnings: 0,
-          fileType: null,
-          size: file.Size,
-          key: encodeURI(file.Key)
-        };
+    const returnData = await Promise.all(
+      data.Contents.filter(
+        myFile => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)
+      )
+        .map(async file => {
+          const elements = file.Key.split('/');
 
-        const fileMetaData = data.Contents.filter(myFile => myFile.Key === file.Key + '.metadata.json');
-        if (fileMetaData.length === 1) {
-          const metaData = await downloadContent(fileMetaData[0].Key);
-          const metadataJSON = JSON.parse(metaData.data);
-          returnData.records = metadataJSON.records ? metadataJSON.records : 0;
-          returnData.errors = metadataJSON.errors ? metadataJSON.errors : 0;
-          returnData.warnings = metadataJSON.warnings ? metadataJSON.warnings : 0;
-          returnData.fileType = metadataJSON.fileType ? metadataJSON.fileType : null;
-        }
+          const objData = await s3.headObject({
+            Bucket,
+            Key: file.Key
+          }).promise();
 
-        return returnData;
-      }));
+          const returnData = {
+            filename: elements[elements.length - 1],
+            uploaded: file.LastModified,
+            username: objData.Metadata.username,
+            records: 0,
+            errors: 0,
+            warnings: 0,
+            fileType: null,
+            size: file.Size,
+            key: encodeURI(file.Key)
+          };
+
+          const fileMetaData = data.Contents.filter(myFile => myFile.Key === file.Key + '.metadata.json');
+          if (fileMetaData.length === 1) {
+            const metaData = await downloadContent(fileMetaData[0].Key);
+            const metadataJSON = JSON.parse(metaData.data);
+            returnData.records = metadataJSON.records ? metadataJSON.records : 0;
+            returnData.errors = metadataJSON.errors ? metadataJSON.errors : 0;
+            returnData.warnings = metadataJSON.warnings ? metadataJSON.warnings : 0;
+            returnData.fileType = metadataJSON.fileType ? metadataJSON.fileType : null;
+          }
+
+          return returnData;
+        })
+    );
     return res.status(200).send({
       establishment: {
         uid: req.establishmentId
@@ -85,10 +214,9 @@ router.route('/uploaded').get(async (req, res) => {
     console.error(err);
     return res.status(503).send({});
   }
-});
+};
 
-router.route('/uploaded/*').get(async (req, res) => {
-  const Bucket = String(appConfig.get('bulkupload.bucketname'));
+const uploadedStarGet = async (req, res) => {
   const Key = req.params['0'];
   const elements = Key.split('/');
 
@@ -108,7 +236,7 @@ router.route('/uploaded/*').get(async (req, res) => {
         signedUrl: s3.getSignedUrl('getObject', {
           Bucket,
           Key,
-          Expires: appConfig.get('bulkupload.uploadSignedUrlExpire')
+          Expires: config.get('bulkupload.uploadSignedUrlExpire')
         })
       }
     });
@@ -119,12 +247,12 @@ router.route('/uploaded/*').get(async (req, res) => {
     console.log(err);
     return res.status(503).send({});
   }
-});
+};
 
-const purgeBulkUploadS3Objects = async (establishmentId) => {
+const purgeBulkUploadS3Objects = async establishmentId => {
   // drop all in latest
   const listParams = {
-    Bucket: appConfig.get('bulkupload.bucketname').toString(),
+    Bucket,
     Prefix: `${establishmentId}/latest/`
   };
   const latestObjects = await s3.listObjects(listParams).promise();
@@ -157,35 +285,18 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
 
   if (deleteKeys.length > 0) {
     // now delete the objects in one go
-    const deleteParams = {
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
+    await s3.deleteObjects({
+      Bucket,
       Delete: {
         Objects: deleteKeys,
         Quiet: true
       }
-    };
-    await s3.deleteObjects(deleteParams).promise();
+    }).promise();
   }
 };
 
-/*
- * input:
- * "files": [
- *  {
- *    "filename": "blah-csv"
- *  }
- * ]
- *
- * output:
- * "files": [
- *  {
- *    "filename": "blah-csv",
- *    "signedUrl": "....."
- *  }
- * ]
- */
-router.route('/uploaded').post(async function (req, res) {
-  const myEstablishmentId = Number.isInteger(req.establishmentId) ? req.establishmentId.toString() : req.establishmentId;
+const uploadedPost = async (req, res) => {
+  const establishmentId = String(req.establishmentId);
   const username = req.username;
   const uploadedFiles = req.body.files;
 
@@ -203,22 +314,22 @@ router.route('/uploaded').post(async function (req, res) {
 
   try {
     // clean up existing bulk upload objects
-    await purgeBulkUploadS3Objects(myEstablishmentId);
+    await purgeBulkUploadS3Objects(establishmentId);
 
     const signedUrls = [];
 
     uploadedFiles.forEach(thisFile => {
       if (thisFile.filename) {
         thisFile.signedUrl = s3.getSignedUrl('putObject', {
-          Bucket: appConfig.get('bulkupload.bucketname').toString(),
-          Key: myEstablishmentId + '/' + FileStatuses.Latest + '/' + thisFile.filename,
+          Bucket,
+          Key: `${establishmentId}/${FileStatuses.Latest}/${thisFile.filename}`,
           ContentType: req.query.type,
           Metadata: {
             username,
-            establishmentId: myEstablishmentId,
-            validationstatus: FileValidationStatusEnum.Pending
+            establishmentId,
+            validationstatus: FileValidationStatuses.Pending
           },
-          Expires: appConfig.get('bulkupload.uploadSignedUrlExpire')
+          Expires: config.get('bulkupload.uploadSignedUrlExpire')
         });
         signedUrls.push(thisFile);
       }
@@ -229,35 +340,32 @@ router.route('/uploaded').post(async function (req, res) {
     console.error('API POST bulkupload/uploaded: ', err);
     return res.status(503).send({});
   }
-});
+};
 
-router.route('/signedUrl').get(async function (req, res) {
+const signedUrlGet = async (req, res) => {
   try {
-    const establishmentId = String(req.establishmentId);
+    const establishmentId = req.establishmentId;
 
-    res.json({
+    res.status(200).send({
       urls: s3.getSignedUrl('putObject', {
-        Bucket: appConfig.get('bulkupload.bucketname').toString(),
-        Key: establishmentId + '/' + FileStatuses.Latest + '/' + req.query.filename,
-        // ACL: 'public-read',
+        Bucket,
+        Key: `${establishmentId}/${FileStatuses.Latest}/${req.query.filename}`,
         ContentType: req.query.type,
         Metadata: {
           username: String(req.username),
-          establishmentId,
-          validationstatus: FileValidationStatusEnum.Pending
+          establishmentId: String(establishmentId),
+          validationstatus: FileValidationStatuses.Pending
         },
-        Expires: appConfig.get('bulkupload.uploadSignedUrlExpire')
+        Expires: config.get('bulkupload.uploadSignedUrlExpire')
       })
     });
-    res.end();
   } catch (err) {
     console.error('establishment::bulkupload GET/:PreSigned - failed', err.message);
     return res.status(503).send();
   }
-});
+};
 
-// Prevalidate
-router.route('/uploaded').put(async (req, res) => {
+const uploadedPut = async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
   const myDownloads = {};
@@ -268,14 +376,16 @@ router.route('/uploaded').put(async (req, res) => {
   try {
     // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
     const createModelPromises = [];
+
     const data = await s3.listObjects({
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
+      Bucket,
       Prefix: `${req.establishmentId}/latest/`
     }).promise();
 
     data.Contents.forEach(myFile => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
+
       if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
         createModelPromises.push(downloadContent(myFile.Key, myFile.Size, myFile.LastModified));
       }
@@ -311,8 +421,12 @@ router.route('/uploaded').put(async (req, res) => {
       }
     });
 
-    let workerHeaders, establishmentHeaders, trainingHeaders;
-    let importedWorkers = null; let importedEstablishments = null; let importedTraining = null;
+    let workerHeaders;
+    let establishmentHeaders;
+    let trainingHeaders;
+    let importedWorkers = null;
+    let importedEstablishments = null;
+    let importedTraining = null;
 
     const headerPromises = [];
 
@@ -444,9 +558,9 @@ router.route('/uploaded').put(async (req, res) => {
     console.error(err);
     return res.status(503).send({});
   }
-});
+};
 
-router.route('/validate').put(async (req, res) => {
+const validatePut = async (req, res) => {
   // manage the request timeout
   req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
 
@@ -488,7 +602,7 @@ router.route('/validate').put(async (req, res) => {
 
       // get list of files from s3 bucket
       await s3.listObjects({
-        Bucket: appConfig.get('bulkupload.bucketname').toString(),
+        Bucket,
         Prefix: `${establishmentId}/latest/`
       }).promise()
 
@@ -586,14 +700,12 @@ router.route('/validate').put(async (req, res) => {
   }
 
   res.end();
-});
-
-const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
+};
 
 const downloadContent = async (key, size, lastModified) => {
   try {
     return await s3.getObject({
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
+      Bucket,
       Key: key
     })
       .promise()
@@ -614,7 +726,7 @@ const downloadContent = async (key, size, lastModified) => {
 const uploadAsJSON = async (username, establishmentId, content, key) => {
   try {
     await s3.putObject({
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
+      Bucket,
       Key: key,
       Body: JSON.stringify(content, null, 2),
       ContentType: 'application/json',
@@ -690,7 +802,13 @@ const validateEstablishmentCsv = async (
   myEstablishments.push(lineValidator);
 };
 
-const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications, keepAlive = () => {}) => {
+const loadWorkerQualifications = async (
+  lineValidator,
+  thisQual,
+  thisApiWorker,
+  myAPIQualifications,
+  keepAlive = () => {}
+) => {
   const thisApiQualification = new Qualification();
 
   // load while ignoring the "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
@@ -776,7 +894,14 @@ const validateWorkerCsv = async (
   myWorkers.push(lineValidator);
 };
 
-const validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings, keepAlive = () => {}) => {
+const validateTrainingCsv = async (
+  thisLine,
+  currentLineNumber,
+  csvTrainingSchemaErrors,
+  myTrainings,
+  myAPITrainings,
+  keepAlive = () => {}
+) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   const lineValidator = new TrainingCsvValidator(thisLine, currentLineNumber);
 
@@ -813,7 +938,16 @@ const validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchem
 };
 
 // if commit is false, then the results of validation are not uploaded to S3
-const validateBulkUploadFiles = async (commit, username, establishmentId, isParent, establishments, workers, training, keepAlive = () => {}) => {
+const validateBulkUploadFiles = async (
+  commit,
+  username,
+  establishmentId,
+  isParent,
+  establishments,
+  workers,
+  training,
+  keepAlive = () => {}
+) => {
   const csvEstablishmentSchemaErrors = [];
   const csvWorkerSchemaErrors = [];
   const csvTrainingSchemaErrors = [];
@@ -1356,7 +1490,14 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment
 // the "onlyMine" parameter is used to remove those subsidiary establishments where the parent is not the owner
-const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent, assocationLevel = 1, onlyMine = false, keepAlive = () => {}) => {
+const restoreExistingEntities = async (
+  loggedInUsername,
+  primaryEstablishmentId,
+  isParent,
+  assocationLevel = 1,
+  onlyMine = false,
+  keepAlive = () => {}
+) => {
   try {
     const thisUser = new User(primaryEstablishmentId);
     await thisUser.restore(null, loggedInUsername, false);
@@ -1412,7 +1553,11 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
 //  able to complete on the upload though, they will need a report highlighting which, if any, of the
 //  the establishments and workers will be deleted.
 // Only generate this validation difference report, if there are no errors.
-const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, currentEntities) => {
+const validationDifferenceReport = (
+  primaryEstablishmentId,
+  onloadEntities,
+  currentEntities
+) => {
   const newEntities = [];
   const updatedEntities = [];
   const deletedEntities = [];
@@ -1578,7 +1723,7 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
   };
 };
 
-router.route('/report/:reportType').get(async (req, res) => {
+const reportGet = async (req, res) => {
   const NEWLINE = '\r\n';
   const reportTypes = ['training', 'establishments', 'workers'];
   const reportType = req.params.reportType;
@@ -1723,7 +1868,7 @@ router.route('/report/:reportType').get(async (req, res) => {
     console.error(err);
     return res.status(503).send({});
   }
-});
+};
 
 const printLine = (readable, reportType, errors, sep) => {
   Object.keys(errors).forEach(key => {
@@ -1755,7 +1900,11 @@ const getFileName = reportType => {
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment
-const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId, keepAlive = () => {}) => {
+const restoreOnloadEntities = async (
+  loggedInUsername,
+  primaryEstablishmentId,
+  keepAlive = () => {}
+) => {
   try {
     // the result of validation is to make available an S3 object outlining ALL entities ready to be uploaded
     const allEntitiesKey = `${primaryEstablishmentId}/intermediary/all.entities.json`;
@@ -1907,7 +2056,7 @@ const completeDeleteEstablishment = async (
   }
 };
 
-router.route('/complete').post(async (req, res) => {
+const completePost = async (req, res) => {
   // manage the request timeout
   req.setTimeout(config.get('bulkupload.completion.timeout') * 1000);
 
@@ -1962,7 +2111,7 @@ router.route('/complete').post(async (req, res) => {
       let completeCommitTransactionTime = null;
       try {
         // all creates, updates and deletes (archive) are done in one transaction to ensure database integrity
-        await dbmodels.sequelize.transaction(async t => {
+        await dbModels.sequelize.transaction(async t => {
           // first create the new establishments - in sequence
           const starterNewPromise = Promise.resolve(null);
           await validationDiferenceReport
@@ -2062,20 +2211,20 @@ router.route('/complete').post(async (req, res) => {
   }
 
   res.end();
-});
+};
 
 // takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
 const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, responseSend) => {
   // before being able to write the worker header, we need to know the maximum number of qualifications
   // columns across all workers
 
-  const determineMaxQuals = await dbmodels.sequelize.query(
+  const determineMaxQuals = await dbModels.sequelize.query(
     'select cqc.maxQualifications(:givenPrimaryEstablishment);',
     {
       replacements: {
         givenPrimaryEstablishment: primaryEstablishmentId
       },
-      type: dbmodels.sequelize.QueryTypes.SELECT
+      type: dbModels.sequelize.QueryTypes.SELECT
     }
   );
 
@@ -2128,7 +2277,7 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
 // entities are restored, it is easy enough to create all three exports every time. Ideally the CSV content should
 // be prepared and uploaded to S3, and then signed URLs returned for the browsers to download directly, thus not
 // imposing the streaming of large data files through node.js API
-router.route('/download/:downloadType').get(async (req, res) => {
+const downloadGet = async (req, res) => {
   // manage the request timeout
   req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
 
@@ -2197,6 +2346,23 @@ router.route('/download/:downloadType').get(async (req, res) => {
       message: `Unexpected download type: ${downloadType}`
     });
   }
-});
+};
+
+const router = require('express').Router();
+
+router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet)); // DONE
+
+router.route('/download/:downloadType').get(acquireLock.bind(null, downloadGet)); // DONE
+
+router.route('/uploaded').put(acquireLock.bind(null, uploadedPut));
+router.route('/uploaded').get(acquireLock.bind(null, uploadedGet));
+router.route('/uploaded').post(acquireLock.bind(null, uploadedPost));
+router.route('/uploaded/*').get(acquireLock.bind(null, uploadedStarGet));
+
+router.route('/validate').put(acquireLock.bind(null, validatePut));
+router.route('/report/:reportType').get(acquireLock.bind(null, reportGet));
+router.route('/complete').post(acquireLock.bind(null, completePost));
+router.route('/lockstatus').get(lockStatusGet);
+router.route('/unlock').get(releaseLock);
 
 module.exports = router;
