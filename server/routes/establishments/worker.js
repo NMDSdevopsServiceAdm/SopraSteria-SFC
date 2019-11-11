@@ -12,6 +12,8 @@ const WdfUtils = require('../../utils/wdfEligibilityDate');
 // all worker functionality is encapsulated
 const Workers = require('../../models/classes/worker');
 const models = require('../../models');
+const Training = require('../../models/classes/training').Training;
+const Qualification = require('../../models/classes/qualification').Qualification;
 
 // parent route defines the "id" parameter
 
@@ -96,10 +98,26 @@ router.route('/').get(async (req, res) => {
     const establishmentId = req.establishmentId;
 
     try {
-        const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
-        return res.status(200).json({
-            workers: allTheseWorkers
-        });
+        let allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+        if(allTheseWorkers && allTheseWorkers.length){
+          const updateTrainingRecords = await Training.getExpiringAndExpiredTrainingCounts(establishmentId, allTheseWorkers);
+          if(updateTrainingRecords){
+            const updateQualsRecords = await Qualification.getQualsCounts(establishmentId, updateTrainingRecords);
+            if(updateQualsRecords){
+              //Sort workers record first by expired count then by expiring training count
+              updateQualsRecords.sort((a, b) => {
+                if(b.expiredTrainingCount > a.expiredTrainingCount){return 1;}
+                if(b.expiredTrainingCount < a.expiredTrainingCount){return -1;}
+                if(b.expiringTrainingCount > a.expiringTrainingCount){return 1;}
+                if(b.expiringTrainingCount < a.expiringTrainingCount){return -1;}
+                return 0;
+              })
+              return res.status(200).json({
+                workers: updateQualsRecords
+              });
+            }
+          }
+        }
     } catch (err) {
         console.error('worker::GET:all - failed', err);
         return res.status(503).send('Failed to get workers for establishment having id: '+establishmentId);
