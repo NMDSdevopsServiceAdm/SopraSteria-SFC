@@ -785,7 +785,7 @@ class Qualification extends EntityValidator {
     if(workerRecords.length !== 0){
       for(let i = 0; i < workerRecords.length; i++){
         const allQualRecords = await Qualification.fetch(establishmentId, workerRecords[i].uid);
-        if(allQualRecords){
+        if(allQualRecords && allQualRecords.qualifications.length > 0){
           workerRecords[i].qualificationCount = allQualRecords.qualifications.length;
         }else{
           workerRecords[i].qualificationCount = 0;

@@ -819,21 +819,19 @@ class Training extends EntityValidator {
       if(workerRecords.length !== 0){
         for(let i = 0; i < workerRecords.length; i++){
           const allTrainingRecords = await Training.fetch(establishmentId, workerRecords[i].uid);
-          if(allTrainingRecords){
+          if(allTrainingRecords && allTrainingRecords.training.length > 0){
             workerRecords[i].trainingCount = allTrainingRecords.training.length;
             workerRecords[i].expiredTrainingCount = 0;
             workerRecords[i].expiringTrainingCount = 0;
-            if(allTrainingRecords.training.length !== 0){
-              //calculate all expired and expiring soon trainings count
-              let trainings = allTrainingRecords.training.length;
-              for(let j = 0; j < trainings; j++){
-                let expiringDate = moment(allTrainingRecords.training[j].expires);
-                let currentDate = moment();
-                if(currentDate > expiringDate){
-                  workerRecords[i].expiredTrainingCount++;
-                }else if(expiringDate.diff(currentDate, 'days') <= 90){
-                  workerRecords[i].expiringTrainingCount++;
-                }
+            //calculate all expired and expiring soon trainings count
+            let trainings = allTrainingRecords.training.length;
+            for(let j = 0; j < trainings; j++){
+              let expiringDate = moment(allTrainingRecords.training[j].expires);
+              let currentDate = moment();
+              if(currentDate > expiringDate){
+                workerRecords[i].expiredTrainingCount++;
+              }else if(expiringDate.diff(currentDate, 'days') <= 90){
+                workerRecords[i].expiringTrainingCount++;
               }
             }
           }else{
