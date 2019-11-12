@@ -1,4 +1,16 @@
-<table class="govuk-table">
+<div class="govuk-form-group">
+  <label class="govuk-label" for="sort">
+    Sort by
+  </label>
+  <select class="govuk-select" id="sortBy" name="sortBy" (change)="sortByColumn($event.target.value)">
+    <option value="0_asc" selected="selected">Staff name ascending</option>
+    <option value="0_dsc">Staff name descending</option>
+    <option value="1_asc">Job role ascending</option>
+    <option value="1_dsc">Job role descending</option>
+  </select>
+</div>
+
+<table class="govuk-table" datatable [dtOptions]="dtOptions">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Staff name</th>

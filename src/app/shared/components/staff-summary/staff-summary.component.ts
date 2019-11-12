@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { DataTableDirective } from 'angular-datatables';
 import * as moment from 'moment';
 
 @Component({
@@ -9,11 +10,15 @@ import * as moment from 'moment';
   templateUrl: './staff-summary.component.html',
 })
 export class StaffSummaryComponent implements OnInit {
+  @ViewChild(DataTableDirective, { static: false })
+  dtElement: DataTableDirective;
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
   @Input() wdfView = false;
+
   public canViewWorker: boolean;
   public canEditWorker: boolean;
+  public dtOptions: DataTables.Settings = {};
 
   constructor(private permissionsService: PermissionsService) {}
 
@@ -31,5 +36,50 @@ export class StaffSummaryComponent implements OnInit {
   ngOnInit() {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+    this.dtOptions = this.buildDtOptions();
+  }
+
+  private buildDtOptions(): DataTables.Settings {
+    return {
+      paging: false,
+      ordering: true,
+      searching: false,
+      info: false,
+      //To make orderable false for all columns because we are using dropdown for orderBy
+      columnDefs: [{ orderable: false, targets: [0, 1, 2, 3] }],
+    };
+  }
+
+  public sortByColumn(selectedColumn: any) {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      switch (selectedColumn) {
+        case '0_asc': {
+          dtInstance.order([0, 'asc']).draw();
+          break;
+        }
+        case '0_dsc': {
+          dtInstance.order([0, 'dsc']).draw();
+          break;
+        }
+        case '1_asc': {
+          dtInstance.order([1, 'asc']).draw();
+          break;
+        }
+        case '1_dsc': {
+          dtInstance.order([1, 'dsc']).draw();
+          break;
+        }
+        default: {
+          dtInstance.order([0, 'asc']).draw();
+          break;
+        }
+      }
+      // Destroy the table first
+
+      //dtInstance.destroy();
+
+      // Call the dtTrigger to rerender again
+      //this.dtTrigger.next();
+    });
   }
 }
