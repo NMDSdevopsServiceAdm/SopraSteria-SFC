@@ -43,7 +43,14 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
     );
 
     this.createStaffResponse = this.workerService.getCreateStaffResponse();
-    this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
+    this.subscriptions.add(
+      this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermissions => {
+        if (hasPermissions && hasPermissions.permissions) {
+          this.permissionsService.setPermissions(this.workplace.uid, hasPermissions.permissions);
+          this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
+        }
+      })
+    );
   }
 
   ngOnDestroy() {

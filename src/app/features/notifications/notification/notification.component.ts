@@ -75,6 +75,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
         this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
         return true;
       }
+
       let requestParameter = {
         ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
         approvalStatus: 'APPROVED',
@@ -90,14 +91,19 @@ export class NotificationComponent implements OnInit, OnDestroy {
           .subscribe(
             request => {
               if (request) {
-                this.router.navigate(['/dashboard']);
+                this.establishmentService.getEstablishment(this.workplace.uid).subscribe(workplace => {
+                  if (workplace) {
+                    this.establishmentService.setState(workplace);
+                    this.router.navigate(['/dashboard']);
+                    this.alertService.addAlert({
+                      type: 'success',
+                      message: `Your decision to transfer ownership of data has been sent to
+                      ${this.notification.typeContent.requestorName} `,
+                    });
+                  }
+                });
                 this.notificationsService.getAllNotifications().subscribe(notify => {
                   this.notificationsService.notifications$.next(notify);
-                });
-                this.alertService.addAlert({
-                  type: 'success',
-                  message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.requestorName} `,
                 });
               }
             },
