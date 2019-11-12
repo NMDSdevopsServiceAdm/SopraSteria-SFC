@@ -168,10 +168,10 @@ SELECT
   "Worker"."NameOrIdValue",
   "Establishment"."NameValue",
   "Worker"."GenderValue",
-  "Worker"."DateOfBirthValue",
+  to_char("DateOfBirthValue", :timeFormat) as "DateOfBirthValue",
   "NationalityValue",
   "Job"."JobName" AS "MainJobRole",
-  "MainJobStartDateValue",
+  to_char("MainJobStartDateValue", :timeFormat) as "MainJobStartDateValue",
   "RecruitedFromValue",
   "ContractValue",
   "WeeklyHoursContractedValue",
@@ -217,7 +217,8 @@ exports.getWorkerData = async establishmentId =>
     replacements: {
       establishmentId,
       separator: ', ',
-      falseValue: false
+      falseValue: false,
+      timeFormat: 'DD/MM/YYYY'
     },
     type: db.QueryTypes.SELECT
   });
