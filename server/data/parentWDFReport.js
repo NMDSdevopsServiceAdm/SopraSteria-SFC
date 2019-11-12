@@ -3,6 +3,7 @@
 const db = rfr('server/utils/datastore');
 
 const effectiveDate = rfr('server/models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
+console.log(effectiveDate)
 
 const getEstablishmentDataQuery =
 `
@@ -130,7 +131,7 @@ SELECT
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
   "ShareDataWithCQC",
   "ShareDataWithLA",
-  "ReasonsForLeaving"
+  (select count("LeaveReasonFK") from cqc."Worker" where "EstablishmentFK" = "Establishment"."EstablishmentID") as "ReasonsForLeaving"
 FROM
   cqc."Establishment"
 LEFT JOIN
