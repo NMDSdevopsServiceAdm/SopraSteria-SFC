@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { WeeklyContractedHoursComponent } from './WeeklyContractedHoursComponent';
+import { WeeklyContractedHoursComponent } from './weekly-contracted-hours.component';
 
 describe('AverageWeeklyHoursComponent', () => {
   let component: WeeklyContractedHoursComponent;

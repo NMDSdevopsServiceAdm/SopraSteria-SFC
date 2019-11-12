@@ -88,11 +88,17 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
-
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe(response => {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;
+      })
+    );
+    this.subscriptions.add(
+      this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermissions => {
+        if (hasPermissions && hasPermissions.permissions) {
+          this.permissionsService.setPermissions(this.workplace.uid, hasPermissions.permissions);
+          this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+        }
       })
     );
   }
