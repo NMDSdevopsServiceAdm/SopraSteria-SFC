@@ -44,6 +44,7 @@ import { ResetPasswordConfirmationComponent } from '@features/reset-password/con
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SharedModule } from '@shared/shared.module';
+import { DataTablesModule } from 'angular-datatables';
 import { Angulartics2Module } from 'angulartics2';
 import { MomentModule } from 'ngx-moment';
 
@@ -86,6 +87,7 @@ import {
     MomentModule,
     ReactiveFormsModule,
     SharedModule,
+    DataTablesModule,
   ],
   providers: [
     AuthGuard,

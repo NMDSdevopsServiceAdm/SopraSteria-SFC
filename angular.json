@@ -29,7 +29,11 @@
                 "output": "./assets/"
               }
             ],
-            "styles": ["./src/styles.scss"]
+            "styles": ["./src/styles.scss"],
+            "scripts": [
+              "./node_modules/jquery/dist/jquery.js",
+              "./node_modules/datatables.net/js/jquery.dataTables.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -85,7 +89,10 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "styles": ["src/styles.scss"],
-            "scripts": [],
+            "scripts": [
+              "./node_modules/jquery/dist/jquery.js",
+              "./node_modules/datatables.net/js/jquery.dataTables.js"
+            ],
             "assets": ["src/favicon.ico", "src/assets"]
           }
         },
