@@ -113,6 +113,8 @@ const getEstablishmentReportData = async establishmentId => {
       value.DateEligibilityAchieved = '';
     }
 
+    value.NumberOfStaffValue = (value.NumberOfStaffValue === null) ? 0: value.NumberOfStaffValue;
+
     if (
       value.NumberOfStaffValue !== 0 &&
       value.NumberOfStaffValue !== null &&
@@ -685,6 +687,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].SubsidiaryName
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'C': {
@@ -692,6 +695,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].SubsidiarySharingPermissions
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'D': {
@@ -699,6 +703,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].EmployerTypeValue
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'E': {
@@ -706,6 +711,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].MainService
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'F': {
@@ -713,6 +719,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].Capacities
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'G': {
@@ -720,6 +727,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].Utilisations
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'H': {
@@ -727,6 +735,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].OtherServices
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'I': {
@@ -734,6 +743,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].ServiceUsers
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'J': {
@@ -741,6 +751,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].LastUpdatedDate
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'K': {
@@ -748,6 +759,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].NumberOfStaffValue
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'L': {
@@ -755,6 +767,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].TotalIndividualWorkerRecord
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'M': {
@@ -762,6 +775,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].PercentageOfWorkerRecords
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'N': {
@@ -769,6 +783,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].StartersValue
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'O': {
@@ -776,6 +791,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].LeaversValue
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'P': {
@@ -783,6 +799,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].VacanciesValue
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'Q': {
@@ -952,13 +969,14 @@ const updateWorkersSheet = (
         } break;
 
         case 'I': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].RecruitedFromValue,
-            columnText,
-            rowType
+            reportData.workers[row].RecruitedFromValue
           );
+
+          isRed = (reportData.workers[row].RecruitedFromValue === 'Missing') ? true: false;
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'J': {
@@ -972,33 +990,36 @@ const updateWorkersSheet = (
         } break;
 
         case 'K': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].WeeklyHoursContractedValue,
-            columnText,
-            rowType
+            reportData.workers[row].WeeklyHoursContractedValue
           );
+
+          isRed = (reportData.workers[row].WeeklyHoursContractedValue === 'Missing') ? true: false;
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'L': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].ZeroHoursContractValue,
-            columnText,
-            rowType
+            reportData.workers[row].ZeroHoursContractValue
           );
+
+          isRed = (reportData.workers[row].ZeroHoursContractValue === 'Missing') ? true: false;
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'M': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].DaysSickValue,
-            columnText,
-            rowType
+            reportData.workers[row].DaysSickValue
           );
+
+          isRed = (reportData.workers[row].DaysSickValue === 'Missing') ? true: false;
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'N': {
@@ -1022,13 +1043,14 @@ const updateWorkersSheet = (
         } break;
 
         case 'P': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].CareCertificateValue,
-            columnText,
-            rowType
+            reportData.workers[row].CareCertificateValue
           );
+
+          isRed = (reportData.workers[row].CareCertificateValue === 'Missing') ? true: false;
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'Q': {
