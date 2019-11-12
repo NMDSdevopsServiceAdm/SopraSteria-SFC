@@ -22,17 +22,21 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
   constructor(private userService: UserService, private permissionsService: PermissionsService) {}
 
   ngOnInit() {
-    this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
-
     this.subscriptions.add(
-      this.userService.getAllUsersForEstablishment(this.workplace.uid).subscribe(users => {
-        this.users = orderBy(
-          users,
-          ['status', 'isPrimary', 'role', (user: UserDetails) => user.fullname.toLowerCase()],
-          ['desc', 'desc', 'asc', 'asc']
-        );
-        this.canAddUser =
-          this.permissionsService.can(this.workplace.uid, 'canAddUser') && this.userSlotsAvailable(users);
+      this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermissions => {
+        if (hasPermissions && hasPermissions.permissions) {
+          this.permissionsService.setPermissions(this.workplace.uid, hasPermissions.permissions);
+          this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
+          this.userService.getAllUsersForEstablishment(this.workplace.uid).subscribe(users => {
+            this.users = orderBy(
+              users,
+              ['status', 'isPrimary', 'role', (user: UserDetails) => user.fullname.toLowerCase()],
+              ['desc', 'desc', 'asc', 'asc']
+            );
+            this.canAddUser =
+              this.permissionsService.can(this.workplace.uid, 'canAddUser') && this.userSlotsAvailable(users);
+          });
+        }
       })
     );
   }
