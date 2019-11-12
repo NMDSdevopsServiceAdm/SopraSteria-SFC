@@ -1665,7 +1665,7 @@ class Establishment {
               lineNumber: this._lineNumber,
               errCode: Establishment.CAPACITY_UTILISATION_ERROR,
               errType: 'CAPACITY_UTILISATION_ERROR',
-              error: `Capacities (CAPACITY): position ${index + 1} is unexpected capacity (no expected capacity for given service: ${this._allServices[index]})`,
+              error: `Capacities (CAPACITY): position ${index + 1} is unexpected capacity (no expected capacity for given service: ${thisMappedCapacity})`,
               source: this._currentLine.CAPACITY,
               name: this._currentLine.LOCALESTID
             });
