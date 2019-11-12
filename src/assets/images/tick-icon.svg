@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 53.1 (72631) - https://sketchapp.com -->
-    <title>Tick icon</title>
+    <!-- Generator: Sketch 57.1 (83088) - https://sketch.com -->
+    <title>Green tick</title>
     <desc>Created with Sketch.</desc>
-    <defs>
-        <polygon id="path-1" points="-7.99360578e-14 0.000253846153 21.9997462 0.000253846153 21.9997462 22 -7.99360578e-14 22"></polygon>
-    </defs>
-    <g id="Tick-icon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Group-3">
-            <mask id="mask-2" fill="white">
-                <use xlink:href="#path-1"></use>
-            </mask>
-            <g id="Clip-2"></g>
-            <path d="M18.0981308,8.76725385 L10.0816692,16.7811769 C10.0647462,16.7972538 10.0461308,16.8082538 10.0292077,16.8234846 C10.0241308,16.8285615 10.0215923,16.8344846 10.0165154,16.8395615 C9.40474615,17.4513308 8.41051538,17.4513308 7.79874615,16.8387154 L3.85566923,12.8947923 C3.24305385,12.2821769 3.2439,11.2887923 3.85566923,10.6770231 C4.46913077,10.0644077 5.46166923,10.0644077 6.07428462,10.6770231 L8.91143846,13.5150231 L15.8803615,6.54863846 C16.4929769,5.93602308 17.4855154,5.93602308 18.0981308,6.54863846 C18.7107462,7.1621 18.7107462,8.15463846 18.0981308,8.76725385 M11.0014385,0.000253846154 C4.9269,-0.000592307692 0.000592307692,4.92317692 -0.000253846154,10.9985615 C-0.0011,17.0731 4.92351538,21.9994077 10.9980538,22.0002538 C17.0734385,22.0011 21.9989,17.0764846 21.9997462,11.0019462 C22.0005923,4.92656154 17.0768231,0.0011 11.0014385,0.000253846154" id="Fill-1" fill="#03893F" mask="url(#mask-2)"></path>
-        </g>
+    <g id="Green-tick" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Oval" fill="#03893F" cx="11" cy="11" r="11"></circle>
+        <path d="M5,11.5 L9,15.5" id="Stroke-6" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"></path>
+        <path d="M17,7.5 L9,15.5" id="Stroke-6" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"></path>
     </g>
 </svg>
