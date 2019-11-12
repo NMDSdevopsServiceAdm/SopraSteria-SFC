@@ -75,6 +75,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
         this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
         return true;
       }
+
       let requestParameter = {
         ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
         approvalStatus: 'APPROVED',
