@@ -119,7 +119,7 @@ const getEstablishmentReportData = async establishmentId => {
       value.NumberOfStaffValue !== 0 &&
       value.NumberOfStaffValue !== null &&
       (value.TotalIndividualWorkerRecord !== 0 || value.TotalIndividualWorkerRecord !== null)) {
-      value.PercentageOfWorkerRecords = `${parseFloat(+value.NumberOfStaffValue * +value.TotalIndividualWorkerRecord / 100).toFixed(1)}%`;
+      value.PercentageOfWorkerRecords = `${parseFloat(+value.TotalIndividualWorkerRecord / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
     } else {
       value.PercentageOfWorkerRecords = '0.0%';
     }
@@ -152,7 +152,7 @@ const getEstablishmentReportData = async establishmentId => {
     value.CompletedWorkerRecordsPercentage =
       (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
         ? '0.0%'
-        : `${parseFloat(+value.NumberOfStaffValue * +value.CompletedWorkerRecords / 100).toFixed(1)}%`;
+        : `${parseFloat(+value.CompletedWorkerRecords / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
   });
 
   return establishmentData;
@@ -189,7 +189,7 @@ const styleLookup = {
       H: 12,
       I: 12,
       J: 12,
-      K: 13
+      K: 12
     },
     OVRLAST: {
       A: 2,
@@ -202,7 +202,7 @@ const styleLookup = {
       H: 22,
       I: 22,
       J: 22,
-      K: 23
+      K: 22
     },
     ESTREGULAR: {
       A: 2,
@@ -217,7 +217,7 @@ const styleLookup = {
       J: 26,
       K: 27,
       L: 12,
-      M: 28,
+      M: 12,
       N: 27,
       O: 12,
       P: 29,
@@ -237,7 +237,7 @@ const styleLookup = {
       J: 32,
       K: 33,
       L: 22,
-      M: 34,
+      M: 12,
       N: 33,
       O: 22,
       P: 35,
@@ -259,7 +259,7 @@ const styleLookup = {
       L: 9,
       M: 9,
       N: 15,
-      O: 27,
+      O: 15,
       P: 15,
       Q: 15
     },
@@ -278,7 +278,7 @@ const styleLookup = {
       L: 9,
       M: 9,
       N: 20,
-      O: 27,
+      O: 20,
       P: 20,
       Q: 20
     }
@@ -323,7 +323,7 @@ const styleLookup = {
       J: 26,
       K: 27,
       L: 12,
-      M: 28,
+      M: 66,
       N: 27,
       O: 12,
       P: 29,
@@ -343,7 +343,7 @@ const styleLookup = {
       J: 32,
       K: 33,
       L: 22,
-      M: 34,
+      M: 66,
       N: 33,
       O: 22,
       P: 35,
@@ -365,7 +365,7 @@ const styleLookup = {
       L: 65,
       M: 65,
       N: 67,
-      O: 66,
+      O: 67,
       P: 67,
       Q: 15
     },
@@ -384,7 +384,7 @@ const styleLookup = {
       L: 65,
       M: 65,
       N: 67,
-      O: 66,
+      O: 67,
       P: 67,
       Q: 20
     }
@@ -404,7 +404,8 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
   }
 
   if (percentColumn) {
-    if (value < 90) {
+    let percentValue = value.split('%');
+    if (Number(percentValue[0]) < 90) {
       isRed = true;
     }
   }
@@ -771,11 +772,14 @@ const updateEstablishmentsSheet = (
         } break;
 
         case 'M': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            reportData.establishments[row].PercentageOfWorkerRecords
+            reportData.establishments[row].PercentageOfWorkerRecords,
+            columnText,
+            rowType,
+            true
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'N': {
@@ -893,7 +897,7 @@ const updateWorkersSheet = (
 
     for (let column = 0; column < 17; column++) {
       const columnText = String.fromCharCode(column + 65);
-      const isRed = false;
+      let isRed = false;
 
       const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 10}']`);
 
