@@ -160,7 +160,7 @@ const getEstablishmentReportData = async establishmentId => {
 
 const updateProps = ('DateOfBirthValue,GenderValue,NationalityValue,MainJobStartDateValue,' +
 'RecruitedFromValue,WeeklyHoursContractedValue,ZeroHoursContractValue,' +
-'DaysSickValue,AnnualHourlyPayValue,AnnualHourlyPayRate,CareCertificateValue').split(',');
+'DaysSickValue,AnnualHourlyPayValue,AnnualHourlyPayRate,CareCertificateValue,QualificationInSocialCareValue,QualificationInSocialCare,OtherQualificationsValue').split(',');
 
 const getWorkersReportData = async establishmentId => {
   const workerData = await getWorkerData(establishmentId);
@@ -261,7 +261,9 @@ const styleLookup = {
       N: 15,
       O: 15,
       P: 15,
-      Q: 15
+      Q: 15,
+      R: 15,
+      S: 15
     },
     WKRLAST: {
       A: 2,
@@ -280,7 +282,9 @@ const styleLookup = {
       N: 20,
       O: 20,
       P: 20,
-      Q: 20
+      Q: 20,
+      R: 20,
+      S: 20
     }
   },
   RED: {
@@ -367,7 +371,9 @@ const styleLookup = {
       N: 67,
       O: 67,
       P: 67,
-      Q: 15
+      Q: 67,
+      R: 67,
+      S: 67
     },
     WKRLAST: {
       A: 2,
@@ -386,7 +392,9 @@ const styleLookup = {
       N: 67,
       O: 67,
       P: 67,
-      Q: 20
+      Q: 67,
+      R: 67,
+      S: 67
     }
   }
 };
@@ -895,7 +903,7 @@ const updateWorkersSheet = (
     const rowType = row === reportData.workers.length - 1 ? 'WKRLAST' : 'WKRREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 17; column++) {
+    for (let column = 0; column < 19; column++) {
       const columnText = String.fromCharCode(column + 65);
       let isRed = false;
 
@@ -1058,13 +1066,34 @@ const updateWorkersSheet = (
         } break;
 
         case 'Q': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].HighestQualificationHeld,
-            columnText,
-            rowType
+            reportData.workers[row].QualificationInSocialCareValue
           );
+
+          isRed = (reportData.workers[row].QualificationInSocialCareValue === 'Missing') ? true: false;
+
+          setStyle(cellToChange, columnText, rowType, isRed);
+        } break;
+        case 'R': {
+          putString(
+            cellToChange,
+            reportData.workers[row].QualificationInSocialCare
+          );
+
+          isRed = (reportData.workers[row].QualificationInSocialCare === 'Missing') ? true: false;
+
+          setStyle(cellToChange, columnText, rowType, isRed);
+        } break;
+        case 'S': {
+          putString(
+            cellToChange,
+            reportData.workers[row].OtherQualificationsValue
+          );
+
+          isRed = (reportData.workers[row].OtherQualificationsValue === 'Missing') ? true: false;
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
       }
 

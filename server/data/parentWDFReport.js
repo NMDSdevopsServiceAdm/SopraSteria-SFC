@@ -3,7 +3,6 @@
 const db = rfr('server/utils/datastore');
 
 const effectiveDate = rfr('server/models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
-console.log(effectiveDate)
 
 const getEstablishmentDataQuery =
 `
@@ -181,18 +180,13 @@ SELECT
   "AnnualHourlyPayValue",
   "AnnualHourlyPayRate",
   "CareCertificateValue",
-  array_to_string(array(
-    SELECT
-      b."From"
-    FROM
-      cqc."Worker" AS a
-    JOIN
-      cqc."Qualifications" AS b
-    ON
-      a."HighestQualificationFKValue" = b."ID"
-    WHERE
-      "EstablishmentFK" = "Establishment"."EstablishmentID"
-  ), :separator) AS "HighestQualificationHeld"
+  "QualificationInSocialCareValue",
+  "QualificationInSocialCareSavedAt",
+  "Qualification"."Level" AS "QualificationInSocialCare",
+  "SocialCareQualificationFKValue",
+  "SocialCareQualificationFKSavedAt",
+  "OtherQualificationsValue",
+  "OtherQualificationsSavedAt"
 FROM
   cqc."Worker"
 INNER JOIN
