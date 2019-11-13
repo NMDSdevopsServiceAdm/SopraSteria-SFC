@@ -62,7 +62,7 @@ router.route('/:id').put(async (req, res) => {
         if (params.approvalStatus !== 'DENIED') {
           let objToUpdate = {
             dataOwner: 'Workplace',
-            dataPermissions: 'Workplace and Staff',
+            dataPermissions: checkOwnerChangeRequest[0].permissionRequest,
           };
           requesterUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(
             checkOwnerChangeRequest[0].subEstablishmentID,
@@ -77,7 +77,7 @@ router.route('/:id').put(async (req, res) => {
             //updating reciever establishment details
             objToUpdate = {
               dataOwner: 'Workplace',
-              dataPermissions: checkOwnerChangeRequest[0].permissionRequest,
+              dataPermissions: 'Workplace and Staff',
             };
 
             recieverUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(

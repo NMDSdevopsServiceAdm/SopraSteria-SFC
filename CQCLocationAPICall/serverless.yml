@@ -19,11 +19,28 @@ service: cqc-location-call # NOTE: update this with your service name
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
+  memorySize: 512
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+        - "s3:GetObject"
+      Resource:
+        Fn::Join:
+          - ""
+          - - arn:aws:s3:::*
 
+    - Effect: "Allow"
+      Action:
+        - "sqs:sendMessage"
+      Resource:
+        Fn::Join:
+          - ""
+          - - arn:aws:sqs:eu-west-1:624216394565:cqctest
 # you can overwrite defaults here
 #  stage: dev
-  region: eu-west-2
+  region: eu-west-1
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -47,22 +64,33 @@ provider:
 
 # you can add packaging information here
 #package:
-#  include:
-#    - include-me.js
-#    - include-me-dir/**
+include:
+  - config/*
+  - models/*
+  - aws/*
+  - changes.js
+  - update.js
 #  exclude:
 #    - exclude-me.js
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.handler
-    name: postBook
+  changes:
+    handler: changes.handler
+    name: cqc-changes
     timeout: 900
     events:
-      - http:
-          path: /
-          method: get
+      - schedule: rate(24 hours)
+
+  update:
+    handler: update.handler
+    name: cqc-update
+    timeout: 900
+    events:
+      - sqs:
+        arn: arn:aws:sqs:eu-west-1:624216394565:cqctest
+        batchSize: 1
+        reservedConcurrency: 1
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -94,19 +122,24 @@ functions:
 #          trigger: PreSignUp
 
 #    Define function environment variables here
-#    environment:
-#      variable2: value2
+  # environment:
+  #   variable2: value2
 
 # you can add CloudFormation resource templates here
-#resources:
+# resources:
 #  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
+#   cqcchanges:
+#     Type: AWS::S3::Bucket
+#     Properties:
+#       BucketName: cqcchanges
+#   cqctest:
+#     Type: AWS::SQS::Queue
+#     Properties:
+#       QueueName: cqctest
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+
 plugins:
   - serverless-offline

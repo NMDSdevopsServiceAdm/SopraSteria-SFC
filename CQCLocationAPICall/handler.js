@@ -1,14 +1,15 @@
 const axios = require('axios');
+const axiosRetry = require('axios-retry');
 const models = require('./models/index');
 //CQC Endpoint
 const url = 'https://api.cqc.org.uk/public/v1';
+axiosRetry(axios, { retries: 3 });
 
 const BULK_UPLOAD=0;
 const REFRESH=1;
-const METHOD=BULK_UPLOAD;
+const METHOD=REFRESH;
 
 module.exports.handler =  async (event, context) => {
-
     try {
       switch (METHOD) {
         case BULK_UPLOAD:
@@ -28,14 +29,14 @@ module.exports.handler =  async (event, context) => {
           }).then(function(entries){
             startDate = entries[0].dataValues.lastUpdatedAt;
           });
-    
+
           // Set end date for query to now. Regex to remove milliseconds from ISO Date String
           const endDate=new Date().toISOString().split('.')[0]+"Z";
-    
+
           let locations = await getIndividualLocations(await getChangedIds(startDate,endDate));
-    
+
           await writeToLocationsTable(locations);
-    
+
           // Log Successful API and DB population with last update date and time
           await models.cqclog.create({
             success: true,
@@ -44,7 +45,7 @@ module.exports.handler =  async (event, context) => {
           });
           break;
       }
-
+      models.sequelize.close();
       return {status: 200,
         body: "Call Successful"};
 
@@ -57,6 +58,7 @@ module.exports.handler =  async (event, context) => {
         });
       }
       console.error(e);
+      models.sequelize.close();
       return  e.message;
     }
 
@@ -65,7 +67,6 @@ module.exports.handler =  async (event, context) => {
 
       let changes = [];
       let nextPage='/changes/location?page=1&perPage=1000&startTimestamp=' + startTimestamp + '&endTimestamp=' + endTimestamp;
-
       do {
         let changeUrl = url + nextPage;
 
@@ -76,7 +77,6 @@ module.exports.handler =  async (event, context) => {
           changes.push(response.data.changes[i]);
         }
       } while (nextPage != null);
-
       return changes;
     }
 
@@ -85,15 +85,18 @@ module.exports.handler =  async (event, context) => {
       let locations = [];
 
       for (let i=0, len=locationIds.length; i<len; i++){
-        let individualLocation = await axios.get(url+'/locations/'+locationIds[i]);
-        
-        if (!individualLocation.data.deregistrationDate) {
-          // not deregistered so must exist
-          locations.push(individualLocation.data);
-        }
+        try {
+          let individualLocation = await axios.get(url+'/locations/'+locationIds[i]);
+          if (!individualLocation.data.deregistrationDate) {
+            // not deregistered so must exist
+            locations.push(individualLocation.data);
+          }
 
-        if (i % 100 === 0) {
-          console.log("... fetched records: ", i)
+          if (i % 100 === 0) {
+            console.log("... fetched records: ", i)
+          }
+        } catch (error) {
+          console.error(error);
         }
       }
 
@@ -125,20 +128,20 @@ module.exports.handler =  async (event, context) => {
   //
   async function populateAllLocations(url){
     let response;
-    let nextPage='/locations?page=22&perPage=1000';
-  
+    let nextPage='/locations?page=1&perPage=1000';
+
     do{
       let locationIds = [];
       console.log("Fetching remote data: ", url+nextPage)
       response = await axios.get(url+nextPage);
       nextPage = response.data.nextPageUri;
-  
+
       for (let i=0, len=response.data.locations.length; i<len; i++){
         locationIds.push(response.data.locations[i].locationId)
       }
-  
+
       let locations = await getIndividualLocations(locationIds);
-  
+
       for (let i=0, len=locations.length; i<len; i++){
         await models.location.create({
           locationid:locations[i].locationId,
@@ -153,5 +156,4 @@ module.exports.handler =  async (event, context) => {
       }
     } while (nextPage != null);
   }
-
 };
