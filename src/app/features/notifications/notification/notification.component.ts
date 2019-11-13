@@ -23,8 +23,11 @@ export class NotificationComponent implements OnInit, OnDestroy {
   public notification;
   private subscriptions: Subscription = new Subscription();
   public displayActionButtons;
-  public isDataOwner: boolean;
-
+  public notificationUid: string;
+  public isWorkPlaceIsRequester: boolean;
+  public ownerShipRequestedFrom: string;
+  public ownerShipRequestedTo: string;
+  public isSubWorkplace: boolean;
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -38,22 +41,49 @@ export class NotificationComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
-    const notificationUid = this.route.snapshot.params.notificationuid;
-    this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
+    this.notificationUid = this.route.snapshot.params.notificationuid;
+
+    this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
       this.notification = details;
-      this.isDataOwner = true; //To do once correct response from DB.
-      this.displayActionButtons = details.typeContent.approvalStatus === 'REQUESTED';
+
+      this.isSubWorkplace =
+        this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
+
+      this.ownerShipRequestedFrom =
+        details.typeContent.requestedOwnerType === 'Workplace'
+          ? details.typeContent.parentEstablishmentName
+          : details.typeContent.subEstablishmentName;
+      this.ownerShipRequestedTo =
+        details.typeContent.requestedOwnerType === 'Workplace'
+          ? details.typeContent.subEstablishmentName
+          : details.typeContent.parentEstablishmentName;
+
+      if (details.typeContent.approvalStatus === 'APPROVED') {
+        this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
+      } else {
+        this.isWorkPlaceIsRequester = this.workplace.name === this.ownerShipRequestedFrom;
+      }
+      this.displayActionButtons =
+        details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });
-    this.setNotificationViewed(notificationUid);
+    this.setNotificationViewed(this.notificationUid);
   }
 
   public approveRequest() {
     if (this.notification) {
+      if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
+        this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
+        return true;
+      }
+
       let requestParameter = {
         ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
         approvalStatus: 'APPROVED',
         approvalReason: '',
+        rejectionReason: null,
         type: OWNERSHIP_APPROVED,
+        exsistingNotificationUid: this.notificationUid,
+        requestedOwnership: this.notification.typeContent.permissionRequest,
       };
       this.subscriptions.add(
         this.notificationsService
@@ -61,11 +91,19 @@ export class NotificationComponent implements OnInit, OnDestroy {
           .subscribe(
             request => {
               if (request) {
-                this.router.navigate(['/dashboard']);
-                this.alertService.addAlert({
-                  type: 'success',
-                  message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.subEstablishmentName} `,
+                this.establishmentService.getEstablishment(this.workplace.uid).subscribe(workplace => {
+                  if (workplace) {
+                    this.establishmentService.setState(workplace);
+                    this.router.navigate(['/dashboard']);
+                    this.alertService.addAlert({
+                      type: 'success',
+                      message: `Your decision to transfer ownership of data has been sent to
+                      ${this.notification.typeContent.requestorName} `,
+                    });
+                  }
+                });
+                this.notificationsService.getAllNotifications().subscribe(notify => {
+                  this.notificationsService.notifications$.next(notify);
                 });
               }
             },
@@ -93,18 +131,24 @@ export class NotificationComponent implements OnInit, OnDestroy {
   }
 
   public rejectRequest($event: Event) {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
-    dialog.afterClosed.subscribe(requestRejected => {
-      if (requestRejected) {
-        this.router.navigate(['/dashboard']);
-        this.alertService.addAlert({
-          type: 'success',
-          message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.subEstablishmentName} `,
-        });
+    if (this.notification) {
+      if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
+        this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
+        return true;
       }
-    });
+      $event.preventDefault();
+      const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
+      dialog.afterClosed.subscribe(requestRejected => {
+        if (requestRejected) {
+          this.router.navigate(['/dashboard']);
+          this.alertService.addAlert({
+            type: 'success',
+            message: `Your decision to transfer ownership of data has been sent to
+                  ${this.notification.typeContent.requestorName} `,
+          });
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {

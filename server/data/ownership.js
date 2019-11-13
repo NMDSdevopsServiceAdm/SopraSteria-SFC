@@ -24,7 +24,7 @@ VALUES (:uid, :subEstId, :permReq, :appStatus, :userUid, :userUid);
 
 const updateChangeOwnershipQuery = `
 UPDATE cqc."OwnerChangeRequest"
-SET "approvalStatus" = :approvalStatus, "approvalReason" = :approvalReason, "updatedByUserUID" = :userUid
+SET "approvalStatus" = :approvalStatus, "approvalReason" = :rejectionReason, "updatedByUserUID" = :userUid
 WHERE "ownerChangeRequestUID" = :uid;
 `;
 
@@ -48,20 +48,23 @@ LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID
 JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
 WHERE :estID = est."EstablishmentID" AND individual."IsPrimary" = true
 `;
+const getRecipientSubUserDetailsQuery = `select "UserUID" from cqc."Establishment" est
+JOIN cqc."User" individual ON individual."EstablishmentID" = est."EstablishmentID"
+WHERE est."EstablishmentID"= :estID AND individual."IsPrimary" = true`;
 
 const ownershipDetailsQuery = `
-SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus"
+SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus", "createdByUserUID"
 FROM cqc."OwnerChangeRequest"
 WHERE "subEstablishmentID" = :subEstId ORDER BY "created" DESC LIMIT :limit;
 `;
 const checkOwnershipRequestIdQuery = `
-SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus"
+SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus", "permissionRequest"
 FROM cqc."OwnerChangeRequest"
 WHERE "ownerChangeRequestUID" = :ownerChangeRequestUID ORDER BY "created" DESC LIMIT :limit;
 `;
 
 const getUpdatedOwnershipRequestQuery = `
-SELECT "ownerChangeRequestUID", "approvalStatus", "permissionRequest", "createdByUserUID", "created", "updatedByUserUID", "updated"
+SELECT "ownerChangeRequestUID", "approvalStatus", "permissionRequest", "approvalReason", "createdByUserUID", "created", "updatedByUserUID", "updated"
 FROM cqc."OwnerChangeRequest"
 WHERE "ownerChangeRequestUID" = :ownerChangeId;
 `;
@@ -72,6 +75,13 @@ SET "DataOwnershipRequested" = :timestamp
 WHERE "EstablishmentID" = :estId;
 `;
 
+exports.getRecipientSubUserDetails = async params =>
+  db.query(getRecipientSubUserDetailsQuery, {
+    replacements: {
+      estID: params.establishmentId,
+    },
+    type: db.QueryTypes.SELECT,
+  });
 exports.getRecipientUserDetails = async params =>
   db.query(getRecipientUserDetailsQuery, {
     replacements: {
@@ -148,7 +158,7 @@ exports.updateOwnershipRequest = async params =>
   db.query(updateChangeOwnershipQuery, {
     replacements: {
       uid: params.ownerRequestChangeUid,
-      approvalReason: params.approvalReason,
+      rejectionReason: params.rejectionReason,
       approvalStatus: params.approvalStatus,
       userUid: params.userUid,
     },
@@ -159,7 +169,7 @@ exports.updateChangeRequest = async params =>
   db.query(updateChangeOwnershipQuery, {
     replacements: {
       uid: params.ownerRequestChangeUid,
-      approvalReason: params.approvalReason,
+      rejectionReason: params.rejectionReason,
       approvalStatus: params.approvalStatus,
       userUid: params.userUid,
     },
@@ -187,6 +197,7 @@ exports.changedDataOwnershipRequested = async params =>
 const getOwnershipNotificationDetailsQuery = `
 SELECT
   "ownerChangeRequestUID",
+  "createdByUserUID",
   parent."NameValue" as "parentEstablishmentName",
   sub."NameValue" as "subEstablishmentName",
   CASE
@@ -209,6 +220,20 @@ exports.getOwnershipNotificationDetails = async ({ ownerChangeRequestUid }) =>
       parent: 'Parent',
       workplace: 'Workplace',
       unknown: 'unknown',
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const getNotificationRecieverNameQuery = `
+  select "NameValue" from cqc."User" as use
+  JOIN cqc."Notifications" as individual on individual."recipientUserUid" = use."UserUID"
+  JOIN cqc."Establishment" as sub on sub."EstablishmentID" = use."EstablishmentID"
+    WHERE "notificationUid" = :notificationUid;
+  `;
+exports.getNotificationRecieverName = async params =>
+  db.query(getNotificationRecieverNameQuery, {
+    replacements: {
+      notificationUid: params.notificationUid,
     },
     type: db.QueryTypes.SELECT,
   });

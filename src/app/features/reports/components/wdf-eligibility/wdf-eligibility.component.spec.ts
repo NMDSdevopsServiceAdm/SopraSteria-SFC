@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { WdfEligibilityComponent } from '@features/reports/wdf-eligibility/wdf-eligibility.component';
+import { WdfEligibilityComponent } from '@features/reports/components/wdf-eligibility/wdf-eligibility.component';
 
 describe('EligibilityDisplayOverviewComponent', () => {
   let component: WdfEligibilityComponent;

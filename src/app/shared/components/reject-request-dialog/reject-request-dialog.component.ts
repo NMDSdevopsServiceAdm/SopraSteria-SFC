@@ -1,5 +1,6 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { RejectOptions } from '@core/model/my-workplaces.model';
@@ -25,13 +26,15 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
   private serverErrorsMap: Array<ErrorDefinition>;
   public reason = '';
   public notification;
+  public serverError: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: FormBuilder,
     public dialog: Dialog<RejectRequestDialogComponent>,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private router: Router
   ) {
     super(data, dialog);
   }
@@ -125,26 +128,32 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
   }
 
   public rejectPermissionRequest() {
-    let requestParameter = {
-      ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
-      approvalStatus: 'DENIED',
-      approvalReason: this.form.value.reason,
-      type: OWNERSHIP_REJECTED,
-    };
-    this.subscriptions.add(
-      this.notificationsService
-        .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
-        .subscribe(
-          request => {
-            if (request) {
-              this.close(true);
+    if (this.form.valid) {
+      let requestParameter = {
+        ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
+        approvalStatus: 'DENIED',
+        rejectionReason: this.form.value.reason,
+        type: OWNERSHIP_REJECTED,
+        exsistingNotificationUid: this.notification.notificationUid,
+      };
+      this.subscriptions.add(
+        this.notificationsService
+          .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+          .subscribe(
+            request => {
+              if (request) {
+                this.notificationsService.getAllNotifications().subscribe(notify => {
+                  this.notificationsService.notifications$.next(notify);
+                });
+                this.close(true);
+              }
+            },
+            error => {
+              this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
             }
-          },
-          error => {
-            console.error(error.error.message);
-          }
-        )
-    );
+          )
+      );
+    }
   }
 
   public ngOnDestroy(): void {

@@ -6,23 +6,20 @@ const moment = require('moment');
 const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
-const JsZip = new require('jszip');
+const JsZip = require('jszip');
 
-const Establishment = require('../../../models/classes/establishment').Establishment;
-const parentWDFData = rfr('server/data/parentWDFReport');
-
-// for database
-const models = require('../../../models');
-
+const { Establishment } = require('../../../models/classes/establishment');
+const { getEstablishmentData, getWorkerData } = rfr('server/data/parentWDFReport');
 
 // Constants string needed by this file in several places
 const folderName = 'template';
 const overviewSheetName = path.join('xl', 'worksheets', 'sheet1.xml');
 const establishmentsSheetName = path.join('xl', 'worksheets', 'sheet2.xml');
-const workersSheetName = path.join('xl', 'worksheets', 'sheet3.xml')
+const workersSheetName = path.join('xl', 'worksheets', 'sheet3.xml');
 const sharedStringsName = path.join('xl', 'sharedStrings.xml');
 const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
+//const debuglog = console.log.bind(console);
 const debuglog = () => {};
 
 // XML DOM manipulation helper functions
@@ -75,108 +72,107 @@ const putStringTemplate = (
 };
 
 const getReportData = async (date, thisEstablishment) => {
-  // for the report
-  const establishmentId = thisEstablishment.id;
+  debuglog('wdf parent excel report data started:', thisEstablishment);
 
-  // first run the report, which means running the `cqc.parentWdfReport` function.
-  // this function runs in a single transaction
-  // the function returns true or false; encapsulating any SQL exceptions.
-  const params = {
-    establishmentId: establishmentId
-  };
-
-  debuglog('wdf parent excel report data started:', params);
-
-  const establishmentData = await parentWDFData.getEstablishmentData(params);
-  const createEstablishmentReportData = await getEstablishmentReportData(establishmentData);
-  const workersData = await parentWDFData.getWorkerData(params);
-  const createWorkerReportData = await getWorkersReportData(workersData);
-  const reportData = {
+  return {
     date: date.toISOString(),
     parentName: thisEstablishment.name,
-    establishments: createEstablishmentReportData,
-    workers: createWorkerReportData
+    establishments: await getEstablishmentReportData(thisEstablishment.id),
+    workers: await getWorkersReportData(thisEstablishment.id)
   };
-
-
-  //debuglog('LA user report data finished:', params, reportData.establishments.length, reportData.workers.length);
-
-  return reportData;
 };
 
-const getEstablishmentReportData = async (establishmentData) => {
+const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,ServiceUsers,' +
+'StartersValue,LeaversValue,VacanciesValue,NumberOfStaffValue').split(',');
+
+const getEstablishmentReportData = async establishmentId => {
+  const establishmentData = await getEstablishmentData(establishmentId);
+
   establishmentData.forEach((value, key) => {
-    if(value.ShareDataWithCQC && value.ShareDataWithLA){
+    if (value.ShareDataWithCQC && value.ShareDataWithLA) {
       value.SubsidiarySharingPermissions = 'All';
-    }else if(value.ShareDataWithCQC && !value.ShareDataWithLA){
+    } else if (value.ShareDataWithCQC && !value.ShareDataWithLA) {
       value.SubsidiarySharingPermissions = 'CQC';
-    }else if(!value.ShareDataWithCQC && value.ShareDataWithLA){
+    } else if (!value.ShareDataWithCQC && value.ShareDataWithLA) {
       value.SubsidiarySharingPermissions = 'LA';
-    }else{
+    } else {
       value.SubsidiarySharingPermissions = 'None';
     }
 
-    if(value.MainService === null || value.EmployerTypeValue === null || value.Capacities === null ||
-      value.ServiceUsers === null || value.StartersValue === null || value.LeaversValue === null ||
-      value.VacanciesValue === null || value.NumberOfStaffValue === null){
+    value.EstablishmentDataFullyCompleted = 'Yes';
+
+    propsNeededToComplete.forEach(prop => {
+      if (value[prop] === null) {
         value.EstablishmentDataFullyCompleted = 'No';
-      }else{
-        value.EstablishmentDataFullyCompleted = 'Yes';
       }
+    });
 
-    if(value.CurrentWdfEligibilityStatus === false){
-      value.CurrentWdfEligibilityStatus = 'Not Eligible';
-    }else{
-      value.CurrentWdfEligibilityStatus = 'Eligible';
-    }
+    value.CurrentWdfEligibilityStatus = value.CurrentWdfEligibilityStatus === null ? 'Not Eligible' : 'Eligible';
 
-    if(value.DateEligibilityAchieved === null){
+    if (value.DateEligibilityAchieved === null) {
       value.DateEligibilityAchieved = '';
     }
 
-    if(value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null){
-      value.PercentageOfWorkerRecords = `0.0%`;
-    }else{
-      value.PercentageOfWorkerRecords = (value.TotalIndividualWorkerRecord !== 0 || value.TotalIndividualWorkerRecord !== null)? `${parseFloat(+value.NumberOfStaffValue*+value.TotalIndividualWorkerRecord/100).toFixed(1)}%`: 0;
+    if (
+      value.NumberOfStaffValue !== 0 &&
+      value.NumberOfStaffValue !== null &&
+      (value.TotalIndividualWorkerRecord !== 0 || value.TotalIndividualWorkerRecord !== null)) {
+      value.PercentageOfWorkerRecords = `${parseFloat(+value.NumberOfStaffValue * +value.TotalIndividualWorkerRecord / 100).toFixed(1)}%`;
+    } else {
+      value.PercentageOfWorkerRecords = '0.0%';
     }
 
-    if(value.Capacities === null) value.Capacities = '';
-    if(value.Utilisations === null) value.Utilisations = '';
-    if(value.VacanciesValue === null) value.VacanciesValue = 0;
-    if(value.StartersValue === null) value.StartersValue = 0;
-    if(value.LeaversValue === null) value.LeaversValue = 0;
-
-    value.LeavingReasonsCountEqualsLeavers = (value.ReasonsForLeaving === value.LeaversValue)? 'Yes': 'No';
-    value.TotalWorkersCountGTEWorkerRecords = (value.NumberOfStaffValue >= value.TotalIndividualWorkerRecord)? 'Yes': 'No';
-    let currentYear = new Date().getFullYear();
-    let establishmentYear = value.LastUpdatedDate.split('/')[2];
-    value.UpdatedInCurrentFinancialYear = (currentYear === establishmentYear)? 'Yes': 'No';
-    if(value.CompletedWorkerRecords === 0){
-      value.CompletedWorkerRecordsPercentage = `0.0%`;
-    }else{
-      value.CompletedWorkerRecordsPercentage = (value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)? 0: `${parseFloat(+value.NumberOfStaffValue*+value.CompletedWorkerRecords/100).toFixed(1)}%`;
+    if (value.Capacities === null) {
+      value.Capacities = '';
     }
+
+    if (value.Utilisations === null) {
+      value.Utilisations = '';
+    }
+
+    if (value.VacanciesValue === null) {
+      value.VacanciesValue = 0;
+    }
+
+    if (value.StartersValue === null) {
+      value.StartersValue = 0;
+    }
+
+    if (value.LeaversValue === null) {
+      value.LeaversValue = 0;
+    }
+
+    value.LeavingReasonsCountEqualsLeavers = (value.ReasonsForLeaving === value.LeaversValue) ? 'Yes' : 'No';
+    value.TotalWorkersCountGTEWorkerRecords = (value.NumberOfStaffValue >= value.TotalIndividualWorkerRecord) ? 'Yes' : 'No';
+
+    value.UpdatedInCurrentFinancialYear = value.LastUpdatedDate !== null ? 'Yes' : 'No';
+
+    value.CompletedWorkerRecordsPercentage =
+      (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
+        ? '0.0%'
+        : `${parseFloat(+value.NumberOfStaffValue * +value.CompletedWorkerRecords / 100).toFixed(1)}%`;
   });
 
   return establishmentData;
 };
 
-const getWorkersReportData = async (workerData) => {
-  workerData.forEach((value, key) => {
-    if(value.DateOfBirthValue === null) value.DateOfBirthValue = 'Missing';
-    if(value.GenderValue === null) value.GenderValue = 'Missing';
-    if(value.NationalityValue === null) value.NationalityValue = 'Missing';
-    if(value.MainJobStartDateValue === null) value.MainJobStartDateValue = 'Missing';
-    if(value.RecruitedFromValue === null) value.RecruitedFromValue = 'Missing';
-    if(value.WeeklyHoursContractedValue === null) value.WeeklyHoursContractedValue = 'Missing';
-    if(value.ZeroHoursContractValue === null) value.ZeroHoursContractValue = 'Missing';
-    if(value.DaysSickValue === null) value.DaysSickValue = 'Missing';
-    if(value.AnnualHourlyPayValue === null) value.AnnualHourlyPayValue = 'Missing';
-    if(value.AnnualHourlyPayRate === null) value.AnnualHourlyPayRate = 'Missing';
-    if(value.CareCertificateValue === null) value.CareCertificateValue = 'Missing';
+const updateProps = ('DateOfBirthValue,GenderValue,NationalityValue,MainJobStartDateValue,' +
+'RecruitedFromValue,WeeklyHoursContractedValue,ZeroHoursContractValue,' +
+'DaysSickValue,AnnualHourlyPayValue,AnnualHourlyPayRate,CareCertificateValue').split(',');
+
+const getWorkersReportData = async establishmentId => {
+  const workerData = await getWorkerData(establishmentId);
+
+  workerData.forEach(value => {
+    updateProps.forEach(prop => {
+      if (value[prop] === null) {
+        value[prop] = 'Missing';
+      }
+    });
   });
+
   return workerData;
-}
+};
 
 const styleLookup = {
   BLACK: {
@@ -216,7 +212,6 @@ const styleLookup = {
       G: 12,
       H: 15,
       I: 15,
-      //J: 15,
       J: 26,
       K: 27,
       L: 12,
@@ -225,10 +220,6 @@ const styleLookup = {
       O: 12,
       P: 29,
       Q: 24,
-      //S: 15,
-      //T: 15,
-      //U: 15,
-      //V: 15,
       R: 9
     },
     ESTLAST: {
@@ -241,7 +232,6 @@ const styleLookup = {
       G: 22,
       H: 20,
       I: 20,
-      //J: 20,
       J: 32,
       K: 33,
       L: 22,
@@ -250,10 +240,6 @@ const styleLookup = {
       O: 22,
       P: 35,
       Q: 31,
-      //S: 20,
-      //T: 20,
-      //U: 20,
-     // V: 20,
       R: 9
     },
     WKRREGULAR: {
@@ -268,17 +254,12 @@ const styleLookup = {
       I: 9,
       J: 15,
       K: 9,
-      //L: 25,
-      //M: 10,
       L: 9,
       M: 9,
       N: 15,
       O: 27,
-      //R: 15,
       P: 15,
-      Q: 15,
-      //U: 60,
-      //V: 61
+      Q: 15
     },
     WKRLAST: {
       A: 2,
@@ -292,17 +273,12 @@ const styleLookup = {
       I: 9,
       J: 20,
       K: 22,
-      //L: 22,
-      //M: 20,
       L: 9,
       M: 9,
       N: 20,
       O: 27,
-      //R: 20,
       P: 20,
-      Q: 20,
-      //U: 62,
-      //V: 63
+      Q: 20
     }
   },
   RED: {
@@ -342,7 +318,6 @@ const styleLookup = {
       G: 12,
       H: 15,
       I: 15,
-      //J: 15,
       J: 26,
       K: 27,
       L: 12,
@@ -351,10 +326,6 @@ const styleLookup = {
       O: 12,
       P: 29,
       Q: 65,
-      //S: 65,
-      //T: 15,
-      //U: 15,
-      //V: 15,
       R: 65
     },
     ESTLAST: {
@@ -367,7 +338,6 @@ const styleLookup = {
       G: 22,
       H: 20,
       I: 20,
-      //J: 20,
       J: 32,
       K: 33,
       L: 22,
@@ -376,10 +346,6 @@ const styleLookup = {
       O: 22,
       P: 35,
       Q: 65,
-      //S: 65,
-      //T: 20,
-     // U: 20,
-      //V: 20,
       R: 65
     },
     WKRREGULAR: {
@@ -394,17 +360,12 @@ const styleLookup = {
       I: 65,
       J: 15,
       K: 65,
-      //L: 25,
-     // M: 10,
       L: 65,
       M: 65,
       N: 67,
       O: 66,
-      //R: 15,
       P: 67,
-      Q: 15,
-      //U: 60,
-      //V: 61
+      Q: 15
     },
     WKRLAST: {
       A: 2,
@@ -418,17 +379,12 @@ const styleLookup = {
       I: 65,
       J: 20,
       K: 65,
-      //L: 22,
-      //M: 20,
       L: 65,
       M: 65,
       N: 67,
       O: 66,
-      //R: 20,
       P: 67,
-      Q: 20,
-      //U: 62,
-      //V: 63
+      Q: 20
     }
   }
 };
@@ -437,23 +393,24 @@ const setStyle = (cellToChange, columnText, rowType, isRed) => {
   cellToChange.setAttribute('s', styleLookup[isRed ? 'RED' : 'BLACK'][rowType][columnText]);
 };
 
-const basicValidationUpdate = (putString, cellToChange, value, columnText, rowType, extraParam = '') => {
+const basicValidationUpdate = (putString, cellToChange, value, columnText, rowType, percentColumn = false) => {
   let isRed = false;
+  const stringValue = String(value);
 
-  if(String(value) === 'No' || String(value) === 'Not Eligible' || String(value) === 'Missing') {
+  if (stringValue === 'No' || stringValue === 'Not Eligible' || stringValue === 'Missing') {
     isRed = true;
   }
 
-  if(extraParam === 'percentColumn'){
-    if(value < 90){
+  if (percentColumn) {
+    if (value < 90) {
       isRed = true;
     }
   }
 
   putString(
-      cellToChange,
-      value
-    );
+    cellToChange,
+    value
+  );
 
   setStyle(cellToChange, columnText, rowType, isRed);
 };
@@ -480,13 +437,52 @@ const updateOverviewSheet = (
     `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`
   );
 
-  // clone the row the apropriate number of times
   const templateRow = overviewSheet.querySelector("row[r='11']");
-  let currentRow = templateRow;
-  let rowIndex = 12;
+
+  // move the footer rows down appropriately
+  //no rows = -1
+  //one row = 0
+  //two rows = 1
+  let currentRow = overviewSheet.querySelector("row[r='16']");
+  let rowIndex = 16;
+  let updateRowIndex = 16 + reportData.establishments.length - 1;
+
+  for(; rowIndex > 11; rowIndex--, updateRowIndex--) {
+    if(rowIndex === 16) {
+      // fix the dimensions tag value
+      const dimension = overviewSheet.querySelector('dimension');
+      dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + updateRowIndex);
+    }
+
+    currentRow.querySelectorAll('c').forEach(elem => {
+      elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + updateRowIndex);
+    });
+
+    currentRow.setAttribute('r', updateRowIndex);
+
+    const mergeCell = overviewSheet.querySelector(`mergeCell[ref='B${rowIndex}:L${rowIndex}']`);
+
+    if(mergeCell !== null) {
+      mergeCell.setAttribute('ref', `B${updateRowIndex}:L${updateRowIndex}`);
+    }
+
+    while(currentRow.previousSibling !== null) {
+      currentRow = currentRow.previousSibling;
+
+      if(currentRow.nodeName === 'row') {
+        break;
+      }
+    }
+  }
+
+  // TODO: fix the page footer timestamp
+
+  // clone the row the apropriate number of times
+  currentRow = templateRow;
+  rowIndex = 12;
 
   if (reportData.establishments.length > 1) {
-    for (let i = 0; i < (reportData.establishments.length-1); i++) {
+    for (let i = 0; i < (reportData.establishments.length - 1); i++) {
       const tempRow = templateRow.cloneNode(true);
 
       tempRow.setAttribute('r', rowIndex);
@@ -502,23 +498,7 @@ const updateOverviewSheet = (
     }
 
     currentRow = templateRow;
-
-  } else if (reportData.establishments.length === 0) {
-    templateRow.remove();
-    rowIndex = 11;
   }
-
-  // fix the last row in the table
-  overviewSheet.querySelector('sheetData row:last-child').setAttribute('r', rowIndex);
-
-  // fix the dimensions tag value
-  const dimension = overviewSheet.querySelector('dimension');
-  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndex);
-
-  // TODO: fix the bottom 2 merge cells
-  /////////////////////////////////////
-
-  // fix the page footer timestamp
 
   // update the cell values
   for (let row = 0; row < reportData.establishments.length; row++) {
@@ -529,24 +509,24 @@ const updateOverviewSheet = (
 
     for (let column = 0; column < 10; column++) {
       const columnText = String.fromCharCode(column + 66);
-      let isRed = false;
+      const isRed = false;
 
       const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 11}']`);
       switch (columnText) {
         case 'B': {
           putString(
-              cellToChange,
-              reportData.establishments[row].SubsidiaryName
-            );
-            setStyle(cellToChange, columnText, rowType, isRed);
+            cellToChange,
+            reportData.establishments[row].SubsidiaryName
+          );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'C': {
           putString(
-              cellToChange,
-              reportData.establishments[row].SubsidiarySharingPermissions
-            );
-            setStyle(cellToChange, columnText, rowType, isRed);
+            cellToChange,
+            reportData.establishments[row].SubsidiarySharingPermissions
+          );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'D': {
@@ -561,9 +541,9 @@ const updateOverviewSheet = (
 
         case 'E': {
           putString(
-              cellToChange,
-              reportData.establishments[row].DateEligibilityAchieved
-            );
+            cellToChange,
+            reportData.establishments[row].DateEligibilityAchieved
+          );
         } break;
 
         case 'F': {
@@ -588,23 +568,23 @@ const updateOverviewSheet = (
 
         case 'H': {
           putString(
-              cellToChange,
-              reportData.establishments[row].NumberOfStaffValue
-            );
+            cellToChange,
+            reportData.establishments[row].NumberOfStaffValue
+          );
         } break;
 
         case 'I': {
           putString(
-              cellToChange,
-              reportData.establishments[row].TotalIndividualWorkerRecord
-            );
+            cellToChange,
+            reportData.establishments[row].TotalIndividualWorkerRecord
+          );
         } break;
 
         case 'J': {
           putString(
-              cellToChange,
-              reportData.establishments[row].CompletedWorkerRecords
-            );
+            cellToChange,
+            reportData.establishments[row].CompletedWorkerRecords
+          );
         } break;
 
         case 'K': {
@@ -614,13 +594,13 @@ const updateOverviewSheet = (
             reportData.establishments[row].CompletedWorkerRecordsPercentage,
             columnText,
             rowType,
-            'percentColumn'
+            true
           );
         } break;
       }
 
-      //TODO: duplicate the hyperlinked fields
-      ////////////////////////////////////////
+      // TODO: duplicate the hyperlinked fields
+      // //////////////////////////////////////
 
       nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
@@ -677,9 +657,6 @@ const updateEstablishmentsSheet = (
     }
 
     currentRow = templateRow;
-  } else if (reportData.establishments.length === 0) {
-    templateRow.remove();
-    rowIndex = 13;
   }
 
   // fix the last row in the table
@@ -705,107 +682,107 @@ const updateEstablishmentsSheet = (
       switch (columnText) {
         case 'B': {
           putString(
-              cellToChange,
-              reportData.establishments[row].SubsidiaryName
-            );
+            cellToChange,
+            reportData.establishments[row].SubsidiaryName
+          );
         } break;
 
         case 'C': {
           putString(
-              cellToChange,
-              reportData.establishments[row].SubsidiarySharingPermissions
-            );
+            cellToChange,
+            reportData.establishments[row].SubsidiarySharingPermissions
+          );
         } break;
 
         case 'D': {
           putString(
-              cellToChange,
-              reportData.establishments[row].EmployerTypeValue
-            );
+            cellToChange,
+            reportData.establishments[row].EmployerTypeValue
+          );
         } break;
 
         case 'E': {
           putString(
-              cellToChange,
-              reportData.establishments[row].MainService
-            );
+            cellToChange,
+            reportData.establishments[row].MainService
+          );
         } break;
 
         case 'F': {
           putString(
-              cellToChange,
-              reportData.establishments[row].Capacities
-            );
+            cellToChange,
+            reportData.establishments[row].Capacities
+          );
         } break;
 
         case 'G': {
           putString(
-              cellToChange,
-              reportData.establishments[row].Utilisations
-            );
+            cellToChange,
+            reportData.establishments[row].Utilisations
+          );
         } break;
 
         case 'H': {
           putString(
-              cellToChange,
-              reportData.establishments[row].OtherServices
-            );
+            cellToChange,
+            reportData.establishments[row].OtherServices
+          );
         } break;
 
         case 'I': {
           putString(
-              cellToChange,
-              reportData.establishments[row].ServiceUsers
-            );
+            cellToChange,
+            reportData.establishments[row].ServiceUsers
+          );
         } break;
 
         case 'J': {
           putString(
-              cellToChange,
-              reportData.establishments[row].LastUpdatedDate
-            );
+            cellToChange,
+            reportData.establishments[row].LastUpdatedDate
+          );
         } break;
 
         case 'K': {
           putString(
-              cellToChange,
-              reportData.establishments[row].NumberOfStaffValue
-            );
+            cellToChange,
+            reportData.establishments[row].NumberOfStaffValue
+          );
         } break;
 
         case 'L': {
           putString(
-              cellToChange,
-              reportData.establishments[row].TotalIndividualWorkerRecord
-            );
+            cellToChange,
+            reportData.establishments[row].TotalIndividualWorkerRecord
+          );
         } break;
 
         case 'M': {
           putString(
-              cellToChange,
-              reportData.establishments[row].PercentageOfWorkerRecords
-            );
+            cellToChange,
+            reportData.establishments[row].PercentageOfWorkerRecords
+          );
         } break;
 
         case 'N': {
           putString(
-              cellToChange,
-              reportData.establishments[row].StartersValue
-            );
+            cellToChange,
+            reportData.establishments[row].StartersValue
+          );
         } break;
 
         case 'O': {
           putString(
-              cellToChange,
-              reportData.establishments[row].LeaversValue
-            );
+            cellToChange,
+            reportData.establishments[row].LeaversValue
+          );
         } break;
 
         case 'P': {
           putString(
-              cellToChange,
-              reportData.establishments[row].VacanciesValue
-            );
+            cellToChange,
+            reportData.establishments[row].VacanciesValue
+          );
         } break;
 
         case 'Q': {
@@ -884,17 +861,11 @@ const updateWorkersSheet = (
     }
 
     currentRow = templateRow;
-  } else if (reportData.workers.length === 0) {
-    templateRow.remove();
-    rowIndex = 10;
   }
-
-  // fix the last row in the table
-  workersSheet.querySelector('sheetData row:last-child').setAttribute('r', rowIndex);
 
   // fix the dimensions tag value
   const dimension = workersSheet.querySelector('dimension');
-  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndex);
+  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + (rowIndex - 1));
 
   // update the cell values
   for (let row = 0; row < reportData.workers.length; row++) {
@@ -910,7 +881,6 @@ const updateWorkersSheet = (
       const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 10}']`);
 
       switch (columnText) {
-
         case 'B': {
           basicValidationUpdate(
             putString,
@@ -1091,7 +1061,6 @@ const getReport = async (date, thisEstablishment) => {
   }
 
   return (new Promise(resolve => {
-   // const thePath = `${__dirname}/${folderName}`;
     const thePath = path.join(__dirname, folderName);
     const walker = walk.walk(thePath);
     const outputZip = new JsZip();
@@ -1155,7 +1124,7 @@ const getReport = async (date, thisEstablishment) => {
         )));
 
         //outputZip.file(establishmentsSheetName, serializeXML(establishmentsSheet));
-       // outputZip.file(establishmentsSheetName, serializeXML(workersSheet));
+        //outputZip.file(workersSheetName, serializeXML(workersSheet));
 
         // update the establishments sheet with the report data and add it to the zip
         outputZip.file(establishmentsSheetName, serializeXML(updateEstablishmentsSheet(
@@ -1174,7 +1143,6 @@ const getReport = async (date, thisEstablishment) => {
           sst,
           sharedStringsUniqueCount // pass unique count by reference rather than by value
         )));
-
 
         // update the shared strings counts we've been keeping track of
         sst.setAttribute('uniqueCount', sharedStringsUniqueCount[0]);
@@ -1203,10 +1171,8 @@ const express = require('express');
 const router = express.Router();
 
 router.route('/').get(async (req, res) => {
-  // req.setTimeout(config.get('app.reports.parentWdf.timeout')*1000);
-
   try {
-    // first ensure this report can only be run by those establishments with a Local Authority employer type
+    // first ensure this report can only be run by those establishments that are a parent
     const thisEstablishment = new Establishment(req.username);
 
     if (await thisEstablishment.restore(req.establishment.id, false)) {
@@ -1216,7 +1182,7 @@ router.route('/').get(async (req, res) => {
 
         if (report) {
           res.setHeader('Content-disposition',
-            `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`);
+              `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`);
           res.setHeader('Content-Type',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           res.setHeader('Content-Length', report.length);
@@ -1238,7 +1204,7 @@ router.route('/').get(async (req, res) => {
         return res.status(403).send();
       }
     } else {
-      console.error('report/wdf/parent - failed restoring establisment', err);
+      console.error('report/wdf/parent - failed restoring establisment');
       return res.status(503).send('ERR: Failed to restore establishment');
     }
   } catch (err) {
