@@ -18,6 +18,7 @@
         "api:proxy": "node proxy.js",
         "api:server": "node server.js",
         "server": "npm-run-all -p -l build:watch api:server",
+        "lambda:test": "nyc --reporter=html mocha CQCLocationAPICall/test/**/*.js",
         "server:test": "mocha server/test/**/*.js",
         "nyc": "nyc --reporter=html mocha server/test/**/*.js"
     },

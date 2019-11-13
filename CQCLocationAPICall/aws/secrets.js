@@ -147,13 +147,15 @@ const dbAppRootCertificate = () => {
 };
 
 
-module.exports.initialiseSecrets = initialiseSecrets;
-module.exports.dbHost = dbHost;
-module.exports.dbPass = dbPass;
-module.exports.jwtSecret = jwtSecret;
-module.exports.slackUrl = slackUrl;
-module.exports.govNotify = govNotify;
-module.exports.dbAppUserKey = dbAppUserKey;
-module.exports.dbAppUserCertificate = dbAppUserCertificate;
-module.exports.dbAppRootCertificate = dbAppRootCertificate;
-module.exports.adminUrl = adminUrl;
+module.exports = {
+  initialiseSecrets,
+  dbHost,
+  dbPass,
+  jwtSecret,
+  slackUrl,
+  govNotify,
+  dbAppUserKey,
+  dbAppUserCertificate,
+  dbAppRootCertificate,
+  adminUrl
+};
