@@ -20,7 +20,6 @@ export class StaffSummaryComponent implements OnInit {
   public canEditWorker: boolean;
   public dtOptions: DataTables.Settings = {};
   public sortStaffOptions;
-  public defaultSelectedColumn;
 
   constructor(private permissionsService: PermissionsService) {}
 
@@ -40,7 +39,6 @@ export class StaffSummaryComponent implements OnInit {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = SortStaffOptions;
     this.dtOptions = this.buildDtOptions();
-    this.defaultSelectedColumn = '0_asc';
   }
 
   private buildDtOptions(): DataTables.Settings {
