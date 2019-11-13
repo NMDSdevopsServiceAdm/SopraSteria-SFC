@@ -37,7 +37,7 @@ export class StaffSummaryComponent implements OnInit {
     this.sortStaffOptions = SortStaffOptions;
     this.workersData = this.workers;
     map(this.workers, worker => {
-      //Adding jobRole attrubute to solve sorting by using only this property instead of itrating over the nested mainJob object
+      //Adding jobRole attribute to solve sorting by using only this property instead of iterating over the nested mainJob object
       worker.jobRole = worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title;
     });
     this.workers = orderBy(this.workersData, ['nameOrId'], ['asc']); //sorting by default on first column

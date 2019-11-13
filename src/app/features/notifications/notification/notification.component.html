@@ -41,7 +41,7 @@
             </ng-template>
           </ng-container>
           <ng-template #nonWorkPlaceRequester>
-            <p>{{ ownerShipRequestedFrom }} has rejected your request to become the owner of its data.</p>
+            <p>{{ ownerShipRequestedFrom }} has rejected your request to become the owner of the data.</p>
             <h2 class="govuk-heading-s">Reason</h2>
             <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
               <p>{{ notification.typeContent.rejectionReason }}</p>
@@ -57,7 +57,7 @@
           </ng-container>
           <ng-template #nonWorkPlaceRequester>
             <p>
-              {{ ownerShipRequestedTo }} has approved your request to become the owner of its data. You are now free to
+              {{ ownerShipRequestedTo }} has approved your request to become the owner of the data. You are now free to
               edit workplace and staff data.
             </p>
           </ng-template>
