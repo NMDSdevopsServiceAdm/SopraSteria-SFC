@@ -2,9 +2,8 @@
   "name": "cqc-location-call",
   "version": "1.0.0",
   "description": "Call CQC Location API and populate our own location database.",
-  "main": "handler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc --reporter=html mocha test/**/*.js"
   },
   "author": "",
   "license": "ISC",
