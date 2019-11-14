@@ -46,11 +46,11 @@ const getRecipientUserDetailsQuery = `
 select "UserUID" from cqc."Establishment" est
 LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
 JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
-WHERE :estID = est."EstablishmentID" AND individual."IsPrimary" = true
+WHERE :estID = est."EstablishmentID" AND individual."UserRoleValue" = :userRole
 `;
 const getRecipientSubUserDetailsQuery = `select "UserUID" from cqc."Establishment" est
 JOIN cqc."User" individual ON individual."EstablishmentID" = est."EstablishmentID"
-WHERE est."EstablishmentID"= :estID AND individual."IsPrimary" = true`;
+WHERE est."EstablishmentID"= :estID AND individual."UserRoleValue" = :userRole`;
 
 const ownershipDetailsQuery = `
 SELECT "ownerChangeRequestUID", "subEstablishmentID", "approvalStatus", "createdByUserUID"
@@ -79,6 +79,7 @@ exports.getRecipientSubUserDetails = async params =>
   db.query(getRecipientSubUserDetailsQuery, {
     replacements: {
       estID: params.establishmentId,
+      userRole: 'Edit'
     },
     type: db.QueryTypes.SELECT,
   });
@@ -86,6 +87,7 @@ exports.getRecipientUserDetails = async params =>
   db.query(getRecipientUserDetailsQuery, {
     replacements: {
       estID: params.establishmentId,
+      userRole: 'Edit'
     },
     type: db.QueryTypes.SELECT,
   });

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Establishment, SortStaffOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { map, orderBy } from 'lodash';
+import { orderBy } from 'lodash';
 import * as moment from 'moment';
 
 @Component({
@@ -17,6 +17,7 @@ export class StaffSummaryComponent implements OnInit {
   public canEditWorker: boolean;
   public sortStaffOptions;
   public workersData: Array<Worker>;
+  public workersOrderBy: Array<Worker>;
 
   constructor(private permissionsService: PermissionsService) {}
 
@@ -35,34 +36,34 @@ export class StaffSummaryComponent implements OnInit {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = SortStaffOptions;
-    this.workersData = this.workers;
-    map(this.workers, worker => {
+    this.workersData = this.workers.map(worker => {
       //Adding jobRole attrubute to solve sorting by using only this property instead of itrating over the nested mainJob object
       worker.jobRole = worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title;
+      return worker;
     });
-    this.workers = orderBy(this.workersData, ['nameOrId'], ['asc']); //sorting by default on first column
+    this.workersOrderBy = orderBy(this.workersData, ['nameOrId'], ['asc']); //sorting by default on first column
   }
 
   public sortByColumn(selectedColumn: any) {
     switch (selectedColumn) {
       case '0_asc': {
-        this.workers = orderBy(this.workersData, ['nameOrId'], ['asc']);
+        this.workersOrderBy = orderBy(this.workersData, ['nameOrId'], ['asc']);
         break;
       }
       case '0_dsc': {
-        this.workers = orderBy(this.workers, ['nameOrId'], ['desc']);
+        this.workersOrderBy = orderBy(this.workersData, ['nameOrId'], ['desc']);
         break;
       }
       case '1_asc': {
-        this.workers = orderBy(this.workers, ['jobRole'], ['asc']);
+        this.workersOrderBy = orderBy(this.workersData, ['jobRole'], ['asc']);
         break;
       }
       case '1_dsc': {
-        this.workers = orderBy(this.workers, ['jobRole'], ['desc']);
+        this.workersOrderBy = orderBy(this.workersData, ['jobRole'], ['desc']);
         break;
       }
       default: {
-        orderBy(this.workers, ['nameOrId'], ['asc']);
+        this.workersOrderBy = orderBy(this.workersData, ['nameOrId'], ['asc']);
         break;
       }
     }
