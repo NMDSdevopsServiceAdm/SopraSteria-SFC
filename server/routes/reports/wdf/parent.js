@@ -986,7 +986,7 @@ const updateWorkersSheet = (
             reportData.workers[row].RecruitedFromValue
           );
 
-          isRed = (reportData.workers[row].RecruitedFromValue === 'Missing') ? true: false;
+          isRed = (reportData.workers[row].RecruitedFromValue === 'Missing');
 
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -1007,7 +1007,7 @@ const updateWorkersSheet = (
             reportData.workers[row].WeeklyHoursContractedValue
           );
 
-          isRed = (reportData.workers[row].WeeklyHoursContractedValue === 'Missing') ? true: false;
+          isRed = (reportData.workers[row].WeeklyHoursContractedValue === 'Missing');
 
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -1018,7 +1018,7 @@ const updateWorkersSheet = (
             reportData.workers[row].ZeroHoursContractValue
           );
 
-          isRed = (reportData.workers[row].ZeroHoursContractValue === 'Missing') ? true: false;
+          isRed = (reportData.workers[row].ZeroHoursContractValue === 'Missing');
 
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -1029,7 +1029,7 @@ const updateWorkersSheet = (
             reportData.workers[row].DaysSickValue
           );
 
-          isRed = (reportData.workers[row].DaysSickValue === 'Missing') ? true: false;
+          isRed = (reportData.workers[row].DaysSickValue === 'Missing');
 
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -1060,7 +1060,7 @@ const updateWorkersSheet = (
             reportData.workers[row].CareCertificateValue
           );
 
-          isRed = (reportData.workers[row].CareCertificateValue === 'Missing') ? true: false;
+          isRed = (reportData.workers[row].CareCertificateValue === 'Missing');
 
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -1071,7 +1071,7 @@ const updateWorkersSheet = (
             reportData.workers[row].QualificationInSocialCareValue
           );
 
-          isRed = (reportData.workers[row].QualificationInSocialCareValue === 'Missing') ? true: false;
+          isRed = (reportData.workers[row].QualificationInSocialCareValue === 'Missing');
 
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -1081,7 +1081,7 @@ const updateWorkersSheet = (
             reportData.workers[row].QualificationInSocialCare
           );
 
-          isRed = (reportData.workers[row].QualificationInSocialCare === 'Missing') ? true: false;
+          isRed = (reportData.workers[row].QualificationInSocialCare === 'Missing');
 
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -1091,7 +1091,7 @@ const updateWorkersSheet = (
             reportData.workers[row].OtherQualificationsValue
           );
 
-          isRed = (reportData.workers[row].OtherQualificationsValue === 'Missing') ? true: false;
+          isRed = (reportData.workers[row].OtherQualificationsValue === 'Missing');
 
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;

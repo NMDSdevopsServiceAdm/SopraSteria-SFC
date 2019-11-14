@@ -243,7 +243,10 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: 'Annually',
                     AnnualHourlyPayRate: '14000.00',
                     CareCertificateValue: 'No',
-                    HighestQualificationHeld: '2011-01-01, 2011-01-01'
+                    QualificationInSocialCareValue: 'Yes',
+                    QualificationInSocialCare: 'Level 5',
+                    OtherQualificationsValue: 'Yes'
+
                   },
                   {
                     NameOrIdValue: 'Worker',
@@ -261,7 +264,9 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: 'Hourly',
                     AnnualHourlyPayRate: '7.35',
                     CareCertificateValue: 'Yes, completed',
-                    HighestQualificationHeld: '2010-09-01, 2011-01-01, 2010-09-01, 2011-01-01, 2010-09-01'
+                    QualificationInSocialCareValue: 'No',
+                    QualificationInSocialCare: 'Level 2',
+                    OtherQualificationsValue: 'No'
                   },
                   {
                     NameOrIdValue: 'Worker',
@@ -279,7 +284,9 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: 'Hourly',
                     AnnualHourlyPayRate: '7.35',
                     CareCertificateValue: 'Yes, completed',
-                    HighestQualificationHeld: '2010-09-01, 2011-01-01, 2010-09-01, 2011-01-01, 2010-09-01'
+                    QualificationInSocialCareValue: 'Yes',
+                    QualificationInSocialCare: 'Level 3',
+                    OtherQualificationsValue: 'Missing'
                   },
                   {
                     NameOrIdValue: 'Fat Tony',
@@ -297,7 +304,9 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: 'Annually',
                     AnnualHourlyPayRate: '25545.00',
                     CareCertificateValue: 'No',
-                    HighestQualificationHeld: '2010-09-01, 2011-01-01, 2010-09-01, 2011-01-01, 2010-09-01'
+                    QualificationInSocialCareValue: 'Missing',
+                    QualificationInSocialCare: 'Missing',
+                    OtherQualificationsValue: 'Missing'
                   },
                   {
                     NameOrIdValue: 'Worker',
@@ -315,7 +324,9 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: 'Hourly',
                     AnnualHourlyPayRate: '10.00',
                     CareCertificateValue: 'Yes, completed',
-                    HighestQualificationHeld: '2010-09-01, 2011-01-01, 2010-09-01, 2011-01-01, 2010-09-01'
+                    QualificationInSocialCareValue: 'Yes',
+                    QualificationInSocialCare: 'Level 7',
+                    OtherQualificationsValue: 'Missing'
                   },
                   {
                     NameOrIdValue: '6',
@@ -333,7 +344,9 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: 'Hourly',
                     AnnualHourlyPayRate: '10.11',
                     CareCertificateValue: 'No',
-                    HighestQualificationHeld: '2010-09-01, 2011-01-01, 2010-09-01, 2011-01-01, 2010-09-01'
+                    QualificationInSocialCareValue: 'No',
+                    QualificationInSocialCare: 'Missing',
+                    OtherQualificationsValue: 'Yes'
                   },
                   {
                     NameOrIdValue: '4',
@@ -351,7 +364,9 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: 'Annually',
                     AnnualHourlyPayRate: '45600.00',
                     CareCertificateValue: 'Yes, completed',
-                    HighestQualificationHeld: '2010-09-01, 2011-01-01, 2010-09-01, 2011-01-01, 2010-09-01'
+                    QualificationInSocialCareValue: 'Yes',
+                    QualificationInSocialCare: 'Level 5',
+                    OtherQualificationsValue: 'Yes'
                   },
                   {
                     NameOrIdValue: '1',
@@ -369,7 +384,9 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: "Don't know",
                     AnnualHourlyPayRate: 'Missing',
                     CareCertificateValue: 'No',
-                    HighestQualificationHeld: '2010-09-01, 2011-01-01, 2010-09-01, 2011-01-01, 2010-09-01'
+                    QualificationInSocialCareValue: 'No',
+                    QualificationInSocialCare: 'Level 5',
+                    OtherQualificationsValue: 'No'
                   },
                   {
                     NameOrIdValue: '10',
@@ -387,7 +404,9 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: 'Missing',
                     AnnualHourlyPayRate: 'Missing',
                     CareCertificateValue: 'Yes, completed',
-                    HighestQualificationHeld: '2010-09-01, 2011-01-01, 2010-09-01, 2011-01-01, 2010-09-01'
+                    QualificationInSocialCareValue: 'Yes',
+                    QualificationInSocialCare: 'Level 10',
+                    OtherQualificationsValue: 'Yes'
                   },
                   {
                     NameOrIdValue: '5',
@@ -405,7 +424,9 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: 'Missing',
                     AnnualHourlyPayRate: 'Missing',
                     CareCertificateValue: 'Missing',
-                    HighestQualificationHeld: '2010-09-01, 2011-01-01, 2010-09-01, 2011-01-01, 2010-09-01'
+                    QualificationInSocialCareValue: 'Yes',
+                    QualificationInSocialCare: 'Level 5',
+                    OtherQualificationsValue: 'Missing'
                   },
                   {
                     NameOrIdValue: '3',
@@ -423,7 +444,9 @@ describe('/server/routes/reports/wdf/parent', () => {
                     AnnualHourlyPayValue: 'Missing',
                     AnnualHourlyPayRate: 'Missing',
                     CareCertificateValue: 'Missing',
-                    HighestQualificationHeld: '2010-09-01, 2011-01-01, 2010-09-01, 2011-01-01, 2010-09-01'
+                    QualificationInSocialCareValue: 'Yes',
+                    QualificationInSocialCare: 'Missing',
+                    OtherQualificationsValue: 'Yes'
                   }
                 ]
               }
@@ -470,18 +493,28 @@ describe('/server/routes/reports/wdf/parent', () => {
 
       const zip = new JsZip();
       const unzipped = await zip.loadAsync(response);
-
-      expect(Object.keys(unzipped.files).join(',')).to.equal('[Content_Types].xml,xl/,xl/styles.xml,xl/workbook.xml,xl/worksheets/,' +
-      'xl/worksheets/_rels/,xl/worksheets/_rels/sheet1.xml.rels,xl/worksheets/_rels/sheet2.xml.rels,xl/worksheets/_rels/sheet3.xml.rels,' +
-      'xl/theme/,xl/theme/theme1.xml,xl/_rels/,xl/_rels/workbook.xml.rels,docProps/,docProps/app.xml,docProps/core.xml,_rels/,_rels/.rels,' +
-      'xl/worksheets/sheet1.xml,xl/worksheets/sheet2.xml,xl/worksheets/sheet3.xml,xl/sharedStrings.xml');
+      let rels = path.join('_rels', '.rels');
+      let styles = path.join('xl', 'styles.xml');
+      let workbook = path.join('xl', 'workbook.xml');
+      let relWorkbook = path.join('xl', '_rels', 'workbook.xml.rels');
+      let relSheet1 = path.join('xl', 'worksheets', '_rels', 'sheet1.xml.rels');
+      let relSheet2 = path.join('xl', 'worksheets', '_rels', 'sheet2.xml.rels');
+      let relSheet3 = path.join('xl', 'worksheets', '_rels', 'sheet3.xml.rels');
+      let theme = path.join('xl', 'theme', 'theme1.xml');
+      let app = path.join('docProps', 'app.xml');
+      let core = path.join('docProps', 'core.xml');
+      let sheet1 = path.join('xl', 'worksheets', 'sheet1.xml');
+      let sheet2 = path.join('xl', 'worksheets', 'sheet2.xml');
+      let sheet3 = path.join('xl', 'worksheets', 'sheet3.xml');
+      let sharedSheet = path.join('xl', 'sharedStrings.xml');
+      let expectedOutput = ['[Content_Types].xml', rels, styles, workbook, relWorkbook, relSheet1, relSheet2, relSheet3, theme, app, core, sheet1, sheet2, sheet3, sharedSheet].join(',');
+      expect(Object.keys(unzipped.files).join(',')).to.equal(expectedOutput);
 
       const references = {
         'xl/worksheets/sheet1.xml': await readFile('parentSheet1.xml'),
         'xl/worksheets/sheet2.xml': await readFile('parentSheet2.xml'),
         'xl/worksheets/sheet3.xml': await readFile('parentSheet3.xml')
       };
-
       await Promise.all(Object.keys(unzipped.files).map(async filename => {
         switch (filename) {
           case 'xl/worksheets/sheet1.xml': {
