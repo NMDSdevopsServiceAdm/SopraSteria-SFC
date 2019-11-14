@@ -5,36 +5,26 @@ const fs = require('fs');
 const sinon = require('sinon');
 const axios = require('axios');
 const MockAdapter = require('axios-mock-adapter');
+const proxyquire = require('proxyquire')
+
+const { makeMockModels } = require('sequelize-test-helpers')
 
 const appConfig = require('../../config/config');
 const changes = require('../../changes');
+const models = require('../../models/index');
 
 describe('changes.js', () => {
-  let sandbox = null;
-  let cqcLogFind = null;
   before(async () => {
     const mock = new MockAdapter(axios);
-
-    sandbox = sinon.sandbox.create();
-    cqcLogFind = sanbox.stub(User, 'find');
-
     const startTimestamp = '2019-10-30T18:20:11Z';
-
-    db.cqclog = dbMock.define('cqclog', {
+    sinon.stub(models.cqclog, 'findAll').returns({
       success: true,
       message: 'Call Successful',
       createdAt: '2019-10-31 05:12:20.736+00',
-      lastUpdatedAt: startTimestamp,
+      lastUpdatedAt: startTimestamp
     });
-    db.location = dbMock.define('location', {});
 
     mock.onAny().reply(200, {
-      total: 10,
-      firstPageUri:
-        '/changes/location?page=1&perPage=1000&startTimestamp=2019-03-10T06:30:00Z&endTimestamp=2019-03-14T06:30:00Z',
-      page: 1,
-      perPage: 1000,
-      totalPages: 1,
       changes: [
         '1-108946357',
         '1-110299837',
@@ -72,5 +62,6 @@ describe('changes.js', () => {
     const changesTest = await changes.handler(null, null);
     expect(changesTest.status).to.equal(200);
     expect(changesTest.body).to.equal('Call Successful');
+    console.log(test.callCount);
   });
 });
