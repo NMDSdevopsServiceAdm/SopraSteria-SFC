@@ -4,16 +4,6 @@ import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { orderBy } from 'lodash';
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import * as moment from 'moment';
->>>>>>> Removed Link
-=======
-import { PermissionsService } from '@core/services/permissions/permissions.service';
->>>>>>> Feature/training and qualifications home tab (#1683)
-
 @Component({
   selector: 'app-training-and-qualifications-summary',
   templateUrl: './training-and-qualifications-summary.component.html',
