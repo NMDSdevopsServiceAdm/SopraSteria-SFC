@@ -35,6 +35,7 @@ class Worker {
 
     this._validationErrors = [];
     this._contractType = null;
+    this._contractTypeId = null;
 
     this._localId = null;
     this._workerLocalID = null;
@@ -47,8 +48,6 @@ class Worker {
     this._postCode = null;
     this._DOB = null;
     this._gender = null;
-
-    this._contractType = null;
 
     this._ethnicity = null;
     this._britishNationality = null;
@@ -242,11 +241,11 @@ class Worker {
   }
 
   get contractType () {
-    return BUDI.contractType(BUDI.TO_ASC, this._contractType) || this._contractType;
+    return this._contractType;
   }
 
   get contractTypeId () {
-    return this._contractType;
+    return this._contractTypeId;
   }
 
   get status () {
@@ -378,6 +377,7 @@ class Worker {
       return false;
     } else {
       this._contractType = myContractType;
+      this._contractTypeId = myContractType;  //work around for the inadequacies of the transform() function's existance
       return true;
     }
   }
@@ -2185,7 +2185,8 @@ class Worker {
   // transform related
   _transformContractType () {
     if (this._contractType) {
-      if (!BUDI.contractType(BUDI.TO_ASC, this._contractType)) {
+      const mappedType = BUDI.contractType(BUDI.TO_ASC, this._contractType);
+      if (mappedType === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -2195,6 +2196,9 @@ class Worker {
           error: 'The code you have entered for EMPLSTATUS is incorrect',
           source: this._currentLine.EMPLSTATUS
         });
+      }
+      else {
+        this._contractType = mappedType;
       }
     }
   }
