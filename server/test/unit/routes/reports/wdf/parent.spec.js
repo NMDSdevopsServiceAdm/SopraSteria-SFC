@@ -516,7 +516,8 @@ describe('/server/routes/reports/wdf/parent', () => {
       let sheet3 = path.join('xl', 'worksheets', 'sheet3.xml');
       let sharedSheet = path.join('xl', 'sharedStrings.xml');
       let expectedOutput;
-      if(isWindows){
+
+      if(isWindows()){
         expectedOutput = ['[Content_Types].xml', rels, styles, workbook, relWorkbook, relSheet1, relSheet2, relSheet3, theme, app, core, sheet1, sheet2, sheet3, sharedSheet].join(',');
       }else{
         expectedOutput = ['[Content_Types].xml', xl, styles, workbook, worksheets, worksheet_rels, relSheet1, relSheet2, relSheet3, themeFolder, theme, xl_rels, relWorkbook,
