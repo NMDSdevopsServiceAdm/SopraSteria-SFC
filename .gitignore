@@ -54,4 +54,5 @@ Thumbs.db
 // nodemon localisations
 nodemon.json
 CQCLocationAPICall/coverage/
+CQCLocationAPICall/test/mockdata/
 CQCLocationAPICall/.nyc_output/
