@@ -39,6 +39,9 @@
       <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
         <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
       </app-tab>
+      <app-tab *ngIf="workplace && canViewListOfWorkers" [title]="'Training and qualifications'">
+        <app-training-and-qualifications-tab [workplace]="workplace"></app-training-and-qualifications-tab>
+      </app-tab>
 
       <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'User accounts'">
         <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>

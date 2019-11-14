@@ -1,0 +1,27 @@
+<table class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Staff name</th>
+      <th class="govuk-table__header" scope="col">Records</th>
+      <th class="govuk-table__header" scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr class="govuk-table__row" *ngFor="let worker of workers">
+      <td class="govuk-table__cell govuk-!-font-weight-regular">
+        <ng-container *ngIf="canViewWorker; else nameOrId">
+          <a [routerLink]="getWorkerRecordPath(worker)">
+            {{ worker.nameOrId }}
+          </a>
+        </ng-container>
+        <ng-template #nameOrId>
+          {{ worker.nameOrId }}
+        </ng-template>
+      </td>
+      <td class="govuk-table__cell">{{ worker.trainingCount }}</td>
+      <td class="govuk-table__cell">
+        {{ worker.expiringTrainingCount }}
+      </td>
+    </tr>
+  </tbody>
+</table>
