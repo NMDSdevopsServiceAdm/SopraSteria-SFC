@@ -17,16 +17,10 @@ router.route('/').post(async (req, res) => {
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
 
     const params = {
-      ownerRequestChangeUid: uuid.v4(),
       userUid: req.userUid,
       subEstablishmentId: req.establishmentId,
       permissionRequest: req.body.permissionRequest,
     };
-
-    if (!uuidRegex.test(params.ownerRequestChangeUid.toUpperCase())) {
-      console.error('Invalid owner change request UUID');
-      return res.status(400).send();
-    }
 
     const thisEstablishment = new Establishment.Establishment(req.username);
     if (await thisEstablishment.restore(req.establishmentId, false)) {
@@ -51,33 +45,38 @@ router.route('/').post(async (req, res) => {
            getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
         }
         if (getRecipientUserDetails.length) {
-          //save records
-          params.recipientUserUid = getRecipientUserDetails[0].UserUID;
+          for (i = 0; i < getRecipientUserDetails.length; i++) {
+            //save records
+            params.ownerRequestChangeUid = uuid.v4();
+            if (!uuidRegex.test(params.ownerRequestChangeUid.toUpperCase())) {
+              console.error('Invalid owner change request UUID');
+              return res.status(400).send();
+            }
+            params.recipientUserUid = getRecipientUserDetails[i].UserUID;
+            params.type = 'OWNERCHANGE';
+            let changeRequestResp = await ownership.changeOwnershipRequest(params);
+            if (!changeRequestResp) {
+              return res.status(400).send({
+                message: 'Invalid request',
+              });
+            } else {
+              params.notificationUid = uuid.v4();
+              if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
+                console.error('Invalid notification UUID');
+                return res.status(400).send();
+              }
+              let addNotificationResp = await notifications.insertNewNotification(params);
+            }
+          }
           params.timeValue = 'NOW()';
           let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
           if (!saveDataOwnershipRequested) {
             return res.status(400).send({
               message: 'Invalid request',
             });
-          }
-          params.type = 'OWNERCHANGE';
-          let changeRequestResp = await ownership.changeOwnershipRequest(params);
-          if (!changeRequestResp) {
-            return res.status(400).send({
-              message: 'Invalid request',
-            });
           } else {
-            params.notificationUid = uuid.v4();
-            if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
-              console.error('Invalid notification UUID');
-              return res.status(400).send();
-            }
-
-            let addNotificationResp = await notifications.insertNewNotification(params);
-            if (addNotificationResp) {
-              let resp = await ownership.lastOwnershipRequest(params);
-              return res.status(201).send(resp[0]);
-            }
+            let resp = await ownership.lastOwnershipRequest(params);
+            return res.status(201).send(resp[0]);
           }
         }
       }
