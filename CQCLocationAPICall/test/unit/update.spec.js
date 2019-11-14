@@ -281,6 +281,8 @@ describe('update.js', () => {
         }
       ]
     });
+
+
     AWS.mock('S3', 'getObject', {Body: Buffer.from(fs.readFileSync('test/mockdata/s3.json'))});
     AWS.mock('S3', 'putObject', (params, callback) => {
       expect(params).to.have.property('Bucket', appConfig.get('aws.bucketname').toString());
@@ -296,6 +298,9 @@ describe('update.js', () => {
         Bucket: params.Bucket,
       });
     });
+  });
+  after(async () => {
+    fs.writeFileSync('test/mockdata/s3.json', JSON.stringify({}), 'utf8');
   });
   it('should return a status of 200',async () => {
     const updateTest = await update.handler(JSON.parse(fs.readFileSync('./event.json')), null);
