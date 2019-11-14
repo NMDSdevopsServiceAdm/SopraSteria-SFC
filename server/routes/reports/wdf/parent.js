@@ -113,11 +113,13 @@ const getEstablishmentReportData = async establishmentId => {
       value.DateEligibilityAchieved = '';
     }
 
+    value.NumberOfStaffValue = (value.NumberOfStaffValue === null) ? 0: value.NumberOfStaffValue;
+
     if (
       value.NumberOfStaffValue !== 0 &&
       value.NumberOfStaffValue !== null &&
       (value.TotalIndividualWorkerRecord !== 0 || value.TotalIndividualWorkerRecord !== null)) {
-      value.PercentageOfWorkerRecords = `${parseFloat(+value.NumberOfStaffValue * +value.TotalIndividualWorkerRecord / 100).toFixed(1)}%`;
+      value.PercentageOfWorkerRecords = `${parseFloat(+value.TotalIndividualWorkerRecord / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
     } else {
       value.PercentageOfWorkerRecords = '0.0%';
     }
@@ -150,7 +152,7 @@ const getEstablishmentReportData = async establishmentId => {
     value.CompletedWorkerRecordsPercentage =
       (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
         ? '0.0%'
-        : `${parseFloat(+value.NumberOfStaffValue * +value.CompletedWorkerRecords / 100).toFixed(1)}%`;
+        : `${parseFloat(+value.CompletedWorkerRecords / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
   });
 
   return establishmentData;
@@ -158,7 +160,7 @@ const getEstablishmentReportData = async establishmentId => {
 
 const updateProps = ('DateOfBirthValue,GenderValue,NationalityValue,MainJobStartDateValue,' +
 'RecruitedFromValue,WeeklyHoursContractedValue,ZeroHoursContractValue,' +
-'DaysSickValue,AnnualHourlyPayValue,AnnualHourlyPayRate,CareCertificateValue').split(',');
+'DaysSickValue,AnnualHourlyPayValue,AnnualHourlyPayRate,CareCertificateValue,QualificationInSocialCareValue,QualificationInSocialCare,OtherQualificationsValue').split(',');
 
 const getWorkersReportData = async establishmentId => {
   const workerData = await getWorkerData(establishmentId);
@@ -180,27 +182,27 @@ const styleLookup = {
       A: 2,
       B: 6,
       C: 7,
-      D: 8,
+      D: 15,
       E: 9,
       F: 15,
       G: 11,
       H: 12,
       I: 12,
       J: 12,
-      K: 13
+      K: 12
     },
     OVRLAST: {
       A: 2,
       B: 16,
       C: 17,
-      D: 18,
+      D: 15,
       E: 19,
       F: 20,
       G: 21,
       H: 22,
       I: 22,
       J: 22,
-      K: 23
+      K: 22
     },
     ESTREGULAR: {
       A: 2,
@@ -215,7 +217,7 @@ const styleLookup = {
       J: 26,
       K: 27,
       L: 12,
-      M: 28,
+      M: 12,
       N: 27,
       O: 12,
       P: 29,
@@ -235,7 +237,7 @@ const styleLookup = {
       J: 32,
       K: 33,
       L: 22,
-      M: 34,
+      M: 12,
       N: 33,
       O: 22,
       P: 35,
@@ -257,9 +259,11 @@ const styleLookup = {
       L: 9,
       M: 9,
       N: 15,
-      O: 27,
+      O: 15,
       P: 15,
-      Q: 15
+      Q: 15,
+      R: 15,
+      S: 15
     },
     WKRLAST: {
       A: 2,
@@ -276,9 +280,11 @@ const styleLookup = {
       L: 9,
       M: 9,
       N: 20,
-      O: 27,
+      O: 20,
       P: 20,
-      Q: 20
+      Q: 20,
+      R: 20,
+      S: 20
     }
   },
   RED: {
@@ -286,7 +292,7 @@ const styleLookup = {
       A: 2,
       B: 6,
       C: 7,
-      D: 8,
+      D: 67,
       E: 9,
       F: 65,
       G: 65,
@@ -299,7 +305,7 @@ const styleLookup = {
       A: 2,
       B: 16,
       C: 17,
-      D: 18,
+      D: 67,
       E: 19,
       F: 65,
       G: 65,
@@ -321,7 +327,7 @@ const styleLookup = {
       J: 26,
       K: 27,
       L: 12,
-      M: 28,
+      M: 66,
       N: 27,
       O: 12,
       P: 29,
@@ -341,7 +347,7 @@ const styleLookup = {
       J: 32,
       K: 33,
       L: 22,
-      M: 34,
+      M: 66,
       N: 33,
       O: 22,
       P: 35,
@@ -363,9 +369,11 @@ const styleLookup = {
       L: 65,
       M: 65,
       N: 67,
-      O: 66,
+      O: 67,
       P: 67,
-      Q: 15
+      Q: 67,
+      R: 67,
+      S: 67
     },
     WKRLAST: {
       A: 2,
@@ -382,9 +390,11 @@ const styleLookup = {
       L: 65,
       M: 65,
       N: 67,
-      O: 66,
+      O: 67,
       P: 67,
-      Q: 20
+      Q: 67,
+      R: 67,
+      S: 67
     }
   }
 };
@@ -402,7 +412,8 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
   }
 
   if (percentColumn) {
-    if (value < 90) {
+    let percentValue = value.split('%');
+    if (Number(percentValue[0]) < 90) {
       isRed = true;
     }
   }
@@ -685,6 +696,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].SubsidiaryName
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'C': {
@@ -692,6 +704,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].SubsidiarySharingPermissions
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'D': {
@@ -699,6 +712,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].EmployerTypeValue
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'E': {
@@ -706,6 +720,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].MainService
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'F': {
@@ -713,6 +728,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].Capacities
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'G': {
@@ -720,6 +736,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].Utilisations
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'H': {
@@ -727,6 +744,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].OtherServices
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'I': {
@@ -734,6 +752,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].ServiceUsers
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'J': {
@@ -741,6 +760,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].LastUpdatedDate
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'K': {
@@ -748,6 +768,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].NumberOfStaffValue
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'L': {
@@ -755,12 +776,17 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].TotalIndividualWorkerRecord
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'M': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            reportData.establishments[row].PercentageOfWorkerRecords
+            reportData.establishments[row].PercentageOfWorkerRecords,
+            columnText,
+            rowType,
+            true
           );
         } break;
 
@@ -769,6 +795,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].StartersValue
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'O': {
@@ -776,6 +803,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].LeaversValue
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'P': {
@@ -783,6 +811,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].VacanciesValue
           );
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'Q': {
@@ -874,9 +903,9 @@ const updateWorkersSheet = (
     const rowType = row === reportData.workers.length - 1 ? 'WKRLAST' : 'WKRREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 17; column++) {
+    for (let column = 0; column < 19; column++) {
       const columnText = String.fromCharCode(column + 65);
-      const isRed = false;
+      let isRed = false;
 
       const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 10}']`);
 
@@ -952,13 +981,14 @@ const updateWorkersSheet = (
         } break;
 
         case 'I': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].RecruitedFromValue,
-            columnText,
-            rowType
+            reportData.workers[row].RecruitedFromValue
           );
+
+          isRed = (reportData.workers[row].RecruitedFromValue === 'Missing');
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'J': {
@@ -972,33 +1002,36 @@ const updateWorkersSheet = (
         } break;
 
         case 'K': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].WeeklyHoursContractedValue,
-            columnText,
-            rowType
+            reportData.workers[row].WeeklyHoursContractedValue
           );
+
+          isRed = (reportData.workers[row].WeeklyHoursContractedValue === 'Missing');
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'L': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].ZeroHoursContractValue,
-            columnText,
-            rowType
+            reportData.workers[row].ZeroHoursContractValue
           );
+
+          isRed = (reportData.workers[row].ZeroHoursContractValue === 'Missing');
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'M': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].DaysSickValue,
-            columnText,
-            rowType
+            reportData.workers[row].DaysSickValue
           );
+
+          isRed = (reportData.workers[row].DaysSickValue === 'Missing');
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'N': {
@@ -1022,23 +1055,45 @@ const updateWorkersSheet = (
         } break;
 
         case 'P': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].CareCertificateValue,
-            columnText,
-            rowType
+            reportData.workers[row].CareCertificateValue
           );
+
+          isRed = (reportData.workers[row].CareCertificateValue === 'Missing');
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'Q': {
-          basicValidationUpdate(
-            putString,
+          putString(
             cellToChange,
-            reportData.workers[row].HighestQualificationHeld,
-            columnText,
-            rowType
+            reportData.workers[row].QualificationInSocialCareValue
           );
+
+          isRed = (reportData.workers[row].QualificationInSocialCareValue === 'Missing');
+
+          setStyle(cellToChange, columnText, rowType, isRed);
+        } break;
+        case 'R': {
+          putString(
+            cellToChange,
+            reportData.workers[row].QualificationInSocialCare
+          );
+
+          isRed = (reportData.workers[row].QualificationInSocialCare === 'Missing');
+
+          setStyle(cellToChange, columnText, rowType, isRed);
+        } break;
+        case 'S': {
+          putString(
+            cellToChange,
+            reportData.workers[row].OtherQualificationsValue
+          );
+
+          isRed = (reportData.workers[row].OtherQualificationsValue === 'Missing');
+
+          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
       }
 

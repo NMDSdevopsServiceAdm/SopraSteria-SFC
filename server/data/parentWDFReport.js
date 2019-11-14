@@ -130,7 +130,7 @@ SELECT
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
   "ShareDataWithCQC",
   "ShareDataWithLA",
-  "ReasonsForLeaving"
+  (select count("LeaveReasonFK") from cqc."Worker" where "EstablishmentFK" = "Establishment"."EstablishmentID") as "ReasonsForLeaving"
 FROM
   cqc."Establishment"
 LEFT JOIN
@@ -168,10 +168,10 @@ SELECT
   "Worker"."NameOrIdValue",
   "Establishment"."NameValue",
   "Worker"."GenderValue",
-  "Worker"."DateOfBirthValue",
+  to_char("DateOfBirthValue", :timeFormat) as "DateOfBirthValue",
   "NationalityValue",
   "Job"."JobName" AS "MainJobRole",
-  "MainJobStartDateValue",
+  to_char("MainJobStartDateValue", :timeFormat) as "MainJobStartDateValue",
   "RecruitedFromValue",
   "ContractValue",
   "WeeklyHoursContractedValue",
@@ -180,18 +180,13 @@ SELECT
   "AnnualHourlyPayValue",
   "AnnualHourlyPayRate",
   "CareCertificateValue",
-  array_to_string(array(
-    SELECT
-      b."From"
-    FROM
-      cqc."Worker" AS a
-    JOIN
-      cqc."Qualifications" AS b
-    ON
-      a."HighestQualificationFKValue" = b."ID"
-    WHERE
-      "EstablishmentFK" = "Establishment"."EstablishmentID"
-  ), :separator) AS "HighestQualificationHeld"
+  "QualificationInSocialCareValue",
+  "QualificationInSocialCareSavedAt",
+  "Qualification"."Level" AS "QualificationInSocialCare",
+  "SocialCareQualificationFKValue",
+  "SocialCareQualificationFKSavedAt",
+  "OtherQualificationsValue",
+  "OtherQualificationsSavedAt"
 FROM
   cqc."Worker"
 INNER JOIN
@@ -217,7 +212,8 @@ exports.getWorkerData = async establishmentId =>
     replacements: {
       establishmentId,
       separator: ', ',
-      falseValue: false
+      falseValue: false,
+      timeFormat: 'DD/MM/YYYY'
     },
     type: db.QueryTypes.SELECT
   });
