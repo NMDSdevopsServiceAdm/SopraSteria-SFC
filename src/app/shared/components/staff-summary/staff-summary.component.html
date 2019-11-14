@@ -21,7 +21,7 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <tr class="govuk-table__row" *ngFor="let worker of workersOrderBy">
+    <tr class="govuk-table__row" *ngFor="let worker of workers">
       <td class="govuk-table__cell govuk-!-font-weight-regular">
         <ng-container *ngIf="canViewWorker; else nameOrId">
           <a [routerLink]="getWorkerRecordPath(worker)">
