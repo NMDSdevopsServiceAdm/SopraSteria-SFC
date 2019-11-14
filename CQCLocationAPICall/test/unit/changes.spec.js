@@ -5,9 +5,6 @@ const fs = require('fs');
 const sinon = require('sinon');
 const axios = require('axios');
 const MockAdapter = require('axios-mock-adapter');
-const proxyquire = require('proxyquire')
-
-const { makeMockModels } = require('sequelize-test-helpers')
 
 const appConfig = require('../../config/config');
 const changes = require('../../changes');
