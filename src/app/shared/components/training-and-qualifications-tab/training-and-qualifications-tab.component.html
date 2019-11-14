@@ -1,0 +1,10 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <h2 class="govuk-heading-m">Training and qualifications (0)</h2>
+  </div>
+</div>
+<app-training-and-qualifications-summary
+  *ngIf="workers"
+  [workplace]="workplace"
+  [workers]="workers"
+></app-training-and-qualifications-summary>
