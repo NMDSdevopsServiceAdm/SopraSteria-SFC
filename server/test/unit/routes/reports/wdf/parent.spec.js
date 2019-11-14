@@ -12,6 +12,7 @@ const walk = require('walk');
 const jsdom = require('jsdom');
 const JsZip = require('jszip');
 const fs = require('fs');
+const isWindows = require('is-windows');
 
 const readFile = filename =>
   (new Promise((resolve, reject) => {
@@ -494,6 +495,13 @@ describe('/server/routes/reports/wdf/parent', () => {
       const zip = new JsZip();
       const unzipped = await zip.loadAsync(response);
       let rels = path.join('_rels', '.rels');
+      let xl = 'xl/';
+      let worksheets = 'xl/worksheets/';
+      let worksheet_rels = 'xl/worksheets/_rels/';
+      let themeFolder = 'xl/theme/';
+      let xl_rels = 'xl/_rels/';
+      let docProps = 'docProps/';
+      let _rels = '_rels/';
       let styles = path.join('xl', 'styles.xml');
       let workbook = path.join('xl', 'workbook.xml');
       let relWorkbook = path.join('xl', '_rels', 'workbook.xml.rels');
@@ -507,7 +515,14 @@ describe('/server/routes/reports/wdf/parent', () => {
       let sheet2 = path.join('xl', 'worksheets', 'sheet2.xml');
       let sheet3 = path.join('xl', 'worksheets', 'sheet3.xml');
       let sharedSheet = path.join('xl', 'sharedStrings.xml');
-      let expectedOutput = ['[Content_Types].xml', rels, styles, workbook, relWorkbook, relSheet1, relSheet2, relSheet3, theme, app, core, sheet1, sheet2, sheet3, sharedSheet].join(',');
+      let expectedOutput;
+      if(isWindows){
+        expectedOutput = ['[Content_Types].xml', rels, styles, workbook, relWorkbook, relSheet1, relSheet2, relSheet3, theme, app, core, sheet1, sheet2, sheet3, sharedSheet].join(',');
+      }else{
+        expectedOutput = ['[Content_Types].xml', xl, styles, workbook, worksheets, worksheet_rels, relSheet1, relSheet2, relSheet3, themeFolder, theme, xl_rels, relWorkbook,
+         docProps, app, core, _rels, rels, sheet1, sheet2, sheet3, sharedSheet].join(',');
+      }
+
       expect(Object.keys(unzipped.files).join(',')).to.equal(expectedOutput);
 
       const references = {
