@@ -39,6 +39,12 @@ import { SummaryListComponent } from './components/summary-list/summary-list.com
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
+import {
+  TrainingAndQualificationsSummaryComponent,
+} from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
+import {
+  TrainingAndQualificationsTabComponent,
+} from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
@@ -106,6 +112,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LongDatePipe,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
+    TrainingAndQualificationsTabComponent,
+    TrainingAndQualificationsSummaryComponent,
   ],
   exports: [
     AlertComponent,
@@ -155,6 +163,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LongDatePipe,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
+    TrainingAndQualificationsTabComponent,
+    TrainingAndQualificationsSummaryComponent,
   ],
   entryComponents: [
     ChangeDataOwnerDialogComponent,
