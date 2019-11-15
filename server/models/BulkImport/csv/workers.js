@@ -70,6 +70,7 @@ class Worker {
     this._hourlyRate = null;
 
     this._mainJobRole = null;
+    this._mainJobRoleId = null;
     this._mainJobDesc = null;
 
     this._contHours = null;
@@ -337,7 +338,7 @@ class Worker {
   }
 
   get mainJobRole () {
-    return BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole) || this._mainJobRole;
+    return this._mainJobRole;
   }
 
   get mainJobDesc () {
@@ -345,7 +346,7 @@ class Worker {
   }
 
   get mainJobRoleId () {
-    return this._mainJobRole;
+    return this._mainJobRoleId;
   }
 
   get otherJobIds () {
@@ -1408,6 +1409,7 @@ class Worker {
       return false;
     } else {
       this._mainJobRole = myMainJobRole;
+      this._mainJobRoleId = myMainJobRole;
       return true;
     }
   }
@@ -2262,7 +2264,9 @@ class Worker {
         source: this._currentLine.MAINJOBROLE
       });
     } else if (this._mainJobRole || this._mainJobRole === 0) {
-      if (!BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole)) {
+      const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
+
+      if (mappedRole === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -2272,6 +2276,8 @@ class Worker {
           error: 'The code you have entered for MAINJOBROLE is incorrect',
           source: this._currentLine.MAINJOBROLE
         });
+      } else {
+        this._mainJobRole = mappedRole;
       }
     }
   }

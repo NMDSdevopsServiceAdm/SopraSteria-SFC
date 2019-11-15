@@ -135,7 +135,7 @@ exports.ownershipDetails = async params =>
   db.query(ownershipDetailsQuery, {
     replacements: {
       subEstId: params.subEstablishmentId,
-      limit: 1,
+      limit: params.limit,
     },
     type: db.QueryTypes.SELECT,
   });
@@ -236,6 +236,17 @@ exports.getNotificationRecieverName = async params =>
   db.query(getNotificationRecieverNameQuery, {
     replacements: {
       notificationUid: params.notificationUid,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+ const getownershipRequesterIdQuery = `select "IsParent", "ParentID" from cqc."Establishment"
+ WHERE "EstablishmentID" = :EstablishmentID;
+ `;
+
+ exports.getownershipRequesterId = async params =>
+  db.query(getownershipRequesterIdQuery, {
+    replacements: {
+      EstablishmentID: params,
     },
     type: db.QueryTypes.SELECT,
   });

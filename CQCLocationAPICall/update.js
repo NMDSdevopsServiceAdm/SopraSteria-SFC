@@ -8,10 +8,6 @@ const models = require('./models/index');
 const url = 'https://api.cqc.org.uk/public/v1';
 axiosRetry(axios, { retries: 3 });
 
-const s3 = new AWS.S3({
-  region: appConfig.get('aws.region').toString()
-});
-
 // Upload a list of all the changed location ID's along with timings to S3
 async function updateComplete(locations, error) {
   let completionCount = 0;
@@ -51,6 +47,9 @@ async function updateComplete(locations, error) {
 
 // Upload a list of all the changed location ID's along with timings to S3
 async function updateS3(location, status) {
+  const s3 = new AWS.S3({
+    region: appConfig.get('aws.region').toString()
+  });
   console.log('Getting S3 object');
   const locations = await s3.getObject({
     Bucket: appConfig.get('aws.bucketname').toString(),
