@@ -18,9 +18,10 @@
           {{ worker.nameOrId }}
         </ng-template>
       </td>
-      <td class="govuk-table__cell">{{ worker.trainingCount }}</td>
+      <td class="govuk-table__cell">{{ worker.trainingCount + worker.qualificationCount }}</td>
       <td class="govuk-table__cell">
-        {{ worker.expiringTrainingCount }}
+        {{ worker.expiredTrainingCount }} Expired <br />
+        {{ worker.expiringTrainingCount }} Expires soon
       </td>
     </tr>
   </tbody>
