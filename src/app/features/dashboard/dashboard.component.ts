@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       wdfEligible: false,
       trainingCount: 2,
       expiredTrainingCount: 2,
-      expiringTrainingCount: 0,
+      expiringTrainingCount: 1,
       qualificationCount: 1,
     },
     {
@@ -217,16 +217,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public getTrainingAlertFlag(workers) {
-    let expariedTrainingCount = 0;
-    let expiringTrainingCount = 0;
-    if (workers) {
-      expariedTrainingCount = workers.filter(worker => worker.expiredTrainingCount > 0).length;
-      expiringTrainingCount = workers.filter(worker => worker.expiringTrainingCount > 0).length;
+    if (workers.length > 0) {
+      const expariedTrainingCount = workers.filter(worker => worker.expiredTrainingCount > 0).length || 0;
+      const expiringTrainingCount = workers.filter(worker => worker.expiringTrainingCount > 0).length || 0;
       if (expariedTrainingCount > 0) {
         return 2;
       } else if (expiringTrainingCount > 0) {
         return 1;
+      } else {
+        return 0;
       }
+    } else {
+      return 0;
     }
   }
 

@@ -20,8 +20,13 @@
       </td>
       <td class="govuk-table__cell">{{ worker.trainingCount + worker.qualificationCount }}</td>
       <td class="govuk-table__cell">
-        {{ worker.expiredTrainingCount }} Expired <br />
-        {{ worker.expiringTrainingCount }} Expires soon
+        <div class="govuk-table__cell--red-alert" *ngIf="worker.expiredTrainingCount > 0">
+          {{ worker.expiredTrainingCount }} Expired
+        </div>
+        <div class="govuk-table__cell--alert" *ngIf="worker.expiringTrainingCount > 0">
+          {{ worker.expiringTrainingCount }} Expires soon
+        </div>
+        <div *ngIf="worker.expiredTrainingCount === 0 && worker.expiringTrainingCount === 0">Up-to-date</div>
       </td>
     </tr>
   </tbody>
