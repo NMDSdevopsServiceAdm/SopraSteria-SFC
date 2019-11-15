@@ -135,7 +135,7 @@ exports.ownershipDetails = async params =>
   db.query(ownershipDetailsQuery, {
     replacements: {
       subEstId: params.subEstablishmentId,
-      limit: 1,
+      limit: params.limit,
     },
     type: db.QueryTypes.SELECT,
   });

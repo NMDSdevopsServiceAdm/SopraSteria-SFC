@@ -7,15 +7,9 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import {
-  CancelDataOwnerDialogComponent,
-} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import {
-  ChangeDataOwnerDialogComponent,
-} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import {
-  SetDataPermissionDialogComponent,
-} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -31,7 +25,9 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public dataOwner = WorkplaceDataOwner;
   public loggedInUser: string;
   private subscriptions: Subscription = new Subscription();
-  public ownershipChangeRequestId;
+  public ownershipChangeRequestId: any = [];
+  public ownershipChangeRequestCreatedByLoggegInUser: boolean;
+  public ownershipChangeRequester: any;
 
   constructor(
     private dialogService: DialogService,
@@ -81,15 +77,21 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.changeOwnershipDetails(this.workplace.uid).subscribe(
         data => {
-          if (data) {
+          if (data && data.length > 0) {
             this.userService.loggedInUser$.subscribe(user => {
               if (user) {
                 this.loggedInUser = user.uid;
               }
             });
-            this.ownershipChangeRequestId = data.ownerChangeRequestUID;
+            data.forEach(element => {
+              this.ownershipChangeRequestId.push(element.ownerChangeRequestUID);
+              this.ownershipChangeRequester.push(element.createdByUserUID);
+            });
+            this.ownershipChangeRequester.forEach(requester => {
+              this.ownershipChangeRequestCreatedByLoggegInUser = requester === this.loggedInUser ? true : false;
+            });
             this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
-            if (data.createdByUserUID === this.loggedInUser) {
+            if (this.ownershipChangeRequestCreatedByLoggegInUser) {
               const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
               dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
                 if (cancelDataOwnerConfirmed) {

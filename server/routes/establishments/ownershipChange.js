@@ -96,7 +96,7 @@ router.route('/').post(async (req, res) => {
 router.route('/:id').post(async (req, res) => {
   try {
     if (req.body.approvalStatus === undefined || req.body.approvalStatus !== 'CANCELLED') {
-      console.error('Approval status would be "CANCELLED"');
+      console.error('Approval status should be "CANCELLED"');
       return res.status(400).send();
     }
 
@@ -140,7 +140,7 @@ router.route('/:id').post(async (req, res) => {
               });
             }
             let resp = await ownership.getUpdatedOwnershipRequest(params);
-            return res.status(201).send(resp[0]);
+            return res.status(201).send(resp);
           }
         }
       }
@@ -166,8 +166,22 @@ router.route('/details').get(async (req, res) => {
           message: 'Establishment is not a subsidiary',
         });
       } else {
+        const getRecipientUserDetailsParams = {
+          userUid: req.userUid,
+          establishmentId: req.establishmentId,
+          permissionRequest: req.body.permissionRequest,
+        };
+        let getRecipientUserDetails;
+        if(thisEstablishment._dataOwner !== 'Parent'){
+          getRecipientUserDetails = await ownership.getRecipientSubUserDetails(getRecipientUserDetailsParams);
+       } else {
+          getRecipientUserDetails = await ownership.getRecipientUserDetails(getRecipientUserDetailsParams);
+       }
+       if (getRecipientUserDetails.length > 0) {
+
         const params = {
           subEstablishmentId: req.establishmentId,
+          limit: getRecipientUserDetails.length
         };
         let owenershipChangeRequestDetails = await ownership.ownershipDetails(params);
 
@@ -176,8 +190,9 @@ router.route('/details').get(async (req, res) => {
             message: `Ownership change request details not found.`,
           });
         } else {
-          return res.status(200).send(owenershipChangeRequestDetails[0]);
+          return res.status(200).send(owenershipChangeRequestDetails);
         }
+      }
       }
     } else {
       return res.status(404).send({
