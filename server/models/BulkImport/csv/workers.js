@@ -2266,7 +2266,7 @@ class Worker {
     } else if (this._mainJobRole || this._mainJobRole === 0) {
       const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
 
-      if (mappedRole !== null) {
+      if (mappedRole === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
