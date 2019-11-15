@@ -3,6 +3,7 @@
 const moment = require('moment');
 const csv = require('csvtojson');
 const Stream = require('stream');
+const uuid = require('uuid');
 
 const config = rfr('server/config/config');
 const db = rfr('server/utils/datastore');
@@ -37,7 +38,7 @@ const buStates = [
   'COMPLETING'
 ].reduce((acc, item) => {
   acc[item] = item;
-  
+
   return acc;
 }, Object.create(null));
 
@@ -50,7 +51,7 @@ const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
 const acquireLock = async function (logic, newState, req, res) {
   const { establishmentId } = req;
 
-  let nextState = null;
+  console.log(`Acquiring lock for establishment ${establishmentId}.`);
 
   // attempt to acquire the lock
   const currentLockState = await db.query(`
@@ -68,8 +69,6 @@ const acquireLock = async function (logic, newState, req, res) {
     type: db.QueryTypes.UPDATE
   });
 
-  console.log(`Acquiring lock for establishment ${establishmentId}.`);
-
   // if no records were updated the lock could not be acquired
   // Just respond with a 409 http code and don't call the regular logic
   // close the response either way and continue processing in the background
@@ -82,36 +81,71 @@ const acquireLock = async function (logic, newState, req, res) {
       });
 
     return;
-  } else {
-    console.log('Lock acquired.');
-    
-    switch(newState) {
-      case buStates.DOWNLOADING:
-        //go back to whatever the previous state was afterward
-        nextState = await lockStatus(establishmentId).bulkUploadState;
-      break;
-      
-      case buStates.UPLOADING:
-        nextState = buStates.UPLOADED;
-      break;
-      
-      case buStates.VALIDATING:
-        //we don't yet know wether the validation should go to the PASSED, FAILED
-        //or WARNINGS state next as it depends on whether the data is valid or not
-        nextState = null;
-      break;
-      
-      case buStates.COMPLETING:
-        nextState = buStates.READY;
-      break;
-    }
-
-    /* res
-      .status(200)
-      .send({
-        message: `Lock for establishment ${establishmentId} acquired.`
-      }); */
   }
+
+  console.log('Lock acquired.', newState);
+
+  let nextState;
+
+  switch (newState) {
+    case buStates.DOWNLOADING: {
+      // get the current bulk upload state
+      const currentState = await lockStatus(establishmentId);
+
+      if (currentState.length === 1) {
+        // don't update the status for downloads, just hold the lock
+        newState = currentState[0].bulkUploadState;
+        nextState = null;
+      } else {
+        nextState = buStates.READY;
+      }
+    } break;
+
+    case buStates.UPLOADING:
+      nextState = buStates.UPLOADED;
+      break;
+
+    case buStates.VALIDATING:
+      // we don't yet know wether the validation should go to the PASSED, FAILED
+      // or WARNINGS state next as it depends on whether the data is valid or not
+      nextState = null;
+      break;
+
+    case buStates.COMPLETING:
+      nextState = buStates.READY;
+      break;
+
+    default:
+      newState = buStates.READY;
+      nextState = buStates.READY;
+      break;
+  }
+
+  // update the current state
+  await db.query(`
+    UPDATE
+      cqc."Establishment"
+    SET
+      "bulkUploadState" = :newState
+    WHERE
+      "EstablishmentID" = :establishmentId AND
+      "bulkUploadLockHeld" = true
+  `, {
+    replacements: {
+      establishmentId,
+      newState
+    },
+    type: db.QueryTypes.UPDATE
+  });
+
+  req.buRequestId = uuid();
+
+  /* res
+    .status(200)
+    .send({
+      message: `Lock for establishment ${establishmentId} acquired.`
+      requestId: req.buRequestId
+    }); */
 
   // run whatever the original logic was
   try {
@@ -121,10 +155,10 @@ const acquireLock = async function (logic, newState, req, res) {
   }
 
   // release the lock
-  await releaseLock(req, null);
+  await releaseLock(req, null, null, nextState);
 };
 
-const lockStatus = async establishmentId => await db.query(`
+const lockStatus = async establishmentId => db.query(`
   SELECT
     "EstablishmentID" AS "establishmentId",
     "bulkUploadState",
@@ -133,18 +167,18 @@ const lockStatus = async establishmentId => await db.query(`
     cqc."Establishment"
   WHERE
     "EstablishmentID" = :establishmentId`,
-  {
-    replacements: {
-      establishmentId
-    },
-    type: db.QueryTypes.SELECT
-  }
+{
+  replacements: {
+    establishmentId
+  },
+  type: db.QueryTypes.SELECT
+}
 );
 
 const lockStatusGet = async (req, res) => {
   const { establishmentId } = req;
 
-  const currentLockState = lockStatus(establishmentId);
+  const currentLockState = await lockStatus(establishmentId);
 
   res
     .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
@@ -156,17 +190,27 @@ const lockStatusGet = async (req, res) => {
           bulkUploadLockHeld: true
         } : currentLockState[0]
     );
-    
+
   return currentLockState[0];
 };
 
-const releaseLock = async (req, res, newState = null) => {
-  const establishmentId = req.params.subEstId || req.establishmentId;
+const releaseLock = async (req, res, next, nextState = null) => {
+  const establishmentId = req.query.subEstId || req.establishmentId;
 
   if (Number.isInteger(establishmentId)) {
     let query;
-    
-    if(newState !== null) {
+
+    if (nextState !== null) {
+      query = `
+        UPDATE
+          cqc."Establishment"
+        SET
+          "bulkUploadLockHeld" = false,
+          "bulkUploadState" = :nextState
+        WHERE
+          "EstablishmentID" = :establishmentId
+        `;
+    } else {
       query = `
         UPDATE
           cqc."Establishment"
@@ -176,22 +220,11 @@ const releaseLock = async (req, res, newState = null) => {
           "EstablishmentID" = :establishmentId
         `;
     }
-    else {
-      query = `
-        UPDATE
-          cqc."Establishment"
-        SET
-          "bulkUploadLockHeld" = false,
-          "bulkUploadState" = :newState
-        WHERE
-          "EstablishmentID" = :establishmentId
-        `;
-    }
 
     await db.query(query, {
       replacements: {
         establishmentId,
-        newState
+        nextState
       },
       type: db.QueryTypes.UPDATE
     });
@@ -2399,18 +2432,19 @@ const downloadGet = async (req, res) => {
 
 const router = require('express').Router();
 
-router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet)); // DONE
+router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
+router.route('/download/:downloadType').get(acquireLock.bind(null, downloadGet, buStates.DOWNLOADING));
 
-router.route('/download/:downloadType').get(acquireLock.bind(null, downloadGet)); // DONE
+router.route('/uploaded').put(acquireLock.bind(null, uploadedPut, buStates.UPLOADING));
+router.route('/uploaded').post(acquireLock.bind(null, uploadedPost, buStates.UPLOADING));
+router.route('/uploaded').get(acquireLock.bind(null, uploadedGet, buStates.DOWNLOADING));
+router.route('/uploaded/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOADING));
 
-router.route('/uploaded').put(acquireLock.bind(null, uploadedPut));
-router.route('/uploaded').get(acquireLock.bind(null, uploadedGet));
-router.route('/uploaded').post(acquireLock.bind(null, uploadedPost));
-router.route('/uploaded/*').get(acquireLock.bind(null, uploadedStarGet));
+router.route('/validate').put(acquireLock.bind(null, validatePut, buStates.VALIDATING));
 
-router.route('/validate').put(acquireLock.bind(null, validatePut));
-router.route('/report/:reportType').get(acquireLock.bind(null, reportGet));
-router.route('/complete').post(acquireLock.bind(null, completePost));
+router.route('/report/:reportType').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
+
+router.route('/complete').post(acquireLock.bind(null, completePost, buStates.COMPLETING));
 router.route('/lockstatus').get(lockStatusGet);
 router.route('/unlock').get(releaseLock);
 
