@@ -1,3 +1,13 @@
+<div class="govuk-form-group">
+  <label class="govuk-label" for="sort">
+    Sort by
+  </label>
+  <select class="govuk-select" id="sortBy" name="sortBy" (change)="sortByColumn($event.target.value)">
+    <option *ngFor="let sortStaffOption of sortStaffOptions | keyvalue" value="{{ sortStaffOption.key }}">
+      {{ sortStaffOption.value }}
+    </option>
+  </select>
+</div>
 <table class="govuk-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
@@ -22,7 +32,7 @@
           {{ worker.nameOrId }}
         </ng-template>
       </td>
-      <td class="govuk-table__cell">{{ worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title }}</td>
+      <td class="govuk-table__cell">{{ worker.jobRole }}</td>
       <td class="govuk-table__cell">
         <span class="govuk-visually-hidden">last updated</span>
         <span class="govuk__nowrap">{{ lastUpdated(worker.updated) }}</span>

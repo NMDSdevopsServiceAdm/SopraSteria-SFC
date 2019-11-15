@@ -154,3 +154,10 @@ export interface ChangeOwner {
 export interface CancelOwnerShip {
   approvalStatus: string;
 }
+
+export enum SortStaffOptions {
+  '0_asc' = 'Staff name ascending',
+  '0_dsc' = 'Staff name descending',
+  '1_asc' = 'Job role ascending',
+  '1_dsc' = 'Job role descending',
+}
