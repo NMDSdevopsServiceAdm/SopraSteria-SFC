@@ -25,21 +25,21 @@ const { Qualification } = rfr('server/models/classes/qualification');
 const { Training } = rfr('server/models/classes/training');
 const { User } = rfr('server/models/classes/user');
 
-const FileStatuses = {
-  Latest: 'latest',
-  Validated: 'validated',
-  Imported: 'imported'
-};
-
-const FileValidationStatuses = {
-  Pending: 'pending',
-  Validating: 'validating',
-  Pass: 'pass',
-  PassWithWarnings: 'pass with warnings',
-  Fail: 'fail'
-};
-
-const completionBulkUploadStatus = 'COMPLETE';
+const buStates = [
+  'READY',
+  'DOWNLOADING',
+  'UPLOADING',
+  'UPLOADED',
+  'VALIDATING',
+  'FAILED',
+  'WARNINGS',
+  'PASSED',
+  'COMPLETING'
+].reduce((acc, item) => {
+  acc[item] = item;
+  
+  return acc;
+}, Object.create(null));
 
 const ignoreMetaDataObjects = /.*metadata.json$/;
 const ignoreRoot = /.*\/$/;
@@ -47,8 +47,10 @@ const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
 
 // Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
-const acquireLock = async function (logic, req, res) {
-  const establishmentId = req.establishmentId;
+const acquireLock = async function (logic, newState, req, res) {
+  const { establishmentId } = req;
+
+  let nextState = null;
 
   // attempt to acquire the lock
   const currentLockState = await db.query(`
@@ -82,6 +84,27 @@ const acquireLock = async function (logic, req, res) {
     return;
   } else {
     console.log('Lock acquired.');
+    
+    switch(newState) {
+      case buStates.DOWNLOADING:
+        //go back to whatever the previous state was afterward
+        nextState = await lockStatus(establishmentId).bulkUploadState;
+      break;
+      
+      case buStates.UPLOADING:
+        nextState = buStates.UPLOADED;
+      break;
+      
+      case buStates.VALIDATING:
+        //we don't yet know wether the validation should go to the PASSED, FAILED
+        //or WARNINGS state next as it depends on whether the data is valid or not
+        nextState = null;
+      break;
+      
+      case buStates.COMPLETING:
+        nextState = buStates.READY;
+      break;
+    }
 
     /* res
       .status(200)
@@ -98,26 +121,30 @@ const acquireLock = async function (logic, req, res) {
   }
 
   // release the lock
-  await releaseLock(req);
+  await releaseLock(req, null);
 };
 
-const lockStatusGet = async (req, res) => {
-  const { establishmentId } = req;
-
-  const currentLockState = await db.query(`
-      SELECT
-        "EstablishmentID" AS "establishmentId",
-        "bulkUploadLockHeld"
-      FROM
-        cqc."Establishment"
-      WHERE
-        "EstablishmentID" = :establishmentId
-    `, {
+const lockStatus = async establishmentId => await db.query(`
+  SELECT
+    "EstablishmentID" AS "establishmentId",
+    "bulkUploadState",
+    "bulkUploadLockHeld"
+  FROM
+    cqc."Establishment"
+  WHERE
+    "EstablishmentID" = :establishmentId`,
+  {
     replacements: {
       establishmentId
     },
     type: db.QueryTypes.SELECT
-  });
+  }
+);
+
+const lockStatusGet = async (req, res) => {
+  const { establishmentId } = req;
+
+  const currentLockState = lockStatus(establishmentId);
 
   res
     .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
@@ -125,25 +152,46 @@ const lockStatusGet = async (req, res) => {
       currentLockState.length === 0
         ? {
           establishmentId,
+          bulkUploadState: buStates.READY,
           bulkUploadLockHeld: true
         } : currentLockState[0]
     );
+    
+  return currentLockState[0];
 };
 
-const releaseLock = async (req, res) => {
+const releaseLock = async (req, res, newState = null) => {
   const establishmentId = req.params.subEstId || req.establishmentId;
 
   if (Number.isInteger(establishmentId)) {
-    await db.query(`
-      UPDATE
-        cqc."Establishment"
-      SET
-        "bulkUploadLockHeld" = false
-      WHERE
-        "EstablishmentID" = :establishmentId
-      `, {
+    let query;
+    
+    if(newState !== null) {
+      query = `
+        UPDATE
+          cqc."Establishment"
+        SET
+          "bulkUploadLockHeld" = false
+        WHERE
+          "EstablishmentID" = :establishmentId
+        `;
+    }
+    else {
+      query = `
+        UPDATE
+          cqc."Establishment"
+        SET
+          "bulkUploadLockHeld" = false,
+          "bulkUploadState" = :newState
+        WHERE
+          "EstablishmentID" = :establishmentId
+        `;
+    }
+
+    await db.query(query, {
       replacements: {
-        establishmentId
+        establishmentId,
+        newState
       },
       type: db.QueryTypes.UPDATE
     });
@@ -151,7 +199,7 @@ const releaseLock = async (req, res) => {
     console.log(`Lock released for establishment ${establishmentId}`);
   }
 
-  if (res) {
+  if (res !== null) {
     res
       .status(200)
       .send({
@@ -322,12 +370,12 @@ const uploadedPost = async (req, res) => {
       if (thisFile.filename) {
         thisFile.signedUrl = s3.getSignedUrl('putObject', {
           Bucket,
-          Key: `${establishmentId}/${FileStatuses.Latest}/${thisFile.filename}`,
+          Key: `${establishmentId}/latest/${thisFile.filename}`,
           ContentType: req.query.type,
           Metadata: {
             username,
             establishmentId,
-            validationstatus: FileValidationStatuses.Pending
+            validationstatus: 'pending'
           },
           Expires: config.get('bulkupload.uploadSignedUrlExpire')
         });
@@ -349,12 +397,12 @@ const signedUrlGet = async (req, res) => {
     res.status(200).send({
       urls: s3.getSignedUrl('putObject', {
         Bucket,
-        Key: `${establishmentId}/${FileStatuses.Latest}/${req.query.filename}`,
+        Key: `${establishmentId}/latest/${req.query.filename}`,
         ContentType: req.query.type,
         Metadata: {
           username: String(req.username),
           establishmentId: String(establishmentId),
-          validationstatus: FileValidationStatuses.Pending
+          validationstatus: 'pending'
         },
         Expires: config.get('bulkupload.uploadSignedUrlExpire')
       })
@@ -1499,6 +1547,7 @@ const restoreExistingEntities = async (
   keepAlive = () => {}
 ) => {
   try {
+    const completionBulkUploadStatus = 'COMPLETE';
     const thisUser = new User(primaryEstablishmentId);
     await thisUser.restore(null, loggedInUsername, false);
 
