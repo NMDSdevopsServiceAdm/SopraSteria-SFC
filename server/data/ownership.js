@@ -239,3 +239,14 @@ exports.getNotificationRecieverName = async params =>
     },
     type: db.QueryTypes.SELECT,
   });
+ const getownershipRequesterIdQuery = `select "IsParent", "ParentID" from cqc."Establishment"
+ WHERE "EstablishmentID" = :EstablishmentID;
+ `;
+
+ exports.getownershipRequesterId = async params =>
+  db.query(getownershipRequesterIdQuery, {
+    replacements: {
+      EstablishmentID: params,
+    },
+    type: db.QueryTypes.SELECT,
+  });
