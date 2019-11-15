@@ -82,6 +82,7 @@ export interface Worker {
   completed?: boolean;
   wdf?: WorkerWdfRecord;
   wdfEligible: boolean;
+  jobRole?: string;
 }
 
 export interface WorkerPay {
