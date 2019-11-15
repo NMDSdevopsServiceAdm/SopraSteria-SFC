@@ -79,7 +79,7 @@ export interface Establishment {
   createdByUserUID?: string;
   id: number;
   uid: string;
-  ownerChangeRequestUID?: string;
+  ownerChangeRequestUID?: any;
   name: string;
   address: string;
   postcode: string;

@@ -224,8 +224,8 @@ export class EstablishmentService {
   public changeOwnership(establishmentId, data: ChangeOwner): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/ownershipChange`, data);
   }
-  public changeOwnershipDetails(establishmentId): Observable<Establishment> {
-    return this.http.get<Establishment>(`/api/establishment/${establishmentId}/ownershipChange/details`);
+  public changeOwnershipDetails(establishmentId): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${establishmentId}/ownershipChange/details`);
   }
 
   public cancelOwnership(establishmentId, ownershipChangeId, data: CancelOwnerShip): Observable<Establishment> {

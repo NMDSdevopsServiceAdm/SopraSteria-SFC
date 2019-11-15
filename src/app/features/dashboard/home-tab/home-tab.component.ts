@@ -37,7 +37,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public user: UserDetails;
   public canViewChangeDataOwner: boolean;
   public canViewDataPermissionsLink: boolean;
-  public ownershipChangeRequestId;
+  public ownershipChangeRequestId: any = [];
   public isOwnershipRequested = false;
   public primaryWorkplace: Establishment;
 
@@ -100,8 +100,10 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.changeOwnershipDetails(this.workplace.uid).subscribe(
         data => {
-          if (data) {
-            this.ownershipChangeRequestId = data.ownerChangeRequestUID;
+          if (data && data.length > 0) {
+            data.forEach(element => {
+              this.ownershipChangeRequestId.push(element.ownerChangeRequestUID);
+            });
             this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
             const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
             dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
