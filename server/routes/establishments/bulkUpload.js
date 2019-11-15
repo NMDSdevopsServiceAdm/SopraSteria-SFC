@@ -154,6 +154,19 @@ const acquireLock = async function (logic, newState, req, res) {
 
   }
 
+  if(newState === buStates.VALIDATING) {
+    switch(res.buValidationResult) {
+      case buStates.PASSED:
+      case buStates.WARNINGS:
+        nextState = res.buValidationResult;
+      break;
+
+      default:
+        nextState = buStates.FAILED;
+      break;
+    }
+  }
+
   // release the lock
   await releaseLock(req, null, null, nextState);
 };
