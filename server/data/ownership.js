@@ -250,3 +250,18 @@ exports.getNotificationRecieverName = async params =>
     },
     type: db.QueryTypes.SELECT,
   });
+
+  const updateOwnershipRequestQuery = `
+  UPDATE cqc."OwnerChangeRequest"
+  SET "approvalStatus" = :approvalStatus, "approvalReason" = :rejectionReason, "updatedByUserUID" = :userUid
+  WHERE "subEstablishmentID" = :EstablishmentID;`;
+  exports.updateOwnershipRequest = async params =>
+    db.query(updateOwnershipRequestQuery, {
+      replacements: {
+        EstablishmentID: params.subEstablishmentId,
+        approvalStatus: 'APPROVED',
+        rejectionReason: null,
+        userUid: params.userUid
+      },
+      type: db.QueryTypes.UPDATE,
+    });

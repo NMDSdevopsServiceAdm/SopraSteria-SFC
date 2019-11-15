@@ -87,23 +87,21 @@ export class CancelDataOwnerDialogComponent extends DialogComponent implements O
           approvalStatus: 'CANCELLED',
           notificationRecipientUid: this.ownershipToUid,
         };
-        if (this.workplace.ownershipChangeRequestId) {
-          this.subscriptions.add(
-            this.establishmentService.cancelOwnership(this.workplace.uid, ownershipChangeRequestId, status).subscribe(
-              data => {
-                if (data) {
-                  this.close(true);
-                }
-              },
-              error => {
-                this.isCancelOwnershipError = true;
-                if (error.error.message) {
-                  this.serverError = error.error.message;
-                }
+        this.subscriptions.add(
+          this.establishmentService.cancelOwnership(this.workplace.uid, ownershipChangeRequestId, status).subscribe(
+            data => {
+              if (data) {
+                this.close(true);
               }
-            )
-          );
-        }
+            },
+            error => {
+              this.isCancelOwnershipError = true;
+              if (error.error.message) {
+                this.serverError = error.error.message;
+              }
+            }
+          )
+        );
       });
     }
   }

@@ -127,8 +127,10 @@ router.route('/:id').put(async (req, res) => {
                   let clearOwnershipParam = {
                     timeValue: null,
                     subEstablishmentId: params.subEstablishmentId,
+                    userUid: req.userUid
                   };
                   let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
+                  let updateOwnershipRequest = await ownership.updateOwnershipRequest(clearOwnershipParam);
                   if (!saveDataOwnershipRequested) {
                     return res.status(400).send({
                       message: 'Invalid request',
