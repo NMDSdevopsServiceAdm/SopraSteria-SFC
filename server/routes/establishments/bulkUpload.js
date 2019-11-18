@@ -272,7 +272,7 @@ const responseGet = (req, res) => {
     .then(data => {
       const jsonData = JSON.parse(data.Body.toString());
 
-      if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode < 100) {
+      if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
         if (jsonData.responseHeaders) {
           res.set(jsonData.responseHeaders);
         }
