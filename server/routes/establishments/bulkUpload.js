@@ -153,16 +153,16 @@ const acquireLock = async function (logic, newState, req, res) {
 
   }
 
-  if(newState === buStates.VALIDATING) {
-    switch(res.buValidationResult) {
+  if (newState === buStates.VALIDATING) {
+    switch (res.buValidationResult) {
       case buStates.PASSED:
       case buStates.WARNINGS:
         nextState = res.buValidationResult;
-      break;
+        break;
 
       default:
         nextState = buStates.FAILED;
-      break;
+        break;
     }
   }
 
@@ -254,59 +254,59 @@ const releaseLock = async (req, res, next, nextState = null) => {
 };
 
 const responseGet = (req, res) => {
-  const uuidRegex = /[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/;
+  const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
   const buRequestId = String(req.params.buRequestId).toLowerCase();
-  
-  if(!uuidRegex.test(buRequestId)) {
+
+  if (!uuidRegex.test(buRequestId)) {
     res.status(400).send({
       message: 'request id must be a uuid'
     });
-    
+
     return;
   }
-  
+
   s3.getObject({
-      Bucket,
-      Key: `${req.establishmentId}/intermediary/${buRequestId}.json`
-    }).promise().
-      then(data => {
-        const jsonData = JSON.parse(data.Body.toString());
-        
-        if(Number.isInteger(jsonData.responseCode) && jsonData.responseCode < 100) {
-          if(jsonData.responseHeaders) {
-            res.set(jsonData.responseHeaders);
-          }
-          
-          res.status(jsonData.responseCode).send(jsonData.responseBody);  
+    Bucket,
+    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`
+  }).promise()
+    .then(data => {
+      const jsonData = JSON.parse(data.Body.toString());
+
+      if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode < 100) {
+        if (jsonData.responseHeaders) {
+          res.set(jsonData.responseHeaders);
         }
 
-        console.log('bulkUpload::responseGet: Response code was not numeric', jsonData);
+        res.status(jsonData.responseCode).send(jsonData.responseBody);
+      }
 
-        throw new Error("Response code was not numeric");
-      }).
-      catch(err => {
-        console.log("bulkUpload::responseGet: getting data returned an error:", err);
+      console.log('bulkUpload::responseGet: Response code was not numeric', jsonData);
 
-        res.status(404).send({
-          message: 'Not Found'
-        });
+      throw new Error('Response code was not numeric');
+    })
+    .catch(err => {
+      console.log('bulkUpload::responseGet: getting data returned an error:', err);
+
+      res.status(404).send({
+        message: 'Not Found'
       });
+    });
 };
 
 const saveResponse = async (req, res, statusCode, body, headers) => {
-  if(!Number.isInteger(statusCode) || statusCode < 100) {
+  if (!Number.isInteger(statusCode) || statusCode < 100) {
     statusCode = 500;
   }
-  
+
   return s3.putObject({
-      Bucket,
-      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-      Body: JSON.stringify({
-        responseCode,
-        responseBody: body
-        responseHeaders: typeof headers === 'object' ? headers : undefined
-      })
-    }).promise();
+    Bucket,
+    Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
+    Body: JSON.stringify({
+      responseCode: statusCode,
+      responseBody: body,
+      responseHeaders: (typeof headers === 'object' ? headers : undefined)
+    })
+  }).promise();
 };
 
 const uploadedGet = async (req, res) => {
@@ -324,10 +324,10 @@ const uploadedGet = async (req, res) => {
           const elements = file.Key.split('/');
 
           const objData = await s3.headObject({
-              Bucket,
-              Key: file.Key
-            }).promise();
-            
+            Bucket,
+            Key: file.Key
+          }).promise();
+
           const username = objData && objData.Metadata ? objData.Metadata.username : '';
 
           const fileMetaData = data.Contents.filter(myFile => myFile.Key === (file.Key + '.metadata.json'));
@@ -338,7 +338,7 @@ const uploadedGet = async (req, res) => {
             const metaData = await downloadContent(fileMetaData[0].Key);
             metadataJSON = JSON.parse(metaData.data);
           }
-  
+
           return {
             filename: elements[elements.length - 1],
             uploaded: file.LastModified,
@@ -352,7 +352,7 @@ const uploadedGet = async (req, res) => {
           };
         })
     );
-    
+
     await saveResponse(req, res, 200, {
       establishment: {
         uid: req.establishmentId
@@ -361,8 +361,8 @@ const uploadedGet = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    
-    await saveResponse(req, res, 503, {}); 
+
+    await saveResponse(req, res, 503, {});
   }
 };
 
@@ -392,9 +392,8 @@ const uploadedStarGet = async (req, res) => {
     });
   } catch (err) {
     if (err.code && err.code === 'NotFound') {
-      await saveResponse(req, res, 404, {}); 
-    }
-    else {
+      await saveResponse(req, res, 404, {});
+    } else {
       console.log(err);
       await saveResponse(req, res, 503, {});
     }
@@ -462,7 +461,8 @@ const uploadedPost = async (req, res) => {
     uploadedFiles.length < MINIMUM_NUMBER_OF_FILES ||
     uploadedFiles.length > MAXIMUM_NUMBER_OF_FILES
   ) {
-    return res.status(400).send({});
+    await saveResponse(req, res, 400, {});
+    return;
   }
 
   try {
@@ -514,7 +514,7 @@ const signedUrlGet = async (req, res) => {
     });
   } catch (err) {
     console.error('establishment::bulkupload GET/:PreSigned - failed', err.message);
-    await saveResponse(req, res, 503, {}); 
+    await saveResponse(req, res, 503, {});
   }
 };
 
@@ -820,12 +820,15 @@ const validatePut = async (req, res) => {
           keepAlive
         ));
 
+    // set what the next state should be
+    res.buValidationResult = validationResponse.status;
+
     // handle parsing errors
     await saveResponse(req, res, 200, {
-        establishment: validationResponse.metaData.establishments.toJSON(),
-        workers: validationResponse.metaData.workers.toJSON(),
-        training: validationResponse.metaData.training.toJSON()
-      });
+      establishment: validationResponse.metaData.establishments.toJSON(),
+      workers: validationResponse.metaData.workers.toJSON(),
+      training: validationResponse.metaData.training.toJSON()
+    });
   } catch (err) {
     console.error(err);
 
@@ -1399,6 +1402,22 @@ const validateBulkUploadFiles = async (
   training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
   training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
+  // set the status based upon whether there were errors or warnings
+  let status = buStates.FAILED;
+  if ((
+    establishments.establishmentMetadata.errors.length +
+    workers.workerMetadata.errors.length +
+    training.trainingMetadata.errors.length) === 0
+  ) {
+    status = (
+      establishments.establishmentMetadata.warnings.length +
+    workers.workerMetadata.warnings.length +
+    training.trainingMetadata.warnings.length
+    ) === 0
+      ? buStates.PASSED
+      : buStates.WARNINGS;
+  }
+
   const validateCompleteTime = new Date();
   timerLog('CHECKPOINT - BU Validate - have cross-checked validations', validateTrainingTime, validateCompleteTime);
   timerLog('CHECKPOINT - BU Validate - overall validations', validateRestoredStateTime, validateCompleteTime);
@@ -1585,8 +1604,6 @@ const validateBulkUploadFiles = async (
   timerLog('CHECKPOINT - BU Validate - upload artifacts to S3', validateDifferenceReportTime, validateS3UploadTime);
 
   timerLog('CHECKPOINT - BU Validate - total', validateStartTime, validateS3UploadTime);
-
-  const status = !(csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0 || csvTrainingSchemaErrors.length > 0);
 
   return {
     status,
@@ -1991,11 +2008,9 @@ const reportGet = async (req, res) => {
       }
     }
 
-    readable = readable.join(NEWLINE);
-    
-    await saveResponse(req, res, 200, readable, {
-      'Content-Type', 'text/plain',
-      'Content-disposition', `attachment; filename=${getFileName(reportType)}`
+    await saveResponse(req, res, 200, readable.join(NEWLINE), {
+      'Content-Type': 'text/plain',
+      'Content-disposition': `attachment; filename=${getFileName(reportType)}`
     });
   } catch (err) {
     console.error(err);
@@ -2314,10 +2329,10 @@ const completePost = async (req, res) => {
         await saveResponse(req, res, 200, {});
       } catch (err) {
         console.error("route('/complete') err: ", err);
-        
+
         await saveResponse(req, res, 503, {
           message: 'Failed to save'
-        }));
+        });
       }
     } catch (err) {
       console.error('router.route(\'/complete\').post: failed to download entities intermediary - atypical that the object does not exist because not yet validated: ', err);
@@ -2328,10 +2343,10 @@ const completePost = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    
+
     await saveResponse(req, res, 503, {
       message: 'Service Unavailable'
-    }));
+    });
   }
 };
 
@@ -2413,7 +2428,7 @@ const downloadGet = async (req, res) => {
   const downloadType = req.params.downloadType;
 
   const ENTITY_RESTORE_LEVEL = 2;
-  
+
   const responseText = [];
 
   const responseSend = async (text, stepName = '') => {
@@ -2432,10 +2447,10 @@ const downloadGet = async (req, res) => {
         downloadType,
         responseSend
       );
-      
+
       await saveResponse(req, res, 200, responseText.join(), {
         'Content-Type': 'text/csv',
-        'Content-disposition': `attachment; filename=${new Date().toISOString().split('T')[0]}-sfc-bulk-upload-${downloadType}.csv`,
+        'Content-disposition': `attachment; filename=${new Date().toISOString().split('T')[0]}-sfc-bulk-upload-${downloadType}.csv`
       });
     } catch (err) {
       console.error('router.get(\'/bulkupload/download\').get: failed to restore my establishments and all associated entities (workers, qualifications and training: ', err);
