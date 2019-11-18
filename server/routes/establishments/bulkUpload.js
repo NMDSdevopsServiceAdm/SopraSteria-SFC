@@ -2,7 +2,6 @@
 
 const moment = require('moment');
 const csv = require('csvtojson');
-const Stream = require('stream');
 const uuid = require('uuid');
 
 const config = rfr('server/config/config');
@@ -274,6 +273,10 @@ const responseGet = (req, res) => {
         const jsonData = JSON.parse(data.Body.toString());
         
         if(Number.isInteger(jsonData.responseCode) && jsonData.responseCode < 100) {
+          if(jsonData.responseHeaders) {
+            res.set(jsonData.responseHeaders);
+          }
+          
           res.status(jsonData.responseCode).send(jsonData.responseBody);  
         }
 
@@ -290,7 +293,7 @@ const responseGet = (req, res) => {
       });
 };
 
-const saveResponse = async (req, res, statusCode, body) => {
+const saveResponse = async (req, res, statusCode, body, headers) => {
   if(!Number.isInteger(statusCode) || statusCode < 100) {
     statusCode = 500;
   }
@@ -300,7 +303,8 @@ const saveResponse = async (req, res, statusCode, body) => {
       Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
       Body: JSON.stringify({
         responseCode,
-        responseBody
+        responseBody: body
+        responseHeaders: typeof headers === 'object' ? headers : undefined
       })
     }).promise();
 };
@@ -710,22 +714,6 @@ const uploadedPut = async (req, res) => {
 };
 
 const validatePut = async (req, res) => {
-  // manage the request timeout
-  req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
-
-  res.writeHead(200, {
-    'Content-Type': 'application/json',
-    'Transfer-Encoding': 'chunked'
-  });
-  res.flushHeaders();
-
-  const keepAlive = (stepName = '', stepId = '') => {
-    res.write(' ');
-    res.flush();
-
-    console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
-  };
-
   const establishments = {
     imported: null,
     establishmentMetadata: new MetaData()
@@ -829,26 +817,16 @@ const validatePut = async (req, res) => {
         ));
 
     // handle parsing errors
-    if (!validationResponse.status) {
-      res.write(JSON.stringify({
+    await saveResponse(req, res, 200, {
         establishment: validationResponse.metaData.establishments.toJSON(),
         workers: validationResponse.metaData.workers.toJSON(),
         training: validationResponse.metaData.training.toJSON()
-      }));
-    } else {
-      res.write(JSON.stringify({
-        establishment: validationResponse.metaData.establishments.toJSON(),
-        workers: validationResponse.metaData.workers.toJSON(),
-        training: validationResponse.metaData.training.toJSON()
-      }));
-    }
+      });
   } catch (err) {
     console.error(err);
 
-    res.write('{}'); // keep connection alive
+    await saveResponse(req, res, 503, {});
   }
-
-  res.end();
 };
 
 const downloadContent = async (key, size, lastModified) => {
@@ -1877,7 +1855,7 @@ const reportGet = async (req, res) => {
   const NEWLINE = '\r\n';
   const reportTypes = ['training', 'establishments', 'workers'];
   const reportType = req.params.reportType;
-  const readable = new Stream.Readable();
+  const readable = [];
 
   try {
     if (!reportTypes.includes(reportType)) {
@@ -2009,14 +1987,15 @@ const reportGet = async (req, res) => {
       }
     }
 
-    readable.push(null);
-
-    res.setHeader('Content-disposition', 'attachment; filename=' + getFileName(reportType));
-    res.set('Content-Type', 'text/plain');
-    return readable.pipe(res);
+    readable = readable.join(NEWLINE);
+    
+    await saveResponse(req, res, 200, readable, {
+      'Content-Type', 'text/plain',
+      'Content-disposition', `attachment; filename=${getFileName(reportType)}`
+    });
   } catch (err) {
     console.error(err);
-    return res.status(503).send({});
+    await saveResponse(req, res, 503, {});
   }
 };
 
@@ -2207,19 +2186,7 @@ const completeDeleteEstablishment = async (
 };
 
 const completePost = async (req, res) => {
-  // manage the request timeout
-  req.setTimeout(config.get('bulkupload.completion.timeout') * 1000);
-
-  res.writeHead(200, {
-    'Content-Type': 'application/json',
-    'Transfer-Encoding': 'chunked'
-  });
-  res.flushHeaders();
-
   const keepAlive = (stepName = '', stepId = '') => {
-    res.write(' ');
-    res.flush();
-
     console.log(`Bulk Upload /complete keep alive: ${new Date()} ${stepName} ${stepId}`);
   };
 
@@ -2340,27 +2307,28 @@ const completePost = async (req, res) => {
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);
         timerLog('CHECKPOINT - BU COMPLETE - overall', completeStartTime, completeEndTime);
 
-        res.write(JSON.stringify({}));
+        await saveResponse(req, res, 200, {});
       } catch (err) {
         console.error("route('/complete') err: ", err);
-        res.write(JSON.stringify({
+        
+        await saveResponse(req, res, 503, {
           message: 'Failed to save'
         }));
       }
     } catch (err) {
       console.error('router.route(\'/complete\').post: failed to download entities intermediary - atypical that the object does not exist because not yet validated: ', err);
-      res.write(JSON.stringify({
+
+      await saveResponse(req, res, 406, {
         message: 'Validation has not run'
-      }));
+      });
     }
   } catch (err) {
     console.error(err);
-    res.write(JSON.stringify({
+    
+    await saveResponse(req, res, 503, {
       message: 'Service Unavailable'
     }));
   }
-
-  res.end();
 };
 
 // takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
@@ -2441,24 +2409,11 @@ const downloadGet = async (req, res) => {
   const downloadType = req.params.downloadType;
 
   const ENTITY_RESTORE_LEVEL = 2;
-
-  let headWritten = false;
+  
+  const responseText = [];
 
   const responseSend = async (text, stepName = '') => {
-    if (!headWritten) {
-      headWritten = true;
-
-      res.writeHead(200, {
-        'Content-Type': 'text/csv',
-        'Content-disposition': `attachment; filename=${new Date().toISOString().split('T')[0]}-sfc-bulk-upload-${downloadType}.csv`,
-        'Transfer-Encoding': 'chunked'
-      });
-
-      res.flushHeaders();
-    }
-
-    res.write(text);
-    res.flush();
+    responseText.push(text);
 
     console.log(`Bulk upload /download/${downloadType}: ${new Date()} ${stepName}`);
   };
@@ -2473,26 +2428,22 @@ const downloadGet = async (req, res) => {
         downloadType,
         responseSend
       );
+      
+      await saveResponse(req, res, 200, responseText.join(), {
+        'Content-Type': 'text/csv',
+        'Content-disposition': `attachment; filename=${new Date().toISOString().split('T')[0]}-sfc-bulk-upload-${downloadType}.csv`,
+      });
     } catch (err) {
       console.error('router.get(\'/bulkupload/download\').get: failed to restore my establishments and all associated entities (workers, qualifications and training: ', err);
 
-      if (!headWritten) {
-        // This is iffy,b ut what else can we do if something fails while streaming csv data?
-        res.writeHead(503, {
-          'Content-Type': 'application/json'
-        });
-        res.flushHeaders();
-
-        headWritten = true;
-
-        responseSend('{ "message": "Failed to retrieve establishment data" }', 'failed to retrieve');
-      }
+      await saveResponse(req, res, 503, {
+        message: 'Failed to retrieve establishment data'
+      });
     }
-
-    res.end();
   } else {
     console.error(`router.get('/bulkupload/download').get: unexpected download type: ${downloadType}`, downloadType);
-    res.status(400).send({
+
+    await saveResponse(req, res, 400, {
       message: `Unexpected download type: ${downloadType}`
     });
   }
