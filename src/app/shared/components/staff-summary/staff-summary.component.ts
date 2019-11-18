@@ -44,29 +44,29 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
       worker.jobRole = worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title;
       return worker;
     });
-    this.workers = orderBy(this.workers, ['nameOrId'], ['asc']); //sorting by default on first column
+    this.workers = orderBy(this.workers, [worker => worker.nameOrId.toLowerCase()], ['asc']); //sorting by default on first column
   }
 
   public sortByColumn(selectedColumn: any) {
     switch (selectedColumn) {
       case '0_asc': {
-        this.workers = orderBy(this.workers, ['nameOrId'], ['asc']);
+        this.workers = orderBy(this.workers, [worker => worker.nameOrId.toLowerCase()], ['asc']);
         break;
       }
       case '0_dsc': {
-        this.workers = orderBy(this.workers, ['nameOrId'], ['desc']);
+        this.workers = orderBy(this.workers, [worker => worker.nameOrId.toLowerCase()], ['desc']);
         break;
       }
       case '1_asc': {
-        this.workers = orderBy(this.workers, ['jobRole'], ['asc']);
+        this.workers = orderBy(this.workers, [worker => worker.jobRole.toLowerCase()], ['asc']);
         break;
       }
       case '1_dsc': {
-        this.workers = orderBy(this.workers, ['jobRole'], ['desc']);
+        this.workers = orderBy(this.workers, [worker => worker.jobRole.toLowerCase()], ['desc']);
         break;
       }
       default: {
-        this.workers = orderBy(this.workers, ['nameOrId'], ['asc']);
+        this.workers = orderBy(this.workers, [worker => worker.nameOrId.toLowerCase()], ['asc']);
         break;
       }
     }
