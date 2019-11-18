@@ -138,14 +138,14 @@ const acquireLock = async function (logic, newState, req, res) {
     type: db.QueryTypes.UPDATE
   });
 
-  req.buRequestId = uuid();
+  req.buRequestId = String(uuid()).toLowerCase();
 
-  /* res
+  res
     .status(200)
     .send({
-      message: `Lock for establishment ${establishmentId} acquired.`
+      message: `Lock for establishment ${establishmentId} acquired.`,
       requestId: req.buRequestId
-    }); */
+    });
 
   // run whatever the original logic was
   try {
@@ -254,6 +254,57 @@ const releaseLock = async (req, res, next, nextState = null) => {
   }
 };
 
+const responseGet = (req, res) => {
+  const uuidRegex = /[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/;
+  const buRequestId = String(req.params.buRequestId).toLowerCase();
+  
+  if(!uuidRegex.test(buRequestId)) {
+    res.status(400).send({
+      message: 'request id must be a uuid'
+    });
+    
+    return;
+  }
+  
+  s3.getObject({
+      Bucket,
+      Key: `${req.establishmentId}/intermediary/${buRequestId}.json`
+    }).promise().
+      then(data => {
+        const jsonData = JSON.parse(data.Body.toString());
+        
+        if(Number.isInteger(jsonData.responseCode) && jsonData.responseCode < 100) {
+          res.status(jsonData.responseCode).send(jsonData.responseBody);  
+        }
+
+        console.log('bulkUpload::responseGet: Response code was not numeric', jsonData);
+
+        throw new Error("Response code was not numeric");
+      }).
+      catch(err => {
+        console.log("bulkUpload::responseGet: getting data returned an error:", err);
+
+        res.status(404).send({
+          message: 'Not Found'
+        });
+      });
+};
+
+const saveResponse = async (req, res, statusCode, body) => {
+  if(!Number.isInteger(statusCode) || statusCode < 100) {
+    statusCode = 500;
+  }
+  
+  return s3.putObject({
+      Bucket,
+      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
+      Body: JSON.stringify({
+        responseCode,
+        responseBody
+      })
+    }).promise();
+};
+
 const uploadedGet = async (req, res) => {
   try {
     const data = await s3.listObjects({
@@ -269,36 +320,36 @@ const uploadedGet = async (req, res) => {
           const elements = file.Key.split('/');
 
           const objData = await s3.headObject({
-            Bucket,
-            Key: file.Key
-          }).promise();
+              Bucket,
+              Key: file.Key
+            }).promise();
+            
+          const username = objData && objData.Metadata ? objData.Metadata.username : '';
 
-          const returnData = {
+          const fileMetaData = data.Contents.filter(myFile => myFile.Key === (file.Key + '.metadata.json'));
+
+          let metadataJSON = {};
+
+          if (fileMetaData.length === 1) {
+            const metaData = await downloadContent(fileMetaData[0].Key);
+            metadataJSON = JSON.parse(metaData.data);
+          }
+  
+          return {
             filename: elements[elements.length - 1],
             uploaded: file.LastModified,
-            username: objData.Metadata.username,
-            records: 0,
-            errors: 0,
-            warnings: 0,
-            fileType: null,
+            username,
+            records: metadataJSON.records ? metadataJSON.records : 0,
+            errors: metadataJSON.errors ? metadataJSON.errors : 0,
+            warnings: metadataJSON.warnings ? metadataJSON.warnings : 0,
+            fileType: metadataJSON.fileType ? metadataJSON.fileType : null,
             size: file.Size,
             key: encodeURI(file.Key)
           };
-
-          const fileMetaData = data.Contents.filter(myFile => myFile.Key === file.Key + '.metadata.json');
-          if (fileMetaData.length === 1) {
-            const metaData = await downloadContent(fileMetaData[0].Key);
-            const metadataJSON = JSON.parse(metaData.data);
-            returnData.records = metadataJSON.records ? metadataJSON.records : 0;
-            returnData.errors = metadataJSON.errors ? metadataJSON.errors : 0;
-            returnData.warnings = metadataJSON.warnings ? metadataJSON.warnings : 0;
-            returnData.fileType = metadataJSON.fileType ? metadataJSON.fileType : null;
-          }
-
-          return returnData;
         })
     );
-    return res.status(200).send({
+    
+    await saveResponse(req, res, 200, {
       establishment: {
         uid: req.establishmentId
       },
@@ -306,7 +357,8 @@ const uploadedGet = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(503).send({});
+    
+    await saveResponse(req, res, 503, {}); 
   }
 };
 
@@ -320,7 +372,7 @@ const uploadedStarGet = async (req, res) => {
       Key
     }).promise();
 
-    return res.status(200).send({
+    await saveResponse(req, res, 200, {
       file: {
         filename: elements[elements.length - 1],
         uploaded: objHeadData.LastModified,
@@ -336,10 +388,12 @@ const uploadedStarGet = async (req, res) => {
     });
   } catch (err) {
     if (err.code && err.code === 'NotFound') {
-      return res.status(404).send({});
+      await saveResponse(req, res, 404, {}); 
     }
-    console.log(err);
-    return res.status(503).send({});
+    else {
+      console.log(err);
+      await saveResponse(req, res, 503, {});
+    }
   }
 };
 
@@ -349,9 +403,10 @@ const purgeBulkUploadS3Objects = async establishmentId => {
     Bucket,
     Prefix: `${establishmentId}/latest/`
   };
-  const latestObjects = await s3.listObjects(listParams).promise();
 
+  const latestObjects = await s3.listObjects(listParams).promise();
   const deleteKeys = [];
+
   latestObjects.Contents.forEach(myFile => {
     const ignoreRoot = /.*\/$/;
     if (!ignoreRoot.test(myFile.Key)) {
@@ -429,10 +484,10 @@ const uploadedPost = async (req, res) => {
       }
     });
 
-    return res.status(200).send(signedUrls);
+    await saveResponse(req, res, 200, signedUrls);
   } catch (err) {
     console.error('API POST bulkupload/uploaded: ', err);
-    return res.status(503).send({});
+    await saveResponse(req, res, 503, {});
   }
 };
 
@@ -440,7 +495,7 @@ const signedUrlGet = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
 
-    res.status(200).send({
+    await saveResponse(req, res, 200, {
       urls: s3.getSignedUrl('putObject', {
         Bucket,
         Key: `${establishmentId}/latest/${req.query.filename}`,
@@ -455,7 +510,7 @@ const signedUrlGet = async (req, res) => {
     });
   } catch (err) {
     console.error('establishment::bulkupload GET/:PreSigned - failed', err.message);
-    return res.status(503).send();
+    await saveResponse(req, res, 503, {}); 
   }
 };
 
@@ -647,10 +702,10 @@ const uploadedPut = async (req, res) => {
       }
     });
 
-    return res.status(200).send(returnData);
+    await saveResponse(req, res, 200, returnData);
   } catch (err) {
     console.error(err);
-    return res.status(503).send({});
+    await saveResponse(req, res, 503, {});
   }
 };
 
@@ -2460,5 +2515,6 @@ router.route('/report/:reportType').get(acquireLock.bind(null, reportGet, buStat
 router.route('/complete').post(acquireLock.bind(null, completePost, buStates.COMPLETING));
 router.route('/lockstatus').get(lockStatusGet);
 router.route('/unlock').get(releaseLock);
+router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;
