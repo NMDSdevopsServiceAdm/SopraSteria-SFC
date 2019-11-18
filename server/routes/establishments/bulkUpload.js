@@ -279,10 +279,11 @@ const responseGet = (req, res) => {
 
         res.status(jsonData.responseCode).send(jsonData.responseBody);
       }
+      else {
+        console.log('bulkUpload::responseGet: Response code was not numeric', jsonData);
 
-      console.log('bulkUpload::responseGet: Response code was not numeric', jsonData);
-
-      throw new Error('Response code was not numeric');
+        throw new Error('Response code was not numeric');
+      }
     })
     .catch(err => {
       console.log('bulkUpload::responseGet: getting data returned an error:', err);
