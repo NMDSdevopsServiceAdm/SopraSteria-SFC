@@ -156,17 +156,6 @@ exports.getUpdatedOwnershipRequest = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-exports.updateOwnershipRequest = async params =>
-  db.query(updateChangeOwnershipQuery, {
-    replacements: {
-      uid: params.ownerRequestChangeUid,
-      rejectionReason: params.rejectionReason,
-      approvalStatus: params.approvalStatus,
-      userUid: params.userUid,
-    },
-    type: db.QueryTypes.UPDATE,
-  });
-
 exports.updateChangeRequest = async params =>
   db.query(updateChangeOwnershipQuery, {
     replacements: {
@@ -259,9 +248,9 @@ exports.getNotificationRecieverName = async params =>
     db.query(updateOwnershipRequestQuery, {
       replacements: {
         EstablishmentID: params.subEstablishmentId,
-        approvalStatus: 'APPROVED',
-        rejectionReason: null,
-        userUid: params.userUid
+        rejectionReason: params.rejectionReason,
+        approvalStatus: params.approvalStatus,
+        userUid: params.userUid,
       },
       type: db.QueryTypes.UPDATE,
     });
