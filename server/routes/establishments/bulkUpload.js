@@ -714,6 +714,10 @@ const uploadedPut = async (req, res) => {
 };
 
 const validatePut = async (req, res) => {
+  const keepAlive = (stepName = '', stepId = '') => {
+    console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
+  };
+
   const establishments = {
     imported: null,
     establishmentMetadata: new MetaData()
