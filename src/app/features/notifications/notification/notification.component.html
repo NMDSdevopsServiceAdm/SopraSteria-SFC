@@ -57,8 +57,8 @@
           </ng-container>
           <ng-template #nonWorkPlaceRequester>
             <p>
-              {{ ownerShipRequestedTo }} has approved your request to become the owner of the data. You are now free to
-              edit workplace and staff data.
+              {{ ownerShipRequestedTo }} has approved your request to become the data owner. You are now free to edit
+              workplace and staff data.
             </p>
           </ng-template>
         </div>
@@ -86,7 +86,7 @@
               </ng-container>
               <ng-template #notNone>
                 <td class="govuk-table__cell">
-                  View {{ notification.typeContent.permissionRequest | dataViewPermissions }}
+                  View {{ notification.typeContent.permissionRequest | dataViewPermissions | lowercase }}
                 </td>
               </ng-template>
             </tr>
@@ -94,7 +94,7 @@
               <td class="govuk-table__cell">
                 {{ ownerShipRequestedTo }}
               </td>
-              <td class="govuk-table__cell">Edit workplace and Staff</td>
+              <td class="govuk-table__cell">Edit workplace and staff records</td>
             </tr>
           </ng-container>
           <ng-template #approved>
@@ -110,7 +110,7 @@
               </ng-container>
               <ng-template #notNone>
                 <td class="govuk-table__cell">
-                  View {{ notification.typeContent.permissionRequest | dataViewPermissions }}
+                  View {{ notification.typeContent.permissionRequest | dataViewPermissions | lowercase }}
                 </td>
               </ng-template>
             </tr>
@@ -118,7 +118,7 @@
               <td class="govuk-table__cell">
                 {{ ownerShipRequestedFrom }}
               </td>
-              <td class="govuk-table__cell">Edit Workplace and Staff</td>
+              <td class="govuk-table__cell">Edit workplace and staff records</td>
             </tr>
           </ng-template>
         </tbody>
