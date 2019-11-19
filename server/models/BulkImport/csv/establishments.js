@@ -9,6 +9,7 @@ const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
 const permanantContractStatusId = 1;
+const HEAD_OFFICE_MAIN_SERVICE = 72;
 
 const csvQuote = toCsv => {
   if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
@@ -782,6 +783,16 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
+    } else if(myRegType === 2 && this._mainService && this._mainService !== HEAD_OFFICE_MAIN_SERVICE) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.REGTYPE_ERROR,
+        errType: 'REGTYPE_ERROR',
+        error: 'REGTYPE is 2 (CQC) but no CQC regulated services have been specified.  Please change either REGTYPE or MAINSERVICE',
+        source: this._currentLine.REGTYPE,
+        name: this._currentLine.LOCALESTID
+      });
+      return false;
     } else {
       this._regType = myRegType;
       return true;
@@ -1186,7 +1197,6 @@ class Establishment {
     // mandatory
     const MAX_TOTAL = 999;
     const myTotalPermTemp = parseInt(this._currentLine.TOTALPERMTEMP, 10);
-    const HEAD_OFFICE_MAIN_SERVICE = 72;
 
     if (Number.isNaN(myTotalPermTemp)) {
       this._validationErrors.push({
@@ -1208,7 +1218,7 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if (this._mainService && this.mainService !== HEAD_OFFICE_MAIN_SERVICE && myTotalPermTemp === 0) {
+    } else if (this._mainService && this._mainService !== HEAD_OFFICE_MAIN_SERVICE && myTotalPermTemp === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
@@ -1931,11 +1941,11 @@ class Establishment {
       status = !this._validateShareWithLA() ? false : status;
       status = !this._validateLocalAuthorities() ? false : status;
 
+      status = !this._validateMainService() ? false : status;
       status = !this._validateRegType() ? false : status;
       status = !this._validateProvID() ? false : status;
       status = !this._validateLocationID() ? false : status;
 
-      status = !this._validateMainService() ? false : status;
       status = !this._validateAllServices() ? false : status;
       status = !this._validateServiceUsers() ? false : status;
       status = !this._validateCapacitiesAndUtilisations() ? false : status;
