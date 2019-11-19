@@ -10,6 +10,7 @@ const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
 const permanantContractStatusId = 1;
 const HEAD_OFFICE_MAIN_SERVICE = 72;
+const notHeadOfficeOrCqcRegulated = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,/* 16,*/ 17, 18];
 
 const csvQuote = toCsv => {
   if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
@@ -783,12 +784,12 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if(myRegType === 2 && this._mainService && this._mainService !== HEAD_OFFICE_MAIN_SERVICE) {
+    } else if(myRegType === 2 && notHeadOfficeOrCqcRegulated.includes(this._mainService)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.REGTYPE_ERROR,
         errType: 'REGTYPE_ERROR',
-        error: 'REGTYPE is 2 (CQC) but no CQC regulated services have been specified.  Please change either REGTYPE or MAINSERVICE',
+        error: 'REGTYPE is 2 (CQC) but no CQC regulated services have been specified. Please change either REGTYPE or MAINSERVICE',
         source: this._currentLine.REGTYPE,
         name: this._currentLine.LOCALESTID
       });
