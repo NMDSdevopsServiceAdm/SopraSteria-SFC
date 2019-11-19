@@ -52,10 +52,13 @@ import {
 } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
-import { QualificationsComponent } from './staff-record/qualifications/qualifications.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
-import { TrainingComponent } from './staff-record/training/training.component';
 import { TotalStaffComponent } from './total-staff/total-staff.component';
+import { QualificationsComponent } from './training-qualifications-record/qualifications/qualifications.component';
+import {
+  TrainingAndQualificationsRecordComponent,
+} from './training-qualifications-record/training-and-qualifications-record.component';
+import { TrainingComponent } from './training-qualifications-record/training/training.component';
 import {
   WdfWorkerConfirmationDialogComponent,
 } from './wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
@@ -64,6 +67,8 @@ import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-su
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
+//import { QualificationsComponent } from './staff-record/qualifications/qualifications.component';
+//import { TrainingComponent } from './staff-record/training/training.component';
 @NgModule({
   imports: [CommonModule, OverlayModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
   declarations: [
@@ -115,6 +120,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     YearArrivedUkComponent,
     WdfStaffSummaryComponent,
     WdfWorkerConfirmationDialogComponent,
+    TrainingAndQualificationsRecordComponent,
   ],
   providers: [DialogService, WorkerResolver],
   entryComponents: [
