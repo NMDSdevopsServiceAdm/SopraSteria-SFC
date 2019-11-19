@@ -19,6 +19,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public lastLoggedIn: string;
   public totalStaffRecords: number;
   public workplace: Establishment;
+  public trainingAlert: number;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -50,9 +51,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.workerService.getAllWorkers(this.workplace.uid).subscribe(
           workers => {
-            if (workers) {
-              this.workerService.setWorkers(workers);
-            }
+            this.workerService.setWorkers(workers);
+            this.trainingAlert = this.getTrainingAlertFlag(workers);
           },
           error => {
             console.error(error.error);
@@ -68,6 +68,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
       url: ['/dashboard'],
       fragment: 'user-accounts',
     });
+  }
+
+  public getTrainingAlertFlag(workers) {
+    if (workers.length > 0) {
+      const expariedTrainingCount = workers.filter(worker => worker.expiredTrainingCount > 0).length || 0;
+      const expiringTrainingCount = workers.filter(worker => worker.expiringTrainingCount > 0).length || 0;
+      if (expariedTrainingCount > 0) {
+        return 2;
+      } else if (expiringTrainingCount > 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    } else {
+      return 0;
+    }
   }
 
   ngOnDestroy(): void {

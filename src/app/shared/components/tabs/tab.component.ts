@@ -19,6 +19,8 @@ export class TabComponent implements OnInit {
   @Input() title;
   @Input() active = false;
   @Input() alert = false;
+  @Input() redAlert = false;
+
   public slug: string;
 
   ngOnInit() {

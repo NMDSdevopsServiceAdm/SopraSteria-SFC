@@ -45,6 +45,7 @@ import {
 import {
   TrainingAndQualificationsTabComponent,
 } from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
+import { TainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
@@ -114,6 +115,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SetDataPermissionDialogComponent,
     TrainingAndQualificationsTabComponent,
     TrainingAndQualificationsSummaryComponent,
+    TainingInfoPanelComponent,
   ],
   exports: [
     AlertComponent,
@@ -165,6 +167,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SetDataPermissionDialogComponent,
     TrainingAndQualificationsTabComponent,
     TrainingAndQualificationsSummaryComponent,
+    TainingInfoPanelComponent,
   ],
   entryComponents: [
     ChangeDataOwnerDialogComponent,
