@@ -10,7 +10,7 @@
     <tr class="govuk-table__row" *ngFor="let worker of workers">
       <td class="govuk-table__cell govuk-!-font-weight-regular">
         <ng-container *ngIf="canViewWorker; else nameOrId">
-          <a [routerLink]="getWorkerRecordPath(worker)">
+          <a [routerLink]="getWorkerTrainingAndQualificationsPath(worker)">
             {{ worker.nameOrId }}
           </a>
         </ng-container>
