@@ -1,22 +1,14 @@
 <ng-container *ngIf="worker">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-one-half">
       <h1 class="govuk-heading-xl">
         <span class="govuk-caption-xl">{{ worker.nameOrId }}</span>
-        Staff record summary
+        <h2 class="govuk-heading-m">Training and qualifications (0)</h2>
       </h1>
     </div>
-
-    <div class="govuk-grid-column-one-third">
-      <button
-        *ngIf="canDeleteWorker"
-        class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
-        (click)="deleteWorker($event)"
-      >
-        <img src="/assets/images/bin.svg" alt="" />
-        <span class="govuk-!-margin-left-1">
-          Delete <span class="govuk-visually-hidden">{{ worker.nameOrId }}</span> staff record
-        </span>
+    <div class="govuk-grid-column-one-half govuk-util__align-right">
+      <button class="govuk-button govuk-button--link" (click)="deleteWorker($event)">
+        Staff record summary
       </button>
       <a
         *ngIf="canEditWorker && !worker.completed"
@@ -25,18 +17,18 @@
         draggable="false"
         [routerLink]="['../main-job-start-date']"
       >
-        Complete Full Record
+        Add a record
       </a>
     </div>
   </div>
 
   <app-tabs>
-    <app-tab [title]="'Staff Record'">
+    <app-tab [title]="'Training'">
       <app-basic-record [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-basic-record>
       <app-personal-details [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-personal-details>
       <app-employment [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-employment>
     </app-tab>
-    <app-tab [title]="'Qualifications and training'">
+    <app-tab [title]="'Qualifications'">
       <app-qualifications-and-training
         [workplace]="workplace"
         [worker]="worker"
