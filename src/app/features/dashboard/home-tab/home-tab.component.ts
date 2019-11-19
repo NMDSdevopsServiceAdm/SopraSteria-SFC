@@ -97,6 +97,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
 
   public cancelChangeDataOwnerRequest($event: Event) {
     $event.preventDefault();
+    this.ownershipChangeRequestId = [];
     this.subscriptions.add(
       this.establishmentService.changeOwnershipDetails(this.workplace.uid).subscribe(
         data => {

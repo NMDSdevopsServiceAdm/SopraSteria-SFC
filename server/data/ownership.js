@@ -156,17 +156,6 @@ exports.getUpdatedOwnershipRequest = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-exports.updateOwnershipRequest = async params =>
-  db.query(updateChangeOwnershipQuery, {
-    replacements: {
-      uid: params.ownerRequestChangeUid,
-      rejectionReason: params.rejectionReason,
-      approvalStatus: params.approvalStatus,
-      userUid: params.userUid,
-    },
-    type: db.QueryTypes.UPDATE,
-  });
-
 exports.updateChangeRequest = async params =>
   db.query(updateChangeOwnershipQuery, {
     replacements: {
@@ -250,3 +239,18 @@ exports.getNotificationRecieverName = async params =>
     },
     type: db.QueryTypes.SELECT,
   });
+
+  const updateOwnershipRequestQuery = `
+  UPDATE cqc."OwnerChangeRequest"
+  SET "approvalStatus" = :approvalStatus, "approvalReason" = :rejectionReason, "updatedByUserUID" = :userUid
+  WHERE "subEstablishmentID" = :EstablishmentID;`;
+  exports.updateOwnershipRequest = async params =>
+    db.query(updateOwnershipRequestQuery, {
+      replacements: {
+        EstablishmentID: params.subEstablishmentId,
+        rejectionReason: params.rejectionReason,
+        approvalStatus: params.approvalStatus,
+        userUid: params.userUid,
+      },
+      type: db.QueryTypes.UPDATE,
+    });

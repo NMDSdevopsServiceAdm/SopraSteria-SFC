@@ -125,11 +125,11 @@ const getEstablishmentReportData = async establishmentId => {
     }
 
     if (value.Capacities === null) {
-      value.Capacities = '';
+      value.Capacities = 'N/A';
     }
 
     if (value.Utilisations === null) {
-      value.Utilisations = '';
+      value.Utilisations = 'N/A';
     }
 
     if (value.VacanciesValue === null) {
@@ -142,6 +142,12 @@ const getEstablishmentReportData = async establishmentId => {
 
     if (value.LeaversValue === null) {
       value.LeaversValue = 0;
+    }
+
+    if(value.ServiceUsers === ''){
+      value.ServiceUsers = 'Missing';
+    }else{
+      value.ServiceUsers = 'Yes';
     }
 
     value.LeavingReasonsCountEqualsLeavers = (value.ReasonsForLeaving === value.LeaversValue) ? 'Yes' : 'No';
@@ -166,6 +172,24 @@ const getWorkersReportData = async establishmentId => {
   const workerData = await getWorkerData(establishmentId);
 
   workerData.forEach(value => {
+    if(value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know"){
+      value.QualificationInSocialCareValue = 'N/A';
+    }
+    if(value.AnnualHourlyPayRate === "Don't know"){
+      value.AnnualHourlyPayRate = 'N/A';
+    }
+    if(value.DaysSickValue === 'No'){
+      value.DaysSickValue = "Don't know";
+    }
+    if(value.RecruitedFromValue === 'No'){
+      value.RecruitedFromValue = "Don't know";
+    }
+    if(value.WeeklyHoursContractedValue === 'No'){
+      value.WeeklyHoursContractedValue = "Don't know";
+    }
+    if(value.ZeroHoursContractValue === 'No'){
+      value.ZeroHoursContractValue = "Don't know";
+    }
     updateProps.forEach(prop => {
       if (value[prop] === null) {
         value[prop] = 'Missing';
@@ -213,7 +237,7 @@ const styleLookup = {
       F: 12,
       G: 12,
       H: 15,
-      I: 15,
+      I: 9,
       J: 26,
       K: 27,
       L: 12,
@@ -233,7 +257,7 @@ const styleLookup = {
       F: 22,
       G: 22,
       H: 20,
-      I: 20,
+      I: 9,
       J: 32,
       K: 33,
       L: 22,
@@ -276,7 +300,7 @@ const styleLookup = {
       H: 20,
       I: 9,
       J: 20,
-      K: 22,
+      K: 9,
       L: 9,
       M: 9,
       N: 20,
@@ -323,7 +347,7 @@ const styleLookup = {
       F: 12,
       G: 12,
       H: 15,
-      I: 15,
+      I: 65,
       J: 26,
       K: 27,
       L: 12,
@@ -343,7 +367,7 @@ const styleLookup = {
       F: 22,
       G: 22,
       H: 20,
-      I: 20,
+      I: 65,
       J: 32,
       K: 33,
       L: 22,
@@ -413,7 +437,7 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
 
   if (percentColumn) {
     let percentValue = value.split('%');
-    if (Number(percentValue[0]) < 90) {
+    if (Number(percentValue[0]) < 100) {
       isRed = true;
     }
   }
@@ -684,7 +708,7 @@ const updateEstablishmentsSheet = (
     const rowType = row === reportData.establishments.length - 1 ? 'ESTLAST' : 'ESTREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 18; column++) {
+    for (let column = 0; column < 16; column++) {
       const columnText = String.fromCharCode(column + 65);
       const isRed = false;
 
@@ -748,11 +772,14 @@ const updateEstablishmentsSheet = (
         } break;
 
         case 'I': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            reportData.establishments[row].ServiceUsers
+            reportData.establishments[row].ServiceUsers,
+            columnText,
+            rowType,
+            true
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'J': {
@@ -812,26 +839,6 @@ const updateEstablishmentsSheet = (
             reportData.establishments[row].VacanciesValue
           );
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-
-        case 'Q': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.establishments[row].LeavingReasonsCountEqualsLeavers,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'R': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.establishments[row].TotalWorkersCountGTEWorkerRecords,
-            columnText,
-            rowType
-          );
         } break;
       }
 

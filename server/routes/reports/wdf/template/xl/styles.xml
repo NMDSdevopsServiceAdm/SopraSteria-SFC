@@ -43,9 +43,8 @@
             <charset val="1" />
         </font>
         <font>
-            <u />
             <sz val="8" />
-            <color indexed="12" />
+            <color indexed="8" />
             <name val="Arial" />
             <charset val="1" />
         </font>
@@ -89,7 +88,7 @@
             </patternFill>
         </fill>
     </fills>
-    <borders count="28">
+    <borders count="29">
         <border>
             <left />
             <right />
@@ -472,6 +471,21 @@
             </bottom>
             <diagonal />
         </border>
+        <border>
+            <left style="thin">
+                <color indexed="1" />
+            </left>
+            <right style="thin">
+                <color indexed="1" />
+            </right>
+            <top style="thin">
+                <color indexed="1" />
+            </top>
+            <bottom style="thin">
+                <color indexed="1" />
+            </bottom>
+            <diagonal />
+        </border>
     </borders>
     <cellStyleXfs count="1">
         <xf numFmtId="0" fontId="0" fillId="0" borderId="0" />
@@ -486,7 +500,7 @@
             <alignment horizontal="center" wrapText="1" readingOrder="1" />
             <protection locked="0" />
         </xf>
-        <xf numFmtId="0" fontId="5" fillId="2" borderId="3" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1" applyProtection="1">
+        <xf numFmtId="0" fontId="5" fillId="2" borderId="28" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1" applyProtection="1">
             <alignment horizontal="center" wrapText="1" readingOrder="1" />
             <protection locked="0" />
         </xf>

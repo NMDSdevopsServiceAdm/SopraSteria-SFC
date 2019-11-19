@@ -74,6 +74,8 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
 
   public cancelChangeDataOwnerRequest($event: Event) {
     $event.preventDefault();
+    this.ownershipChangeRequestId = [];
+    this.ownershipChangeRequester = [];
     this.subscriptions.add(
       this.establishmentService.changeOwnershipDetails(this.workplace.uid).subscribe(
         data => {

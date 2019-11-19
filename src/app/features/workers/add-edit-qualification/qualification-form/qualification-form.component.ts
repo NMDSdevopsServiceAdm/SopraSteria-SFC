@@ -41,9 +41,16 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService
         .getAvailableQualifcations(this.workplace.uid, this.worker.uid, this.type.value as QualificationType)
-        .subscribe(qualifications => {
-          this.qualifications = qualifications;
-        })
+        .subscribe(
+          qualifications => {
+            if (qualifications) {
+              this.qualifications = qualifications;
+            }
+          },
+          error => {
+            console.error(error.error);
+          }
+        )
     );
 
     this.group.get('qualification').valueChanges.subscribe(value => {
