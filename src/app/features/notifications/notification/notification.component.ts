@@ -126,12 +126,14 @@ export class NotificationComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
         resp => {
-          this.notificationsService.notifications.forEach((notification, i) => {
-            if (notification.notificationUid === resp.notificationUid) {
-              this.notificationsService.notifications[i] = resp;
-            }
-          });
-          this.notificationsService.notifications$.next(this.notificationsService.notifications);
+          if (resp) {
+            this.notificationsService.notifications.forEach((notification, i) => {
+              if (notification.notificationUid === resp.notificationUid) {
+                this.notificationsService.notifications[i] = resp;
+              }
+            });
+            this.notificationsService.notifications$.next(this.notificationsService.notifications);
+          }
         },
         error => console.log('Could not update notification.')
       )
