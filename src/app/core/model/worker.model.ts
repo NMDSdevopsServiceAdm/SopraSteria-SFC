@@ -83,6 +83,10 @@ export interface Worker {
   wdf?: WorkerWdfRecord;
   wdfEligible: boolean;
   jobRole?: string;
+  trainingCount: number;
+  expiredTrainingCount: number;
+  expiringTrainingCount: number;
+  qualificationCount: number;
 }
 
 export interface WorkerPay {
