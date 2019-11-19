@@ -21,14 +21,21 @@ export class TrainingAndQualificationsTabComponent implements OnInit {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(workers => {
-        this.workers = workers;
-        this.workers.forEach((worker: Worker) => {
-          this.totalRecords += worker.trainingCount + worker.qualificationCount;
-          this.totalExpiredTraining += worker.expiredTrainingCount;
-          this.totalExpiringTraining += worker.expiringTrainingCount;
-        });
-      })
+      this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(
+        workers => {
+          if (workers) {
+            this.workers = workers;
+            this.workers.forEach((worker: Worker) => {
+              this.totalRecords += worker.trainingCount + worker.qualificationCount;
+              this.totalExpiredTraining += worker.expiredTrainingCount;
+              this.totalExpiringTraining += worker.expiringTrainingCount;
+            });
+          }
+        },
+        error => {
+          console.error(error.error);
+        }
+      )
     );
   }
 }
