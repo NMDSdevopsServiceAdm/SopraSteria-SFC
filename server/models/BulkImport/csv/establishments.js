@@ -1298,17 +1298,41 @@ class Establishment {
     // optional
     const allJobs = this._currentLine.ALLJOBROLES.split(';');
     const localValidationErrors = [];
+    const vacancies = this._currentLine.VACANCIES.split(';');
+    const starters = this._currentLine.STARTERS.split(';');
+    const leavers = this._currentLine.LEAVERS.split(';');
 
     // allJobs can only be empty, if TOTALPERMTEMP is 0
     if (!this._currentLine.ALLJOBROLES || this._currentLine.ALLJOBROLES.length === 0) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: Establishment.ALL_JOBS_WARNING,
-        warnType: 'ALL_JOBS_WARNING',
-        warning: 'All Job Roles (ALLJOBROLES) missing',
-        source: this._currentLine.ALLJOBROLES,
-        name: this._currentLine.LOCALESTID
-      });
+      if(
+        [].
+        concat(vacancies).
+        concat(starters).
+        concat(leavers).
+        findIndex(item => {
+          item = parseInt(item, 10);
+
+          return Number.isInteger(item) && item > 0 && item !== 999
+        }) !== -1
+      ) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.ALL_JOBS_ERROR,
+          errType: 'ALL_JOBS_ERROR',
+          error: 'ALLJOBROLES cannot be blank as you have STARTERS, LEAVERS, VACANCIES greater than zero',
+          source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID
+        });
+      } else {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          warnCode: Establishment.ALL_JOBS_WARNING,
+          warnType: 'ALL_JOBS_WARNING',
+          warning: 'All Job Roles (ALLJOBROLES) missing',
+          source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID
+        });
+      }
     } else if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0) {
       // all jobs are integers
       const isValid = allJobs.every(thisJob => !Number.isNaN(parseInt(thisJob, 10)));
