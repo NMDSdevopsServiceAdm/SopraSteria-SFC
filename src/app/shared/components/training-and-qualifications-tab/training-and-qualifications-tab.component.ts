@@ -14,9 +14,15 @@ export class TrainingAndQualificationsTabComponent implements OnInit {
 
   private subscriptions: Subscription = new Subscription();
   public workers: Worker[];
+<<<<<<< HEAD
   public totalRecords;
   public totalExpiredTraining;
   public totalExpiringTraining;
+=======
+  public totalRecords = 0;
+  public totalExpiredTraining = 0;
+  public totalExpiringTraining = 0;
+>>>>>>> Feature/training and qualifications home tab (#1683)
   constructor(private workerService: WorkerService) {}
 
   ngOnInit() {
