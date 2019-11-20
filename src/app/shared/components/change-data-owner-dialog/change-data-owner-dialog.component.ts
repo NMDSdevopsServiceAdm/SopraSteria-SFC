@@ -26,7 +26,10 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   public permissionType: string;
   public isOwnershipError: boolean;
   public serverError: string;
-  public requesterName: string;
+  public ownershipToName: string;
+  public ownershipFromName: string;
+  public isSubWorkplace: boolean;
+  public ownershipToUid: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
@@ -49,10 +52,17 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   private setWorkplaces(): void {
     this.workplace = this.data;
     this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
-    if (!this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid) {
-      this.requesterName = this.workplace.parentName;
+    this.isSubWorkplace =
+      !this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
+
+    if (this.workplace.dataOwner === 'Workplace') {
+      this.ownershipToName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
+      this.ownershipToUid = this.isSubWorkplace ? this.workplace.uid : this.dataPermissionsRequester.uid;
+      this.ownershipFromName = this.workplace.name;
     } else {
-      this.requesterName = this.dataPermissionsRequester.name;
+      this.ownershipToName = this.workplace.name;
+      this.ownershipToUid = this.workplace.uid;
+      this.ownershipFromName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
     }
   }
 
@@ -64,11 +74,11 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
     this.summaryList = [
       {
         label: 'From',
-        data: this.workplace.name,
+        data: this.ownershipFromName,
       },
       {
         label: 'To',
-        data: this.requesterName,
+        data: this.ownershipToName,
       },
     ];
   }
@@ -116,8 +126,9 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   public changeOwnership() {
     if (this.form.valid) {
       this.permissionType = this.form.value.dataPermission;
-      let requestedPermission = {
+      const requestedPermission = {
         permissionRequest: this.permissionType,
+        notificationRecipientUid: this.ownershipToUid,
       };
       this.subscriptions.add(
         this.establishmentService.changeOwnership(this.workplace.uid, requestedPermission).subscribe(

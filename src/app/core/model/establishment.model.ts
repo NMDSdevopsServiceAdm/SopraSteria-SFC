@@ -76,9 +76,10 @@ export interface WDF {
 
 export interface Establishment {
   parentUid?: string;
+  createdByUserUID?: string;
   id: number;
   uid: string;
-  ownerChangeRequestUID?: string;
+  ownerChangeRequestUID?: any;
   name: string;
   address: string;
   postcode: string;
@@ -153,6 +154,10 @@ export interface ChangeOwner {
 
 export interface CancelOwnerShip {
   approvalStatus: string;
+}
+
+export interface setPermission {
+  permissionToSet: string;
 }
 
 export enum SortStaffOptions {

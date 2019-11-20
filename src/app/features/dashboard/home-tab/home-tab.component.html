@@ -56,6 +56,9 @@
             <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>
           </ng-template>
         </li>
+        <li *ngIf="canViewDataPermissionsLink">
+          <a (click)="setDataPermissions($event)" href="#">Data permissions</a>
+        </li>
       </ul>
     </ng-container>
     <ul *ngIf="[adminRole].includes(user.role)" class="govuk-list">

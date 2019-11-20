@@ -399,6 +399,28 @@ const config = convict({
         }
       }
     }
+  },
+  test: {
+    baseurl: {
+      doc: 'The API URL to run integration tests against',
+      format: String,
+      default: 'http://localhost',
+      env: 'TEST_BASEURL'
+    },
+    admin: {
+      username: {
+        doc: 'A username of an admin user who can approve the registration request for new logins',
+        format: String,
+        default: 'unknown',
+        env: 'TEST_ADMINUSERNAME'
+      },
+      password: {
+        doc: 'A password of an admin user who can approve the registration request for new logins',
+        format: String,
+        default: 'unknown',
+        env: 'TEST_ADMINPASSWORD'
+      }
+    }
   }
 });
 

@@ -6,8 +6,13 @@
       <span *ngIf="primaryWorkplace.name" class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
       All workplaces ({{ workplacesCount }})
     </h1>
-    <!-- <a *ngIf="canAddEstablishment" class="govuk-button govuk-!-margin-bottom-0" [routerLink]="['/add-workplace/start']"
-      role="button" draggable="false">
+    <!-- <a
+      *ngIf="canAddEstablishment"
+      class="govuk-button govuk-!-margin-bottom-0"
+      [routerLink]="['/add-workplace/start']"
+      role="button"
+      draggable="false"
+    >
       Add a new workplace
     </a> -->
   </div>
@@ -16,7 +21,10 @@
 <ng-container *ngIf="workplaces.length; else noWorkPlaces">
   <ul class="govuk-list">
     <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngFor="let workplace of workplaces">
-      <app-workplace-info-panel [workplace]="workplace" (changeOwnershipEvent)="changeOwnershipRequest($event)">
+      <app-workplace-info-panel
+        [workplace]="workplace"
+        (changeOwnershipAndPermissionsEvent)="changeOwnershipAndPermissions($event)"
+      >
       </app-workplace-info-panel>
     </li>
   </ul>

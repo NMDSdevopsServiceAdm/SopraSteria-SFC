@@ -1,5 +1,9 @@
-<app-error-summary *ngIf="submitted && form.invalid || isOwnershipError" [formErrorsMap]="formErrorsMap"
-  [serverError]="serverError" [form]="form">
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || isOwnershipError"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+>
 </app-error-summary>
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
@@ -12,19 +16,26 @@
       </legend>
       <app-summary-list [wrapBorder]="true" [summaryList]="summaryList"></app-summary-list>
 
-      <p class="govuk-!-margin-top-5">
-        This will allow {{ dataPermissionsRequester.name }} to edit workplace and staff data.
-      </p>
-      <p>Select what data {{ workplace.name }} will have view only access to:</p>
+      <p class="govuk-!-margin-top-5">This will allow {{ ownershipToName }} to edit workplace and staff data.</p>
+      <p>Select what data {{ ownershipFromName }} will have view only access to:</p>
 
-      <span *ngIf="submitted && form.get('dataPermission').invalid" id="dataPermission-error"
-        class="govuk-error-message">
+      <span
+        *ngIf="submitted && form.get('dataPermission').invalid"
+        id="dataPermission-error"
+        class="govuk-error-message"
+      >
         <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('dataPermission') }}
       </span>
       <div class="govuk-radios">
         <div class="govuk-radios__item" *ngFor="let dataPermission of dataPermissions; let i = index">
-          <input class="govuk-radios__input" id="dataPermission-{{ i }}" name="dataPermission"
-            [formControlName]="'dataPermission'" type="radio" [value]="dataPermission" />
+          <input
+            class="govuk-radios__input"
+            id="dataPermission-{{ i }}"
+            name="dataPermission"
+            [formControlName]="'dataPermission'"
+            type="radio"
+            [value]="dataPermission"
+          />
           <label class="govuk-label govuk-radios__label" for="dataPermission-{{ i }}">
             {{ dataPermission | dataViewPermissions }}
           </label>
@@ -34,7 +45,7 @@
   </div>
 
   <p>
-    <strong>{{ workplace.name }} will need to approve your request.</strong>
+    <strong>{{ ownershipFromName }} will need to approve your request.</strong>
   </p>
 
   <button type="submit" (click)="changeOwnership()" class="govuk-button">Save and return</button>

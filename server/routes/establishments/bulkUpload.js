@@ -9,27 +9,28 @@ const config = require('../../config/config');
 
 const timerLog = require('../../utils/timerLog');
 
-// Shorthand for hasOwnProperty that also works with bare objects
-const hasProp = (obj, prop) =>
-  Object.prototype.hasOwnProperty.bind(obj)(prop);
-
 const router = express.Router();
 const s3 = new AWS.S3({
   region: appConfig.get('bulkupload.region').toString()
 });
 
-const CsvEstablishmentValidator = require('../../models/BulkImport/csv/establishments').Establishment;
-const CsvWorkerValidator = require('../../models/BulkImport/csv/workers').Worker;
-const CsvTrainingValidator = require('../../models/BulkImport/csv/training').Training;
+const EstablishmentCsvValidator = require('../../models/BulkImport/csv/establishments').Establishment;
+const WorkerCsvValidator = require('../../models/BulkImport/csv/workers').Worker;
+const TrainingCsvValidator = require('../../models/BulkImport/csv/training').Training;
+
 const MetaData = require('../../models/BulkImport/csv/metaData').MetaData;
 
-var FileStatusEnum = { Latest: 'latest', Validated: 'validated', Imported: 'imported' };
+const FileStatuses = {
+  Latest: 'latest',
+  Validated: 'validated',
+  Imported: 'imported'
+};
 
-const EstablishmentEntity = require('../../models/classes/establishment').Establishment;
-const WorkerEntity = require('../../models/classes/worker').Worker;
-const QualificationEntity = require('../../models/classes/qualification').Qualification;
-const TrainingEntity = require('../../models/classes/training').Training;
-const UserEntity = require('../../models/classes/user').User;
+const Establishment = require('../../models/classes/establishment').Establishment;
+const Worker = require('../../models/classes/worker').Worker;
+const Qualification = require('../../models/classes/qualification').Qualification;
+const Training = require('../../models/classes/training').Training;
+const User = require('../../models/classes/user').User;
 
 const FileValidationStatusEnum = { Pending: 'pending', Validating: 'validating', Pass: 'pass', PassWithWarnings: 'pass with warnings', Fail: 'fail' };
 
@@ -39,16 +40,17 @@ const completionBulkUploadStatus = 'COMPLETE';
 
 router.route('/uploaded').get(async (req, res) => {
   try {
-    const params = {
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
-      Prefix: `${req.establishmentId}/latest/`
-    };
+    const Bucket = appConfig.get('bulkupload.bucketname').toString();
 
-    const data = await s3.listObjects(params).promise();
+    const data = await s3.listObjects({
+      Bucket,
+      Prefix: `${req.establishmentId}/latest/`
+    }).promise();
+
     const returnData = await Promise.all(data.Contents.filter(myFile => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key))
-      .map(async (file) => {
+      .map(async file => {
         const elements = file.Key.split('/');
-        const objData = await s3.headObject({ Bucket: params.Bucket, Key: file.Key }).promise();
+        const objData = await s3.headObject({ Bucket, Key: file.Key }).promise();
         const returnData = {
           filename: elements[elements.length - 1],
           uploaded: file.LastModified,
@@ -73,7 +75,12 @@ router.route('/uploaded').get(async (req, res) => {
 
         return returnData;
       }));
-    return res.status(200).send({ establishment: { uid: req.establishmentId }, files: returnData });
+    return res.status(200).send({
+      establishment: {
+        uid: req.establishmentId
+      },
+      files: returnData
+    });
   } catch (err) {
     console.error(err);
     return res.status(503).send({});
@@ -81,32 +88,30 @@ router.route('/uploaded').get(async (req, res) => {
 });
 
 router.route('/uploaded/*').get(async (req, res) => {
-  const requestedKey = req.params['0'];
-
-  const params = {
-    Bucket: appConfig.get('bulkupload.bucketname').toString(),
-    Prefix: `${req.establishmentId}/latest/`
-  };
+  const Bucket = String(appConfig.get('bulkupload.bucketname'));
+  const Key = req.params['0'];
+  const elements = Key.split('/');
 
   try {
-    const objHeadData = await s3.headObject({ Bucket: params.Bucket, Key: requestedKey }).promise();
+    const objHeadData = await s3.headObject({
+      Bucket,
+      Key
+    }).promise();
 
-    const elements = requestedKey.split('/');
-
-    const returnData = {
-      filename: elements[elements.length - 1],
-      uploaded: objHeadData.LastModified,
-      username: objHeadData.Metadata.username,
-      size: objHeadData.ContentLength,
-      key: requestedKey,
-      signedUrl: s3.getSignedUrl('getObject', {
-        Bucket: appConfig.get('bulkupload.bucketname').toString(),
-        Key: requestedKey,
-        Expires: appConfig.get('bulkupload.uploadSignedUrlExpire')
-      })
-    };
-
-    return res.status(200).send({ file: returnData });
+    return res.status(200).send({
+      file: {
+        filename: elements[elements.length - 1],
+        uploaded: objHeadData.LastModified,
+        username: objHeadData.Metadata.username,
+        size: objHeadData.ContentLength,
+        key: Key,
+        signedUrl: s3.getSignedUrl('getObject', {
+          Bucket,
+          Key,
+          Expires: appConfig.get('bulkupload.uploadSignedUrlExpire')
+        })
+      }
+    });
   } catch (err) {
     if (err.code && err.code === 'NotFound') {
       return res.status(404).send({});
@@ -116,7 +121,7 @@ router.route('/uploaded/*').get(async (req, res) => {
   }
 });
 
-const purgeBulkUploadS3Obbejcts = async (establishmentId) => {
+const purgeBulkUploadS3Objects = async (establishmentId) => {
   // drop all in latest
   const listParams = {
     Bucket: appConfig.get('bulkupload.bucketname').toString(),
@@ -187,21 +192,26 @@ router.route('/uploaded').post(async function (req, res) {
   const MINIMUM_NUMBER_OF_FILES = 2;
   const MAXIMUM_NUMBER_OF_FILES = 3;
 
-  if (!uploadedFiles || !Array.isArray(uploadedFiles) || uploadedFiles.length < MINIMUM_NUMBER_OF_FILES || uploadedFiles.length > MAXIMUM_NUMBER_OF_FILES) {
+  if (
+    !uploadedFiles ||
+    !Array.isArray(uploadedFiles) ||
+    uploadedFiles.length < MINIMUM_NUMBER_OF_FILES ||
+    uploadedFiles.length > MAXIMUM_NUMBER_OF_FILES
+  ) {
     return res.status(400).send({});
   }
 
-  const signedUrls = [];
   try {
     // clean up existing bulk upload objects
-    await purgeBulkUploadS3Obbejcts(myEstablishmentId);
+    await purgeBulkUploadS3Objects(myEstablishmentId);
+
+    const signedUrls = [];
 
     uploadedFiles.forEach(thisFile => {
       if (thisFile.filename) {
         thisFile.signedUrl = s3.getSignedUrl('putObject', {
           Bucket: appConfig.get('bulkupload.bucketname').toString(),
-          Key: myEstablishmentId + '/' + FileStatusEnum.Latest + '/' + thisFile.filename,
-          // ACL: 'public-read',
+          Key: myEstablishmentId + '/' + FileStatuses.Latest + '/' + thisFile.filename,
           ContentType: req.query.type,
           Metadata: {
             username,
@@ -222,24 +232,23 @@ router.route('/uploaded').post(async function (req, res) {
 });
 
 router.route('/signedUrl').get(async function (req, res) {
-  const establishmentId = req.establishmentId;
-  const username = req.username;
-
   try {
-    const myEstablishmentId = Number.isInteger(establishmentId) ? establishmentId.toString() : establishmentId;
-    var uploadPreSignedUrl = s3.getSignedUrl('putObject', {
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
-      Key: establishmentId + '/' + FileStatusEnum.Latest + '/' + req.query.filename,
-      // ACL: 'public-read',
-      ContentType: req.query.type,
-      Metadata: {
-        username,
-        establishmentId: myEstablishmentId,
-        validationstatus: FileValidationStatusEnum.Pending
-      },
-      Expires: appConfig.get('bulkupload.uploadSignedUrlExpire')
+    const establishmentId = String(req.establishmentId);
+
+    res.json({
+      urls: s3.getSignedUrl('putObject', {
+        Bucket: appConfig.get('bulkupload.bucketname').toString(),
+        Key: establishmentId + '/' + FileStatuses.Latest + '/' + req.query.filename,
+        // ACL: 'public-read',
+        ContentType: req.query.type,
+        Metadata: {
+          username: String(req.username),
+          establishmentId,
+          validationstatus: FileValidationStatusEnum.Pending
+        },
+        Expires: appConfig.get('bulkupload.uploadSignedUrlExpire')
+      })
     });
-    res.json({ urls: uploadPreSignedUrl });
     res.end();
   } catch (err) {
     console.error('establishment::bulkupload GET/:PreSigned - failed', err.message);
@@ -258,13 +267,11 @@ router.route('/uploaded').put(async (req, res) => {
 
   try {
     // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
-    const params = {
+    const createModelPromises = [];
+    const data = await s3.listObjects({
       Bucket: appConfig.get('bulkupload.bucketname').toString(),
       Prefix: `${req.establishmentId}/latest/`
-    };
-    const data = await s3.listObjects(params).promise();
-
-    const createModelPromises = [];
+    }).promise();
 
     data.Contents.forEach(myFile => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
@@ -277,7 +284,7 @@ router.route('/uploaded').put(async (req, res) => {
     const allContent = await Promise.all(createModelPromises);
 
     allContent.forEach(myfile => {
-      if (CsvEstablishmentValidator.isContent(myfile.data)) {
+      if (EstablishmentCsvValidator.isContent(myfile.data)) {
         myDownloads.establishments = myfile.data;
         establishmentMetadata.filename = myfile.filename;
         establishmentMetadata.fileType = 'Establishment';
@@ -285,7 +292,7 @@ router.route('/uploaded').put(async (req, res) => {
         establishmentMetadata.size = myfile.size;
         establishmentMetadata.key = myfile.key;
         establishmentMetadata.lastModified = myfile.lastModified;
-      } else if (CsvWorkerValidator.isContent(myfile.data)) {
+      } else if (WorkerCsvValidator.isContent(myfile.data)) {
         myDownloads.workers = myfile.data;
         workerMetadata.filename = myfile.filename;
         workerMetadata.fileType = 'Worker';
@@ -293,7 +300,7 @@ router.route('/uploaded').put(async (req, res) => {
         workerMetadata.size = myfile.size;
         workerMetadata.key = myfile.key;
         workerMetadata.lastModified = myfile.lastModified;
-      } else if (CsvTrainingValidator.isContent(myfile.data)) {
+      } else if (TrainingCsvValidator.isContent(myfile.data)) {
         myDownloads.trainings = myfile.data;
         trainingMetadata.filename = myfile.filename;
         trainingMetadata.fileType = 'Training';
@@ -338,8 +345,7 @@ router.route('/uploaded').put(async (req, res) => {
     const metadataS3Promises = [];
 
     if (importedEstablishments) {
-      const establishmentsCsvValidator = new CsvEstablishmentValidator(importedEstablishments[firstRow], firstLineNumber);
-      if (establishmentsCsvValidator.preValidate(establishmentHeaders)) {
+      if ((new EstablishmentCsvValidator(importedEstablishments[firstRow], firstLineNumber)).preValidate(establishmentHeaders)) {
         // count records and update metadata
         establishmentMetadata.records = importedEstablishments.length;
         metadataS3Promises.push(uploadAsJSON(
@@ -355,8 +361,7 @@ router.route('/uploaded').put(async (req, res) => {
     }
 
     if (importedWorkers) {
-      const workerCsvValidator = new CsvWorkerValidator(importedWorkers[firstRow], firstLineNumber);
-      if (workerCsvValidator.preValidate(workerHeaders)) {
+      if ((new WorkerCsvValidator(importedWorkers[firstRow], firstLineNumber)).preValidate(workerHeaders)) {
         // count records and update metadata
         workerMetadata.records = importedWorkers.length;
         metadataS3Promises.push(uploadAsJSON(
@@ -372,8 +377,7 @@ router.route('/uploaded').put(async (req, res) => {
     }
 
     if (importedTraining) {
-      const trainingCsvValidator = new CsvTrainingValidator(importedTraining[firstRow], firstLineNumber);
-      if (trainingCsvValidator.preValidate(trainingHeaders)) {
+      if ((new TrainingCsvValidator(importedTraining[firstRow], firstLineNumber)).preValidate(trainingHeaders)) {
         // count records and update metadata
         trainingMetadata.records = importedTraining.length;
         metadataS3Promises.push(uploadAsJSON(
@@ -504,7 +508,7 @@ router.route('/validate').put(async (req, res) => {
                   let metadata = null;
 
                   // figure out which type of csv this file is and load the data
-                  if (estNotFound && CsvEstablishmentValidator.isContent(myFile.data)) {
+                  if (estNotFound && EstablishmentCsvValidator.isContent(myFile.data)) {
                     estNotFound = false;
                     obj = establishments;
                     metadata = establishments.establishmentMetadata;
@@ -512,7 +516,7 @@ router.route('/validate').put(async (req, res) => {
                     metadata.filename = myFile.filename;
                     metadata.fileType = 'Establishment';
                     metadata.userName = myFile.username;
-                  } else if (wrkNotFound && CsvWorkerValidator.isContent(myFile.data)) {
+                  } else if (wrkNotFound && WorkerCsvValidator.isContent(myFile.data)) {
                     wrkNotFound = false;
                     obj = workers;
                     metadata = workers.workerMetadata;
@@ -520,7 +524,7 @@ router.route('/validate').put(async (req, res) => {
                     metadata.filename = myFile.filename;
                     metadata.fileType = 'Worker';
                     metadata.userName = myFile.username;
-                  } else if (trnNotFound && CsvTrainingValidator.isContent(myFile.data)) {
+                  } else if (trnNotFound && TrainingCsvValidator.isContent(myFile.data)) {
                     trnNotFound = false;
                     obj = trainings;
                     metadata = trainings.trainingMetadata;
@@ -584,120 +588,9 @@ router.route('/validate').put(async (req, res) => {
   res.end();
 });
 
-// alternative (testable) route, which passes the establishment, worker and training CSV as content
-// return the validation errors as the response
-router.route('/validate').post(async (req, res) => {
-  const establishmentId = req.establishmentId;
-  const username = req.username;
-  const isParent = req.isParent;
-  const establishmentMetadata = new MetaData();
-  const workerMetadata = new MetaData();
-  const trainingMetadata = new MetaData();
-
-  const establishmentRegex = /LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES/;
-  const trainingRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
-  const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
-
-  try {
-    const importedEstablishments = await csv().fromString(req.body.establishments.csv);
-    const importedWorkers = await csv().fromString(req.body.workers.csv);
-    const importedTraining = await csv().fromString(req.body.training.csv);
-
-    if (establishmentRegex.test(req.body.establishments.csv.substring(0, 50))) {
-      const key = req.body.establishments.filename;
-      establishmentMetadata.filename = key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3];
-      establishmentMetadata.fileType = 'Establishment';
-    }
-    if (trainingRegex.test(req.body.training.csv.substring(0, 50))) {
-      const key = req.body.training.filename;
-      trainingMetadata.filename = key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3];
-      trainingMetadata.fileType = 'Training';
-    }
-
-    const validationResponse = await validateBulkUploadFiles(
-      false,
-      username,
-      establishmentId,
-      isParent,
-      {
-        imported: importedEstablishments,
-        establishmentMetadata: establishmentMetadata
-      },
-      {
-        imported: importedWorkers,
-        workerMetadata: workerMetadata
-      },
-      {
-        imported: importedTraining,
-        trainingMetadata: trainingMetadata
-      }
-    );
-
-    // handle parsing errors
-    if (!validationResponse.status) {
-      return res.status(400).send({
-        report: validationResponse.report,
-        establishments: {
-          filename: null,
-          records: importedEstablishments.length,
-          deleted: validationResponse.metaData.establishments.deleted,
-          errors: validationResponse.validation.establishments
-            .filter(thisVal => hasProp(thisVal, 'errCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          warnings: validationResponse.validation.establishments
-            .filter(thisVal => hasProp(thisVal, 'warnCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          data: {
-            csv: validationResponse.data.csv.establishments,
-            entities: validationResponse.data.entities.establishments
-          }
-        },
-        workers: {
-          filename: null,
-          records: importedWorkers.length,
-          deleted: validationResponse.metaData.workers.deleted,
-          errors: validationResponse.validation.workers
-            .filter(thisVal => hasProp(thisVal, 'errCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          warnings: validationResponse.validation.workers
-            .filter(thisVal => hasProp(thisVal, 'warnCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          data: {
-            csv: validationResponse.data.csv.workers,
-            entities: {
-              workers: validationResponse.data.entities.workers,
-              qualifications: validationResponse.data.entities.qualifications
-            }
-          }
-        },
-        training: {
-          filename: null,
-          records: importedTraining.length,
-          errors: validationResponse.validation.training
-            .filter(thisVal => hasProp(thisVal, 'errCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          warnings: validationResponse.validation.training
-            .filter(thisVal => hasProp(thisVal, 'warnCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          data: {
-            csv: validationResponse.data.csv.training,
-            entities: validationResponse.data.entities.training
-          }
-        },
-        all: validationResponse.data.resulting
-      });
-    } else {
-      return res.status(200).send(validationResponse.data.resulting);
-    }
-  } catch (err) {
-    console.error(err);
-    return res.status(503).send({});
-  }
-});
-
 const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
 
-async function downloadContent (key, objectSize, lastModified) {
+const downloadContent = async (key, size, lastModified) => {
   try {
     return await s3.getObject({
       Bucket: appConfig.get('bulkupload.bucketname').toString(),
@@ -709,38 +602,34 @@ async function downloadContent (key, objectSize, lastModified) {
         data: objData.Body.toString(),
         filename: key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3],
         username: objData.Metadata.username,
-        size: objectSize,
+        size,
         lastModified
       }));
   } catch (err) {
     console.error(`api/establishment/bulkupload/downloadFile: ${key})\n`, err);
     throw new Error(`Failed to download S3 object: ${key}`);
   }
-}
+};
 
-async function uploadAsJSON (username, establishmentId, content, key) {
-  const myEstablishmentId = Number.isInteger(establishmentId) ? establishmentId.toString() : establishmentId;
-
-  var params = {
-    Bucket: appConfig.get('bulkupload.bucketname').toString(),
-    Key: key,
-    Body: JSON.stringify(content, null, 2),
-    ContentType: 'application/json',
-    Metadata: {
-      username,
-      establishmentId: myEstablishmentId
-    }
-  };
-
+const uploadAsJSON = async (username, establishmentId, content, key) => {
   try {
-    await s3.putObject(params).promise();
+    await s3.putObject({
+      Bucket: appConfig.get('bulkupload.bucketname').toString(),
+      Key: key,
+      Body: JSON.stringify(content, null, 2),
+      ContentType: 'application/json',
+      Metadata: {
+        username,
+        establishmentId: String(establishmentId)
+      }
+    }).promise();
   } catch (err) {
     console.error('uploadAsJSON: ', err);
     throw new Error(`Failed to upload S3 object: ${key}`);
   }
-}
+};
 
-const _validateEstablishmentCsv = async (
+const validateEstablishmentCsv = async (
   thisLine,
   currentLineNumber,
   csvEstablishmentSchemaErrors,
@@ -749,16 +638,16 @@ const _validateEstablishmentCsv = async (
   myCurrentEstablishments,
   keepAlive = () => {}
 ) => {
-  const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber, myCurrentEstablishments);
+  const lineValidator = new EstablishmentCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   lineValidator.validate();
   lineValidator.transform();
 
   const thisEstablishmentAsAPI = lineValidator.toAPI();
-  const thisApiEstablishment = new EstablishmentEntity();
 
   try {
+    const thisApiEstablishment = new Establishment();
     thisApiEstablishment.initialise(
       thisEstablishmentAsAPI.Address1,
       thisEstablishmentAsAPI.Address2,
@@ -775,16 +664,11 @@ const _validateEstablishmentCsv = async (
 
     keepAlive('establishment loaded', currentLineNumber);
 
-    const isValid = thisApiEstablishment.validate();
-
-    if (isValid) {
+    if (thisApiEstablishment.validate()) {
       // No validation errors in the entity itself, so add it ready for completion
       myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
     } else {
       const errors = thisApiEstablishment.errors;
-      const warnings = thisApiEstablishment.warnings;
-
-      lineValidator.addAPIValidations(errors, warnings);
 
       if (errors.length === 0) {
         myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
@@ -806,10 +690,12 @@ const _validateEstablishmentCsv = async (
   myEstablishments.push(lineValidator);
 };
 
-const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications, keepAlive = () => {}) => {
-  const thisApiQualification = new QualificationEntity();
+const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications, keepAlive = () => {}) => {
+  const thisApiQualification = new Qualification();
+
   // load while ignoring the "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
   const isValid = await thisApiQualification.load(thisQual);
+
   keepAlive('qualification loaded', lineValidator.lineNumber);
 
   if (isValid) {
@@ -833,7 +719,7 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker,
   }
 };
 
-const _validateWorkerCsv = async (
+const validateWorkerCsv = async (
   thisLine,
   currentLineNumber,
   csvWorkerSchemaErrors,
@@ -844,15 +730,18 @@ const _validateWorkerCsv = async (
   keepAlive = () => {}
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
-  const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber, myCurrentEstablishments);
+  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
+
   lineValidator.validate();
   lineValidator.transform();
 
-  // construct Worker entity
-  const thisApiWorker = new WorkerEntity();
+  const thisWorkerAsAPI = lineValidator.toAPI();
 
   try {
-    await thisApiWorker.load(lineValidator.toAPI());
+    // construct Worker entity
+    const thisApiWorker = new Worker();
+    await thisApiWorker.load(thisWorkerAsAPI);
+
     keepAlive('worker loaded', currentLineNumber);
 
     if (thisApiWorker.validate()) {
@@ -861,7 +750,7 @@ const _validateWorkerCsv = async (
 
       // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
       //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
-      await Promise.all(lineValidator.toQualificationAPI().map(thisQual => _loadWorkerQualifications(
+      await Promise.all(lineValidator.toQualificationAPI().map(thisQual => loadWorkerQualifications(
         lineValidator,
         thisQual,
         thisApiWorker,
@@ -870,9 +759,6 @@ const _validateWorkerCsv = async (
       )));
     } else {
       const errors = thisApiWorker.errors;
-      const warnings = thisApiWorker.warnings;
-
-      lineValidator.addAPIValidations(errors, warnings);
 
       if (errors.length === 0) {
         myAPIWorkers[currentLineNumber] = thisApiWorker;
@@ -890,27 +776,25 @@ const _validateWorkerCsv = async (
   myWorkers.push(lineValidator);
 };
 
-const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings, keepAlive = () => {}) => {
-  const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber);
-
+const validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings, keepAlive = () => {}) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
+  const lineValidator = new TrainingCsvValidator(thisLine, currentLineNumber);
+
   lineValidator.validate();
   lineValidator.transform();
 
   const thisTrainingAsAPI = lineValidator.toAPI();
-  const thisApiTraining = new TrainingEntity();
   try {
+    const thisApiTraining = new Training();
     const isValid = await thisApiTraining.load(thisTrainingAsAPI);
 
     keepAlive('training loaded', currentLineNumber);
+
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
       myAPITrainings[currentLineNumber] = thisApiTraining;
     } else {
       const errors = thisApiTraining.errors;
-      const warnings = thisApiTraining.warnings;
-
-      lineValidator.addAPIValidations(errors, warnings);
 
       if (errors.length === 0) {
         myAPITrainings[currentLineNumber] = thisApiTraining;
@@ -943,6 +827,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 
   // restore the current known state this primary establishment (including all subs)
   const RESTORE_ASSOCIATION_LEVEL = 1;
+
   keepAlive('begin validate files', establishmentId); // keep connection alive
 
   const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent, RESTORE_ASSOCIATION_LEVEL, false, keepAlive);
@@ -967,11 +852,10 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   const allWorkersByKey = {};
 
   // /////////////////////////
-
-  // parse and process Establishments CSV
+  // Parse and process Establishments CSV
   if (Array.isArray(establishments.imported) && establishments.imported.length > 0 && establishments.establishmentMetadata.fileType === 'Establishment') {
     // validate all establishment rows
-    await Promise.all(establishments.imported.map((thisLine, currentLineNumber) => _validateEstablishmentCsv(
+    await Promise.all(establishments.imported.map((thisLine, currentLineNumber) => validateEstablishmentCsv(
       thisLine,
       currentLineNumber + 2,
       csvEstablishmentSchemaErrors,
@@ -1006,10 +890,9 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   establishments.establishmentMetadata.records = myEstablishments.length;
 
   // /////////////////////////
-
-  // parse and process Workers CSV
+  // Parse and process Workers CSV
   if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType === 'Worker') {
-    await Promise.all(workers.imported.map((thisLine, currentLineNumber) => _validateWorkerCsv(
+    await Promise.all(workers.imported.map((thisLine, currentLineNumber) => validateWorkerCsv(
       thisLine,
       currentLineNumber + 2,
       csvWorkerSchemaErrors,
@@ -1103,10 +986,9 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   timerLog('CHECKPOINT - BU Validate - have validated workers', validateEstablishmentsTime, validateWorkersTime);
 
   // /////////////////////////
-
-  // parse and process Training CSV
+  // Parse and process Training CSV
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType === 'Training') {
-    await Promise.all(training.imported.map((thisLine, currentLineNumber) => _validateTrainingCsv(
+    await Promise.all(training.imported.map((thisLine, currentLineNumber) => validateTrainingCsv(
       thisLine,
       currentLineNumber + 2,
       csvTrainingSchemaErrors,
@@ -1173,49 +1055,41 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   const validateTrainingTime = new Date();
   timerLog('CHECKPOINT - BU Validate - have validated training', validateWorkersTime, validateTrainingTime);
 
-  // prepare entities ready for upload/return
-  const establishmentsAsArray = Object.values(myAPIEstablishments);
-  const workersAsArray = Object.values(myAPIWorkers);
-  const trainingAsArray = Object.values(myAPITrainings);
-  const qualificationsAsArray = Object.values(myAPIQualifications);
+  // /////////////////////////
+  // Cross Entity Validations
 
-  // **** Cross Entity Validations ****
-
-  // firstly, if the logged in account performing this validation is not a parent, then
-  //  there should be just one establishment, and that establishment should the primary establishment
+  // If the logged in account performing this validation is not a parent, then
+  // there should be just one establishment, and that establishment should the primary establishment
   if (!isParent) {
     const MAX_ESTABLISHMENTS = 1;
 
     if (establishments.imported.length !== MAX_ESTABLISHMENTS) {
-      csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.justOneEstablishmentError());
+      csvEstablishmentSchemaErrors.unshift(EstablishmentCsvValidator.justOneEstablishmentError());
     }
   }
 
-  // the primary establishment should alway be present
+  // The primary establishment should always be present
   // TODO - should use LOCAL_IDENTIFIER when available.
-  const primaryEstablishment = myCurrentEstablishments.find(thisCurrentEstablishment => {
-    if (thisCurrentEstablishment.id === establishmentId) {
-      return thisCurrentEstablishment;
-    }
-  });
+  const primaryEstablishment = myCurrentEstablishments.find(thisCurrentEstablishment => thisCurrentEstablishment.id === establishmentId);
 
   if (primaryEstablishment) {
     const onloadedPrimaryEstablishment = myAPIEstablishments[primaryEstablishment.key];
+
     if (!onloadedPrimaryEstablishment) {
-      csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
+      csvEstablishmentSchemaErrors.unshift(EstablishmentCsvValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
     } else {
       // primary establishment does exist in given CSV; check STATUS is not DELETE - cannot delete the primary establishment
       if (onloadedPrimaryEstablishment.status === 'DELETE') {
-        csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.cannotDeletePrimaryEstablishmentError(primaryEstablishment.name));
+        csvEstablishmentSchemaErrors.unshift(EstablishmentCsvValidator.cannotDeletePrimaryEstablishmentError(primaryEstablishment.name));
       }
     }
   } else {
     console.error(('Seriously, if seeing this then something has truely gone wrong - the primary establishment should always be in the set of current establishments!'));
   }
 
+  // Check for trying to upload against subsidaries for which this parent does not own (if a parent) - ignore the primary (self) establishment
+  // must be a parent
   if (isParent) {
-    // must be a parent
-    // check for trying to upload against subsidaries for which this parent does not own (if a parent) - ignore the primary (self) establishment of course
     Object.values(myAPIEstablishments).forEach(thisOnloadEstablishment => {
       if (thisOnloadEstablishment.key !== primaryEstablishment.key) {
         // we're not the primary
@@ -1224,15 +1098,31 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
         );
 
         if (foundCurrentEstablishment && foundCurrentEstablishment.dataOwner !== 'Parent') {
-          const lineValidator = myEstablishments.find(thisLineValidator =>
-            thisLineValidator.key === foundCurrentEstablishment.key
-          );
+          const lineValidator = myEstablishments.find(thisLineValidator => thisLineValidator.key === foundCurrentEstablishment.key);
 
           csvEstablishmentSchemaErrors.unshift(lineValidator.addNotOwner());
         }
       }
     });
   }
+
+  // Run validations that require information about workers
+  await Promise.all(myEstablishments.map(async establishment => {
+    await establishment.crossValidate({
+      csvEstablishmentSchemaErrors,
+      myWorkers,
+      fetchMyEstablishmentsWorkers: Establishment.fetchMyEstablishmentsWorkers
+    });
+  }));
+
+  // /////////////////////////
+  // Prepare validation results
+
+  // prepare entities ready for upload/return
+  const establishmentsAsArray = Object.values(myAPIEstablishments);
+  const workersAsArray = Object.values(myAPIWorkers);
+  const trainingAsArray = Object.values(myAPITrainings);
+  const qualificationsAsArray = Object.values(myAPIQualifications);
 
   // update CSV metadata error/warning counts
   establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
@@ -1271,7 +1161,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
   if (commit) {
     const s3UploadPromises = [];
 
-    // upload the metadata as JSON to S3 - these are requited for uploaded list endpoint
+    // upload the metadata as JSON to S3 - these are requested for uploaded list endpoint
     if (establishments.imported) {
       s3UploadPromises.push(uploadAsJSON(
         username,
@@ -1468,7 +1358,7 @@ const validateBulkUploadFiles = async (commit, username, establishmentId, isPare
 // the "onlyMine" parameter is used to remove those subsidiary establishments where the parent is not the owner
 const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent, assocationLevel = 1, onlyMine = false, keepAlive = () => {}) => {
   try {
-    const thisUser = new UserEntity(primaryEstablishmentId);
+    const thisUser = new User(primaryEstablishmentId);
     await thisUser.restore(null, loggedInUsername, false);
 
     keepAlive('begin restore entities'); // keep connection alive
@@ -1483,7 +1373,7 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
     const restoreEntityPromises = [];
 
     // first add the primary establishment entity
-    const primaryEstablishment = new EstablishmentEntity(loggedInUsername, completionBulkUploadStatus);
+    const primaryEstablishment = new Establishment(loggedInUsername, completionBulkUploadStatus);
     currentEntities.push(primaryEstablishment);
 
     restoreEntityPromises.push(primaryEstablishment.restore(myEstablishments.primary.uid, false, true, assocationLevel).then(data => {
@@ -1495,7 +1385,7 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
     if (myEstablishments.subsidaries && myEstablishments.subsidaries.establishments && Array.isArray(myEstablishments.subsidaries.establishments)) {
       myEstablishments.subsidaries.establishments.forEach(thisSubsidairy => {
         if (!onlyMine || (onlyMine && thisSubsidairy.dataOwner === 'Parent')) {
-          const newSub = new EstablishmentEntity(loggedInUsername, completionBulkUploadStatus);
+          const newSub = new Establishment(loggedInUsername, completionBulkUploadStatus);
 
           currentEntities.push(newSub);
 
@@ -1687,11 +1577,6 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
     deleted: deletedEntities
   };
 };
-
-// deprecated
-router.route('/report').get(async (req, res) => {
-  return res.status(410).send('Deprecated');
-});
 
 router.route('/report/:reportType').get(async (req, res) => {
   const NEWLINE = '\r\n';
@@ -1888,7 +1773,7 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId, k
     const onloadPromises = [];
     if (onLoadEntities && Array.isArray(onLoadEntities)) {
       onLoadEntities.forEach(thisEntity => {
-        const newOnloadEstablishment = new EstablishmentEntity(loggedInUsername);
+        const newOnloadEstablishment = new Establishment(loggedInUsername);
         onLoadEstablishments.push(newOnloadEstablishment);
 
         newOnloadEstablishment.initialise(
@@ -1996,7 +1881,12 @@ const completeUpdateEstablishment = async (
   }
 };
 
-const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedInUser, transaction, myCurrentEstablishments) => {
+const completeDeleteEstablishment = async (
+  thisDeletedEstablishment,
+  theLoggedInUser,
+  transaction,
+  myCurrentEstablishments
+) => {
   try {
     const startTime = new Date();
 
@@ -2138,12 +2028,12 @@ router.route('/complete').post(async (req, res) => {
 
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects
-        await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
+        await purgeBulkUploadS3Objects(primaryEstablishmentId);
 
-        keepAlive('purgeBulkUploadS3Obbejcts');
+        keepAlive('purgeBulkUploadS3Objects');
 
         // confirm success against the primary establishment
-        await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
+        await Establishment.bulkUploadSuccess(primaryEstablishmentId);
 
         keepAlive('bulkUploadSuccess');
 
@@ -2197,15 +2087,15 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
 
     switch (downloadType) {
       case 'establishments':
-        columnNames = (new CsvEstablishmentValidator()).headers;
+        columnNames = EstablishmentCsvValidator.headers();
         break;
 
       case 'workers':
-        columnNames = (new CsvWorkerValidator()).headers(MAX_QUALS);
+        columnNames = WorkerCsvValidator.headers(MAX_QUALS);
         break;
 
       case 'training':
-        columnNames = (new CsvTrainingValidator()).headers;
+        columnNames = TrainingCsvValidator.headers();
         break;
     }
 
@@ -2213,16 +2103,16 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
 
     allMyEstablishments.forEach(thisEstablishment => {
       if (downloadType === 'establishments') {
-        responseSend(NEWLINE + (new CsvEstablishmentValidator()).toCSV(thisEstablishment), 'establishment');
+        responseSend(NEWLINE + EstablishmentCsvValidator.toCSV(thisEstablishment), 'establishment');
       } else {
         // for each worker on this establishment
         thisEstablishment.workers.forEach(thisWorker => {
           // note - thisEstablishment.name will need to be local identifier once available
           if (downloadType === 'workers') {
-            responseSend(NEWLINE + (new CsvWorkerValidator()).toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
+            responseSend(NEWLINE + WorkerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
           } else if (thisWorker.training) { // or for this Worker's training records
             thisWorker.training.forEach(thisTrainingRecord => {
-              responseSend(NEWLINE + (new CsvTrainingValidator()).toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord), 'training');
+              responseSend(NEWLINE + TrainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord), 'training');
             });
           }
         });
@@ -2307,73 +2197,6 @@ router.route('/download/:downloadType').get(async (req, res) => {
       message: `Unexpected download type: ${downloadType}`
     });
   }
-});
-
-// demo API to showcase how trickle feed responses would work for the client
-//  no parameter validation and no error handling and no security
-router.route('/trickle').post(async (req, res) => {
-  const retries = parseInt(req.query.retries, 10);
-  const withError = !(!req.query.error || req.query.error !== 'true');
-  const withTrickle = !!(!req.query.trickle || req.query.trickle !== 'false');
-
-  const RETRY_TIMEOUT_SECS = 15;
-  const RETRY_TIMEOUT = RETRY_TIMEOUT_SECS * 1000; // milliseconds
-  let currentRetries = 0;
-  let firstStatusFlush = true;
-
-  const response = {
-    status: []
-  };
-
-  const statusMsg = () => {
-    currentRetries++;
-    const timestamp = new Date().toISOString();
-
-    response.status.push({
-      message: `${currentRetries}`,
-      duration: `${RETRY_TIMEOUT} seconds`,
-      timestamp
-    });
-
-    if (withTrickle) {
-      if (firstStatusFlush) {
-        console.log(`WA DEBUG - timed out: ${currentRetries} - ${timestamp}`);
-        res.write(`{ "message": "${currentRetries}", "duration":"${RETRY_TIMEOUT} seconds", "timestamp":"${timestamp}" }`);
-        firstStatusFlush = false;
-      } else {
-        console.log(`WA DEBUG - comma timed out: ${currentRetries} - ${timestamp}`);
-        res.write(`,{ "message": "${currentRetries}", "duration":"${RETRY_TIMEOUT} seconds", "timestamp":"${timestamp}" }`);
-      }
-      res.flush();
-    }
-
-    if (currentRetries < retries) {
-      setTimeout(statusMsg, RETRY_TIMEOUT);
-    } else {
-      if (withTrickle) {
-        if (withError) {
-          res.end('],"error": "Forced Failure"}');
-        } else {
-          return res.end(']}');
-        }
-      } else {
-        // if (withError) {
-        //  E;
-        // }
-
-        return res.status(200).send(response);
-      }
-    }
-  };
-
-  if (withTrickle) {
-    res.status(200);
-    res.header('Content-Type', 'application/json');
-    res.write('{"status": [');
-    res.flush();
-  }
-
-  setTimeout(statusMsg, RETRY_TIMEOUT);
 });
 
 module.exports = router;

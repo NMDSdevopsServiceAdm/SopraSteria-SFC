@@ -76,44 +76,58 @@ export class AddEditTrainingComponent implements OnInit {
     this.form.get('expires').setValidators([DateValidator.dateValid(), DateValidator.min(minDate)]);
 
     this.subscriptions.add(
-      this.trainingService.getCategories().subscribe(categories => {
-        this.categories = categories;
-      })
+      this.trainingService.getCategories().subscribe(
+        categories => {
+          if (categories) {
+            this.categories = categories;
+          }
+        },
+        error => {
+          console.error(error.error);
+        }
+      )
     );
 
     if (this.trainingRecordId) {
       this.subscriptions.add(
-        this.workerService
-          .getTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId)
-          .subscribe(trainingRecord => {
-            this.trainingRecord = trainingRecord;
+        this.workerService.getTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId).subscribe(
+          trainingRecord => {
+            if (trainingRecord) {
+              this.trainingRecord = trainingRecord;
 
-            const completed = this.trainingRecord.completed
-              ? moment(this.trainingRecord.completed, DATE_PARSE_FORMAT)
-              : null;
-            const expires = this.trainingRecord.expires ? moment(this.trainingRecord.expires, DATE_PARSE_FORMAT) : null;
+              const completed = this.trainingRecord.completed
+                ? moment(this.trainingRecord.completed, DATE_PARSE_FORMAT)
+                : null;
+              const expires = this.trainingRecord.expires
+                ? moment(this.trainingRecord.expires, DATE_PARSE_FORMAT)
+                : null;
 
-            this.form.patchValue({
-              title: this.trainingRecord.title,
-              category: this.trainingRecord.trainingCategory.id,
-              accredited: this.trainingRecord.accredited,
-              ...(completed && {
-                completed: {
-                  day: completed.date(),
-                  month: completed.format('M'),
-                  year: completed.year(),
-                },
-              }),
-              ...(expires && {
-                expires: {
-                  day: expires.date(),
-                  month: expires.format('M'),
-                  year: expires.year(),
-                },
-              }),
-              notes: this.trainingRecord.notes,
-            });
-          })
+              this.form.patchValue({
+                title: this.trainingRecord.title,
+                category: this.trainingRecord.trainingCategory.id,
+                accredited: this.trainingRecord.accredited,
+                ...(completed && {
+                  completed: {
+                    day: completed.date(),
+                    month: completed.format('M'),
+                    year: completed.year(),
+                  },
+                }),
+                ...(expires && {
+                  expires: {
+                    day: expires.date(),
+                    month: expires.format('M'),
+                    year: expires.year(),
+                  },
+                }),
+                notes: this.trainingRecord.notes,
+              });
+            }
+          },
+          error => {
+            console.error(error.error);
+          }
+        )
       );
     }
 
@@ -237,13 +251,17 @@ export class AddEditTrainingComponent implements OnInit {
       this.subscriptions.add(
         this.workerService
           .updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
-          .subscribe(() => this.onSuccess(), error => this.onError(error))
+          .subscribe(
+            () => this.onSuccess(),
+            error => this.onError(error)
+          )
       );
     } else {
       this.subscriptions.add(
-        this.workerService
-          .createTrainingRecord(this.workplace.uid, this.worker.uid, record)
-          .subscribe(() => this.onSuccess(), error => this.onError(error))
+        this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record).subscribe(
+          () => this.onSuccess(),
+          error => this.onError(error)
+        )
       );
     }
   }

@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MentalHealthProfessionalComponent } from './mental-health-professional.component';
 
 describe('MentalHealthProfessionalComponent', () => {
   let component: MentalHealthProfessionalComponent;

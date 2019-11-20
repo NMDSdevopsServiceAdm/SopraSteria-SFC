@@ -23,7 +23,10 @@ export class CancelDataOwnerDialogComponent extends DialogComponent implements O
   public permissionType: string;
   public isCancelOwnershipError: boolean;
   public serverError: string;
-  public requesterName: string;
+  public ownershipToName: string;
+  public ownershipFromName: string;
+  public isSubWorkplace: boolean;
+  public ownershipToUid: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
@@ -42,10 +45,17 @@ export class CancelDataOwnerDialogComponent extends DialogComponent implements O
   private setWorkplaces(): void {
     this.workplace = this.data;
     this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
-    if (!this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid) {
-      this.requesterName = this.workplace.parentName;
+    this.isSubWorkplace =
+      !this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
+
+    if (this.workplace.dataOwner === 'Workplace') {
+      this.ownershipToName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
+      this.ownershipToUid = this.isSubWorkplace ? this.workplace.uid : this.dataPermissionsRequester.uid;
+      this.ownershipFromName = this.workplace.name;
     } else {
-      this.requesterName = this.dataPermissionsRequester.name;
+      this.ownershipToName = this.workplace.name;
+      this.ownershipToUid = this.workplace.uid;
+      this.ownershipFromName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
     }
   }
 
@@ -57,11 +67,11 @@ export class CancelDataOwnerDialogComponent extends DialogComponent implements O
     this.summaryList = [
       {
         label: 'From',
-        data: this.workplace.name,
+        data: this.ownershipFromName,
       },
       {
         label: 'To',
-        data: this.requesterName,
+        data: this.ownershipToName,
       },
     ];
   }
@@ -71,14 +81,14 @@ export class CancelDataOwnerDialogComponent extends DialogComponent implements O
   }
 
   public cancelChangeOwnership() {
-    let status = {
-      approvalStatus: 'CANCELLED',
-    };
-    if (this.workplace.ownershipChangeRequestId) {
-      this.subscriptions.add(
-        this.establishmentService
-          .cancelOwnership(this.workplace.uid, this.workplace.ownershipChangeRequestId, status)
-          .subscribe(
+    if (this.workplace.ownershipChangeRequestId.length > 0) {
+      this.workplace.ownershipChangeRequestId.forEach(ownershipChangeRequestId => {
+        let status = {
+          approvalStatus: 'CANCELLED',
+          notificationRecipientUid: this.ownershipToUid,
+        };
+        this.subscriptions.add(
+          this.establishmentService.cancelOwnership(this.workplace.uid, ownershipChangeRequestId, status).subscribe(
             data => {
               if (data) {
                 this.close(true);
@@ -91,7 +101,8 @@ export class CancelDataOwnerDialogComponent extends DialogComponent implements O
               }
             }
           )
-      );
+        );
+      });
     }
   }
 

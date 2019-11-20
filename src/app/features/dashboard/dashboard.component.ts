@@ -36,12 +36,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     if (this.workplace) {
       this.subscriptions.add(
-        this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(total => (this.totalStaffRecords = total))
+        this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
+          total => {
+            if (total) {
+              this.totalStaffRecords = total;
+            }
+          },
+          error => {
+            console.error(error.error);
+          }
+        )
       );
       this.subscriptions.add(
-        this.workerService
-          .getAllWorkers(this.workplace.uid)
-          .subscribe(workers => this.workerService.setWorkers(workers))
+        this.workerService.getAllWorkers(this.workplace.uid).subscribe(
+          workers => {
+            if (workers) {
+              this.workerService.setWorkers(workers);
+            }
+          },
+          error => {
+            console.error(error.error);
+          }
+        )
       );
     }
 
