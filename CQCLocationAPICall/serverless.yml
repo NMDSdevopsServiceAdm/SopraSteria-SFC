@@ -21,6 +21,7 @@ provider:
   name: aws
   runtime: nodejs10.x
   memorySize: 512
+  stage: ${opt:stage, 'dev'}
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -37,7 +38,7 @@ provider:
       Resource:
         Fn::Join:
           - ""
-          - - arn:aws:sqs:eu-west-1:624216394565:cqctest
+          - - ${self:custom.sqsQueue.${self:provider.stage}}
 # you can overwrite defaults here
 #  stage: dev
   region: eu-west-1
@@ -88,7 +89,7 @@ functions:
     timeout: 900
     events:
       - sqs:
-        arn: arn:aws:sqs:eu-west-1:624216394565:cqctest
+        arn: ${self:custom.sqsQueue.${self:provider.stage}}
         batchSize: 1
         reservedConcurrency: 1
 
@@ -143,3 +144,8 @@ functions:
 
 plugins:
   - serverless-offline
+
+custom:
+  sqsQueue:
+    dev: arn:aws:sqs:eu-west-1:624216394565:cqctest
+    prod: arn:aws:sqs:eu-west-1:624216394565:cqctest2

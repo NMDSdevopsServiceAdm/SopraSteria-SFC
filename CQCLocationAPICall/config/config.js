@@ -95,23 +95,6 @@ const config = convict({
           default: 'TBC',
           env: "CQC_DB_CLIENT_SSL_CA"
         }
-      },
-      data: {
-        certificate: {
-          doc: 'The client certificate',
-          format: String,
-          default: 'TBC',
-        },
-        key: {
-          doc: 'The client key',
-          format: String,
-          default: 'TBC',
-        },
-        ca: {
-          doc: 'The server certificate (authority - ca)',
-          format: String,
-          default: 'TBC',
-        }
       }
     }
   },
@@ -124,12 +107,14 @@ const config = convict({
     bucketname: {
       doc: 'Bucket used to upload all CQC changes',
       format: '*',
-      default: 'cqcchanges'
+      default: 'cqcchanges',
+      env: 'CQC_BUCKET'
     },
     sqsqueue: {
       doc: 'SQS queue to send location changes',
       format: '*',
-      default: 'https://sqs.eu-west-1.amazonaws.com/624216394565/cqctest'
+      default: 'https://sqs.eu-west-1.amazonaws.com/624216394565/cqctest',
+      env: 'CQC_SQS_QUEUE'
     },
     secrets: {
       use: {
