@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: cqc-location-call # NOTE: update this with your service name
+service: cqc-location-call-${self:provider.stage} # NOTE: update this with your service name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -60,8 +60,11 @@ provider:
 #            - "/*"
 
 # you can define service wide environment variables here
-#  environment:
-#    variable1: value1
+environment:
+  CQC_SQS_QUEUE: ${self:custom.sqsQueueUrl.${self:provider.stage}}
+  CQC_WALLET_ID: ${self:custom.wallet.${self:provider.stage}}
+  CQC_BUCKET: ${self:custom.bucket.${self:provider.stage}}
+  NODE_ENV: ${self:provider.stage}
 
 # you can add packaging information here
 #package:
@@ -78,14 +81,14 @@ include:
 functions:
   changes:
     handler: changes.handler
-    name: cqc-changes
+    name: cqc-changes-${self:provider.stage}
     timeout: 900
     events:
       - schedule: rate(24 hours)
 
   update:
     handler: update.handler
-    name: cqc-update
+    name: cqc-update-${self:provider.stage}
     timeout: 900
     events:
       - sqs:
@@ -142,10 +145,19 @@ functions:
 #       Description: "Description for the output"
 #       Value: "Some output value"
 
-plugins:
-  - serverless-offline
+# plugins:
+#   - serverless-offline
 
 custom:
-  sqsQueue:
+  sqsQueueArn:
+    dev: arn:aws:sqs:eu-west-1:364648107127:CQC_SQS_Dev
+    prod: arn:aws:sqs:eu-west-1:364648107127:CQC_SQS_Dev
+  sqsQueueUrl:
+    dev: https://sqs.eu-west-1.amazonaws.com/364648107127/CQC_SQS_Dev
+    prod: https://sqs.eu-west-1.amazonaws.com/364648107127/CQC_SQS_Dev
+  wallet:
     dev: arn:aws:sqs:eu-west-1:624216394565:cqctest
     prod: arn:aws:sqs:eu-west-1:624216394565:cqctest2
+  bucket:
+    dev: cqcs3dev
+    prod: cqcs3dev

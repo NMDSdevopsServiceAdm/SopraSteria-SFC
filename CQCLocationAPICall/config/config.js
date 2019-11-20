@@ -120,12 +120,14 @@ const config = convict({
       use: {
         doc: 'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
         format: 'Boolean',
-        default: false
+        default: true
       },
       wallet: {
         doc: 'The name of the AWS Secrets Manager wallet to recall from',
         format: String,
-        default: 'bob'
+        default: 'bob',
+        env: 'CQC_WALLET_ID'
+
       }
     }
   }
@@ -153,10 +155,10 @@ if (config.get('aws.secrets.use')) {
     // DB rebind
     config.set('db.host', AWSSecrets.dbHost());
     config.set('db.password', AWSSecrets.dbPass());
+    config.set('db.username', AWSSecrets.dbUser());
     config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
     config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
     config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
-
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);
   });
