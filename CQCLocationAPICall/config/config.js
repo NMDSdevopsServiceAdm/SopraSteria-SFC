@@ -27,31 +27,31 @@ const config = convict({
       doc: 'Database host name/IP',
       format: String,
       default: 'localhost',
-      env: 'DB_HOST'
+      env: 'CQC_DB_HOST'
     },
     database: {
       doc: 'Database name',
       format: String,
       default: 'sfcdevdb',
-      env: 'DB_NAME'
+      env: 'CQC_DB_NAME'
     },
     username: {
         doc: 'Database username',
         format: String,
         default: 'sfcadmin',
-        env: 'DB_USER'
+        env: 'CQC_DB_USER'
     },
     password: {
         doc: 'Database username',
         format: '*',
       default: 'unknown',           // note - bug in notify - must provide a default value for it to use env var
-        env: 'DB_PASS'
+        env: 'CQC_DB_PASS'
     },
     port: {
         doc: 'Database port',
         format: 'port',
         default: 5432,
-        env: 'DB_PORT'
+        env: 'CQC_DB_PORT'
     },
     dialect: {
       doc: 'Database dialect (sequelize)',
@@ -62,14 +62,14 @@ const config = convict({
       doc: 'Use SSL?',
       format: 'Boolean',
       default: false,
-      env: 'DB_SSL'
+      env: 'CQC_DB_SSL'
     },
     client_ssl: {
       status: {
         doc: 'Client SSL enabled or not',
         format: 'Boolean',
         default: false,
-        env: "DB_CLIENT_SSL_STATUS"
+        env: "CQC_DB_CLIENT_SSL_STATUS"
       },
       usingFiles: {
         doc: 'If true, retrieves client certificate, client key and root certificate from file; if false, using data values',
@@ -81,19 +81,19 @@ const config = convict({
           doc: 'The full path location of the client certificate file',
           format: String,
           default: 'TBC',
-          env: "DB_CLIENT_SSL_CERTIFICATE"
+          env: "CQC_DB_CLIENT_SSL_CERTIFICATE"
         },
         key: {
           doc: 'The full path location of the client key file',
           format: String,
           default: 'TBC',
-          env: "DB_CLIENT_SSL_KEY"
+          env: "CQC_DB_CLIENT_SSL_KEY"
         },
         ca: {
           doc: 'The full path location of the server certificate (authority - ca) file',
           format: String,
           default: 'TBC',
-          env: "DB_CLIENT_SSL_CA"
+          env: "CQC_DB_CLIENT_SSL_CA"
         }
       },
       data: {
