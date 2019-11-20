@@ -32,7 +32,7 @@
         </p>
         <p class="govuk-!-margin-bottom-0">
           {{ workplace.dataPermissions | dataViewPermissions }}
-          <span class="govuk-util__float-right" *ngIf=false>
+          <span class="govuk-util__float-right">
             <ng-container *ngIf="workplace.dataOwnershipRequested; else dataPermissions">
               <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
             </ng-container>
