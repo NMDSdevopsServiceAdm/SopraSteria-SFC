@@ -11,7 +11,7 @@
         Staff record summary
       </button>
       <a
-        *ngIf="canEditWorker && !worker.completed"
+        *ngIf="canEditWorker"
         class="govuk-button"
         role="button"
         draggable="false"
@@ -24,9 +24,7 @@
 
   <app-tabs>
     <app-tab [title]="'Training'">
-      <app-basic-record [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-basic-record>
-      <app-personal-details [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-personal-details>
-      <app-employment [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-employment>
+      <app-training [workplace]="workplace" [worker]="worker"></app-training>
     </app-tab>
     <app-tab [title]="'Qualifications'">
       <app-qualifications-and-training
@@ -36,7 +34,6 @@
         [showAddButtons]="true"
       ></app-qualifications-and-training>
       <app-qualifications [workplace]="workplace" [worker]="worker"></app-qualifications>
-      <app-training [workplace]="workplace" [worker]="worker"></app-training>
     </app-tab>
   </app-tabs>
 </ng-container>
