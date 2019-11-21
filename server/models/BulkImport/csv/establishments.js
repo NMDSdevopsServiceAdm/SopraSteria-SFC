@@ -9,6 +9,7 @@ const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
 const permanantContractStatusId = 1;
+const notHeadOfficeOrCqcRegulated = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,/* 16, (16 = Head office service code, which should be excluded) */ 17, 18];
 
 const csvQuote = toCsv => {
   if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
@@ -782,6 +783,16 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
+    } else if(myRegType === 2 && notHeadOfficeOrCqcRegulated.includes(this._mainService)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.REGTYPE_ERROR,
+        errType: 'REGTYPE_ERROR',
+        error: 'REGTYPE is 2 (CQC) but no CQC regulated services have been specified. Please change either REGTYPE or MAINSERVICE',
+        source: this._currentLine.REGTYPE,
+        name: this._currentLine.LOCALESTID
+      });
+      return false;
     } else {
       this._regType = myRegType;
       return true;
@@ -1287,17 +1298,41 @@ class Establishment {
     // optional
     const allJobs = this._currentLine.ALLJOBROLES.split(';');
     const localValidationErrors = [];
+    const vacancies = this._currentLine.VACANCIES.split(';');
+    const starters = this._currentLine.STARTERS.split(';');
+    const leavers = this._currentLine.LEAVERS.split(';');
 
     // allJobs can only be empty, if TOTALPERMTEMP is 0
     if (!this._currentLine.ALLJOBROLES || this._currentLine.ALLJOBROLES.length === 0) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: Establishment.ALL_JOBS_WARNING,
-        warnType: 'ALL_JOBS_WARNING',
-        warning: 'All Job Roles (ALLJOBROLES) missing',
-        source: this._currentLine.ALLJOBROLES,
-        name: this._currentLine.LOCALESTID
-      });
+      if(
+        [].
+        concat(vacancies).
+        concat(starters).
+        concat(leavers).
+        findIndex(item => {
+          item = parseInt(item, 10);
+
+          return Number.isInteger(item) && item > 0 && item !== 999
+        }) !== -1
+      ) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.ALL_JOBS_ERROR,
+          errType: 'ALL_JOBS_ERROR',
+          error: 'ALLJOBROLES cannot be blank as you have STARTERS, LEAVERS, VACANCIES greater than zero',
+          source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID
+        });
+      } else {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          warnCode: Establishment.ALL_JOBS_WARNING,
+          warnType: 'ALL_JOBS_WARNING',
+          warning: 'All Job Roles (ALLJOBROLES) missing',
+          source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID
+        });
+      }
     } else if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0) {
       // all jobs are integers
       const isValid = allJobs.every(thisJob => !Number.isNaN(parseInt(thisJob, 10)));
@@ -1931,11 +1966,11 @@ class Establishment {
       status = !this._validateShareWithLA() ? false : status;
       status = !this._validateLocalAuthorities() ? false : status;
 
+      status = !this._validateMainService() ? false : status;
       status = !this._validateRegType() ? false : status;
       status = !this._validateProvID() ? false : status;
       status = !this._validateLocationID() ? false : status;
 
-      status = !this._validateMainService() ? false : status;
       status = !this._validateAllServices() ? false : status;
       status = !this._validateServiceUsers() ? false : status;
       status = !this._validateCapacitiesAndUtilisations() ? false : status;
