@@ -22,7 +22,9 @@
         </td>
         <td class="govuk-table__cell">{{ trainingRecord.title }}</td>
         <td class="govuk-table__cell">
-          {{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd/MM/y') : '-' }}
+          <span [class.govuk-util__bold]="trainingRecord.trainingStatus === 2"
+            >{{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd/MM/y') : '-' }}
+          </span>
           <div *ngIf="trainingRecord.trainingStatus === 2" class="govuk-!-margin-bottom-1">
             <img
               src="/assets/images/flag-red.svg"
