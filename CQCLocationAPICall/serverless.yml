@@ -38,7 +38,7 @@ provider:
       Resource:
         Fn::Join:
           - ""
-          - - ${self:custom.sqsQueue.${self:provider.stage}}
+          - - ${self:custom.sqsQueueArn.${self:provider.stage}}
 # you can overwrite defaults here
 #  stage: dev
   region: eu-west-1
@@ -90,11 +90,11 @@ functions:
     handler: update.handler
     name: cqc-update-${self:provider.stage}
     timeout: 900
+    reservedConcurrency: 1
     events:
       - sqs:
-        arn: ${self:custom.sqsQueue.${self:provider.stage}}
+        arn: ${self:custom.sqsQueueArn.${self:provider.stage}}
         batchSize: 1
-        reservedConcurrency: 1
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
