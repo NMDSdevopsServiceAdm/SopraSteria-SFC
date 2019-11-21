@@ -763,6 +763,8 @@ class Establishment {
   _validateRegType () {
     const myRegType = parseInt(this._currentLine.REGTYPE, 10);
 
+    //throw new Error(`${this._mainService}, ${}`);
+
     if (!this._currentLine.REGTYPE || this._currentLine.REGTYPE.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
@@ -783,7 +785,7 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if(myRegType === 2 && notHeadOfficeOrCqcRegulated.includes(this._mainService)) {
+    } else if(myRegType === 2 && notHeadOfficeOrCqcRegulated.includes(BUDI.services(BUDI.FROM_ASC, this._mainService))) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.REGTYPE_ERROR,
