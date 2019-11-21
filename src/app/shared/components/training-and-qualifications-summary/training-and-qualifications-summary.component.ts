@@ -17,7 +17,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   constructor(private permissionsService: PermissionsService) {}
 
   public getWorkerTrainingAndQualificationsPath(worker: Worker) {
-    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid];
+    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
     return this.wdfView ? [...path, ...['wdf-summary']] : path;
   }
   ngOnInit() {

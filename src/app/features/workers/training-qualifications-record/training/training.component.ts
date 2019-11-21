@@ -49,14 +49,42 @@ export class TrainingComponent implements OnInit {
       }
     });
   }
-
+  //to get all training records
   fetchAllRecords() {
     this.workerService
       .getTrainingRecords(this.workplace.uid, this.worker.uid)
       .pipe(take(1))
-      .subscribe(training => {
-        this.lastUpdated = moment(training.lastUpdated);
-        this.trainingRecords = training.training;
-      });
+      .subscribe(
+        training => {
+          this.lastUpdated = moment(training.lastUpdated);
+          this.trainingRecords = training.training;
+          this.trainingRecords.map(trainingRecord => {
+            trainingRecord.trainingStatus = this.getTrainingStatus(trainingRecord.expires);
+          });
+        },
+        error => {
+          console.error(error.error);
+        }
+      );
+  }
+  /**
+   * Function used to get traingin status by comparing expiring date
+   * @param {date} exptire date
+   * @return {number} 0 for up-to-date, 1 for expiring soon and 2 for expired.
+   */
+  public getTrainingStatus(expires) {
+    let status = 0;
+    if (expires) {
+      const expiringDate = moment(expires);
+      const currentDate = moment();
+      if (currentDate > expiringDate) {
+        status = 2;
+      } else if (expiringDate.diff(currentDate, 'days') <= 90) {
+        status = 1;
+      } else {
+        status = 0;
+      }
+    }
+    return status;
   }
 }
