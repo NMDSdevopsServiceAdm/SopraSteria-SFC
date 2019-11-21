@@ -7,7 +7,7 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <tr class="govuk-table__row" *ngFor="let worker of workers">
+    <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of workers">
       <td class="govuk-table__cell govuk-!-font-weight-regular">
         <ng-container *ngIf="canViewWorker; else nameOrId">
           <a [routerLink]="getWorkerTrainingAndQualificationsPath(worker)">
@@ -35,7 +35,7 @@
             alt="expiring"
             class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
           />
-          {{ worker.expiringTrainingCount }} Expires soon
+          {{ worker.expiringTrainingCount }} Expiring soon
         </div>
         <div *ngIf="worker.expiredTrainingCount === 0 && worker.expiringTrainingCount === 0">Up-to-date</div>
       </td>
