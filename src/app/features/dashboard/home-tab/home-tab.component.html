@@ -48,7 +48,7 @@
           <a [routerLink]="['/workplace', 'view-all-workplaces']">View all workplaces</a>
         </li>
         <li *ngIf="canViewReports"><a [routerLink]="['/reports']">View reports</a></li>
-        <li *ngIf="canViewChangeDataOwner && false">
+        <li *ngIf="canViewChangeDataOwner">
           <ng-container *ngIf="isOwnershipRequested; else changeDataOwner">
             <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
           </ng-container>
