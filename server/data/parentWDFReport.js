@@ -10,6 +10,7 @@ SELECT
   "Establishment"."EstablishmentID",
   "NmdsID",
   "NameValue" AS "SubsidiaryName",
+  "DataPermissions",
   "EmployerTypeValue",
   "EmployerTypeSavedAt",
   CASE WHEN "OverallWdfEligibility" > :effectiveDate THEN "OverallWdfEligibility" ELSE NULL END AS "CurrentWdfEligibilityStatus",
@@ -164,6 +165,7 @@ const getWorkerDataQuery =
 SELECT
   "Worker"."NameOrIdValue",
   "Establishment"."NameValue",
+  "DataPermissions",
   "Worker"."GenderValue",
   to_char("DateOfBirthValue", :timeFormat) as "DateOfBirthValue",
   "NationalityValue",
