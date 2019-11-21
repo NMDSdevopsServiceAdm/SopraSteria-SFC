@@ -39,4 +39,5 @@ export interface TrainingRecord {
   uid: string;
   updated: string;
   updatedBy: string;
+  trainingStatus?: number;
 }

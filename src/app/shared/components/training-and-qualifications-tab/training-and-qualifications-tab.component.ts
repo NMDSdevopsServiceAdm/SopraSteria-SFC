@@ -14,9 +14,9 @@ export class TrainingAndQualificationsTabComponent implements OnInit {
 
   private subscriptions: Subscription = new Subscription();
   public workers: Worker[];
-  public totalRecords = 0;
-  public totalExpiredTraining = 0;
-  public totalExpiringTraining = 0;
+  public totalRecords;
+  public totalExpiredTraining;
+  public totalExpiringTraining;
   constructor(private workerService: WorkerService) {}
 
   ngOnInit() {
@@ -24,6 +24,9 @@ export class TrainingAndQualificationsTabComponent implements OnInit {
       this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(
         workers => {
           this.workers = workers;
+          this.totalRecords = 0;
+          this.totalExpiredTraining = 0;
+          this.totalExpiringTraining = 0;
           this.workers.forEach((worker: Worker) => {
             this.totalRecords += worker.trainingCount + worker.qualificationCount;
             this.totalExpiredTraining += worker.expiredTrainingCount;

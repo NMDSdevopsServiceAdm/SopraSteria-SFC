@@ -826,12 +826,14 @@ class Training extends EntityValidator {
             //calculate all expired and expiring soon trainings count
             let trainings = allTrainingRecords.training.length;
             for(let j = 0; j < trainings; j++){
-              let expiringDate = moment(allTrainingRecords.training[j].expires);
-              let currentDate = moment();
-              if(currentDate > expiringDate){
-                workerRecords[i].expiredTrainingCount++;
-              }else if(expiringDate.diff(currentDate, 'days') <= 90){
-                workerRecords[i].expiringTrainingCount++;
+              if(allTrainingRecords.training[j].expires){
+                let expiringDate = moment(allTrainingRecords.training[j].expires);
+                let currentDate = moment();
+                if(currentDate > expiringDate){
+                  workerRecords[i].expiredTrainingCount++;
+                }else if(expiringDate.diff(currentDate, 'days') <= 90){
+                  workerRecords[i].expiringTrainingCount++;
+                }
               }
             }
           }else{
