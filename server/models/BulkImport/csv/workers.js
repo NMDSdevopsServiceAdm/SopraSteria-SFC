@@ -3,6 +3,30 @@ const moment = require('moment');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
+const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,NINUMBER,'+
+'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,'+
+'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
+'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
+'OTHERJOBROLE,OTHERJRDESC,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
+'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
+
+const _headers_v1_without_chgUnique = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMBER,' +
+'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
+'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
+'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
+'OTHERJOBROLE,OTHERJRDESC,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
+'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
+
+const DEFAULT_NUMBER_OF_QUALS = 3;
+
+const csvQuote = toCsv => {
+  if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+    return '"' + toCsv.replace(/"/g, '""') + '"';
+  }
+
+  return toCsv;
+};
+
 class Worker {
   constructor (currentLine, lineNumber, allCurrentEstablishments) {
     this._currentLine = currentLine;
@@ -10,9 +34,8 @@ class Worker {
     this._allCurrentEstablishments = allCurrentEstablishments;
 
     this._validationErrors = [];
-    this._headers_v1 = ['LOCALESTID', 'UNIQUEWORKERID', 'CHGUNIQUEWRKID', 'STATUS', 'DISPLAYID', 'NINUMBER', 'POSTCODE', 'DOB', 'GENDER', 'ETHNICITY', 'NATIONALITY', 'BRITISHCITIZENSHIP', 'COUNTRYOFBIRTH', 'YEAROFENTRY', 'DISABLED', 'CARECERT', 'RECSOURCE', 'STARTDATE', 'STARTINSECT', 'APPRENTICE', 'EMPLSTATUS', 'ZEROHRCONT', 'DAYSSICK', 'SALARYINT', 'SALARY', 'HOURLYRATE', 'MAINJOBROLE', 'MAINJRDESC', 'CONTHOURS', 'AVGHOURS', 'OTHERJOBROLE', 'OTHERJRDESC', 'NMCREG', 'NURSESPEC', 'AMHP', 'SCQUAL', 'NONSCQUAL', 'QUALACH01', 'QUALACH01NOTES', 'QUALACH02', 'QUALACH02NOTES', 'QUALACH03', 'QUALACH03NOTES'];
-    this._headers_v1_without_chgUnique = ['LOCALESTID', 'UNIQUEWORKERID', 'STATUS', 'DISPLAYID', 'NINUMBER', 'POSTCODE', 'DOB', 'GENDER', 'ETHNICITY', 'NATIONALITY', 'BRITISHCITIZENSHIP', 'COUNTRYOFBIRTH', 'YEAROFENTRY', 'DISABLED', 'CARECERT', 'RECSOURCE', 'STARTDATE', 'STARTINSECT', 'APPRENTICE', 'EMPLSTATUS', 'ZEROHRCONT', 'DAYSSICK', 'SALARYINT', 'SALARY', 'HOURLYRATE', 'MAINJOBROLE', 'MAINJRDESC', 'CONTHOURS', 'AVGHOURS', 'OTHERJOBROLE', 'OTHERJRDESC', 'NMCREG', 'NURSESPEC', 'AMHP', 'SCQUAL', 'NONSCQUAL', 'QUALACH01', 'QUALACH01NOTES', 'QUALACH02', 'QUALACH02NOTES', 'QUALACH03', 'QUALACH03NOTES'];
     this._contractType = null;
+    this._contractTypeId = null;
 
     this._localId = null;
     this._workerLocalID = null;
@@ -25,8 +48,6 @@ class Worker {
     this._postCode = null;
     this._DOB = null;
     this._gender = null;
-
-    this._contractType = null;
 
     this._ethnicity = null;
     this._britishNationality = null;
@@ -49,6 +70,7 @@ class Worker {
     this._hourlyRate = null;
 
     this._mainJobRole = null;
+    this._mainJobRoleId = null;
     this._mainJobDesc = null;
 
     this._contHours = null;
@@ -56,6 +78,7 @@ class Worker {
 
     this._otherJobs = null;
     this._otherJobsOther = null;
+    this._mappedOtherJobs = null;
 
     this._registeredNurse = null;
     this._nursingSpecialist = null;
@@ -177,18 +200,25 @@ class Worker {
 
   static get NI_WORKER_DUPLICATE_ERROR () { return 5570; }
 
-  headers (MAX_QUALS) {
-    const defaultHeaders = this._headers_v1_without_chgUnique;
-    const DEFAULT_NUMBER_OF_QUALS = 3;
+  static headers (MAX_QUALS) {
+    const extraHeaders = [];
 
     for (let additionalHeaders = 0; additionalHeaders < MAX_QUALS - DEFAULT_NUMBER_OF_QUALS; additionalHeaders++) {
       const currentHeader = `${additionalHeaders + DEFAULT_NUMBER_OF_QUALS + 1}`;
-      defaultHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}`);
-      defaultHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}NOTES`);
+      extraHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}`);
+      extraHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}NOTES`);
     }
 
     // default headers includes three quals
-    return defaultHeaders.join(',');
+    if(extraHeaders.length !== 0) {
+      return _headers_v1_without_chgUnique + ',' + extraHeaders.join(',');
+    }
+
+    return _headers_v1_without_chgUnique;
+  }
+  
+  headers (MAX_QUALS) {
+    return Worker.headers(MAX_QUALS);
   }
 
   get lineNumber () {
@@ -213,6 +243,10 @@ class Worker {
 
   get contractType () {
     return this._contractType;
+  }
+
+  get contractTypeId () {
+    return this._contractTypeId;
   }
 
   get status () {
@@ -311,6 +345,15 @@ class Worker {
     return this._mainJobDesc;
   }
 
+  get mainJobRoleId () {
+    return this._mainJobRoleId;
+  }
+
+  get otherJobIds () {
+    //return a clone of the array to prevent modifications to it
+    return Array.isArray(this._otherJobs) ? this._otherJobs.map(x => x) : [];
+  }
+
   get contHours () {
     return this._contHours;
   }
@@ -320,7 +363,7 @@ class Worker {
   }
 
   _validateContractType () {
-    const myContractType = this._currentLine.EMPLSTATUS;
+    const myContractType = parseInt(this._currentLine.EMPLSTATUS, 10);
 
     if (!myContractType) {
       this._validationErrors.push({
@@ -335,6 +378,7 @@ class Worker {
       return false;
     } else {
       this._contractType = myContractType;
+      this._contractTypeId = myContractType;  //work around for the inadequacies of the transform() function's existance
       return true;
     }
   }
@@ -453,9 +497,9 @@ class Worker {
     } else {
       // helper which returns true if the given LOCALESTID
       const thisWorkerExists = (establishmentKey, workerKey) => {
-        const foundEstablishment = this._allCurrentEstablishments.find(currentEstablishment => {
-          return currentEstablishment.key === establishmentKey;
-        });
+
+        const foundEstablishment = this._allCurrentEstablishments.find(currentEstablishment =>
+          currentEstablishment.key === establishmentKey);
 
         // having found the establishment, find the worker within the establishment
         if (foundEstablishment) {
@@ -1365,6 +1409,7 @@ class Worker {
       return false;
     } else {
       this._mainJobRole = myMainJobRole;
+      this._mainJobRoleId = myMainJobRole;
       return true;
     }
   }
@@ -1585,10 +1630,10 @@ class Worker {
   }
 
   _validateOtherJobs () {
-    const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
-    const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
+    const listOfOtherJobs = this._currentLine.OTHERJOBROLE.split(';');
+    const listOfOtherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
     const localValidationErrors = [];
-    const isValid = listOfotherJobs.every(job => !Number.isNaN(parseInt(job, 10)));
+    const isValid = listOfOtherJobs.every(job => !Number.isNaN(parseInt(job, 10)));
 
     if (this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
       if (!isValid) {
@@ -1601,7 +1646,7 @@ class Worker {
           error: 'The code you have entered for OTHERJOBROLE is incorrect',
           source: this._currentLine.OTHERJOBROLE
         });
-      } else if (listOfotherJobs.length !== listOfotherJobsDescriptions.length) {
+      } else if (listOfOtherJobs.length !== listOfOtherJobsDescriptions.length) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1613,13 +1658,13 @@ class Worker {
         });
       } else {
         const myJobDescriptions = [];
-        this._otherJobs = listOfotherJobs.map((thisJob, index) => {
+        this._otherJobs = listOfOtherJobs.map((thisJob, index) => {
           const thisJobIndex = parseInt(thisJob, 10);
 
           // if the job is one of the many "other" job roles, then need to validate the "other description"
           const otherJobs = [23, 27]; // these are the original budi codes
           if (otherJobs.includes(thisJobIndex)) {
-            const myJobOther = listOfotherJobsDescriptions[index];
+            const myJobOther = listOfOtherJobsDescriptions[index];
             const MAX_LENGTH = 120;
             if (!myJobOther || myJobOther.length === 0) {
               localValidationErrors.push({
@@ -1629,7 +1674,7 @@ class Worker {
                 errCode: Worker.OTHER_JR_DESC_ERROR,
                 errType: 'OTHER_JR_DESC_ERROR',
                 error: `OTHERJRDESC (${index + 1}) has not been supplied`,
-                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`
+                source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`
               });
               myJobDescriptions.push(null);
             } else if (myJobOther.length > MAX_LENGTH) {
@@ -1640,12 +1685,12 @@ class Worker {
                 errCode: Worker.OTHER_JR_DESC_ERROR,
                 errType: 'OTHER_JR_DESC_ERROR',
                 error: 'OTHERJRDESC is longer than 120 characters',
-                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`
+                source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`
               });
             } else {
-              myJobDescriptions.push(listOfotherJobsDescriptions[index]);
+              myJobDescriptions.push(listOfOtherJobsDescriptions[index]);
             }
-          } else if (listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
+          } else if (listOfOtherJobsDescriptions[index] && listOfOtherJobsDescriptions[index].length > 0) {
             localValidationErrors.push({
               worker: this._currentLine.UNIQUEWORKERID,
               name: this._currentLine.LOCALESTID,
@@ -1653,7 +1698,7 @@ class Worker {
               warnCode: Worker.OTHER_JR_DESC_WARNING,
               warnType: 'OTHER_JR_DESC_WARNING',
               warning: 'OTHERJRDESC will be ignored as not required for OTHERJOBROLE',
-              source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`
+              source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`
             });
           } else {
             myJobDescriptions.push(null);
@@ -1662,6 +1707,7 @@ class Worker {
           return thisJobIndex;
         });
 
+        this._mappedOtherJobs = this._otherJobs;
         this._otherJobsOther = myJobDescriptions;
       }
 
@@ -1677,13 +1723,13 @@ class Worker {
   _validateRegisteredNurse () {
     const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
     const NURSING_ROLE = 16;
-    const otherJobRoleIsNurse = this._otherJobs !== null && this._otherJobs.includes(NURSING_ROLE);
+    const otherJobRoleIsNurse = Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE);
     const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
     const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
 
     if (
       (this._mainJobRole === NURSING_ROLE ||
-      (this._otherJobs !== null && this._otherJobs.includes(NURSING_ROLE))) &&
+      (Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE))) &&
       myRegisteredNurse !== 0 &&
       isNaN(myRegisteredNurse)
     ) {
@@ -1717,13 +1763,13 @@ class Worker {
   _validateNursingSpecialist () {
     const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
     const NURSING_ROLE = 16;
-    const otherJobRoleIsNurse = this._otherJobs !== null && this._otherJobs.includes(NURSING_ROLE);
+    const otherJobRoleIsNurse = Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE);
     const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
     const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
 
     if (
       (this._mainJobRole === NURSING_ROLE ||
-      (this._otherJobs !== null && this._otherJobs.includes(NURSING_ROLE))) &&
+      (Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE))) &&
       myNursingSpecialist !== 0 &&
       isNaN(myNursingSpecialist)
     ) {
@@ -2141,9 +2187,8 @@ class Worker {
   // transform related
   _transformContractType () {
     if (this._contractType) {
-      const myValidatedContractType = BUDI.contractType(BUDI.TO_ASC, this._contractType);
-
-      if (!myValidatedContractType) {
+      const mappedType = BUDI.contractType(BUDI.TO_ASC, this._contractType);
+      if (mappedType === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -2153,8 +2198,9 @@ class Worker {
           error: 'The code you have entered for EMPLSTATUS is incorrect',
           source: this._currentLine.EMPLSTATUS
         });
-      } else {
-        this._contractType = myValidatedContractType;
+      }
+      else {
+        this._contractType = mappedType;
       }
     }
   }
@@ -2218,9 +2264,9 @@ class Worker {
         source: this._currentLine.MAINJOBROLE
       });
     } else if (this._mainJobRole || this._mainJobRole === 0) {
-      const myValidatedJobRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
+      const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
 
-      if (!myValidatedJobRole) {
+      if (mappedRole === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -2231,7 +2277,7 @@ class Worker {
           source: this._currentLine.MAINJOBROLE
         });
       } else {
-        this._mainJobRole = myValidatedJobRole;
+        this._mainJobRole = mappedRole;
       }
     }
   }
@@ -2258,7 +2304,7 @@ class Worker {
         }
       });
 
-      this._otherJobs = mappedJobs;
+      this._mappedOtherJobs = mappedJobs;
     }
   }
 
@@ -2511,8 +2557,8 @@ class Worker {
 
   _validateHeaders (headers) {
     // console.log("WA DEBUF - _validateHeaders -  S: ", headers)
-    // console.log("WA DEBUF - _validateHeaders - T1: ", this._headers_v1.join(','))
-    // console.log("WA DEBUF - _validateHeaders - T2: ", this._headers_v1_without_chgUnique.join(','))
+    // console.log("WA DEBUF - _validateHeaders - T1: ", _headers_v1)
+    // console.log("WA DEBUF - _validateHeaders - T2: ", _headers_v1_without_chgUnique)
 
     // only run once for first line, so check _lineNumber
     // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
@@ -2520,8 +2566,8 @@ class Worker {
     // worker CSV can include more than the default three qualification sets of columns
     // first compare the default headers (up to and including three quals)
 
-    const matchesWithChgUnique = headers.startsWith(this._headers_v1_without_chgUnique.join(','));
-    const matchesWithoutChgUnique = headers.startsWith(this._headers_v1.join(','));
+    const matchesWithChgUnique = headers.startsWith(_headers_v1_without_chgUnique);
+    const matchesWithoutChgUnique = headers.startsWith(_headers_v1);
 
     if (!matchesWithChgUnique && !matchesWithoutChgUnique) {
       this._validationErrors.push({
@@ -2530,14 +2576,14 @@ class Worker {
         lineNumber: 1,
         errCode: Worker.HEADERS_ERROR,
         errType: 'HEADERS_ERROR',
-        error: `Worker headers (HEADERS) can contain, ${this._headers_v1}`,
+        error: `Worker headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
         source: headers
       });
       return false;
     }
 
     // gets this far having passed the default set of headers; now check the qualification headers
-    const additionalQualsHeader = matchesWithChgUnique ? headers.slice(this._headers_v1_without_chgUnique.join(',').length) : headers.slice(this._headers_v1.join(',').length);
+    const additionalQualsHeader = matchesWithChgUnique ? headers.slice(_headers_v1_without_chgUnique.length) : headers.slice(_headers_v1.length);
     let remainingHeadersValid = true; // assume success
     if (additionalQualsHeader.length > 0) {
       // there are more than the default three qualifications, so validate the remaining headers (noting that the first character will be a comma)
@@ -2672,14 +2718,14 @@ class Worker {
       salary: this._salary ? this._salary : undefined,
       hourlyRate: this._hourlyRate ? this._hourlyRate : undefined,
       mainJob: {
-        role: this._mainJobRole,
+        role: this.mainJobRole,
         other: this._mainJobDesc ? this._mainJobDesc : undefined
       },
       hours: {
         contractedHours: this._contHours !== null ? this._contHours : undefined,
         additionalHours: this._avgHours !== null ? this._avgHours : undefined
       },
-      otherJobs: this._otherJobs !== null ? this._otherJobs.map((thisJob, index) => {
+      otherJobs: this._mappedOtherJobs !== null ? this._mappedOtherJobs.map((thisJob, index) => {
         return {
           job: thisJob,
           other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined
@@ -2722,7 +2768,7 @@ class Worker {
         jobId: this._mainJobRole,
         other: this._mainJobDesc
       },
-      otherJobs: this._otherJobs !== null ? this._otherJobs.map((thisJob, index) => ({
+      otherJobs: this._mappedOtherJobs !== null ? this._mappedOtherJobs.map((thisJob, index) => ({
         jobId: thisJob,
         other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined
       })) : undefined,
@@ -2945,331 +2991,6 @@ class Worker {
   }
 
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
-  addAPIValidations (errors, warnings) {
-    /*     errors.forEach(thisError => {
-      thisError.properties ? thisError.properties.forEach(thisProp => {
-        const validationError = {
-          lineNumber: this._lineNumber,
-          error: thisError.message,
-          name: this._currentLine.LOCALESTID,
-          worker: this._currentLine.UNIQUEWORKERID,
-        };
-
-        switch (thisProp) {
-          case 'WorkerNameOrId':
-            // validationError.errCode = Worker.UNIQUE_WORKER_ID_ERROR;
-            // validationError.errType = 'UNIQUE_WORKER_ID_ERROR';
-            // validationError.source  = `${this._currentLine.UNIQUEWORKERID}`;
-            break;
-          case 'WorkerMainJob':
-            // validationError.errCode = Worker.MAIN_JOB_ROLE_ERROR;
-            // validationError.errType = 'MAIN_JOB_ROLE_ERROR';
-            // validationError.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
-            break;
-          case 'WorkerContract':
-            // validationError.errCode = Worker.CONTRACT_TYPE_ERROR;
-            // validationError.errType = 'CONTRACT_TYPE_ERROR';
-            // validationError.source  = `${this._currentLine.EMPLSTATUS}`;
-            break;
-          case 'WorkerAnnualHourlyPay':
-            // note - the Worker entity wraps the pay type (interval) and rate, with a single rate for hourly and annually
-            validationError.errCode = Worker.SALARY_INT_ERROR;
-            validationError.errType = 'SALARY_INT_ERROR';
-            validationError.source  = `${this._currentLine.SALARYINT} - ${this._currentLine.SALARY} - ${this._currentLine.HOURLYRATE}`;
-            break;
-          case 'WorkerApprenticeshipTraining':
-            validationError.errCode = Worker.APPRENCTICE_ERROR;
-            validationError.errType = 'APPRENCTICE_ERROR';
-            validationError.source  = `${this._currentLine.APPRENTICE}`;
-            break;
-          case 'WorkerApprovedMentalHealthWorker':
-            // validationError.errCode = Worker.AMHP_ERROR;
-            // validationError.errType = 'AMHP_ERROR';
-            // validationError.source  = `${this._currentLine.AMHP}`;
-            break;
-          case 'WorkerBritishCitizenship':
-            validationError.errCode = Worker.BRITISH_CITIZENSHIP_ERROR;
-            validationError.errType = 'BRITISH_CITIZENSHIP_ERROR';
-            validationError.source  = `${this._currentLine.BRITISHCITIZENSHIP}`;
-            break;
-          case 'WorkerCareCertificate':
-            validationError.errCode = Worker.CARE_CERT_ERROR;
-            validationError.errType = 'CARE_CERT_ERROR';
-            validationError.source  = `${this._currentLine.CARECERT}`;
-            break;
-          case 'WorkerCountry':
-            // validationError.errCode = Worker.COUNTRY_OF_BIRTH_ERROR;
-            // validationError.errType = 'COUNTRY_OF_BIRTH_ERROR';
-            // validationError.source  = `${this._currentLine.COUNTRYOFBIRTH}`;
-            break;
-          case 'WorkerDateOfBirth':
-            validationError.errCode = Worker.DOB_ERROR;
-            validationError.errType = 'DOB_ERROR';
-            validationError.source  = `${this._currentLine.DOB}`;
-            break;
-          case 'WorkerDaysSick':
-            validationError.errCode = Worker.DAYSICK_ERROR;
-            validationError.errType = 'DAYSICK_ERROR';
-            validationError.source  = `${this._currentLine.DAYSSICK}`;
-            break;
-          case 'WorkerDisability':
-            validationError.errCode = Worker.DISABLED_ERROR;
-            validationError.errType = 'DISABLED_ERROR';
-            validationError.source  = `${this._currentLine.DISABLED}`;
-            break;
-          case 'WorkerEthnicity':
-            validationError.errCode = Worker.ETHNICITY_ERROR;
-            validationError.errType = 'ETHNICITY_ERROR';
-            validationError.source  = `${this._currentLine.ETHNICITY}`;
-            break;
-          case 'WorkerGender':
-            validationError.errCode = Worker.GENDER_ERROR;
-            validationError.errType = 'GENDER_ERROR';
-            validationError.source  = `${this._currentLine.GENDER}`;
-            break;
-          // in Worker entity, we have separated the non-social care qualification type and level into separate properties
-          case 'WorkerOtherQualification':
-          case 'WorkerHighestQualification':
-            validationError.errCode = Worker.NON_SOCIALCARE_QUAL_ERROR;
-            validationError.errType = 'NON_SOCIALCARE_QUAL_ERROR';
-            validationError.source  = `${this._currentLine.NONSCQUAL}`;
-            break;
-          case 'WorkerMainJobStartDate':
-            validationError.errCode = Worker.START_DATE_ERROR;
-            validationError.errType = 'START_DATE_ERROR';
-            validationError.source  = `${this._currentLine.STARTDATE}`;
-            break;
-          case 'WorkerNationalInsuranceNumber':
-            validationError.errCode = Worker.NINUMBER_ERROR;
-            validationError.errType = 'NINUMBER_ERROR';
-            validationError.source  = `${this._currentLine.NINUMBER}`;
-            break;
-          case 'WorkerNationality':
-            // validationError.errCode = Worker.NATIONALITY_ERROR;
-            // validationError.errType = 'NATIONALITY_ERROR';
-            // validationError.source  = `${this._currentLine.NATIONALITY}`;
-            break;
-          case 'WorkerOtherJobs':
-            // the Worker entity combines OTHERJOBROLE and OTHERJRDESC
-            validationError.errCode = Worker.OTHER_JOB_ROLE_ERROR;
-            validationError.errType = 'OTHER_JOB_ROLE_ERROR';
-            validationError.source  = `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`;
-            break;
-          case 'WorkerPostcode':
-            validationError.errCode = Worker.POSTCODE_ERROR;
-            validationError.errType = 'POSTCODE_ERROR';
-            validationError.source  = `${this._currentLine.POSTCODE}`;
-            break;
-          // in Worker entity, we have separated the social care qualification type and level into separate properties
-          case 'WorkerQualificationInSocialCare':
-          case 'WorkerSocialCareQualification':
-            // validationError.errCode = Worker.SOCIALCARE_QUAL_ERROR;
-            // validationError.errType = 'SOCIALCARE_QUAL_ERROR';
-            // validationError.source  = `${this._currentLine.SCQUAL}`;
-            break;
-          case 'WorkerRecruitedFrom':
-            // validationError.errCode = Worker.RECSOURCE_ERROR;
-            // validationError.errType = 'RECSOURCE_ERROR';
-            // validationError.source  = `${this._currentLine.RECSOURCE}`;
-            break;
-          case 'WorkerSocialCareStartDate':
-            validationError.errCode = Worker.START_INSECT_ERROR;
-            validationError.errType = 'START_INSECT_ERROR';
-            validationError.source  = `${this._currentLine.STARTINSECT}`;
-            break;
-          case `WorkerWeeklyHoursAverage`:
-            validationError.errCode = Worker.AVG_HOURS_ERROR;
-            validationError.errType = 'AVG_HOURS_ERROR';
-            validationError.source  = `${this._currentLine.AVGHOURS}`;
-            break;
-          case 'WorkerWeeklyHoursContracted':
-            validationError.errCode = Worker.CONT_HOURS_ERROR;
-            validationError.errType = 'CONT_HOURS_ERROR';
-            validationError.source  = `${this._currentLine.CONTHOURS}`;
-            break;
-          case 'WorkerYearArrived':
-            validationError.errCode = Worker.YEAR_OF_ENTRY_ERROR;
-            validationError.errType = 'YEAR_OF_ENTRY_ERROR';
-            validationError.source  = `${this._currentLine.YEAROFENTRY}`;
-            break;
-          case 'WorkerZeroContract':
-            validationError.errCode = Worker.ZERO_HRCONT_ERROR;
-            validationError.errType = 'ZERO_HRCONT_ERROR';
-            validationError.source  = `${this._currentLine.ZEROHRCONT}`;
-            break;
-          default:
-            validationError.errCode = thisError.code;
-            validationError.errType = 'Undefined';
-            validationError.source  = thisProp;
-        }
-        this._validationErrors.push(validationError);
-      }) : true;
-    });
-
-    warnings.forEach(thisWarning => {
-      thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
-        const validationWarning = {
-          lineNumber: this._lineNumber,
-          warning: thisWarning.message,
-          name: this._currentLine.LOCALESTID,
-          worker: this._currentLine.UNIQUEWORKERID,
-        };
-
-        switch (thisProp) {
-          case 'WorkerNameOrId':
-            validationWarning.warnCode = Worker.UNIQUE_WORKER_ID_WARNING;
-            validationWarning.warnType = 'UNIQUE_WORKER_ID_WARNING';
-            validationWarning.source  = `${this._currentLine.UNIQUEWORKERID}`;
-            break;
-          case 'WorkerMainJob':
-            // validationWarning.warnCode = Worker.MAIN_JOB_ROLE_WARNING;
-            // validationWarning.warnType = 'MAIN_JOB_ROLE_WARNING';
-            // validationWarning.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
-            break;
-          case 'WorkerContract':
-            // validationWarning.warnCode = Worker.CONTRACT_TYPE_WARNING;
-            // validationWarning.warnType = 'CONTRACT_TYPE_WARNING';
-            // validationWarning.source  = `${this._currentLine.EMPLSTATUS}`;
-            break;
-          case 'WorkerAnnualHourlyPay':
-            // note - the Worker entity wraps the pay type (interval) and rate, with a single rate for hourly and annually
-            validationWarning.warnCode = Worker.SALARY_INT_WARNING;
-            validationWarning.warnType = 'SALARY_INT_WARNING';
-            validationWarning.source  = `${this._currentLine.SALARYINT} - ${this._currentLine.SALARY} - ${this._currentLine.HOURLYRATE}`;
-            break;
-          case 'WorkerApprenticeshipTraining':
-            validationWarning.warnCode = Worker.APPRENCTICE_WARNING;
-            validationWarning.warnType = 'APPRENCTICE_WARNING';
-            validationWarning.source  = `${this._currentLine.APPRENTICE}`;
-            break;
-          case 'WorkerApprovedMentalHealthWorker':
-            validationWarning.warnCode = Worker.AMHP_WARNING;
-            validationWarning.warnType = 'AMHP_WARNING';
-            // validationWarning.source  = `${this._currentLine.AMHP}`;
-            break;
-          case 'WorkerBritishCitizenship':
-            validationWarning.warnCode = Worker.BRITISH_CITIZENSHIP_WARNING;
-            validationWarning.warnType = 'BRITISH_CITIZENSHIP_ERROR';
-            validationWarning.source  = `${this._currentLine.BRITISHCITIZENSHIP}`;
-            break;
-          case 'WorkerCareCertificate':
-            validationWarning.warnCode = Worker.CARE_CERT_WARNING;
-            validationWarning.warnType = 'CARE_CERT_WARNING';
-            validationWarning.source  = `${this._currentLine.CARECERT}`;
-            break;
-          case 'WorkerCountry':
-            // validationWarning.warnCode = Worker.COUNTRY_OF_BIRTH_WARNING;
-            // validationWarning.warnType = 'COUNTRY_OF_BIRTH_ERROR';
-            // validationWarning.source  = `${this._currentLine.COUNTRYOFBIRTH}`;
-            break;
-          case 'WorkerDateOfBirth':
-            // validationWarning.warnCode = Worker.DOB_WARNING;
-            // validationWarning.warnType = 'DOB_WARNING';
-            // validationWarning.source  = `${this._currentLine.DOB}`;
-            break;
-          case 'WorkerDaysSick':
-            validationWarning.warnCode = Worker.DAYSICK_WARNING;
-            validationWarning.warnType = 'DAYSICK_WARNING';
-            validationWarning.source  = `${this._currentLine.DAYSSICK}`;
-            break;
-          case 'WorkerDisability':
-            validationWarning.warnCode = Worker.DISABLED_WARNING;
-            validationWarning.warnType = 'DISABLED_WARNING';
-            validationWarning.source  = `${this._currentLine.DISABLED}`;
-            break;
-          case 'WorkerEthnicity':
-            validationWarning.warnCode = Worker.ETHNICITY_WARNING;
-            validationWarning.warnType = 'ETHNICITY_WARNING';
-            validationWarning.source  = `${this._currentLine.ETHNICITY}`;
-            break;
-          case 'WorkerGender':
-            validationWarning.warnCode = Worker.GENDER_WARNING;
-            validationWarning.warnType = 'GENDER_WARNING';
-            validationWarning.source  = `${this._currentLine.GENDER}`;
-            break;
-          case 'WorkerHighestQualification':
-            validationWarning.warnCode = Worker.NON_SOCIALCARE_QUAL_WARNING;
-            validationWarning.warnType = 'NON_SOCIALCARE_QUAL_WARNING';
-            validationWarning.source  = `${this._currentLine.STARTDATE}`;
-            break;
-          case 'WorkerMainJobStartDate':
-            validationWarning.warnCode = Worker.START_DATE_WARNING;
-            validationWarning.warnType = 'START_DATE_WARNING';
-            validationWarning.source  = `${this._currentLine.STARTDATE}`;
-            break;
-          case 'WorkerNationalInsuranceNumber':
-            validationWarning.warnCode = Worker.NINUMBER_WARNING;
-            validationWarning.warnType = 'NINUMBER_WARNING';
-            validationWarning.source  = `${this._currentLine.NINUMBER}`;
-            break;
-          case 'WorkerNationality':
-            // validationWarning.warnCode = Worker.NATIONALITY_WARNING;
-            // validationWarning.warnType = 'NATIONALITY_WARNING';
-            // validationWarning.source  = `${this._currentLine.NATIONALITY}`;
-            break;
-          case 'WorkerOtherJobs':
-            validationWarning.warnCode = Worker.OTHER_JOB_ROLE_WARNING;
-            validationWarning.warnType = 'OTHER_JOB_ROLE_WARNING';
-            validationWarning.source  = `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`;
-            break;
-          case 'WorkerPostcode':
-            validationWarning.warnCode = Worker.POSTCODE_ERROR;
-            validationWarning.warnType = 'POSTCODE_ERROR';
-            validationWarning.source  = `${this._currentLine.POSTCODE}`;
-            break;
-          // in Worker entity, we have separated the social care qualification type and level into separate properties
-          case 'WorkerQualificationInSocialCare':
-          case 'WorkerSocialCareQualification':
-            // validationWarning.warnCode = Worker.SOCIALCARE_QUAL_WARNING;
-            // validationWarning.warnType = 'SOCIALCARE_QUAL_WARNING';
-            // validationWarning.source  = `${this._currentLine.SCQUAL}`;
-            break;
-          case 'WorkerRecruitedFrom':
-            // validationWarning.warnCode = Worker.RECSOURCE_ERROR;
-            // validationWarning.warnType = 'RECSOURCE_ERROR';
-            // validationWarning.source  = `${this._currentLine.RECSOURCE}`;
-            break;
-          case 'WorkerSocialCareStartDate':
-            validationWarning.warnCode = Worker.START_INSECT_WARNING;
-            validationWarning.warnType = 'START_INSECT_WARNING';
-            validationWarning.source  = `${this._currentLine.STARTINSECT}`;
-            break;
-          case 'WorkerWeeklyHoursAverage':
-            validationWarning.warnCode = Worker.AVG_HOURS_WARNING;
-            validationWarning.warnType = 'AVG_HOURS_WARNING';
-            validationWarning.source  = `${this._currentLine.AVGHOURS}`;
-            break;
-          case 'WorkerWeeklyHoursContracted':
-            validationWarning.warnCode = Worker.CONT_HOURS_WARNING;
-            validationWarning.warnType = 'CONT_HOURS_WARNING';
-            validationWarning.source  = `${this._currentLine.CONTHOURS}`;
-            break;
-          case 'WorkerYearArrived':
-            validationWarning.warnCode = Worker.YEAR_OF_ENTRY_ERROR;
-            validationWarning.warnType = 'YEAR_OF_ENTRY_ERROR';
-            validationWarning.source  = `${this._currentLine.YEAROFENTRY}`;
-            break;
-          case 'WorkerZeroContract':
-            validationWarning.warnCode = Worker.ZERO_HRCONT_WARNING;
-            validationWarning.warnType = 'ZERO_HRCONT_WARNING';
-            validationWarning.source  = `${this._currentLine.ZEROHRCONT}`;
-            break;
-          case 'RegisteredNurse':
-            break;
-          case 'NurseSpecialism':
-            break;
-          default:
-            validationWarning.warnCode = thisWarning.code;
-            validationWarning.warnType = 'Undefined';
-            validationWarning.source  = thisProp;
-        }
-
-        this._validationErrors.push(validationWarning);
-      }) : true;
-    }); */
-  }
-
-  // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
   addQualificationAPIValidation (columnIndex, errors, warnings) {
     errors.forEach(thisError => {
       if (thisError.properties) {
@@ -3342,16 +3063,8 @@ class Worker {
     });
   }
 
-  _csvQuote (toCsv) {
-    if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
-      return '"' + toCsv.replace(/"/g, '""') + '"';
-    } else {
-      return toCsv;
-    }
-  }
-
   // returns the BUDI mapped nationality
-  _maptoCSVnationality (nationality) {
+  static _maptoCSVnationality (nationality) {
     if (nationality) {
       if (nationality.value === 'British') {
         return 826;
@@ -3372,7 +3085,7 @@ class Worker {
   }
 
   // returns the BUDI mapped country
-  _maptoCSVcountry (country) {
+  static _maptoCSVcountry (country) {
     if (country) {
       if (country.value === 'United Kingdom') {
         return 826;
@@ -3394,7 +3107,7 @@ class Worker {
   }
 
   // returns the BUDI mapped recruitment source
-  _maptoCSVrecruitedFrom (source) {
+  static _maptoCSVrecruitedFrom (source) {
     if (source) {
       if (source.value === 'No') {
         return 16;
@@ -3408,7 +3121,7 @@ class Worker {
   }
 
   // returns the BUDI mapped started in sector
-  _maptoCSVStartedInSector (started) {
+  static _maptoCSVStartedInSector (started) {
     if (started) {
       if (started.value === 'No') {
         return '';
@@ -3421,7 +3134,7 @@ class Worker {
   }
 
   // returns the BUDI mapped days sick
-  _maptoCSVDaysSick (daysSick) {
+  static _maptoCSVDaysSick (daysSick) {
     if (daysSick) {
       if (daysSick.value === 'No') {
         return 999;
@@ -3434,7 +3147,7 @@ class Worker {
   }
 
   // returns the BUDI mapped days sick
-  _maptoCSVslary (annualHourlyPay) {
+  static _maptoCSVsalary (annualHourlyPay) {
     if (annualHourlyPay) {
       if (annualHourlyPay.value === 'Annually') {
         return [1, annualHourlyPay.rate, ''];
@@ -3446,7 +3159,7 @@ class Worker {
     }
   }
 
-  _maptoCSVregsiterNurse (registeredNurse) {
+  static _maptoCSVregisteredNurse (registeredNurse) {
     let mappedValue = '';
     switch (registeredNurse) {
       case 'Adult Nurse':
@@ -3470,7 +3183,7 @@ class Worker {
   }
 
   // takes the given Worker entity and writes it out to CSV string (one line)
-  toCSV (establishmentId, entity, MAX_QUALIFICATIONS) {
+  static toCSV (establishmentId, entity, MAX_QUALIFICATIONS) {
     // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
     //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
@@ -3480,13 +3193,13 @@ class Worker {
     columns.push(establishmentId);
 
     // "UNIQUEWORKERID"
-    columns.push(this._csvQuote(entity.localIdentifier)); // todo - this will be local identifier
+    columns.push(csvQuote(entity.localIdentifier)); // todo - this will be local identifier
 
     // "STATUS"
     columns.push('UNCHECKED');
 
     // "DISPLAYID"
-    columns.push(this._csvQuote(entity.nameOrId));
+    columns.push(csvQuote(entity.nameOrId));
 
     // "NINUMBER"
     columns.push(entity.nationalInsuranceNumber ? entity.nationalInsuranceNumber.replace(/\s+/g, '') : ''); // remove whitespace
@@ -3523,7 +3236,7 @@ class Worker {
     columns.push(entity.ethnicity ? BUDI.ethnicity(BUDI.FROM_ASC, entity.ethnicity.ethnicityId) : '');
 
     // "NATIONALITY"
-    columns.push(entity.nationality ? this._maptoCSVnationality(entity.nationality) : '');
+    columns.push(entity.nationality ? Worker._maptoCSVnationality(entity.nationality) : '');
 
     // "BRITISHCITIZENSHIP"
     let britishCitizenship = '';
@@ -3543,7 +3256,7 @@ class Worker {
     columns.push(britishCitizenship);
 
     // "COUNTRYOFBIRTH"
-    columns.push(entity.countryOfBirth ? this._maptoCSVcountry(entity.countryOfBirth) : '');
+    columns.push(entity.countryOfBirth ? Worker._maptoCSVcountry(entity.countryOfBirth) : '');
 
     // "YEAROFENTRY"
     columns.push(entity.yearArrived ? entity.yearArrived.year : '');
@@ -3587,14 +3300,14 @@ class Worker {
     columns.push(careCert);
 
     // "RECSOURCE"
-    columns.push(entity.recruitmentSource ? this._maptoCSVrecruitedFrom(entity.recruitmentSource) : '');
+    columns.push(entity.recruitmentSource ? Worker._maptoCSVrecruitedFrom(entity.recruitmentSource) : '');
 
     // "STARTDATE"
     const mainJobStartDateParts = entity.mainJobStartDate ? entity.mainJobStartDate.split('-') : null;
     columns.push(mainJobStartDateParts ? `${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}` : ''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
 
     // "STARTINSECT"
-    columns.push(this._maptoCSVStartedInSector(entity.socialCareStartDate));
+    columns.push(Worker._maptoCSVStartedInSector(entity.socialCareStartDate));
 
     // "APPRENTICE"
     let apprenticeship = '';
@@ -3657,9 +3370,9 @@ class Worker {
     columns.push(zeroHours);
 
     // "DAYSSICK"
-    columns.push(this._maptoCSVDaysSick(entity.daysSick));
+    columns.push(Worker._maptoCSVDaysSick(entity.daysSick));
 
-    const salaryMap = this._maptoCSVslary(entity.annualHourlyPay);
+    const salaryMap = Worker._maptoCSVsalary(entity.annualHourlyPay);
 
     // "SALARYINT"
     columns.push(salaryMap[0]);
@@ -3740,7 +3453,7 @@ class Worker {
     // "NMCREG"
     columns.push(
       entity.mainJob.jobId === NURSE_JOB_ID && entity.registeredNurse
-        ? this._maptoCSVregsiterNurse(entity.registeredNurse)
+        ? Worker._maptoCSVregisteredNurse(entity.registeredNurse)
         : ''
     );
 
@@ -3835,6 +3548,10 @@ class Worker {
     }
 
     return columns.join(',');
+  }
+
+  toCSV (establishmentId, entity, MAX_QUALIFICATIONS) {
+    return Worker.toCSV(establishmentId, entity, MAX_QUALIFICATIONS);
   }
 }
 
