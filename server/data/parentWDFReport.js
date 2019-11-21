@@ -89,42 +89,6 @@ SELECT
       "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Leavers
   ) AS "LeaversValue",
-  (
-    SELECT
-      a."Answer"
-    FROM
-      cqc."EstablishmentCapacity" AS a
-    JOIN
-      cqc."ServicesCapacity" AS b
-    ON
-      a."ServiceCapacityID" = b."ServiceCapacityID"
-    JOIN
-      cqc."Establishment" c
-    ON
-      a."EstablishmentID" = c."EstablishmentID"
-    WHERE
-      a."EstablishmentID" = "Establishment"."EstablishmentID" AND
-      c."MainServiceFKValue" = b."ServiceID" AND
-      b."Type" = :Capacity
-  ) AS  "Capacities",
-  (
-    SELECT
-      a."Answer"
-    FROM
-      cqc."EstablishmentCapacity" a
-    JOIN
-      cqc."ServicesCapacity" b
-    ON
-      a."ServiceCapacityID" = b."ServiceCapacityID"
-    JOIN
-      cqc."Establishment" c
-    ON
-      a."EstablishmentID" = c."EstablishmentID"
-    WHERE
-      a."EstablishmentID" = "Establishment"."EstablishmentID" AND
-      c."MainServiceFKValue" = b."ServiceID" AND
-      b."Type" = :Utilisation
-  ) AS "Utilisations",
   "NumberOfStaffValue",
   updated,
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
@@ -144,6 +108,23 @@ ORDER BY
   "EstablishmentID";
 `;
 
+const getCapicityOrUtilisationDataQuery =
+`SELECT
+    a."Answer", b."ServiceID", a."EstablishmentID", b."Type"
+  FROM
+    cqc."EstablishmentCapacity" AS a
+  JOIN
+    cqc."ServicesCapacity" AS b
+  ON
+    a."ServiceCapacityID" = b."ServiceCapacityID"
+  JOIN
+    cqc."Establishment" c
+  ON
+    a."EstablishmentID" = c."EstablishmentID"
+  WHERE
+    a."EstablishmentID" = :establishmentId AND
+    b."Type" = :type`;
+
 exports.getEstablishmentData = async establishmentId =>
   db.query(getEstablishmentDataQuery, {
     replacements: {
@@ -156,8 +137,24 @@ exports.getEstablishmentData = async establishmentId =>
       Vacancies: 'Vacancies',
       Starters: 'Starters',
       Leavers: 'Leavers',
-      Capacity: 'Capacity',
-      Utilisation: 'Utilisation'
+    },
+    type: db.QueryTypes.SELECT
+  });
+
+exports.getCapicityData = async (establishmentId) =>
+  db.query(getCapicityOrUtilisationDataQuery, {
+    replacements: {
+      establishmentId,
+      type: 'Capacity'
+    },
+    type: db.QueryTypes.SELECT
+  });
+
+exports.getUtilisationData = async (establishmentId) =>
+  db.query(getCapicityOrUtilisationDataQuery, {
+    replacements: {
+      establishmentId,
+      type: 'Utilisation'
     },
     type: db.QueryTypes.SELECT
   });
@@ -174,7 +171,8 @@ SELECT
   to_char("MainJobStartDateValue", :timeFormat) as "MainJobStartDateValue",
   "RecruitedFromValue",
   "ContractValue",
-  "WeeklyHoursContractedValue",
+  "WeeklyHoursContractedHours",
+  "WeeklyHoursAverageHours",
   "ZeroHoursContractValue",
   "DaysSickValue",
   "AnnualHourlyPayValue",

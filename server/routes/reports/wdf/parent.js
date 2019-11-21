@@ -9,7 +9,7 @@ const walk = require('walk');
 const JsZip = require('jszip');
 
 const { Establishment } = require('../../../models/classes/establishment');
-const { getEstablishmentData, getWorkerData } = rfr('server/data/parentWDFReport');
+const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData } = rfr('server/data/parentWDFReport');
 
 // Constants string needed by this file in several places
 const folderName = 'template';
@@ -87,8 +87,43 @@ const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,Service
 
 const getEstablishmentReportData = async establishmentId => {
   const establishmentData = await getEstablishmentData(establishmentId);
-
-  establishmentData.forEach((value, key) => {
+  establishmentData.forEach(async (value, key) => {
+    let capicityDetails = await getCapicityData(value.EstablishmentID);
+    let utilisationDetails = await getUtilisationData(value.EstablishmentID);
+    if(capicityDetails && capicityDetails.length > 0){
+      let foundMainService = false;
+      let answerKey = -1;
+      capicityDetails.forEach((capacity, key) => {
+        if(capacity.ServiceID === value.MainServiceFKValue){
+          foundMainService = true;
+          answerKey = key;
+        }
+      });
+      if(foundMainService){
+        value.Capacities = (capicityDetails[answerKey].Answer === null)? 'Missing': capicityDetails[answerKey].Answer;
+      }else{
+        value.Capacities = 'N/A';
+      }
+    }else{
+      value.Capacities = 'Missing';
+    }
+    if(utilisationDetails && utilisationDetails.length > 0){
+      let foundMainService = false;
+      let answerKey = -1;
+      utilisationDetails.forEach((utilisation, key) => {
+        if(utilisation.ServiceID === value.MainServiceFKValue){
+          foundMainService = true;
+          answerKey = key;
+        }
+      });
+      if(foundMainService){
+        value.Utilisations = (utilisationDetails[answerKey].Answer === null)? 'Missing': utilisationDetails[answerKey].Answer;
+      }else{
+        value.Utilisations = 'N/A';
+      }
+    }else{
+      value.Utilisations = 'Missing';
+    }
     if (value.ShareDataWithCQC && value.ShareDataWithLA) {
       value.SubsidiarySharingPermissions = 'All';
     } else if (value.ShareDataWithCQC && !value.ShareDataWithLA) {
@@ -122,14 +157,6 @@ const getEstablishmentReportData = async establishmentId => {
       value.PercentageOfWorkerRecords = `${parseFloat(+value.TotalIndividualWorkerRecord / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
     } else {
       value.PercentageOfWorkerRecords = '0.0%';
-    }
-
-    if (value.Capacities === null) {
-      value.Capacities = 'N/A';
-    }
-
-    if (value.Utilisations === null) {
-      value.Utilisations = 'N/A';
     }
 
     if (value.VacanciesValue === null) {
@@ -184,8 +211,12 @@ const getWorkersReportData = async establishmentId => {
     if(value.RecruitedFromValue === 'No'){
       value.RecruitedFromValue = "Don't know";
     }
-    if(value.WeeklyHoursContractedValue === 'No'){
-      value.WeeklyHoursContractedValue = "Don't know";
+    if(value.WeeklyHoursContractedHours === null && value.WeeklyHoursAverageHours === null){
+      value.WeeklyHoursContractedValue = 'Missing';
+    }else if(value.WeeklyHoursContractedHours === null && value.WeeklyHoursAverageHours !== null){
+      value.WeeklyHoursContractedValue = value.WeeklyHoursAverageHours;
+    }else{
+      value.WeeklyHoursContractedValue = value.WeeklyHoursContractedHours;
     }
     if(value.ZeroHoursContractValue === 'No'){
       value.ZeroHoursContractValue = "Don't know";
@@ -234,8 +265,8 @@ const styleLookup = {
       C: 7,
       D: 24,
       E: 15,
-      F: 12,
-      G: 12,
+      F: 15,
+      G: 15,
       H: 15,
       I: 9,
       J: 26,
@@ -254,8 +285,8 @@ const styleLookup = {
       C: 17,
       D: 31,
       E: 20,
-      F: 22,
-      G: 22,
+      F: 20,
+      G: 20,
       H: 20,
       I: 9,
       J: 32,
@@ -279,7 +310,7 @@ const styleLookup = {
       H: 15,
       I: 9,
       J: 15,
-      K: 9,
+      K: 15,
       L: 9,
       M: 9,
       N: 15,
@@ -300,7 +331,7 @@ const styleLookup = {
       H: 20,
       I: 9,
       J: 20,
-      K: 9,
+      K: 20,
       L: 9,
       M: 9,
       N: 20,
@@ -344,8 +375,8 @@ const styleLookup = {
       C: 7,
       D: 24,
       E: 15,
-      F: 12,
-      G: 12,
+      F: 67,
+      G: 67,
       H: 15,
       I: 65,
       J: 26,
@@ -364,8 +395,8 @@ const styleLookup = {
       C: 17,
       D: 31,
       E: 20,
-      F: 22,
-      G: 22,
+      F: 67,
+      G: 67,
       H: 20,
       I: 65,
       J: 32,
@@ -389,7 +420,7 @@ const styleLookup = {
       H: 67,
       I: 65,
       J: 15,
-      K: 65,
+      K: 67,
       L: 65,
       M: 65,
       N: 67,
@@ -410,7 +441,7 @@ const styleLookup = {
       H: 67,
       I: 65,
       J: 20,
-      K: 65,
+      K: 67,
       L: 65,
       M: 65,
       N: 67,
@@ -437,7 +468,7 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
 
   if (percentColumn) {
     let percentValue = value.split('%');
-    if (Number(percentValue[0]) < 100) {
+    if (Number(percentValue[0]) !== 100) {
       isRed = true;
     }
   }
@@ -748,19 +779,23 @@ const updateEstablishmentsSheet = (
         } break;
 
         case 'F': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            reportData.establishments[row].Capacities
+            reportData.establishments[row].Capacities,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'G': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            reportData.establishments[row].Utilisations
+            reportData.establishments[row].Utilisations,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'H': {
@@ -777,8 +812,7 @@ const updateEstablishmentsSheet = (
             cellToChange,
             reportData.establishments[row].ServiceUsers,
             columnText,
-            rowType,
-            true
+            rowType
           );
         } break;
 
