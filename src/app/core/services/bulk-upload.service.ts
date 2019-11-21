@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
   BulkUploadFileType,
+  BulkUploadLock,
+  BulkUploadStatus,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
@@ -15,8 +17,8 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, from, interval, Observable } from 'rxjs';
+import { concatMap, filter, map, take, tap } from 'rxjs/operators';
 
 import { UserService } from './user.service';
 
@@ -79,16 +81,44 @@ export class BulkUploadService {
     this.returnTo$.next(returnTo);
   }
 
+  public getCurrentStatus(workplaceUid: string): Observable<BulkUploadStatus> {
+    return this.http.get<BulkUploadStatus>(`/api/establishment/${workplaceUid}/bulkupload/lockstatus`);
+  }
+
   public getPresignedUrls(payload: PresignedUrlsRequest): Observable<PresignedUrlResponseItem[]> {
-    return this.http.post<PresignedUrlResponseItem[]>(
-      `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/uploaded`,
-      payload
-    );
+    return this.http
+      .post<BulkUploadLock>(
+        `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/uploaded`,
+        payload
+      )
+      .pipe(
+        concatMap(lock => {
+          return this.http.get<PresignedUrlResponseItem[]>(
+            `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/response/${lock.requestId}`
+          );
+        })
+      );
   }
 
   public uploadFile(file: File, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
-    return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
+    const establishmentUid = this.establishmentService.primaryWorkplace.uid;
+    console.log('Trying to upload');
+    return interval(1000).pipe(
+      concatMap(() =>
+        from(this.getCurrentStatus(establishmentUid))
+          .pipe(filter(state => state.bulkUploadState === 'READY'))
+          .pipe(take(1))
+          .pipe(
+            map(state => {
+              if (state.bulkUploadState === 'READY') {
+                console.log(state.bulkUploadState);
+                return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
+              }
+            })
+          )
+      )
+    );
   }
 
   public getFileType(fileName: string): string {

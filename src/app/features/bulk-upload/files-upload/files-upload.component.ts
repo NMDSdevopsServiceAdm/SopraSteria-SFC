@@ -2,6 +2,7 @@ import { HttpEventType } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
+  BulkUploadStatus,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   UploadFileRequestItem,
@@ -26,6 +27,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   public filesUploaded = false;
   public submitted = false;
   public selectedFiles: File[];
+  public bulkUploadStatus: string;
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
   private subscriptions: Subscription = new Subscription();
@@ -42,6 +44,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.setupForm();
     this.checkForUploadedFiles();
+    this.checkBulkUploadState();
   }
 
   ngAfterViewInit() {
@@ -58,6 +61,18 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group({
       fileUpload: [null, Validators.required],
     });
+  }
+
+  private checkBulkUploadState(): void {
+    this.subscriptions.add(
+      this.bulkUploadService
+        .getCurrentStatus(this.establishmentService.primaryWorkplace.uid)
+        .subscribe((response: BulkUploadStatus) => {
+          if (response) {
+            this.bulkUploadStatus = response.bulkUploadState;
+          }
+        })
+    );
   }
 
   private checkForUploadedFiles(): void {
@@ -134,7 +149,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   private prepForUpload(response: PresignedUrlResponseItem[]): void {
     this.bytesUploaded = [];
     const request: UploadFileRequestItem[] = [];
-
+    console.log(response);
     this.selectedFiles.forEach((file: File) => {
       this.bytesTotal += file.size;
       this.bytesUploaded.push(0);
