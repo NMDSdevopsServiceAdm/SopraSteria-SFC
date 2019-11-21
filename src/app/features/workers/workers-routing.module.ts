@@ -47,6 +47,9 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffComponent } from './total-staff/total-staff.component';
+import {
+  TrainingAndQualificationsRecordComponent,
+} from './training-qualifications-record/training-and-qualifications-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
@@ -300,6 +303,11 @@ const routes: Routes = [
         path: 'training/:trainingRecordId',
         component: AddEditTrainingComponent,
         data: { title: 'Training' },
+      },
+      {
+        path: 'training',
+        component: TrainingAndQualificationsRecordComponent,
+        data: { title: 'Training and qualification record' },
       },
     ],
   },

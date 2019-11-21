@@ -8,6 +8,7 @@ enum Path {
   USER_ACCOUNT = '/workplace/:workplaceUid/user/:workerUid',
   USER_PERMISSIONS = '/workplace/:workerUid/user/:workerUid/permissions',
   CREATE_ACCOUNT = '/workplace/:workplaceUid/user/create',
+  TRAINING_AND_QUALIFICATIONS_RECORD = '/workplace/:workplaceUid/training-and-qualifications-record/:workerUid/training',
 }
 
 export const myWorkplaceJourney: JourneyRoute = {
@@ -18,6 +19,14 @@ export const myWorkplaceJourney: JourneyRoute = {
       referrer: {
         path: Path.DASHBOARD,
         fragment: 'staff-records',
+      },
+    },
+    {
+      title: 'Traing and qualifications summary',
+      path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
+      referrer: {
+        path: Path.DASHBOARD,
+        fragment: 'training-and-qualifications',
       },
     },
     {
@@ -61,6 +70,14 @@ export const allWorkplacesJourney: JourneyRoute = {
               referrer: {
                 path: Path.WORKPLACE,
                 fragment: 'staff-records',
+              },
+            },
+            {
+              title: 'Traing and qualifications summary',
+              path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
+              referrer: {
+                path: Path.WORKPLACE,
+                fragment: 'training-and-qualifications',
               },
             },
             {
