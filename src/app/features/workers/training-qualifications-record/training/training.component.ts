@@ -49,7 +49,7 @@ export class TrainingComponent implements OnInit {
       }
     });
   }
-
+  //to get all training records
   fetchAllRecords() {
     this.workerService
       .getTrainingRecords(this.workplace.uid, this.worker.uid)
@@ -67,7 +67,11 @@ export class TrainingComponent implements OnInit {
         }
       );
   }
-
+  /**
+   * Function used to get traingin status by comparing expiring date
+   * @param {date} exptire date
+   * @return {number} 0 for up-to-date, 1 for expiring soon and 2 for expired.
+   */
   public getTrainingStatus(expires) {
     let status = 0;
     if (expires) {
