@@ -9,8 +9,8 @@
   <table class="govuk-table" *ngIf="trainingRecords.length">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">Training category</th>
-        <th class="govuk-table__header" scope="col">Training name</th>
+        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Training category</th>
+        <th class="govuk-table__header govuk-!-width-one-half" scope="col">Training name</th>
         <th class="govuk-table__header" scope="col">Expiry Date</th>
         <th class="govuk-table__header" scope="col"></th>
       </tr>
@@ -49,32 +49,38 @@
             >
           </td>
         </tr>
-        <tr *ngIf="trainingDetails[i]" class="govuk-panel--gray">
+        <tr *ngIf="trainingDetails[i]" class="govuk-panel--gray ">
           <td colspan="4">
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">
-                Date completed
-              </dt>
-              <dd class="govuk-summary-list__value">
-                {{ trainingRecord.completed ? (trainingRecord.completed | date: 'dd M y') : '-' }}
-              </dd>
-              <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-                <a class="govuk-link--no-visited-state" href="#" (click)="deleteTrainingRecord(trainingRecord, $event)"
+            <div class="govuk-grid-row govuk-!-margin-2">
+              <div class="govuk-grid-column-one-quarter">
+                <strong>Date completed</strong>
+                <div>
+                  {{ trainingRecord.completed ? (trainingRecord.completed | date: 'dd M y') : '-' }}
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-half">
+                <strong>Accredited</strong>
+                <div>
+                  {{ trainingRecord.accredited | closedEndedAnswer }}
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter-list__actions govuk-util__float-right">
+                <a
+                  class="govuk-link--no-visited-state govuk-!-margin-right-6"
+                  href="#"
+                  (click)="deleteTrainingRecord(trainingRecord, $event)"
                   >Delete</a
                 >
-              </dd>
-              <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-                <a [routerLink]="['../training', trainingRecord.uid]">Change</a>
-              </dd>
+                <a class="govuk-link--no-visited-state" [routerLink]="['../training', trainingRecord.uid]">Change</a>
+              </div>
             </div>
-            <div class="govuk-summary-list__row govuk-summary-list--bottom-border">
-              <dt class="govuk-summary-list__key">
-                Training notes
-              </dt>
-              <dd class="govuk-summary-list__value">
-                {{ trainingRecord.notes ? trainingRecord.notes : '-' }}
-              </dd>
-              <dd class="govuk-summary-list__actions"></dd>
+            <div class="govuk-grid-row govuk-!-margin-2">
+              <div class="govuk-grid-column-two-thirds">
+                <strong>Training notes</strong>
+                <div>
+                  {{ trainingRecord.notes ? trainingRecord.notes : '-' }}
+                </div>
+              </div>
             </div>
           </td>
         </tr>
