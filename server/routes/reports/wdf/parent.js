@@ -267,42 +267,40 @@ const styleLookup = {
     ESTREGULAR: {
       A: 2,
       B: 6,
-      C: 7,
-      D: 24,
-      E: 15,
+      C: 6,
+      D: 7,
+      E: 24,
       F: 15,
       G: 15,
       H: 15,
-      I: 9,
-      J: 26,
-      K: 27,
-      L: 12,
+      I: 15,
+      J: 9,
+      K: 26,
+      L: 27,
       M: 12,
-      N: 27,
-      O: 12,
-      P: 29,
-      Q: 24,
-      R: 9
+      N: 12,
+      O: 27,
+      P: 12,
+      Q: 29
     },
     ESTLAST: {
       A: 2,
       B: 16,
-      C: 17,
-      D: 31,
-      E: 20,
+      C: 16,
+      D: 17,
+      E: 31,
       F: 20,
       G: 20,
       H: 20,
-      I: 9,
-      J: 32,
-      K: 33,
-      L: 22,
-      M: 12,
-      N: 33,
-      O: 22,
-      P: 35,
-      Q: 31,
-      R: 9
+      I: 20,
+      J: 9,
+      K: 32,
+      L: 33,
+      M: 22,
+      N: 12,
+      O: 33,
+      P: 22,
+      Q: 35
     },
     WKRREGULAR: {
       A: 2,
@@ -377,42 +375,40 @@ const styleLookup = {
     ESTREGULAR: {
       A: 2,
       B: 6,
-      C: 7,
-      D: 24,
-      E: 15,
-      F: 67,
+      C: 6,
+      D: 7,
+      E: 24,
+      F: 15,
       G: 67,
-      H: 15,
-      I: 65,
-      J: 26,
-      K: 27,
-      L: 12,
-      M: 66,
-      N: 27,
-      O: 12,
-      P: 29,
-      Q: 65,
-      R: 65
+      H: 67,
+      I: 15,
+      J: 65,
+      K: 26,
+      L: 27,
+      M: 12,
+      N: 66,
+      O: 27,
+      P: 12,
+      Q: 29
     },
     ESTLAST: {
       A: 2,
       B: 16,
-      C: 17,
-      D: 31,
-      E: 20,
-      F: 67,
+      C: 16,
+      D: 17,
+      E: 31,
+      F: 20,
       G: 67,
-      H: 20,
-      I: 65,
-      J: 32,
-      K: 33,
-      L: 22,
-      M: 66,
-      N: 33,
-      O: 22,
-      P: 35,
-      Q: 65,
-      R: 65
+      H: 67,
+      I: 20,
+      J: 65,
+      K: 32,
+      L: 33,
+      M: 22,
+      N: 66,
+      O: 33,
+      P: 22,
+      Q: 35
     },
     WKRREGULAR: {
       A: 2,
@@ -770,7 +766,7 @@ const updateEstablishmentsSheet = (
         case 'D': {
           putString(
             cellToChange,
-            establishmentArray[row].EmployerTypeValue
+            establishmentArray[row].NmdsID
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -778,12 +774,20 @@ const updateEstablishmentsSheet = (
         case 'E': {
           putString(
             cellToChange,
-            establishmentArray[row].MainService
+            establishmentArray[row].EmployerTypeValue
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'F': {
+          putString(
+            cellToChange,
+            establishmentArray[row].MainService
+          );
+          setStyle(cellToChange, columnText, rowType, isRed);
+        } break;
+
+        case 'G': {
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -793,7 +797,7 @@ const updateEstablishmentsSheet = (
           );
         } break;
 
-        case 'G': {
+        case 'H': {
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -803,7 +807,7 @@ const updateEstablishmentsSheet = (
           );
         } break;
 
-        case 'H': {
+        case 'I': {
           putString(
             cellToChange,
             establishmentArray[row].OtherServices
@@ -811,7 +815,7 @@ const updateEstablishmentsSheet = (
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
-        case 'I': {
+        case 'J': {
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -821,7 +825,7 @@ const updateEstablishmentsSheet = (
           );
         } break;
 
-        case 'J': {
+        case 'K': {
           putString(
             cellToChange,
             establishmentArray[row].LastUpdatedDate
@@ -829,7 +833,7 @@ const updateEstablishmentsSheet = (
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
-        case 'K': {
+        case 'L': {
           putString(
             cellToChange,
             establishmentArray[row].NumberOfStaffValue
@@ -837,7 +841,7 @@ const updateEstablishmentsSheet = (
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
-        case 'L': {
+        case 'M': {
           putString(
             cellToChange,
             establishmentArray[row].TotalIndividualWorkerRecord
@@ -845,7 +849,7 @@ const updateEstablishmentsSheet = (
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
-        case 'M': {
+        case 'N': {
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -856,7 +860,7 @@ const updateEstablishmentsSheet = (
           );
         } break;
 
-        case 'N': {
+        case 'O': {
           putString(
             cellToChange,
             establishmentArray[row].StartersValue
@@ -864,7 +868,7 @@ const updateEstablishmentsSheet = (
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
-        case 'O': {
+        case 'P': {
           putString(
             cellToChange,
             establishmentArray[row].LeaversValue
@@ -872,7 +876,7 @@ const updateEstablishmentsSheet = (
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
-        case 'P': {
+        case 'Q': {
           putString(
             cellToChange,
             establishmentArray[row].VacanciesValue
