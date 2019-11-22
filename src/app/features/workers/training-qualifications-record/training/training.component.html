@@ -16,42 +16,69 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let trainingRecord of trainingRecords">
-        <td class="govuk-table__cell govuk-!-font-weight-regular">
-          {{ trainingRecord.trainingCategory.category }}
-        </td>
-        <td class="govuk-table__cell">{{ trainingRecord.title }}</td>
-        <td class="govuk-table__cell">
-          <span [class.govuk-util__bold]="trainingRecord.trainingStatus === 2"
-            >{{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd/MM/y') : '-' }}
-          </span>
-          <div *ngIf="trainingRecord.trainingStatus === 2" class="govuk-!-margin-bottom-1">
-            <img
-              src="/assets/images/flag-red.svg"
-              alt="expired"
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            Expired
-          </div>
-          <div *ngIf="trainingRecord.trainingStatus === 1">
-            <img
-              src="/assets/images/flag-orange.svg"
-              alt="expiring"
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            Expiring soon
-          </div>
-        </td>
-        <td class="govuk-table__cell govuk-!-font-weight-regular">
-          <a
-            *ngIf="canEditWorker"
-            class="govuk-link--no-visited-state"
-            href="#"
-            (click)="deleteTrainingRecord(trainingRecord, $event)"
-            >Open</a
-          >
-        </td>
-      </tr>
+      <ng-container *ngFor="let trainingRecord of trainingRecords; let i = index">
+        <tr class="govuk-table__row govuk-util__vertical-align-top">
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            {{ trainingRecord.trainingCategory.category }}
+          </td>
+          <td class="govuk-table__cell">{{ trainingRecord.title }}</td>
+          <td class="govuk-table__cell">
+            <span [class.govuk-util__bold]="trainingRecord.trainingStatus === 2"
+              >{{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd M y') : '-' }}
+            </span>
+            <div *ngIf="trainingRecord.trainingStatus === 2" class="govuk-!-margin-bottom-1">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt="expired"
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Expired
+            </div>
+            <div *ngIf="trainingRecord.trainingStatus === 1">
+              <img
+                src="/assets/images/flag-orange.svg"
+                alt="expiring"
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Expiring soon
+            </div>
+          </td>
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            <a *ngIf="canEditWorker" class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(i, $event)"
+              >Open</a
+            >
+          </td>
+        </tr>
+        <tr *ngIf="trainingDetails[i]" class="govuk-panel--gray">
+          <td colspan="4">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Date completed
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {{ trainingRecord.completed ? (trainingRecord.completed | date: 'dd M y') : '-' }}
+              </dd>
+              <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+                <a class="govuk-link--no-visited-state" href="#" (click)="deleteTrainingRecord(trainingRecord, $event)"
+                  >Delete</a
+                >
+              </dd>
+              <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+                <a [routerLink]="['../training', trainingRecord.uid]">Change</a>
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row govuk-summary-list--bottom-border">
+              <dt class="govuk-summary-list__key">
+                Training notes
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {{ trainingRecord.notes ? trainingRecord.notes : '-' }}
+              </dd>
+              <dd class="govuk-summary-list__actions"></dd>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
     </tbody>
   </table>
 </ng-container>

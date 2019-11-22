@@ -19,6 +19,7 @@ export class TrainingComponent implements OnInit {
   public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
   public trainingRecords: TrainingRecord[] = [];
+  public trainingDetails = [];
 
   constructor(
     private workerService: WorkerService,
@@ -86,5 +87,10 @@ export class TrainingComponent implements OnInit {
       }
     }
     return status;
+  }
+
+  public toggleDetails(index: number, event) {
+    event.preventDefault();
+    this.trainingDetails[index] = !this.trainingDetails[index];
   }
 }
