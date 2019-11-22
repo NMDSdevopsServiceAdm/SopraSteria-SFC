@@ -57,8 +57,9 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.qualificationId = this.route.snapshot.params.qualificationId;
 
     this.backService.setBackLink({
-      url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
-      fragment: 'qualifications-and-training',
+      url: [
+        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/select-record-type`,
+      ],
     });
 
     Object.keys(QualificationType).forEach(key => {
@@ -247,9 +248,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   private onSuccess() {
     this.router
-      .navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid], {
-        fragment: 'qualifications-and-training',
-      })
+      .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
       .then(() => {
         if (this.qualificationId) {
           this.workerService.alert = { type: 'success', message: 'Qualification has been saved' };
