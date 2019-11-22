@@ -19,6 +19,8 @@ export class TrainingComponent implements OnInit {
   public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
   public trainingRecords: TrainingRecord[] = [];
+  public trainingDetails = [];
+  public trainingDetailsLabel = [];
 
   constructor(
     private workerService: WorkerService,
@@ -86,5 +88,15 @@ export class TrainingComponent implements OnInit {
       }
     }
     return status;
+  }
+  /**
+   * Function used to hadle toggle for traing details view and change training details lable
+   * @param {number} index numer of clicked row
+   * @param {event} refrance of event handler
+   */
+  public toggleDetails(index: number, event) {
+    event.preventDefault();
+    this.trainingDetails[index] = !this.trainingDetails[index];
+    this.trainingDetailsLabel[index] = this.trainingDetailsLabel[index] === 'Close' ? 'Open' : 'Close';
   }
 }

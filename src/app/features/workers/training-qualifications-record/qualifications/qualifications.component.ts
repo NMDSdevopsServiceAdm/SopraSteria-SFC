@@ -21,6 +21,8 @@ export class QualificationsComponent implements OnInit {
   public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
   public qualifications: Qualification[];
+  public qualificationDetails = [];
+  public qualificationDetailsLabel = [];
 
   constructor(
     private workerService: WorkerService,
@@ -55,5 +57,16 @@ export class QualificationsComponent implements OnInit {
       this.lastUpdated = moment(data.lastUpdated);
       this.qualifications = data.qualifications;
     });
+  }
+
+  /**
+   * Function used to hadle toggle for traing details view and change training details lable
+   * @param {number} index numer of clicked row
+   * @param {event} refrance of event handler
+   */
+  public toggleDetails(index: number, event) {
+    event.preventDefault();
+    this.qualificationDetails[index] = !this.qualificationDetails[index];
+    this.qualificationDetailsLabel[index] = this.qualificationDetailsLabel[index] === 'Close' ? 'Open' : 'Close';
   }
 }
