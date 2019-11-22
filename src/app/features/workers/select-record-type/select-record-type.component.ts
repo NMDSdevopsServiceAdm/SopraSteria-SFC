@@ -73,8 +73,6 @@ export class SelectRecordTypeComponent implements OnInit {
     if (this.form.invalid) {
       this.errorSummaryService.scrollToErrorSummary();
       return;
-    } else {
-      console.log('form valid');
     }
   }
   protected setBackLink(): void {
