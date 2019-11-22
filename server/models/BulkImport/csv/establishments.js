@@ -8,7 +8,7 @@ const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
 const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
-const permanantContractStatusId = 1;
+const employedContractStatusIds = [1, 2];
 const notHeadOfficeOrCqcRegulated = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,/* 16, (16 = Head office service code, which should be excluded) */ 17, 18];
 
 const csvQuote = toCsv => {
@@ -33,10 +33,10 @@ function updateWorkerTotals(totals, worker) {
   }
 
   // Is the worker on a permanant contract? Any workers that are not permanant are considered temporary for validation purposes
-  if (worker.contractTypeId === permanantContractStatusId) {
-    totals.permanantWorkers++;
+  if (employedContractStatusIds.includes(worker.contractTypeId)) {
+    totals.employedWorkers++;
   } else {
-    totals.temporaryWorkers++;
+    totals.nonEmployedWorkers++;
   }
 }
 
@@ -763,8 +763,6 @@ class Establishment {
   _validateRegType () {
     const myRegType = parseInt(this._currentLine.REGTYPE, 10);
 
-    //throw new Error(`${this._mainService}, ${}`);
-
     if (!this._currentLine.REGTYPE || this._currentLine.REGTYPE.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
@@ -1240,8 +1238,8 @@ class Establishment {
   _crossValidateTotalPermTemp(
     csvEstablishmentSchemaErrors,
     {
-      permanantWorkers = 0,
-      temporaryWorkers = 0,
+      employedWorkers = 0,
+      nonEmployedWorkers = 0,
       directCareWorkers = 0,
       managerialProfessionalWorkers = 0
     }) {
@@ -1260,22 +1258,19 @@ class Establishment {
     // Is the establishment a local authority?
     const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
 
-    // All services already includes the main service
-    const allServices = this.allServices;
-
     // Is the establishment only shared lives (code 19)?
-    const notSharedLivesOnly = allServices.findIndex(service => service !== 19) !== -1;
+    const notSharedLivesOnly = BUDI.services(BUDI.FROM_ASC, this._mainService) !== 19;
 
     // Is the establishment only head office services (code 16)?
-    const notHeadOfficeOnly = allServices.findIndex(service => service !== 16) !== -1;
+    const notHeadOfficeOnly = BUDI.services(BUDI.FROM_ASC, this._mainService) !== 16;
 
-    if (this._totalPermTemp === permanantWorkers + temporaryWorkers) {
+    if (this._totalPermTemp === employedWorkers + nonEmployedWorkers) {
       if (notHeadOfficeOnly) {
-        if (permanantWorkers + temporaryWorkers === 0) {
+        if (employedWorkers === 0) {
           csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
             warning: 'The number of employed staff is 0 please check your staff records',
           }));
-        } else if (permanantWorkers < temporaryWorkers) {
+        } else if (employedWorkers < nonEmployedWorkers) {
           csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
             warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records',
           }));
@@ -2002,8 +1997,8 @@ class Establishment {
     const totals = {
       directCareWorkers: 0,
       managerialProfessionalWorkers: 0,
-      permanantWorkers: 0,
-      temporaryWorkers: 0
+      employedWorkers: 0,
+      nonEmployedWorkers: 0
     };
 
     // ignoreDBWorkers is used as a hashmap of workers that are being modified

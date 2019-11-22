@@ -943,7 +943,7 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
   });
 
   describe('cross entity validations', () => {
-    it('should emit a warning if there are zero permanant staff', async () => {
+    it('should emit a warning if there are zero staff', async () => {
       const bulkUpload = new (testUtils.sandBox(
         filename,
         {
@@ -1512,7 +1512,7 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
       });
     });
 
-    it('should emit a warning if there are fewer permanent staff than non permanant staff', async () => {
+    it('should emit a warning if there are fewer employed staff than non employed staff', async () => {
       const bulkUpload = new (testUtils.sandBox(
         filename,
         {
@@ -1666,7 +1666,7 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
         establishmentKey: 'omar3',
         status: 'UPDATE',
         uniqueWorker: '3',
-        contractTypeId: 3,
+        contractTypeId: 2,
         mainJobRoleId: 10,
         otherJobIds: []
       }];
@@ -1712,35 +1712,35 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
         {
           establishmentKey: 'omar3',
           uniqueWorker: '10',
-          contractTypeId: 'Permanent',
+          contractTypeId: 'Other',
           mainJobRoleId: 18,
           otherJobIds: ''
         },
         {
           establishmentKey: 'omar3',
           uniqueWorker: '4',
-          contractTypeId: 'Permanent',
+          contractTypeId: 'Other',
           mainJobRoleId: 1,
           otherJobIds: ''
         },
         {
           establishmentKey: 'omar3',
           uniqueWorker: 'SA 4',
-          contractTypeId: 'Permanent',
+          contractTypeId: 'Other',
           mainJobRoleId: 23,
           otherJobIds: ''
         },
         {
           establishmentKey: 'omar3',
           uniqueWorker: 'FTSpecial',
-          contractTypeId: 'Temporary',
+          contractTypeId: 'Other',
           mainJobRoleId: 24,
           otherJobIds: ''
         },
         {
           establishmentKey: 'omar3',
           uniqueWorker: '1',
-          contractTypeId: 'Permanent',
+          contractTypeId: 'Other',
           mainJobRoleId: 2,
           otherJobIds: ''
         }];
