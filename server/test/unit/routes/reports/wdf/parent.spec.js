@@ -93,6 +93,22 @@ describe('/server/routes/reports/wdf/parent', () => {
           globals: {
             rfr: testUtils.wrapRequire({
               'server/data/parentWDFReport': {
+                getCapicityData: () => [
+                  {
+                    "Answer": 10,
+                    "ServiceID": 12,
+                    "EstablishmentID": 479,
+                    "Type": "Capacity"
+                  }
+                ],
+                getUtilisationData: () => [
+                  {
+                    "Answer": 10,
+                    "ServiceID": 12,
+                    "EstablishmentID": 479,
+                    "Type": "Utilisation"
+                  }
+                ],
                 getEstablishmentData: () => [
                   {
                     EstablishmentID: 479,
