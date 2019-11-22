@@ -26,9 +26,7 @@ import { SetDataPermissionDialogComponent } from './components/set-data-permissi
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
 import { PersonalDetailsComponent } from './components/staff-record-summary/personal-details/personal-details.component';
-import {
-  QualificationsAndTrainingComponent,
-} from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
+import { QualificationsAndTrainingComponent } from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
 import { StaffRecordsTabComponent } from './components/staff-records-tab/staff-records-tab.component';
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
@@ -39,12 +37,8 @@ import { SummaryListComponent } from './components/summary-list/summary-list.com
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
-import {
-  TrainingAndQualificationsSummaryComponent,
-} from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
-import {
-  TrainingAndQualificationsTabComponent,
-} from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
+import { TrainingAndQualificationsSummaryComponent } from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
+import { TrainingAndQualificationsTabComponent } from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
 import { TainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
@@ -53,6 +47,7 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
+import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
