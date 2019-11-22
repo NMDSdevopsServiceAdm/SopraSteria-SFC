@@ -89,7 +89,11 @@ export class TrainingComponent implements OnInit {
     }
     return status;
   }
-
+  /**
+   * Function used to hadle toggle for traing details view and change training details lable
+   * @param {number} index numer of clicked row
+   * @param {event} refrance of event handler
+   */
   public toggleDetails(index: number, event) {
     event.preventDefault();
     this.trainingDetails[index] = !this.trainingDetails[index];
