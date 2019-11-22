@@ -63,7 +63,13 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       }
     });
     this.backService.setBackLink({
+<<<<<<< HEAD
       url: [this.previousUrl],
+=======
+      url: [
+        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/select-record-type`,
+      ],
+>>>>>>> Added functionality to add new training and qualifications records (#1703)
     });
 
     Object.keys(QualificationType).forEach(key => {
