@@ -44,3 +44,6 @@
   background-color: $govuk-error-colour;
   color: #fff;
 }
+.govuk-panel--gray {
+  background-color: govuk-colour('grey-3');
+}

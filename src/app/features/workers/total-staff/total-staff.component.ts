@@ -22,7 +22,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   public return: URLStructure;
   public returnCopy: boolean;
   private totalStaffConstraints = { min: 0, max: 999 };
-  private formErrorsMap: Array<ErrorDetails>;
+  public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -106,9 +106,10 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     const { totalStaff } = this.form.value;
 
     this.subscriptions.add(
-      this.establishmentService
-        .postStaff(this.workplace.uid, totalStaff)
-        .subscribe(() => this.onSuccess(), error => this.onError(error))
+      this.establishmentService.postStaff(this.workplace.uid, totalStaff).subscribe(
+        () => this.onSuccess(),
+        error => this.onError(error)
+      )
     );
   }
 
