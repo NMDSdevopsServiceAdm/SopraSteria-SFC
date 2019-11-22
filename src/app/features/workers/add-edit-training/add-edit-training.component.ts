@@ -47,8 +47,9 @@ export class AddEditTrainingComponent implements OnInit {
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
 
     this.backService.setBackLink({
-      url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
-      fragment: 'qualifications-and-training',
+      url: [
+        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/select-record-type`,
+      ],
     });
 
     this.form = this.formBuilder.group({
@@ -268,9 +269,7 @@ export class AddEditTrainingComponent implements OnInit {
 
   private onSuccess() {
     this.router
-      .navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid], {
-        fragment: 'qualifications-and-training',
-      })
+      .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
       .then(() => {
         if (this.trainingRecordId) {
           this.workerService.alert = { type: 'success', message: 'Training has been saved' };
