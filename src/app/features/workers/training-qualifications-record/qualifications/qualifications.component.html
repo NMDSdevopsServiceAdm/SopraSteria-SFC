@@ -1,77 +1,63 @@
 <ng-container *ngIf="qualifications?.length">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <h2 class="govuk-heading-m">Qualifications</h2>
-    </div>
-    <div class="govuk-grid-column-one-half">
-      <p class="govuk-util__float-right">Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
+      <h2 class="govuk-heading-m">Qualifications({{ qualifications.length }})</h2>
+      <p>Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
     </div>
   </div>
 
-  <dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--top-border">
-    <ng-container *ngFor="let qualification of qualifications">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Qualification type
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ qualification.qualification.group }}
-        </dd>
-        <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-          <a class="govuk-link--no-visited-state" href="#" (click)="deleteQualification(qualification, $event)"
-            >Delete<span class="govuk-visually-hidden"> {{ qualification.title }} qualification</span></a
-          >
-        </dd>
-        <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-          <a [routerLink]="['../qualification', qualification.uid]"
-            >Change<span class="govuk-visually-hidden"> {{ qualification.title }} qualification</span></a
-          >
-        </dd>
-      </div>
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Qualification type</th>
+        <th class="govuk-table__header govuk-!-width-one-half" scope="col">Qualification name</th>
+        <th class="govuk-table__header" scope="col">Year achieved</th>
+        <th class="govuk-table__header" scope="col"></th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <ng-container *ngFor="let qualification of qualifications; let i = index">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            {{ qualification.qualification.group }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ qualification.qualification.title }}
+          </td>
 
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Qualification name
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ qualification.qualification.title }}
-        </dd>
-        <dd class="govuk-summary-list__actions"></dd>
-        <dd class="govuk-summary-list__actions"></dd>
-      </div>
-
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Qualification level
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ qualification?.qualification?.level ? qualification.qualification.level : '-' }}
-        </dd>
-        <dd class="govuk-summary-list__actions"></dd>
-        <dd class="govuk-summary-list__actions"></dd>
-      </div>
-
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Year achieved
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ qualification?.year ? qualification.year : '-' }}
-        </dd>
-        <dd class="govuk-summary-list__actions"></dd>
-        <dd class="govuk-summary-list__actions"></dd>
-      </div>
-
-      <div class="govuk-summary-list__row govuk-summary-list--bottom-border">
-        <dt class="govuk-summary-list__key">
-          Qualification notes
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ qualification?.notes ? qualification.notes : '-' }}
-        </dd>
-        <dd class="govuk-summary-list__actions"></dd>
-        <dd class="govuk-summary-list__actions"></dd>
-      </div>
-    </ng-container>
-  </dl>
+          <td class="govuk-table__cell">
+            {{ qualification?.year ? qualification.year : '-' }}
+          </td>
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            <a *ngIf="canEditWorker" class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(i, $event)">{{
+              qualificationDetailsLabel[i] ? qualificationDetailsLabel[i] : 'Open'
+            }}</a>
+          </td>
+        </tr>
+        <tr *ngIf="qualificationDetails[i]" class="govuk-panel--gray ">
+          <td colspan="4">
+            <div class="govuk-grid-row govuk-!-margin-2">
+              <div class="govuk-grid-column-two-thirds">
+                <strong> Qualification notes</strong>
+                <div>
+                  {{ qualification?.notes ? qualification.notes : '-' }}
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter-list__actions govuk-util__float-right">
+                <a
+                  class="govuk-link--no-visited-state govuk-!-margin-right-6"
+                  href="#"
+                  (click)="deleteQualification(qualification, $event)"
+                  >Delete</a
+                >
+                <a class="govuk-link--no-visited-state" [routerLink]="['../qualification', qualification.uid]"
+                  >Change</a
+                >
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
 </ng-container>
