@@ -754,10 +754,11 @@ const updateEstablishmentsSheet = (
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
+
         case 'C': {
           putString(
             cellToChange,
-            establishmentArray[row].NmdsID
+            establishmentArray[row].SubsidiarySharingPermissions
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -765,7 +766,7 @@ const updateEstablishmentsSheet = (
         case 'D': {
           putString(
             cellToChange,
-            establishmentArray[row].SubsidiarySharingPermissions
+            establishmentArray[row].NmdsID
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
