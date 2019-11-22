@@ -20,6 +20,7 @@ export class TrainingComponent implements OnInit {
   public lastUpdated: moment.Moment;
   public trainingRecords: TrainingRecord[] = [];
   public trainingDetails = [];
+  public trainingDetailsLabel = [];
 
   constructor(
     private workerService: WorkerService,
@@ -92,5 +93,6 @@ export class TrainingComponent implements OnInit {
   public toggleDetails(index: number, event) {
     event.preventDefault();
     this.trainingDetails[index] = !this.trainingDetails[index];
+    this.trainingDetailsLabel[index] = this.trainingDetailsLabel[index] === 'Close' ? 'Open' : 'Close';
   }
 }
