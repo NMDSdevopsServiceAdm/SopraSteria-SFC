@@ -130,3 +130,8 @@ export interface WorkersResponse {
 export interface WorkerEditResponse {
   uid: string;
 }
+
+export enum SelectRecordTypes {
+  Training = 'Training course',
+  Qualification = 'Qualification',
+}
