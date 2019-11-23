@@ -10,10 +10,9 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-
-import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
 
 @Component({
   selector: 'app-training-and-qualifications-record',
@@ -22,10 +21,14 @@ import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-work
 export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
   public canDeleteWorker: boolean;
   public canEditWorker: boolean;
-  public returnToQuals: URLStructure;
-  public returnToRecord: URLStructure;
+  public returnToQualifications: URLStructure;
+  public returnToTraining: URLStructure;
   public worker: Worker;
   public workplace: Establishment;
+  public trainingAndQualsCount: number;
+  public trainingAlert: number;
+  public qualificationsCount: number;
+  public trainingCount: number;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -47,14 +50,31 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe(worker => {
         this.worker = worker;
-        this.returnToRecord = {
-          url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
-          fragment: 'staff-record',
-        };
-        this.returnToQuals = {
-          url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
-          fragment: 'qualifications-and-training',
-        };
+        this.qualificationsCount = 0;
+        this.trainingCount = 0;
+        this.trainingAndQualsCount = 0;
+        //get qualification count
+        this.workerService.getQualifications(this.workplace.uid, this.worker.uid).subscribe(
+          qual => {
+            this.qualificationsCount = qual.qualifications.length;
+          },
+          error => {
+            console.error(error.error);
+          }
+        );
+        //get trainging count and flag
+        this.workerService
+          .getTrainingRecords(this.workplace.uid, this.worker.uid)
+          .pipe(take(1))
+          .subscribe(
+            training => {
+              this.trainingCount = training.count;
+              this.trainingAlert = this.getTrainingFlag(training.training);
+            },
+            error => {
+              console.error(error.error);
+            }
+          );
       })
     );
 
@@ -70,18 +90,33 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  public getTrainingFlag(traingRecords) {
+    let expired = false;
+    let expiring = false;
+
+    const currentDate = moment();
+    //check traingin status
+    traingRecords.forEach(training => {
+      if (training.expires) {
+        const expiringDate = moment(training.expires);
+        if (currentDate > expiringDate) {
+          expired = true;
+        } else if (expiringDate.diff(currentDate, 'days') <= 90) {
+          expiring = true;
+        }
+      }
+    });
+    // return for flag value
+    if (expired) {
+      return 2;
+    } else if (expiring) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
-  deleteWorker(event) {
-    event.preventDefault();
-    this.dialogService.open(DeleteWorkerDialogComponent, {
-      worker: this.worker,
-      workplace: this.workplace,
-      primaryWorkplaceUid: this.route.parent.snapshot.data.primaryWorkplace
-        ? this.route.parent.snapshot.data.primaryWorkplace.uid
-        : null,
-    });
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }

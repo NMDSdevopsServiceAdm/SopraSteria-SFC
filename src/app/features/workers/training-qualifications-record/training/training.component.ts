@@ -70,7 +70,7 @@ export class TrainingComponent implements OnInit {
       );
   }
   /**
-   * Function used to get traingin status by comparing expiring date
+   * Function used to get training status by comparing expiring date
    * @param {date} exptire date
    * @return {number} 0 for up-to-date, 1 for expiring soon and 2 for expired.
    */

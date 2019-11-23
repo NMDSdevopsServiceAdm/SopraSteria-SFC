@@ -3,11 +3,13 @@
     <div class="govuk-grid-column-one-half">
       <h1 class="govuk-heading-xl">
         <span class="govuk-caption-xl">{{ worker.nameOrId }}</span>
-        <h2 class="govuk-heading-m">Training and qualifications (0)</h2>
+        <h2 class="govuk-heading-m">
+          Training and qualifications ({{ this.trainingCount + this.qualificationsCount }})
+        </h2>
       </h1>
     </div>
     <div class="govuk-grid-column-one-half govuk-util__align-right">
-      <button class="govuk-button govuk-button--link" (click)="deleteWorker($event)">
+      <button class="govuk-button govuk-button--link">
         Staff record summary
       </button>
       <a
@@ -23,7 +25,7 @@
   </div>
 
   <app-tabs>
-    <app-tab [title]="'Training'">
+    <app-tab [alert]="trainingAlert === 1" [redAlert]="trainingAlert === 2" [title]="'Training'">
       <app-training [workplace]="workplace" [worker]="worker"></app-training>
     </app-tab>
     <app-tab [title]="'Qualifications'">
