@@ -45,12 +45,16 @@
               </div>
               <div class="govuk-grid-column-one-quarter-list__actions govuk-util__float-right">
                 <a
+                  *ngIf="canEditWorker"
                   class="govuk-link--no-visited-state govuk-!-margin-right-6"
                   href="#"
                   (click)="deleteQualification(qualification, $event)"
                   >Delete</a
                 >
-                <a class="govuk-link--no-visited-state" [routerLink]="['../qualification', qualification.uid]"
+                <a
+                  *ngIf="canEditWorker"
+                  class="govuk-link--no-visited-state"
+                  [routerLink]="['../qualification', qualification.uid]"
                   >Change</a
                 >
               </div>

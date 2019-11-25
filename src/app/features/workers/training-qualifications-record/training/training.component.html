@@ -66,12 +66,18 @@
               </div>
               <div class="govuk-grid-column-one-quarter-list__actions govuk-util__float-right">
                 <a
+                  *ngIf="canEditWorker"
                   class="govuk-link--no-visited-state govuk-!-margin-right-6"
                   href="#"
                   (click)="deleteTrainingRecord(trainingRecord, $event)"
                   >Delete</a
                 >
-                <a class="govuk-link--no-visited-state" [routerLink]="['../training', trainingRecord.uid]">Change</a>
+                <a
+                  *ngIf="canEditWorker"
+                  class="govuk-link--no-visited-state"
+                  [routerLink]="['../training', trainingRecord.uid]"
+                  >Change</a
+                >
               </div>
             </div>
             <div class="govuk-grid-row govuk-!-margin-2">

@@ -29,22 +29,12 @@
       </a>
     </div>
   </div>
-
-  <app-tabs>
-    <app-tab [title]="'Staff Record'">
-      <app-basic-record [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-basic-record>
-      <app-personal-details [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-personal-details>
-      <app-employment [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-employment>
-    </app-tab>
-    <app-tab [title]="'Qualifications and training'">
-      <app-qualifications-and-training
-        [workplace]="workplace"
-        [worker]="worker"
-        [return]="returnToQuals"
-        [showAddButtons]="true"
-      ></app-qualifications-and-training>
-      <app-qualifications [workplace]="workplace" [worker]="worker"></app-qualifications>
-      <app-training [workplace]="workplace" [worker]="worker"></app-training>
-    </app-tab>
-  </app-tabs>
+  <app-basic-record [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-basic-record>
+  <app-personal-details [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-personal-details>
+  <app-employment [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-employment>
+  <app-qualifications-and-training
+    [workplace]="workplace"
+    [worker]="worker"
+    [return]="returnToRecord"
+  ></app-qualifications-and-training>
 </ng-container>
