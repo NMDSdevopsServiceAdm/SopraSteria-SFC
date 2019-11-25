@@ -2,11 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -21,8 +19,6 @@ import { take } from 'rxjs/operators';
 export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
   public canDeleteWorker: boolean;
   public canEditWorker: boolean;
-  public returnToQualifications: URLStructure;
-  public returnToTraining: URLStructure;
   public worker: Worker;
   public workplace: Establishment;
   public trainingAndQualsCount: number;
@@ -35,7 +31,6 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
   constructor(
     private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
-    private dialogService: DialogService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
@@ -59,39 +54,49 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
+  //This method is used to set training & qualifications list and their counts and alret flag
   public setTrainingAndQualifications() {
     this.subscriptions.add(
-      this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-        this.worker = worker;
-        this.qualificationsCount = 0;
-        this.trainingCount = 0;
-        this.trainingAndQualsCount = 0;
-        //get qualification count
-        this.workerService.getQualifications(this.workplace.uid, this.worker.uid).subscribe(
-          qual => {
-            this.qualificationsCount = qual.qualifications.length;
-          },
-          error => {
-            console.error(error.error);
-          }
-        );
-        //get trainging count and flag
-        this.workerService
-          .getTrainingRecords(this.workplace.uid, this.worker.uid)
-          .pipe(take(1))
-          .subscribe(
-            training => {
-              this.trainingCount = training.count;
-              this.trainingAlert = this.getTrainingFlag(training.training);
+      this.workerService.worker$.pipe(take(1)).subscribe(
+        worker => {
+          this.worker = worker;
+          this.qualificationsCount = 0;
+          this.trainingCount = 0;
+          this.trainingAndQualsCount = 0;
+          //get qualification count
+          this.workerService.getQualifications(this.workplace.uid, this.worker.uid).subscribe(
+            qual => {
+              this.qualificationsCount = qual.qualifications.length;
             },
             error => {
               console.error(error.error);
             }
           );
-      })
+          //get trainging count and flag
+          this.workerService
+            .getTrainingRecords(this.workplace.uid, this.worker.uid)
+            .pipe(take(1))
+            .subscribe(
+              training => {
+                this.trainingCount = training.count;
+                this.trainingAlert = this.getTrainingFlag(training.training);
+              },
+              error => {
+                console.error(error.error);
+              }
+            );
+        },
+        error => {
+          console.error(error.error);
+        }
+      )
     );
   }
-
+  /**
+   * Function used to set training alert flag over the traing and qualifications tab
+   * @param {traingRecords} list of trainging record
+   * @return {number} 0 for up-to-date, 1 for expiring soon and 2 for expired.
+   */
   public getTrainingFlag(traingRecords) {
     let expired = false;
     let expiring = false;
@@ -117,7 +122,7 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
       return 0;
     }
   }
-
+  //event handler from traingin and qualification component.
   public trainingAndQualificationsChangedHandler(refresh) {
     if (refresh) {
       this.setTrainingAndQualifications();
