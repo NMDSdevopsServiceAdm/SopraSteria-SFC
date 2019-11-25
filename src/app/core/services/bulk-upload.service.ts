@@ -174,7 +174,7 @@ export class BulkUploadService {
   }
 
   public complete(workplaceUid: string) {
-    return this.checkLockStatus(() => this.http.post(`/api/establishment/${workplaceUid}/bulkupload/complete`), {
+    return this.checkLockStatus(() => this.http.post(`/api/establishment/${workplaceUid}/bulkupload/complete`, null), {
       observe: 'body',
       responseType: 'json',
     });
