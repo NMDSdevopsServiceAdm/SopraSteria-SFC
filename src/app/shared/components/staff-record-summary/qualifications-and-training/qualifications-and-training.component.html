@@ -2,22 +2,6 @@
   <div class="govuk-grid-column-one-half-from-desktop">
     <h2 class="govuk-heading-m">Qualifications and training</h2>
   </div>
-  <div *ngIf="showAddButtons && canEditWorker" class="govuk-grid-column-one-half-from-desktop govuk-util__align-right">
-    <a
-      class="govuk-button govuk-button--secondary govuk-!-margin-right-4"
-      [routerLink]="['../add-qualification']"
-      role="button"
-      draggable="false"
-    >
-      Add a qualification
-    </a>
-    <a class="govuk-button govuk-button--secondary" [routerLink]="['../add-training']" role="button" draggable="false">
-      Add training
-    </a>
-    <p class="govuk-caption-m">
-      Adding additional qualifications or training is optional.
-    </p>
-  </div>
 </div>
 
 <dl class="govuk-summary-list govuk-summary-list--top-border">
