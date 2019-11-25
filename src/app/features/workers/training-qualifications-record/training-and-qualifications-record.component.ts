@@ -17,8 +17,8 @@ import { take } from 'rxjs/operators';
   templateUrl: './training-and-qualifications-record.component.html',
 })
 export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
-  public canDeleteWorker: boolean;
   public canEditWorker: boolean;
+  public canViewWorker: boolean;
   public worker: Worker;
   public workplace: Establishment;
   public trainingAndQualsCount: number;
@@ -46,12 +46,13 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
       this.workerService.alert$.subscribe(alert => {
         if (alert) {
           this.alertService.addAlert(alert);
+          this.workerService.alert = null;
         }
       })
     );
 
-    this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+    this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
   }
 
   //This method is used to set training & qualifications list and their counts and alret flag

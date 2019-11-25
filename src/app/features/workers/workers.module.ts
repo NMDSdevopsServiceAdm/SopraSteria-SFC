@@ -68,8 +68,6 @@ import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-su
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
-//import { QualificationsComponent } from './staff-record/qualifications/qualifications.component';
-//import { TrainingComponent } from './staff-record/training/training.component';
 @NgModule({
   imports: [CommonModule, OverlayModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
   declarations: [
