@@ -49,6 +49,8 @@ const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
 // This function can't be an express middleware as it needs to run both before and after the regular logic
 const acquireLock = async function (logic, newState, req, res) {
   const { establishmentId } = req;
+  
+  req.startTime = (new Date()).toISOString();
 
   console.log(`Acquiring lock for establishment ${establishmentId}.`);
 
@@ -303,6 +305,9 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
     Bucket,
     Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
     Body: JSON.stringify({
+      url: req.url,
+      startTime: req.startTime,
+      endTime: (new Date()).toISOString(),
       responseCode: statusCode,
       responseBody: body,
       responseHeaders: (typeof headers === 'object' ? headers : undefined)
@@ -2449,7 +2454,7 @@ const downloadGet = async (req, res) => {
         responseSend
       );
 
-      await saveResponse(req, res, 200, responseText.join(), {
+      await saveResponse(req, res, 200, responseText.join(''), {
         'Content-Type': 'text/csv',
         'Content-disposition': `attachment; filename=${new Date().toISOString().split('T')[0]}-sfc-bulk-upload-${downloadType}.csv`
       });
