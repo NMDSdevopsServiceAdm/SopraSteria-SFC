@@ -225,7 +225,7 @@ export class BulkUploadService {
           )
           .pipe(take(1))
           .pipe(
-            map(async (request: any) => {
+            map((request: any) => {
               console.log(request);
               requestId = request.requestId;
               return interval(1000).pipe(
@@ -239,7 +239,7 @@ export class BulkUploadService {
                     )
                     .pipe(take(1))
                     .pipe(
-                      map(async state => {
+                      map(state => {
                         console.log(state.bulkUploadLockHeld);
                         return this.http.get<any>(
                           `/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`
