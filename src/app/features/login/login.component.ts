@@ -128,7 +128,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
           this.authService.clearPreviousUser();
 
-          if (response.body.migratedUserFirstLogon) {
+          if (response.body.migratedUserFirstLogon || !response.body.agreedUpdatedTerms) {
             this.router.navigate(['/migrated-user-terms-and-conditions']);
           }
         },
