@@ -215,42 +215,22 @@ export class BulkUploadService {
   private checkLockStatus(callback): Observable<any> {
     const establishmentUid = this.establishmentService.establishmentId;
     let requestId;
-    return interval(1000).pipe(
-      concatMap(() =>
-        from(callback())
-          .pipe(
-            filter((request: any) => {
-              return typeof request.requestId === 'string';
-            })
-          )
-          .pipe(take(1))
-          .pipe(
-            map((request: any) => {
-              console.log(request);
-              requestId = request.requestId;
-              return interval(1000).pipe(
-                concatMap(() =>
-                  from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`))
-                    .pipe(
-                      filter(state => {
-                        console.log(state);
-                        return state.bulkUploadLockHeld === false;
-                      })
-                    )
-                    .pipe(take(1))
-                    .pipe(
-                      map(state => {
-                        console.log(state.bulkUploadLockHeld);
-                        return this.http.get<any>(
-                          `/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`
-                        );
-                      })
-                    )
-                )
-              );
-            })
-          )
-      )
-    );
+
+    return interval(1000).
+      pipe(concatMap(() => from(callback()))).
+      pipe(filter((request: any) => typeof request.requestId === 'string')).
+      pipe(take(1)).
+      pipe(map((request: any) => {
+        requestId = request.requestId;
+      })).
+      pipe(concatMap(() => 
+        interval(1000).
+          pipe(concatMap(() => from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`))))
+      )).
+      pipe(filter(state => state.bulkUploadLockHeld === false)).
+      pipe(take(1)).
+      pipe(concatMap(() => from(this.http.get<any>(
+        `/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`
+      ))));
   }
 }
