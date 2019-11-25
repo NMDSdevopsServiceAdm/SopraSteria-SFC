@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Qualification } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
@@ -18,6 +18,7 @@ import { take } from 'rxjs/operators';
 export class QualificationsComponent implements OnInit {
   @Input() worker: Worker;
   @Input() workplace: Establishment;
+  @Output() qualificationsChanged: EventEmitter<boolean> = new EventEmitter();
   public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
   public qualifications: Qualification[];
@@ -47,6 +48,7 @@ export class QualificationsComponent implements OnInit {
         this.workerService.deleteQualification(this.workplace.uid, this.worker.uid, record.uid).subscribe(() => {
           this.workerService.alert = { type: 'success', message: 'Qualification has been deleted' };
           this.fetchAllRecords();
+          this.qualificationsChanged.emit(true);
         });
       }
     });
