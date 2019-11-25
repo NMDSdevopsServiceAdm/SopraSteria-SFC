@@ -18,7 +18,7 @@ import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, from, interval, Observable } from 'rxjs';
-import { concatMap, filter, map, take, tap } from 'rxjs/operators';
+import { concatMap, filter, map, startWith, take, tap } from 'rxjs/operators';
 
 import { UserService } from './user.service';
 
@@ -112,22 +112,19 @@ export class BulkUploadService {
 
   public getUploadedFiles(workplaceUid: string): Observable<ValidatedFile[]> {
     return this.checkLockStatus(
-      () =>
-        this.http
-          .get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`)
-          .pipe(map(response => response.files)),
+      () => this.http.get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`),
       undefined
-    );
+    ).pipe(map(response => response.files));
   }
 
   public getUploadedFileSignedURL(workplaceUid: string, key: string): Observable<string> {
     return this.checkLockStatus(
       () =>
-        this.http
-          .get<UploadedFilesRequestToDownloadResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded/${key}`)
-          .pipe(map(response => response.file.signedUrl)),
+        this.http.get<UploadedFilesRequestToDownloadResponse>(
+          `/api/establishment/${workplaceUid}/bulkupload/uploaded/${key}`
+        ),
       undefined
-    );
+    ).pipe(map(response => response.file.signedUrl));
   }
 
   public validateFiles(workplaceUid: string): Observable<ValidatedFilesResponse> {
@@ -237,6 +234,7 @@ export class BulkUploadService {
     let requestId;
 
     return interval(1000)
+      .pipe(startWith(0))
       .pipe(concatMap(() => from(callback())))
       .pipe(filter((request: any) => typeof request.requestId === 'string'))
       .pipe(take(1))
@@ -247,11 +245,13 @@ export class BulkUploadService {
       )
       .pipe(
         concatMap(() =>
-          interval(1000).pipe(
-            concatMap(() =>
-              from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`))
+          interval(1000)
+            .pipe(startWith(0))
+            .pipe(
+              concatMap(() =>
+                from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`))
+              )
             )
-          )
         )
       )
       .pipe(filter(state => state.bulkUploadLockHeld === false))
