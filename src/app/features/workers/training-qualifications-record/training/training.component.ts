@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecord } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
@@ -16,6 +16,7 @@ import { take } from 'rxjs/operators';
 export class TrainingComponent implements OnInit {
   @Input() worker: Worker;
   @Input() workplace: Establishment;
+  @Output() trainingChanged: EventEmitter<boolean> = new EventEmitter();
   public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
   public trainingRecords: TrainingRecord[] = [];
@@ -47,6 +48,7 @@ export class TrainingComponent implements OnInit {
           .subscribe(() => {
             this.workerService.alert = { type: 'success', message: 'Training has been deleted' };
             this.fetchAllRecords();
+            this.trainingChanged.emit(true);
           });
       }
     });

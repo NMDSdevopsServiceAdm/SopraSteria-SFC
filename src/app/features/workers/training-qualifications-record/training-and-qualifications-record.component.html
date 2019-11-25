@@ -26,10 +26,18 @@
 
   <app-tabs>
     <app-tab [alert]="trainingAlert === 1" [redAlert]="trainingAlert === 2" [title]="'Training'">
-      <app-training [workplace]="workplace" [worker]="worker"></app-training>
+      <app-training
+        [workplace]="workplace"
+        [worker]="worker"
+        (trainingChanged)="trainingAndQualificationsChangedHandler($event)"
+      ></app-training>
     </app-tab>
     <app-tab [title]="'Qualifications'">
-      <app-qualifications [workplace]="workplace" [worker]="worker"></app-qualifications>
+      <app-qualifications
+        [workplace]="workplace"
+        [worker]="worker"
+        (qualificationsChanged)="trainingAndQualificationsChangedHandler($event)"
+      ></app-qualifications>
     </app-tab>
   </app-tabs>
 </ng-container>

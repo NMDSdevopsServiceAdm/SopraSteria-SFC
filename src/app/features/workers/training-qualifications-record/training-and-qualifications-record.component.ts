@@ -46,7 +46,20 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     this.workplace = this.route.parent.snapshot.data.establishment;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
+    this.setTrainingAndQualifications();
+    this.subscriptions.add(
+      this.workerService.alert$.subscribe(alert => {
+        if (alert) {
+          this.alertService.addAlert(alert);
+        }
+      })
+    );
 
+    this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
+    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+  }
+
+  public setTrainingAndQualifications() {
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe(worker => {
         this.worker = worker;
@@ -77,17 +90,6 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
           );
       })
     );
-
-    this.subscriptions.add(
-      this.workerService.alert$.subscribe(alert => {
-        if (alert) {
-          this.alertService.addAlert(alert);
-        }
-      })
-    );
-
-    this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
-    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
   public getTrainingFlag(traingRecords) {
@@ -113,6 +115,12 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
       return 1;
     } else {
       return 0;
+    }
+  }
+
+  public trainingAndQualificationsChangedHandler(refresh) {
+    if (refresh) {
+      this.setTrainingAndQualifications();
     }
   }
 
