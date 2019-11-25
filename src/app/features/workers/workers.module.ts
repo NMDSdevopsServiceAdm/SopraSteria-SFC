@@ -19,9 +19,13 @@ import { CareCertificateComponent } from './care-certificate/care-certificate.co
 import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
-import { CreateBasicRecordsStartScreenComponent } from './create-basic-records-start-screen/create-basic-records-start-screen.component';
+import {
+  CreateBasicRecordsStartScreenComponent,
+} from './create-basic-records-start-screen/create-basic-records-start-screen.component';
 import { CreateBasicRecordsComponent } from './create-basic-records/create-basic-records.component';
-import { CreateStaffRecordStartScreenComponent } from './create-staff-record-start-screen/create-staff-record-start-screen.component';
+import {
+  CreateStaffRecordStartScreenComponent,
+} from './create-staff-record-start-screen/create-staff-record-start-screen.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteQualificationDialogComponent } from './delete-qualification-dialog/delete-qualification-dialog.component';
@@ -43,20 +47,26 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level/
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
-import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
+import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
+import {
+  SocialCareQualificationLevelComponent,
+} from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffComponent } from './total-staff/total-staff.component';
 import { QualificationsComponent } from './training-qualifications-record/qualifications/qualifications.component';
-import { TrainingAndQualificationsRecordComponent } from './training-qualifications-record/training-and-qualifications-record.component';
+import {
+  TrainingAndQualificationsRecordComponent,
+} from './training-qualifications-record/training-and-qualifications-record.component';
 import { TrainingComponent } from './training-qualifications-record/training/training.component';
-import { WdfWorkerConfirmationDialogComponent } from './wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
+import {
+  WdfWorkerConfirmationDialogComponent,
+} from './wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
 
 //import { QualificationsComponent } from './staff-record/qualifications/qualifications.component';
 //import { TrainingComponent } from './staff-record/training/training.component';
