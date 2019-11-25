@@ -2,7 +2,6 @@ import { HttpEventType } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
-  BulkUploadStatus,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   UploadFileRequestItem,
@@ -44,7 +43,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.setupForm();
     this.checkForUploadedFiles();
-    this.checkBulkUploadState();
+    // this.checkBulkUploadState();
   }
 
   ngAfterViewInit() {
@@ -61,18 +60,6 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group({
       fileUpload: [null, Validators.required],
     });
-  }
-
-  private checkBulkUploadState(): void {
-    this.subscriptions.add(
-      this.bulkUploadService
-        .getCurrentStatus(this.establishmentService.primaryWorkplace.uid)
-        .subscribe((response: BulkUploadStatus) => {
-          if (response) {
-            this.bulkUploadStatus = response.bulkUploadState;
-          }
-        })
-    );
   }
 
   private checkForUploadedFiles(): void {

@@ -81,43 +81,20 @@ export class BulkUploadService {
     this.returnTo$.next(returnTo);
   }
 
-  public getCurrentStatus(workplaceUid: string): Observable<BulkUploadStatus> {
-    return this.http.get<BulkUploadStatus>(`/api/establishment/${workplaceUid}/bulkupload/lockstatus`);
-  }
-
   public getPresignedUrls(payload: PresignedUrlsRequest): Observable<PresignedUrlResponseItem[]> {
-    return this.http
-      .post<BulkUploadLock>(
+    return this.checkLockStatus(() =>
+      this.http.post<BulkUploadLock>(
         `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/uploaded`,
         payload
       )
-      .pipe(
-        concatMap(lock => {
-          return this.http.get<PresignedUrlResponseItem[]>(
-            `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/response/${lock.requestId}`
-          );
-        })
-      );
+    );
   }
 
   public uploadFile(file: File, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
-    const establishmentUid = this.establishmentService.primaryWorkplace.uid;
     console.log('Trying to upload');
-    return interval(1000).pipe(
-      concatMap(() =>
-        from(this.getCurrentStatus(establishmentUid))
-          .pipe(filter(state => state.bulkUploadState === 'READY'))
-          .pipe(take(1))
-          .pipe(
-            map(state => {
-              if (state.bulkUploadState === 'READY') {
-                console.log(state.bulkUploadState);
-                return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
-              }
-            })
-          )
-      )
+    return this.checkLockStatus(() =>
+      this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' })
     );
   }
 
@@ -233,5 +210,47 @@ export class BulkUploadService {
         message: 'There is a problem with the service.',
       },
     ];
+  }
+
+  private checkLockStatus(callback): Observable<any> {
+    const establishmentUid = this.establishmentService.establishmentId;
+    let requestId;
+    return interval(1000).pipe(
+      concatMap(() =>
+        from(callback())
+          .pipe(
+            filter((request: any) => {
+              return typeof request.requestId === 'string';
+            })
+          )
+          .pipe(take(1))
+          .pipe(
+            map(async (request: any) => {
+              console.log(request);
+              requestId = request.requestId;
+              return interval(1000).pipe(
+                concatMap(() =>
+                  from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`))
+                    .pipe(
+                      filter(state => {
+                        console.log(state);
+                        return state.bulkUploadLockHeld === false;
+                      })
+                    )
+                    .pipe(take(1))
+                    .pipe(
+                      map(async state => {
+                        console.log(state.bulkUploadLockHeld);
+                        return this.http.get<any>(
+                          `/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`
+                        );
+                      })
+                    )
+                )
+              );
+            })
+          )
+      )
+    );
   }
 }
