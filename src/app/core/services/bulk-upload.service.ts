@@ -93,9 +93,7 @@ export class BulkUploadService {
   public uploadFile(file: File, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
     console.log('Trying to upload');
-    return this.checkLockStatus(() =>
-      this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' })
-    );
+    return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
   }
 
   public getFileType(fileName: string): string {
@@ -104,30 +102,40 @@ export class BulkUploadService {
   }
 
   public preValidateFiles(workplaceUid: string): Observable<ValidatedFile[]> {
-    return this.http.put<ValidatedFile[]>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`, null);
+    return this.checkLockStatus(() =>
+      this.http.put<ValidatedFile[]>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`, null)
+    );
   }
 
   public getUploadedFiles(workplaceUid: string): Observable<ValidatedFile[]> {
-    return this.http
-      .get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`)
-      .pipe(map(response => response.files));
+    return this.checkLockStatus(() =>
+      this.http
+        .get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`)
+        .pipe(map(response => response.files))
+    );
   }
 
   public getUploadedFileSignedURL(workplaceUid: string, key: string): Observable<string> {
-    return this.http
-      .get<UploadedFilesRequestToDownloadResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded/${key}`)
-      .pipe(map(response => response.file.signedUrl));
+    return this.checkLockStatus(() =>
+      this.http
+        .get<UploadedFilesRequestToDownloadResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded/${key}`)
+        .pipe(map(response => response.file.signedUrl))
+    );
   }
 
   public validateFiles(workplaceUid: string): Observable<ValidatedFilesResponse> {
-    return this.http.put<ValidatedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/validate`, null);
+    return this.checkLockStatus(() =>
+      this.http.put<ValidatedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/validate`, null)
+    );
   }
 
   public getReport(workplaceUid: string, reportType: ReportTypeRequestItem): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/report/${reportType}`, {
-      observe: 'response',
-      responseType: 'blob' as 'json',
-    });
+    return this.checkLockStatus(() =>
+      this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/report/${reportType}`, {
+        observe: 'response',
+        responseType: 'blob' as 'json',
+      })
+    );
   }
 
   public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
@@ -150,17 +158,21 @@ export class BulkUploadService {
         url = 'training';
         break;
     }
-    return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/download/${url}`, {
-      observe: 'response',
-      responseType: 'blob' as 'json',
-    });
+    return this.checkLockStatus(() =>
+      this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/download/${url}`, {
+        observe: 'response',
+        responseType: 'blob' as 'json',
+      })
+    );
   }
 
   public complete(workplaceUid: string) {
-    return this.http.post(`/api/establishment/${workplaceUid}/bulkupload/complete`, {
-      observe: 'body',
-      responseType: 'json',
-    });
+    return this.checkLockStatus(() =>
+      this.http.post(`/api/establishment/${workplaceUid}/bulkupload/complete`, {
+        observe: 'body',
+        responseType: 'json',
+      })
+    );
   }
 
   public resetBulkUpload(): void {
