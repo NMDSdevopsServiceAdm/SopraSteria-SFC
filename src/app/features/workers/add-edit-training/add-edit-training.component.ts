@@ -275,9 +275,9 @@ export class AddEditTrainingComponent implements OnInit {
       .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
       .then(() => {
         if (this.trainingRecordId) {
-          this.workerService.alert = { type: 'success', message: 'Training has been saved' };
+          this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
         } else {
-          this.workerService.alert = { type: 'success', message: 'Training has been added' };
+          this.workerService.alert = { type: 'success', message: 'Training has been added.' };
         }
       });
   }

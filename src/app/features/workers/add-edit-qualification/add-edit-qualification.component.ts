@@ -255,9 +255,9 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
       .then(() => {
         if (this.qualificationId) {
-          this.workerService.alert = { type: 'success', message: 'Qualification has been saved' };
+          this.workerService.alert = { type: 'success', message: 'Qualification has been saved.' };
         } else {
-          this.workerService.alert = { type: 'success', message: 'Qualification has been added' };
+          this.workerService.alert = { type: 'success', message: 'Qualification has been added.' };
         }
       });
   }
