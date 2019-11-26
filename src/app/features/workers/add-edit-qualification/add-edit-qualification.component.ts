@@ -28,6 +28,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
+  public previousUrl: string;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -56,10 +57,13 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.qualificationId = this.route.snapshot.params.qualificationId;
 
+    this.workerService.getRoute$.subscribe(route => {
+      if (route) {
+        this.previousUrl = route;
+      }
+    });
     this.backService.setBackLink({
-      url: [
-        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/select-record-type`,
-      ],
+      url: [this.previousUrl],
     });
 
     Object.keys(QualificationType).forEach(key => {
