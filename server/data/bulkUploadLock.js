@@ -3,7 +3,7 @@
 const db = rfr('server/utils/datastore');
 
 module.exports = {
-  attemptToAcquireLock: async establishmentId =>
+  attemptToAcquireLock: establishmentId =>
     db.query(`
       UPDATE
         cqc."Establishment"
@@ -19,7 +19,7 @@ module.exports = {
       type: db.QueryTypes.UPDATE
     }),
 
-  updateLockState: async (establishmentId, newState) =>
+  updateLockState: (establishmentId, newState) =>
     db.query(`
       UPDATE
         cqc."Establishment"
@@ -37,7 +37,7 @@ module.exports = {
     }
     ),
 
-  lockStatus: async establishmentId =>
+  lockStatus: establishmentId =>
     db.query(`
       SELECT
         "EstablishmentID" AS "establishmentId",
@@ -55,7 +55,7 @@ module.exports = {
     }
     ),
 
-  releaseLockQuery: async (establishmentId, nextState) => {
+  releaseLockQuery: (establishmentId, nextState) => {
     let query;
 
     if (nextState !== null) {
