@@ -187,7 +187,7 @@ const getWorkersReportData = async establishmentId => {
   const workerData = await getWorkerData(establishmentId);
   let workersArray = workerData.
       filter(worker => {
-        return (worker.DataOwner !== 'Parent' || worker.DataPermissions === "Workplace and Staff")
+        return (worker.DataOwner === 'Parent' || worker.DataPermissions === "Workplace and Staff")
       });
 
   workersArray.forEach((value, key) => {
@@ -696,7 +696,7 @@ const updateEstablishmentsSheet = (
   let establishmentReportData = [...reportData.establishments];
   let establishmentArray = establishmentReportData.
       filter(est => {
-        return (est.DataOwner !== 'Parent' || est.DataPermissions !== "None")
+        return (est.DataOwner === 'Parent' || est.DataPermissions !== "None")
       });
   if (establishmentArray.length > 1) {
     for (let i = 0; i < establishmentArray.length - 1; i++) {
