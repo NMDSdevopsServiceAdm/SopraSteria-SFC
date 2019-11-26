@@ -136,7 +136,6 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   private prepForUpload(response: PresignedUrlResponseItem[]): void {
     this.bytesUploaded = [];
     const request: UploadFileRequestItem[] = [];
-    console.log(response);
     this.selectedFiles.forEach((file: File) => {
       this.bytesTotal += file.size;
       this.bytesUploaded.push(0);

@@ -232,36 +232,41 @@ export class BulkUploadService {
   private checkLockStatus(callback, httpOptions): Observable<any> {
     const establishmentUid = this.establishmentService.establishmentId;
     let requestId;
-
-    return interval(1000)
-      .pipe(startWith(0))
-      .pipe(concatMap(() => from(callback())))
-      .pipe(filter((request: any) => typeof request.requestId === 'string'))
-      .pipe(take(1))
-      .pipe(
-        map((request: any) => {
-          requestId = request.requestId;
-        })
-      )
-      .pipe(
-        concatMap(() =>
-          interval(1000)
-            .pipe(startWith(0))
-            .pipe(
-              concatMap(() =>
-                from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`))
-              )
-            )
+    // Run function every second until lock aquired
+    return (
+      interval(1000)
+        // Start he function straight away rather than waiting for the first second
+        .pipe(startWith(0))
+        .pipe(concatMap(() => from(callback())))
+        // Don't go any further unless there's a request ID
+        .pipe(filter((request: any) => typeof request.requestId === 'string'))
+        .pipe(take(1))
+        .pipe(
+          map((request: any) => {
+            requestId = request.requestId;
+          })
         )
-      )
-      .pipe(filter(state => state.bulkUploadLockHeld === false))
-      .pipe(take(1))
-      .pipe(
-        concatMap(() =>
-          from(
-            this.http.get<any>(`/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`, httpOptions)
+        .pipe(
+          // Run serperate function to get the current lock status
+          concatMap(() =>
+            interval(1000)
+              .pipe(startWith(0))
+              .pipe(
+                concatMap(() =>
+                  from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`))
+                )
+              )
           )
         )
-      );
+        .pipe(filter(state => state.bulkUploadLockHeld === false))
+        .pipe(take(1))
+        .pipe(
+          concatMap(() =>
+            from(
+              this.http.get<any>(`/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`, httpOptions)
+            )
+          )
+        )
+    );
   }
 }
