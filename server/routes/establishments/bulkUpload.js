@@ -5,7 +5,6 @@ const csv = require('csvtojson');
 const uuid = require('uuid');
 
 const config = rfr('server/config/config');
-const db = rfr('server/utils/datastore');
 const dbModels = rfr('server/models');
 const timerLog = rfr('server/utils/timerLog');
 
@@ -24,6 +23,7 @@ const { Worker } = rfr('server/models/classes/worker');
 const { Qualification } = rfr('server/models/classes/qualification');
 const { Training } = rfr('server/models/classes/training');
 const { User } = rfr('server/models/classes/user');
+const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('server/data/bulkUploadLock');
 
 const buStates = [
   'READY',
@@ -49,26 +49,13 @@ const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
 // This function can't be an express middleware as it needs to run both before and after the regular logic
 const acquireLock = async function (logic, newState, req, res) {
   const { establishmentId } = req;
-  
+
   req.startTime = (new Date()).toISOString();
 
   console.log(`Acquiring lock for establishment ${establishmentId}.`);
 
   // attempt to acquire the lock
-  const currentLockState = await db.query(`
-    UPDATE
-      cqc."Establishment"
-    SET
-      "bulkUploadLockHeld" = true
-    WHERE
-      "EstablishmentID" = :establishmentId AND
-      "bulkUploadLockHeld" = false
-  `, {
-    replacements: {
-      establishmentId
-    },
-    type: db.QueryTypes.UPDATE
-  });
+  const currentLockState = await attemptToAcquireLock(establishmentId);
 
   // if no records were updated the lock could not be acquired
   // Just respond with a 409 http code and don't call the regular logic
@@ -123,21 +110,7 @@ const acquireLock = async function (logic, newState, req, res) {
   }
 
   // update the current state
-  await db.query(`
-    UPDATE
-      cqc."Establishment"
-    SET
-      "bulkUploadState" = :newState
-    WHERE
-      "EstablishmentID" = :establishmentId AND
-      "bulkUploadLockHeld" = true
-  `, {
-    replacements: {
-      establishmentId,
-      newState
-    },
-    type: db.QueryTypes.UPDATE
-  });
+  await updateLockState(establishmentId, newState);
 
   req.buRequestId = String(uuid()).toLowerCase();
 
@@ -172,23 +145,6 @@ const acquireLock = async function (logic, newState, req, res) {
   await releaseLock(req, null, null, nextState);
 };
 
-const lockStatus = async establishmentId => db.query(`
-  SELECT
-    "EstablishmentID" AS "establishmentId",
-    "bulkUploadState",
-    "bulkUploadLockHeld"
-  FROM
-    cqc."Establishment"
-  WHERE
-    "EstablishmentID" = :establishmentId`,
-{
-  replacements: {
-    establishmentId
-  },
-  type: db.QueryTypes.SELECT
-}
-);
-
 const lockStatusGet = async (req, res) => {
   const { establishmentId } = req;
 
@@ -212,36 +168,7 @@ const releaseLock = async (req, res, next, nextState = null) => {
   const establishmentId = req.query.subEstId || req.establishmentId;
 
   if (Number.isInteger(establishmentId)) {
-    let query;
-
-    if (nextState !== null) {
-      query = `
-        UPDATE
-          cqc."Establishment"
-        SET
-          "bulkUploadLockHeld" = false,
-          "bulkUploadState" = :nextState
-        WHERE
-          "EstablishmentID" = :establishmentId
-        `;
-    } else {
-      query = `
-        UPDATE
-          cqc."Establishment"
-        SET
-          "bulkUploadLockHeld" = false
-        WHERE
-          "EstablishmentID" = :establishmentId
-        `;
-    }
-
-    await db.query(query, {
-      replacements: {
-        establishmentId,
-        nextState
-      },
-      type: db.QueryTypes.UPDATE
-    });
+    await releaseLockQuery(establishmentId, nextState);
 
     console.log(`Lock released for establishment ${establishmentId}`);
   }
@@ -280,8 +207,7 @@ const responseGet = (req, res) => {
         }
 
         res.status(jsonData.responseCode).send(jsonData.responseBody);
-      }
-      else {
+      } else {
         console.log('bulkUpload::responseGet: Response code was not numeric', jsonData);
 
         throw new Error('Response code was not numeric');
