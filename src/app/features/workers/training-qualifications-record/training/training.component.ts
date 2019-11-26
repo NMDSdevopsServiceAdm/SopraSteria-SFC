@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecord } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
+import { Router } from '@angular/router';
 import { DialogService } from '@core/services/dialog.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -26,6 +27,7 @@ export class TrainingComponent implements OnInit {
   constructor(
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
+    private router: Router,
     private dialogService: DialogService
   ) {}
 
@@ -100,5 +102,9 @@ export class TrainingComponent implements OnInit {
     event.preventDefault();
     this.trainingDetails[index] = !this.trainingDetails[index];
     this.trainingDetailsLabel[index] = this.trainingDetailsLabel[index] === 'Close' ? 'Open' : 'Close';
+  }
+
+  public getRoute() {
+    this.workerService.getRoute$.next(this.router.url);
   }
 }
