@@ -87,7 +87,8 @@ const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,Service
 
 const getEstablishmentReportData = async establishmentId => {
   const establishmentData = await getEstablishmentData(establishmentId);
-  establishmentData.forEach(async (value, key) => {
+  for(let i = 0; i< establishmentData.length; i++) {
+    let value = establishmentData[i];
     let getServiceCapacityData = await getServiceCapacityDetails(value.MainServiceFKValue);
     if(getServiceCapacityData && getServiceCapacityData.length === 0){
       value.Capacities = 'N/A';
@@ -95,7 +96,7 @@ const getEstablishmentReportData = async establishmentId => {
     }else{
       let capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
       let utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
-      console.log(capicityDetails, utilisationDetails);
+
       if(capicityDetails && capicityDetails.length > 0){
         value.Capacities = capicityDetails[0].Answer;
       }else{
@@ -173,7 +174,7 @@ const getEstablishmentReportData = async establishmentId => {
       (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
         ? '0.0%'
         : `${parseFloat(+value.CompletedWorkerRecords / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
-  });
+  }
 
   return establishmentData;
 };
@@ -692,7 +693,8 @@ const updateEstablishmentsSheet = (
   const templateRow = establishmentsSheet.querySelector("row[r='11']");
   let currentRow = templateRow;
   let rowIndex = 12;
-  let establishmentArray = reportData.establishments.
+  let establishmentReportData = [...reportData.establishments];
+  let establishmentArray = establishmentReportData.
       filter(est => {
         return (est.DataOwner !== 'Parent' || est.DataPermissions !== "None")
       });
