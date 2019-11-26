@@ -30,6 +30,7 @@ export class AddEditTrainingComponent implements OnInit {
   public notesMaxLength = 1000;
   private titleMaxLength = 120;
   private subscriptions: Subscription = new Subscription();
+  public previousUrl: string;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -45,11 +46,13 @@ export class AddEditTrainingComponent implements OnInit {
     this.worker = this.workerService.worker;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
-
+    this.workerService.getRoute$.subscribe(route => {
+      if (route) {
+        this.previousUrl = route;
+      }
+    });
     this.backService.setBackLink({
-      url: [
-        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/select-record-type`,
-      ],
+      url: [this.previousUrl],
     });
 
     this.form = this.formBuilder.group({

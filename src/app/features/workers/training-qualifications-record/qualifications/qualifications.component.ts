@@ -3,11 +3,10 @@ import { Establishment } from '@core/model/establishment.model';
 import { Qualification } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
+import { Router } from '@angular/router';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  DeleteQualificationDialogComponent,
-} from '@features/workers/delete-qualification-dialog/delete-qualification-dialog.component';
+import { DeleteQualificationDialogComponent } from '@features/workers/delete-qualification-dialog/delete-qualification-dialog.component';
 import * as moment from 'moment';
 import { take } from 'rxjs/operators';
 
@@ -28,6 +27,7 @@ export class QualificationsComponent implements OnInit {
   constructor(
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
+    private router: Router,
     private dialogService: DialogService
   ) {}
 
@@ -70,5 +70,8 @@ export class QualificationsComponent implements OnInit {
     event.preventDefault();
     this.qualificationDetails[index] = !this.qualificationDetails[index];
     this.qualificationDetailsLabel[index] = this.qualificationDetailsLabel[index] === 'Close' ? 'Open' : 'Close';
+  }
+  public getRoute() {
+    this.workerService.getRoute$.next(this.router.url);
   }
 }
