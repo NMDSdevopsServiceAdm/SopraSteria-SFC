@@ -265,4 +265,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   private onError(error) {
     console.log(error);
   }
+  public navigateToPreviousPage() {
+    this.router.navigate([this.previousUrl]);
+  }
 }
