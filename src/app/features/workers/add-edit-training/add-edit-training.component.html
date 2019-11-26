@@ -157,7 +157,7 @@
       class="govuk-button govuk-button__link govuk-util__float-right"
       role="button"
       draggable="false"
-      [routerLink]="trainingRecordId ? ['../../'] : ['../training']"
+      (click)="navigateToPreviousPage()"
     >
       Cancel
     </a>
