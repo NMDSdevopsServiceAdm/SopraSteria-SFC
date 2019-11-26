@@ -316,4 +316,7 @@ export class AddEditTrainingComponent implements OnInit {
     }
     return null;
   }
+  public navigateToPreviousPage() {
+    this.router.navigate([this.previousUrl]);
+  }
 }
