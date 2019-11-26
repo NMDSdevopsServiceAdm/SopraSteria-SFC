@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecord } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
+import { Router } from '@angular/router';
 import { DialogService } from '@core/services/dialog.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
