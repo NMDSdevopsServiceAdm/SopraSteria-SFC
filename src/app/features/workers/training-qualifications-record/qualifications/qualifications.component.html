@@ -55,6 +55,7 @@
                   *ngIf="canEditWorker"
                   class="govuk-link--no-visited-state"
                   [routerLink]="['../qualification', qualification.uid]"
+                  (click)="getRoute()"
                   >Change</a
                 >
               </div>

@@ -39,7 +39,7 @@ export class WorkerService {
   public addStaffRecordInProgress$ = new BehaviorSubject<boolean>(false);
   public alert$: Observable<Alert> = this._alert$.asObservable();
   public worker$ = this._worker$.asObservable();
-
+  public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);

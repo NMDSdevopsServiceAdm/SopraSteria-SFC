@@ -5,6 +5,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SelectRecordTypes } from '@core/model/worker.model';
+import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-select-record-type',
@@ -17,6 +18,7 @@ export class SelectRecordTypeComponent implements OnInit {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
+    private workerService: WorkerService,
     protected router: Router
   ) {}
   public formErrorsMap: ErrorDetails[];
@@ -88,6 +90,7 @@ export class SelectRecordTypeComponent implements OnInit {
     }
     if (this.navigateUrl && this.form.value.selectRecordType !== null) {
       this.router.navigate([this.navigateUrl]);
+      this.workerService.getRoute$.next(this.router.url);
     }
   }
 }
