@@ -1,22 +1,21 @@
 <ng-container *ngIf="worker">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half">
-      <h1 class="govuk-heading-xl">
-        <span class="govuk-caption-xl">{{ worker.nameOrId }}</span>
-        <h2 class="govuk-heading-m">
-          Training and qualifications ({{ this.trainingCount + this.qualificationsCount }})
-        </h2>
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+        <span class="govuk-caption-xl govuk-!-margin-bottom-3">{{ worker.nameOrId }}</span>
+        Training and qualifications ({{ this.trainingCount + this.qualificationsCount }})
       </h1>
     </div>
-    <div class="govuk-grid-column-one-half govuk-util__align-right">
+
+    <div class="govuk-grid-column-one-third contact-col govuk-!-margin-top-8 govuk-util__float-right">
       <a
         *ngIf="canEditWorker"
-        class="govuk-button govuk-button--link"
+        class="govuk-button govuk-button--link govuk-!-margin-right-6"
         role="button"
         draggable="false"
         [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid]"
       >
-        Staff record summary
+        Staff record
       </a>
       <a
         *ngIf="canEditWorker"
@@ -29,7 +28,6 @@
       </a>
     </div>
   </div>
-
   <app-tabs>
     <app-tab [alert]="trainingAlert === 1" [redAlert]="trainingAlert === 2" [title]="'Training'">
       <app-training
