@@ -1411,14 +1411,14 @@ const validateBulkUploadFiles = async (
   // set the status based upon whether there were errors or warnings
   let status = buStates.FAILED;
   if ((
-    establishments.establishmentMetadata.errors.length +
-    workers.workerMetadata.errors.length +
-    training.trainingMetadata.errors.length) === 0
+    establishments.establishmentMetadata.errors +
+    workers.workerMetadata.errors +
+    training.trainingMetadata.errors) === 0
   ) {
     status = (
-      establishments.establishmentMetadata.warnings.length +
-    workers.workerMetadata.warnings.length +
-    training.trainingMetadata.warnings.length
+      establishments.establishmentMetadata.warnings +
+    workers.workerMetadata.warnings +
+    training.trainingMetadata.warnings
     ) === 0
       ? buStates.PASSED
       : buStates.WARNINGS;
