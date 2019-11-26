@@ -9,7 +9,7 @@ const walk = require('walk');
 const JsZip = require('jszip');
 
 const { Establishment } = require('../../../models/classes/establishment');
-const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData } = rfr('server/data/parentWDFReport');
+const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData, getServiceCapacityDetails } = rfr('server/data/parentWDFReport');
 
 // Constants string needed by this file in several places
 const folderName = 'template';
@@ -87,42 +87,26 @@ const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,Service
 
 const getEstablishmentReportData = async establishmentId => {
   const establishmentData = await getEstablishmentData(establishmentId);
-  establishmentData.forEach(async (value, key) => {
-    let capicityDetails = await getCapicityData(value.EstablishmentID);
-    let utilisationDetails = await getUtilisationData(value.EstablishmentID);
-    if(capicityDetails && capicityDetails.length > 0){
-      let foundMainService = false;
-      let answerKey = -1;
-      capicityDetails.forEach((capacity, key) => {
-        if(capacity.ServiceID === value.MainServiceFKValue){
-          foundMainService = true;
-          answerKey = key;
-        }
-      });
-      if(foundMainService){
-        value.Capacities = (capicityDetails[answerKey].Answer === null)? 'Missing': capicityDetails[answerKey].Answer;
-      }else{
-        value.Capacities = 'N/A';
-      }
+  for(let i = 0; i< establishmentData.length; i++) {
+    let value = establishmentData[i];
+    let getServiceCapacityData = await getServiceCapacityDetails(value.MainServiceFKValue);
+    if(getServiceCapacityData && getServiceCapacityData.length === 0){
+      value.Capacities = 'N/A';
+      value.Utilisations = 'N/A';
     }else{
-      value.Capacities = 'Missing';
-    }
-    if(utilisationDetails && utilisationDetails.length > 0){
-      let foundMainService = false;
-      let answerKey = -1;
-      utilisationDetails.forEach((utilisation, key) => {
-        if(utilisation.ServiceID === value.MainServiceFKValue){
-          foundMainService = true;
-          answerKey = key;
-        }
-      });
-      if(foundMainService){
-        value.Utilisations = (utilisationDetails[answerKey].Answer === null)? 'Missing': utilisationDetails[answerKey].Answer;
+      let capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
+      let utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
+
+      if(capicityDetails && capicityDetails.length > 0){
+        value.Capacities = capicityDetails[0].Answer;
       }else{
-        value.Utilisations = 'N/A';
+        value.Capacities = 'Missing';
       }
-    }else{
-      value.Utilisations = 'Missing';
+      if(utilisationDetails && utilisationDetails.length > 0){
+        value.Utilisations = utilisationDetails[0].Answer;
+      }else{
+        value.Utilisations = 'Missing';
+      }
     }
     if (value.ShareDataWithCQC && value.ShareDataWithLA) {
       value.SubsidiarySharingPermissions = 'All';
@@ -190,7 +174,7 @@ const getEstablishmentReportData = async establishmentId => {
       (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
         ? '0.0%'
         : `${parseFloat(+value.CompletedWorkerRecords / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
-  });
+  }
 
   return establishmentData;
 };
@@ -201,7 +185,10 @@ const updateProps = ('DateOfBirthValue,GenderValue,NationalityValue,MainJobStart
 
 const getWorkersReportData = async establishmentId => {
   const workerData = await getWorkerData(establishmentId);
-  let workersArray = workerData.filter(worker => worker.DataPermissions === "Workplace and Staff");
+  let workersArray = workerData.
+      filter(worker => {
+        return (worker.DataOwner === 'Parent' || worker.DataPermissions === "Workplace and Staff")
+      });
 
   workersArray.forEach((value, key) => {
     if(value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know"){
@@ -706,7 +693,11 @@ const updateEstablishmentsSheet = (
   const templateRow = establishmentsSheet.querySelector("row[r='11']");
   let currentRow = templateRow;
   let rowIndex = 12;
-  let establishmentArray = reportData.establishments.filter(est => est.DataPermissions !== "None");
+  let establishmentReportData = [...reportData.establishments];
+  let establishmentArray = establishmentReportData.
+      filter(est => {
+        return (est.DataOwner === 'Parent' || est.DataPermissions !== "None")
+      });
   if (establishmentArray.length > 1) {
     for (let i = 0; i < establishmentArray.length - 1; i++) {
       const tempRow = templateRow.cloneNode(true);
