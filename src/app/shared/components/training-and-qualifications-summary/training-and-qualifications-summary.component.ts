@@ -30,7 +30,11 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     //sorting by default on Status column (expiredTrainingCount)
     this.sortByColumn(this.sortByDefault);
   }
-
+  /**
+   * Function used to sort traingin list based on selected column
+   * @param {string} selected column key
+   * @return {void}
+   */
   public sortByColumn(selectedColumn: any) {
     switch (selectedColumn) {
       case '0_asc': {
