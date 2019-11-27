@@ -42,6 +42,11 @@ provider:
 # you can overwrite defaults here
 #  stage: dev
   region: eu-west-1
+  environment:
+    CQC_SQS_QUEUE: ${self:custom.sqsQueueUrl.${self:provider.stage}}
+    CQC_WALLET_ID: ${self:custom.wallet.${self:provider.stage}}
+    CQC_BUCKET: ${self:custom.bucket.${self:provider.stage}}
+    NODE_ENV: ${self:provider.stage}
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -60,11 +65,6 @@ provider:
 #            - "/*"
 
 # you can define service wide environment variables here
-environment:
-  CQC_SQS_QUEUE: ${self:custom.sqsQueueUrl.${self:provider.stage}}
-  CQC_WALLET_ID: ${self:custom.wallet.${self:provider.stage}}
-  CQC_BUCKET: ${self:custom.bucket.${self:provider.stage}}
-  NODE_ENV: ${self:provider.stage}
 
 # you can add packaging information here
 #package:
