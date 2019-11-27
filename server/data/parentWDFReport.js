@@ -10,6 +10,7 @@ SELECT
   "Establishment"."EstablishmentID",
   "NmdsID",
   "NameValue" AS "SubsidiaryName",
+  "DataOwner",
   "DataPermissions",
   "EmployerTypeValue",
   "EmployerTypeSavedAt",
@@ -24,6 +25,7 @@ SELECT
       cqc."Worker"
     WHERE
       "Worker"."EstablishmentFK" = "Establishment"."EstablishmentID"
+      and "Archived" = false
   ) AS "TotalIndividualWorkerRecord",
   (
     SELECT
@@ -111,20 +113,22 @@ ORDER BY
 
 const getCapicityOrUtilisationDataQuery =
 `SELECT
-    a."Answer", b."ServiceID", a."EstablishmentID", b."Type"
+    b."Answer"
   FROM
-    cqc."EstablishmentCapacity" AS a
+    cqc."ServicesCapacity" AS a
   JOIN
-    cqc."ServicesCapacity" AS b
+    cqc."EstablishmentCapacity" AS b
   ON
     a."ServiceCapacityID" = b."ServiceCapacityID"
-  JOIN
-    cqc."Establishment" c
-  ON
-    a."EstablishmentID" = c."EstablishmentID"
   WHERE
-    a."EstablishmentID" = :establishmentId AND
-    b."Type" = :type`;
+    b."EstablishmentID" = :establishmentId AND
+    "ServiceID" = :mainServiceId AND
+    a."Type" = :type`;
+
+const getServiceCapacityDetailsQuery =
+  `SELECT "ServiceCapacityID", "Type"
+   FROM cqc."ServicesCapacity"
+   WHERE "ServiceID" = :mainServiceId`;
 
 exports.getEstablishmentData = async establishmentId =>
   db.query(getEstablishmentDataQuery, {
@@ -142,20 +146,30 @@ exports.getEstablishmentData = async establishmentId =>
     type: db.QueryTypes.SELECT
   });
 
-exports.getCapicityData = async (establishmentId) =>
+exports.getCapicityData = async (establishmentId, mainServiceId) =>
   db.query(getCapicityOrUtilisationDataQuery, {
     replacements: {
       establishmentId,
+      mainServiceId,
       type: 'Capacity'
     },
     type: db.QueryTypes.SELECT
   });
 
-exports.getUtilisationData = async (establishmentId) =>
+exports.getUtilisationData = async (establishmentId, mainServiceId) =>
   db.query(getCapicityOrUtilisationDataQuery, {
     replacements: {
       establishmentId,
+      mainServiceId,
       type: 'Utilisation'
+    },
+    type: db.QueryTypes.SELECT
+  });
+
+exports.getServiceCapacityDetails = async (mainServiceId) =>
+  db.query(getServiceCapacityDetailsQuery, {
+    replacements: {
+      mainServiceId
     },
     type: db.QueryTypes.SELECT
   });
@@ -165,6 +179,7 @@ const getWorkerDataQuery =
 SELECT
   "Worker"."NameOrIdValue",
   "Establishment"."NameValue",
+  "DataOwner",
   "DataPermissions",
   "Worker"."GenderValue",
   to_char("DateOfBirthValue", :timeFormat) as "DateOfBirthValue",

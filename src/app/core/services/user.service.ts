@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DataPermissions, GetWorkplacesResponse } from '@core/model/my-workplaces.model';
+import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -20,6 +20,7 @@ export class UserService {
   public userDetails$: Observable<UserDetails> = this._userDetails$.asObservable();
   public returnUrl$: Observable<URLStructure> = this._returnUrl$.asObservable();
   public migratedUserTermsAccepted$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public agreedUpdatedTerms$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
 

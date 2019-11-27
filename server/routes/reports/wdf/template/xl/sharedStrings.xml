@@ -87,7 +87,7 @@
         <t>Establishment data fully completed?</t>
     </si>
     <si>
-        <t>Workplace ID</t>
+        <t>Establishment data created/updated with the financial year?</t>
     </si>
     <si>
         <t>Number of workers at the establishment</t>
@@ -147,7 +147,7 @@
         <t>Starters, leavers and vacancies</t>
     </si>
     <si>
-        <t>Data quality assurance</t>
+        <t>Workplace ID</t>
     </si>
     <si>
         <t>Establishment type</t>

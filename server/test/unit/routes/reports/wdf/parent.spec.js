@@ -95,18 +95,18 @@ describe('/server/routes/reports/wdf/parent', () => {
               'server/data/parentWDFReport': {
                 getCapicityData: () => [
                   {
-                    "Answer": 10,
-                    "ServiceID": 12,
-                    "EstablishmentID": 479,
-                    "Type": "Capacity"
+                    "Answer": 10
                   }
                 ],
                 getUtilisationData: () => [
                   {
-                    "Answer": 10,
+                    "Answer": 10
+                  }
+                ],
+                getServiceCapacityDetails: () => [
+                  {
                     "ServiceID": 12,
-                    "EstablishmentID": 479,
-                    "Type": "Utilisation"
+                    "Type": "Capacity"
                   }
                 ],
                 getEstablishmentData: () => [
