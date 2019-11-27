@@ -7,6 +7,7 @@ import { SelectRecordTypes } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-select-record-type',
