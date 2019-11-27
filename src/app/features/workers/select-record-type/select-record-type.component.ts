@@ -6,6 +6,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SelectRecordTypes } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-select-record-type',
@@ -19,7 +20,8 @@ export class SelectRecordTypeComponent implements OnInit {
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     private workerService: WorkerService,
-    protected router: Router
+    protected router: Router,
+    private location: Location
   ) {}
   public formErrorsMap: ErrorDetails[];
   public form: FormGroup;
@@ -90,7 +92,15 @@ export class SelectRecordTypeComponent implements OnInit {
     }
     if (this.navigateUrl && this.form.value.selectRecordType !== null) {
       this.router.navigate([this.navigateUrl]);
-      this.workerService.getRoute$.next(this.router.url);
+      this.route.fragment.subscribe((fragment: string) => {
+        if (fragment && fragment === 'error-summary-title') {
+          // This will give you current location path without including hash
+          const pathWithoutHash = this.location.path(false);
+          this.workerService.getRoute$.next(pathWithoutHash);
+        } else {
+          this.workerService.getRoute$.next(this.router.url);
+        }
+      });
     }
   }
 }
