@@ -16,7 +16,7 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <ng-container *ngFor="let qualification of qualifications; let i = index">
+      <ng-container *ngFor="let qualification of qualifications">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell govuk-!-font-weight-regular">
             {{ qualification.qualification.group }}
@@ -29,12 +29,18 @@
             {{ qualification?.year ? qualification.year : '-' }}
           </td>
           <td class="govuk-table__cell govuk-!-font-weight-regular">
-            <a *ngIf="canEditWorker" class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(i, $event)">{{
-              qualificationDetailsLabel[i] ? qualificationDetailsLabel[i] : 'Open'
-            }}</a>
+            <a
+              *ngIf="canEditWorker"
+              class="govuk-link--no-visited-state"
+              href="#"
+              (click)="toggleDetails(qualification.uid, $event)"
+              >{{
+                qualificationDetailsLabel[qualification.uid] ? qualificationDetailsLabel[qualification.uid] : 'Open'
+              }}</a
+            >
           </td>
         </tr>
-        <tr *ngIf="qualificationDetails[i]" class="govuk-panel--gray ">
+        <tr *ngIf="qualificationDetails[qualification.uid]" class="govuk-panel--gray ">
           <td colspan="4">
             <div class="govuk-grid-row govuk-!-margin-2">
               <div class="govuk-grid-column-two-thirds">

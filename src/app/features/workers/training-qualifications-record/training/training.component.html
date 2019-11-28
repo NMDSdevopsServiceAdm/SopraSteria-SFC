@@ -16,7 +16,7 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <ng-container *ngFor="let trainingRecord of trainingRecords; let i = index">
+      <ng-container *ngFor="let trainingRecord of trainingRecords">
         <tr class="govuk-table__row govuk-util__vertical-align-top">
           <td class="govuk-table__cell govuk-!-font-weight-regular">
             {{ trainingRecord.trainingCategory.category }}
@@ -44,12 +44,16 @@
             </div>
           </td>
           <td class="govuk-table__cell govuk-!-font-weight-regular">
-            <a *ngIf="canEditWorker" class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(i, $event)">{{
-              trainingDetailsLabel[i] ? trainingDetailsLabel[i] : 'Open'
-            }}</a>
+            <a
+              *ngIf="canEditWorker"
+              class="govuk-link--no-visited-state"
+              href="#"
+              (click)="toggleDetails(trainingRecord.uid, $event)"
+              >{{ trainingDetailsLabel[trainingRecord.uid] ? trainingDetailsLabel[trainingRecord.uid] : 'Open' }}</a
+            >
           </td>
         </tr>
-        <tr *ngIf="trainingDetails[i]" class="govuk-panel--gray ">
+        <tr *ngIf="trainingDetails[trainingRecord.uid]" class="govuk-panel--gray ">
           <td colspan="4">
             <div class="govuk-grid-row govuk-!-margin-2">
               <div class="govuk-grid-column-one-quarter">

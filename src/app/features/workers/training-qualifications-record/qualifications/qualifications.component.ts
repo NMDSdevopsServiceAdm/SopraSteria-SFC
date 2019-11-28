@@ -65,13 +65,13 @@ export class QualificationsComponent implements OnInit {
 
   /**
    * Function used to hadle toggle for traing details view and change training details lable
-   * @param {number} index numer of clicked row
+   * @param {string} qualification uid of clicked row
    * @param {event} refrance of event handler
    */
-  public toggleDetails(index: number, event) {
+  public toggleDetails(uid: string, event) {
     event.preventDefault();
-    this.qualificationDetails[index] = !this.qualificationDetails[index];
-    this.qualificationDetailsLabel[index] = this.qualificationDetailsLabel[index] === 'Close' ? 'Open' : 'Close';
+    this.qualificationDetails[uid] = !this.qualificationDetails[uid];
+    this.qualificationDetailsLabel[uid] = this.qualificationDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
   }
   public getRoute() {
     this.workerService.getRoute$.next(this.router.url);
