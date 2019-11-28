@@ -9,7 +9,7 @@ const initialiseSecrets = async (region, wallet) => {
 
   try {
     if (!wallet) throw new Error('wallet must be defined');
-
+    console.log(wallet);
     const mySecretsValue = await secrets.getSecretValue({SecretId: wallet}).promise();
     if (typeof mySecretsValue.SecretString !== 'undefined') {
       const mySecrets = JSON.parse(mySecretsValue.SecretString);
@@ -26,6 +26,7 @@ const initialiseSecrets = async (region, wallet) => {
         CQC_DB_CLIENT_SSL_KEY: mySecrets.CQC_DB_CLIENT_SSL_KEY,
         CQC_DB_CLIENT_SSL_CA: mySecrets.CQC_DB_CLIENT_SSL_C
       };
+      console.log(myLocalSecrets);
     }
 
   } catch (err) {
