@@ -39,6 +39,13 @@ provider:
         Fn::Join:
           - ""
           - - ${self:custom.sqsQueueArn.${self:provider.stage}}
+    - Effect: "Allow"
+      Action:
+        - "secretsmanager:getSecretValue"
+      Resource:
+        Fn::Join:
+          - ""
+          - - ${self:custom.wallet.${self:provider.stage}}
 # you can overwrite defaults here
 #  stage: dev
   region: eu-west-1
