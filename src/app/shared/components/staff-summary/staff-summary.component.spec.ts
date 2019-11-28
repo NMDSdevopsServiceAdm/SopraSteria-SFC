@@ -1,5 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
+import { EligibilityIconComponent } from '../eligibility-icon/eligibility-icon.component';
 import { StaffSummaryComponent } from './staff-summary.component';
 
 describe('StaffSummaryComponent', () => {
@@ -8,9 +10,9 @@ describe('StaffSummaryComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StaffSummaryComponent ]
-    })
-    .compileComponents();
+      imports: [RouterTestingModule],
+      declarations: [StaffSummaryComponent, EligibilityIconComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
