@@ -98,14 +98,22 @@ const getEstablishmentReportData = async establishmentId => {
       let utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
 
       if(capicityDetails && capicityDetails.length > 0){
-        value.Capacities = capicityDetails[0].Answer;
+        if(capicityDetails[0].Answer === null){
+          value.Capacities = 'Missing';
+        }else{
+          value.Capacities = capicityDetails[0].Answer;
+        }
       }else{
-        value.Capacities = 'Missing';
+        value.Capacities = 'N/A';
       }
       if(utilisationDetails && utilisationDetails.length > 0){
-        value.Utilisations = utilisationDetails[0].Answer;
+        if(utilisationDetails[0].Answer === null){
+          value.Utilisations = 'Missing';
+        }else{
+          value.Utilisations = utilisationDetails[0].Answer;
+        }
       }else{
-        value.Utilisations = 'Missing';
+        value.Utilisations = 'N/A';
       }
     }
     if (value.ShareDataWithCQC && value.ShareDataWithLA) {
@@ -143,16 +151,28 @@ const getEstablishmentReportData = async establishmentId => {
       value.PercentageOfWorkerRecords = '0.0%';
     }
 
-    if (value.VacanciesValue === null) {
-      value.VacanciesValue = 0;
+    if(value.VacanciesValue === 'None' || value.VacanciesValue === null){
+      value.Vacancies = 0;
+    }else if(value.VacanciesValue === "Don't know"){
+      value.Vacancies =  "Don't know";
+    }else if(value.VacanciesValue === "With Jobs"){
+      value.Vacancies = (value.VacanciesCount === null)? 'Missing':  value.VacanciesCount;
     }
 
-    if (value.StartersValue === null) {
-      value.StartersValue = 0;
+    if(value.StartersValue === 'None' || value.StartersValue === null){
+      value.Starters = 0;
+    }else if(value.StartersValue === "Don't know"){
+      value.Starters =  "Don't know";
+    }else if(value.StartersValue === "With Jobs"){
+      value.Starters = (value.StartersCount === null)? 'Missing':  value.StartersCount;
     }
 
-    if (value.LeaversValue === null) {
-      value.LeaversValue = 0;
+    if(value.LeaversValue === 'None' || value.LeaversValue === null){
+      value.Leavers = 0;
+    }else if(value.LeaversValue === "Don't know"){
+      value.Leavers =  "Don't know";
+    }else if(value.LeaversValue === "With Jobs"){
+      value.Leavers = (value.LeaversCount === null)? 'Missing':  value.LeaversCount;
     }
 
     if(value.EmployerTypeValue === null){
@@ -192,9 +212,9 @@ const getWorkersReportData = async establishmentId => {
 
   workersArray.forEach((value, key) => {
     if(value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know"){
-      value.QualificationInSocialCareValue = 'N/A';
+      value.QualificationInSocialCare = 'N/A';
     }
-    if(value.AnnualHourlyPayRate === "Don't know"){
+    if(value.AnnualHourlyPayRate === "Don't know" || value.AnnualHourlyPayValue === "Don't know"){
       value.AnnualHourlyPayRate = 'N/A';
     }
     if(value.DaysSickValue === 'No'){
@@ -203,16 +223,21 @@ const getWorkersReportData = async establishmentId => {
     if(value.RecruitedFromValue === 'No'){
       value.RecruitedFromValue = "Don't know";
     }
-    if(value.WeeklyHoursContractedHours === null && value.WeeklyHoursAverageHours === null){
-      value.WeeklyHoursContractedValue = 'Missing';
-    }else if(value.WeeklyHoursContractedHours === null && value.WeeklyHoursAverageHours !== null){
-      value.WeeklyHoursContractedValue = value.WeeklyHoursAverageHours;
-    }else{
-      value.WeeklyHoursContractedValue = value.WeeklyHoursContractedHours;
+
+    if(value.WeeklyHoursContractedValue === 'Yes'){
+      value.HoursValue = value.WeeklyHoursContractedHours;
+    }else if(value.WeeklyHoursContractedValue === 'No'){
+      value.HoursValue = (value.WeeklyHoursAverageValue !== null)? value.WeeklyHoursAverageHours: "Don't know";
+    }else if(value.WeeklyHoursContractedValue === null){
+      value.HoursValue = (value.WeeklyHoursAverageValue === null)? 'Missing': value.WeeklyHoursAverageValue;
     }
-    if(value.ZeroHoursContractValue === 'No'){
-      value.ZeroHoursContractValue = "Don't know";
-    }
+
+    console.log('value.weeklyHoursContractedValue', value.WeeklyHoursContractedValue,
+    'value.WeeklyHoursContractedHours', value.WeeklyHoursContractedHours,
+    'value.WeeklyHoursAverageValue', value.WeeklyHoursAverageValue,
+    'value.WeeklyHoursAverageHours', value.WeeklyHoursAverageHours,
+    'value.HoursValue', value.HoursValue)
+
     updateProps.forEach(prop => {
       if (value[prop] === null) {
         value[prop] = 'Missing';
@@ -266,9 +291,9 @@ const styleLookup = {
       L: 27,
       M: 12,
       N: 12,
-      O: 27,
-      P: 12,
-      Q: 29
+      O: 15,
+      P: 15,
+      Q: 15
     },
     ESTLAST: {
       A: 2,
@@ -285,9 +310,9 @@ const styleLookup = {
       L: 33,
       M: 22,
       N: 12,
-      O: 33,
-      P: 22,
-      Q: 35
+      O: 20,
+      P: 20,
+      Q: 20
     },
     WKRREGULAR: {
       A: 2,
@@ -374,9 +399,9 @@ const styleLookup = {
       L: 27,
       M: 12,
       N: 66,
-      O: 27,
-      P: 12,
-      Q: 29
+      O: 67,
+      P: 67,
+      Q: 67
     },
     ESTLAST: {
       A: 2,
@@ -393,9 +418,9 @@ const styleLookup = {
       L: 33,
       M: 22,
       N: 66,
-      O: 33,
-      P: 22,
-      Q: 35
+      O: 67,
+      P: 67,
+      Q: 67
     },
     WKRREGULAR: {
       A: 2,
@@ -852,27 +877,33 @@ const updateEstablishmentsSheet = (
         } break;
 
         case 'O': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            establishmentArray[row].StartersValue
+            establishmentArray[row].Starters,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'P': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            establishmentArray[row].LeaversValue
+            establishmentArray[row].Leavers,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'Q': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            establishmentArray[row].VacanciesValue
+            establishmentArray[row].Vacancies,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
       }
 
@@ -1045,10 +1076,10 @@ const updateWorkersSheet = (
         case 'K': {
           putString(
             cellToChange,
-            reportData.workers[row].WeeklyHoursContractedValue
+            reportData.workers[row].HoursValue
           );
 
-          isRed = (reportData.workers[row].WeeklyHoursContractedValue === 'Missing');
+          isRed = (reportData.workers[row].HoursValue === 'Missing');
 
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
