@@ -1135,7 +1135,7 @@ class Establishment {
 
     // all capacities and all utilisations are integers (if given)
     // capacities and utilisations must be less than 999999999
-    const MAX_CAP_UTIL = 999999999;
+    const MAX_CAP_UTIL = 9999;
 
     const areCapacitiesValid = listOfCapacities.every(thisCapacity =>
       thisCapacity === null || thisCapacity.length === 0 || (!Number.isNaN(parseInt(thisCapacity, 10)) && parseInt(thisCapacity, 10) < MAX_CAP_UTIL)
@@ -1259,10 +1259,10 @@ class Establishment {
     const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
 
     // Is the establishment only shared lives (code 19)?
-    const notSharedLivesOnly = BUDI.services(BUDI.FROM_ASC, this._mainService) !== 19;
+    const notSharedLivesOnly = this._mainService.id !== 19;
 
     // Is the establishment only head office services (code 16)?
-    const notHeadOfficeOnly = BUDI.services(BUDI.FROM_ASC, this._mainService) !== 16;
+    const notHeadOfficeOnly = this._mainService.id !== 16;
 
     if (this._totalPermTemp === employedWorkers + nonEmployedWorkers) {
       if (notHeadOfficeOnly) {
