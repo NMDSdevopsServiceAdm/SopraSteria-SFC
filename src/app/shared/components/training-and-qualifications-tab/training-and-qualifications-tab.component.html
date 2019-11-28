@@ -3,6 +3,16 @@
     <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords }})</h2>
   </div>
 </div>
+<div class="govuk-grid-row" *ngIf="totalRecords === 0">
+  <div class="govuk-grid-column-two-thirds">
+    <app-inset-text color="warning">Start adding your training and qualifications records.</app-inset-text>
+    <p>
+      Many care providers use ASC-WDS as the place to keep a record of all their staff training and qualifications. The
+      service alerts them when training is expiring e.g. fire safety.
+    </p>
+    <h3>Click on a staff name to add a record.</h3>
+  </div>
+</div>
 <app-training-info-panel
   *ngIf="workers"
   [workplace]="workplace"

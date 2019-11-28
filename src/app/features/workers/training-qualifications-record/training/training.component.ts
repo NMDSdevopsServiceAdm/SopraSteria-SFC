@@ -95,13 +95,13 @@ export class TrainingComponent implements OnInit {
   }
   /**
    * Function used to hadle toggle for traing details view and change training details lable
-   * @param {number} index numer of clicked row
+   * @param {string} training uid of clicked row
    * @param {event} refrance of event handler
    */
-  public toggleDetails(index: number, event) {
+  public toggleDetails(uid: string, event) {
     event.preventDefault();
-    this.trainingDetails[index] = !this.trainingDetails[index];
-    this.trainingDetailsLabel[index] = this.trainingDetailsLabel[index] === 'Close' ? 'Open' : 'Close';
+    this.trainingDetails[uid] = !this.trainingDetails[uid];
+    this.trainingDetailsLabel[uid] = this.trainingDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
   }
 
   public getRoute() {
