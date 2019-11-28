@@ -24,7 +24,7 @@ const initialiseSecrets = async (region, wallet) => {
         CQC_DB_HOST: mySecrets.CQC_DB_HOST,
         CQC_DB_CLIENT_SSL_CERTIFICATE: mySecrets.CQC_DB_CLIENT_SSL_CERTIFICATE,
         CQC_DB_CLIENT_SSL_KEY: mySecrets.CQC_DB_CLIENT_SSL_KEY,
-        CQC_DB_CLIENT_SSL_CA: mySecrets.CQC_DB_CLIENT_SSL_C
+        CQC_DB_CLIENT_SSL_CA: mySecrets.CQC_DB_CLIENT_SSL_CA
       };
       console.log(myLocalSecrets);
     }
