@@ -270,7 +270,7 @@ class BUDI {
 
   // maps training roles
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static trainingCaterogy (direction, originalCode) {
+  static trainingCategory (direction, originalCode) {
     const fixedMapping = [
       { ASC: 8, BUDI: 1 },
       { ASC: 10, BUDI: 2 },
