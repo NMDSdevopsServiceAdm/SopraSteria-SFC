@@ -4,6 +4,7 @@ import { PageNotFoundComponent } from '@core/components/error/page-not-found/pag
 import {
   ProblemWithTheServiceComponent,
 } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { AcceptedTermsGuard } from '@core/guards/accpeted-terms/accepted-terms';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
@@ -77,7 +78,7 @@ const routes: Routes = [
   {
     path: '',
     canActivate: [HasPermissionsGuard],
-    canActivateChild: [AuthGuard],
+    canActivateChild: [AuthGuard, AcceptedTermsGuard],
     resolve: {
       loggedInUser: LoggedInUserResolver,
       primaryWorkplace: PrimaryWorkplaceResolver,
