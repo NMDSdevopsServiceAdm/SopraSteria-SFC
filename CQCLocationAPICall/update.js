@@ -4,12 +4,12 @@ const axios = require('axios');
 const axiosRetry = require('axios-retry');
 const models = require('./models/index');
 
-//CQC Endpoint
+// CQC Endpoint
 const url = 'https://api.cqc.org.uk/public/v1';
 axiosRetry(axios, { retries: 3 });
 
 // Upload a list of all the changed location ID's along with timings to S3
-async function updateComplete(locations, error) {
+async function updateComplete (locations, error) {
   let completionCount = 0;
   let failed = false;
   console.log('Update Complete');
@@ -27,7 +27,7 @@ async function updateComplete(locations, error) {
     if (failed) {
       console.log('One or more updates failed');
       await models.cqclog.create({
-        success:false,
+        success: false,
         message: error
       });
       return false;
@@ -35,7 +35,7 @@ async function updateComplete(locations, error) {
       console.log('All went successfully');
       await models.cqclog.create({
         success: true,
-        message: "Call Successful",
+        message: 'Call Successful',
         lastUpdatedAt: locations.endDate
       });
       return true;
@@ -46,7 +46,7 @@ async function updateComplete(locations, error) {
 }
 
 // Upload a list of all the changed location ID's along with timings to S3
-async function updateS3(location, status) {
+async function updateS3 (location, status) {
   const s3 = new AWS.S3({
     region: appConfig.get('aws.region').toString()
   });
@@ -75,7 +75,7 @@ async function updateS3(location, status) {
   }).promise();
 }
 
-module.exports.handler =  async (event, context) => {
+module.exports.handler = async (event, context) => {
   const location = JSON.parse(event.Records[0].body);
   try {
     console.log('Getting information about ' + location.locationId + ' from CQC');
@@ -84,7 +84,7 @@ module.exports.handler =  async (event, context) => {
       // not deregistered so must exist
       console.log('Updating/Inserting information into database');
       await models.location.upsert({
-        locationid:individualLocation.data.locationId,
+        locationid: individualLocation.data.locationId,
         locationname: individualLocation.data.name,
         addressline1: individualLocation.data.postalAddressLine1,
         addressline2: individualLocation.data.postalAddressLine2,
@@ -93,17 +93,23 @@ module.exports.handler =  async (event, context) => {
         postalcode: individualLocation.data.postalCode,
         mainservice: (individualLocation.data.gacServiceTypes.length>0) ? individualLocation.data.gacServiceTypes[0].name : null
       });
+    } else {
+      await models.location.destroy({
+        where: {
+          locationid: location.locationId
+        }
+      });
     }
     await updateS3(location, 'success');
     models.sequelize.close();
 
     return {
       status: 200,
-      body: "Call Successful"
+      body: 'Call Successful'
     };
   } catch (error) {
     await updateS3(location, `failed: ${error.message}`);
     models.sequelize.close();
-    return  error.message;
+    return error.message;
   }
 };
