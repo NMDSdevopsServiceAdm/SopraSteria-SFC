@@ -9,7 +9,7 @@ const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
 const employedContractStatusIds = [1, 2];
-const notHeadOfficeOrCqcRegulated = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,/* 16, (16 = Head office service code, which should be excluded) */ 17, 18];
+const dbNotCqcRegulatedServiceCodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
 const csvQuote = toCsv => {
   if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
@@ -762,6 +762,8 @@ class Establishment {
 
   _validateRegType () {
     const myRegType = parseInt(this._currentLine.REGTYPE, 10);
+    const dbServiceCode = BUDI.services(BUDI.TO_ASC, this._mainService);
+    const dbMainServiceCode = 16;
 
     if (!this._currentLine.REGTYPE || this._currentLine.REGTYPE.length === 0) {
       this._validationErrors.push({
@@ -783,7 +785,7 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if(myRegType === 2 && notHeadOfficeOrCqcRegulated.includes(BUDI.services(BUDI.FROM_ASC, this._mainService))) {
+    } else if(myRegType === 2 && dbNotCqcRegulatedServiceCodes.includes(dbServiceCode) && dbServiceCode !== dbMainServiceCode) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.REGTYPE_ERROR,
@@ -1135,7 +1137,7 @@ class Establishment {
 
     // all capacities and all utilisations are integers (if given)
     // capacities and utilisations must be less than 999999999
-    const MAX_CAP_UTIL = 999999999;
+    const MAX_CAP_UTIL = 9999;
 
     const areCapacitiesValid = listOfCapacities.every(thisCapacity =>
       thisCapacity === null || thisCapacity.length === 0 || (!Number.isNaN(parseInt(thisCapacity, 10)) && parseInt(thisCapacity, 10) < MAX_CAP_UTIL)
@@ -1259,10 +1261,10 @@ class Establishment {
     const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
 
     // Is the establishment only shared lives (code 19)?
-    const notSharedLivesOnly = BUDI.services(BUDI.FROM_ASC, this._mainService) !== 19;
+    const notSharedLivesOnly = this._mainService.id !== 19;
 
     // Is the establishment only head office services (code 16)?
-    const notHeadOfficeOnly = BUDI.services(BUDI.FROM_ASC, this._mainService) !== 16;
+    const notHeadOfficeOnly = this._mainService.id !== 16;
 
     if (this._totalPermTemp === employedWorkers + nonEmployedWorkers) {
       if (notHeadOfficeOnly) {
