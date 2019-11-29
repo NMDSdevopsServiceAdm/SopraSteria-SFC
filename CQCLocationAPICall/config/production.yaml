@@ -1,4 +1,11 @@
 aws:
-    region: eu-west-1
+  region: eu-west-1
+  secrets:
+    use: true
 log:
-    sequelize: false
+  sequelize: false
+db:
+  ssl: true
+  client_ssl:
+    status: true
+    usingFiles: false

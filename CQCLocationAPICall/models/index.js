@@ -75,7 +75,6 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-
 if (AppConfig.ready) {
   // the config is ready, so the config properties are true and thus the database is ready to use
   db.status.ready = true;
@@ -86,6 +85,7 @@ if (AppConfig.ready) {
   AppConfig.on(AppConfig.READY_EVENT, () => {
     // rebind sensitive database connections
     sequelize.connectionManager.config.host = appConfig.get('db.host');
+    sequelize.connectionManager.config.username = appConfig.get('db.username');
     sequelize.connectionManager.config.password = appConfig.get('db.password');
 
 

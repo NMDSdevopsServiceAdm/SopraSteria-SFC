@@ -9,15 +9,12 @@ const initialiseSecrets = async (region, wallet) => {
 
   try {
     if (!wallet) throw new Error('wallet must be defined');
-    console.log(wallet);
     const mySecretsValue = await secrets.getSecretValue({SecretId: wallet}).promise().then((mySecretsValue) => {
-      console.log(mySecretsValue);
       return mySecretsValue;
     }).catch(error => {
       console.error(error);
       throw error;
     });
-    console.log(mySecretsValue);
     if (typeof mySecretsValue.SecretString !== 'undefined') {
       const mySecrets = JSON.parse(mySecretsValue.SecretString);
 
@@ -33,7 +30,6 @@ const initialiseSecrets = async (region, wallet) => {
         CQC_DB_CLIENT_SSL_KEY: mySecrets.CQC_DB_CLIENT_SSL_KEY,
         CQC_DB_CLIENT_SSL_CA: mySecrets.CQC_DB_CLIENT_SSL_CA
       };
-      console.log(myLocalSecrets);
     }
 
   } catch (err) {
@@ -94,10 +90,10 @@ const dbAppUserKey = () => {
 };
 const dbAppUserCertificate = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.CQC_DB_CLIENT_SSL_CA) {
+    if (!myLocalSecrets.CQC_DB_CLIENT_SSL_CERTIFICATE) {
       throw new Error('Unknown DB_APP_USER_CERT secret');
     } else {
-      return myLocalSecrets.CQC_DB_CLIENT_SSL_CA;
+      return myLocalSecrets.CQC_DB_CLIENT_SSL_CERTIFICATE;
     }
   } else {
     throw new Error('Unknown secrets');
@@ -105,10 +101,10 @@ const dbAppUserCertificate = () => {
 };
 const dbAppRootCertificate = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.CQC_DB_CLIENT_SSL_CERTIFICATE) {
+    if (!myLocalSecrets.CQC_DB_CLIENT_SSL_CA) {
       throw new Error('Unknown DB_ROOT_CRT secret');
     } else {
-      return myLocalSecrets.CQC_DB_CLIENT_SSL_CERTIFICATE;
+      return myLocalSecrets.CQC_DB_CLIENT_SSL_CA;
     }
   } else {
     throw new Error('Unknown secrets');
