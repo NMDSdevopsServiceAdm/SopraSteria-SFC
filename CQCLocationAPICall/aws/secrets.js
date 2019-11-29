@@ -10,7 +10,13 @@ const initialiseSecrets = async (region, wallet) => {
   try {
     if (!wallet) throw new Error('wallet must be defined');
     console.log(wallet);
-    const mySecretsValue = await secrets.getSecretValue({SecretId: wallet}).promise();
+    const mySecretsValue = await secrets.getSecretValue({SecretId: wallet}).promise().then((mySecretsValue) => {
+      console.log(mySecretsValue);
+      return mySecretsValue;
+    }).catch(error => {
+      console.error(error);
+      throw error;
+    });
     console.log(mySecretsValue);
     if (typeof mySecretsValue.SecretString !== 'undefined') {
       const mySecrets = JSON.parse(mySecretsValue.SecretString);
