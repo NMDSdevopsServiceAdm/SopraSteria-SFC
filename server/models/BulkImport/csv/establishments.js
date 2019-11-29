@@ -785,7 +785,9 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if(myRegType === 2 && dbNotCqcRegulatedServiceCodes.includes(dbServiceCode) && dbServiceCode !== dbMainServiceCode) {
+    } else if(
+      false &&
+      myRegType === 2 && dbNotCqcRegulatedServiceCodes.includes(dbServiceCode) && dbServiceCode !== dbMainServiceCode) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.REGTYPE_ERROR,
@@ -1269,26 +1271,34 @@ class Establishment {
     if (this._totalPermTemp === employedWorkers + nonEmployedWorkers) {
       if (notHeadOfficeOnly) {
         if (employedWorkers === 0) {
-          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-            warning: 'The number of employed staff is 0 please check your staff records'
-          }));
+          if(false) {
+            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+              warning: 'The number of employed staff is 0 please check your staff records'
+            }));
+          }
         } else if (employedWorkers < nonEmployedWorkers) {
-          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-            warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records'
-          }));
+          if(false) {
+            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+              warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records'
+            }));
+          }
         }
 
         if (isCQCRegulated && notSharedLivesOnly && directCareWorkers === 0) {
-          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-            warning: 'The number of direct care staff is 0 please check your staff records'
-          }));
+          if(false) {
+            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+              warning: 'The number of direct care staff is 0 please check your staff records'
+            }));
+          }
         }
       }
 
       if (isLocalAuthority && managerialProfessionalWorkers === 0) {
-        csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-          warning: 'The number of non-direct care staff is 0 please check your staff records'
-        }));
+        if(false) {
+          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+            warning: 'The number of non-direct care staff is 0 please check your staff records'
+          }));
+        }
       }
     }
   }
@@ -1304,6 +1314,7 @@ class Establishment {
     // allJobs can only be empty, if TOTALPERMTEMP is 0
     if (!this._currentLine.ALLJOBROLES || this._currentLine.ALLJOBROLES.length === 0) {
       if(
+        false &&
         [].
         concat(vacancies).
         concat(starters).
