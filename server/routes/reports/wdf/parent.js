@@ -232,12 +232,6 @@ const getWorkersReportData = async establishmentId => {
       value.HoursValue = (value.WeeklyHoursAverageValue === null)? 'Missing': value.WeeklyHoursAverageValue;
     }
 
-    console.log('value.weeklyHoursContractedValue', value.WeeklyHoursContractedValue,
-    'value.WeeklyHoursContractedHours', value.WeeklyHoursContractedHours,
-    'value.WeeklyHoursAverageValue', value.WeeklyHoursAverageValue,
-    'value.WeeklyHoursAverageHours', value.WeeklyHoursAverageHours,
-    'value.HoursValue', value.HoursValue)
-
     updateProps.forEach(prop => {
       if (value[prop] === null) {
         value[prop] = 'Missing';
@@ -756,7 +750,7 @@ const updateEstablishmentsSheet = (
     const rowType = row === establishmentArray.length - 1 ? 'ESTLAST' : 'ESTREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 16; column++) {
+    for (let column = 0; column < 17; column++) {
       const columnText = String.fromCharCode(column + 65);
       const isRed = false;
 
