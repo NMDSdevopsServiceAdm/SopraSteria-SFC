@@ -73,7 +73,7 @@ SELECT
     WHERE
       "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Vacancies
-  ) AS "VacanciesValue",
+  ) AS "VacanciesCount",
   (
     SELECT
       SUM("Total")
@@ -82,7 +82,7 @@ SELECT
     WHERE
       "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Starters
-  ) AS "StartersValue",
+  ) AS "StartersCount",
   (
     SELECT
       SUM("Total")
@@ -91,7 +91,10 @@ SELECT
     WHERE
       "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Leavers
-  ) AS "LeaversValue",
+  ) AS "LeaversCount",
+  "VacanciesValue",
+  "StartersValue",
+  "LeaversValue",
   "NumberOfStaffValue",
   updated,
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
@@ -188,8 +191,10 @@ SELECT
   to_char("MainJobStartDateValue", :timeFormat) as "MainJobStartDateValue",
   "RecruitedFromValue",
   "ContractValue",
+  "WeeklyHoursContractedValue",
   "WeeklyHoursContractedHours",
   "WeeklyHoursAverageHours",
+  "WeeklyHoursAverageValue",
   "ZeroHoursContractValue",
   "DaysSickValue",
   "AnnualHourlyPayValue",
