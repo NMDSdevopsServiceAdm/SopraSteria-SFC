@@ -7,6 +7,7 @@ import { AuthService } from '@core/services/auth.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
+import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -25,6 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private idleService: IdleService,
     private authService: AuthService,
+    private userService: UserService,
     private establishmentService: EstablishmentService,
     private router: Router,
     private formBuilder: FormBuilder,
@@ -118,6 +120,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           if (response.body.establishment && response.body.establishment.uid) {
             // update the establishment service state with the given establishment id
             this.establishmentService.establishmentId = response.body.establishment.uid;
+            this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
           }
 
           if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {

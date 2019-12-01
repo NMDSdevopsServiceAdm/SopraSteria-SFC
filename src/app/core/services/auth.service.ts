@@ -90,6 +90,7 @@ export class AuthService {
     localStorage.clear();
     this._isAuthenticated$.next(false);
     this.userService.loggedInUser = null;
+    this.userService.resetAgreedUpdatedTermsStatus = null;
     this.establishmentService.resetState();
     this.permissionsService.clearPermissions();
   }
