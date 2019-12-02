@@ -101,7 +101,6 @@ module.exports.handler = async (event, context) => {
       });
     }
     await updateS3(location, 'success');
-    models.sequelize.close();
 
     return {
       status: 200,
@@ -109,7 +108,6 @@ module.exports.handler = async (event, context) => {
     };
   } catch (error) {
     await updateS3(location, `failed: ${error.message}`);
-    models.sequelize.close();
     return error.message;
   }
 };

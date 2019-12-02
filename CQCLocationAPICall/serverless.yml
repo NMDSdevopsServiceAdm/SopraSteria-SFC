@@ -18,6 +18,8 @@ provider:
     - Effect: "Allow"
       Action:
         - "sqs:sendMessage"
+        - "sqs:recieveMessage"
+        - "sqs:deleteMessage"
       Resource:
         Fn::Join:
           - ""
