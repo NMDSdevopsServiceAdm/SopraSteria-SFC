@@ -28,7 +28,15 @@ class DBEmitter extends EventEmitter {
 db.status = new DBEmitter();
 
 let sequelize;
-const config = {};
+const config = {
+  pool: {
+    max: 10000,
+    min: 0,
+    idle: 200000,
+    acquire: 200000
+  },
+  retry: { max: 3 }
+};
 
 // allow override of any config value from environment variable
 config.host = appConfig.get('db.host');
