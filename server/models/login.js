@@ -69,6 +69,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: "TribalSalt"
     },
+    agreedUpdatedTerms: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"AgreedUpdatedTerms"'
+    }
   }, {
     tableName: '"Login"',
     schema: 'cqc',

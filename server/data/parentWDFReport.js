@@ -10,6 +10,8 @@ SELECT
   "Establishment"."EstablishmentID",
   "NmdsID",
   "NameValue" AS "SubsidiaryName",
+  "DataOwner",
+  "DataPermissions",
   "EmployerTypeValue",
   "EmployerTypeSavedAt",
   CASE WHEN "OverallWdfEligibility" > :effectiveDate THEN "OverallWdfEligibility" ELSE NULL END AS "CurrentWdfEligibilityStatus",
@@ -23,6 +25,7 @@ SELECT
       cqc."Worker"
     WHERE
       "Worker"."EstablishmentFK" = "Establishment"."EstablishmentID"
+      and "Archived" = false
   ) AS "TotalIndividualWorkerRecord",
   (
     SELECT
@@ -70,7 +73,7 @@ SELECT
     WHERE
       "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Vacancies
-  ) AS "VacanciesValue",
+  ) AS "VacanciesCount",
   (
     SELECT
       SUM("Total")
@@ -79,7 +82,7 @@ SELECT
     WHERE
       "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Starters
-  ) AS "StartersValue",
+  ) AS "StartersCount",
   (
     SELECT
       SUM("Total")
@@ -88,43 +91,10 @@ SELECT
     WHERE
       "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Leavers
-  ) AS "LeaversValue",
-  (
-    SELECT
-      a."Answer"
-    FROM
-      cqc."EstablishmentCapacity" AS a
-    JOIN
-      cqc."ServicesCapacity" AS b
-    ON
-      a."ServiceCapacityID" = b."ServiceCapacityID"
-    JOIN
-      cqc."Establishment" c
-    ON
-      a."EstablishmentID" = c."EstablishmentID"
-    WHERE
-      a."EstablishmentID" = "Establishment"."EstablishmentID" AND
-      c."MainServiceFKValue" = b."ServiceID" AND
-      b."Type" = :Capacity
-  ) AS  "Capacities",
-  (
-    SELECT
-      a."Answer"
-    FROM
-      cqc."EstablishmentCapacity" a
-    JOIN
-      cqc."ServicesCapacity" b
-    ON
-      a."ServiceCapacityID" = b."ServiceCapacityID"
-    JOIN
-      cqc."Establishment" c
-    ON
-      a."EstablishmentID" = c."EstablishmentID"
-    WHERE
-      a."EstablishmentID" = "Establishment"."EstablishmentID" AND
-      c."MainServiceFKValue" = b."ServiceID" AND
-      b."Type" = :Utilisation
-  ) AS "Utilisations",
+  ) AS "LeaversCount",
+  "VacanciesValue",
+  "StartersValue",
+  "LeaversValue",
   "NumberOfStaffValue",
   updated,
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
@@ -144,6 +114,25 @@ ORDER BY
   "EstablishmentID";
 `;
 
+const getCapicityOrUtilisationDataQuery =
+`SELECT
+    b."Answer"
+  FROM
+    cqc."ServicesCapacity" AS a
+  JOIN
+    cqc."EstablishmentCapacity" AS b
+  ON
+    a."ServiceCapacityID" = b."ServiceCapacityID"
+  WHERE
+    b."EstablishmentID" = :establishmentId AND
+    "ServiceID" = :mainServiceId AND
+    a."Type" = :type`;
+
+const getServiceCapacityDetailsQuery =
+  `SELECT "ServiceCapacityID", "Type"
+   FROM cqc."ServicesCapacity"
+   WHERE "ServiceID" = :mainServiceId`;
+
 exports.getEstablishmentData = async establishmentId =>
   db.query(getEstablishmentDataQuery, {
     replacements: {
@@ -156,8 +145,34 @@ exports.getEstablishmentData = async establishmentId =>
       Vacancies: 'Vacancies',
       Starters: 'Starters',
       Leavers: 'Leavers',
-      Capacity: 'Capacity',
-      Utilisation: 'Utilisation'
+    },
+    type: db.QueryTypes.SELECT
+  });
+
+exports.getCapicityData = async (establishmentId, mainServiceId) =>
+  db.query(getCapicityOrUtilisationDataQuery, {
+    replacements: {
+      establishmentId,
+      mainServiceId,
+      type: 'Capacity'
+    },
+    type: db.QueryTypes.SELECT
+  });
+
+exports.getUtilisationData = async (establishmentId, mainServiceId) =>
+  db.query(getCapicityOrUtilisationDataQuery, {
+    replacements: {
+      establishmentId,
+      mainServiceId,
+      type: 'Utilisation'
+    },
+    type: db.QueryTypes.SELECT
+  });
+
+exports.getServiceCapacityDetails = async (mainServiceId) =>
+  db.query(getServiceCapacityDetailsQuery, {
+    replacements: {
+      mainServiceId
     },
     type: db.QueryTypes.SELECT
   });
@@ -167,6 +182,8 @@ const getWorkerDataQuery =
 SELECT
   "Worker"."NameOrIdValue",
   "Establishment"."NameValue",
+  "DataOwner",
+  "DataPermissions",
   "Worker"."GenderValue",
   to_char("DateOfBirthValue", :timeFormat) as "DateOfBirthValue",
   "NationalityValue",
@@ -175,6 +192,9 @@ SELECT
   "RecruitedFromValue",
   "ContractValue",
   "WeeklyHoursContractedValue",
+  "WeeklyHoursContractedHours",
+  "WeeklyHoursAverageHours",
+  "WeeklyHoursAverageValue",
   "ZeroHoursContractValue",
   "DaysSickValue",
   "AnnualHourlyPayValue",

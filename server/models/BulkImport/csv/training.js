@@ -1,12 +1,32 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 
+const csvQuote = toCsv => {
+  if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+    return '"' + toCsv.replace(/"/g, '""') + '"';
+  }
+
+  return toCsv;
+};
+
+// input is a string date in format "YYYY-MM-DD"
+const convertIso8601ToUkDate = dateText => {
+  if (dateText) {
+    const dateParts = String(dateText).split('-');
+
+    return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+  }
+
+  return '';
+}
+
+const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
+
 class Training {
   constructor (currentLine, lineNumber) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
-    this._headers_v1 = ['LOCALESTID', 'UNIQUEWORKERID', 'CATEGORY', 'DESCRIPTION', 'DATECOMPLETED', 'EXPIRYDATE', 'ACCREDITED', 'NOTES'];
 
     this._localeStId = null;
     this._uniqueWorkerId = null;
@@ -38,8 +58,12 @@ class Training {
   static get ACCREDITED_WARNING () { return 2060; }
   static get NOTES_WARNING () { return 2070; }
 
+  static headers () {
+    return _headers_v1;
+  }
+
   get headers () {
-    return this._headers_v1.join(',');
+    return _headers_v1;
   }
 
   get lineNumber () {
@@ -279,8 +303,9 @@ class Training {
   }
 
   _validateCategory () {
-    const myCategory = parseInt(this._currentLine.CATEGORY);
-    if (Number.isNaN(myCategory) || !BUDI.trainingCaterogy(BUDI.TO_ASC, this._currentLine.CATEGORY)) {
+    const myCategory = parseInt(this._currentLine.CATEGORY, 10);
+
+    if (Number.isNaN(myCategory) || BUDI.trainingCategory(BUDI.TO_ASC, myCategory) === null) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -298,7 +323,7 @@ class Training {
   }
 
   _validateAccredited () {
-    const myAccredited = parseInt(this._currentLine.ACCREDITED);
+    const myAccredited = parseInt(this._currentLine.ACCREDITED, 10);
     const ALLOWED_VALUES = [0, 1, 999];
     if (Number.isNaN(myAccredited) || !ALLOWED_VALUES.includes(myAccredited)) {
       this._validationErrors.push({
@@ -329,7 +354,7 @@ class Training {
 
   _transformTrainingCategory () {
     if (this._category) {
-      const mappedCategory = BUDI.trainingCaterogy(BUDI.TO_ASC, this._category);
+      const mappedCategory = BUDI.trainingCategory(BUDI.TO_ASC, this._category);
       if (mappedCategory === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -380,14 +405,14 @@ class Training {
 
   _validateHeaders (headers) {
     // only run once for first line, so check _lineNumber
-    if (this._headers_v1.join(',') !== headers) {
+    if (_headers_v1 !== headers) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: 1,
         errCode: Training.HEADERS_ERROR,
         errType: 'HEADERS_ERROR',
-        error: `Training headers (HEADERS) can contain, ${this._headers_v1}`,
+        error: `Training headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
         source: headers
       });
       return false;
@@ -497,158 +522,39 @@ class Training {
     });
   }
 
-  // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
-  addAPIValidations (errors, warnings) {
-    /*     errors.forEach(thisError => {
-      thisError.properties ? thisError.properties.forEach(thisProp => {
-        const validationError = {
-          lineNumber: this._lineNumber,
-          error: thisError.message,
-          name: this._currentLine.LOCALESTID,
-          worker: this._currentLine.UNIQUEWORKERID,
-        };
-
-        switch (thisProp) {
-          case 'TrainingCategory':
-            // this generates multiple errors, which are already covered in validation above
-            // validationError.errCode = Training.CATEGORY_ERROR;
-            // validationError.errType = 'CATEGORY_ERROR';
-            // validationError.source  = `${this._currentLine.CATEGORY}`;
-            break;
-          case 'Title':
-            validationError.errCode = Training.DESCRIPTION_ERROR;
-            validationError.errType = 'DESCRIPTION_ERROR';
-            validationError.source  = `${this._currentLine.DESCRIPTION}`;
-            break;
-          case 'Accredited':
-            validationError.errCode = Training.ACCREDITED_ERROR;
-            validationError.errType = 'ACCREDITED_ERROR';
-            validationError.source  = `${this._currentLine.ACCREDITED}`;
-            break;
-          case 'Completed':
-            validationError.errCode = Training.DATE_COMPLETED_ERROR;
-            validationError.errType = 'DATE_COMPLETED_ERROR';
-            validationError.source  = `${this._currentLine.DATECOMPLETED}`;
-            break;
-          case 'Expires':
-            validationError.errCode = Training.EXPIRY_DATE_ERROR;
-            validationError.errType = 'EXPIRY_DATE_ERROR';
-            validationError.source  = `${this._currentLine.EXPIRYDATE}`;
-            break;
-          case 'Notes':
-            validationError.errCode = Training.NOTES_ERROR;
-            validationError.errType = 'NOTES_ERROR';
-            validationError.source  = `${this._currentLine.NOTES}`;
-            break;
-          default:
-            validationError.errCode = thisError.code;
-            validationError.errType = 'Undefined';
-            validationError.source  = thisProp;
-        }
-        this._validationErrors.push(validationError);
-      }) : true;
-    });
-
-    warnings.forEach(thisWarning => {
-      thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
-        const validationWarning = {
-          lineNumber: this._lineNumber,
-          warning: thisWarning.message,
-          name: this._currentLine.LOCALESTID,
-          worker: this._currentLine.UNIQUEWORKERID,
-        };
-
-        switch (thisProp) {
-          case 'TrainingCategory':
-            validationWarning.warnCode = Training.CATEGORY_WARNING;
-            validationWarning.warnType = 'CATEGORY_WARNING';
-            validationWarning.source  = `${this._currentLine.CATEGORY}`;
-            break;
-          case 'Title':
-            validationWarning.warnCode = Training.DESCRIPTION_WARNING;
-            validationWarning.warnType = 'DESCRIPTION_WARNING';
-            validationWarning.source  = `${this._currentLine.DESCRIPTION}`;
-            break;
-          case 'Accredited':
-            validationWarning.warnCode = Training.ACCREDITED_WARNING;
-            validationWarning.warnType = 'ACCREDITED_WARNING';
-            validationWarning.source  = `${this._currentLine.ACCREDITED}`;
-            break;
-          case 'Completed':
-            validationWarning.warnCode = Training.DATE_COMPLETED_WARNING;
-            validationWarning.warnType = 'DATE_COMPLETED_WARNING';
-            validationWarning.source  = `${this._currentLine.DATECOMPLETED}`;
-            break;
-          case 'Expires':
-            validationWarning.warnCode = Training.EXPIRY_DATE_WARNING;
-            validationWarning.warnType = 'EXPIRY_DATE_WARNING';
-            validationWarning.source  = `${this._currentLine.EXPIRYDATE}`;
-            break;
-          case 'Notes':
-            validationWarning.warnCode = Training.NOTES_WARNING;
-            validationWarning.warnType = 'NOTES_WARNING';
-            validationWarning.source  = `${this._currentLine.NOTES}`;
-            break;
-          default:
-            validationWarning.warnCode = thisWarning.code;
-            validationWarning.warnType = 'Undefined';
-            validationWarning.source  = thisProp;
-        }
-
-        this._validationErrors.push(validationWarning);
-      }) : true;
-    }); */
-  }
-
-  _csvQuote (toCsv) {
-    if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
-      return '"' + toCsv.replace(/"/g, '""') + '"';
-    } else {
-      return toCsv;
-    }
-  }
-
-  // input is a string date in format "YYYY-MM-DD"
-  _fromDateToCsv (convertThis) {
-    if (convertThis) {
-      const dateParts = convertThis.split('-');
-
-      return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-    } else {
-      return '';
-    }
-  }
-
   // takes the given Training entity and writes it out to CSV string (one line)
-  toCSV (establishmentId, workerId, entity) {
+  static toCSV (establishmentId, workerId, entity) {
     // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
     const columns = [];
-    columns.push(this._csvQuote(establishmentId));
-    columns.push(this._csvQuote(workerId));
+    columns.push(csvQuote(establishmentId));
+    columns.push(csvQuote(workerId));
 
-    columns.push(BUDI.trainingCaterogy(BUDI.FROM_ASC, entity.category.id));
-    columns.push(entity.title ? this._csvQuote(entity.title) : '');
+    columns.push(BUDI.trainingCategory(BUDI.FROM_ASC, entity.category.id));
+    columns.push(entity.title ? csvQuote(entity.title) : '');
 
-    columns.push(this._fromDateToCsv(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
-    columns.push(this._fromDateToCsv(entity.expires)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
+    columns.push(convertIso8601ToUkDate(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
+    columns.push(convertIso8601ToUkDate(entity.expires)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
 
+    let accredited = '';
     switch (entity.accredited) {
-      case null:
-        columns.push('');
-        break;
       case 'Yes':
-        columns.push(1);
+        accredited = 1;
         break;
       case 'No':
-        columns.push(0);
+        accredited = 0;
         break;
       case 'Don\'t know':
-        columns.push(999);
+        accredited = 999;
         break;
     }
-    columns.push(entity.notes ? this._csvQuote(entity.notes) : '');
+    columns.push(accredited);
+    columns.push(entity.notes ? csvQuote(entity.notes) : '');
 
     return columns.join(',');
+  }
+  
+  toCSV(establishmentId, workerId, entity) {
+    return Training.toCSV(establishmentId, workerId, entity);
   }
 }
 
