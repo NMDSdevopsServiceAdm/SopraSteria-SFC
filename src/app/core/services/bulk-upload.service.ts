@@ -228,7 +228,7 @@ export class BulkUploadService {
       },
     ];
   }
-
+  // Function to check for the lock status
   private checkLockStatus(callback, httpOptions): Observable<any> {
     const establishmentUid = this.establishmentService.establishmentId;
     let requestId;
