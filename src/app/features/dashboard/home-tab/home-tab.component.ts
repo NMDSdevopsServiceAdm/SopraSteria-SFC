@@ -12,9 +12,16 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import {
+  CancelDataOwnerDialogComponent,
+} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import {
+  ChangeDataOwnerDialogComponent,
+} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
+import {
+  SetDataPermissionDialogComponent,
+} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -40,6 +47,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public ownershipChangeRequestId: any = [];
   public isOwnershipRequested = false;
   public primaryWorkplace: Establishment;
+  public canLinkToParent: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -78,6 +86,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
     }
+    this.canLinkToParent = true;
   }
 
   public onChangeDataOwner($event: Event) {
@@ -151,6 +160,24 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   get numberOfNewNotifications() {
     const newNotifications = this.notificationsService.notifications.filter(notification => !notification.isViewed);
     return newNotifications.length;
+  }
+  /**
+   * Function used to link a workplace to parent organisation
+   * @param {event} triggred event
+   * @return {void}
+   */
+  public linkToParent($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(LinkToParentDialogComponent, this.workplace);
+    dialog.afterClosed.subscribe(setPermissionConfirmed => {
+      if (setPermissionConfirmed) {
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({
+          type: 'success',
+          message: `Request to link to ${this.workplace.parentName} has been sent.`,
+        });
+      }
+    });
   }
 
   ngOnDestroy(): void {

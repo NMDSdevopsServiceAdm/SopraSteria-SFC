@@ -238,4 +238,8 @@ export class EstablishmentService {
   public setDataPermission(establishmentId, data: setPermission): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/dataPermissions`, data);
   }
+  //Send data for link to parent
+  public setRequestToParentForLink(establishmentId, data: setPermission): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent`, data);
+  }
 }
