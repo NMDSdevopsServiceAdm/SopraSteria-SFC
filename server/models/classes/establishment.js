@@ -1995,7 +1995,7 @@ class Establishment extends EntityValidator {
             parentName: parentsAndPostcodeDetails[i].NameValue,
             postcode: parentsAndPostcodeDetails[i].postcode,
             uid: parentsAndPostcodeDetails[i].uid,
-            parentNameAndPostalcode: `${parentsAndPostcodeDetails[i].NameValue},${parentsAndPostcodeDetails[i].postcode}`
+            parentNameAndPostalcode: `${parentsAndPostcodeDetails[i].NameValue}, ${parentsAndPostcodeDetails[i].postcode}`
           });
         }
         return parentPostcodeDetailsArr;
