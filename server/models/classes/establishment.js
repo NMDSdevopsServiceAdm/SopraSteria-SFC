@@ -1973,15 +1973,15 @@ class Establishment extends EntityValidator {
     }
   }
 
-/**
- * Function to fetch all the parents name and their post code.
- * @fetchQuery consist of parameters based on which we will filter parent name and postcode.
- */
+  /**
+   * Function to fetch all the parents name and their post code.
+   * @fetchQuery consist of parameters based on which we will filter parent name and postcode.
+   */
 
   static async fetchAllParentsAndPostcode() {
     try {
       let fetchQuery = {
-        attributes: ['NameValue','postcode'],
+        attributes: ['uid', 'NameValue', 'postcode'],
         where: {
           isParent: true,
           archived: false,
@@ -1989,7 +1989,16 @@ class Establishment extends EntityValidator {
       };
       let parentsAndPostcodeDetails = await models.establishment.findAll(fetchQuery);
       if (parentsAndPostcodeDetails) {
-        return parentsAndPostcodeDetails;
+        let parentPostcodeDetails = [];
+        for (let i = 0; i < parentsAndPostcodeDetails.length; i++) {
+          parentPostcodeDetails.push({
+            parentName: parentsAndPostcodeDetails[i].NameValue,
+            postcode: parentsAndPostcodeDetails[i].postcode,
+            uid: parentsAndPostcodeDetails[i].uid,
+            parentNameAndPostalcode: `${parentsAndPostcodeDetails[i].NameValue},${parentsAndPostcodeDetails[i].postcode}`
+          });
+        }
+        return parentPostcodeDetails;
       }
     } catch (err) {
       console.error('Establishment::fetch error: ', err);
