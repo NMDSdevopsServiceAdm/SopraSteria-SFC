@@ -1989,16 +1989,16 @@ class Establishment extends EntityValidator {
       };
       let parentsAndPostcodeDetails = await models.establishment.findAll(fetchQuery);
       if (parentsAndPostcodeDetails) {
-        let parentPostcodeDetails = [];
+        let parentPostcodeDetailsArr = [];
         for (let i = 0; i < parentsAndPostcodeDetails.length; i++) {
-          parentPostcodeDetails.push({
+          parentPostcodeDetailsArr.push({
             parentName: parentsAndPostcodeDetails[i].NameValue,
             postcode: parentsAndPostcodeDetails[i].postcode,
             uid: parentsAndPostcodeDetails[i].uid,
             parentNameAndPostalcode: `${parentsAndPostcodeDetails[i].NameValue},${parentsAndPostcodeDetails[i].postcode}`
           });
         }
-        return parentPostcodeDetails;
+        return parentPostcodeDetailsArr;
       }
     } catch (err) {
       console.error('Establishment::fetch error: ', err);
