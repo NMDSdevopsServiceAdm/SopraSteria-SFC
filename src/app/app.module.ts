@@ -3,6 +3,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import {
   ProblemWithTheServiceComponent,
@@ -86,6 +87,7 @@ import {
     MomentModule,
     ReactiveFormsModule,
     SharedModule,
+    RouterModule,
   ],
   providers: [
     AuthGuard,
