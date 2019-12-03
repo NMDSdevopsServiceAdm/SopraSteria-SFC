@@ -1,3 +1,14 @@
+export interface BulkUploadStatus {
+  establishmentId: string;
+  bulkUploadState: string;
+  bulkUploadLockHeld: boolean;
+}
+
+export interface BulkUploadLock {
+  message: string;
+  requestId: string;
+}
+
 export enum FileValidateStatus {
   Fail = 'Fail',
   Validating = 'Validating...',
