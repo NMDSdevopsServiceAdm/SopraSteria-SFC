@@ -1973,15 +1973,15 @@ class Establishment extends EntityValidator {
     }
   }
 
-/**
- * Function to fetch all the parents name and their post code.
- * @fetchQuery consist of parameters based on which we will filter parent name and postcode.
- */
+ /**
+   * Function to fetch all the parents name and their post code.
+   * @fetchQuery consist of parameters based on which we will filter parent name and postcode.
+   */
 
   static async fetchAllParentsAndPostcode() {
     try {
       let fetchQuery = {
-        attributes: ['NameValue','postcode'],
+        attributes: ['uid', 'NameValue', 'postcode'],
         where: {
           isParent: true,
           archived: false,
@@ -1989,13 +1989,23 @@ class Establishment extends EntityValidator {
       };
       let parentsAndPostcodeDetails = await models.establishment.findAll(fetchQuery);
       if (parentsAndPostcodeDetails) {
-        return parentsAndPostcodeDetails;
+        let parentPostcodeDetailsArr = [];
+        for (let i = 0; i < parentsAndPostcodeDetails.length; i++) {
+          parentPostcodeDetailsArr.push({
+            parentName: parentsAndPostcodeDetails[i].NameValue,
+            postcode: parentsAndPostcodeDetails[i].postcode,
+            uid: parentsAndPostcodeDetails[i].uid,
+            parentNameAndPostalcode: `${parentsAndPostcodeDetails[i].NameValue},${parentsAndPostcodeDetails[i].postcode}`
+          });
+        }
+        return parentPostcodeDetailsArr;
       }
     } catch (err) {
       console.error('Establishment::fetch error: ', err);
       return false;
     }
   }
+
 
   // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
   static async fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF) {
