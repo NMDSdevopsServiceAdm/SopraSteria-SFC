@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { SubmitExitButtonsComponent } from './submit-exit-buttons.component';
 
@@ -8,9 +9,9 @@ describe('SubmitExitButtonsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SubmitExitButtonsComponent ]
-    })
-    .compileComponents();
+      imports: [RouterTestingModule],
+      declarations: [SubmitExitButtonsComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
