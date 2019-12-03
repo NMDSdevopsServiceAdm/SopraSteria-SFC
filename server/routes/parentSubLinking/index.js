@@ -1,4 +1,5 @@
 // default route for getting all the parent name and postcode
+'use strict';
 const express = require('express');
 const router = express.Router();
 const Establishment = require('../../models/classes/establishment');

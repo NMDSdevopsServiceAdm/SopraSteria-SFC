@@ -1974,7 +1974,7 @@ class Establishment extends EntityValidator {
   }
 
 /**
- * Helper function to fetch all the parents name and their post code.
+ * Function to fetch all the parents name and their post code.
  * @fetchQuery consist of parameters based on which we will filter parent name and postcode.
  */
 
