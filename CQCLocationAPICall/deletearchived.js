@@ -20,7 +20,7 @@ const api = axios.create({
   baseURL: url,
   rejectUnauthorized: false
 });
-const MAX_CONCURRENT_REQUESTS = 1;
+const MAX_CONCURRENT_REQUESTS = 10;
 const manager = ConcurrencyManager(api, MAX_CONCURRENT_REQUESTS);
 
 async function getLocation (location) {
