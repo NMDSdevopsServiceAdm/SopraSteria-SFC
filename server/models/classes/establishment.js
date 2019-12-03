@@ -373,6 +373,23 @@ class Establishment extends EntityValidator {
       if (document.status) {
         this._status = document.status;
       }
+      // Consequential updates when one value means another should be empty or null
+
+      // When sharing is disabled, the local authority shared with should be removed
+      if (document.share) {
+        if (!document.share.enabled) {
+          document.share.with = [];
+          document.localAuthorities = [];
+        }
+      }
+
+      // If an establishment is not CQC regulated, remove CQC sharing and remove a location ID if set
+      if (document.IsCQCRegulated === false || document.isRegulated === false) {
+        if (document.share && document.share.with) {
+          document.share.with.filter(item => item !== 'CQC');
+        }
+        document.locationId = null;
+      }
 
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();
