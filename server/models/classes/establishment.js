@@ -1973,7 +1973,7 @@ class Establishment extends EntityValidator {
     }
   }
 
-  /**
+ /**
    * Function to fetch all the parents name and their post code.
    * @fetchQuery consist of parameters based on which we will filter parent name and postcode.
    */
@@ -2005,6 +2005,7 @@ class Establishment extends EntityValidator {
       return false;
     }
   }
+
 
   // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
   static async fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF) {
