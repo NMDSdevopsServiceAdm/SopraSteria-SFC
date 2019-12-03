@@ -42,13 +42,13 @@ const ServiceCache = require('../cache/singletons/services').ServiceCache;
 const CapacitiesCache = require('../cache/singletons/capacities').CapacitiesCache;
 
 // Bulk upload helpers
-const db = rfr('server/utils/datastore');
+const db = require('../../utils/datastore');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 const nonCareServices = [16];
 
 class Establishment extends EntityValidator {
-  constructor (username, bulkUploadStatus = null) {
+  constructor(username, bulkUploadStatus = null) {
     super();
 
     this._username = username;
@@ -109,17 +109,27 @@ class Establishment extends EntityValidator {
   }
 
   // private logging
-  static get LOG_ERROR () { return 100; }
-  static get LOG_WARN () { return 200; }
-  static get LOG_INFO () { return 300; }
-  static get LOG_TRACE () { return 400; }
-  static get LOG_DEBUG () { return 500; }
+  static get LOG_ERROR() {
+    return 100;
+  }
+  static get LOG_WARN() {
+    return 200;
+  }
+  static get LOG_INFO() {
+    return 300;
+  }
+  static get LOG_TRACE() {
+    return 400;
+  }
+  static get LOG_DEBUG() {
+    return 500;
+  }
 
-  set logLevel (logLevel) {
+  set logLevel(logLevel) {
     this._logLevel = logLevel;
   }
 
-  _log (level, msg) {
+  _log(level, msg) {
     if (this._logLevel >= level) {
       console.log(`TODO: (${level}) - Establishment class: `, msg);
     }
@@ -128,183 +138,188 @@ class Establishment extends EntityValidator {
   //
   // attributes
   //
-  get id () {
+  get id() {
     return this._id;
   }
 
-  get uid () {
+  get uid() {
     return this._uid;
   }
 
-  get ustatus () {
+  get ustatus() {
     return this._ustatus;
   }
 
-  get username () {
+  get username() {
     return this._username;
   }
 
-  get name () {
+  get name() {
     return this._properties.get('Name') ? this._properties.get('Name').property : null;
   }
 
-  get address () {
+  get address() {
     // returns concatenated address
     const self = this;
-    return ['_address1', '_address2', '_address3', '_town', '_county'].reduce((arr, part) => {
-      if (self[part]) {
-        arr.push(self[part]);
-      }
-      return arr;
-    }, []).join(', ');
+    return ['_address1', '_address2', '_address3', '_town', '_county']
+      .reduce((arr, part) => {
+        if (self[part]) {
+          arr.push(self[part]);
+        }
+        return arr;
+      }, [])
+      .join(', ');
   }
 
-  get address1 () {
+  get address1() {
     return this._address1;
   }
 
-  get address2 () {
+  get address2() {
     return this._address2;
   }
 
-  get address3 () {
+  get address3() {
     return this._address3;
   }
 
-  get town () {
+  get town() {
     return this._town;
   }
 
-  get county () {
+  get county() {
     return this._county;
   }
 
-  get locationId () {
+  get locationId() {
     return this._locationId;
   }
 
-  get provId () {
+  get provId() {
     return this._provId;
   }
 
-  get postcode () {
+  get postcode() {
     return this._postcode;
   }
 
-  get isRegulated () {
+  get isRegulated() {
     return this._isRegulated;
   }
 
-  get mainService () {
+  get mainService() {
     return this._properties.get('MainServiceFK') ? this._properties.get('MainServiceFK').property : null;
   }
 
-  get employerType () {
+  get employerType() {
     return this._properties.get('EmployerType') ? this._properties.get('EmployerType').property : null;
   }
 
-  get localIdentifier () {
+  get localIdentifier() {
     return this._properties.get('LocalIdentifier') ? this._properties.get('LocalIdentifier').property : null;
   }
 
-  get shareWith () {
+  get shareWith() {
     return this._properties.get('ShareData') ? this._properties.get('ShareData').property : null;
   }
 
-  get shareWithLA () {
+  get shareWithLA() {
     return this._properties.get('ShareWithLA') ? this._properties.get('ShareWithLA').property : null;
   }
 
-  get otherServices () {
+  get otherServices() {
     return this._properties.get('OtherServices') ? this._properties.get('OtherServices').property : null;
   }
 
-  get capacities () {
+  get capacities() {
     return this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').property : null;
   }
 
-  get serviceUsers () {
+  get serviceUsers() {
     return this._properties.get('ServiceUsers') ? this._properties.get('ServiceUsers').property : null;
   }
 
-  get starters () {
+  get starters() {
     return this._properties.get('Starters') ? this._properties.get('Starters').property : null;
   }
 
-  get leavers () {
+  get leavers() {
     return this._properties.get('Leavers') ? this._properties.get('Leavers').property : null;
   }
 
-  get vacancies () {
+  get vacancies() {
     return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
   }
 
-  get reasonsForLeaving () {
+  get reasonsForLeaving() {
     return this._reasonsForLeaving;
   }
 
-  get nmdsId () {
+  get nmdsId() {
     return this._nmdsId;
   }
 
-  get created () {
+  get created() {
     return this._created;
   }
 
-  get updated () {
+  get updated() {
     return this._updated;
   }
 
-  get updatedBy () {
+  get updatedBy() {
     return this._updatedBy;
   }
 
-  get isParent () {
+  get isParent() {
     return this._isParent;
   }
 
-  get parentId () {
+  get parentId() {
     return this._parentId;
   }
 
-  get parentUid () {
+  get parentUid() {
     return this._parentUid;
   }
 
   get parentName() {
-  return this._parentName;
+    return this._parentName;
   }
 
-  get dataOwner () {
+  get dataOwner() {
     return this._dataOwner;
   }
 
-  get dataPermissions () {
+  get dataPermissions() {
     return this._dataPermissions;
   }
 
-  get numberOfStaff () {
+  get numberOfStaff() {
     return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
   }
 
-  get status () {
+  get status() {
     return this._status;
   }
 
-  get key () {
-    return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, '') : this.name).replace(/\s/g, '');
+  get key() {
+    return (this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
+      ? this.localIdentifier.replace(/\s/g, '')
+      : this.name
+    ).replace(/\s/g, '');
   }
 
-  get archived () {
+  get archived() {
     return this._archived;
   }
 
-  get dataOwnershipRequested () {
+  get dataOwnershipRequested() {
     return this._dataOwnershipRequested;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
-  _initialise () {
+  _initialise() {
     if (this._uid === null) {
       this._isNew = true;
       this._uid = uuid.v4();
@@ -317,7 +332,7 @@ class Establishment extends EntityValidator {
   }
 
   // external method to initialise the mandatory non-extendable properties
-  initialise (address1, address2, address3, town, county, locationId, provId, postcode, isRegulated) {
+  initialise(address1, address2, address3, town, county, locationId, provId, postcode, isRegulated) {
     // NMDS ID will be calculated when saving this establishment for the very first time - on creation only
     this._nmdsId = null;
 
@@ -332,7 +347,7 @@ class Establishment extends EntityValidator {
     this._provId = provId;
   }
 
-  initialiseSub (parentID, parentUid) {
+  initialiseSub(parentID, parentUid) {
     this._parentUid = parentUid;
     this._parentId = parentID;
     this._dataOwner = 'Parent';
@@ -340,7 +355,7 @@ class Establishment extends EntityValidator {
   }
 
   // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
-  associateWorker (key, worker) {
+  associateWorker(key, worker) {
     if (key && worker) {
       // worker not yet associated; take as is
       this._workerEntities[key] = worker;
@@ -348,7 +363,7 @@ class Establishment extends EntityValidator {
   }
 
   // returns just the set of keys of the associated workers
-  get associatedWorkers () {
+  get associatedWorkers() {
     if (this._workerEntities) {
       return Object.keys(this._workerEntities);
     } else {
@@ -356,7 +371,7 @@ class Establishment extends EntityValidator {
     }
   }
 
-  get workers () {
+  get workers() {
     if (this._workerEntities) {
       return Object.values(this._workerEntities);
     } else {
@@ -364,13 +379,13 @@ class Establishment extends EntityValidator {
     }
   }
 
-  theWorker (key) {
+  theWorker(key) {
     return this._workerEntities && key ? this._workerEntities[key] : null;
   }
 
   // takes the given JSON document and creates an Establishment's set of extendable properties
   // Returns true if the resulting Establishment is valid; otherwise false
-  async load (document, associatedEntities = false, bulkUploadCompletion = false) {
+  async load(document, associatedEntities = false, bulkUploadCompletion = false) {
     try {
       // bulk upload status
       if (document.status) {
@@ -489,7 +504,9 @@ class Establishment extends EntityValidator {
 
           document.workers.forEach(thisWorker => {
             // we're loading from JSON, not entity, so there is no key property; so add it
-            thisWorker.key = thisWorker.localIdentifier ? thisWorker.localIdentifier.replace(/\s/g, '') : thisWorker.nameOrId.replace(/\s/g, '');
+            thisWorker.key = thisWorker.localIdentifier
+              ? thisWorker.localIdentifier.replace(/\s/g, '')
+              : thisWorker.nameOrId.replace(/\s/g, '');
 
             // check if we already have the Worker associated, before associating a new worker
             if (this._workerEntities[thisWorker.key]) {
@@ -527,17 +544,14 @@ class Establishment extends EntityValidator {
       }
     } catch (err) {
       this._log(Establishment.LOG_ERROR, `Establishment::load - failed: ${err}`);
-      throw new EstablishmentExceptions.EstablishmentJsonException(
-        err,
-        null,
-        'Failed to load Establishment from JSON');
+      throw new EstablishmentExceptions.EstablishmentJsonException(err, null, 'Failed to load Establishment from JSON');
     }
 
     return this.isValid();
   }
 
   // returns true if Establishment is valid, otherwise false
-  isValid () {
+  isValid() {
     // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
     if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
       const thisEstablishmentIsValid = this._properties.isValid;
@@ -548,12 +562,11 @@ class Establishment extends EntityValidator {
         if (thisEstablishmentIsValid && Array.isArray(thisEstablishmentIsValid) && this._validations.length === 0) {
           const propertySuffixLength = 'Property'.length * -1;
           thisEstablishmentIsValid.forEach(thisInvalidProp => {
-            this._validations.push(new ValidationMessage(
-              ValidationMessage.WARNING,
-              111111111,
-              'Invalid',
-              [thisInvalidProp.slice(0, propertySuffixLength)]
-            ));
+            this._validations.push(
+              new ValidationMessage(ValidationMessage.WARNING, 111111111, 'Invalid', [
+                thisInvalidProp.slice(0, propertySuffixLength),
+              ])
+            );
           });
         }
 
@@ -565,9 +578,9 @@ class Establishment extends EntityValidator {
     }
   }
 
-  async saveAssociatedEntities (savedBy, bulkUploaded = false, externalTransaction) {
+  async saveAssociatedEntities(savedBy, bulkUploaded = false, externalTransaction) {
     if (this._workerEntities) {
-      const log = result => (result == null);
+      const log = result => result == null;
 
       try {
         const workersAsArray = Object.values(this._workerEntities).map(thisWorker => {
@@ -577,15 +590,19 @@ class Establishment extends EntityValidator {
 
         // new and updated Workers
         const starterSavePromise = Promise.resolve(null);
-        await workersAsArray
-          .reduce((p, thisWorkerToSave) => p
-            .then(() => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true))
-            .then(log),
-          starterSavePromise);
+        await workersAsArray.reduce(
+          (p, thisWorkerToSave) =>
+            p.then(() => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true)).then(log),
+          starterSavePromise
+        );
 
         // now deleted workers
         const starterDeletedPromise = Promise.resolve(null);
-        await this._readyForDeletionWorkers.reduce((p, thisWorkerToDelete) => p.then(() => thisWorkerToDelete.archive(savedBy, externalTransaction, true).then(log)), starterDeletedPromise);
+        await this._readyForDeletionWorkers.reduce(
+          (p, thisWorkerToDelete) =>
+            p.then(() => thisWorkerToDelete.archive(savedBy, externalTransaction, true).then(log)),
+          starterDeletedPromise
+        );
       } catch (err) {
         console.error('Establishment::saveAssociatedEntities error: ', err);
         // rethrow error to ensure the transaction is rolled back
@@ -596,23 +613,29 @@ class Establishment extends EntityValidator {
 
   // saves the Establishment to DB. Returns true if saved; false is not.
   // Throws "EstablishmentSaveException" on error
-  async save (savedBy, bulkUploaded = false, ttl = 0, externalTransaction = null, associatedEntities = false) {
+  async save(savedBy, bulkUploaded = false, ttl = 0, externalTransaction = null, associatedEntities = false) {
     const mustSave = this._initialise();
 
     if (!this.uid) {
       this._log(Establishment.LOG_ERROR, 'Not able to save an unknown uid');
-      throw new EstablishmentExceptions.EstablishmentSaveException(null,
+      throw new EstablishmentExceptions.EstablishmentSaveException(
+        null,
         this.uid,
         this.name,
         'Not able to save an unknown uid',
-        'Establishment does not exist');
+        'Establishment does not exist'
+      );
     }
 
     // with bulk upload, if this entity's status is "UNCHECKED", do not save it
     if (this._status === 'UNCHECKED') {
       // if requested, propagate the saving of this establishment down to each of the associated entities
       if (associatedEntities) {
-        await this.saveAssociatedEntities(savedBy, bulkUploaded, externalTransaction || await models.sequelize.transaction());
+        await this.saveAssociatedEntities(
+          savedBy,
+          bulkUploaded,
+          externalTransaction || (await models.sequelize.transaction())
+        );
       }
 
       return;
@@ -624,44 +647,42 @@ class Establishment extends EntityValidator {
         // when creating an establishment, need to calculate it's NMDS ID, which is combination of postcode area and sequence.
         const cssrResults = await models.pcodedata.findOne({
           where: {
-            postcode: this._postcode
+            postcode: this._postcode,
           },
-          include: [{
-            model: models.cssr,
-            as: 'theAuthority',
-            attributes: ['id', 'name', 'nmdsIdLetter']
-          }]
+          include: [
+            {
+              model: models.cssr,
+              as: 'theAuthority',
+              attributes: ['id', 'name', 'nmdsIdLetter'],
+            },
+          ],
         });
 
         let nmdsLetter = null;
         if (
           cssrResults &&
-            cssrResults.postcode === this._postcode &&
-            cssrResults.theAuthority &&
-            cssrResults.theAuthority.id &&
-            Number.isInteger(cssrResults.theAuthority.id)
+          cssrResults.postcode === this._postcode &&
+          cssrResults.theAuthority &&
+          cssrResults.theAuthority.id &&
+          Number.isInteger(cssrResults.theAuthority.id)
         ) {
           nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
         } else {
           // No direct match so do the fuzzy match
           const [firstHalfOfPostcode] = 'postcode'.split(' ');
           const fuzzyCssrNmdsIdMatch = await models.sequelize.query(
-              `select "Cssr"."NmdsIDLetter"
+            `select "Cssr"."NmdsIDLetter"
               from cqcref.pcodedata, cqc."Cssr"
               where postcode like '${escape(firstHalfOfPostcode)}%'
               and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode"
               group by "Cssr"."NmdsIDLetter"
               limit 1`,
-              {
-                type: models.sequelize.QueryTypes.SELECT
-              }
+            {
+              type: models.sequelize.QueryTypes.SELECT,
+            }
           );
 
-          if (
-            fuzzyCssrNmdsIdMatch &&
-            fuzzyCssrNmdsIdMatch[0] &&
-            fuzzyCssrNmdsIdMatch[0].NmdsIDLetter
-          ) {
+          if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
             nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
           }
         }
@@ -672,14 +693,27 @@ class Establishment extends EntityValidator {
         }
 
         let nextNmdsIdSeqNumber = 0;
-        const nextNmdsIdSeqNumberResults = await models.sequelize.query('SELECT nextval(\'cqc."NmdsID_seq"\')', { type: models.sequelize.QueryTypes.SELECT });
+        const nextNmdsIdSeqNumberResults = await models.sequelize.query('SELECT nextval(\'cqc."NmdsID_seq"\')', {
+          type: models.sequelize.QueryTypes.SELECT,
+        });
 
-        if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
+        if (
+          nextNmdsIdSeqNumberResults &&
+          nextNmdsIdSeqNumberResults[0] &&
+          nextNmdsIdSeqNumberResults[0] &&
+          nextNmdsIdSeqNumberResults[0].nextval
+        ) {
           nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
         } else {
           // no sequence number
           console.error('Failed to get next sequence number for Establishment: ', nextNmdsIdSeqNumberResults);
-          throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Failed to generate NMDS ID', 'Failed to generate NMDS ID');
+          throw new EstablishmentExceptions.EstablishmentSaveException(
+            null,
+            this.uid,
+            this.name,
+            'Failed to generate NMDS ID',
+            'Failed to generate NMDS ID'
+          );
         }
 
         this._nmdsId = `${nmdsLetter}${nextNmdsIdSeqNumber}`;
@@ -709,7 +743,7 @@ class Establishment extends EntityValidator {
           shareWithLA: false,
           source: bulkUploaded ? 'Bulk' : 'Online',
           attributes: ['id', 'created', 'updated'],
-          ustatus: this._ustatus
+          ustatus: this._ustatus,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -742,16 +776,20 @@ class Establishment extends EntityValidator {
           this._isNew = false;
 
           // having the user we can now create the audit record; injecting the userFk
-          const allAuditEvents = [{
-            establishmentFk: this._id,
-            username: savedBy.toLowerCase(),
-            type: 'created'
-          }].concat(this._properties.auditEvents.map(thisEvent => {
-            return {
-              ...thisEvent,
-              establishmentFk: this._id
-            };
-          }));
+          const allAuditEvents = [
+            {
+              establishmentFk: this._id,
+              username: savedBy.toLowerCase(),
+              type: 'created',
+            },
+          ].concat(
+            this._properties.auditEvents.map(thisEvent => {
+              return {
+                ...thisEvent,
+                establishmentFk: this._id,
+              };
+            })
+          );
           await models.establishmentAudit.bulkCreate(allAuditEvents, { transaction: thisTransaction });
 
           // now - work through any additional models having processed all properties (first delete and then re-create)
@@ -762,9 +800,9 @@ class Establishment extends EntityValidator {
             deleteModelPromises.push(
               models[thisModelByName].destroy({
                 where: {
-                  establishmentId: this._id
+                  establishmentId: this._id,
                 },
-                transaction: thisTransaction
+                transaction: thisTransaction,
               })
             );
           });
@@ -777,7 +815,7 @@ class Establishment extends EntityValidator {
                 thisModelData.map(thisRecord => {
                   return {
                     ...thisRecord,
-                    establishmentId: this._id
+                    establishmentId: this._id,
                   };
                 }),
                 { transaction: thisTransaction }
@@ -788,7 +826,14 @@ class Establishment extends EntityValidator {
 
           // always recalculate WDF - if not bulk upload (this._status)
           if (this._status === null) {
-            await WdfCalculator.calculate(savedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_ADD, false);
+            await WdfCalculator.calculate(
+              savedBy,
+              this._id,
+              null,
+              thisTransaction,
+              WdfCalculator.ESTABLISHMENT_ADD,
+              false
+            );
           }
 
           // this is an async method - don't wait for it to return
@@ -799,29 +844,60 @@ class Establishment extends EntityValidator {
             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
           }
 
-          this._log(Establishment.LOG_INFO, `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`);
+          this._log(
+            Establishment.LOG_INFO,
+            `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`
+          );
         });
       } catch (err) {
         // need to handle duplicate Establishment
         if (err.name && err.name === 'SequelizeUniqueConstraintError') {
-          if (err.parent.constraint && (err.parent.constraint === 'Establishment_unique_registration_with_locationid' || err.parent.constraint === 'Establishment_unique_registration')) {
-            throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Duplicate Establishment', 'Duplicate Establishment');
+          if (
+            err.parent.constraint &&
+            (err.parent.constraint === 'Establishment_unique_registration_with_locationid' ||
+              err.parent.constraint === 'Establishment_unique_registration')
+          ) {
+            throw new EstablishmentExceptions.EstablishmentSaveException(
+              null,
+              this.uid,
+              this.name,
+              'Duplicate Establishment',
+              'Duplicate Establishment'
+            );
           }
         }
 
         if (err.name && err.name === 'SequelizeUniqueConstraintError') {
-          if (err.parent.constraint && (err.parent.constraint === 'establishment_LocalIdentifier_unq')) {
-            throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Duplicate LocalIdentifier', 'Duplicate LocalIdentifier');
+          if (err.parent.constraint && err.parent.constraint === 'establishment_LocalIdentifier_unq') {
+            throw new EstablishmentExceptions.EstablishmentSaveException(
+              null,
+              this.uid,
+              this.name,
+              'Duplicate LocalIdentifier',
+              'Duplicate LocalIdentifier'
+            );
           }
         }
 
         // and foreign key constaint to Location
         if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
-          throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Unknown Location', 'Unknown Location');
+          throw new EstablishmentExceptions.EstablishmentSaveException(
+            null,
+            this.uid,
+            this.name,
+            'Unknown Location',
+            'Unknown Location'
+          );
         }
 
         if (err.name && err.name === 'SequelizeValidationError' && err.errors[0].path === 'nmdsId') {
-          throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Unknown NMDSID', 'Unknown NMDSID');
+          throw new EstablishmentExceptions.EstablishmentSaveException(
+            null,
+            this.uid,
+            this.name,
+            'Unknown NMDSID',
+            'Unknown NMDSID'
+          );
         }
 
         // gets here having not explicitly caught err
@@ -859,7 +935,7 @@ class Establishment extends EntityValidator {
             reasonsForLeaving: this._reasonsForLeaving,
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
-            ustatus: this._ustatus
+            ustatus: this._ustatus,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -875,7 +951,7 @@ class Establishment extends EntityValidator {
             updateDocument.establishmentWdfEligibility = updatedTimestamp;
             wdfAudit = {
               username: savedBy.toLowerCase(),
-              type: 'wdfEligible'
+              type: 'wdfEligible',
             };
           } else {
             // blank out establishmentWdfEligibility to indicate the
@@ -885,17 +961,14 @@ class Establishment extends EntityValidator {
           }
 
           // now save the document
-          const [updatedRecordCount, updatedRows] = await models.establishment.update(
-            updateDocument,
-            {
-              returning: true,
-              where: {
-                uid: this.uid
-              },
-              attributes: ['id', 'updated'],
-              transaction: thisTransaction
-            }
-          );
+          const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
+            returning: true,
+            where: {
+              uid: this.uid,
+            },
+            attributes: ['id', 'updated'],
+            transaction: thisTransaction,
+          });
 
           if (updatedRecordCount === 1) {
             const updatedRecord = updatedRows[0].get({ plain: true });
@@ -905,16 +978,20 @@ class Establishment extends EntityValidator {
             this._id = updatedRecord.EstablishmentID;
 
             // having updated the record, create the audit event
-            const allAuditEvents = [{
-              establishmentFk: this._id,
-              username: savedBy.toLowerCase(),
-              type: 'updated'
-            }].concat(this._properties.auditEvents.map(thisEvent => {
-              return {
-                ...thisEvent,
-                establishmentFk: this._id
-              };
-            }));
+            const allAuditEvents = [
+              {
+                establishmentFk: this._id,
+                username: savedBy.toLowerCase(),
+                type: 'updated',
+              },
+            ].concat(
+              this._properties.auditEvents.map(thisEvent => {
+                return {
+                  ...thisEvent,
+                  establishmentFk: this._id,
+                };
+              })
+            );
 
             if (wdfAudit) {
               wdfAudit.establishmentFk = this._id;
@@ -932,9 +1009,9 @@ class Establishment extends EntityValidator {
               deleteModelPromises.push(
                 models[thisModelByName].destroy({
                   where: {
-                    establishmentId: this._id
+                    establishmentId: this._id,
                   },
-                  transaction: thisTransaction
+                  transaction: thisTransaction,
                 })
               );
             });
@@ -950,7 +1027,7 @@ class Establishment extends EntityValidator {
                   thisModelData.map(thisRecord => {
                     return {
                       ...thisRecord,
-                      establishmentId: this._id
+                      establishmentId: this._id,
                     };
                   }),
                   { transaction: thisTransaction }
@@ -962,7 +1039,14 @@ class Establishment extends EntityValidator {
 
             // always recalculate WDF - if not bulk upload (this._status)
             if (this._status === null) {
-              await WdfCalculator.calculate(savedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_UPDATE, false);
+              await WdfCalculator.calculate(
+                savedBy,
+                this._id,
+                null,
+                thisTransaction,
+                WdfCalculator.ESTABLISHMENT_UPDATE,
+                false
+              );
             }
 
             // if requested, propagate the saving of this establishment down to each of the associated entities
@@ -975,17 +1059,35 @@ class Establishment extends EntityValidator {
 
             this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
           } else {
-            throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, `Failed to update resulting establishment record with id: ${this._id}`, `Failed to update resulting establishment record with id: ${this._id}`);
+            throw new EstablishmentExceptions.EstablishmentSaveException(
+              null,
+              this.uid,
+              this.name,
+              `Failed to update resulting establishment record with id: ${this._id}`,
+              `Failed to update resulting establishment record with id: ${this._id}`
+            );
           }
         });
       } catch (err) {
         if (err.name && err.name === 'SequelizeUniqueConstraintError') {
-          if (err.parent.constraint && (err.parent.constraint === 'establishment_LocalIdentifier_unq')) {
-            throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Duplicate LocalIdentifier', 'Duplicate LocalIdentifier');
+          if (err.parent.constraint && err.parent.constraint === 'establishment_LocalIdentifier_unq') {
+            throw new EstablishmentExceptions.EstablishmentSaveException(
+              null,
+              this.uid,
+              this.name,
+              'Duplicate LocalIdentifier',
+              'Duplicate LocalIdentifier'
+            );
           }
         }
 
-        throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, `Failed to update establishment record with id: ${this._id}`);
+        throw new EstablishmentExceptions.EstablishmentSaveException(
+          null,
+          this.uid,
+          this.name,
+          err,
+          `Failed to update establishment record with id: ${this._id}`
+        );
       }
     }
 
@@ -995,68 +1097,72 @@ class Establishment extends EntityValidator {
   //This method will fetch parent name
   async fetchParentName(id) {
     if (!id) {
-      throw new EstablishmentExceptions.EstablishmentRestoreException(null,
+      throw new EstablishmentExceptions.EstablishmentRestoreException(
         null,
-        null,
-        'User::restore failed: Missing id or uid',
-        null,
-        'Unexpected Error');
-      }
-        try {
-          // restore establishment based on id as an integer (primary key or uid)
-          let fetchQuery = {
-            where: {
-              id: id
-            }
-          };
-
-          if (!Number.isInteger(id)) {
-            fetchQuery = {
-              where: {
-                uid: id,
-                archived: false
-              }
-            };
-          }
-          const fetchName = await models.establishment.findOne(fetchQuery);
-          if (fetchName && fetchName.id && Number.isInteger(fetchName.id)) {
-              this._parentName = fetchName.NameValue;
-          }
-          return this._parentName;
-        }catch (err) {
-          // typically errors when making changes to model or database schema!
-          this._log(Establishment.LOG_ERROR, err);
-
-          throw new EstablishmentExceptions.EstablishmentRestoreException(null, this.uid, null, err, null);
-        }
-  }
-
-  // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
-  // returns true on success; false if no User
-  // Can throw EstablishmentRestoreException exception.
-  async restore (id, showHistory = false, associatedEntities = false, associatedLevel = 1) {
-    if (!id) {
-      throw new EstablishmentExceptions.EstablishmentRestoreException(null,
         null,
         null,
         'User::restore failed: Missing id or uid',
         null,
-        'Unexpected Error');
+        'Unexpected Error'
+      );
     }
     try {
       // restore establishment based on id as an integer (primary key or uid)
       let fetchQuery = {
         where: {
-          id: id
-        }
+          id: id,
+        },
       };
 
       if (!Number.isInteger(id)) {
         fetchQuery = {
           where: {
             uid: id,
-            archived: false
-          }
+            archived: false,
+          },
+        };
+      }
+      const fetchName = await models.establishment.findOne(fetchQuery);
+      if (fetchName && fetchName.id && Number.isInteger(fetchName.id)) {
+        this._parentName = fetchName.NameValue;
+      }
+      return this._parentName;
+    } catch (err) {
+      // typically errors when making changes to model or database schema!
+      this._log(Establishment.LOG_ERROR, err);
+
+      throw new EstablishmentExceptions.EstablishmentRestoreException(null, this.uid, null, err, null);
+    }
+  }
+
+  // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
+  // returns true on success; false if no User
+  // Can throw EstablishmentRestoreException exception.
+  async restore(id, showHistory = false, associatedEntities = false, associatedLevel = 1) {
+    if (!id) {
+      throw new EstablishmentExceptions.EstablishmentRestoreException(
+        null,
+        null,
+        null,
+        'User::restore failed: Missing id or uid',
+        null,
+        'Unexpected Error'
+      );
+    }
+    try {
+      // restore establishment based on id as an integer (primary key or uid)
+      let fetchQuery = {
+        where: {
+          id: id,
+        },
+      };
+
+      if (!Number.isInteger(id)) {
+        fetchQuery = {
+          where: {
+            uid: id,
+            archived: false,
+          },
         };
       }
 
@@ -1108,103 +1214,103 @@ class Establishment extends EntityValidator {
         if (showHistory) {
           fetchResults.auditEvents = await models.establishmentAudit.findAll({
             where: {
-              establishmentFk: this._id
+              establishmentFk: this._id,
             },
-            order: [
-              ['id', 'DESC']
-            ]
+            order: [['id', 'DESC']],
           });
         }
 
         // Individual fetches for extended information in associations
         const establishmentServiceUserResults = await models.establishmentServiceUsers.findAll({
           where: {
-            EstablishmentID: this._id
+            EstablishmentID: this._id,
           },
-          raw: true
+          raw: true,
         });
 
         const establishmentServices = await models.establishmentServices.findAll({
           where: {
-            EstablishmentID: this._id
+            EstablishmentID: this._id,
           },
-          raw: true
+          raw: true,
         });
 
         const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([
           ServiceCache.allMyOtherServices(establishmentServices.map(x => x)),
           models.services.findOne({
             where: {
-              id: fetchResults.MainServiceFKValue
+              id: fetchResults.MainServiceFKValue,
             },
             attributes: ['id', 'name'],
-            raw: true
+            raw: true,
           }),
           models.serviceUsers.findAll({
             where: {
-              id: establishmentServiceUserResults.map(su => su.serviceUserId)
+              id: establishmentServiceUserResults.map(su => su.serviceUserId),
             },
             attributes: ['id', 'service', 'group', 'seq'],
-            order: [
-              ['seq', 'ASC']
-            ],
-            raw: true
+            order: [['seq', 'ASC']],
+            raw: true,
           }),
           models.establishmentCapacity.findAll({
             where: {
-              EstablishmentID: this._id
+              EstablishmentID: this._id,
             },
-            include: [{
-              model: models.serviceCapacity,
-              as: 'reference',
-              attributes: ['id', 'question']
-            }],
-            attributes: ['id', 'answer']
+            include: [
+              {
+                model: models.serviceCapacity,
+                as: 'reference',
+                attributes: ['id', 'question'],
+              },
+            ],
+            attributes: ['id', 'answer'],
           }),
           models.establishmentJobs.findAll({
             where: {
-              EstablishmentID: this._id
+              EstablishmentID: this._id,
             },
-            include: [{
-              model: models.job,
-              as: 'reference',
-              attributes: ['id', 'title'],
-              order: [
-                ['title', 'ASC']
-              ]
-            }],
+            include: [
+              {
+                model: models.job,
+                as: 'reference',
+                attributes: ['id', 'title'],
+                order: [['title', 'ASC']],
+              },
+            ],
             attributes: ['id', 'type', 'total'],
-            order: [
-              ['type', 'ASC']
-            ]
+            order: [['type', 'ASC']],
           }),
           models.establishmentLocalAuthority.findAll({
             where: {
-              EstablishmentID: this._id
+              EstablishmentID: this._id,
             },
-            attributes: ['id', 'cssrId', 'cssr']
-          })
+            attributes: ['id', 'cssrId', 'cssr'],
+          }),
         ]);
 
         // For services merge any other data into resultset
-        fetchResults.serviceUsers = establishmentServiceUserResults.map((suResult) => {
-          const serviceUser = serviceUsers.find(element => { return suResult.serviceUserId === element.id; });
+        fetchResults.serviceUsers = establishmentServiceUserResults.map(suResult => {
+          const serviceUser = serviceUsers.find(element => {
+            return suResult.serviceUserId === element.id;
+          });
           if (suResult.other) {
             return {
               ...serviceUser,
-              other: suResult.other
+              other: suResult.other,
             };
           } else {
             return serviceUser;
           }
         });
 
-        fetchResults.otherServices = establishmentServices.map((suResult) => {
-          const otherService = otherServices.find(element => { return suResult.serviceId === element.id; });
+        fetchResults.otherServices = establishmentServices.map(suResult => {
+          const otherService = otherServices.find(element => {
+            return suResult.serviceId === element.id;
+          });
           if (suResult.other) {
             return {
               ...otherService,
-              other: suResult.other
+              other: suResult.other,
             };
           } else {
             return otherService;
@@ -1220,7 +1326,7 @@ class Establishment extends EntityValidator {
         // Moved this code from the section after the findOne, to here, now that mainService is pulled in seperately
         this._mainService = {
           id: fetchResults.mainService.id,
-          name: fetchResults.mainService.name
+          name: fetchResults.mainService.name,
         };
 
         // other services output requires a list of ALL services available to
@@ -1232,21 +1338,21 @@ class Establishment extends EntityValidator {
         // fetch the main service id and all the associated 'other services' by id only
         const allCapacitiesResults = await models.establishment.findOne({
           where: {
-            id: this._id
+            id: this._id,
           },
           attributes: ['id'],
           include: [
             {
               model: models.services,
               as: 'otherServices',
-              attributes: ['id']
+              attributes: ['id'],
             },
             {
               model: models.services,
               as: 'mainService',
-              attributes: ['id']
-            }
-          ]
+              attributes: ['id'],
+            },
+          ],
         });
 
         const allAssociatedServiceIndices = [];
@@ -1275,15 +1381,15 @@ class Establishment extends EntityValidator {
         // lookup primary authority by trying to resolve on specific postcode code
         const cssrResults = await models.pcodedata.findOne({
           where: {
-            postcode: fetchResults.postcode
+            postcode: fetchResults.postcode,
           },
           include: [
             {
               model: models.cssr,
               as: 'theAuthority',
-              attributes: ['id', 'name', 'nmdsIdLetter']
-            }
-          ]
+              attributes: ['id', 'name', 'nmdsIdLetter'],
+            },
+          ],
         });
 
         if (
@@ -1295,7 +1401,7 @@ class Establishment extends EntityValidator {
         ) {
           fetchResults.primaryAuthorityCssr = {
             id: cssrResults.theAuthority.id,
-            name: cssrResults.theAuthority.name
+            name: cssrResults.theAuthority.name,
           };
         } else {
           //  using just the first half of the postcode
@@ -1303,21 +1409,21 @@ class Establishment extends EntityValidator {
 
           // must escape the string to prevent SQL injection
           const fuzzyCssrIdMatch = await models.sequelize.query(
-              `select "Cssr"."CssrID", "Cssr"."CssR"
+            `select "Cssr"."CssrID", "Cssr"."CssR"
               from cqcref.pcodedata, cqc."Cssr"
               where postcode like '${escape(firstHalfOfPostcode)}%'
               and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode"
               group by "Cssr"."CssrID", "Cssr"."CssR"
               limit 1`,
-              {
-                type: models.sequelize.QueryTypes.SELECT
-              }
+            {
+              type: models.sequelize.QueryTypes.SELECT,
+            }
           );
 
           if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
             fetchResults.primaryAuthorityCssr = {
               id: fuzzyCssrIdMatch[0].CssrID,
-              name: fuzzyCssrIdMatch[0].CssR
+              name: fuzzyCssrIdMatch[0].CssR,
             };
           }
         }
@@ -1338,21 +1444,28 @@ class Establishment extends EntityValidator {
             attributes: ['uid'],
             where: {
               establishmentFk: this._id,
-              archived: false
-            }
+              archived: false,
+            },
           });
 
           if (myWorkerSet && Array.isArray(myWorkerSet)) {
-            await Promise.all(myWorkerSet.map(async thisWorker => {
-              const newWorker = new Worker(this._id, this._status);
-              await newWorker.restore(thisWorker.uid, false, associatedLevel > 1 ? associatedEntities : false, associatedLevel);
+            await Promise.all(
+              myWorkerSet.map(async thisWorker => {
+                const newWorker = new Worker(this._id, this._status);
+                await newWorker.restore(
+                  thisWorker.uid,
+                  false,
+                  associatedLevel > 1 ? associatedEntities : false,
+                  associatedLevel
+                );
 
-              // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
-              // without whitespace
-              this.associateWorker(newWorker.key, newWorker);
+                // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
+                // without whitespace
+                this.associateWorker(newWorker.key, newWorker);
 
-              return {};
-            }));
+                return {};
+              })
+            );
           }
         }
 
@@ -1368,11 +1481,10 @@ class Establishment extends EntityValidator {
     }
   }
 
-  async delete (deletedBy, externalTransaction = null, associatedEntities = false) {
+  async delete(deletedBy, externalTransaction = null, associatedEntities = false) {
     let t;
     try {
       const updatedTimestamp = new Date();
-
 
       // the saving of an Establishment can be initiated within
       //  an external transaction
@@ -1383,20 +1495,17 @@ class Establishment extends EntityValidator {
         archived: true,
         updated: updatedTimestamp,
         updatedBy: deletedBy,
-        LocalIdentifierValue: null
+        LocalIdentifierValue: null,
       };
 
-      const [updatedRecordCount, updatedRows] = await models.establishment.update(
-        updateDocument,
-        {
-          returning: true,
-          where: {
-            uid: this.uid
-          },
-          attributes: ['id', 'updated'],
-          transaction: thisTransaction
-        }
-      );
+      const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
+        returning: true,
+        where: {
+          uid: this.uid,
+        },
+        attributes: ['id', 'updated'],
+        transaction: thisTransaction,
+      });
 
       if (updatedRecordCount === 1) {
         const updatedRecord = updatedRows[0].get({ plain: true });
@@ -1404,24 +1513,33 @@ class Establishment extends EntityValidator {
         this._updated = updatedRecord.updated;
         this._updatedBy = deletedBy;
 
-        const allAuditEvents = [{
-          establishmentFk: this._id,
-          username: deletedBy,
-          type: 'deleted'
-        }];
+        const allAuditEvents = [
+          {
+            establishmentFk: this._id,
+            username: deletedBy,
+            type: 'deleted',
+          },
+        ];
 
         await models.establishmentAudit.bulkCreate(allAuditEvents, { transaction: thisTransaction });
 
         // if deleting this establishment, and if requested, then delete all the associated entities (workers) too
         if (associatedEntities && this._workerEntities) {
-          await Promise.all(Object.values(this._workerEntities).map(thisWorker =>
-            thisWorker.archive(deletedBy, thisTransaction)
-          ));
+          await Promise.all(
+            Object.values(this._workerEntities).map(thisWorker => thisWorker.archive(deletedBy, thisTransaction))
+          );
         }
 
         // always recalculate WDF - if not bulk upload (this._status)
         if (this._status === null) {
-          await WdfCalculator.calculate(deletedBy, this._id, null, thisTransaction, WdfCalculator.ESTABLISHMENT_DELETE, false);
+          await WdfCalculator.calculate(
+            deletedBy,
+            this._id,
+            null,
+            thisTransaction,
+            WdfCalculator.ESTABLISHMENT_DELETE,
+            false
+          );
         }
 
         // this is an async method - don't wait for it to return
@@ -1435,7 +1553,8 @@ class Establishment extends EntityValidator {
       } else {
         const nameId = this._properties.get('NameOrId');
 
-        throw new EstablishmentExceptions.EstablishmentDeleteException(null,
+        throw new EstablishmentExceptions.EstablishmentDeleteException(
+          null,
           this.uid,
           nameId ? nameId.property : null,
           '',
@@ -1443,16 +1562,16 @@ class Establishment extends EntityValidator {
         );
       }
     } catch (err) {
-      if(t) {
+      if (t) {
         t.rollback();
-      }
-      else {
+      } else {
         externalTransaction.rollback();
       }
       console.log('throwing error');
       console.log(err);
       const nameId = this._properties.get('NameOrId');
-      throw new EstablishmentExceptions.EstablishmentDeleteException(null,
+      throw new EstablishmentExceptions.EstablishmentDeleteException(
+        null,
         this.uid,
         nameId ? nameId.property : null,
         err,
@@ -1464,14 +1583,15 @@ class Establishment extends EntityValidator {
   // helper returns a set 'json ready' objects for representing an Establishments's overall
   //  change history, from a given set of audit events (those events being created
   //  or updated only)
-  formatHistoryEvents (auditEvents) {
+  formatHistoryEvents(auditEvents) {
     if (auditEvents) {
-      return auditEvents.filter(thisEvent => ['created', 'updated', 'wdfEligible', 'overalWdfEligible'].includes(thisEvent.type))
+      return auditEvents
+        .filter(thisEvent => ['created', 'updated', 'wdfEligible', 'overalWdfEligible'].includes(thisEvent.type))
         .map(thisEvent => {
           return {
             when: thisEvent.when,
             username: thisEvent.username,
-            event: thisEvent.type
+            event: thisEvent.type,
           };
         });
     } else {
@@ -1482,7 +1602,7 @@ class Establishment extends EntityValidator {
   // helper returns a set 'json ready' objects for representing an Establishment's audit
   //  history, from a the given set of audit events including those of individual
   //  Establishment properties)
-  formatHistory (auditEvents) {
+  formatHistory(auditEvents) {
     if (auditEvents) {
       return auditEvents.map(thisEvent => {
         return {
@@ -1490,7 +1610,7 @@ class Establishment extends EntityValidator {
           username: thisEvent.username,
           event: thisEvent.type,
           property: thisEvent.property,
-          change: thisEvent.event
+          change: thisEvent.event,
         };
       });
     } else {
@@ -1498,21 +1618,35 @@ class Establishment extends EntityValidator {
     }
   }
 
-  async getTotalWorkers () {
+  async getTotalWorkers() {
     return models.worker.count({ where: { establishmentFk: this._id, archived: false } });
   }
 
   // returns a Javascript object which can be used to present as JSON
   //  showHistory appends the historical account of changes at User and individual property level
   //  showHistoryTimeline just returns the history set of audit events for the given User
-  toJSON (showHistory = false, showPropertyHistoryOnly = true, showHistoryTimeline = false, modifiedOnlyProperties = false, fullDescription = true, filteredPropertiesByName = null, includeAssociatedEntities = false) {
+  toJSON(
+    showHistory = false,
+    showPropertyHistoryOnly = true,
+    showHistoryTimeline = false,
+    modifiedOnlyProperties = false,
+    fullDescription = true,
+    filteredPropertiesByName = null,
+    includeAssociatedEntities = false
+  ) {
     if (!showHistoryTimeline) {
       if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
         throw new Error('Establishment::toJSON filteredPropertiesByName must be a simple Array of names');
       }
 
       // JSON representation of extendable properties - with optional filter
-      const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName, false);
+      const myJSON = this._properties.toJSON(
+        showHistory,
+        showPropertyHistoryOnly,
+        modifiedOnlyProperties,
+        filteredPropertiesByName,
+        false
+      );
 
       // add Establishment default properties
       //  using the default formatters
@@ -1520,7 +1654,7 @@ class Establishment extends EntityValidator {
         id: this.id,
         uid: this.uid,
         name: this.name,
-        dataOwnershipRequested: this.dataOwnershipRequested
+        dataOwnershipRequested: this.dataOwnershipRequested,
       };
 
       if (fullDescription) {
@@ -1561,13 +1695,15 @@ class Establishment extends EntityValidator {
         return {
           ...myDefaultJSON,
           ...myJSON,
-          history: this.formatHistoryEvents(this._auditEvents)
+          history: this.formatHistoryEvents(this._auditEvents),
         };
       } else {
         return {
           ...myDefaultJSON,
           ...myJSON,
-          workers: includeAssociatedEntities ? Object.values(this._workerEntities).map(thisWorker => thisWorker.toJSON(false, false, false, false, true)) : undefined
+          workers: includeAssociatedEntities
+            ? Object.values(this._workerEntities).map(thisWorker => thisWorker.toJSON(false, false, false, false, true))
+            : undefined,
         };
       }
     } else {
@@ -1578,7 +1714,7 @@ class Establishment extends EntityValidator {
         created: this.created.toJSON(),
         updated: this.updated.toJSON(),
         updatedBy: this.updatedBy,
-        history: this.formatHistory(this._auditEvents)
+        history: this.formatHistory(this._auditEvents),
       };
     }
   }
@@ -1586,7 +1722,7 @@ class Establishment extends EntityValidator {
   // HELPERS
 
   // returns true if all mandatory properties for an Establishment exist and are valid
-  get hasMandatoryProperties () {
+  get hasMandatoryProperties() {
     let allExistAndValid = true; // assume all exist until proven otherwise
 
     // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
@@ -1595,62 +1731,62 @@ class Establishment extends EntityValidator {
         const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i;
         if (this._uid !== null && !(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
           allExistAndValid = false;
-          this._validations.push(new ValidationMessage(
-            ValidationMessage.ERROR,
-            101,
-            this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
-            ['NMDSID']
-          ));
+          this._validations.push(
+            new ValidationMessage(ValidationMessage.ERROR, 101, this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing', [
+              'NMDSID',
+            ])
+          );
           this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
         }
 
-        if (!(this.name)) {
+        if (!this.name) {
           allExistAndValid = false;
-          this._validations.push(new ValidationMessage(
-            ValidationMessage.ERROR,
-            102,
-            this.name ? `Invalid: ${this.name}` : 'Missing',
-            ['Name']
-          ));
+          this._validations.push(
+            new ValidationMessage(ValidationMessage.ERROR, 102, this.name ? `Invalid: ${this.name}` : 'Missing', [
+              'Name',
+            ])
+          );
           this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
         }
 
-        if (!(this.mainService)) {
+        if (!this.mainService) {
           allExistAndValid = false;
           this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid main service');
         }
 
         // must at least have the first line of address
-        if (!(this._address1)) {
+        if (!this._address1) {
           allExistAndValid = false;
-          this._validations.push(new ValidationMessage(
-            ValidationMessage.ERROR,
-            103,
-            this._address ? `Invalid: ${this._address}` : 'Missing',
-            ['Address']
-          ));
-          this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid first line of address');
+          this._validations.push(
+            new ValidationMessage(
+              ValidationMessage.ERROR,
+              103,
+              this._address ? `Invalid: ${this._address}` : 'Missing',
+              ['Address']
+            )
+          );
+          this._log(
+            Establishment.LOG_ERROR,
+            'Establishment::hasMandatoryProperties - missing or invalid first line of address'
+          );
         }
 
-        if (!(this._postcode)) {
+        if (!this._postcode) {
           allExistAndValid = false;
-          this._validations.push(new ValidationMessage(
-            ValidationMessage.ERROR,
-            104,
-            this._postcode ? `Invalid: ${this._postcode}` : 'Missing',
-            ['Postcode']
-          ));
+          this._validations.push(
+            new ValidationMessage(
+              ValidationMessage.ERROR,
+              104,
+              this._postcode ? `Invalid: ${this._postcode}` : 'Missing',
+              ['Postcode']
+            )
+          );
           this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid postcode');
         }
 
         if (this._isRegulated === null) {
           allExistAndValid = false;
-          this._validations.push(new ValidationMessage(
-            ValidationMessage.ERROR,
-            105,
-            'Missing',
-            ['CQCRegistered']
-          ));
+          this._validations.push(new ValidationMessage(ValidationMessage.ERROR, 105, 'Missing', ['CQCRegistered']));
           this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing regulated flag');
         }
 
@@ -1660,13 +1796,15 @@ class Establishment extends EntityValidator {
         if (this._isRegulated) {
           if (this.mainService.id !== MAIN_SERVICE_HEAD_OFFICE_ID && this._locationId === null) {
             allExistAndValid = false;
-            this._validations.push(new ValidationMessage(
-              ValidationMessage.ERROR,
-              106,
-              'Missing (mandatory) for a CQC Registered site',
-              ['LocationID']
-            ));
-            this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
+            this._validations.push(
+              new ValidationMessage(ValidationMessage.ERROR, 106, 'Missing (mandatory) for a CQC Registered site', [
+                'LocationID',
+              ])
+            );
+            this._log(
+              Establishment.LOG_ERROR,
+              'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace'
+            );
           }
         }
       } catch (err) {
@@ -1679,7 +1817,7 @@ class Establishment extends EntityValidator {
 
   // returns true if this establishment is WDF eligible as referenced from the
   //  given effective date; otherwise returns false
-  async isWdfEligible (effectiveFrom) {
+  async isWdfEligible(effectiveFrom) {
     const wdfByProperty = await this.wdf(effectiveFrom);
     const wdfPropertyValues = Object.values(wdfByProperty);
 
@@ -1687,21 +1825,22 @@ class Establishment extends EntityValidator {
     // The WDF by property will show the current eligibility of each property
     return {
       // whether the establishment has achieved overall wdf eligibility in this financial year
-      isEligible: !!(this._overallWdfEligibility && (this._overallWdfEligibility > effectiveFrom)),
+      isEligible: !!(this._overallWdfEligibility && this._overallWdfEligibility > effectiveFrom),
 
       // whether just the establishment fields are currently considered wdf valid
-      currentEligibility: wdfPropertyValues.every(thisWdfProperty =>
-        (thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
-        thisWdfProperty.isEligible === 'Not relevant'
+      currentEligibility: wdfPropertyValues.every(
+        thisWdfProperty =>
+          (thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
+          thisWdfProperty.isEligible === 'Not relevant'
       ),
 
       // The date just the establishment fields were last wdf valid
       lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-      ...wdfByProperty
+      ...wdfByProperty,
     };
   }
 
-  _isPropertyWdfBasicEligible (refEpoch, property) {
+  _isPropertyWdfBasicEligible(refEpoch, property) {
     const PER_PROPERTY_ELIGIBLE = 0;
     const RECORD_LEVEL_ELIGIBLE = 1;
     const COMPLETED_PROPERTY_ELIGIBLE = 2;
@@ -1723,35 +1862,43 @@ class Establishment extends EntityValidator {
         throw new Error('Establishment WDF by Completion is Not implemented');
     }
 
-    return property &&
+    return (
+      property &&
       property.property !== null &&
       property.property !== undefined &&
       property.valid &&
-      referenceTime !== null;
+      referenceTime !== null
+    );
   }
 
   // returns the WDF eligibility of each WDF relevant property as referenced from
   //  the given effect date
-  async wdf (effectiveFrom) {
+  async wdf(effectiveFrom) {
     const myWdf = {};
     const effectiveFromEpoch = effectiveFrom.getTime();
 
     // employer type
     myWdf.employerType = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('EmployerType').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties.get('EmployerType').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     // main service & Other Service & Service Capacities & Service Users
     myWdf.mainService = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('MainServiceFK').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties.get('MainServiceFK').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)
     //   are capacities. Otherwise, it (capacities eligibility) is not relevant.
     // All Known Capacities is available from the CapacityServices property JSON
-    const hasCapacities = this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').toJSON(false, false).allServiceCapacities.length > 0 : false;
+    const hasCapacities = this._properties.get('CapacityServices')
+      ? this._properties.get('CapacityServices').toJSON(false, false).allServiceCapacities.length > 0
+      : false;
 
     let capacitiesEligible;
     if (hasCapacities) {
@@ -1761,14 +1908,15 @@ class Establishment extends EntityValidator {
       // we're only interested in the main service capacities
       const mainServiceCapacities = capacitiesProperty
         .toJSON(false, false)
-        .allServiceCapacities
-        .filter(thisCapacity => (/^Main Service - /).test(thisCapacity.service));
+        .allServiceCapacities.filter(thisCapacity => /^Main Service - /.test(thisCapacity.service));
 
       if (mainServiceCapacities.length === 0) {
         capacitiesEligible = 'Not relevant';
       } else {
         // ensure all all main service's capacities have been answered - note, the can only be one Main Service capacity set
-        capacitiesEligible = mainServiceCapacities[0].questions.every(thisQuestion => hasProp(thisQuestion, 'answer')) ? 'Yes' : 'No';
+        capacitiesEligible = mainServiceCapacities[0].questions.every(thisQuestion => hasProp(thisQuestion, 'answer'))
+          ? 'Yes'
+          : 'No';
       }
     } else {
       capacitiesEligible = 'Not relevant';
@@ -1776,31 +1924,38 @@ class Establishment extends EntityValidator {
 
     myWdf.capacities = {
       isEligible: capacitiesEligible,
-      updatedSinceEffectiveDate: this._properties.get('CapacityServices').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties
+        .get('CapacityServices')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     const serviceUsers = this._properties.get('ServiceUsers');
     myWdf.serviceUsers = {
       // for service users, it is not enough that the property itself is valid, to be WDF eligible it
       //   there must be at least one service user
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, serviceUsers) && serviceUsers.property.length > 0 ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: serviceUsers.toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible:
+        this._isPropertyWdfBasicEligible(effectiveFromEpoch, serviceUsers) && serviceUsers.property.length > 0
+          ? 'Yes'
+          : 'No',
+      updatedSinceEffectiveDate: serviceUsers.toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     // vacancies, starters and leavers
     myWdf.vacancies = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('Vacancies').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties.get('Vacancies').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     myWdf.starters = {
       isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('Starters').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties.get('Starters').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     myWdf.leavers = {
       isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('Leavers').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties.get('Leavers').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     // removing the cross-check on #workers from establishment's own (self) WDF Eligibility
@@ -1808,34 +1963,36 @@ class Establishment extends EntityValidator {
 
     myWdf.numberOfStaff = {
       // isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) && this._properties.get('NumberOfStaff').property == totalWorkerCount ? 'Yes' : 'No',
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('NumberOfStaff').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties.get('NumberOfStaff').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     return myWdf;
   }
 
   // returns the WDF eligibilty as JSON object
-  async wdfToJson () {
+  async wdfToJson() {
     const effectiveFrom = WdfCalculator.effectiveDate;
 
     return {
       effectiveFrom: effectiveFrom.toISOString(),
-      ...await this.isWdfEligible(effectiveFrom)
+      ...(await this.isWdfEligible(effectiveFrom)),
     };
   }
 
   // for the given establishment, updates the last bulk uploaded timestamp
-  static async bulkUploadSuccess (establishmentId) {
+  static async bulkUploadSuccess(establishmentId) {
     try {
       await models.establishment.update(
         {
-          lastBulkUploaded: new Date()
+          lastBulkUploaded: new Date(),
         },
         {
           where: {
-            id: establishmentId
-          }
+            id: establishmentId,
+          },
         }
       );
     } catch (err) {
@@ -1843,8 +2000,32 @@ class Establishment extends EntityValidator {
     }
   }
 
+/**
+ * Function to fetch all the parents name and their post code.
+ * @fetchQuery consist of parameters based on which we will filter parent name and postcode.
+ */
+
+  static async fetchAllParentsAndPostcode() {
+    try {
+      let fetchQuery = {
+        attributes: ['NameValue','postcode'],
+        where: {
+          isParent: true,
+          archived: false,
+        },
+      };
+      let parentsAndPostcodeDetails = await models.establishment.findAll(fetchQuery);
+      if (parentsAndPostcodeDetails) {
+        return parentsAndPostcodeDetails;
+      }
+    } catch (err) {
+      console.error('Establishment::fetch error: ', err);
+      return false;
+    }
+  }
+
   // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
-  static async fetchMyEstablishments (isParent, primaryEstablishmentId, isWDF) {
+  static async fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF) {
     // for each establishment, need:
     //  1. Name
     //  2. Main Service (by title)
@@ -1855,20 +2036,22 @@ class Establishment extends EntityValidator {
     //  7. ParentUID
 
     // only get the sub if the isParent parameter is truthy
-    const where = isParent ? {
-      $or: [
-        {
-          id: {
-            $eq: primaryEstablishmentId
-          }
-        },
-        {
-          ParentID: {
-            $eq: primaryEstablishmentId
-          }
+    const where = isParent
+      ? {
+          $or: [
+            {
+              id: {
+                $eq: primaryEstablishmentId,
+              },
+            },
+            {
+              ParentID: {
+                $eq: primaryEstablishmentId,
+              },
+            },
+          ],
         }
-      ]
-    } : { id: primaryEstablishmentId };
+      : { id: primaryEstablishmentId };
 
     let params;
 
@@ -1888,17 +2071,21 @@ class Establishment extends EntityValidator {
           'establishmentWdfEligibility',
           'NumberOfStaffValue',
           [models.sequelize.fn('COUNT', models.sequelize.col('"workers"."ID"')), 'workerCount'],
-          [models.sequelize.fn(
-            'SUM',
-            models.sequelize.literal(`CASE WHEN "workers"."LastWdfEligibility" > '${WdfCalculator.effectiveDate.toISOString()}' THEN 1 ELSE 0 END`)
-          ),
-          'eligibleWorkersCount']
+          [
+            models.sequelize.fn(
+              'SUM',
+              models.sequelize.literal(
+                `CASE WHEN "workers"."LastWdfEligibility" > '${WdfCalculator.effectiveDate.toISOString()}' THEN 1 ELSE 0 END`
+              )
+            ),
+            'eligibleWorkersCount',
+          ],
         ],
         include: [
           {
             model: models.services,
             as: 'mainService',
-            attributes: ['name']
+            attributes: ['name'],
           },
           {
             model: models.worker,
@@ -1906,15 +2093,15 @@ class Establishment extends EntityValidator {
             as: 'workers',
             attributes: [],
             where: {
-              archived: false
-            }
-          }
+              archived: false,
+            },
+          },
         ],
         where,
         order: [
           // list the primary establishment first
           models.sequelize.literal('"ParentID" IS NOT NULL'),
-          'NameValue'
+          'NameValue',
         ],
         group: [
           'establishment.EstablishmentID',
@@ -1931,8 +2118,8 @@ class Establishment extends EntityValidator {
           'overallWdfEligibility',
           'lastWdfEligibility',
           'establishmentWdfEligibility',
-          'NumberOfStaffValue'
-        ]
+          'NumberOfStaffValue',
+        ],
       };
     } else {
       params = {
@@ -1944,20 +2131,17 @@ class Establishment extends EntityValidator {
           'LocalIdentifierValue',
           'dataOwner',
           'dataPermissions',
-          'dataOwnershipRequested'
+          'dataOwnershipRequested',
         ],
         include: [
           {
             model: models.services,
             as: 'mainService',
-            attributes: ['name']
-          }
+            attributes: ['name'],
+          },
         ],
         where,
-        order: [
-          models.sequelize.literal('"ParentID" IS NOT NULL'),
-          'NameValue'
-        ]
+        order: [models.sequelize.literal('"ParentID" IS NOT NULL'), 'NameValue'],
       };
     }
 
@@ -1970,56 +2154,62 @@ class Establishment extends EntityValidator {
     }
 
     // map the results to the desired type
-    const mappedResults = await Promise.all(fetchResults.map(async thisSub => {
-      const {
-        uid,
-        updated,
-        parentUid,
-        NameValue: name,
-        LocalIdentifierValue,
-        mainService: { name: mainService },
-        dataOwner,
-        dataPermissions,
-        dataOwnershipRequested
-      } = thisSub;
+    const mappedResults = await Promise.all(
+      fetchResults.map(async thisSub => {
+        const {
+          uid,
+          updated,
+          parentUid,
+          NameValue: name,
+          LocalIdentifierValue,
+          mainService: { name: mainService },
+          dataOwner,
+          dataPermissions,
+          dataOwnershipRequested,
+        } = thisSub;
 
-      return {
-        uid,
-        updated,
-        parentUid,
-        name,
-        localIdentifier: LocalIdentifierValue || null,
-        mainService,
-        dataOwner,
-        dataPermissions,
-        dataOwnershipRequested,
-        wdf: isWDF ? await WdfCalculator.calculateData({
-          thisEstablishment: thisSub,
-          calculateOverall: true,
-          calculateStaff: true,
-          calculateEstablishment: true,
-          readOnly: true
-        }) : undefined
-      };
-    }));
+        return {
+          uid,
+          updated,
+          parentUid,
+          name,
+          localIdentifier: LocalIdentifierValue || null,
+          mainService,
+          dataOwner,
+          dataPermissions,
+          dataOwnershipRequested,
+          wdf: isWDF
+            ? await WdfCalculator.calculateData({
+                thisEstablishment: thisSub,
+                calculateOverall: true,
+                calculateStaff: true,
+                calculateEstablishment: true,
+                readOnly: true,
+              })
+            : undefined,
+        };
+      })
+    );
 
     // The first result is the primary establishment. put it in a special field
     const primary = mappedResults.shift();
 
     // Add a boolean flag to indicate the establishment is a parent
-    primary.isParent = !!(mappedResults.length);
+    primary.isParent = !!mappedResults.length;
 
     return {
       primary,
-      subsidaries: primary.isParent ? {
-        count: mappedResults.length,
-        establishments: mappedResults
-      } : undefined
+      subsidaries: primary.isParent
+        ? {
+            count: mappedResults.length,
+            establishments: mappedResults,
+          }
+        : undefined,
     };
   }
 
   //used by bulk upload to fetch a list of the worker
-  static async fetchMyEstablishmentsWorkers (establishmentId, establishmentKey) {
+  static async fetchMyEstablishmentsWorkers(establishmentId, establishmentKey) {
     return await db.query(
       `SELECT
         "Establishment"."LocalIdentifierValue" "establishmentKey",
@@ -2038,9 +2228,9 @@ class Establishment extends EntityValidator {
         replacements: {
           establishmentKey,
           establishmentId,
-          sep: ';'
+          sep: ';',
         },
-        type: db.QueryTypes.SELECT
+        type: db.QueryTypes.SELECT,
       }
     );
   }
@@ -2049,22 +2239,22 @@ class Establishment extends EntityValidator {
   //  https://trello.com/c/Z93EZqyB - requires that when updating local identifier, the
   //                                  establishment's own `updated` timestamp is not is to
   //                                  be updated
-  async _updateLocalIdOnEstablishment (thisGivenEstablishment, transaction, updatedTimestamp, username, allAuditEvents) {
+  async _updateLocalIdOnEstablishment(thisGivenEstablishment, transaction, updatedTimestamp, username, allAuditEvents) {
     const updatedEstablishment = await models.establishment.update(
       {
         LocalIdentifierValue: thisGivenEstablishment.value,
         LocalIdentifierSavedBy: username,
         LocalIdentifierChangedBy: username,
         LocalIdentifierSavedAt: updatedTimestamp,
-        LocalIdentifierChangedAt: updatedTimestamp
+        LocalIdentifierChangedAt: updatedTimestamp,
       },
       {
         returning: true,
         where: {
-          uid: thisGivenEstablishment.uid
+          uid: thisGivenEstablishment.uid,
         },
         attributes: ['id', 'updated'],
-        transaction
+        transaction,
       }
     );
 
@@ -2076,7 +2266,7 @@ class Establishment extends EntityValidator {
         establishmentFk: updatedRecord.EstablishmentID,
         username,
         type: 'saved',
-        property: 'LocalIdentifier'
+        property: 'LocalIdentifier',
       });
 
       allAuditEvents.push({
@@ -2085,8 +2275,8 @@ class Establishment extends EntityValidator {
         type: 'changed',
         property: 'LocalIdentifier',
         event: {
-          new: thisGivenEstablishment.value
-        }
+          new: thisGivenEstablishment.value,
+        },
       });
     }
   }
@@ -2095,7 +2285,7 @@ class Establishment extends EntityValidator {
   //   - can only update the local identifier on subs "owned" by this given primary establishment
   //  - When updating the local identifier, the local identifier property itself is audited, but the establishment's own
   //    "updated" status is not updated
-  async bulkUpdateLocalIdentifiers (username, givenLocalIdentifiers) {
+  async bulkUpdateLocalIdentifiers(username, givenLocalIdentifiers) {
     try {
       const myEstablishments = await Establishment.fetchMyEstablishments(this.isParent, this.id, false);
 
@@ -2104,7 +2294,7 @@ class Establishment extends EntityValidator {
 
       myEstablishmentUIDs.push({
         uid: myEstablishments.primary.uid,
-        localIdentifier: myEstablishments.primary.localIdentifier
+        localIdentifier: myEstablishments.primary.localIdentifier,
       });
 
       if (myEstablishments.subsidaries) {
@@ -2113,7 +2303,7 @@ class Establishment extends EntityValidator {
           if (thisEst.dataOwner === 'Parent') {
             myEstablishmentUIDs.push({
               uid: thisEst.uid,
-              localIdentifier: thisEst.localIdentifier
+              localIdentifier: thisEst.localIdentifier,
             });
           }
         });
@@ -2136,7 +2326,13 @@ class Establishment extends EntityValidator {
 
             // only if the found and given local identifiers are not equal, then update the record
             if (foundEstablishment && foundEstablishment.localIdentifier !== thisGivenEstablishment.value) {
-              const updateThisEstablishment = this._updateLocalIdOnEstablishment(thisGivenEstablishment, t, updatedTimestamp, username, allAuditEvents);
+              const updateThisEstablishment = this._updateLocalIdOnEstablishment(
+                thisGivenEstablishment,
+                t,
+                updatedTimestamp,
+                username,
+                allAuditEvents
+              );
               dbUpdatePromises.push(updateThisEstablishment);
               updatedUids.push(thisGivenEstablishment);
             } else if (foundEstablishment) {
@@ -2161,7 +2357,7 @@ class Establishment extends EntityValidator {
 
   // returns all true if establishments (subs only owned by this parent) and workers associated to them
   //  local identifier is not null (has been set), otherwise returns false
-  async missingLocalIdentifiers () {
+  async missingLocalIdentifiers() {
     try {
       // NOTE - req.establishmentId is an assured integer from authorisation middleware
       //        and consequently the value is assured and thus the queries below not at risk
@@ -2191,12 +2387,9 @@ class Establishment extends EntityValidator {
             and "Establishment"."Archived" = false
             and ("Establishment"."LocalIdentifierValue" is null)`;
 
-      const results = await models.sequelize.query(
-        missingEstablishmentsWithWorkerCountQuery,
-        {
-          type: models.sequelize.QueryTypes.SELECT
-        }
-      );
+      const results = await models.sequelize.query(missingEstablishmentsWithWorkerCountQuery, {
+        type: models.sequelize.QueryTypes.SELECT,
+      });
 
       // note - postgres returns the Total as a string not an integer
       // eg.:
@@ -2218,7 +2411,7 @@ class Establishment extends EntityValidator {
             uid: thisEstablishment.EstablishmentUID,
             name: thisEstablishment.NameValue,
             missing: thisEstablishment.EstablishmentLocal === null ? true : undefined,
-            workers: parseInt(thisEstablishment.TotalWorkers, 10)
+            workers: parseInt(thisEstablishment.TotalWorkers, 10),
           });
         });
       }
@@ -2230,13 +2423,13 @@ class Establishment extends EntityValidator {
     }
   }
 
-  async bulkUploadWdf (savedby, externalTransaction) {
+  async bulkUploadWdf(savedby, externalTransaction) {
     // recalculate WDF - if not bulk upload (this._status)
     return WdfCalculator.calculate(savedby, this._id, null, externalTransaction, WdfCalculator.BULK_UPLOAD, false);
   }
 
   // recalcs the establishment known by given establishment
-  static async recalcWdf (username, establishmentId) {
+  static async recalcWdf(username, establishmentId) {
     try {
       const log = result => result == null;
       const thisEstablishment = new Establishment(username);
@@ -2250,13 +2443,13 @@ class Establishment extends EntityValidator {
             if (wdfEligibility.isEligible) {
               await models.establishment.update(
                 {
-                  lastWdfEligibility: new Date()
+                  lastWdfEligibility: new Date(),
                 },
                 {
                   where: {
-                    id: establishmentId
+                    id: establishmentId,
                   },
-                  transaction: t
+                  transaction: t,
                 }
               );
 
@@ -2264,7 +2457,7 @@ class Establishment extends EntityValidator {
                 {
                   establishmentFk: establishmentId,
                   username,
-                  type: 'wdfEligible'
+                  type: 'wdfEligible',
                 },
                 { transaction: t }
               );
@@ -2274,7 +2467,10 @@ class Establishment extends EntityValidator {
           // checking checked/updated establishment, now iterate through the workers
           const workers = await Worker.fetch(establishmentId);
           const workerPromise = Promise.resolve(null);
-          await workers.reduce((p, thisWorker) => p.then(() => Worker.recalcWdf(username, establishmentId, thisWorker.uid, t).then(log)), workerPromise);
+          await workers.reduce(
+            (p, thisWorker) => p.then(() => Worker.recalcWdf(username, establishmentId, thisWorker.uid, t).then(log)),
+            workerPromise
+          );
 
           // having updated establishment and all workers, recalculate the overall WDF eligibility
           await WdfCalculator.calculate(username, establishmentId, null, t, WdfCalculator.RECALC, false);
@@ -2293,44 +2489,45 @@ class Establishment extends EntityValidator {
   //method to fetch all establishment details by establishment id
   static async fetchAndUpdateEstablishmentDetails(id, data, establishmentIsParent = false) {
     if (!id) {
-      throw new EstablishmentExceptions.EstablishmentRestoreException(null,
+      throw new EstablishmentExceptions.EstablishmentRestoreException(
+        null,
         null,
         null,
         'User::restore failed: Missing id or uid',
         null,
-        'Unexpected Error');
-      }
-        try {
-          // restore establishment based on id as an integer (primary key or uid)
-          let fetchQuery = {
-            where: {
-              id: id
-            }
-          };
+        'Unexpected Error'
+      );
+    }
+    try {
+      // restore establishment based on id as an integer (primary key or uid)
+      let fetchQuery = {
+        where: {
+          id: id,
+        },
+      };
 
-          if (!Number.isInteger(id)) {
-            fetchQuery = {
-              where: {
-                uid: id,
-                archived: false
-              }
-            };
-          }
-          let establishment = await models.establishment.findOne(fetchQuery)
-          if (establishment) {
-            if(establishmentIsParent !== false){
-              data.dataOwner = establishment.isParent === false ? 'Parent' : 'Workplace';
-            }
-            let responseToReturn = await establishment.update(data)
-            .then(function (establishmentDetails) {
-              return establishmentDetails;
-            })
-            return responseToReturn;
-          }
-        }catch (err) {
-          console.error('Establishment::fetch error: ', err);
-          return false;
+      if (!Number.isInteger(id)) {
+        fetchQuery = {
+          where: {
+            uid: id,
+            archived: false,
+          },
+        };
+      }
+      let establishment = await models.establishment.findOne(fetchQuery);
+      if (establishment) {
+        if (establishmentIsParent !== false) {
+          data.dataOwner = establishment.isParent === false ? 'Parent' : 'Workplace';
         }
+        let responseToReturn = await establishment.update(data).then(function(establishmentDetails) {
+          return establishmentDetails;
+        });
+        return responseToReturn;
+      }
+    } catch (err) {
+      console.error('Establishment::fetch error: ', err);
+      return false;
+    }
   }
 }
 
