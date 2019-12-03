@@ -34,7 +34,7 @@ const invalidQueryParameters = 'Invalid query parameters';
 const mustUseReplacementsRegex = /(\*|--|[?'0-9])/g;
 
 // The main project file exports the db connection pool
-const db = rfr('server/models');
+const db = require('../../models');
 
 // listen for the db ready event, and let the queries we've queued up all run when it's recieved
 let subscribers = []; // Pub/sub FTW!
