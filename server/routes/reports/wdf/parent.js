@@ -228,12 +228,23 @@ const getWorkersReportData = async establishmentId => {
       value.RecruitedFromValue = "Don't know";
     }
 
-    if(value.WeeklyHoursContractedValue === 'Yes'){
-      value.HoursValue = value.WeeklyHoursContractedHours;
-    }else if(value.WeeklyHoursContractedValue === 'No'){
-      value.HoursValue = (value.WeeklyHoursAverageValue !== null)? value.WeeklyHoursAverageHours: "Don't know";
-    }else if(value.WeeklyHoursContractedValue === null){
-      value.HoursValue = (value.WeeklyHoursAverageValue === null)? 'Missing': value.WeeklyHoursAverageValue;
+    if((value.ContractValue === 'Permanent' || value.ContractValue === 'Temporary')
+    && value.ZeroHoursContractValue === 'No'){
+      if(value.WeeklyHoursContractedValue === 'Yes'){
+        value.HoursValue = value.WeeklyHoursContractedHours;
+      }else if(value.WeeklyHoursContractedValue === 'No'){
+        value.HoursValue = "Don't know";
+      }else if(value.WeeklyHoursContractedValue === null){
+        value.HoursValue = 'Missing';
+      }
+    }else{
+      if(value.WeeklyHoursAverageValue === 'Yes'){
+        value.HoursValue = value.WeeklyHoursAverageHours;
+      }else if(value.WeeklyHoursAverageValue === 'No'){
+        value.HoursValue = "Don't know";
+      }else if(value.WeeklyHoursAverageValue === null){
+        value.HoursValue = 'Missing';
+      }
     }
 
     updateProps.forEach(prop => {
