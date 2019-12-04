@@ -9,22 +9,30 @@ router.route('/').get(async (req, res) => {
   const thisEstablishment = new Establishment.Establishment(req.username);
 
   try {
-    if (await thisEstablishment.restore(establishmentId)) {
-        const permissions = await PermissionCache.myPermissions(req).map((item) => {
-          if(item.code === "canChangeDataOwner" && thisEstablishment.dataOwnershipRequested !== null){
-            return { [item.code]: false };
-          }else{
-            return { [item.code]: true };
-          }
-        })
-        return res.status(200).json({
+        if (await thisEstablishment.restore(establishmentId)) {
+          const permissions = await PermissionCache.myPermissions(req).map(item => {
+            if (item.code === 'canChangeDataOwner' && thisEstablishment.dataOwnershipRequested !== null) {
+              return { [item.code]: false };
+            } else {
+              return { [item.code]: true };
+            }
+          });
+          permissions.forEach(permission => {
+            if (permission.canLinkToParent && !thisEstablishment.isParent && !thisEstablishment.parentId) {
+              permission.canLinkToParent = true;
+            } else {
+              permission.canLinkToParent = false;
+            }
+          });
+
+          return res.status(200).json({
             uid: thisEstablishment.uid,
-            permissions: Object.assign({}, ...permissions)
-        });
-    } else {
-      return res.status(404).send('Not Found');
-    }
-  } catch (err) {
+            permissions: Object.assign({}, ...permissions),
+          });
+        } else {
+          return res.status(404).send('Not Found');
+        }
+      } catch (err) {
     const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
       thisEstablishment.id,
       thisEstablishment.uid,
