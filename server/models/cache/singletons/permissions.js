@@ -263,7 +263,6 @@ class PermissionCache {
     const estabType = this.getEstablishmentType(requestData.establishment);
     let permissions = [];
     const isLoggedInAsParent = requestData.isParent;
-
     if (requestData.role === 'Admin') {
       // console.log("0")
       permissions = this.filterForAdminRole();
