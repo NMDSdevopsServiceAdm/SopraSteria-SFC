@@ -207,7 +207,11 @@ const getWorkersReportData = async establishmentId => {
   const workerData = await getWorkerData(establishmentId);
   let workersArray = workerData.
       filter(worker => {
-        return (worker.DataOwner === 'Parent' || worker.DataPermissions === "Workplace and Staff")
+        if(establishmentId !== worker.EstablishmentID){
+          return (worker.DataOwner === 'Parent' || worker.DataPermissions === "Workplace and Staff")
+        }else{
+          return true;
+        }
       });
 
   workersArray.forEach((value, key) => {
@@ -691,7 +695,8 @@ const updateEstablishmentsSheet = (
   reportData,
   sharedStrings,
   sst,
-  sharedStringsUniqueCount
+  sharedStringsUniqueCount,
+  thisEstablishment
 ) => {
   debuglog('updating establishments sheet');
 
@@ -715,7 +720,11 @@ const updateEstablishmentsSheet = (
   let establishmentReportData = [...reportData.establishments];
   let establishmentArray = establishmentReportData.
       filter(est => {
-        return (est.DataOwner === 'Parent' || est.DataPermissions !== "None")
+        if(thisEstablishment.id !== est.EstablishmentID){
+          return (est.DataOwner === 'Parent' || est.DataPermissions !== "None")
+        }else{
+          return true;
+        }
       });
   if (establishmentArray.length > 1) {
     for (let i = 0; i < establishmentArray.length - 1; i++) {
@@ -1253,7 +1262,8 @@ const getReport = async (date, thisEstablishment) => {
           reportData,
           sharedStrings,
           sst,
-          sharedStringsUniqueCount // pass unique count by reference rather than by value
+          sharedStringsUniqueCount, // pass unique count by reference rather than by value
+          thisEstablishment
         )));
 
         // update the workplaces sheet with the report data and add it to the zip
