@@ -12,7 +12,7 @@ export class DataViewPermissionsPipe implements PipeTransform {
       case DataPermissions.WorkplaceAndStaff:
         return 'Workplace and staff records';
       case DataPermissions.None:
-        return 'None, linked only';
+        return 'No access to data, linked only';
     }
     return null;
   }
