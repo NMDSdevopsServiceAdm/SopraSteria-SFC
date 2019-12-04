@@ -248,7 +248,7 @@ let ALL_PERMISSIONS = [
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
     isAdmin: false,
-  },
+  }
 ];
 
 class PermissionCache {
