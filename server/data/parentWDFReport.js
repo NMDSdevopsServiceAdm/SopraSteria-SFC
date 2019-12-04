@@ -182,6 +182,7 @@ const getWorkerDataQuery =
 SELECT
   "Worker"."NameOrIdValue",
   "Establishment"."NameValue",
+  "Establishment"."EstablishmentID",
   "DataOwner",
   "DataPermissions",
   "Worker"."GenderValue",
