@@ -11,7 +11,7 @@ const walk = require('walk');
 const JsZip = require('jszip');
 
 const { Establishment } = require('../../../models/classes/establishment');
-const { getTrainingReportData } = rfr('server/data/trainingReport');
+const { getTrainingData } = rfr('server/data/trainingReport');
 
 // Constants string needed by this file in several places
 const folderName = 'template';
@@ -33,7 +33,16 @@ const serializeXML = dom =>
   '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
   (new XMLSerializer()).serializeToString(dom);
 
-// helper function to set a spreadsheet cell's value
+/**
+ * Helper function to set a spreadsheet cell's value
+ *
+ * @param {Document} sheetDoc
+ * @param {Document} stringsDoc
+ * @param {Element} sst
+ * @param {Array} sharedStringsUniqueCount
+ * @param {Element} element
+ * @param {String} value
+ */
 const putStringTemplate = (
   sheetDoc,
   stringsDoc,
@@ -72,6 +81,13 @@ const putStringTemplate = (
   }
 };
 
+/**
+ * Function used to retrieve training report data
+ *
+ * @param {Date} date
+ * @param {Object} thisEstablishment
+ * @return {Object} All training report data
+ */
 const getReportData = async (date, thisEstablishment) => {
   debuglog('training excel report data started:', thisEstablishment);
 
@@ -80,16 +96,21 @@ const getReportData = async (date, thisEstablishment) => {
     trainings: await getTrainingReportData(thisEstablishment.id)
   };
 };
-
-const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,ServiceUsers,' +
-'NumberOfStaffValue').split(',');
-
+/**
+ * Function used to customize training report data
+ *
+ * @param {number} establishmentId
+ * @return {Object} All customized training report data
+ */
 const getTrainingReportData = async establishmentId => {
   const trainingData = await getTrainingData(establishmentId);
 
   return trainingData;
 };
 
+/**
+ * Define styles for sheet columns
+ */
 const styleLookup = {
   BLACK: {
     OVRREGULAR: {
@@ -155,48 +176,6 @@ const styleLookup = {
       O: 20,
       P: 20,
       Q: 20
-    },
-    WKRREGULAR: {
-      A: 2,
-      B: 38,
-      C: 15,
-      D: 15,
-      E: 15,
-      F: 15,
-      G: 15,
-      H: 15,
-      I: 9,
-      J: 15,
-      K: 15,
-      L: 9,
-      M: 9,
-      N: 15,
-      O: 15,
-      P: 15,
-      Q: 15,
-      R: 15,
-      S: 15
-    },
-    WKRLAST: {
-      A: 2,
-      B: 41,
-      C: 20,
-      D: 20,
-      E: 20,
-      F: 20,
-      G: 20,
-      H: 20,
-      I: 9,
-      J: 20,
-      K: 20,
-      L: 9,
-      M: 9,
-      N: 20,
-      O: 20,
-      P: 20,
-      Q: 20,
-      R: 20,
-      S: 20
     }
   },
   RED: {
@@ -263,56 +242,30 @@ const styleLookup = {
       O: 67,
       P: 67,
       Q: 67
-    },
-    WKRREGULAR: {
-      A: 2,
-      B: 38,
-      C: 15,
-      D: 67,
-      E: 67,
-      F: 67,
-      G: 15,
-      H: 67,
-      I: 65,
-      J: 15,
-      K: 67,
-      L: 65,
-      M: 65,
-      N: 67,
-      O: 67,
-      P: 67,
-      Q: 67,
-      R: 67,
-      S: 67
-    },
-    WKRLAST: {
-      A: 2,
-      B: 41,
-      C: 20,
-      D: 67,
-      E: 67,
-      F: 67,
-      G: 20,
-      H: 67,
-      I: 65,
-      J: 20,
-      K: 67,
-      L: 65,
-      M: 65,
-      N: 67,
-      O: 67,
-      P: 67,
-      Q: 67,
-      R: 67,
-      S: 67
     }
   }
 };
-
+/**
+ * Helper function used to set column's font style
+ *
+ * @param {Document} cellToChange
+ * @param {String} columnText
+ * @param {String} rowType
+ * @param {Boolean} isRed
+ */
 const setStyle = (cellToChange, columnText, rowType, isRed) => {
   cellToChange.setAttribute('s', styleLookup[isRed ? 'RED' : 'BLACK'][rowType][columnText]);
 };
-
+/**
+ * Helper function used to set column's font style according to column value
+ *
+ * @param {Function} putString
+ * @param {Document} cellToChange
+ * @param {String} value
+ * @param {String} columnText
+ * @param {String} rowType
+ * @param {Boolean} percentColumn
+ */
 const basicValidationUpdate = (putString, cellToChange, value, columnText, rowType, percentColumn = false) => {
   let isRed = false;
   const stringValue = String(value);
@@ -335,7 +288,16 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
 
   setStyle(cellToChange, columnText, rowType, isRed);
 };
-
+/**
+ * Function used to create columns for overview sheet tab and then push data into those columns
+ *
+ * @param {Document} overviewSheet
+ * @param {Object} reportData
+ * @param {String} sharedStrings
+ * @param {Element} sst
+ * @param {Number} sharedStringsUniqueCount
+ * @return {Document} overviewSheet
+ */
 const updateOverviewSheet = (
   overviewSheet,
   reportData,
@@ -347,193 +309,20 @@ const updateOverviewSheet = (
 
   const putString = putStringTemplate.bind(null, overviewSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
-  // set headers
-  putString(
-    overviewSheet.querySelector("c[r='B6']"),
-    `Parent name : ${reportData.parentName}`
-  );
-
-  putString(
-    overviewSheet.querySelector("c[r='B7']"),
-    `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`
-  );
-
-  const templateRow = overviewSheet.querySelector("row[r='11']");
-
-  // move the footer rows down appropriately
-  //no rows = -1
-  //one row = 0
-  //two rows = 1
-  let currentRow = overviewSheet.querySelector("row[r='16']");
-  let rowIndex = 16;
-  let updateRowIndex = 16 + reportData.establishments.length - 1;
-
-  for(; rowIndex > 11; rowIndex--, updateRowIndex--) {
-    if(rowIndex === 16) {
-      // fix the dimensions tag value
-      const dimension = overviewSheet.querySelector('dimension');
-      dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + updateRowIndex);
-    }
-
-    currentRow.querySelectorAll('c').forEach(elem => {
-      elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + updateRowIndex);
-    });
-
-    currentRow.setAttribute('r', updateRowIndex);
-
-    const mergeCell = overviewSheet.querySelector(`mergeCell[ref='B${rowIndex}:L${rowIndex}']`);
-
-    if(mergeCell !== null) {
-      mergeCell.setAttribute('ref', `B${updateRowIndex}:L${updateRowIndex}`);
-    }
-
-    while(currentRow.previousSibling !== null) {
-      currentRow = currentRow.previousSibling;
-
-      if(currentRow.nodeName === 'row') {
-        break;
-      }
-    }
-  }
-
-  // TODO: fix the page footer timestamp
-
-  // clone the row the apropriate number of times
-  currentRow = templateRow;
-  rowIndex = 12;
-
-  if (reportData.establishments.length > 1) {
-    for (let i = 0; i < (reportData.establishments.length - 1); i++) {
-      const tempRow = templateRow.cloneNode(true);
-
-      tempRow.setAttribute('r', rowIndex);
-
-      tempRow.querySelectorAll('c').forEach(elem => {
-        elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndex);
-      });
-
-      templateRow.parentNode.insertBefore(tempRow, currentRow.nextSibling);
-
-      currentRow = tempRow;
-      rowIndex++;
-    }
-
-    currentRow = templateRow;
-  }
-
-  // update the cell values
-  for (let row = 0; row < reportData.establishments.length; row++) {
-    debuglog('updating overview', row);
-
-    const rowType = row === reportData.establishments.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
-    let nextSibling = {};
-
-    for (let column = 0; column < 10; column++) {
-      const columnText = String.fromCharCode(column + 66);
-      const isRed = false;
-
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 11}']`);
-      switch (columnText) {
-        case 'B': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].SubsidiaryName
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-
-        case 'C': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].SubsidiarySharingPermissions
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-
-        case 'D': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.establishments[row].CurrentWdfEligibilityStatus,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'E': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].DateEligibilityAchieved
-          );
-        } break;
-
-        case 'F': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.establishments[row].EstablishmentDataFullyCompleted,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'G': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.establishments[row].UpdatedInCurrentFinancialYear,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'H': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].NumberOfStaffValue
-          );
-        } break;
-
-        case 'I': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].TotalIndividualWorkerRecord
-          );
-        } break;
-
-        case 'J': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].CompletedWorkerRecords
-          );
-        } break;
-
-        case 'K': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.establishments[row].CompletedWorkerRecordsPercentage,
-            columnText,
-            rowType,
-            true
-          );
-        } break;
-      }
-
-      // TODO: duplicate the hyperlinked fields
-      // //////////////////////////////////////
-
-      nextSibling = cellToChange ? cellToChange.nextSibling : {};
-    }
-
-    currentRow = currentRow.nextSibling;
-  }
-
   debuglog('overview updated');
 
   return overviewSheet;
 };
-
+/**
+ * Function used to create columns for training view sheet tab and then push data into those columns
+ *
+ * @param {Document} trainingsSheet
+ * @param {Object} reportData
+ * @param {String} sharedStrings
+ * @param {Element} sst
+ * @param {Number} sharedStringsUniqueCount
+ * @return {Document} overviewSheet
+ */
 const updateTrainingsSheet = (
   establishmentsSheet,
   reportData,
@@ -541,7 +330,7 @@ const updateTrainingsSheet = (
   sst,
   sharedStringsUniqueCount
 ) => {
-  debuglog('updating establishments sheet');
+  debuglog('updating trainings sheet');
 
   const putString = putStringTemplate.bind(null, establishmentsSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
@@ -759,7 +548,13 @@ const updateTrainingsSheet = (
 
   return establishmentsSheet;
 };
-
+/**
+ * Function used to generate reports data first and then read all related xml files, parse them,
+ * push data into them and then create a zipped file including all reports related sheets
+ *
+ * @param {Date} date
+ * @param {Object} thisEstablishment
+ */
 const getReport = async (date, thisEstablishment) => {
   const reportData = await getReportData(date, thisEstablishment);
 
@@ -792,7 +587,7 @@ const getReport = async (date, thisEstablishment) => {
             } break;
 
             case trainingsSheetName: {
-              establishmentsSheet = parseXML(fileContent);
+              trainingsSheet = parseXML(fileContent);
             } break;
 
             case sharedStringsName: {
@@ -830,13 +625,13 @@ const getReport = async (date, thisEstablishment) => {
         //outputZip.file(workersSheetName, serializeXML(workersSheet));
 
         // update the establishments sheet with the report data and add it to the zip
-        outputZip.file(updateTrainingsSheet, serializeXML(updateEstablishmentsSheet(
-          establishmentsSheet,
-          reportData,
-          sharedStrings,
-          sst,
-          sharedStringsUniqueCount // pass unique count by reference rather than by value
-        )));
+        // outputZip.file(updateTrainingsSheet, serializeXML(updateTrainingsSheet(
+        //   establishmentsSheet,
+        //   reportData,
+        //   sharedStrings,
+        //   sst,
+        //   sharedStringsUniqueCount // pass unique count by reference rather than by value
+        // )));
 
         // update the shared strings counts we've been keeping track of
         sst.setAttribute('uniqueCount', sharedStringsUniqueCount[0]);
@@ -857,6 +652,9 @@ const getReport = async (date, thisEstablishment) => {
     }));
 };
 
+/**
+ * Handle GET API request to get Training report data
+ */
 router.route('/').get(async (req, res) => {
   try {
     // first ensure this report can only be run by those establishments that are a parent

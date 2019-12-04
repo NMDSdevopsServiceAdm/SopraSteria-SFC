@@ -1,81 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="451" uniqueCount="178">
     <si>
-        <r>
-            <t xml:space="preserve">Parent name : </t>
-        </r>
-        <r>
-            <rPr>
-                <b />
-                <sz val="10" />
-                <color indexed="8" />
-                <rFont val="Arial" />
-                <charset val="1" />
-            </rPr>
-            <t>Skills for Care</t>
-        </r>
+        <t>Training records summary</t>
     </si>
     <si>
-        <r>
-            <t xml:space="preserve">A contract must be in place with the organisation or lead partner.
-</t>
-        </r>
-        <r>
-            <rPr>
-                <sz val="10" />
-                <color indexed="10" />
-                <rFont val="Arial" />
-                <charset val="1" />
-            </rPr>
-            <t xml:space="preserve">Members of partnerships must have completed a membership form.
-</t>
-        </r>
-        <r>
-            <rPr>
-                <sz val="10" />
-                <color indexed="10" />
-                <rFont val="Arial" />
-                <charset val="1" />
-            </rPr>
-            <t xml:space="preserve">Organisations contracting directly with Skills for Care must have completed an organisation details forms.
-</t>
-        </r>
-        <r>
-            <rPr>
-                <sz val="10" />
-                <color indexed="10" />
-                <rFont val="Arial" />
-                <charset val="1" />
-            </rPr>
-            <t>Evidence requirements for eligible units must be met and submitted in line with contract milestones for Skills for Care by the required dates (either directly or for partnership members via the lead partner).</t>
-        </r>
+        <t>Mandatory</t>
     </si>
     <si>
-        <t>Parent workforce development fund nmds-sc requirements report</t>
+        <t>Non mandatory</t>
     </si>
     <si>
-        <t>Overview</t>
+        <t>Total</t>
     </si>
     <si>
-        <t>Date: 28/01/2019</t>
+        <t>Expired training records</t>
     </si>
     <si>
-        <t>Permissions</t>
+        <t>Expiring soon</t>
     </si>
     <si>
-        <t>Eligibility status</t>
+        <t>Training Expired</t>
     </si>
     <si>
-        <t>Establishment record completion</t>
-    </si>
-    <si>
-        <t>Worker record completion</t>
-    </si>
-    <si>
-        <t>Subsidiary name</t>
-    </si>
-    <si>
-        <t>Subsidiary sharing permissions</t>
+        <t>Training Expiring soon</t>
     </si>
     <si>
         <t>Current WDF eligibility status</t>

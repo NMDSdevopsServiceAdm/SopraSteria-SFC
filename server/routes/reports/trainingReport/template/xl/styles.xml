@@ -12,7 +12,7 @@
         <font>
             <b />
             <sz val="11.95" />
-            <color indexed="10" />
+            <color indexed="0" />
             <name val="Arial" />
             <charset val="1" />
         </font>
@@ -83,7 +83,7 @@
         </fill>
         <fill>
             <patternFill patternType="solid">
-                <fgColor indexed="10" />
+                <fgColor indexed="11" />
                 <bgColor indexed="0" />
             </patternFill>
         </fill>
@@ -500,8 +500,8 @@
             <alignment horizontal="center" wrapText="1" readingOrder="1" />
             <protection locked="0" />
         </xf>
-        <xf numFmtId="0" fontId="5" fillId="2" borderId="28" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1" applyProtection="1">
-            <alignment horizontal="center" wrapText="1" readingOrder="1" />
+        <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1" applyProtection="1">
+            <alignment vertical="top" wrapText="1" />
             <protection locked="0" />
         </xf>
         <xf numFmtId="0" fontId="5" fillId="2" borderId="4" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1" applyProtection="1">
@@ -692,11 +692,11 @@
             <alignment horizontal="left" vertical="top" wrapText="1" readingOrder="1" />
             <protection locked="0" />
         </xf>
-        <xf numFmtId="0" fontId="0" fillId="0" borderId="18" xfId="0" applyBorder="1" applyAlignment="1" applyProtection="1">
+        <xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyBorder="0" applyAlignment="1" applyProtection="1">
             <alignment vertical="top" wrapText="1" />
             <protection locked="0" />
         </xf>
-        <xf numFmtId="0" fontId="0" fillId="0" borderId="19" xfId="0" applyBorder="1" applyAlignment="1" applyProtection="1">
+        <xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyBorder="0" applyAlignment="1" applyProtection="1">
             <alignment vertical="top" wrapText="1" />
             <protection locked="0" />
         </xf>
