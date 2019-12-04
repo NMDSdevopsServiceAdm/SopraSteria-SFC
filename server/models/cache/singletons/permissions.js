@@ -241,6 +241,14 @@ let ALL_PERMISSIONS = [
     subOwnedByParentAccessBySub: [],
     isAdmin: true,
   },
+  {
+    code: 'canLinkToParent',
+    description: 'Link to any parent',
+    role: [],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: false,
+  },
 ];
 
 class PermissionCache {
