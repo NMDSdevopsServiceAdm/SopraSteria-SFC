@@ -37,7 +37,8 @@
             <charset val="1" />
         </font>
         <font>
-            <sz val="10" />
+            <b />
+            <sz val="11.95" />
             <color indexed="9" />
             <name val="Arial" />
             <charset val="1" />
@@ -84,6 +85,18 @@
         <fill>
             <patternFill patternType="solid">
                 <fgColor indexed="11" />
+                <bgColor indexed="0" />
+            </patternFill>
+        </fill>
+        <fill>
+            <patternFill patternType="solid">
+                <fgColor indexed="13" />
+                <bgColor indexed="0" />
+            </patternFill>
+        </fill>
+        <fill>
+            <patternFill patternType="solid">
+                <fgColor indexed="2" />
                 <bgColor indexed="0" />
             </patternFill>
         </fill>
@@ -486,6 +499,17 @@
             </bottom>
             <diagonal />
         </border>
+        <border>
+            <left />
+            <right style="thin">
+                <color indexed="9" />
+            </right>
+            <top style="thin">
+                <color indexed="9" />
+            </top>
+            <bottom />
+            <diagonal />
+        </border>
     </borders>
     <cellStyleXfs count="1">
         <xf numFmtId="0" fontId="0" fillId="0" borderId="0" />
@@ -700,11 +724,14 @@
             <alignment vertical="top" wrapText="1" />
             <protection locked="0" />
         </xf>
-        <xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1" applyProtection="1">
-            <alignment vertical="top" wrapText="1" readingOrder="1" />
+        <xf numFmtId="0" fontId="5" fillId="3" borderId="0" xfId="0" applyBorder="0" applyAlignment="1" applyProtection="1">
+            <alignment vertical="top" wrapText="1" />
             <protection locked="0" />
         </xf>
-        <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" />
+        <xf numFmtId="0" fontId="5" fillId="4" borderId="0" xfId="0" applyBorder="0" applyAlignment="1" applyProtection="1">
+            <alignment vertical="top" wrapText="1" />
+            <protection locked="0" />
+        </xf>
         <xf numFmtId="0" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1" applyProtection="1">
             <alignment vertical="top" wrapText="1" readingOrder="1" />
             <protection locked="0" />
@@ -767,7 +794,7 @@
         <indexedColors>
             <rgbColor rgb="00000000" />
             <rgbColor rgb="00FFFFFF" />
-            <rgbColor rgb="00FF0000" />
+            <rgbColor rgb="00FF7F50" />
             <rgbColor rgb="0000FF00" />
             <rgbColor rgb="000000FF" />
             <rgbColor rgb="00FFFF00" />

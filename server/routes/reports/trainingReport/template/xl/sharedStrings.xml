@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="451" uniqueCount="178">
     <si>
+      <t>Training Expiring soon</t>
+    </si>
+    <si>
         <t>Training records summary</t>
     </si>
     <si>
@@ -23,9 +26,6 @@
     </si>
     <si>
         <t>Training Expiring soon</t>
-    </si>
-    <si>
-        <t>Current WDF eligibility status</t>
     </si>
     <si>
         <t>Date achieved eligibility</t>
