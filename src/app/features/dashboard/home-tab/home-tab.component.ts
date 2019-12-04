@@ -86,8 +86,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
     }
-    // this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
-    this.canLinkToParent = true;
+    this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
   }
 
   public onChangeDataOwner($event: Event) {
