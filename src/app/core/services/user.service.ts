@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -21,6 +21,7 @@ export class UserService {
   public returnUrl$: Observable<URLStructure> = this._returnUrl$.asObservable();
   public migratedUserTermsAccepted$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public agreedUpdatedTerms$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _agreedUpdatedTermsStatus: boolean = null;
 
   constructor(private http: HttpClient) {}
 
@@ -46,6 +47,37 @@ export class UserService {
 
   public getLoggedInUser(): Observable<UserDetails> {
     return this.http.get<UserDetails>(`/api/user/me`).pipe(tap(user => (this.loggedInUser = user)));
+  }
+
+  // get agreedUpdatedTermsStatus
+  public get agreedUpdatedTerms() {
+    if (this._agreedUpdatedTermsStatus) {
+      return this._agreedUpdatedTermsStatus;
+    }
+    //In case of reload page, BehaviorSubject value is getting preserved
+    //so to taking it from localstorage.
+    const terms = localStorage.getItem('agreedUpdatedTermsStatus');
+    if (terms) {
+      this._agreedUpdatedTermsStatus = JSON.parse(terms);
+    }
+    if (isDevMode()) {
+      if (!this._agreedUpdatedTermsStatus) {
+        throw new TypeError('No agreedUpdatedTermsStatus in local storage!');
+      }
+    }
+
+    return this._agreedUpdatedTermsStatus;
+  }
+  //set agreedUpdatedTermsStatus after login and and accept terms & conditions
+  public set agreedUpdatedTerms(value: boolean) {
+    this._agreedUpdatedTermsStatus = value;
+    //In case of reload page, BehaviorSubject value is getting preserved
+    // so we need to save in localstorage for further use.
+    localStorage.setItem('agreedUpdatedTermsStatus', value.toString());
+  }
+  //reset agreedUpdatedTermsStatus to default from logout call
+  public resetAgreedUpdatedTermsStatus() {
+    this._agreedUpdatedTermsStatus = null;
   }
 
   /*
