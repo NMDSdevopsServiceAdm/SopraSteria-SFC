@@ -86,6 +86,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
     }
+    // this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
     this.canLinkToParent = true;
   }
 
@@ -162,7 +163,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     return newNotifications.length;
   }
   /**
-   * Function used to link a workplace to parent organisation
+   * Function used to open modal box for link a workplace to parent organisation
    * @param {event} triggred event
    * @return {void}
    */
@@ -172,9 +173,10 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     dialog.afterClosed.subscribe(setPermissionConfirmed => {
       if (setPermissionConfirmed) {
         this.router.navigate(['/dashboard']);
+        //To Do once funcationality is ready. Need to add selected parent name.
         this.alertService.addAlert({
           type: 'success',
-          message: `Request to link to ${this.workplace.parentName} has been sent.`,
+          message: `Request to link to parent has been sent.`,
         });
       }
     });

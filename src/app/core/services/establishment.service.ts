@@ -238,6 +238,11 @@ export class EstablishmentService {
   public setDataPermission(establishmentId, data: setPermission): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/dataPermissions`, data);
   }
+  //get all parent with postal code
+  public getAllParentWithPostalCode(): Observable<any> {
+    return this.http.get<any>(`/api/parentLinkingDetails/parents`);
+  }
+
   //Send data for link to parent
   public setRequestToParentForLink(establishmentId, data: setPermission): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent`, data);
