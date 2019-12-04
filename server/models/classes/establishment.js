@@ -12,6 +12,8 @@ const uuid = require('uuid');
 const hasProp = (obj, prop) =>
   Object.prototype.hasOwnProperty.bind(obj)(prop);
 
+const rfr = require('rfr');
+
 // database models
 const models = require('../index');
 
@@ -43,6 +45,7 @@ const CapacitiesCache = require('../cache/singletons/capacities').CapacitiesCach
 const db = rfr('server/utils/datastore');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
+const nonCareServices = [16];
 
 class Establishment extends EntityValidator {
   constructor (username, bulkUploadStatus = null) {
@@ -386,9 +389,16 @@ class Establishment extends EntityValidator {
       // If an establishment is not CQC regulated, remove CQC sharing and remove a location ID if set
       if (document.IsCQCRegulated === false || document.isRegulated === false) {
         if (document.share && document.share.with) {
-          document.share.with.filter(item => item !== 'CQC');
+          document.share.with = document.share.with.filter(item => item !== 'CQC');
         }
         document.locationId = null;
+      }
+
+      // If the main service is not a care provider, remove the capacities and utilisations
+      if (document.mainService) {
+        if (nonCareServices.includes(document.mainService.id)) {
+          document.capacities = [];
+        }
       }
 
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
