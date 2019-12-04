@@ -244,7 +244,7 @@ let ALL_PERMISSIONS = [
   {
     code: 'canLinkToParent',
     description: 'Link to any parent',
-    role: [],
+    role: ['Edit','Read'],
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
     isAdmin: false,
