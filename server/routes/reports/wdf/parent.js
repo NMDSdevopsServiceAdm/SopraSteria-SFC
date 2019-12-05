@@ -223,9 +223,18 @@ const getWorkersReportData = async establishmentId => {
     }
     if(value.DaysSickValue === 'No'){
       value.DaysSickValue = "Don't know";
+    }else if(value.DaysSickValue === 'Yes'){
+      value.DaysSickValue = value.DaysSickDays;
     }
+
     if(value.RecruitedFromValue === 'No'){
       value.RecruitedFromValue = "Don't know";
+    }else if(value.RecruitedFromValue === "Yes"){
+      value.RecruitedFromValue = value.From;
+    }
+
+    if(value.NationalityValue === "Other"){
+      value.NationalityValue = value.Nationality;
     }
 
     if((value.ContractValue === 'Permanent' || value.ContractValue === 'Temporary')
