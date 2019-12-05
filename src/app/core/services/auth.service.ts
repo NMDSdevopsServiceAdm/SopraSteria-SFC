@@ -41,10 +41,12 @@ export class AuthService {
   }
 
   public get token() {
+    console.log('Getting the token from localStorage');
     return localStorage.getItem('auth-token');
   }
 
   public set token(token: string) {
+    console.log('Setting the token in localStorage');
     localStorage.setItem('auth-token', token);
   }
 
@@ -65,6 +67,7 @@ export class AuthService {
   }
 
   public authenticate(username: string, password: string) {
+    console.log('Authservice has been asked to authenticate a user');
     return this.http
       .post<any>('/api/login/', { username, password }, { observe: 'response' })
       .pipe(tap(response => (this.token = response.headers.get('authorization'))));
