@@ -1126,7 +1126,7 @@ class Establishment extends EntityValidator {
         }
       );
       if (updatedEstablishment) {
-        return this._linkToParentRequested;
+        return true;
       }
     } catch (err) {
       this._log(Establishment.LOG_ERROR, `linkToParentRequested - failed: ${err}`);

@@ -1,3 +1,4 @@
+'use strict';
 const express = require('express');
 const router = express.Router();
 const Establishment = require('../../models/classes/establishment');
@@ -67,7 +68,7 @@ router.route('/').post(async (req, res) => {
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    console.error('Worker PUT: ', err);
+    console.error('Error occured: ', err);
     return res.status(503).send({});
   }
 });
