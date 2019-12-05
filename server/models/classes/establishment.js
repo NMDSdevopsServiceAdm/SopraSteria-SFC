@@ -82,6 +82,7 @@ class Establishment extends EntityValidator {
     this._dataPermissions = null;
     this._archived = null;
     this._dataOwnershipRequested = null;
+    this._linkToParentRequested = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -313,6 +314,10 @@ class Establishment extends EntityValidator {
 
   get dataOwnershipRequested() {
     return this._dataOwnershipRequested;
+  }
+
+  get linkToParentRequested() {
+    return this._linkToParentRequested;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -1107,7 +1112,61 @@ class Establishment extends EntityValidator {
       throw new EstablishmentExceptions.EstablishmentRestoreException(null, this.uid, null, err, null);
     }
   }
+  //this method will update linkToParentRequested
+  async updateLinkToParentRequested(establishmentId) {
+    try {
+      const updatedEstablishment = await models.establishment.update(
+        {
+          linkToParentRequested: new Date(),
+        },
+        {
+          where: {
+            id: establishmentId,
+          },
+        }
+      );
+      if (updatedEstablishment) {
+        return this._linkToParentRequested;
+      }
+    } catch (err) {
+      this._log(Establishment.LOG_ERROR, `linkToParentRequested - failed: ${err}`);
+    }
+  }
+  //This method will fetch parent id
+  async fetchParentId(uid) {
+    if (!uid) {
+      throw new EstablishmentExceptions.EstablishmentRestoreException(
+        null,
+        null,
+        null,
+        'User::restore failed: Missing id or uid',
+        null,
+        'Unexpected Error'
+      );
+    }
+    try {
+      // restore establishment based on id as an integer (primary key or uid)
+      let fetchQuery;
+      if (!Number.isInteger(uid)) {
+        fetchQuery = {
+          where: {
+            uid: uid,
+            archived: false,
+          },
+        };
+      }
+      const fetchParent = await models.establishment.findOne(fetchQuery);
+      if (fetchParent && fetchParent.id && Number.isInteger(fetchParent.id)) {
+        this._id = fetchParent.id;
+      }
+      return this._id;
+    } catch (err) {
+      // typically errors when making changes to model or database schema!
+      this._log(Establishment.LOG_ERROR, err);
 
+      throw new EstablishmentExceptions.EstablishmentRestoreException(null, this.uid, null, err, null);
+    }
+  }
   // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
   // returns true on success; false if no User
   // Can throw EstablishmentRestoreException exception.
@@ -1177,6 +1236,7 @@ class Establishment extends EntityValidator {
         this._reasonsForLeaving = fetchResults.reasonsForLeaving;
         this._archived = fetchResults.archived;
         this._dataOwnershipRequested = fetchResults.dataOwnershipRequested;
+        this._linkToParentRequested = fetchResults.linkToParentRequested;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1628,6 +1688,7 @@ class Establishment extends EntityValidator {
         uid: this.uid,
         name: this.name,
         dataOwnershipRequested: this.dataOwnershipRequested,
+        linkToParentRequested: this.linkToParentRequested,
       };
 
       if (fullDescription) {
@@ -1646,6 +1707,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.parentUid = this.parentUid;
         myDefaultJSON.dataOwner = this.dataOwner;
         myDefaultJSON.dataOwnershipRequested = this.dataOwnershipRequested;
+        myDefaultJSON.linkToParentRequested = this.linkToParentRequested;
         myDefaultJSON.dataPermissions = this.isParent ? undefined : this.dataPermissions;
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
       }
@@ -1973,7 +2035,7 @@ class Establishment extends EntityValidator {
     }
   }
 
- /**
+  /**
    * Function to fetch all the parents name and their post code.
    * @fetchQuery consist of parameters based on which we will filter parent name and postcode.
    */
@@ -1995,7 +2057,7 @@ class Establishment extends EntityValidator {
             parentName: parentsAndPostcodeDetails[i].NameValue,
             postcode: parentsAndPostcodeDetails[i].postcode,
             uid: parentsAndPostcodeDetails[i].uid,
-            parentNameAndPostalcode: `${parentsAndPostcodeDetails[i].NameValue}, ${parentsAndPostcodeDetails[i].postcode}`
+            parentNameAndPostalcode: `${parentsAndPostcodeDetails[i].NameValue}, ${parentsAndPostcodeDetails[i].postcode}`,
           });
         }
         return parentPostcodeDetailsArr;
@@ -2005,7 +2067,6 @@ class Establishment extends EntityValidator {
       return false;
     }
   }
-
 
   // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
   static async fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF) {
