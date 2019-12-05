@@ -188,9 +188,11 @@ SELECT
   "Worker"."GenderValue",
   to_char("DateOfBirthValue", :timeFormat) as "DateOfBirthValue",
   "NationalityValue",
+  "Nationality"."Nationality",
   "Job"."JobName" AS "MainJobRole",
   to_char("MainJobStartDateValue", :timeFormat) as "MainJobStartDateValue",
   "RecruitedFromValue",
+  "RecruitedFrom"."From",
   "ContractValue",
   "WeeklyHoursContractedValue",
   "WeeklyHoursContractedHours",
@@ -198,6 +200,7 @@ SELECT
   "WeeklyHoursAverageValue",
   "ZeroHoursContractValue",
   "DaysSickValue",
+  "DaysSickDays",
   "AnnualHourlyPayValue",
   "AnnualHourlyPayRate",
   "CareCertificateValue",
@@ -224,6 +227,14 @@ LEFT JOIN
   cqc."Qualification"
 ON
   "Worker"."SocialCareQualificationFKValue" = "Qualification"."ID"
+LEFT JOIN
+  cqc."Nationality"
+ON
+  cqc."Worker"."NationalityOtherFK" = "Nationality"."ID"
+LEFT JOIN
+  cqc."RecruitedFrom"
+ON
+  cqc."Worker"."RecruitedFromOtherFK" = "RecruitedFrom"."ID"
 WHERE
   "Worker"."Archived" = :falseValue;
 `;

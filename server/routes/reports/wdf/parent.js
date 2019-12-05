@@ -223,17 +223,37 @@ const getWorkersReportData = async establishmentId => {
     }
     if(value.DaysSickValue === 'No'){
       value.DaysSickValue = "Don't know";
-    }
-    if(value.RecruitedFromValue === 'No'){
-      value.RecruitedFromValue = "Don't know";
+    }else if(value.DaysSickValue === 'Yes'){
+      value.DaysSickValue = value.DaysSickDays;
     }
 
-    if(value.WeeklyHoursContractedValue === 'Yes'){
-      value.HoursValue = value.WeeklyHoursContractedHours;
-    }else if(value.WeeklyHoursContractedValue === 'No'){
-      value.HoursValue = (value.WeeklyHoursAverageValue !== null)? value.WeeklyHoursAverageHours: "Don't know";
-    }else if(value.WeeklyHoursContractedValue === null){
-      value.HoursValue = (value.WeeklyHoursAverageValue === null)? 'Missing': value.WeeklyHoursAverageValue;
+    if(value.RecruitedFromValue === 'No'){
+      value.RecruitedFromValue = "Don't know";
+    }else if(value.RecruitedFromValue === "Yes"){
+      value.RecruitedFromValue = value.From;
+    }
+
+    if(value.NationalityValue === "Other"){
+      value.NationalityValue = value.Nationality;
+    }
+
+    if((value.ContractValue === 'Permanent' || value.ContractValue === 'Temporary')
+    && value.ZeroHoursContractValue === 'No'){
+      if(value.WeeklyHoursContractedValue === 'Yes'){
+        value.HoursValue = value.WeeklyHoursContractedHours;
+      }else if(value.WeeklyHoursContractedValue === 'No'){
+        value.HoursValue = "Don't know";
+      }else if(value.WeeklyHoursContractedValue === null){
+        value.HoursValue = 'Missing';
+      }
+    }else{
+      if(value.WeeklyHoursAverageValue === 'Yes'){
+        value.HoursValue = value.WeeklyHoursAverageHours;
+      }else if(value.WeeklyHoursAverageValue === 'No'){
+        value.HoursValue = "Don't know";
+      }else if(value.WeeklyHoursAverageValue === null){
+        value.HoursValue = 'Missing';
+      }
     }
 
     updateProps.forEach(prop => {
