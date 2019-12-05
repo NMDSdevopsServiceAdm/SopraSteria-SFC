@@ -6,7 +6,7 @@
 >
 </app-error-summary>
 
-<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" autocomplete="off">
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
     <fieldset class="govuk-fieldset">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">

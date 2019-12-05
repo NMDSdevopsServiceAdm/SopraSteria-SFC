@@ -89,11 +89,11 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
         type: [
           {
             name: 'required',
-            message: 'Enter parent name or postal code.',
+            message: 'Enter parent name or post code.',
           },
           {
             name: 'validNameOrPostalCode',
-            message: 'Enter correct parent name or postal code',
+            message: 'Enter correct parent name or post code',
           },
         ],
       },
