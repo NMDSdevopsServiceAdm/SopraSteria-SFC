@@ -60,7 +60,9 @@
           <a (click)="setDataPermissions($event)" href="#">Data permissions</a>
         </li>
         <li *ngIf="canLinkToParent">
-          <a (click)="linkToParent($event)" href="#">Link to your parent organisation</a>
+          <a (click)="linkToParentRequested ? cancelLinkToParent($event) : linkToParent($event)" href="#"
+            >Link to your parent organisation</a
+          >
         </li>
       </ul>
     </ng-container>
