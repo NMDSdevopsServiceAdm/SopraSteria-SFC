@@ -306,6 +306,15 @@ class Worker extends EntityValidator {
         this._status = document.status;
       }
 
+      // Consequential updates when one value means another should be empty or null
+
+      // If their job isn't a registered nurse, remove their specialism and category
+      if (document.mainJob) {
+        if (document.mainJob.jobId !== 23) {
+          document.nurseSpecialism = { id: null, specialism: null };
+        }
+      }
+
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();
 
