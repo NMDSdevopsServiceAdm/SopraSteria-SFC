@@ -121,9 +121,31 @@ describe('Worker Class', () => {
       expect(zeroHours.weeklyHoursContracted.hours).to.deep.equal(null);
       expect(zeroHoursWorker).to.deep.equal(true);
     });
+    it('should remove contracted hours when from an agency', async () => {
+      const agency = {
+        contract: 'Agency'
+      };
+      const agencyWorker = await worker.load(agency);
+      expect(agency.weeklyHoursContracted.value).to.deep.equal(null);
+      expect(agency.weeklyHoursContracted.hours).to.deep.equal(null);
+      expect(agencyWorker).to.deep.equal(true);
+    });
     it('should not remove contracted hours when not on a zero hour contract', async () => {
       const notZeroHours = {
         zeroHoursContract: 'No',
+        weeklyHoursContracted: {
+          value: 'Yes',
+          hours: 37
+        }
+      };
+      const notZeroHoursWorker = await worker.load(notZeroHours);
+      expect(notZeroHours.weeklyHoursContracted.value).to.deep.equal('Yes');
+      expect(notZeroHours.weeklyHoursContracted.hours).to.deep.equal(37);
+      expect(notZeroHoursWorker).to.deep.equal(true);
+    });
+    it('should not remove contracted hours when not from an agency', async () => {
+      const notZeroHours = {
+        contract: 'Permanent',
         weeklyHoursContracted: {
           value: 'Yes',
           hours: 37
