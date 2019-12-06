@@ -1077,7 +1077,7 @@ class Establishment extends EntityValidator {
    * @param id is a string or number
    * @fetchQuery consist of parameters based on which we will filter parent detals.
    */
-  static async fetchParentDetails(id) {
+   async fetchParentDetails(id) {
     if (!id) {
       throw new EstablishmentExceptions.EstablishmentRestoreException(
         null,
