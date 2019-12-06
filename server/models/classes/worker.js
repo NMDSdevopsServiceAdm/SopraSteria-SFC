@@ -336,6 +336,9 @@ class Worker extends EntityValidator {
       if (document.zeroHoursContract === 'Yes') {
         document.weeklyHoursContracted = { value: null, hours: null };
       }
+      if (document.zeroHoursContract === 'No') {
+        document.weeklyHoursAverage = { value: null, hours: null };
+      }
       console.log(document);
 
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
