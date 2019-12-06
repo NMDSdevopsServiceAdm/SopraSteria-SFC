@@ -31,9 +31,9 @@ router.route('/').post(async (req, res) => {
         });
       }
       if (isValidEstablishment) {
-        let parentEstablishmentId = await thisEstablishment.fetchParentId(params.parentWorkplaceUId);
+        let parentEstablishmentId = await thisEstablishment.fetchParentDetails(params.parentWorkplaceUId);
         if (parentEstablishmentId) {
-          params.parentEstablishmentId = parentEstablishmentId;
+          params.parentEstablishmentId = parentEstablishmentId.id;
           params.linkToParentUID = uuid.v4();
           if (!uuidRegex.test(params.linkToParentUID.toUpperCase())) {
             console.error('Invalid link to parent request UUID');

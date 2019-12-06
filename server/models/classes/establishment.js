@@ -1072,8 +1072,12 @@ class Establishment extends EntityValidator {
     return mustSave;
   }
 
-  //This method will fetch parent name
-  async fetchParentName(id) {
+/**
+   * Function to fetch all the parents details.
+   * @param id is a string or number
+   * @fetchQuery consist of parameters based on which we will filter parent detals.
+   */
+  async fetchParentDetails(id) {
     if (!id) {
       throw new EstablishmentExceptions.EstablishmentRestoreException(
         null,
@@ -1100,11 +1104,15 @@ class Establishment extends EntityValidator {
           },
         };
       }
-      const fetchName = await models.establishment.findOne(fetchQuery);
-      if (fetchName && fetchName.id && Number.isInteger(fetchName.id)) {
-        this._parentName = fetchName.NameValue;
+      let parentDetails = {};
+      const fetchDetails = await models.establishment.findOne(fetchQuery);
+      if (fetchDetails && fetchDetails.id && Number.isInteger(fetchDetails.id)) {
+        this._parentName = fetchDetails.NameValue;
+        this._id = fetchDetails.id;
+        parentDetails.parentName = this._parentName;
+        parentDetails.id = this._id;
       }
-      return this._parentName;
+      return parentDetails;
     } catch (err) {
       // typically errors when making changes to model or database schema!
       this._log(Establishment.LOG_ERROR, err);
@@ -1112,7 +1120,11 @@ class Establishment extends EntityValidator {
       throw new EstablishmentExceptions.EstablishmentRestoreException(null, this.uid, null, err, null);
     }
   }
-  //this method will update linkToParentRequested
+
+ /**
+   * Function will update linkToParentRequested column.
+   * @param establishmentId is a number
+   */
   async updateLinkToParentRequested(establishmentId) {
     try {
       const updatedEstablishment = await models.establishment.update(
@@ -1130,41 +1142,6 @@ class Establishment extends EntityValidator {
       }
     } catch (err) {
       this._log(Establishment.LOG_ERROR, `linkToParentRequested - failed: ${err}`);
-    }
-  }
-  //This method will fetch parent id
-  async fetchParentId(uid) {
-    if (!uid) {
-      throw new EstablishmentExceptions.EstablishmentRestoreException(
-        null,
-        null,
-        null,
-        'User::restore failed: Missing id or uid',
-        null,
-        'Unexpected Error'
-      );
-    }
-    try {
-      // restore establishment based on id as an integer (primary key or uid)
-      let fetchQuery;
-      if (!Number.isInteger(uid)) {
-        fetchQuery = {
-          where: {
-            uid: uid,
-            archived: false,
-          },
-        };
-      }
-      const fetchParent = await models.establishment.findOne(fetchQuery);
-      if (fetchParent && fetchParent.id && Number.isInteger(fetchParent.id)) {
-        this._id = fetchParent.id;
-      }
-      return this._id;
-    } catch (err) {
-      // typically errors when making changes to model or database schema!
-      this._log(Establishment.LOG_ERROR, err);
-
-      throw new EstablishmentExceptions.EstablishmentRestoreException(null, this.uid, null, err, null);
     }
   }
   // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
@@ -2057,7 +2034,7 @@ class Establishment extends EntityValidator {
             parentName: parentsAndPostcodeDetails[i].NameValue,
             postcode: parentsAndPostcodeDetails[i].postcode,
             uid: parentsAndPostcodeDetails[i].uid,
-            parentNameAndPostcode: `${parentsAndPostcodeDetails[i].NameValue}, ${parentsAndPostcodeDetails[i].postcode}`,
+            parentNameAndPostalcode: `${parentsAndPostcodeDetails[i].NameValue}, ${parentsAndPostcodeDetails[i].postcode}`,
           });
         }
         return parentPostcodeDetailsArr;

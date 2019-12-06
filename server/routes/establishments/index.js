@@ -247,8 +247,10 @@ router.route('/:id').get(async (req, res) => {
         jsonResponse.totalWorkers = await thisEstablishment.getTotalWorkers();
       }
       if (!jsonResponse.isParent && jsonResponse.parentUid !== null) {
-        const parentEstablishmentName = await thisEstablishment.fetchParentName(jsonResponse.parentUid);
-        jsonResponse.parentName = parentEstablishmentName;
+        const parentEstablishmentName = await thisEstablishment.fetchParentDetails(jsonResponse.parentUid);
+        if (parentEstablishmentName) {
+          jsonResponse.parentName = parentEstablishmentName.parentName;
+        }
       }
       return res.status(200).json(jsonResponse);
     } else {
