@@ -26,6 +26,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   public filesUploaded = false;
   public submitted = false;
   public selectedFiles: File[];
+  public bulkUploadStatus: string;
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
   private subscriptions: Subscription = new Subscription();
@@ -42,6 +43,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.setupForm();
     this.checkForUploadedFiles();
+    // this.checkBulkUploadState();
   }
 
   ngAfterViewInit() {
@@ -134,7 +136,6 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   private prepForUpload(response: PresignedUrlResponseItem[]): void {
     this.bytesUploaded = [];
     const request: UploadFileRequestItem[] = [];
-
     this.selectedFiles.forEach((file: File) => {
       this.bytesTotal += file.size;
       this.bytesUploaded.push(0);
