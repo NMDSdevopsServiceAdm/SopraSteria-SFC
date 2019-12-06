@@ -51,7 +51,29 @@ let parentRecords =[
       "NameValue": "PS Testing Home 1",
       "postcode": "TQ3 2SF"
     }
-  ]
+  ];
+
+  let parentDetailsData = [
+    {
+      "localIdentifier": "My establishment",
+      "name": "Sunset health care",
+      "id": 432,
+      "isRegulated": true,
+      "nmdsId": "H1002354",
+      "address1": "Unit 1A, Sunset House",
+      "address2": "Sunset Lane",
+      "address3": '',
+      "postcode": "LS1 1AA",
+      "town": "Leeds",
+      "county": "Leeds",
+      "provId": "",
+      "locationId": "1-1000210669",
+      "provid": '',
+      "shareWith": {
+        "enabled": true,
+        "with": "CQC; Local Authority;"
+      },
+  }]
 
 
 
@@ -64,6 +86,20 @@ describe('/server/models/class/establishment.js', () => {
       const getParentDetails = await Esatblishment.fetchAllParentsAndPostcode();
       if(getParentDetails){
         expect(getParentDetails.length).to.equal(11);
+      }
+    });
+  });
+});
+
+describe('/server/models/class/establishment.js', () => {
+  describe('getParentDetails', () => {
+    sinon.stub(Esatblishment, 'fetchParentDetails').callsFake(() => {
+      return parentDetailsData;
+    });
+    it('should return parent details', async () => {
+      const getParentDetails = await Esatblishment.fetchParentDetails(432);
+      if (getParentDetails) {
+        expect(getParentDetails[0].name).to.equal("Sunset health care");
       }
     });
   });
