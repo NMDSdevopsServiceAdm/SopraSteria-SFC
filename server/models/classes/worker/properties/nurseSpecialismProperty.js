@@ -102,7 +102,7 @@ exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePr
         }
 
         if (specialismDef.id === null) {
-          return true;
+          return specialismDef;
         } else {
             return false;
         }
