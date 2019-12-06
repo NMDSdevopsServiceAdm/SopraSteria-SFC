@@ -328,6 +328,11 @@ class Worker extends EntityValidator {
         }
       }
 
+      if (document.countryOfBirth) {
+        if (document.countryOfBirth.value === 'United Kingdom') {
+          document.yearArrived = { value: null, year: null };
+        }
+      }
       console.log(document);
 
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
