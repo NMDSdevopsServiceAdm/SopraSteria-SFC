@@ -6,6 +6,7 @@ const OTHER_MAX_LENGTH=120;
 exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePropertyPrototype {
     constructor() {
         super('NurseSpecialism', 'NurseSpecialismFK');
+        this._allowNull = true;
     }
 
     static clone() {

@@ -311,7 +311,12 @@ class Worker extends EntityValidator {
       // If their job isn't a registered nurse, remove their specialism and category
       if (document.mainJob) {
         if (document.mainJob.jobId !== 23) {
+          document.registeredNurse = null;
           document.nurseSpecialism = { id: null, specialism: null };
+        }
+        // If their job isn't a social worker - remove the approved mental health worker
+        if (document.mainJob.jobId !== 27) {
+          document.approvedMentalHealthWorker = null;
         }
       }
 
