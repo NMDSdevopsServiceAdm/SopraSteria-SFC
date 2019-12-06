@@ -126,9 +126,12 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             console.log('We have the establishment information');
             // update the establishment service state with the given establishment id
             this.establishmentService.establishmentId = response.body.establishment.uid;
+          }
+          if (response.body.role === 'Admin') {
+            this.userService.agreedUpdatedTerms = true; // skip term & condition check for admin user
+          } else {
             this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
           }
-
           console.log('Checking if the user has previously logged in');
           if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
             console.log('They have so send them to where they were at: ' + this.authService.redirectLocation);
@@ -141,7 +144,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           this.authService.clearPreviousUser();
 
           console.log('Check to make sure they have accepted the terms and conditions');
-          if (response.body.migratedUserFirstLogon || !response.body.agreedUpdatedTerms) {
+          if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
             console.log("They haven't accepted the terms, sending them to the welcome screen");
             this.router.navigate(['/migrated-user-terms-and-conditions']);
           }

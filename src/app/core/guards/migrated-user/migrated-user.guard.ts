@@ -13,7 +13,7 @@ export class MigratedUserGuard implements CanActivate {
   }
 
   private checkTermsAcceptance(state: RouterStateSnapshot): boolean {
-    if (this.userService.agreedUpdatedTerms || this.userService.migratedUserTermsAccepted$.value) {
+    if (this.userService.agreedUpdatedTerms) {
       this.router.navigate(['/dashboard']);
       return false;
     }
