@@ -1,5 +1,7 @@
 'use strict';
 
+const rfr = require('rfr');
+
 // This file abstracts away details of how to easily and safely run a query
 // using the existing database connection pool, but avoiding most of the
 // complexity introduced by Sequelize.

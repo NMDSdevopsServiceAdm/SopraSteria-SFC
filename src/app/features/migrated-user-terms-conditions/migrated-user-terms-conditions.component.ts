@@ -83,7 +83,6 @@ export class MigratedUserTermsConditionsComponent implements OnInit {
   }
 
   private continue(): void {
-    this.userService.migratedUserTermsAccepted$.next(true);
     this.userService.agreedUpdatedTerms = true;
     this.userService.loggedInUser.agreedUpdatedTerms = true;
     this.userService
