@@ -6,6 +6,7 @@ const OTHER_MAX_LENGTH=120;
 exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePropertyPrototype {
     constructor() {
         super('NurseSpecialism', 'NurseSpecialismFK');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -20,7 +21,7 @@ exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePr
             } else {
                this.property = null;
             }
-        }        
+        }
     }
 
     restorePropertyFromSequelize(document) {
@@ -37,9 +38,9 @@ exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePr
         return {
             NurseSpecialismFKValue: this.property.id,
             NurseSpecialismFKOther: this.property.other ? this.property.other : null,
-        };                
+        };
     }
-    
+
     isEqual(currentValue, newValue) {
         return (currentValue && newValue && currentValue.id === newValue.id) && (
             (currentValue.other && newValue.other && currentValue.other === newValue.other) ||
@@ -52,7 +53,7 @@ exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePr
                 nurseSpecialism: this.property
             };
         }
-        
+
         return {
             nurseSpecialism : {
                 currentValue: this.property,
@@ -63,6 +64,8 @@ exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePr
 
     _valid(thisSpecialism) {
         if (!thisSpecialism) return false;
+
+        if (thisSpecialism.id === null && thisSpecialism.specialism === null) return true;
 
         if (!(thisSpecialism.id || thisSpecialism.specialism)) return false;
 
@@ -96,6 +99,10 @@ exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePr
                 id: referenceSpecialism.id,
                 specialism: referenceSpecialism.specialism
             };
+        }
+
+        if (specialismDef.id === null) {
+          return specialismDef;
         } else {
             return false;
         }

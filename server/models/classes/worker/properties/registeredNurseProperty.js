@@ -5,6 +5,7 @@ const REGISTEREDNURSE_TYPE = ['Adult Nurse', 'Mental Health Nurse', 'Learning Di
 exports.RegisteredNurseProperty = class RegisteredNurseProperty extends ChangePropertyPrototype {
     constructor() {
         super('RegisteredNurse');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -12,7 +13,7 @@ exports.RegisteredNurseProperty = class RegisteredNurseProperty extends ChangePr
     }
 
     async restoreFromJson(document) {
-        if (document.registeredNurse) {
+        if (document.registeredNurse || document.registeredNurse === null) {
             if (REGISTEREDNURSE_TYPE.includes(document.registeredNurse)) {
                 this.property = document.registeredNurse;
             } else {
@@ -28,7 +29,7 @@ exports.RegisteredNurseProperty = class RegisteredNurseProperty extends ChangePr
     savePropertyToSequelize() {
         return {
             RegisteredNurseValue: this.property
-        };        
+        };
     }
 
     isEqual(currentValue, newValue) {
@@ -41,7 +42,7 @@ exports.RegisteredNurseProperty = class RegisteredNurseProperty extends ChangePr
                 registeredNurse: this.property
             };
         }
-        
+
         return {
             registeredNurse : {
                 currentValue: this.property,
