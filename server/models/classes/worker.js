@@ -337,7 +337,7 @@ class Worker extends EntityValidator {
       }
 
       // Remove contracted hours If on a zero hour contract
-      if (document.zeroHoursContract === 'Yes') {
+      if (document.zeroHoursContract === 'Yes' || document.contract === 'Agency') {
         document.weeklyHoursContracted = { value: null, hours: null };
       }
 
