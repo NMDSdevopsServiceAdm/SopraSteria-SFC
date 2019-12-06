@@ -328,16 +328,26 @@ class Worker extends EntityValidator {
         }
       }
 
+      // Remove year arriced if born in the UK
       if (document.countryOfBirth) {
         if (document.countryOfBirth.value === 'United Kingdom') {
           document.yearArrived = { value: null, year: null };
         }
       }
+
+      // Remove contracted hours If on a zero hour contract
       if (document.zeroHoursContract === 'Yes') {
         document.weeklyHoursContracted = { value: null, hours: null };
       }
+
+      // Remove average hours if not on a zero hour contract
       if (document.zeroHoursContract === 'No') {
         document.weeklyHoursAverage = { value: null, hours: null };
+      }
+
+      // Remove social care qualification if they don't have one
+      if (document.qualificationInSocialCare === 'No') {
+        document.socialCareQualification = { qualificationId: null, title: null };
       }
       console.log(document);
 

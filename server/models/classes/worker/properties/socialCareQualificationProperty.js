@@ -7,6 +7,7 @@ const models = require('../../../index');
 exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificationProperty extends ChangePropertyPrototype {
     constructor() {
         super('SocialCareQualification', 'SocialCareQualificationFk');
+        this._allowNull = false;
     }
 
     static clone() {
@@ -18,6 +19,7 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
         // TODO: it's a little more than assuming the JSON representation
         if (document.socialCareQualification) {
             const validatedQualification = await this._validateQualification(document.socialCareQualification);
+            console.log(validatedQualification);
             if (validatedQualification) {
                 this.property = validatedQualification;
             } else {
@@ -65,7 +67,10 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
     }
 
     _valid(qualificationDef) {
+      console.log(qualificationDef);
         if (!qualificationDef) return false;
+
+        if (qualificationDef.qualificationId === null && qualificationDef.title === null) return true;
 
         // must exist a qualificationId or title
         if (!(qualificationDef.qualificationId || qualificationDef.title)) return false;
@@ -106,6 +111,10 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
                 qualificationId: referencedQualification.id,
                 title: referencedQualification.level
             };
+        }
+
+        if (qualificationDef.qualificationId === null) {
+          return qualificationDef;
         } else {
             return false;
         }
