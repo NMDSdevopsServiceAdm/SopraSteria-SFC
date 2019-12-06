@@ -307,7 +307,7 @@ class Worker extends EntityValidator {
       }
 
       // Consequential updates when one value means another should be empty or null
-
+      console.log(document);
       // If their job isn't a registered nurse, remove their specialism and category
       if (document.mainJob) {
         if (document.mainJob.jobId !== 23) {
@@ -319,6 +319,16 @@ class Worker extends EntityValidator {
           document.approvedMentalHealthWorker = null;
         }
       }
+
+      // Remove British citizenship if they are british
+      if (document.nationality) {
+        if (document.nationality.value === 'British') {
+          delete document.nationality.other;
+          document.britishCitizenship = null;
+        }
+      }
+
+      console.log(document);
 
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();
