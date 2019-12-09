@@ -93,11 +93,12 @@ describe('/server/models/class/establishment.js', () => {
 
 describe('/server/models/class/establishment.js', () => {
   describe('getParentDetails', () => {
-    sinon.stub(Esatblishment, 'fetchParentDetails').callsFake(() => {
+    const thisEstablishment = new Esatblishment();
+    sinon.stub(thisEstablishment, 'fetchParentDetails').callsFake(() => {
       return parentDetailsData;
     });
     it('should return parent details', async () => {
-      const getParentDetails = await Esatblishment.fetchParentDetails(432);
+      const getParentDetails = await thisEstablishment.fetchParentDetails(432);
       if (getParentDetails) {
         expect(getParentDetails[0].name).to.equal("Sunset health care");
       }
