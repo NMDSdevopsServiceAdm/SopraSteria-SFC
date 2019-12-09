@@ -28,40 +28,40 @@
         <t>Training Expiring soon</t>
     </si>
     <si>
-        <t>Date achieved eligibility</t>
+        <t>Training</t>
     </si>
     <si>
-        <t>Establishment data fully completed?</t>
+        <t>Worker ID</t>
     </si>
     <si>
-        <t>Establishment data created/updated with the financial year?</t>
+        <t>Job role</t>
     </si>
     <si>
-        <t>Number of workers at the establishment</t>
+        <t>Training category</t>
     </si>
     <si>
-        <t>Number of individual worker records</t>
+        <t>Training name</t>
     </si>
     <si>
-        <t>Number of fully completed and updated worker records</t>
+        <t>Status</t>
     </si>
     <si>
-        <t>Percentage of fully completed and updated worker records</t>
+        <t>Mandatory</t>
     </si>
     <si>
-        <t>Grace Street</t>
+        <t>Expiry date</t>
     </si>
     <si>
-        <t>All</t>
+        <t>Date completed</t>
     </si>
     <si>
-        <t>Not Eligible</t>
+        <t>Accredited</t>
     </si>
     <si>
-        <t>No</t>
+        <t>Mandatory training missing</t>
     </si>
     <si>
-        <t>Yes</t>
+        <t>Mandatory training expiring soon</t>
     </si>
     <si>
         <t>Skills for Care</t>

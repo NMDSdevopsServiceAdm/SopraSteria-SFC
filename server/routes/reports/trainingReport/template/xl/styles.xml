@@ -637,15 +637,15 @@
             <alignment horizontal="right" vertical="top" wrapText="1" readingOrder="1" />
             <protection locked="0" />
         </xf>
-        <xf numFmtId="184" fontId="7" fillId="0" borderId="8" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1" applyProtection="1">
-            <alignment horizontal="right" vertical="top" wrapText="1" readingOrder="1" />
+        <xf numFmtId="0" fontId="6" fillId="0" borderId="6" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1" applyProtection="1">
+            <alignment horizontal="center" vertical="top" wrapText="1" readingOrder="1" />
             <protection locked="0" />
         </xf>
-        <xf numFmtId="0" fontId="7" fillId="0" borderId="9" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1" applyProtection="1">
-            <alignment vertical="top" wrapText="1" readingOrder="1" />
+        <xf numFmtId="0" fontId="7" fillId="0" borderId="10" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1" applyProtection="1">
+            <alignment horizontal="center" vertical="top" wrapText="1" readingOrder="1" />
             <protection locked="0" />
         </xf>
-        <xf numFmtId="0" fontId="6" fillId="0" borderId="10" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1" applyProtection="1">
+        <xf numFmtId="0" fontId="6" fillId="0" borderId="6" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1" applyProtection="1">
             <alignment vertical="top" wrapText="1" readingOrder="1" />
             <protection locked="0" />
         </xf>
