@@ -15,6 +15,9 @@ router.route('/').post(async (req, res) => {
       // by loading after the restore, only those properties defined in the
       //  PUT body will be updated (peristed)
       const isValidEstablishment = await thisEstablishment.load(req.body);
+      if (!isValidEstablishment) {
+        return res.status(400).send('Unexpected Input.');
+      }
       const params = {
         userUid: req.userUid,
         subEstablishmentId: req.establishmentId,
@@ -29,54 +32,48 @@ router.route('/').post(async (req, res) => {
           message: `Link to parent is already requested for posted establishment id`,
         });
       }
-      if (isValidEstablishment) {
-        let parentEstablishmentId = await thisEstablishment.fetchParentDetails(params.parentWorkplaceUId);
-        if (parentEstablishmentId) {
-          params.parentEstablishmentId = parentEstablishmentId.id;
-          params.linkToParentUID = uuid.v4();
-          if (!uuidRegex.test(params.linkToParentUID.toUpperCase())) {
-            console.error('Invalid link to parent request UUID');
-            return res.status(400).send();
+      let parentEstablishmentId = await thisEstablishment.fetchParentDetails(params.parentWorkplaceUId);
+      if (parentEstablishmentId) {
+        params.parentEstablishmentId = parentEstablishmentId.id;
+        params.linkToParentUID = uuid.v4();
+        if (!uuidRegex.test(params.linkToParentUID.toUpperCase())) {
+          console.error('Invalid link to parent request UUID');
+          return res.status(400).send();
+        }
+      } else {
+        return res.status(400).send({
+          message: 'Invalid request',
+        });
+      }
+      let linkToParentRequest = await linkSubToParent.linkToParentRequest(params);
+      if (linkToParentRequest) {
+        let saveLinkToParentRequested = await thisEstablishment.updateLinkToParentRequested(params.subEstablishmentId);
+        if (saveLinkToParentRequested) {
+          let lastLinkToParentRequest = await linkSubToParent.getLinkToParentRequest(params);
+          if (lastLinkToParentRequest) {
+            params.notificationUid = uuid.v4();
+            if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
+              console.error('Invalid notification UUID');
+              return res.status(400).send();
+            }
+            let getRecipientUserDetails = await linkSubToParent.getRecipientUserDetails(params);
+            if (getRecipientUserDetails) {
+              let notificationParams = {
+                notificationUid: params.notificationUid,
+                type: 'LINKTOPARENTREQUEST',
+                ownerRequestChangeUid: params.linkToParentUID,
+                recipientUserUid: getRecipientUserDetails[0].UserUID,
+                userUid: params.userUid,
+              };
+              let addNotificationResp = await notifications.insertNewNotification(notificationParams);
+              return res.status(201).send(lastLinkToParentRequest[0]);
+            }
           }
         } else {
           return res.status(400).send({
             message: 'Invalid request',
           });
         }
-        let linkToParentRequest = await linkSubToParent.linkToParentRequest(params);
-        if (linkToParentRequest) {
-          let saveLinkToParentRequested = await thisEstablishment.updateLinkToParentRequested(
-            params.subEstablishmentId
-          );
-          if (saveLinkToParentRequested) {
-            let lastLinkToParentRequest = await linkSubToParent.getLinkToParentRequest(params);
-            if (lastLinkToParentRequest) {
-              params.notificationUid = uuid.v4();
-              if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
-                console.error('Invalid notification UUID');
-                return res.status(400).send();
-              }
-              let getRecipientUserDetails = await linkSubToParent.getRecipientUserDetails(params);
-              if (getRecipientUserDetails) {
-                let notificationParams = {
-                  notificationUid: params.notificationUid,
-                  type: 'LINKTOPARENTREQUEST',
-                  ownerRequestChangeUid: params.linkToParentUID,
-                  recipientUserUid: getRecipientUserDetails[0].UserUID,
-                  userUid: params.userUid,
-                };
-                let addNotificationResp = await notifications.insertNewNotification(notificationParams);
-                return res.status(201).send(lastLinkToParentRequest[0]);
-              }
-            }
-          } else {
-            return res.status(400).send({
-              message: 'Invalid request',
-            });
-          }
-        }
-      } else {
-        return res.status(400).send('Unexpected Input.');
       }
     } else {
       // not found worker
