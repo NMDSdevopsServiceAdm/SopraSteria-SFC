@@ -62,7 +62,11 @@
   </p>
 
   <button type="submit" (click)="sendRequestToParent()" class="govuk-button">Send request</button>
-  <button type="button" (click)="close(null)" class="govuk-button govuk-button--secondary govuk-util__float-right">
+  <button
+    type="button"
+    (click)="closeDialogWindow(null)"
+    class="govuk-button govuk-button--secondary govuk-util__float-right"
+  >
     Close
   </button>
 </form>

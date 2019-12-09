@@ -2,6 +2,7 @@ import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { DataPermissions, Workplace } from '@core/model/my-workplaces.model';
+import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -24,15 +25,14 @@ export class LinkToParentCancelDialogComponent extends DialogComponent implement
     @Inject(DIALOG_DATA) public data,
     private establishmentService: EstablishmentService,
     private errorSummaryService: ErrorSummaryService,
-    public dialog: Dialog<LinkToParentCancelDialogComponent>
+    public dialog: Dialog<LinkToParentCancelDialogComponent>,
+    private alertService: AlertService
   ) {
     super(data, dialog);
   }
 
   ngOnInit() {
     this.workplace = this.data;
-    this.linktoParentRequstedId = '1312 12312 112441 12124';
-    this.linktoParentRequstedParentName = 'Manish';
     this.setupServerErrorsMap();
   }
 
@@ -55,12 +55,12 @@ export class LinkToParentCancelDialogComponent extends DialogComponent implement
   }
 
   /**
-   * Function is used to close modal window after successful confirmation
-   * @param {boject} object for parent name and close status
+   * Function is used to close dialog window after successful confirmation
+   * @param {boolean} true to close dialog
    * @return {void}
    */
-  close(retunToClose): void {
-    this.dialog.close(retunToClose);
+  public closeDialogWindow(confirm: boolean) {
+    this.dialog.close(confirm);
   }
 
   /**
@@ -70,20 +70,24 @@ export class LinkToParentCancelDialogComponent extends DialogComponent implement
    */
   public cancelRequestToParent() {
     this.subscriptions.add(
-      this.establishmentService.cancelRequestToParentForLink(this.workplace.uid, this.linktoParentRequstedId).subscribe(
-        data => {
-          if (data) {
-            const retunToClose = {
-              parentName: this.linktoParentRequstedParentName,
-              isClose: true,
-            };
-            this.close(retunToClose);
+      this.establishmentService
+        .cancelRequestToParentForLink(this.workplace.uid, { approvalStatus: 'CANCELLED' })
+        .subscribe(
+          data => {
+            if (data) {
+              this.workplace.linkToParentRequested = null;
+              const parentName = data[0].requstedParentName;
+              this.alertService.addAlert({
+                type: 'success',
+                message: `Request to link to ${parentName} has been cancelled.`,
+              });
+              this.closeDialogWindow(true);
+            }
+          },
+          error => {
+            this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           }
-        },
-        error => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
-      )
+        )
     );
   }
 

@@ -51,7 +51,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public isOwnershipRequested = false;
   public primaryWorkplace: Establishment;
   public canLinkToParent: boolean;
-  public linkToParentRequested;
+  public linkToParentRequestedStatus: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -90,12 +90,10 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
     }
-    // this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
-    this.canLinkToParent = true;
+    this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
     if (this.canLinkToParent && this.workplace.linkToParentRequested) {
-      this.linkToParentRequested = true;
+      this.linkToParentRequestedStatus = true;
     }
-    this.linkToParentRequested = true;
   }
 
   public onChangeDataOwner($event: Event) {
@@ -180,13 +178,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     $event.preventDefault();
     const dialog = this.dialogService.open(LinkToParentDialogComponent, this.workplace);
     dialog.afterClosed.subscribe(returnToClose => {
-      if (returnToClose.isClose) {
+      if (returnToClose) {
         this.router.navigate(['/dashboard']);
-        //To Do once funcationality is ready. Need to add selected parent name.
-        this.alertService.addAlert({
-          type: 'success',
-          message: `Request to link to ${returnToClose.parentName} has been sent.`,
-        });
       }
     });
   }
@@ -200,12 +193,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     $event.preventDefault();
     const dialog = this.dialogService.open(LinkToParentCancelDialogComponent, this.workplace);
     dialog.afterClosed.subscribe(returnToClose => {
-      if (returnToClose.isClose) {
+      if (returnToClose) {
         this.router.navigate(['/dashboard']);
-        this.alertService.addAlert({
-          type: 'success',
-          message: `Request to link to ${returnToClose.parentName} has been cancelled.`,
-        });
       }
     });
   }

@@ -248,7 +248,7 @@ export class EstablishmentService {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent`, data);
   }
   //Send data for link to parent
-  public cancelRequestToParentForLink(establishmentId, requestId): Observable<Establishment> {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/cancelLinkToParent`, requestId);
+  public cancelRequestToParentForLink(establishmentId, data): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent/cancel`, data);
   }
 }

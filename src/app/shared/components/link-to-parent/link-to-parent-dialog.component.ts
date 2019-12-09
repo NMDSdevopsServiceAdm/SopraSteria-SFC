@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { DataPermissions, Workplace } from '@core/model/my-workplaces.model';
+import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -31,7 +32,8 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
-    public dialog: Dialog<LinkToParentDialogComponent>
+    public dialog: Dialog<LinkToParentDialogComponent>,
+    private alertService: AlertService
   ) {
     super(data, dialog);
     this.parentNameOrPostCodeValidator = this.parentNameOrPostCodeValidator.bind(this);
@@ -150,12 +152,12 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   }
 
   /**
-   * Function is used to close modal window after successful confirmation
-   * @param {boject} object for parent name and close status
+   * Function is used to close dialog window after successful confirmation
+   * @param {boolean} true to close dialog
    * @return {void}
    */
-  close(retunToClose): void {
-    this.dialog.close(retunToClose);
+  public closeDialogWindow(confirm: boolean) {
+    this.dialog.close(confirm);
   }
 
   /**
@@ -176,11 +178,13 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
         this.establishmentService.setRequestToParentForLink(this.workplace.uid, setLinkAndPermission).subscribe(
           data => {
             if (data) {
-              const retunToClose = {
-                parentName: this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null,
-                isClose: true,
-              };
-              this.close(retunToClose); //to do
+              this.workplace.linkToParentRequested = '2232235255';
+              const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
+              this.alertService.addAlert({
+                type: 'success',
+                message: `Request to link to ${parentName} has been sent.`,
+              });
+              this.closeDialogWindow(true);
             }
           },
           error => {
