@@ -82,6 +82,7 @@ class Establishment extends EntityValidator {
     this._dataPermissions = null;
     this._archived = null;
     this._dataOwnershipRequested = null;
+    this._linkToParentRequested = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -313,6 +314,10 @@ class Establishment extends EntityValidator {
 
   get dataOwnershipRequested() {
     return this._dataOwnershipRequested;
+  }
+
+  get linkToParentRequested() {
+    return this._linkToParentRequested;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -1067,8 +1072,12 @@ class Establishment extends EntityValidator {
     return mustSave;
   }
 
-  //This method will fetch parent name
-  async fetchParentName(id) {
+/**
+   * Function to fetch all the parents details.
+   * @param id is a string or number
+   * @fetchQuery consist of parameters based on which we will filter parent detals.
+   */
+   async fetchParentDetails(id) {
     if (!id) {
       throw new EstablishmentExceptions.EstablishmentRestoreException(
         null,
@@ -1095,11 +1104,15 @@ class Establishment extends EntityValidator {
           },
         };
       }
-      const fetchName = await models.establishment.findOne(fetchQuery);
-      if (fetchName && fetchName.id && Number.isInteger(fetchName.id)) {
-        this._parentName = fetchName.NameValue;
+      let parentDetails = {};
+      const fetchDetails = await models.establishment.findOne(fetchQuery);
+      if (fetchDetails && fetchDetails.id && Number.isInteger(fetchDetails.id)) {
+        this._parentName = fetchDetails.NameValue;
+        this._id = fetchDetails.id;
+        parentDetails.parentName = this._parentName;
+        parentDetails.id = this._id;
       }
-      return this._parentName;
+      return parentDetails;
     } catch (err) {
       // typically errors when making changes to model or database schema!
       this._log(Establishment.LOG_ERROR, err);
@@ -1108,6 +1121,29 @@ class Establishment extends EntityValidator {
     }
   }
 
+ /**
+   * Function will update linkToParentRequested column.
+   * @param establishmentId is a number
+   */
+  async updateLinkToParentRequested(establishmentId) {
+    try {
+      const updatedEstablishment = await models.establishment.update(
+        {
+          linkToParentRequested: new Date(),
+        },
+        {
+          where: {
+            id: establishmentId,
+          },
+        }
+      );
+      if (updatedEstablishment) {
+        return true;
+      }
+    } catch (err) {
+      this._log(Establishment.LOG_ERROR, `linkToParentRequested - failed: ${err}`);
+    }
+  }
   // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
   // returns true on success; false if no User
   // Can throw EstablishmentRestoreException exception.
@@ -1177,6 +1213,7 @@ class Establishment extends EntityValidator {
         this._reasonsForLeaving = fetchResults.reasonsForLeaving;
         this._archived = fetchResults.archived;
         this._dataOwnershipRequested = fetchResults.dataOwnershipRequested;
+        this._linkToParentRequested = fetchResults.linkToParentRequested;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1628,6 +1665,7 @@ class Establishment extends EntityValidator {
         uid: this.uid,
         name: this.name,
         dataOwnershipRequested: this.dataOwnershipRequested,
+        linkToParentRequested: this.linkToParentRequested,
       };
 
       if (fullDescription) {
@@ -1646,6 +1684,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.parentUid = this.parentUid;
         myDefaultJSON.dataOwner = this.dataOwner;
         myDefaultJSON.dataOwnershipRequested = this.dataOwnershipRequested;
+        myDefaultJSON.linkToParentRequested = this.linkToParentRequested;
         myDefaultJSON.dataPermissions = this.isParent ? undefined : this.dataPermissions;
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
       }
@@ -1973,7 +2012,7 @@ class Establishment extends EntityValidator {
     }
   }
 
- /**
+  /**
    * Function to fetch all the parents name and their post code.
    * @fetchQuery consist of parameters based on which we will filter parent name and postcode.
    */
@@ -1995,7 +2034,7 @@ class Establishment extends EntityValidator {
             parentName: parentsAndPostcodeDetails[i].NameValue,
             postcode: parentsAndPostcodeDetails[i].postcode,
             uid: parentsAndPostcodeDetails[i].uid,
-            parentNameAndPostalcode: `${parentsAndPostcodeDetails[i].NameValue}, ${parentsAndPostcodeDetails[i].postcode}`
+            parentNameAndPostalcode: `${parentsAndPostcodeDetails[i].NameValue}, ${parentsAndPostcodeDetails[i].postcode}`,
           });
         }
         return parentPostcodeDetailsArr;
@@ -2005,7 +2044,6 @@ class Establishment extends EntityValidator {
       return false;
     }
   }
-
 
   // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
   static async fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF) {
