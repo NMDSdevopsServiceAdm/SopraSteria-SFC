@@ -6,7 +6,7 @@
 >
 </app-error-summary>
 
-<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" autocomplete="off">
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
     <fieldset class="govuk-fieldset">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -15,20 +15,20 @@
         </h1>
       </legend>
       <div class="govuk-form-group">
-        <label class="govuk-label" for="parentNameOrPostalCode">Parent name or postcode</label>
+        <label class="govuk-label" for="parentNameOrPostCode">Parent name or postcode</label>
         <span
-          *ngIf="submitted && form.get('parentNameOrPostalCode').invalid"
-          id="parentNameOrPostalCode-error"
+          *ngIf="submitted && form.get('parentNameOrPostCode').invalid"
+          id="parentNameOrPostCode-error"
           class="govuk-error-message"
         >
           <span class="govuk-visually-hidden">Error:</span>
-          {{ getFirstErrorMessage('parentNameOrPostalCode') }}
+          {{ getFirstErrorMessage('parentNameOrPostCode') }}
         </span>
 
         <app-auto-suggest
           [formGroup]="form"
-          [dataProvider]="parentNameOrPostalCodeFilter"
-          [formControlName]="'parentNameOrPostalCode'"
+          [dataProvider]="parentNameOrPostCodeFilter"
+          [formControlName]="'parentNameOrPostCode'"
         ></app-auto-suggest>
       </div>
 
@@ -62,7 +62,11 @@
   </p>
 
   <button type="submit" (click)="sendRequestToParent()" class="govuk-button">Send request</button>
-  <button type="button" (click)="close(null)" class="govuk-button govuk-button--secondary govuk-util__float-right">
+  <button
+    type="button"
+    (click)="closeDialogWindow(null)"
+    class="govuk-button govuk-button--secondary govuk-util__float-right"
+  >
     Close
   </button>
 </form>
