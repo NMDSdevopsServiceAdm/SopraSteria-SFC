@@ -51,14 +51,14 @@ router.route('/').post(async (req, res) => {
         if (saveLinkToParentRequested) {
           let lastLinkToParentRequest = await linkSubToParent.getLinkToParentRequest(params);
           if (lastLinkToParentRequest) {
-            params.notificationUid = uuid.v4();
-            if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
-              console.error('Invalid notification UUID');
-              return res.status(400).send();
-            }
             let getRecipientUserDetails = await linkSubToParent.getRecipientUserDetails(params);
             if (getRecipientUserDetails.length > 0) {
                 for (let i =0; i < getRecipientUserDetails.length; i++) {
+                    params.notificationUid = uuid.v4();
+                    if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
+                      console.error('Invalid notification UUID');
+                      return res.status(400).send();
+                    }
                     let notificationParams = {
                         notificationUid: params.notificationUid,
                         type: 'LINKTOPARENTREQUEST',
