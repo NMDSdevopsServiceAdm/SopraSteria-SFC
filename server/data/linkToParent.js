@@ -54,3 +54,19 @@ exports.checkAlreadyRequestedLinkToParent = async params =>
     },
     type: db.QueryTypes.SELECT,
   });
+
+const getRecipientUserDetailsQuery = `
+select "UserUID" from cqc."Establishment" est
+LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
+JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
+WHERE :estID = est."EstablishmentUID" AND individual."UserRoleValue" = :userRole AND est."IsParent" = :isParent `;
+
+exports.getRecipientUserDetails = async params =>
+  db.query(getRecipientUserDetailsQuery, {
+    replacements: {
+      estID: params.parentWorkplaceUId,
+      userRole: 'Edit',
+      isParent: true,
+    },
+    type: db.QueryTypes.SELECT,
+  });
