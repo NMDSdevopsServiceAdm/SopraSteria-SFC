@@ -57,15 +57,17 @@ router.route('/').post(async (req, res) => {
               return res.status(400).send();
             }
             let getRecipientUserDetails = await linkSubToParent.getRecipientUserDetails(params);
-            if (getRecipientUserDetails) {
-              let notificationParams = {
-                notificationUid: params.notificationUid,
-                type: 'LINKTOPARENTREQUEST',
-                ownerRequestChangeUid: params.linkToParentUID,
-                recipientUserUid: getRecipientUserDetails[0].UserUID,
-                userUid: params.userUid,
-              };
-              let addNotificationResp = await notifications.insertNewNotification(notificationParams);
+            if (getRecipientUserDetails.length > 0) {
+                for (let i =0; i < getRecipientUserDetails.length; i++) {
+                    let notificationParams = {
+                        notificationUid: params.notificationUid,
+                        type: 'LINKTOPARENTREQUEST',
+                        ownerRequestChangeUid: params.linkToParentUID,
+                        recipientUserUid: getRecipientUserDetails[i].UserUID,
+                        userUid: params.userUid,
+                      };
+                      let addNotificationResp = await notifications.insertNewNotification(notificationParams);
+                }
               return res.status(201).send(lastLinkToParentRequest[0]);
             }
           }
