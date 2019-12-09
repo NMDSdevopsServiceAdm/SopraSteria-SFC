@@ -36,6 +36,12 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       return this.router.createUrlTree(['/logged-out']);
     }
 
+    if (!this.userService.agreedUpdatedTerms) {
+      if (state.url !== '/migrated-user-terms-and-conditions') {
+        return this.router.createUrlTree(['/migrated-user-terms-and-conditions']);
+      }
+    }
+
     return true;
   }
 }
