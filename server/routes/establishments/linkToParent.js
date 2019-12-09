@@ -58,7 +58,6 @@ router.route('/').post(async (req, res) => {
               }
               let getRecipientUserDetails = await linkSubToParent.getRecipientUserDetails(params);
               if (getRecipientUserDetails) {
-                  console.log(getRecipientUserDetails);
                 let notificationParams = {
                   notificationUid: params.notificationUid,
                   type: 'LINKTOPARENTREQUEST',
