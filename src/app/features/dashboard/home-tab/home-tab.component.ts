@@ -18,6 +18,9 @@ import {
 import {
   ChangeDataOwnerDialogComponent,
 } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import {
+  LinkToParentCancelDialogComponent,
+} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import {
   SetDataPermissionDialogComponent,
@@ -48,6 +51,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public isOwnershipRequested = false;
   public primaryWorkplace: Establishment;
   public canLinkToParent: boolean;
+  public linkToParentRequestedStatus: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -87,6 +91,9 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.isOwnershipRequested = true;
     }
     this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
+    if (this.canLinkToParent && this.workplace.linkToParentRequested) {
+      this.linkToParentRequestedStatus = true;
+    }
   }
 
   public onChangeDataOwner($event: Event) {
@@ -140,6 +147,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     const dialog = this.dialogService.open(SetDataPermissionDialogComponent, this.workplace);
     dialog.afterClosed.subscribe(setPermissionConfirmed => {
       if (setPermissionConfirmed) {
+        this.changeDataOwnerLink();
         this.router.navigate(['/dashboard']);
         this.alertService.addAlert({
           type: 'success',
@@ -169,14 +177,24 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public linkToParent($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(LinkToParentDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe(setPermissionConfirmed => {
-      if (setPermissionConfirmed) {
+    dialog.afterClosed.subscribe(returnToClose => {
+      if (returnToClose) {
         this.router.navigate(['/dashboard']);
-        //To Do once funcationality is ready. Need to add selected parent name.
-        this.alertService.addAlert({
-          type: 'success',
-          message: `Request to link to parent has been sent.`,
-        });
+      }
+    });
+  }
+
+  /**
+   * Function used to open modal box for link a workplace to parent organisation
+   * @param {event} triggred event
+   * @return {void}
+   */
+  public cancelLinkToParent($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(LinkToParentCancelDialogComponent, this.workplace);
+    dialog.afterClosed.subscribe(returnToClose => {
+      if (returnToClose) {
+        this.router.navigate(['/dashboard']);
       }
     });
   }

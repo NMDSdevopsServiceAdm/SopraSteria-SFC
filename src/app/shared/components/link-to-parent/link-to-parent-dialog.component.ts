@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { DataPermissions, Workplace } from '@core/model/my-workplaces.model';
+import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -23,7 +24,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public availableParentWorkPlaces;
-  public parentNameOrPostalCode: string;
+  public parentNameOrPostCode: string;
   public formErrorsMap: Array<ErrorDetails>;
 
   constructor(
@@ -31,11 +32,12 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
-    public dialog: Dialog<LinkToParentDialogComponent>
+    public dialog: Dialog<LinkToParentDialogComponent>,
+    private alertService: AlertService
   ) {
     super(data, dialog);
-    this.parentNameOrPostalCodeValidator = this.parentNameOrPostalCodeValidator.bind(this);
-    this.parentNameOrPostalCodeFilter = this.parentNameOrPostalCodeFilter.bind(this);
+    this.parentNameOrPostCodeValidator = this.parentNameOrPostCodeValidator.bind(this);
+    this.parentNameOrPostCodeFilter = this.parentNameOrPostCodeFilter.bind(this);
     this.setupForm();
   }
 
@@ -47,12 +49,12 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
     this.setupServerErrorsMap();
   }
 
-  //function is use to get all available parent workplaces name, uid and postalcode
+  //function is use to get all available parent workplaces name, uid and Postcode
   private getAvailableParentWorkPlaces() {
     this.subscriptions.add(
-      this.establishmentService.getAllParentWithPostalCode().subscribe(
-        parentsWithPostalCode => {
-          this.availableParentWorkPlaces = parentsWithPostalCode;
+      this.establishmentService.getAllParentWithPostCode().subscribe(
+        parentsWithPostCode => {
+          this.availableParentWorkPlaces = parentsWithPostCode;
         },
         error => {
           if (error.error.message) {
@@ -76,7 +78,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   //Set the form fields and validator
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      parentNameOrPostalCode: [null, [Validators.required, this.parentNameOrPostalCodeValidator]],
+      parentNameOrPostCode: [null, [Validators.required, this.parentNameOrPostCodeValidator]],
       dataPermission: [null, Validators.required],
     });
   }
@@ -85,15 +87,15 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'parentNameOrPostalCode',
+        item: 'parentNameOrPostCode',
         type: [
           {
             name: 'required',
-            message: 'Enter parent name or postal code.',
+            message: 'Enter parent name or post code.',
           },
           {
-            name: 'validNameOrPostalCode',
-            message: 'Enter correct parent name or postal code',
+            name: 'validNameOrPostCode',
+            message: 'Enter correct parent name or post code',
           },
         ],
       },
@@ -150,11 +152,11 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   }
 
   /**
-   * Function is used to close modal window after successful confirmation
-   * @param {boolean} confirm
+   * Function is used to close dialog window after successful confirmation
+   * @param {boolean} true to close dialog
    * @return {void}
    */
-  close(confirm: boolean): void {
+  public closeDialogWindow(confirm: boolean) {
     this.dialog.close(confirm);
   }
 
@@ -166,16 +168,23 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   public sendRequestToParent() {
     if (this.form.valid) {
       this.permissionType = this.form.value.dataPermission;
-      this.parentWorkplaceId = this.getParentUid(this.form.value.parentNameOrPostalCode)[0] || null;
+      this.parentWorkplaceId = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'uid') || null;
       const setLinkAndPermission = {
         parentWorkplaceId: this.parentWorkplaceId,
         permissionToSet: this.permissionType,
+        requestStatus: 'REQUESTED',
       };
       this.subscriptions.add(
         this.establishmentService.setRequestToParentForLink(this.workplace.uid, setLinkAndPermission).subscribe(
           data => {
             if (data) {
-              this.close(true); //to do
+              this.workplace.linkToParentRequested = '2232235255';
+              const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
+              this.alertService.addAlert({
+                type: 'success',
+                message: `Request to link to ${parentName} has been sent.`,
+              });
+              this.closeDialogWindow(true);
             }
           },
           error => {
@@ -187,44 +196,44 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   }
 
   /**
-   * Function is used to validate input parent name or postal code is  valid or not.
-   * if valid then return null otherwise return object {validNameOrPostalCode:true}
+   * Function is used to validate input parent name or Post code is  valid or not.
+   * if valid then return null otherwise return object {validNameOrPostCode:true}
    * @param {void}
    * @return {void}
    */
-  public parentNameOrPostalCodeValidator() {
+  public parentNameOrPostCodeValidator() {
     if (this.form && this.availableParentWorkPlaces) {
-      const { parentNameOrPostalCode, dataPermission } = this.form.controls;
-      if (parentNameOrPostalCode.value !== null) {
-        const parentNameOrPostalCodeLowerCase = parentNameOrPostalCode.value.toLowerCase();
+      const { parentNameOrPostCode, dataPermission } = this.form.controls;
+      if (parentNameOrPostCode.value !== null) {
+        const parentNameOrPostCodeLowerCase = parentNameOrPostCode.value.toLowerCase();
         return this.availableParentWorkPlaces.some(
-          wp => wp.parentNameAndPostalcode.toLowerCase() === parentNameOrPostalCodeLowerCase
+          wp => wp.parentNameAndPostalcode.toLowerCase() === parentNameOrPostCodeLowerCase
         )
           ? null
-          : { validNameOrPostalCode: true };
+          : { validNameOrPostCode: true };
       }
     }
 
     return null;
   }
   /**
-   * Function is used to filter parent name and postal code array based on input keys.
-   * if matched found the return combition of name and postal code's array of string
+   * Function is used to filter parent name and Post code array based on input keys.
+   * if matched found the return combition of name and Post code's array of string
    * @param {void}
    * @return {array}  array of string
    */
-  public parentNameOrPostalCodeFilter(): string[] {
-    const parentNameOrPostalCode = this.form.value.parentNameOrPostalCode;
-    if (this.availableParentWorkPlaces && parentNameOrPostalCode && parentNameOrPostalCode.length) {
-      const parentNameOrPostalCodeLowerCase = parentNameOrPostalCode.toLowerCase();
+  public parentNameOrPostCodeFilter(): string[] {
+    const parentNameOrPostCode = this.form.value.parentNameOrPostCode;
+    if (this.availableParentWorkPlaces && parentNameOrPostCode && parentNameOrPostCode.length) {
+      const parentNameOrPostCodeLowerCase = parentNameOrPostCode.toLowerCase();
       return this.availableParentWorkPlaces
         .filter(
           wp =>
-            wp.parentName.toLowerCase().startsWith(parentNameOrPostalCodeLowerCase) ||
-            wp.postcode.toLowerCase().startsWith(parentNameOrPostalCodeLowerCase) ||
-            wp.parentNameAndPostalcode.toLowerCase().startsWith(parentNameOrPostalCodeLowerCase)
+            wp.parentName.toLowerCase().startsWith(parentNameOrPostCodeLowerCase) ||
+            wp.postcode.toLowerCase().startsWith(parentNameOrPostCodeLowerCase) ||
+            wp.parentNameAndPostalcode.toLowerCase().startsWith(parentNameOrPostCodeLowerCase)
         )
-        .filter(wp => wp.parentNameAndPostalcode.toLowerCase() !== parentNameOrPostalCodeLowerCase)
+        .filter(wp => wp.parentNameAndPostalcode.toLowerCase() !== parentNameOrPostCodeLowerCase)
         .map(wp => wp.parentNameAndPostalcode);
     }
 
@@ -232,14 +241,19 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   }
   /**
    * Function is used to get selected parent's uid.
-   * @param {string} nameAndPostalCode of selected parent
+   * @param {string} nameAndPostCode of selected parent
+   * @param {string} desired nameOrUid of selected parent
    * @return {array}  array of string
    */
-  public getParentUid(nameAndPostalCode: string) {
-    if (nameAndPostalCode) {
-      return this.availableParentWorkPlaces
-        .filter(wp => wp.parentNameAndPostalcode.toLowerCase() === nameAndPostalCode.toLowerCase())
-        .map(wp => wp.uid);
+  public getParentUidOrName(nameAndPostCode: string, nameOrUid: string) {
+    if (nameAndPostCode) {
+      const filterArray = this.availableParentWorkPlaces.filter(
+        wp => wp.parentNameAndPostalcode.toLowerCase() === nameAndPostCode.toLowerCase()
+      );
+      if (nameOrUid === 'uid') {
+        return filterArray[0].uid;
+      }
+      return filterArray[0].parentName;
     }
   }
 

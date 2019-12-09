@@ -17,6 +17,9 @@ import { DetailsComponent } from './components/details/details.component';
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
+import {
+  LinkToParentCancelDialogComponent,
+} from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { PanelComponent } from './components/panel/panel.component';
@@ -120,6 +123,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TrainingAndQualificationsSummaryComponent,
     TainingInfoPanelComponent,
     LinkToParentDialogComponent,
+    LinkToParentCancelDialogComponent,
   ],
   exports: [
     AlertComponent,
@@ -174,6 +178,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TrainingAndQualificationsSummaryComponent,
     TainingInfoPanelComponent,
     LinkToParentDialogComponent,
+    LinkToParentCancelDialogComponent,
   ],
   entryComponents: [
     ChangeDataOwnerDialogComponent,
@@ -181,6 +186,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
     LinkToParentDialogComponent,
+    LinkToParentCancelDialogComponent,
   ],
 })
 export class SharedModule {}
