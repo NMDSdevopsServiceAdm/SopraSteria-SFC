@@ -1,5 +1,6 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { DataPermissions, Workplace } from '@core/model/my-workplaces.model';
@@ -33,7 +34,8 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
     public dialog: Dialog<LinkToParentDialogComponent>,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private router: Router
   ) {
     super(data, dialog);
     this.parentNameOrPostCodeValidator = this.parentNameOrPostCodeValidator.bind(this);
@@ -178,8 +180,8 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
         this.establishmentService.setRequestToParentForLink(this.workplace.uid, setLinkAndPermission).subscribe(
           data => {
             if (data) {
-              this.workplace.linkToParentRequested = '2232235255';
               const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
+              this.router.navigate(['/dashboard']);
               this.alertService.addAlert({
                 type: 'success',
                 message: `Request to link to ${parentName} has been sent.`,
