@@ -87,7 +87,9 @@ router.route('/').post(async (req, res) => {
   }
 });
 
-
+ /**
+   * Route will cancel link to Parent Request.
+   */
 router.route('/cancel').post(async (req, res) => {
   try {
     const thisEstablishment = new Establishment.Establishment(req.username);
@@ -116,7 +118,10 @@ router.route('/cancel').post(async (req, res) => {
               message: `Unable to cancel this request.`,
             });
           } else {
-            let saveLinkToParentRequested = await thisEstablishment.updateLinkToParentRequested(params.subEstablishmentId, true);
+            let saveLinkToParentRequested = await thisEstablishment.updateLinkToParentRequested(
+              params.subEstablishmentId,
+              true
+            );
             let updateLinkToParent = await linkSubToParent.updateLinkToParent(params);
             if (updateLinkToParent && saveLinkToParentRequested) {
               return res.status(200).send(updateLinkToParent);
