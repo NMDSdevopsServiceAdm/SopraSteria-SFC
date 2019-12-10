@@ -1,5 +1,5 @@
 import { HttpEventType } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
@@ -12,14 +12,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { filter } from 'lodash';
-import { combineLatest, Subscription } from 'rxjs';
+import { combineLatest, interval, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-files-upload',
   templateUrl: './files-upload.component.html',
 })
-export class FilesUploadComponent implements OnInit, AfterViewInit {
+export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public form: FormGroup;
   public filesUploading = false;
@@ -27,6 +27,8 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   public submitted = false;
   public selectedFiles: File[];
   public bulkUploadStatus: string;
+  public status: Subscription;
+  public stopPolling: boolean;
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
   private subscriptions: Subscription = new Subscription();
@@ -43,7 +45,16 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.setupForm();
     this.checkForUploadedFiles();
-    // this.checkBulkUploadState();
+    this.status = interval(1000).subscribe(() => {
+      console.log(this.stopPolling);
+      if (!this.stopPolling) {
+        this.checkForUploadedFiles();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.status.unsubscribe();
   }
 
   ngAfterViewInit() {
@@ -92,6 +103,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   }
 
   public onFilesSelection($event: Event): void {
+    this.stopPolling = true;
     this.bulkUploadService.resetBulkUpload();
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target[`files`]);
@@ -175,6 +187,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
           this.bulkUploadService.preValidateFiles$.next(true);
           this.filesUploading = false;
           this.filesUploaded = true;
+          this.stopPolling = false;
         }
       );
   }
