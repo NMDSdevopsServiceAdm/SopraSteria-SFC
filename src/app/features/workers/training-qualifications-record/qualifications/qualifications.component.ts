@@ -76,10 +76,4 @@ export class QualificationsComponent implements OnInit {
   public getRoute() {
     this.workerService.getRoute$.next(this.router.url);
   }
-  public getRoute() {
-    this.workerService.getRoute$.next(this.router.url);
-  }
-  public getRoute() {
-    this.workerService.getRoute$.next(this.router.url);
-  }
 }
