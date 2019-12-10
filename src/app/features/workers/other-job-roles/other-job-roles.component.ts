@@ -17,6 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 export class OtherJobRolesComponent extends QuestionComponent {
   public availableJobRoles: Job[];
   public jobsWithOtherRole: JobRole[] = [];
+  public otherJobs: Boolean;
   private otherJobRoleCharacterLimit = 120;
 
   constructor(
@@ -32,6 +33,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
     this.form = this.formBuilder.group({
       selectedJobRoles: this.formBuilder.array([]),
+      otherJobs: null,
     });
   }
 
@@ -111,7 +113,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
   }
 
   generateUpdateProps() {
-    const { selectedJobRoles } = this.form.value;
+    const { selectedJobRoles, otherJobs } = this.form.value;
     return {
       otherJobs: selectedJobRoles
         .filter(j => j.checked)
