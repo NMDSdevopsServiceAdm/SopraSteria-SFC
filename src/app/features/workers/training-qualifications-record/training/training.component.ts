@@ -83,9 +83,10 @@ export class TrainingComponent implements OnInit {
     if (expires) {
       const expiringDate = moment(expires);
       const currentDate = moment();
-      if (currentDate > expiringDate) {
+      const daysDiffrence = expiringDate.diff(currentDate, 'days');
+      if (daysDiffrence < 0) {
         status = 2;
-      } else if (expiringDate.diff(currentDate, 'days') <= 90) {
+      } else if (daysDiffrence >= 0 && daysDiffrence <= 90) {
         status = 1;
       } else {
         status = 0;

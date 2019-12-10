@@ -29,6 +29,7 @@ export class AddEditTrainingComponent implements OnInit {
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
   private titleMaxLength = 120;
+  private titleMinLength = 3;
   private subscriptions: Subscription = new Subscription();
   public previousUrl: string;
 
@@ -56,7 +57,10 @@ export class AddEditTrainingComponent implements OnInit {
     });
 
     this.form = this.formBuilder.group({
-      title: [null, [Validators.required, Validators.maxLength(120)]],
+      title: [
+        null,
+        [Validators.required, Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)],
+      ],
       category: [null, Validators.required],
       accredited: null,
       completed: this.formBuilder.group({
@@ -155,6 +159,10 @@ export class AddEditTrainingComponent implements OnInit {
           {
             name: 'required',
             message: `Enter a training name`,
+          },
+          {
+            name: 'minlength',
+            message: `min length is ${this.titleMinLength}`,
           },
           {
             name: 'maxlength',
