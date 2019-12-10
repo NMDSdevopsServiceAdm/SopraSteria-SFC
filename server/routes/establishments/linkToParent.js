@@ -87,4 +87,57 @@ router.route('/').post(async (req, res) => {
   }
 });
 
+ /**
+   * Route will cancel link to Parent Request.
+   */
+router.route('/cancel').post(async (req, res) => {
+  try {
+    const thisEstablishment = new Establishment.Establishment(req.username);
+    if (req.body.approvalStatus === undefined || req.body.approvalStatus !== 'CANCELLED') {
+      console.error('Approval status should be "CANCELLED"');
+      return res.status(400).send();
+    }
+    if (await thisEstablishment.restore(req.establishmentId, false)) {
+      const isValidEstablishment = await thisEstablishment.load(req.body);
+      if (!isValidEstablishment) {
+        return res.status(400).send('Unexpected Input.');
+      } else {
+        const getLinkToParentUidParams = {
+          establishmentId: req.establishmentId,
+        };
+        let getLinkToParentUid = await linkSubToParent.getLinkToParentUid(getLinkToParentUidParams);
+        if (getLinkToParentUid.length > 0) {
+          const params = {
+            subEstablishmentId: req.establishmentId,
+            linkToParentUid: getLinkToParentUid[0].LinkToParentUID,
+            approvalStatus: req.body.approvalStatus,
+          };
+          let cancelLinkToParent = await linkSubToParent.cancelLinkToParent(params);
+          if (!cancelLinkToParent.length) {
+            return res.status(400).send({
+              message: `Unable to cancel this request.`,
+            });
+          } else {
+            let saveLinkToParentRequested = await thisEstablishment.updateLinkToParentRequested(
+              params.subEstablishmentId,
+              true
+            );
+            let updateLinkToParent = await linkSubToParent.updateLinkToParent(params);
+            if (updateLinkToParent && saveLinkToParentRequested) {
+              return res.status(200).send(updateLinkToParent);
+            }
+          }
+        }
+      }
+    } else {
+      return res.status(404).send({
+        message: 'Establishment is not found',
+      });
+    }
+  } catch (e) {
+    console.error(' /establishment/:id/linkToParent/cancel : ERR: ', e.message);
+    return res.status(503).send({}); //intentionally an empty JSON response
+  }
+});
+
 module.exports = router;
