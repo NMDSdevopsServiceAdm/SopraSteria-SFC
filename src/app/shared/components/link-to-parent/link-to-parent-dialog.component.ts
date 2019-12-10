@@ -155,10 +155,10 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
 
   /**
    * Function is used to close dialog window after successful confirmation
-   * @param {boolean} true to close dialog
+   * @param {any} true to close dialog after response or null to close without action
    * @return {void}
    */
-  public closeDialogWindow(confirm: boolean) {
+  public closeDialogWindow(confirm: any) {
     this.dialog.close(confirm);
   }
 

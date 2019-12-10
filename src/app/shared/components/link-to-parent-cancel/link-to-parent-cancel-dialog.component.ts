@@ -58,7 +58,7 @@ export class LinkToParentCancelDialogComponent extends DialogComponent implement
 
   /**
    * Function is used to close dialog window after successful confirmation
-   * @param {any} true to close dialog
+   * @param {any} true to close dialog after response or null to close without action
    * @return {void}
    */
   public closeDialogWindow(confirm: any) {
