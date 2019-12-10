@@ -45,8 +45,7 @@ export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.setupForm();
     this.checkForUploadedFiles();
-    this.status = interval(1000).subscribe(() => {
-      console.log(this.stopPolling);
+    this.status = interval(5000).subscribe(() => {
       if (!this.stopPolling) {
         this.checkForUploadedFiles();
       }
@@ -164,6 +163,7 @@ export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private uploadFiles(request: UploadFileRequestItem[]): void {
     this.filesUploading = true;
+    this.stopPolling = false;
 
     this.uploadSubscription$ = combineLatest(
       request.map(data => this.bulkUploadService.uploadFile(data.file, data.signedUrl))
@@ -187,7 +187,6 @@ export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
           this.bulkUploadService.preValidateFiles$.next(true);
           this.filesUploading = false;
           this.filesUploaded = true;
-          this.stopPolling = false;
         }
       );
   }
