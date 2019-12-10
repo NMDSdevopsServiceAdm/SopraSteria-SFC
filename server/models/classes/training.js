@@ -817,6 +817,7 @@ class Training extends EntityValidator {
      */
     static async getExpiringAndExpiredTrainingCounts(establishmentId, workerRecords){
       if(workerRecords.length !== 0){
+        let currentDate = moment();
         for(let i = 0; i < workerRecords.length; i++){
           const allTrainingRecords = await Training.fetch(establishmentId, workerRecords[i].uid);
           if(allTrainingRecords && allTrainingRecords.training.length > 0){
@@ -828,10 +829,10 @@ class Training extends EntityValidator {
             for(let j = 0; j < trainings; j++){
               if(allTrainingRecords.training[j].expires){
                 let expiringDate = moment(allTrainingRecords.training[j].expires);
-                let currentDate = moment();
-                if(currentDate > expiringDate){
+                let daysDiffrence = expiringDate.diff(currentDate, 'days');
+                if(daysDiffrence < 0){
                   workerRecords[i].expiredTrainingCount++;
-                }else if(expiringDate.diff(currentDate, 'days') <= 90){
+                }else if(daysDiffrence >= 0 && daysDiffrence <= 90){
                   workerRecords[i].expiringTrainingCount++;
                 }
               }
