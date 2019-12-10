@@ -162,11 +162,11 @@ export class AddEditTrainingComponent implements OnInit {
           },
           {
             name: 'minlength',
-            message: `min length is ${this.titleMinLength}`,
+            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters in length`,
           },
           {
             name: 'maxlength',
-            message: `max length is ${this.titleMaxLength}`,
+            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters in length`,
           },
         ],
       },
