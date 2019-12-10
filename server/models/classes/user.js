@@ -766,7 +766,7 @@ class User {
         this._updatedBy = fetchResults.updatedBy;
         this._tribalId = fetchResults.tribalId;
         this._lastLogin = fetchResults.login && fetchResults.login.username ? fetchResults.login.lastLogin : null;
-        this._agreedUpdatedTerms = fetchResults.login.agreedUpdatedTerms;
+        this._agreedUpdatedTerms = fetchResults.login && fetchResults.login.agreedUpdatedTerms ? fetchResults.login.agreedUpdatedTerms : false;
 
         // TODO: change to amanaged property
         this._isPrimary = fetchResults.isPrimary;
