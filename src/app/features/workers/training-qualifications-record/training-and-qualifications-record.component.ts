@@ -107,9 +107,10 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     traingRecords.forEach(training => {
       if (training.expires) {
         const expiringDate = moment(training.expires);
-        if (currentDate > expiringDate) {
+        const daysDiffrence = expiringDate.diff(currentDate, 'days');
+        if (daysDiffrence < 0) {
           expired = true;
-        } else if (expiringDate.diff(currentDate, 'days') <= 90) {
+        } else if (daysDiffrence >= 0 && daysDiffrence <= 90) {
           expiring = true;
         }
       }
