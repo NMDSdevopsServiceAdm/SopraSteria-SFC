@@ -12,7 +12,7 @@ const uuid = require('uuid');
 const hasProp = (obj, prop) =>
   Object.prototype.hasOwnProperty.bind(obj)(prop);
 
-const rfr = require('rfr');
+// const rfr = require('rfr');
 
 // database models
 const models = require('../index');
@@ -1152,11 +1152,11 @@ class Establishment extends EntityValidator {
    * Function will update linkToParentRequested column.
    * @param establishmentId is a number
    */
-  async updateLinkToParentRequested(establishmentId) {
+  async updateLinkToParentRequested(establishmentId, linkToParentRequest = false) {
     try {
       const updatedEstablishment = await models.establishment.update(
         {
-          linkToParentRequested: new Date(),
+          linkToParentRequested: linkToParentRequest ? null : new Date(),
         },
         {
           where: {
