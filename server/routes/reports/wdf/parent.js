@@ -104,7 +104,7 @@ const getEstablishmentReportData = async establishmentId => {
           value.Capacities = capicityDetails[0].Answer;
         }
       }else{
-        value.Capacities = 'N/A';
+        value.Capacities = 'Missing';
       }
       if(utilisationDetails && utilisationDetails.length > 0){
         if(utilisationDetails[0].Answer === null){
@@ -113,7 +113,7 @@ const getEstablishmentReportData = async establishmentId => {
           value.Utilisations = utilisationDetails[0].Answer;
         }
       }else{
-        value.Utilisations = 'N/A';
+        value.Utilisations = 'Missing';
       }
     }
     if (value.ShareDataWithCQC && value.ShareDataWithLA) {
