@@ -71,7 +71,7 @@ export class AuthService {
     console.log('Authservice has been asked to authenticate a user');
     // Stuck here
     return this.http
-      .post<Auth>('/api/login/', { username, password }, { observe: 'response' })
+      .post<any>('/api/login/', { username, password }, { observe: 'response' })
       .pipe(tap(response => (this.token = response.headers.get('authorization'))));
   }
 
