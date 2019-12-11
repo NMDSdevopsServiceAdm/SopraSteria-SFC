@@ -177,9 +177,9 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public linkToParent($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(LinkToParentDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe(returnToClose => {
-      if (returnToClose) {
-        this.router.navigate(['/dashboard']);
+    dialog.afterClosed.subscribe(confirmToClose => {
+      if (confirmToClose) {
+        this.linkToParentRequestedStatus = true;
       }
     });
   }
@@ -192,9 +192,9 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public cancelLinkToParent($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(LinkToParentCancelDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe(returnToClose => {
-      if (returnToClose) {
-        this.router.navigate(['/dashboard']);
+    dialog.afterClosed.subscribe(confirmToClose => {
+      if (confirmToClose) {
+        this.linkToParentRequestedStatus = false;
       }
     });
   }

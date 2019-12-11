@@ -1,4 +1,5 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { DataPermissions, Workplace } from '@core/model/my-workplaces.model';
@@ -26,7 +27,8 @@ export class LinkToParentCancelDialogComponent extends DialogComponent implement
     private establishmentService: EstablishmentService,
     private errorSummaryService: ErrorSummaryService,
     public dialog: Dialog<LinkToParentCancelDialogComponent>,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private router: Router
   ) {
     super(data, dialog);
   }
@@ -56,10 +58,10 @@ export class LinkToParentCancelDialogComponent extends DialogComponent implement
 
   /**
    * Function is used to close dialog window after successful confirmation
-   * @param {boolean} true to close dialog
+   * @param {any} true to close dialog after response or null to close without action
    * @return {void}
    */
-  public closeDialogWindow(confirm: boolean) {
+  public closeDialogWindow(confirm: any) {
     this.dialog.close(confirm);
   }
 
@@ -75,8 +77,8 @@ export class LinkToParentCancelDialogComponent extends DialogComponent implement
         .subscribe(
           data => {
             if (data) {
-              this.workplace.linkToParentRequested = null;
               const parentName = data[0].requstedParentName;
+              this.router.navigate(['/dashboard']);
               this.alertService.addAlert({
                 type: 'success',
                 message: `Request to link to ${parentName} has been cancelled.`,
