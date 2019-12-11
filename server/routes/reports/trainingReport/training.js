@@ -20,8 +20,14 @@ const trainingsSheetName = path.join('xl', 'worksheets', 'sheet2.xml');
 const sharedStringsName = path.join('xl', 'sharedStrings.xml');
 const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
-//const debuglog = console.log.bind(console);
+
 const debuglog = () => {};
+
+const trainingCounts =
+{
+  expiredTrainingCount: 0, expiringTrainingCount: 0, missingMandatoryTrainingCount: 0,
+  missingExpiringMandatoryTrainingCount: 0
+};
 
 // XML DOM manipulation helper functions
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
@@ -96,6 +102,9 @@ const getReportData = async (date, thisEstablishment) => {
     trainings: await getTrainingReportData(thisEstablishment.id)
   };
 };
+
+const updateProps = ('Completed,Expires').split(',');
+
 /**
  * Function used to customize training report data
  *
@@ -104,7 +113,26 @@ const getReportData = async (date, thisEstablishment) => {
  */
 const getTrainingReportData = async establishmentId => {
   const trainingData = await getTrainingData(establishmentId);
-
+  if(trainingData.length && trainingData.length > 0){
+    trainingCounts.expiredTrainingCount = 0;
+    trainingCounts.expiringTrainingCount = 0;
+    trainingData.forEach(async value => {
+      if(value.Expires && value.Expires !== null){
+        let expiringDate = moment(value.Expires);
+        let currentDate = moment();
+        if(currentDate > expiringDate){
+          trainingCounts.expiredTrainingCount++;
+        }else if(expiringDate.diff(currentDate, 'days') <= 90){
+          trainingCounts.expiringTrainingCount++;
+        }
+      }
+      updateProps.forEach(prop => {
+        if (value[prop] === null) {
+          value[prop] = 'Missing';
+        }
+      });
+    });
+  }
   return trainingData;
 };
 
@@ -122,7 +150,7 @@ const styleLookup = {
       F: 11,
       G: 11,
       H: 12,
-      I: 12,
+      I: 1,
       J: 12,
       K: 12
     },
@@ -140,25 +168,25 @@ const styleLookup = {
       K: 22
     },
     TRNREGULAR: {
-      A: 16,
-      B: 16,
-      C: 16,
-      D: 16,
-      E: 16,
+      A: 18,
+      B: 18,
+      C: 18,
+      D: 18,
+      E: 55,
       F: 14,
-      G: 16,
-      H: 16,
-      I: 16
+      G: 18,
+      H: 18,
+      I: 15
     },
     TRNLAST: {
-      A: 17,
-      B: 17,
-      C: 17,
-      D: 17,
-      E: 17,
-      F: 15,
-      G: 17,
-      H: 17,
+      A: 19,
+      B: 19,
+      C: 19,
+      D: 19,
+      E: 56,
+      F: 17,
+      G: 19,
+      H: 19,
       I: 17
     }
   },
@@ -172,7 +200,7 @@ const styleLookup = {
       F: 65,
       G: 65,
       H: 11,
-      I: 12,
+      I: 21,
       J: 12,
       K: 66
     },
@@ -190,26 +218,26 @@ const styleLookup = {
       K: 66
     },
     TRNREGULAR: {
-      A: 2,
-      B: 6,
-      C: 6,
-      D: 7,
-      E: 24,
-      F: 15,
-      G: 67,
-      H: 67,
-      I: 15
+      A: 20,
+      B: 20,
+      C: 20,
+      D: 20,
+      E: 20,
+      F: 22,
+      G: 20,
+      H: 20,
+      I: 22
     },
     TRNLAST: {
-      A: 2,
-      B: 16,
-      C: 16,
-      D: 17,
-      E: 31,
-      F: 20,
-      G: 67,
-      H: 67,
-      I: 20
+      A: 21,
+      B: 21,
+      C: 21,
+      D: 21,
+      E: 21,
+      F: 23,
+      G: 21,
+      H: 21,
+      I: 23
     }
   }
 };
@@ -276,6 +304,32 @@ const updateOverviewSheet = (
   debuglog('updating overview sheet');
 
   const putString = putStringTemplate.bind(null, overviewSheet, sharedStrings, sst, sharedStringsUniqueCount);
+  // put total expired training count
+  putString(
+    overviewSheet.querySelector("c[r='I5']"),
+    `You have ${trainingCounts.expiredTrainingCount} expired training counts`
+  );
+  overviewSheet.querySelector("c[r='I5']").setAttribute('s', 1);
+
+  // put total expiring soon training count
+  putString(
+    overviewSheet.querySelector("c[r='I7']"),
+    `You have ${trainingCounts.expiringTrainingCount} records expiring soon`
+  );
+  overviewSheet.querySelector("c[r='I7']").setAttribute('s', 2);
+
+  // put total expiring soon/expired training count
+  putString(
+    overviewSheet.querySelector("c[r='I9']"),
+    `You have ${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount} staff members with expired or`
+  );
+  overviewSheet.querySelector("c[r='I9']").setAttribute('s', 10);
+
+  putString(
+    overviewSheet.querySelector("c[r='I10']"),
+    `expiring training counts`
+  );
+  overviewSheet.querySelector("c[r='I10']").setAttribute('s', 10);
 
   debuglog('overview updated');
 
@@ -301,6 +355,16 @@ const updateTrainingsSheet = (
   debuglog('updating trainings sheet');
 
   const putString = putStringTemplate.bind(null, trainingsSheet, sharedStrings, sst, sharedStringsUniqueCount);
+  // put expired training count
+  putString(
+    trainingsSheet.querySelector("c[r='C1']"),
+    `${trainingCounts.expiredTrainingCount}`
+  );
+  // put expiring soon training count
+  putString(
+    trainingsSheet.querySelector("c[r='C2']"),
+    `${trainingCounts.expiringTrainingCount}`
+  );
 
   // clone the row the apropriate number of times
   const templateRow = trainingsSheet.querySelector("row[r='7']");
@@ -346,7 +410,6 @@ const updateTrainingsSheet = (
       const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 7}']`);
       switch (columnText) {
         case 'A': {
-          console.log(`value of ${columnText}${row + 7}: ${trainingArray[row].NameOrIdValue}`);
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -357,7 +420,6 @@ const updateTrainingsSheet = (
         } break;
 
         case 'B': {
-          console.log(`value of ${columnText}${row + 7}: ${trainingArray[row].JobName}`);
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -368,7 +430,6 @@ const updateTrainingsSheet = (
         } break;
 
         case 'C': {
-          console.log(`value of ${columnText}${row + 7}: ${trainingArray[row].Category}`);
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -379,7 +440,6 @@ const updateTrainingsSheet = (
         } break;
 
         case 'D': {
-          console.log(`value of ${columnText}${row + 7}: ${trainingArray[row].Title}`);
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -390,7 +450,6 @@ const updateTrainingsSheet = (
         } break;
 
         case 'E': {
-          console.log(`value of ${columnText}${row + 7}: ${trainingArray[row].Title}`);
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -401,7 +460,6 @@ const updateTrainingsSheet = (
         } break;
 
         case 'F': {
-          console.log(`value of ${columnText}${row + 7}: Yes`);
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -412,7 +470,6 @@ const updateTrainingsSheet = (
         } break;
 
         case 'G': {
-          console.log(`value of ${columnText}${row + 7}: ${trainingArray[row].Expires}`);
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -423,16 +480,16 @@ const updateTrainingsSheet = (
         } break;
 
         case 'H': {
-          console.log(`value of ${columnText}${row + 7}: ${trainingArray[row].Completed}`);
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            trainingArray[row].Completed
+            trainingArray[row].Completed,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'I': {
-          console.log(`value of ${columnText}${row + 7}: ${trainingArray[row].Accredited}`);
           basicValidationUpdate(
             putString,
             cellToChange,
