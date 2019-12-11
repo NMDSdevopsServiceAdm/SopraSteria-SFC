@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { Auth } from '@core/model/auth.model';
 import { isNull } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
@@ -66,8 +67,9 @@ export class AuthService {
     this.redirect = this.router.routerState.snapshot.url;
   }
 
-  public authenticate(username: string, password: string) {
+  public authenticate(username: string, password: string): Observable<Auth> {
     console.log('Authservice has been asked to authenticate a user');
+    // Stuck here
     return this.http
       .post<any>('/api/login/', { username, password }, { observe: 'response' })
       .pipe(tap(response => (this.token = response.headers.get('authorization'))));
