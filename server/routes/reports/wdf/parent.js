@@ -94,8 +94,16 @@ const getEstablishmentReportData = async establishmentId => {
       value.Capacities = 'N/A';
       value.Utilisations = 'N/A';
     }else{
-      let capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
-      let utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
+      let capicityDetails = [];
+      let utilisationDetails = [];
+      if(getServiceCapacityData.length === 2){
+        capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
+        utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
+      }else if(getServiceCapacityData[0].Type === 'Capacity'){
+        capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
+      }else if(getServiceCapacityData[0].Type === 'Utilisation'){
+        utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
+      }
 
       if(capicityDetails && capicityDetails.length > 0){
         if(capicityDetails[0].Answer === null){
