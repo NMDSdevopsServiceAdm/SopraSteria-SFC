@@ -67,11 +67,11 @@ export class AuthService {
     this.redirect = this.router.routerState.snapshot.url;
   }
 
-  public authenticate(username: string, password: string): Observable<Auth> {
+  public authenticate(username: string, password: string) {
     console.log('Authservice has been asked to authenticate a user');
     // Stuck here
     return this.http
-      .post<any>('/api/login/', { username, password }, { observe: 'response' })
+      .post<Auth>('/api/login/', { username, password }, { observe: 'response' })
       .pipe(tap(response => (this.token = response.headers.get('authorization'))));
   }
 
