@@ -101,13 +101,17 @@ const getEstablishmentReportData = async establishmentId => {
         utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
       }else if(getServiceCapacityData[0].Type === 'Capacity'){
         capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
+        utilisationDetails = [{"Answer": 'N/A'}];
       }else if(getServiceCapacityData[0].Type === 'Utilisation'){
         utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
+        capicityDetails = [{"Answer": 'N/A'}];
       }
 
       if(capicityDetails && capicityDetails.length > 0){
         if(capicityDetails[0].Answer === null){
           value.Capacities = 'Missing';
+        }else if(capicityDetails[0].Answer === 'N/A'){
+          value.Capacities = 'N/A';
         }else{
           value.Capacities = capicityDetails[0].Answer;
         }
@@ -117,6 +121,8 @@ const getEstablishmentReportData = async establishmentId => {
       if(utilisationDetails && utilisationDetails.length > 0){
         if(utilisationDetails[0].Answer === null){
           value.Utilisations = 'Missing';
+        }else if(utilisationDetails[0].Answer === 'N/A'){
+          value.Utilisations = 'N/A';
         }else{
           value.Utilisations = utilisationDetails[0].Answer;
         }
