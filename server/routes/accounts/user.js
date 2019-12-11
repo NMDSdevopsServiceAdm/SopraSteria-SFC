@@ -671,6 +671,7 @@ router.route('/add').post(async (req, res) => {
           ...req.body,
           isActive: true,
           status: null,
+          agreedUpdatedTerms: true,
           role: trackingResponse.user.UserRoleValue,
         };
 
