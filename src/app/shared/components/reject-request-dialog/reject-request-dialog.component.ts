@@ -129,30 +129,34 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
 
   public rejectPermissionRequest() {
     if (this.form.valid) {
-      let requestParameter = {
-        ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
-        approvalStatus: 'DENIED',
-        rejectionReason: this.form.value.reason,
-        type: OWNERSHIP_REJECTED,
-        exsistingNotificationUid: this.notification.notificationUid,
-      };
-      this.subscriptions.add(
-        this.notificationsService
-          .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
-          .subscribe(
-            request => {
-              if (request) {
-                this.notificationsService.getAllNotifications().subscribe(notify => {
-                  this.notificationsService.notifications$.next(notify);
-                });
-                this.close(true);
+      if (this.notification.typeContent.type === 'LINKTOPARENTREQUEST') {
+        //to do
+      } else {
+        let requestParameter = {
+          ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
+          approvalStatus: 'DENIED',
+          rejectionReason: this.form.value.reason,
+          type: OWNERSHIP_REJECTED,
+          exsistingNotificationUid: this.notification.notificationUid,
+        };
+        this.subscriptions.add(
+          this.notificationsService
+            .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+            .subscribe(
+              request => {
+                if (request) {
+                  this.notificationsService.getAllNotifications().subscribe(notify => {
+                    this.notificationsService.notifications$.next(notify);
+                  });
+                  this.close(true);
+                }
+              },
+              error => {
+                this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
               }
-            },
-            error => {
-              this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-            }
-          )
-      );
+            )
+        );
+      }
     }
   }
 

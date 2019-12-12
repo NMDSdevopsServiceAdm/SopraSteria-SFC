@@ -13,4 +13,5 @@ export interface NotificationRequest {
 }
 export enum NotificationType {
   OWNERCHANGE = 'Change data owner',
+  LINKTOPARENTREQUEST = 'Link to parent organisation',
 }

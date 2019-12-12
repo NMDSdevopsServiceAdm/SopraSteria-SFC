@@ -1,0 +1,95 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">
+      <span class="govuk-caption-xl">{{ workplace?.name }}</span>
+      Notification
+    </h1>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-2">From:</h2>
+    <p class="govuk-util__inline-block" *ngIf="notification">
+      {{ requestorName }}, {{ notification.created | longDate }}
+    </p>
+    <h2 class="govuk-heading-s" *ngIf="notification">Subject</h2>
+    <p>{{ notification?.type | notificationType }}</p>
+  </div>
+</div>
+<ng-container *ngIf="notification && notification.type === 'LINKTOPARENTREQUEST'">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div [ngSwitch]="notification.typeContent.approvalStatus">
+        <div *ngSwitchCase="'REQUESTED'">
+          <p>You have a request from {{ notificationRequestedFrom }} to link to you.</p>
+          <p>Approve the request to set the following permissions:</p>
+        </div>
+        <div *ngSwitchCase="'CANCELLED'">
+          <p>You have a request from {{ notificationRequestedFrom }} to link to you.</p>
+          <p>Approve the request to set the following permissions:</p>
+        </div>
+        <div *ngSwitchCase="'DENIED'">
+          <p>{{ notificationRequestedTo }} has rejected your request to link to them.</p>
+          <h2 class="govuk-heading-s">Reason</h2>
+          <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
+            <p>{{ notification.typeContent.rejectionReason }}</p>
+          </ng-container>
+          <ng-template #noReason>
+            <p>No reason provided.</p>
+          </ng-template>
+        </div>
+        <div *ngSwitchCase="'APPROVED'">
+          <p>{{ notificationRequestedTo }} has approved your request to link to them.</p>
+          <p>The following permissions have been set:</p>
+        </div>
+        <div *ngSwitchDefault></div>
+      </div>
+
+      <table class="govuk-table govuk-table__with-action" *ngIf="notification.typeContent.approvalStatus !== 'DENIED'">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Workplace</th>
+            <th scope="col" class="govuk-table__header">Permissions</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-tab">
+          <tr class="govuk-table__row govuk-error-table__row--no-border">
+            <td class="govuk-table__cell">
+              {{ notificationRequestedTo }}
+            </td>
+            <ng-container *ngIf="notification.typeContent.permissionRequest === 'None'; else notNone">
+              <td class="govuk-table__cell">
+                {{ notification.typeContent.permissionRequest | dataViewPermissions }}
+              </td>
+            </ng-container>
+            <ng-template #notNone>
+              <td class="govuk-table__cell">
+                View {{ notification.typeContent.permissionRequest | dataViewPermissions | lowercase }}
+              </td>
+            </ng-template>
+          </tr>
+          <tr class="govuk-table__row govuk-error-table__row--no-border">
+            <td class="govuk-table__cell">
+              {{ notificationRequestedFrom }}
+            </td>
+            <td class="govuk-table__cell">Edit workplace and staff records</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="govuk-grid-row" *ngIf="displayActionButtons">
+    <div class="govuk-grid-column-two-thirds">
+      <div class=" govuk-!-margin-top-2">
+        <button (click)="approveRequest()" type="submit" class="govuk-button">Approve request</button>
+        <button
+          (click)="rejectRequest($event)"
+          type="button"
+          class="govuk-button govuk-button--secondary govuk-util__float-right"
+        >
+          Reject request
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>
