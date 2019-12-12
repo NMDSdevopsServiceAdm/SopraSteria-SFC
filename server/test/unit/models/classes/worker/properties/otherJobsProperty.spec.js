@@ -20,13 +20,11 @@ describe('otherJobsProperty Property', () => {
     });
     it('should restore in correct format as if from database', () => {
       const document = {
-        otherJobs: {
-          value: true,
-          jobs: [
-            {jobId: 1, title: "Activities worker or co-ordinator"},
-            {jobId: 2, title: "Administrative / office staff not care-providing"}
-          ]
-        }
+        otherJobsValue: true,
+        otherJobs: [
+          {jobId: 1, title: "Activities worker or co-ordinator"},
+          {jobId: 2, title: "Administrative / office staff not care-providing"}
+        ]
       };
       const restored = otherJobsProperty.restorePropertyFromSequelize(document);
       console.log(restored);
