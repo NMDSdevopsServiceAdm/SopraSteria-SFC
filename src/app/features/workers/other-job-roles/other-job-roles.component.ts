@@ -74,7 +74,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
       )
     );
 
-    this.worker.otherJobs.length > 0
+    this.worker.otherJobs && this.worker.otherJobs.value === 'Yes'
       ? this.form.patchValue({ otherJobs: 'Yes' })
       : this.form.patchValue({ otherJobs: 'No' });
 
@@ -119,20 +119,23 @@ export class OtherJobRolesComponent extends QuestionComponent {
   generateUpdateProps() {
     const { selectedJobRoles, otherJobs } = this.form.value;
     return {
-      otherJobs: selectedJobRoles
-        .filter(j => j.checked)
-        .map(j => {
-          const isJobWithRole = this.jobsWithOtherRole.some(jbRole => jbRole.jobId === j.jobId);
-          if (isJobWithRole) {
-            const otherValue = this.form.get(`otherSelectedJobRole${j.jobId}`).value;
-            return {
-              jobId: j.jobId,
-              ...(otherValue && { other: otherValue }),
-            };
-          }
+      otherJobs: {
+        value: otherJobs,
+        jobs: selectedJobRoles
+          .filter(j => j.checked)
+          .map(j => {
+            const isJobWithRole = this.jobsWithOtherRole.some(jbRole => jbRole.jobId === j.jobId);
+            if (isJobWithRole) {
+              const otherValue = this.form.get(`otherSelectedJobRole${j.jobId}`).value;
+              return {
+                jobId: j.jobId,
+                ...(otherValue && { other: otherValue }),
+              };
+            }
 
-          return { jobId: j.jobId };
-        }),
+            return { jobId: j.jobId };
+          }),
+      },
     };
   }
 
@@ -156,7 +159,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
   }
 
   public removeOtherJobs(): void {
-    this.worker.otherJobs = [];
+    this.worker.otherJobs.jobs = [];
     this.selectedJobRoles.controls.map(control => {
       control.value.checked = false;
     });

@@ -17,7 +17,7 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
     // concrete implementations
     async restoreFromJson(document) {
         if (document.otherJobs) {
-            if (Array.isArray(document.otherJobs.jobs) && document.otherJobs.jobs.length > 0 && document.otherjobs.value === 'Yes') {
+            if (Array.isArray(document.otherJobs.jobs) && document.otherJobs.jobs.length > 0 && document.otherJobs.value === 'Yes') {
                 const validatedJobs = await this._validateJobs(document.otherJobs.jobs);
 
                 if (validatedJobs) {
@@ -42,30 +42,17 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
 
     restorePropertyFromSequelize(document) {
         const otherJobsDocument = {
-            value: document.OtherJobsValue
+            value: document.OtherJobsValue,
         };
 
         if (document.OtherJobsValue === 'Yes') {
-            otherJobsDocument.otherJobs = {
-              value: 'Yes'
-            };
-            otherJobsDocument.otherJobs.jobs = document.otherJobs.jobs.map(thisJob => {
+            otherJobsDocument.jobs = document.otherJobs.map(thisJob => {
                 return {
                     jobId: thisJob.workerJobs.jobFk,
                     title: thisJob.title,
                     other: thisJob.workerJobs.other ? thisJob.workerJobs.other : undefined
                 };
             });
-        } else if (document.OtherJobsValue === 'No') {
-          otherJobsDocument.otherJobs = {
-            value: 'No',
-            jobs: []
-          };
-        } else {
-          otherJobsDocument.otherJobs = {
-            value: null,
-            jobs: []
-          };
         }
 
         return otherJobsDocument;
@@ -78,7 +65,7 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
         // note - only the jobFk is required and that is mapped from the otherJobs.jobId; workerFk will be provided by Worker class
         if (this.property.value === 'Yes') {
             otherJobsDocument.additionalModels = {
-                workerJobs : this.property.otherJobs.jobs.map(thisJob => {
+                workerJobs : this.property.jobs.map(thisJob => {
                     return {
                         jobFk : thisJob.jobId,
                         other: thisJob.other ? thisJob.other : null

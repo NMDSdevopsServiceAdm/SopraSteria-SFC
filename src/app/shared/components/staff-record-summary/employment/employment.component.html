@@ -76,7 +76,7 @@
       <ng-container *ngIf="worker.otherJobs?.value === 'No'">
         No
       </ng-container>
-      <ng-template *ngIf="worker.otherJobs?.value === 'Yes'">
+      <ng-container *ngIf="worker.otherJobs?.value === 'Yes'">
         <ul class="govuk-list govuk-!-margin-bottom-0">
           <li *ngFor="let otherJob of worker.otherJobs.jobs">
             <ng-container *ngIf="otherJob.other; else title">
@@ -87,7 +87,7 @@
             </ng-template>
           </li>
         </ul>
-      </ng-template>
+      </ng-container>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('other-job-roles')" (click)="setReturn()">
