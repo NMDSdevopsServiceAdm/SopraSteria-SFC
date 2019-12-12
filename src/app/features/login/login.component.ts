@@ -16,12 +16,12 @@ import { Subscription } from 'rxjs';
 })
 export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
   public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
+  public auth: Subscription;
 
   constructor(
     private idleService: IdleService,
@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+    this.auth.unsubscribe();
   }
 
   public setupFormErrorsMap(): void {
@@ -117,7 +117,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('Testing we have access to localstorage');
     localStorage.setItem('test', 'test');
     console.log(localStorage.getItem('test'));
-    this.authService.authenticate(username, password).subscribe(
+    this.auth = this.authService.authenticate(username, password).subscribe(
       response => {
         console.log('We successfully recieved a reply to the login call');
         console.log(response);
