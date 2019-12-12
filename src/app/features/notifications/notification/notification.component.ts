@@ -44,10 +44,13 @@ export class NotificationComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
     this.notificationUid = this.route.snapshot.params.notificationuid;
-    this.isSubWorkplace =
-      this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
+
     this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
       this.notification = details;
+
+      this.isSubWorkplace =
+        this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
+
       this.ownerShipRequestedFrom =
         details.typeContent.requestedOwnerType === 'Workplace'
           ? details.typeContent.parentEstablishmentName
