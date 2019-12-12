@@ -49,7 +49,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
           // TODO: This does not really allow fall back for non-javascript form submissions
           this.availableJobRoles.map(job => {
-            const otherJob = this.worker.otherJobs && this.worker.otherJobs.find(o => o.jobId === job.id);
+            const otherJob = this.worker.otherJobs.jobs && this.worker.otherJobs.jobs.find(o => o.jobId === job.id);
 
             if (job.other) {
               this.jobsWithOtherRole.push({
