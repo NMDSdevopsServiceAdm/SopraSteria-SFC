@@ -16,12 +16,12 @@ import { Subscription } from 'rxjs';
 })
 export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
   public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
+  public auth: Subscription;
 
   constructor(
     private idleService: IdleService,
@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+    this.auth.unsubscribe();
   }
 
   public setupFormErrorsMap(): void {
@@ -117,42 +117,40 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('Testing we have access to localstorage');
     localStorage.setItem('test', 'test');
     console.log(localStorage.getItem('test'));
-    this.subscriptions.add(
-      this.authService.authenticate(username, password).subscribe(
-        response => {
-          console.log('We successfully recieved a reply to the login call');
-          console.log(response);
-          if (response.body.establishment && response.body.establishment.uid) {
-            console.log('We have the establishment information');
-            // update the establishment service state with the given establishment id
-            this.establishmentService.establishmentId = response.body.establishment.uid;
-          }
-          if (response.body.role === 'Admin') {
-            this.userService.agreedUpdatedTerms = true; // skip term & condition check for admin user
-          } else {
-            this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
-          }
-          console.log('Checking if the user has previously logged in');
-          if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
-            console.log('They have so send them to where they were at: ' + this.authService.redirectLocation);
-            this.router.navigateByUrl(this.authService.redirectLocation);
-          } else {
-            console.log("They haven't, lets take them to the dashboard");
-            this.router.navigate(['/dashboard']);
-          }
-          console.log('Clearing the previous user information, as someone else has logged in');
-          this.authService.clearPreviousUser();
-
-          console.log('Check to make sure they have accepted the terms and conditions');
-          if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
-            console.log("They haven't accepted the terms, sending them to the welcome screen");
-            this.router.navigate(['/migrated-user-terms-and-conditions']);
-          }
-        },
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+    this.auth = this.authService.authenticate(username, password).subscribe(
+      response => {
+        console.log('We successfully recieved a reply to the login call');
+        console.log(response);
+        if (response.body.establishment && response.body.establishment.uid) {
+          console.log('We have the establishment information');
+          // update the establishment service state with the given establishment id
+          this.establishmentService.establishmentId = response.body.establishment.uid;
         }
-      )
+        if (response.body.role === 'Admin') {
+          this.userService.agreedUpdatedTerms = true; // skip term & condition check for admin user
+        } else {
+          this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
+        }
+        console.log('Checking if the user has previously logged in');
+        if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
+          console.log('They have so send them to where they were at: ' + this.authService.redirectLocation);
+          this.router.navigateByUrl(this.authService.redirectLocation);
+        } else {
+          console.log("They haven't, lets take them to the dashboard");
+          this.router.navigate(['/dashboard']);
+        }
+        console.log('Clearing the previous user information, as someone else has logged in');
+        this.authService.clearPreviousUser();
+
+        console.log('Check to make sure they have accepted the terms and conditions');
+        if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
+          console.log("They haven't accepted the terms, sending them to the welcome screen");
+          this.router.navigate(['/migrated-user-terms-and-conditions']);
+        }
+      },
+      (error: HttpErrorResponse) => {
+        this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+      }
     );
   }
 }
