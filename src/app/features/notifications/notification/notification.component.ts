@@ -2,13 +2,13 @@ import { Overlay } from '@angular/cdk/overlay';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { RejectRequestDialogComponent } from '@shared/components/reject-request-dialog/reject-request-dialog.component';
 import { Subscription } from 'rxjs';
 
@@ -44,31 +44,40 @@ export class NotificationComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
     this.notificationUid = this.route.snapshot.params.notificationuid;
-
+    this.isSubWorkplace =
+      this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
     this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
       this.notification = details;
-
-      this.isSubWorkplace =
-        this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
-
-      this.ownerShipRequestedFrom =
-        details.typeContent.requestedOwnerType === 'Workplace'
-          ? details.typeContent.parentEstablishmentName
-          : details.typeContent.subEstablishmentName;
-      this.ownerShipRequestedTo =
-        details.typeContent.requestedOwnerType === 'Workplace'
-          ? details.typeContent.subEstablishmentName
-          : details.typeContent.parentEstablishmentName;
-
-      if (details.typeContent.approvalStatus === 'APPROVED') {
-        this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
+      if (this.notification.type === 'LINKTOPARENTREQUEST') {
+        this.setConfigurtionForLinkToParent(this.notification);
       } else {
-        this.isWorkPlaceIsRequester = this.workplace.name === this.ownerShipRequestedFrom;
+        this.setConfigurtionForSwapOwnership(this.notification);
       }
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });
     this.setNotificationViewed(this.notificationUid);
+  }
+
+  public setConfigurtionForSwapOwnership(notificationDetils) {
+    this.ownerShipRequestedFrom =
+      notificationDetils.typeContent.requestedOwnerType === 'Workplace'
+        ? notificationDetils.typeContent.parentEstablishmentName
+        : notificationDetils.typeContent.subEstablishmentName;
+    this.ownerShipRequestedTo =
+      notificationDetils.typeContent.requestedOwnerType === 'Workplace'
+        ? notificationDetils.typeContent.subEstablishmentName
+        : notificationDetils.typeContent.parentEstablishmentName;
+
+    if (notificationDetils.typeContent.approvalStatus === 'APPROVED') {
+      this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
+    } else {
+      this.isWorkPlaceIsRequester = this.workplace.name === this.ownerShipRequestedFrom;
+    }
+  }
+
+  public setConfigurtionForLinkToParent(notificationDetils) {
+    console.log('Hello');
   }
 
   public approveRequest() {
