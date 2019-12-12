@@ -69,9 +69,15 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
         return true;
       }
       //to Do
+      this.router.navigate(['/dashboard']);
+      this.alertService.addAlert({
+        type: 'success',
+        message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
+      });
     }
   }
-  protected setNotificationViewed(notificationUid) {
+
+  private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
         resp => {
@@ -97,17 +103,27 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       }
       $event.preventDefault();
       const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
-      dialog.afterClosed.subscribe(requestRejected => {
-        if (requestRejected) {
-          this.router.navigate(['/dashboard']);
-          this.alertService.addAlert({
-            type: 'success',
-            message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.requestorName} `,
-          });
-        }
-      });
+      dialog.afterClosed.subscribe(
+        requestRejected => {
+          if (requestRejected) {
+            this.rejectLinkToParentRequest(requestRejected);
+          }
+        },
+        error => console.log('Could not update notification.')
+      );
     }
+  }
+
+  private rejectLinkToParentRequest(requestRejected) {
+    let requestParameter = {
+      rejectionReason: requestRejected.rejectionReason,
+    };
+    //to Do
+    this.router.navigate(['/dashboard']);
+    this.alertService.addAlert({
+      type: 'success',
+      message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
+    });
   }
 
   ngOnDestroy(): void {
