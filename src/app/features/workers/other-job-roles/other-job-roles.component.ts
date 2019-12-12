@@ -17,7 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 export class OtherJobRolesComponent extends QuestionComponent {
   public availableJobRoles: Job[];
   public jobsWithOtherRole: JobRole[] = [];
-  public otherJobs: Boolean;
+  public otherJobs: string;
   private otherJobRoleCharacterLimit = 120;
 
   constructor(
@@ -73,6 +73,10 @@ export class OtherJobRolesComponent extends QuestionComponent {
         () => this.updateForm()
       )
     );
+
+    this.worker.otherJobs.length > 0
+      ? this.form.patchValue({ otherJobs: 'Yes' })
+      : this.form.patchValue({ otherJobs: 'No' });
 
     this.previous = this.getRoutePath('main-job-start-date');
   }
@@ -149,5 +153,12 @@ export class OtherJobRolesComponent extends QuestionComponent {
   showforOtherJobRole(control): boolean {
     const selectedJobRole = this.availableJobRoles.find(job => job.id === control.value.jobId);
     return selectedJobRole && selectedJobRole.other;
+  }
+
+  public removeOtherJobs(): void {
+    this.worker.otherJobs = [];
+    this.selectedJobRoles.controls.map(control => {
+      control.value.checked = false;
+    });
   }
 }
