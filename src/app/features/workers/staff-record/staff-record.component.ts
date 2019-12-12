@@ -22,7 +22,6 @@ import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-work
 export class StaffRecordComponent implements OnInit, OnDestroy {
   public canDeleteWorker: boolean;
   public canEditWorker: boolean;
-  public returnToQuals: URLStructure;
   public returnToRecord: URLStructure;
   public worker: Worker;
   public workplace: Establishment;
@@ -50,10 +49,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         this.returnToRecord = {
           url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
           fragment: 'staff-record',
-        };
-        this.returnToQuals = {
-          url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
-          fragment: 'qualifications-and-training',
         };
       })
     );

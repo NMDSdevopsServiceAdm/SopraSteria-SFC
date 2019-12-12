@@ -28,6 +28,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
+  public previousUrl: string;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -56,9 +57,13 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.qualificationId = this.route.snapshot.params.qualificationId;
 
+    this.workerService.getRoute$.subscribe(route => {
+      if (route) {
+        this.previousUrl = route;
+      }
+    });
     this.backService.setBackLink({
-      url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
-      fragment: 'qualifications-and-training',
+      url: [this.previousUrl],
     });
 
     Object.keys(QualificationType).forEach(key => {
@@ -247,19 +252,20 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   private onSuccess() {
     this.router
-      .navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid], {
-        fragment: 'qualifications-and-training',
-      })
+      .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
       .then(() => {
         if (this.qualificationId) {
-          this.workerService.alert = { type: 'success', message: 'Qualification has been saved' };
+          this.workerService.alert = { type: 'success', message: 'Qualification has been saved.' };
         } else {
-          this.workerService.alert = { type: 'success', message: 'Qualification has been added' };
+          this.workerService.alert = { type: 'success', message: 'Qualification has been added.' };
         }
       });
   }
 
   private onError(error) {
     console.log(error);
+  }
+  public navigateToPreviousPage() {
+    this.router.navigate([this.previousUrl]);
   }
 }
