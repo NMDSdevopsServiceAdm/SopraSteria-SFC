@@ -13,7 +13,7 @@ const usernameCheck = require('../../utils/security/usernameValidation').isUsern
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
 const uuid = require('uuid');
-
+const linkSubToParent = rfr('server/data/linkToParent');
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
 const notifications = rfr('server/data/notifications');
@@ -773,13 +773,12 @@ router.route('/my/notifications').get(async (req, res) => {
 
 const addTypeContent = async notification => {
   notification.typeContent = {};
-
   switch (notification.type) {
+
     case 'OWNERCHANGE':
       const subQuery = await ownershipChangeRequests.getOwnershipNotificationDetails({
         ownerChangeRequestUid: notification.typeUid,
       });
-
       if (subQuery.length === 1) {
         if (subQuery[0].createdByUserUID) {
           let params = subQuery[0].createdByUserUID;
@@ -803,6 +802,20 @@ const addTypeContent = async notification => {
         notification.typeContent = subQuery[0];
       }
       break;
+
+      case 'LINKTOPARENTREQUEST':
+        let notificationDetailsParams = {
+          typeUid : notification.typeUid,
+        }
+     const notificationDetails = await linkSubToParent.getNotificationDetails(notificationDetailsParams);
+     if(notificationDetails) {
+       const subEstablishmentName = await linkSubToParent.getSubEstablishmentName(notificationDetailsParams);
+       if(subEstablishmentName) {
+        notificationDetails[0].subEstablishmentName = subEstablishmentName[0].subEstablishmentName;
+       }
+       notification.typeContent = notificationDetails[0];
+     }
+     break;
   }
 
   delete notification.typeUid;
@@ -814,11 +827,7 @@ router.route('/my/notifications/:notificationUid').get(async (req, res) => {
       userUid: req.userUid, // pull the user's uuid out of JWT
       notificationUid: req.params.notificationUid, // and the notificationUid from the url
     };
-
-    console.log('/my/notifications/:notificationUid (GET)', params);
-
     const notification = await notifications.getOne(params);
-
     if (notification.length !== 1) {
       return res.status(404).send({
         message: 'Not found',
@@ -827,11 +836,13 @@ router.route('/my/notifications/:notificationUid').get(async (req, res) => {
 
     await addTypeContent(notification[0]);
     // this will fetch notification receiver name
-    const notificationReciever = await ownershipChangeRequests.getNotificationRecieverName(params);
-    if (notificationReciever.length === 1) {
-      notification.forEach(element => {
-        element.recieverName = notificationReciever[0].NameValue;
-      });
+    if ((notification[0].type === 'OWNERCHANGE')) {
+      const notificationReciever = await ownershipChangeRequests.getNotificationRecieverName(params);
+      if (notificationReciever.length === 1) {
+        notification.forEach(element => {
+          element.recieverName = notificationReciever[0].NameValue;
+        });
+      }
     }
     // return the item
     return res.status(200).send(notification[0]);
@@ -854,9 +865,6 @@ router.route('/my/notifications/:notificationUid').post(async (req, res) => {
       userUid: req.userUid, //pull the user's uuid out of JWT
       notificationUid: req.params.notificationUid, // and the notificationUid from the url
     };
-
-    console.log('/my/notifications/:notificationUid (POST)', params);
-
     const notification = await notifications.markOneAsRead(params).then(() => notifications.getOne(params));
 
     if (notification.length !== 1) {

@@ -126,3 +126,32 @@ exports.updateLinkToParent = async params =>
     },
     type: db.QueryTypes.SELECT,
   });
+
+  const getNotificationDetailsQuery = `
+  select "ApprovalStatus" as "approvalStatus", "PermissionRequest" as "permissionRequest",
+  parent."NameValue" as "parentEstablishmentName"
+  from cqc."LinkToParent" as sub
+  JOIN cqc."Establishment" as parent on sub."ParentEstablishmentID" =  parent."EstablishmentID"
+  where "LinkToParentUID" = :uid `;
+
+exports.getNotificationDetails = async params =>
+  db.query(getNotificationDetailsQuery, {
+    replacements: {
+      uid: params.typeUid,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+  const getSubEstablishmentNameQuery = `
+  select  parent."NameValue" as "subEstablishmentName"
+  from cqc."LinkToParent" as sub
+  JOIN cqc."Establishment" as parent on sub."SubEstablishmentID" =  parent."EstablishmentID"
+  where "LinkToParentUID" = :uid `;
+
+exports.getSubEstablishmentName = async params =>
+  db.query(getSubEstablishmentNameQuery, {
+    replacements: {
+      uid: params.typeUid,
+    },
+    type: db.QueryTypes.SELECT,
+  });
