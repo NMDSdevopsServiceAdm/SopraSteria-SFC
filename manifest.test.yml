@@ -1,6 +1,6 @@
 applications:
 - name: sfcstaging
-  memory: 2G
-  disk_quota: 4GB
+  memory: 8G
+  disk_quota: 2GB
   buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.6.32
 stack: cflinuxfs3
