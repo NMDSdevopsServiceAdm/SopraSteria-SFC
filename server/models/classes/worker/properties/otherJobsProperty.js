@@ -88,15 +88,15 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
         let arraysEqual = true;
 
         if (currentValue && newValue && currentValue.value === 'Yes' && newValue.value === 'Yes' &&
-            currentValue.otherJobs.jobs && newValue.otherJobs.jobs) {
-                if (currentValue.otherJobs.jobs.length == newValue.otherJobs.jobs.length) {
+            currentValue.jobs && newValue.jobs) {
+                if (currentValue.jobs.length == newValue.jobs.length) {
                     // the preconditions are set to want to compare the array values themselves
 
                     // we haven't got large arrays here; so simply iterate around every
                     //  current value, and confirm it is in the the new data set.
                     //  Array.every will drop out on the first iteration to return false
-                    arraysEqual = currentValue.otherJobs.jobs.every(thisJob => {
-                        return newValue.otherJobs.jobs.find(newJob => newJob.jobId === thisJob.jobId
+                    arraysEqual = currentValue.jobs.every(thisJob => {
+                        return newValue.jobs.find(newJob => newJob.jobId === thisJob.jobId
                             && ((newJob.other === thisJob.other) || (!newJob.other && !thisJob.other)) );
                     });
                 } else {
