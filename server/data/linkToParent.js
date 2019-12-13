@@ -98,13 +98,13 @@ exports.getLinkToParentUid = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-const cancelLinkToParentQuery = `
+const updatedLinkToParentQuery = `
   UPDATE cqc."LinkToParent"
 SET "ApprovalStatus" = :approvalStatus
 WHERE "LinkToParentUID" = :uid;`;
 
-exports.cancelLinkToParent = async params =>
-  db.query(cancelLinkToParentQuery, {
+exports.updatedLinkToParent = async params =>
+  db.query(updatedLinkToParentQuery, {
     replacements: {
       uid: params.linkToParentUid,
       approvalStatus: params.approvalStatus,
@@ -127,7 +127,7 @@ exports.updateLinkToParent = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-  const getNotificationDetailsQuery = `
+const getNotificationDetailsQuery = `
   select "ApprovalStatus" as "approvalStatus", "PermissionRequest" as "permissionRequest",
   parent."NameValue" as "parentEstablishmentName"
   from cqc."LinkToParent" as sub
@@ -142,7 +142,7 @@ exports.getNotificationDetails = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-  const getSubEstablishmentNameQuery = `
+const getSubEstablishmentNameQuery = `
   select  parent."NameValue" as "subEstablishmentName"
   from cqc."LinkToParent" as sub
   JOIN cqc."Establishment" as parent on sub."SubEstablishmentID" =  parent."EstablishmentID"
@@ -152,6 +152,70 @@ exports.getSubEstablishmentName = async params =>
   db.query(getSubEstablishmentNameQuery, {
     replacements: {
       uid: params.typeUid,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const checkLinkToParentUidQuery = `
+  select  notify."typeUid", link."ApprovalStatus"  as "approvalStatus"
+  from cqc."Notifications" as notify
+  JOIN cqc."LinkToParent" as link on notify."typeUid" =  link."LinkToParentUID"
+  where "notificationUid" = :notificationUid `;
+
+exports.checkLinkToParentUid = async params =>
+  db.query(checkLinkToParentUidQuery, {
+    replacements: {
+      notificationUid: params.notificationUid,
+      approvalStatus: 'REQUESTED',
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const updateNotificationQuery = `
+  UPDATE cqc."Notifications"
+  SET "isViewed" = :isViewed
+  WHERE "Notifications"."notificationUid" = :notificationUid`;
+
+exports.updateNotification = async params =>
+  db.query(updateNotificationQuery, {
+    replacements: {
+      notificationUid: params.notificationUid,
+      isViewed: false,
+    },
+    type: db.QueryTypes.UPDATE,
+  });
+
+  const insertNotificationQuery =
+`INSERT INTO
+cqc."Notifications"
+("notificationUid", "type", "typeUid", "recipientUserUid", "isViewed", "createdByUserUID")
+VALUES (:nuid, :type, :typeUid, :recipientUserUid, :isViewed, :createdByUserUID);
+`;
+  exports.insertNewNotification = async (params) =>
+    db.query(insertNotificationQuery, {
+        replacements: {
+            nuid: params.notificationUid,
+            type: params.type,
+            typeUid: params.typeUid,
+            recipientUserUid: params.recipientUserUid,
+            isViewed: false,
+            createdByUserUID: params.userUid
+        },
+        type: db.QueryTypes.INSERT
+    });
+
+    const getSubUserDetailsQuery = `
+  select "UserUID" from cqc."Establishment" est
+  LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
+  JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
+  WHERE :estID = est."EstablishmentUID" AND individual."UserRoleValue" = :userRole AND est."IsParent" = :isParent `;
+
+exports.getSubUserDetails = async params =>
+  db.query(getSubUserDetailsQuery, {
+    replacements: {
+      estID: params.parentWorkplaceUId,
+      userRole: 'Edit',
+      isParent: true,
     },
     type: db.QueryTypes.SELECT,
   });
