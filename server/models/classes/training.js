@@ -808,6 +808,44 @@ class Training extends EntityValidator {
 
         return allExistAndValid;
     }
+
+    /**
+     * Function used to get all training expired and expiring soon counts for a worker id
+     * @param {number} establishmentId
+     * @param {object} workerRecords
+     * @return {array} Modified worker records while adding training counts for each worker object
+     */
+    static async getExpiringAndExpiredTrainingCounts(establishmentId, workerRecords){
+      if(workerRecords.length !== 0){
+        let currentDate = moment();
+        for(let i = 0; i < workerRecords.length; i++){
+          const allTrainingRecords = await Training.fetch(establishmentId, workerRecords[i].uid);
+          if(allTrainingRecords && allTrainingRecords.training.length > 0){
+            workerRecords[i].trainingCount = allTrainingRecords.training.length;
+            workerRecords[i].expiredTrainingCount = 0;
+            workerRecords[i].expiringTrainingCount = 0;
+            //calculate all expired and expiring soon trainings count
+            let trainings = allTrainingRecords.training.length;
+            for(let j = 0; j < trainings; j++){
+              if(allTrainingRecords.training[j].expires){
+                let expiringDate = moment(allTrainingRecords.training[j].expires);
+                let daysDiffrence = expiringDate.diff(currentDate, 'days');
+                if(daysDiffrence < 0){
+                  workerRecords[i].expiredTrainingCount++;
+                }else if(daysDiffrence >= 0 && daysDiffrence <= 90){
+                  workerRecords[i].expiringTrainingCount++;
+                }
+              }
+            }
+          }else{
+            workerRecords[i].trainingCount = 0;
+            workerRecords[i].expiredTrainingCount = 0;
+            workerRecords[i].expiringTrainingCount = 0;
+          }
+        }
+        return workerRecords;
+      }
+    }
 };
 
 module.exports.Training = Training;

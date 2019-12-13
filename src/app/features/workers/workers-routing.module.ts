@@ -40,6 +40,7 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level/
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
+import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
 import {
   SocialCareQualificationLevelComponent,
 } from './social-care-qualification-level/social-care-qualification-level.component';
@@ -47,6 +48,9 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffComponent } from './total-staff/total-staff.component';
+import {
+  TrainingAndQualificationsRecordComponent,
+} from './training-qualifications-record/training-and-qualifications-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
@@ -135,6 +139,15 @@ const routes: Routes = [
         path: 'main-job-start-date',
         component: MainJobStartDateComponent,
         data: { title: 'Main Job Role Start Date' },
+      },
+      {
+        path: 'select-record-type',
+        canActivate: [CheckPermissionsGuard],
+        component: SelectRecordTypeComponent,
+        data: {
+          permissions: ['canAddWorker'],
+          title: 'Select Record Type',
+        },
       },
       {
         path: 'other-job-roles',
@@ -300,6 +313,11 @@ const routes: Routes = [
         path: 'training/:trainingRecordId',
         component: AddEditTrainingComponent,
         data: { title: 'Training' },
+      },
+      {
+        path: 'training',
+        component: TrainingAndQualificationsRecordComponent,
+        data: { title: 'Training and qualification record' },
       },
     ],
   },

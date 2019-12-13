@@ -64,7 +64,7 @@ const routes: Routes = [
         component: ViewWorkplaceComponent,
         data: {
           permissions: ['canViewEstablishment'],
-          title: 'View Workplace'
+          title: 'View Workplace',
         },
       },
       {
@@ -275,6 +275,15 @@ const routes: Routes = [
         data: {
           permissions: ['canViewWorker'],
           title: 'Staff Records',
+        },
+      },
+      {
+        path: 'training-and-qualifications-record',
+        loadChildren: '@features/workers/workers.module#WorkersModule',
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canViewWorker'],
+          title: 'Training and qualifications record',
         },
       },
     ],
