@@ -671,7 +671,6 @@ router.route('/add').post(async (req, res) => {
           ...req.body,
           isActive: true,
           status: null,
-          agreedUpdatedTerms: true,
           role: trackingResponse.user.UserRoleValue,
         };
 
@@ -923,7 +922,7 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
   const thisUser = await models.login.findOne({
     attributes: ['username', 'lastLogin'],
     where: {
-      username: req.username,
+      username: req.body.username,
     },
     include: [
       {

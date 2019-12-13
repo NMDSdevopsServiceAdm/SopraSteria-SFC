@@ -6,7 +6,9 @@ import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { RegistrationsService } from '@core/services/registrations.service';
+import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { take } from 'rxjs/operators';
+import { UserService } from '@core/services/user.service';
 
 @Component({
   selector: 'app-search',
@@ -15,6 +17,7 @@ import { take } from 'rxjs/operators';
 export class SearchComponent implements OnInit {
   public results = [];
   public registrations = [];
+  public selectedWorkplaceUid: string;
   public form = {
     type: '',
     title: '',
@@ -37,6 +40,8 @@ export class SearchComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private authService: AuthService,
     private permissionsService: PermissionsService,
+    private notificationsService: NotificationsService,
+    private userService: UserService,
     private registrationsService: RegistrationsService
   ) {}
 
@@ -76,13 +81,16 @@ export class SearchComponent implements OnInit {
     return this.http.post<any>('/api/admin/search/' + type, data, { observe: 'response' });
   }
 
-  public getNewEstablishmentId(id) {
-    return this.http.post<any>('/api/user/swap/establishment/' + id, null, { observe: 'response' });
+  public getNewEstablishmentId(id, username) {
+    let data = {
+      username: username,
+    };
+    return this.http.post<any>('/api/user/swap/establishment/' + id, data, { observe: 'response' });
   }
 
-  public setEsblishmentId(id, e): void {
+  public setEsblishmentId(id, username, e): void {
     e.preventDefault();
-    this.getNewEstablishmentId(id).subscribe(
+    this.getNewEstablishmentId(id, username).subscribe(
       data => {
         this.permissionsService.clearPermissions();
         this.onSwapSuccess(data);
@@ -131,18 +139,22 @@ export class SearchComponent implements OnInit {
   private onSwapSuccess(data) {
     if (data.body && data.body.establishment && data.body.establishment.uid) {
       this.authService.token = data.headers.get('authorization');
-
       const workplaceUid = data.body.establishment.uid;
-
       this.establishmentService
         .getEstablishment(workplaceUid)
         .pipe(take(1))
-        .subscribe(workplace => {
-          this.establishmentService.setState(workplace);
-          this.establishmentService.setPrimaryWorkplace(workplace);
-          this.establishmentService.establishmentId = workplace.uid;
-          this.router.navigate(['/dashboard']);
-        });
+        .subscribe(
+          workplace => {
+            this.notificationsService.getAllNotifications().subscribe(notify => {
+              this.notificationsService.notifications$.next(notify);
+              this.establishmentService.setState(workplace);
+              this.establishmentService.setPrimaryWorkplace(workplace);
+              this.establishmentService.establishmentId = workplace.uid;
+              this.router.navigate(['/dashboard']);
+            });
+          },
+          error => this.onError(error)
+        );
     }
   }
 
