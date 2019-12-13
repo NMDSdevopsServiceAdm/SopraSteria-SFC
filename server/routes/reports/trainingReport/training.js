@@ -20,8 +20,14 @@ const trainingsSheetName = path.join('xl', 'worksheets', 'sheet2.xml');
 const sharedStringsName = path.join('xl', 'sharedStrings.xml');
 const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
-//const debuglog = console.log.bind(console);
+
 const debuglog = () => {};
+
+const trainingCounts =
+{
+  expiredTrainingCount: 0, expiringTrainingCount: 0, missingMandatoryTrainingCount: 0,
+  missingExpiringMandatoryTrainingCount: 0
+};
 
 // XML DOM manipulation helper functions
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
@@ -75,7 +81,7 @@ const putStringTemplate = (
     si.appendChild(t);
 
     t.textContent = textValue;
-    vTag.textContent = sharedStringsUniqueCount[0];
+    vTag.textContent = textValue;
 
     sharedStringsUniqueCount[0] += 1;
   }
@@ -96,6 +102,9 @@ const getReportData = async (date, thisEstablishment) => {
     trainings: await getTrainingReportData(thisEstablishment.id)
   };
 };
+
+const updateProps = ('Completed,Expires').split(',');
+
 /**
  * Function used to customize training report data
  *
@@ -104,7 +113,26 @@ const getReportData = async (date, thisEstablishment) => {
  */
 const getTrainingReportData = async establishmentId => {
   const trainingData = await getTrainingData(establishmentId);
-
+  if(trainingData.length && trainingData.length > 0){
+    trainingCounts.expiredTrainingCount = 0;
+    trainingCounts.expiringTrainingCount = 0;
+    trainingData.forEach(async value => {
+      if(value.Expires && value.Expires !== null){
+        let expiringDate = moment(value.Expires);
+        let currentDate = moment();
+        if(currentDate > expiringDate){
+          trainingCounts.expiredTrainingCount++;
+        }else if(expiringDate.diff(currentDate, 'days') <= 90){
+          trainingCounts.expiringTrainingCount++;
+        }
+      }
+      updateProps.forEach(prop => {
+        if (value[prop] === null) {
+          value[prop] = 'Missing';
+        }
+      });
+    });
+  }
   return trainingData;
 };
 
@@ -122,7 +150,7 @@ const styleLookup = {
       F: 11,
       G: 11,
       H: 12,
-      I: 12,
+      I: 1,
       J: 12,
       K: 12
     },
@@ -139,43 +167,27 @@ const styleLookup = {
       J: 22,
       K: 22
     },
-    ESTREGULAR: {
-      A: 2,
-      B: 6,
-      C: 6,
-      D: 7,
-      E: 24,
-      F: 15,
-      G: 15,
-      H: 15,
-      I: 15,
-      J: 9,
-      K: 26,
-      L: 27,
-      M: 12,
-      N: 12,
-      O: 15,
-      P: 15,
-      Q: 15
+    TRNREGULAR: {
+      A: 18,
+      B: 18,
+      C: 18,
+      D: 18,
+      E: 55,
+      F: 14,
+      G: 18,
+      H: 18,
+      I: 15
     },
-    ESTLAST: {
-      A: 2,
-      B: 16,
-      C: 16,
-      D: 17,
-      E: 31,
-      F: 20,
-      G: 20,
-      H: 20,
-      I: 20,
-      J: 9,
-      K: 32,
-      L: 33,
-      M: 22,
-      N: 12,
-      O: 20,
-      P: 20,
-      Q: 20
+    TRNLAST: {
+      A: 19,
+      B: 19,
+      C: 19,
+      D: 19,
+      E: 56,
+      F: 17,
+      G: 19,
+      H: 19,
+      I: 17
     }
   },
   RED: {
@@ -188,7 +200,7 @@ const styleLookup = {
       F: 65,
       G: 65,
       H: 11,
-      I: 12,
+      I: 21,
       J: 12,
       K: 66
     },
@@ -205,43 +217,27 @@ const styleLookup = {
       J: 22,
       K: 66
     },
-    ESTREGULAR: {
-      A: 2,
-      B: 6,
-      C: 6,
-      D: 7,
-      E: 24,
-      F: 15,
-      G: 67,
-      H: 67,
-      I: 15,
-      J: 65,
-      K: 26,
-      L: 27,
-      M: 12,
-      N: 66,
-      O: 67,
-      P: 67,
-      Q: 67
+    TRNREGULAR: {
+      A: 20,
+      B: 20,
+      C: 20,
+      D: 20,
+      E: 20,
+      F: 22,
+      G: 20,
+      H: 20,
+      I: 22
     },
-    ESTLAST: {
-      A: 2,
-      B: 16,
-      C: 16,
-      D: 17,
-      E: 31,
-      F: 20,
-      G: 67,
-      H: 67,
-      I: 20,
-      J: 65,
-      K: 32,
-      L: 33,
-      M: 22,
-      N: 66,
-      O: 67,
-      P: 67,
-      Q: 67
+    TRNLAST: {
+      A: 21,
+      B: 21,
+      C: 21,
+      D: 21,
+      E: 21,
+      F: 23,
+      G: 21,
+      H: 21,
+      I: 23
     }
   }
 };
@@ -308,6 +304,32 @@ const updateOverviewSheet = (
   debuglog('updating overview sheet');
 
   const putString = putStringTemplate.bind(null, overviewSheet, sharedStrings, sst, sharedStringsUniqueCount);
+  // put total expired training count
+  putString(
+    overviewSheet.querySelector("c[r='I5']"),
+    `You have ${trainingCounts.expiredTrainingCount} expired training counts`
+  );
+  overviewSheet.querySelector("c[r='I5']").setAttribute('s', 1);
+
+  // put total expiring soon training count
+  putString(
+    overviewSheet.querySelector("c[r='I7']"),
+    `You have ${trainingCounts.expiringTrainingCount} records expiring soon`
+  );
+  overviewSheet.querySelector("c[r='I7']").setAttribute('s', 2);
+
+  // put total expiring soon/expired training count
+  putString(
+    overviewSheet.querySelector("c[r='I9']"),
+    `You have ${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount} staff members with expired or`
+  );
+  overviewSheet.querySelector("c[r='I9']").setAttribute('s', 10);
+
+  putString(
+    overviewSheet.querySelector("c[r='I10']"),
+    `expiring training counts`
+  );
+  overviewSheet.querySelector("c[r='I10']").setAttribute('s', 10);
 
   debuglog('overview updated');
 
@@ -324,7 +346,7 @@ const updateOverviewSheet = (
  * @return {Document} overviewSheet
  */
 const updateTrainingsSheet = (
-  establishmentsSheet,
+  trainingsSheet,
   reportData,
   sharedStrings,
   sst,
@@ -332,30 +354,25 @@ const updateTrainingsSheet = (
 ) => {
   debuglog('updating trainings sheet');
 
-  const putString = putStringTemplate.bind(null, establishmentsSheet, sharedStrings, sst, sharedStringsUniqueCount);
-
-  // set headers
+  const putString = putStringTemplate.bind(null, trainingsSheet, sharedStrings, sst, sharedStringsUniqueCount);
+  // put expired training count
   putString(
-    establishmentsSheet.querySelector("c[r='B6']"),
-    `Parent name : ${reportData.parentName}`
+    trainingsSheet.querySelector("c[r='C1']"),
+    `${trainingCounts.expiredTrainingCount}`
   );
-
+  // put expiring soon training count
   putString(
-    establishmentsSheet.querySelector("c[r='B7']"),
-    `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`
+    trainingsSheet.querySelector("c[r='C2']"),
+    `${trainingCounts.expiringTrainingCount}`
   );
 
   // clone the row the apropriate number of times
-  const templateRow = establishmentsSheet.querySelector("row[r='11']");
+  const templateRow = trainingsSheet.querySelector("row[r='7']");
   let currentRow = templateRow;
-  let rowIndex = 12;
-  let establishmentReportData = [...reportData.establishments];
-  let establishmentArray = establishmentReportData.
-      filter(est => {
-        return (est.DataOwner === 'Parent' || est.DataPermissions !== "None")
-      });
-  if (establishmentArray.length > 1) {
-    for (let i = 0; i < establishmentArray.length - 1; i++) {
+  let rowIndex = 8;
+  let trainingArray = reportData.trainings;
+  if (trainingArray.length > 1) {
+    for (let i = 0; i < trainingArray.length - 1; i++) {
       const tempRow = templateRow.cloneNode(true);
 
       tempRow.setAttribute('r', rowIndex);
@@ -365,7 +382,6 @@ const updateTrainingsSheet = (
       });
 
       templateRow.parentNode.insertBefore(tempRow, currentRow.nextSibling);
-
       currentRow = tempRow;
       rowIndex++;
     }
@@ -374,71 +390,90 @@ const updateTrainingsSheet = (
   }
 
   // fix the last row in the table
-  establishmentsSheet.querySelector('sheetData row:last-child').setAttribute('r', rowIndex);
+  trainingsSheet.querySelector('sheetData row:last-child').setAttribute('r', rowIndex);
 
   // fix the dimensions tag value
-  const dimension = establishmentsSheet.querySelector('dimension');
+  const dimension = trainingsSheet.querySelector('dimension');
   dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndex);
 
   // update the cell values
-  for (let row = 0; row < establishmentArray.length; row++) {
-    debuglog('updating establishment', row);
+  for (let row = 0; row < trainingArray.length; row++) {
+    debuglog('updating training sheet', row);
 
-    const rowType = row === establishmentArray.length - 1 ? 'ESTLAST' : 'ESTREGULAR';
+    const rowType = row === trainingArray.length - 1 ? 'TRNLAST' : 'TRNREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 17; column++) {
+    for (let column = 0; column < 10; column++) {
       const columnText = String.fromCharCode(column + 65);
       const isRed = false;
 
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 11}']`);
-
+      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 7}']`);
       switch (columnText) {
-        case 'B': {
-          putString(
+        case 'A': {
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            establishmentArray[row].SubsidiaryName
+            trainingArray[row].NameOrIdValue,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
+        } break;
+
+        case 'B': {
+          basicValidationUpdate(
+            putString,
+            cellToChange,
+            trainingArray[row].JobName,
+            columnText,
+            rowType
+          );
         } break;
 
         case 'C': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            establishmentArray[row].SubsidiarySharingPermissions
+            trainingArray[row].Category,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'D': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            establishmentArray[row].NmdsID
+            trainingArray[row].Title,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'E': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            establishmentArray[row].EmployerTypeValue
+            trainingArray[row].Title,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'F': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            establishmentArray[row].MainService
+            'Yes',
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'G': {
           basicValidationUpdate(
             putString,
             cellToChange,
-            establishmentArray[row].Capacities,
+            trainingArray[row].Expires,
             columnText,
             rowType
           );
@@ -448,90 +483,17 @@ const updateTrainingsSheet = (
           basicValidationUpdate(
             putString,
             cellToChange,
-            establishmentArray[row].Utilisations,
+            trainingArray[row].Completed,
             columnText,
             rowType
           );
         } break;
 
         case 'I': {
-          putString(
-            cellToChange,
-            establishmentArray[row].OtherServices
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-
-        case 'J': {
           basicValidationUpdate(
             putString,
             cellToChange,
-            establishmentArray[row].ServiceUsers,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'K': {
-          putString(
-            cellToChange,
-            establishmentArray[row].LastUpdatedDate
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-
-        case 'L': {
-          putString(
-            cellToChange,
-            establishmentArray[row].NumberOfStaffValue
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-
-        case 'M': {
-          putString(
-            cellToChange,
-            establishmentArray[row].TotalIndividualWorkerRecord
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-
-        case 'N': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].PercentageOfWorkerRecords,
-            columnText,
-            rowType,
-            true
-          );
-        } break;
-
-        case 'O': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].Starters,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'P': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].Leavers,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'Q': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].Vacancies,
+            trainingArray[row].Accredited,
             columnText,
             rowType
           );
@@ -544,9 +506,9 @@ const updateTrainingsSheet = (
     currentRow = currentRow.nextSibling;
   }
 
-  debuglog('establishments updated');
+  debuglog('trainings updated');
 
-  return establishmentsSheet;
+  return trainingsSheet;
 };
 /**
  * Function used to generate reports data first and then read all related xml files, parse them,
@@ -622,16 +584,16 @@ const getReport = async (date, thisEstablishment) => {
         )));
 
         //outputZip.file(establishmentsSheetName, serializeXML(establishmentsSheet));
-        //outputZip.file(workersSheetName, serializeXML(workersSheet));
+        //outputZip.file(trainingsSheetName, serializeXML(updateTrainingsSheet));
 
-        // update the establishments sheet with the report data and add it to the zip
-        // outputZip.file(updateTrainingsSheet, serializeXML(updateTrainingsSheet(
-        //   establishmentsSheet,
-        //   reportData,
-        //   sharedStrings,
-        //   sst,
-        //   sharedStringsUniqueCount // pass unique count by reference rather than by value
-        // )));
+        // update the trainings sheet with the report data and add it to the zip
+        outputZip.file(trainingsSheetName, serializeXML(updateTrainingsSheet(
+          trainingsSheet,
+          reportData,
+          sharedStrings,
+          sst,
+          sharedStringsUniqueCount // pass unique count by reference rather than by value
+        )));
 
         // update the shared strings counts we've been keeping track of
         sst.setAttribute('uniqueCount', sharedStringsUniqueCount[0]);

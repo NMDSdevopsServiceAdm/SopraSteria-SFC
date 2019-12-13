@@ -5,6 +5,7 @@ const WEEKLY_HOURS_TYPE = ['Yes', 'No'];
 exports.WorkerWeeklyHoursContractedProperty = class WorkerWeeklyHoursContractedProperty extends ChangePropertyPrototype {
     constructor() {
         super('WeeklyHoursContracted');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -42,6 +43,11 @@ exports.WorkerWeeklyHoursContractedProperty = class WorkerWeeklyHoursContractedP
                     this.property = {
                         value: document.weeklyHoursContracted.value
                     };
+                }
+              } else if (document.weeklyHoursContracted.value === null) {
+                this.property = {
+                  value: document.weeklyHoursContracted.value,
+                  hours: document.weeklyHoursContracted.hours
                 }
             } else {
                 this.property = null;
