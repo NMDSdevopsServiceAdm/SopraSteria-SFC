@@ -17,6 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 export class OtherJobRolesComponent extends QuestionComponent {
   public availableJobRoles: Job[];
   public jobsWithOtherRole: JobRole[] = [];
+  public otherJobs: string;
   private otherJobRoleCharacterLimit = 120;
 
   constructor(
@@ -32,6 +33,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
     this.form = this.formBuilder.group({
       selectedJobRoles: this.formBuilder.array([]),
+      otherJobs: null,
     });
   }
 
@@ -47,7 +49,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
           // TODO: This does not really allow fall back for non-javascript form submissions
           this.availableJobRoles.map(job => {
-            const otherJob = this.worker.otherJobs && this.worker.otherJobs.find(o => o.jobId === job.id);
+            const otherJob = this.worker.otherJobs.jobs && this.worker.otherJobs.jobs.find(o => o.jobId === job.id);
 
             if (job.other) {
               this.jobsWithOtherRole.push({
@@ -71,6 +73,10 @@ export class OtherJobRolesComponent extends QuestionComponent {
         () => this.updateForm()
       )
     );
+
+    this.worker.otherJobs && this.worker.otherJobs.value === 'Yes'
+      ? this.form.patchValue({ otherJobs: 'Yes' })
+      : this.form.patchValue({ otherJobs: 'No' });
 
     this.previous = this.getRoutePath('main-job-start-date');
   }
@@ -111,22 +117,25 @@ export class OtherJobRolesComponent extends QuestionComponent {
   }
 
   generateUpdateProps() {
-    const { selectedJobRoles } = this.form.value;
+    const { selectedJobRoles, otherJobs } = this.form.value;
     return {
-      otherJobs: selectedJobRoles
-        .filter(j => j.checked)
-        .map(j => {
-          const isJobWithRole = this.jobsWithOtherRole.some(jbRole => jbRole.jobId === j.jobId);
-          if (isJobWithRole) {
-            const otherValue = this.form.get(`otherSelectedJobRole${j.jobId}`).value;
-            return {
-              jobId: j.jobId,
-              ...(otherValue && { other: otherValue }),
-            };
-          }
+      otherJobs: {
+        value: otherJobs,
+        jobs: selectedJobRoles
+          .filter(j => j.checked)
+          .map(j => {
+            const isJobWithRole = this.jobsWithOtherRole.some(jbRole => jbRole.jobId === j.jobId);
+            if (isJobWithRole) {
+              const otherValue = this.form.get(`otherSelectedJobRole${j.jobId}`).value;
+              return {
+                jobId: j.jobId,
+                ...(otherValue && { other: otherValue }),
+              };
+            }
 
-          return { jobId: j.jobId };
-        }),
+            return { jobId: j.jobId };
+          }),
+      },
     };
   }
 
@@ -147,5 +156,12 @@ export class OtherJobRolesComponent extends QuestionComponent {
   showforOtherJobRole(control): boolean {
     const selectedJobRole = this.availableJobRoles.find(job => job.id === control.value.jobId);
     return selectedJobRole && selectedJobRole.other;
+  }
+
+  public removeOtherJobs(): void {
+    this.worker.otherJobs.jobs = [];
+    this.selectedJobRoles.controls.map(control => {
+      control.value.checked = false;
+    });
   }
 }
