@@ -108,12 +108,4 @@ export class TrainingComponent implements OnInit {
   public getRoute() {
     this.workerService.getRoute$.next(this.router.url);
   }
-
-  public getRoute() {
-    this.workerService.getRoute$.next(this.router.url);
-  }
-
-  public getRoute() {
-    this.workerService.getRoute$.next(this.router.url);
-  }
 }

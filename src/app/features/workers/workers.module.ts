@@ -47,11 +47,7 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level/
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
-import {
-  SelectRecordTypeComponent,
-  SelectRecordTypeComponent,
-  SelectRecordTypeComponent,
-} from './select-record-type/select-record-type.component';
+import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
 import {
   SocialCareQualificationLevelComponent,
 } from './social-care-qualification-level/social-care-qualification-level.component';
