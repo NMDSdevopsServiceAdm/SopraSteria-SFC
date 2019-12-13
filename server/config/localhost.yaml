@@ -23,17 +23,11 @@ db:
     pool:
         min: 15
         max: 15
-    ssl: true
-    host:  35.178.185.248
-    username: anurag_negi
-    database: sfcdevdb
+    ssl: false
+    username: sfcadmin
     client_ssl:
-       status: true
-       usingFiles: true
-       files:
-           certificate: 'D:\S_F_C\Dev certificates\pg_dev_client.crt'
-           key: 'D:\S_F_C\Dev certificates\pg_dev_client.key'
-           ca: 'D:\S_F_C\Dev certificates\pg_dev_root.crt'
+        status: false
+        usingFiles: false
 log:
     sequelize: false
 

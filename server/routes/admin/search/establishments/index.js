@@ -11,7 +11,7 @@ router.route('/').post(async function (req, res) {
   const postcodeSearchField = establishmentSearchFields.postcode ? establishmentSearchFields.postcode.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
   const nmdsIdSearchField = establishmentSearchFields.nmdsId ? establishmentSearchFields.nmdsId.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
   const locationIdSearchField = establishmentSearchFields.locationid ? establishmentSearchFields.locationid.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
-debugger;
+
   try {
     let results = null;
     if (establishmentSearchFields && establishmentSearchFields.postcode) {

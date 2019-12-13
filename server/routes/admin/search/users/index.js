@@ -6,7 +6,7 @@ const models = require('../../../../models');
 // search for users' establishments using wildcard on username and user's name
 router.route('/').post(async function (req, res) {
   const userSearchFields = req.body;
-debugger;
+
   let searchFilter = null;
 
   const usernameSearchField = userSearchFields.username ? userSearchFields.username.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;

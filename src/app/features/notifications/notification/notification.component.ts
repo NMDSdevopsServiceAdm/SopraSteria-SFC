@@ -160,11 +160,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
       });
     }
   }
-  approveRequests() {
-    this.notificationsService.approve().subscribe(data => {
-      console.log(data);
-    });
-  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }

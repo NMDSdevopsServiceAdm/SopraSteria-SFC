@@ -34,14 +34,4 @@ export class NotificationsService {
   public setNoticationViewed(notificationUid: string): Observable<Notification> {
     return this.http.post<any>(`/api/user/my/notifications/${notificationUid}`, { isViewed: true });
   }
-  public approve() {
-    let data = {
-      createdByUserUID: 'f0f955cc-0d54-4b98-8902-9a110c3d0b16',
-      notificationUid: 'b5ca5429-d8e1-453b-b26b-ed112549b26b',
-      type: 'LINKTOPARENTAPPROVED',
-      approvalStatus: 'APPROVED',
-      rejectionReason: null,
-    };
-    return this.http.put<any>(`/api/establishment/7732dd6e-3fcc-42d3-a652-09e06d4f386b/linkToParent/action`, data);
-  }
 }
