@@ -12,8 +12,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { RejectRequestDialogComponent } from '@shared/components/reject-request-dialog/reject-request-dialog.component';
 import { Subscription } from 'rxjs';
 
-const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
-
 @Component({
   selector: 'app-notification-link-to-parent',
   templateUrl: './notification-link-to-parent.component.html',
@@ -68,12 +66,46 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
         return true;
       }
-      //to Do
-      this.router.navigate(['/dashboard']);
-      this.alertService.addAlert({
-        type: 'success',
-        message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
-      });
+      const requestParameter = {
+        createdByUserUID: this.notification.createdByUserUID,
+        notificationUid: this.notification.notificationUid,
+        rejectionReason: null,
+        type: 'LINKTOPARENTAPPROVED',
+        approvalStatus: 'APPROVED',
+        subEstablishmentId: this.notification.typeContent.subEstablishmentId || '',
+      };
+      this.subscriptions.add(
+        this.notificationsService
+          .setNotificationRequestLinkToParent(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+          .subscribe(
+            request => {
+              if (request) {
+                this.establishmentService.getEstablishment(this.workplace.uid).subscribe(workplace => {
+                  if (workplace) {
+                    this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermission => {
+                      if (hasPermission) {
+                        this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
+                        this.establishmentService.setState(workplace);
+                        this.establishmentService.setPrimaryWorkplace(workplace);
+                        this.router.navigate(['/dashboard']);
+                        this.alertService.addAlert({
+                          type: 'success',
+                          message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
+                        });
+                      }
+                    });
+                  }
+                });
+                this.notificationsService.getAllNotifications().subscribe(notify => {
+                  this.notificationsService.notifications$.next(notify);
+                });
+              }
+            },
+            error => {
+              console.error(error.error.message);
+            }
+          )
+      );
     }
   }
 
@@ -115,15 +147,35 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
   }
 
   private rejectLinkToParentRequest(requestRejected) {
-    let requestParameter = {
+    const requestParameter = {
+      createdByUserUID: this.notification.createdByUserUID,
+      notificationUid: this.notification.notificationUid,
       rejectionReason: requestRejected.rejectionReason,
+      type: 'LINKTOPARENTREJECTED',
+      approvalStatus: 'DENIED',
+      subEstablishmentId: this.notification.typeContent.subEstablishmentId || '',
     };
-    //to Do
-    this.router.navigate(['/dashboard']);
-    this.alertService.addAlert({
-      type: 'success',
-      message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
-    });
+    this.subscriptions.add(
+      this.notificationsService
+        .setNotificationRequestLinkToParent(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+        .subscribe(
+          request => {
+            if (request) {
+              this.notificationsService.getAllNotifications().subscribe(notify => {
+                this.notificationsService.notifications$.next(notify);
+              });
+              this.router.navigate(['/dashboard']);
+              this.alertService.addAlert({
+                type: 'success',
+                message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
+              });
+            }
+          },
+          error => {
+            console.log('Could not update notification.');
+          }
+        )
+    );
   }
 
   ngOnDestroy(): void {

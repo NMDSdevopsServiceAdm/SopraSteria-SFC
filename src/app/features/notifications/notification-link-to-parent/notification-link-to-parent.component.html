@@ -16,7 +16,7 @@
     <p>{{ notification?.type | notificationType }}</p>
   </div>
 </div>
-<ng-container *ngIf="notification && notification.type === 'LINKTOPARENTREQUEST'">
+<ng-container *ngIf="notification">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div [ngSwitch]="notification.typeContent.approvalStatus">

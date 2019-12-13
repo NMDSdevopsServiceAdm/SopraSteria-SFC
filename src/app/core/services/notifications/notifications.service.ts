@@ -34,4 +34,7 @@ export class NotificationsService {
   public setNoticationViewed(notificationUid: string): Observable<Notification> {
     return this.http.post<any>(`/api/user/my/notifications/${notificationUid}`, { isViewed: true });
   }
+  public setNotificationRequestLinkToParent(ownershipChangeRequestId, data): Observable<NotificationRequest> {
+    return this.http.put<any>(`/api/establishment/${ownershipChangeRequestId}/linkToParent/action`, data);
+  }
 }
