@@ -29,7 +29,7 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                     this.property = null;
                 }
 
-            } else if (Array.isArray(document.otherJobs) && document.otherJobs.value === 'No') {
+            } else if (document.otherJobs.value === 'No') {
                 // other jobs property needs to be an array of
                 this.property = {
                     value: 'No'
@@ -78,7 +78,6 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                 workerJobs: []
             };
         }
-        console.log(otherJobsDocument);
         return otherJobsDocument;
     }
 
