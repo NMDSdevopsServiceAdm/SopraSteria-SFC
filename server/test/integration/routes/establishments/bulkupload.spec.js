@@ -60,6 +60,7 @@ describe('Bulk upload', () => {
                 .send(admin)
                 .expect('Content-Type', /json/)
                 .expect(200);
+                console.log(adminLogin);
             if (adminLogin.headers.authorization) {
                 const approval = await apiEndpoint
                     .post('/admin/approval')
