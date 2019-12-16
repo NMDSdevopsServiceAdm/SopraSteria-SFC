@@ -1494,8 +1494,12 @@ const responseGet = (req, res) => {
         if (jsonData.responseHeaders) {
           res.set(jsonData.responseHeaders);
         }
-
-        res.status(jsonData.responseCode).send(jsonData.responseBody);
+        console.log(jsonData);
+        if (jsonData.responseBody && jsonData.responseBody.type && jsonData.responseBody.type === 'Buffer') {
+          res.status(jsonData.responseCode).send(Buffer.from(jsonData.responseBody));
+        } else {
+          res.status(jsonData.responseCode).send(jsonData.responseBody);
+        }
       } else {
         console.log('wdfReport::responseGet: Response code was not numeric', jsonData);
 
