@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const Establishment = require('../../models/classes/establishment');
 const uuid = require('uuid');
-const notifications = rfr('server/data/notifications');
 const linkSubToParent = rfr('server/data/linkToParent');
+const notifications = rfr('server/data/notifications');
 
 router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -62,7 +62,7 @@ router.route('/').post(async (req, res) => {
                     let notificationParams = {
                         notificationUid: params.notificationUid,
                         type: 'LINKTOPARENTREQUEST',
-                        ownerRequestChangeUid: params.linkToParentUID,
+                        typeUid: params.linkToParentUID,
                         recipientUserUid: getRecipientUserDetails[i].UserUID,
                         userUid: params.userUid,
                       };
@@ -112,7 +112,7 @@ router.route('/cancel').post(async (req, res) => {
             linkToParentUid: getLinkToParentUid[0].LinkToParentUID,
             approvalStatus: req.body.approvalStatus,
           };
-          let cancelLinkToParent = await linkSubToParent.cancelLinkToParent(params);
+          let cancelLinkToParent = await linkSubToParent.updatedLinkToParent(params);
           if (!cancelLinkToParent.length) {
             return res.status(400).send({
               message: `Unable to cancel this request.`,
@@ -140,4 +140,96 @@ router.route('/cancel').post(async (req, res) => {
   }
 });
 
+ /**
+   * Route will Approve/Reject link to Parent Request.
+   */
+router.route('/action').put(async (req, res) => {
+  const thisEstablishment = new Establishment.Establishment(req.username);
+  try {
+    if (await thisEstablishment.restore(req.establishmentId)) {
+      const isValidEstablishment = await thisEstablishment.load(req.body);
+      if (!isValidEstablishment) {
+        return res.status(400).send('Unexpected Input.');
+      }
+      const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+      const approvalStatusArr = ['APPROVED', 'DENIED'];
+      const params = {
+        notificationUid: req.body.notificationUid,
+        userUid: req.userUid,
+        approvalStatus: req.body.approvalStatus,
+        rejectionReason: req.body.rejectionReason,
+        type: req.body.type,
+        subEstablishmentUid: req.body.createdByUserUID,
+        subEstablishmentId: req.body.subEstablishmentId,
+        parentEstablishmentId: req.body.parentEstablishmentId,
+      };
+
+      if (!params.notificationUid) {
+        console.error('Missing notificationUid');
+        return res.status(400).send();
+      } else if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
+        console.error('Invalid notification uid');
+        return res.status(400).send();
+      } else if (approvalStatusArr.indexOf(req.body.approvalStatus) === -1) {
+        console.error('Approval status should be APPROVED/DENIED');
+        return res.status(400).send();
+      } else {
+        const checkLinkToParentRequest = await linkSubToParent.checkLinkToParentUid(params);
+        if (checkLinkToParentRequest.length === 0) {
+          return res.status(404).send('Link to parent request id not found');
+        } else if (checkLinkToParentRequest[0].approvalStatus !== 'REQUESTED') {
+          return res.status(400).send('Link to parent request is already approved/rejected');
+        } else {
+          params.linkToParentUid = checkLinkToParentRequest[0].typeUid;
+          const updateLinkToParent = await linkSubToParent.updatedLinkToParent(params);
+          if (updateLinkToParent) {
+            let saveLinkToParentRequested = await thisEstablishment.updateLinkToParentRequested(
+              params.subEstablishmentId,
+              true
+            );
+            if(params.approvalStatus === 'APPROVED') {
+              let getParentUid = await linkSubToParent.getParentUid(params);
+              if(getParentUid) {
+                let getPermissionRequest = await linkSubToParent.getPermissionRequest(params);
+                if(getPermissionRequest) {
+                  params.permissionRequest = getPermissionRequest[0].PermissionRequest;
+                  params.parentUid = getParentUid[0].EstablishmentUID;
+                let updateParentId = await linkSubToParent.updatedLinkToParentId(params);
+                }
+              }
+            }
+            const updateNotification = await linkSubToParent.updateNotification(params);
+            if (updateNotification) {
+              let notificationParams = {
+                notificationUid: uuid.v4(),
+                type: params.type,
+                typeUid: params.linkToParentUid,
+                recipientUserUid: params.subEstablishmentUid,
+                userUid: params.userUid,
+              };
+              if (!uuidRegex.test(notificationParams.notificationUid.toUpperCase())) {
+                console.error('Invalid notification UUID');
+                return res.status(400).send();
+              }
+              let addNotificationResp = await notifications.insertNewNotification(notificationParams);
+              if (addNotificationResp) {
+                let notificationDetailsParams = {
+                  typeUid : params.linkToParentUid,
+                }
+             const notificationDetails = await linkSubToParent.getNotificationDetails(notificationDetailsParams);
+             if(notificationDetails) {
+              return res.status(201).send(notificationDetails[0]);
+             }
+
+              }
+            }
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error('/establishment/:id/linkToParent/action : ERR: ', e.message);
+    return res.status(503).send({});
+  }
+});
 module.exports = router;
