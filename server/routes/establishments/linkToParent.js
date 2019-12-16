@@ -153,7 +153,7 @@ router.route('/action').put(async (req, res) => {
       const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
       const approvalStatusArr = ['APPROVED', 'DENIED'];
       const params = {
-        notificationUid: 'e8185ec9-5849-4700-960c-e7ebc13eb1d0',
+        notificationUid: req.body.notificationUid,
         userUid: req.userUid,
         approvalStatus: req.body.approvalStatus,
         rejectionReason: req.body.rejectionReason,
