@@ -49,7 +49,8 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       this.notification = details;
       this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
       this.notificationRequestedFrom = details.typeContent.subEstablishmentName;
-      this.requestorName = details.typeContent.requestorName || '';
+      this.requestorName = details.typeContent.requestorName;
+      this.isWorkPlaceIsRequester = this.workplace.name === this.requestorName;
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });
