@@ -11,9 +11,9 @@ const config = rfr('server/config/config');
 const uuid = require('uuid');
 
 const s3 = new (require('aws-sdk')).S3({
-  region: String(config.get('wdfExcelReport.region'))
+  region: String(config.get('bulkupload.region'))
 });
-const Bucket = String(config.get('wdfExcelReport.bucketname'));
+const Bucket = String(config.get('bulkupload.bucketname'));
 
 const { Establishment } = require('../../../models/classes/establishment');
 const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData, getServiceCapacityDetails } = rfr('server/data/parentWDFReport');
