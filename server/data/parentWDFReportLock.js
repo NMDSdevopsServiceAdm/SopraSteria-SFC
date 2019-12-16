@@ -8,10 +8,10 @@ module.exports = {
       UPDATE
         cqc."Establishment"
       SET
-        "wdfReportLockHeld" = true
+        "WdfReportLockHeld" = true
       WHERE
         "EstablishmentID" = :establishmentId AND
-        "wdfReportLockHeld" = false
+        "WdfReportLockHeld" = false
     `, {
       replacements: {
         establishmentId
@@ -24,10 +24,10 @@ module.exports = {
       UPDATE
         cqc."Establishment"
       SET
-        "wdfReportState" = :newState
+        "WdfReportState" = :newState
       WHERE
         "EstablishmentID" = :establishmentId AND
-        "wdfReportLockHeld" = true`,
+        "WdfReportLockHeld" = true`,
     {
       replacements: {
         establishmentId,
@@ -41,8 +41,8 @@ module.exports = {
     db.query(`
       SELECT
         "EstablishmentID" AS "establishmentId",
-        "wdfReportState",
-        "wdfReportLockHeld"
+        "WdfReportState",
+        "WdfReportLockHeld"
       FROM
         cqc."Establishment"
       WHERE
@@ -63,8 +63,8 @@ module.exports = {
         UPDATE
           cqc."Establishment"
         SET
-          "wdfReportLockHeld" = false,
-          "wdfReportState" = :nextState
+          "WdfReportLockHeld" = false,
+          "WdfReportState" = :nextState
         WHERE
           "EstablishmentID" = :establishmentId
         `;
@@ -73,7 +73,7 @@ module.exports = {
         UPDATE
           cqc."Establishment"
         SET
-          "wdfReportLockHeld" = false
+          "WdfReportLockHeld" = false
         WHERE
           "EstablishmentID" = :establishmentId
         `;

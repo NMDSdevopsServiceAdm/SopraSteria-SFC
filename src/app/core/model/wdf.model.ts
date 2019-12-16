@@ -1,7 +1,7 @@
 export interface WDFLockStatus {
   establishmentId: number;
-  wdfReportState: string;
-  wdfReportdLockHeld: boolean;
+  WdfReportState: string;
+  WdfReportLockHeld: boolean;
 }
 
 export enum Eligibility {
