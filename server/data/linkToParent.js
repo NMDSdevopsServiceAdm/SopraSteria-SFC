@@ -143,7 +143,7 @@ exports.getNotificationDetails = async params =>
   });
 
 const getSubEstablishmentNameQuery = `
-  select  parent."NameValue" as "subEstablishmentName"
+  select  parent."NameValue" as "subEstablishmentName", sub."ParentEstablishmentID" as parentEstablishmentId, sub."SubEstablishmentID" as subEstablishmentId
   from cqc."LinkToParent" as sub
   JOIN cqc."Establishment" as parent on sub."SubEstablishmentID" =  parent."EstablishmentID"
   where "LinkToParentUID" = :uid `;
@@ -166,7 +166,6 @@ exports.checkLinkToParentUid = async params =>
   db.query(checkLinkToParentUidQuery, {
     replacements: {
       notificationUid: params.notificationUid,
-      approvalStatus: 'REQUESTED',
     },
     type: db.QueryTypes.SELECT,
   });
@@ -185,26 +184,25 @@ exports.updateNotification = async params =>
     type: db.QueryTypes.UPDATE,
   });
 
-  const insertNotificationQuery =
-`INSERT INTO
+const insertNotificationQuery = `INSERT INTO
 cqc."Notifications"
 ("notificationUid", "type", "typeUid", "recipientUserUid", "isViewed", "createdByUserUID")
 VALUES (:nuid, :type, :typeUid, :recipientUserUid, :isViewed, :createdByUserUID);
 `;
-  exports.insertNewNotification = async (params) =>
-    db.query(insertNotificationQuery, {
-        replacements: {
-            nuid: params.notificationUid,
-            type: params.type,
-            typeUid: params.typeUid,
-            recipientUserUid: params.recipientUserUid,
-            isViewed: false,
-            createdByUserUID: params.userUid
-        },
-        type: db.QueryTypes.INSERT
-    });
+exports.insertNewNotification = async params =>
+  db.query(insertNotificationQuery, {
+    replacements: {
+      nuid: params.notificationUid,
+      type: params.type,
+      typeUid: params.typeUid,
+      recipientUserUid: params.recipientUserUid,
+      isViewed: false,
+      createdByUserUID: params.userUid,
+    },
+    type: db.QueryTypes.INSERT,
+  });
 
-    const getSubUserDetailsQuery = `
+const getSubUserDetailsQuery = `
   select "UserUID" from cqc."Establishment" est
   LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
   JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
@@ -216,6 +214,34 @@ exports.getSubUserDetails = async params =>
       estID: params.parentWorkplaceUId,
       userRole: 'Edit',
       isParent: true,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const updatedLinkToParentIdQuery = `
+  UPDATE cqc."Establishment"
+SET "ParentID" = :parentId, "ParentUID" = :parentUid
+WHERE "EstablishmentID" = :estID;`;
+
+exports.updatedLinkToParentId = async params =>
+  db.query(updatedLinkToParentIdQuery, {
+    replacements: {
+      parentId: params.parentEstablishmentId,
+      parentUid: params.parentUid,
+      estID: params.subEstablishmentId,
+    },
+    type: db.QueryTypes.UPDATE,
+  });
+
+  const getParentUidQuery = `
+  SELECT "EstablishmentUID"
+  FROM cqc."Establishment"
+  WHERE "EstablishmentID" = :subEstId;
+  `;
+exports.getParentUid = async params =>
+  db.query(getParentUidQuery, {
+    replacements: {
+      subEstId: params.parentEstablishmentId,
     },
     type: db.QueryTypes.SELECT,
   });

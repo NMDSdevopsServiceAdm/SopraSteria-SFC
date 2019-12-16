@@ -771,10 +771,24 @@ router.route('/my/notifications').get(async (req, res) => {
   }
 });
 
+const getNotificationDetails = async notification => {
+  let notificationDetailsParams = {
+    typeUid: notification.typeUid,
+  };
+  const notificationDetails = await linkSubToParent.getNotificationDetails(notificationDetailsParams);
+  const subEstablishmentName = await linkSubToParent.getSubEstablishmentName(notificationDetailsParams);
+  if (subEstablishmentName) {
+    notificationDetails[0].subEstablishmentName = subEstablishmentName[0].subEstablishmentName;
+    notificationDetails[0].subEstablishmentId = subEstablishmentName[0].subestablishmentid;
+    notificationDetails[0].parentEstablishmentId = subEstablishmentName[0].parentestablishmentid;
+  }
+  return notificationDetails;
+};
+
 const addTypeContent = async notification => {
   notification.typeContent = {};
-  switch (notification.type) {
 
+  switch (notification.type) {
     case 'OWNERCHANGE':
       const subQuery = await ownershipChangeRequests.getOwnershipNotificationDetails({
         ownerChangeRequestUid: notification.typeUid,
@@ -803,19 +817,29 @@ const addTypeContent = async notification => {
       }
       break;
 
-      case 'LINKTOPARENTREQUEST':
-        let notificationDetailsParams = {
-          typeUid : notification.typeUid,
-        }
-     const notificationDetails = await linkSubToParent.getNotificationDetails(notificationDetailsParams);
-     if(notificationDetails) {
-       const subEstablishmentName = await linkSubToParent.getSubEstablishmentName(notificationDetailsParams);
-       if(subEstablishmentName) {
-        notificationDetails[0].subEstablishmentName = subEstablishmentName[0].subEstablishmentName;
-       }
-       notification.typeContent = notificationDetails[0];
-     }
-     break;
+    case 'LINKTOPARENTREQUEST':
+      let fetchNotificationDetails = await getNotificationDetails(notification);
+      if (fetchNotificationDetails) {
+          fetchNotificationDetails[0].requesterName = fetchNotificationDetails[0].subEstablishmentName;
+        notification.typeContent = fetchNotificationDetails[0];
+      }
+      break;
+
+    case 'LINKTOPARENTAPPROVED':
+      let fetchApprovedNotificationDetails = await getNotificationDetails(notification);
+      if (fetchApprovedNotificationDetails) {
+        fetchApprovedNotificationDetails[0].requesterName = fetchApprovedNotificationDetails[0].parentEstablishmentName;
+        notification.typeContent = fetchApprovedNotificationDetails[0];
+      }
+      break;
+
+      case 'LINKTOPARENTREJECTED':
+          let fetchRejectNotificationDetails = await getNotificationDetails(notification);
+          if (fetchRejectNotificationDetails) {
+            fetchRejectNotificationDetails[0].requesterName = fetchRejectNotificationDetails[0].parentEstablishmentName;
+            notification.typeContent = fetchRejectNotificationDetails[0];
+          }
+          break;
   }
 
   delete notification.typeUid;
