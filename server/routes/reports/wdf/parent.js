@@ -1494,7 +1494,7 @@ const responseGet = (req, res) => {
         if (jsonData.responseHeaders) {
           res.set(jsonData.responseHeaders);
         }
-        console.log(jsonData);
+
         if (jsonData.responseBody && jsonData.responseBody.type && jsonData.responseBody.type === 'Buffer') {
           res.status(jsonData.responseCode).send(Buffer.from(jsonData.responseBody));
         } else {
