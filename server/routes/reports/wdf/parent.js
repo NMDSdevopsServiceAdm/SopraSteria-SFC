@@ -8,6 +8,11 @@ const path = require('path');
 const walk = require('walk');
 const JsZip = require('jszip');
 
+const s3 = new (require('aws-sdk')).S3({
+  region: String(config.get('wdfExcelReport.region'))
+});
+const Bucket = String(config.get('wdfExcelReport.bucketname'));
+
 const { Establishment } = require('../../../models/classes/establishment');
 const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData, getServiceCapacityDetails } = rfr('server/data/parentWDFReport');
 const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('server/data/parentWDFReportLock');
@@ -1419,6 +1424,24 @@ const acquireLock = async function (logic, newState, req, res) {
   await releaseLock(req, null, null, nextState);
 };
 
+const releaseLock = async (req, res, next, nextState = null) => {
+  const establishmentId = req.query.subEstId || req.establishmentId;
+
+  if (Number.isInteger(establishmentId)) {
+    await releaseLockQuery(establishmentId, nextState);
+
+    console.log(`Lock released for establishment ${establishmentId}`);
+  }
+
+  if (res !== null) {
+    res
+      .status(200)
+      .send({
+        establishmentId
+      });
+  }
+};
+
 const signedUrlGet = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
@@ -1426,12 +1449,11 @@ const signedUrlGet = async (req, res) => {
     await saveResponse(req, res, 200, {
       urls: s3.getSignedUrl('putObject', {
         Bucket,
-        Key: `${establishmentId}/latest/${req.query.filename}`,
-        ContentType: req.query.type,
+        Key: `${establishmentId}/latest/${moment(date).format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`,
+        ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         Metadata: {
           username: String(req.username),
-          establishmentId: String(establishmentId),
-          dataCounts: 'pending'
+          establishmentId: String(establishmentId)
         },
         Expires: config.get('wdfReport.reportSignedUrlExpire')
       })
@@ -1440,6 +1462,65 @@ const signedUrlGet = async (req, res) => {
     console.error('report/wdf/parent:PreSigned - failed', err.message);
     await saveResponse(req, res, 503, {});
   }
+};
+
+const saveResponse = async (req, res, statusCode, body, headers) => {
+  if (!Number.isInteger(statusCode) || statusCode < 100) {
+    statusCode = 500;
+  }
+
+  return s3.putObject({
+    Bucket,
+    Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
+    Body: JSON.stringify({
+      url: req.url,
+      startTime: req.startTime,
+      endTime: (new Date()).toISOString(),
+      responseCode: statusCode,
+      responseBody: body,
+      responseHeaders: (typeof headers === 'object' ? headers : undefined)
+    })
+  }).promise();
+};
+
+const responseGet = (req, res) => {
+  const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+  const buRequestId = String(req.params.buRequestId).toLowerCase();
+
+  if (!uuidRegex.test(buRequestId)) {
+    res.status(400).send({
+      message: 'request id must be a uuid'
+    });
+
+    return;
+  }
+
+  s3.getObject({
+    Bucket,
+    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`
+  }).promise()
+    .then(data => {
+      const jsonData = JSON.parse(data.Body.toString());
+
+      if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
+        if (jsonData.responseHeaders) {
+          res.set(jsonData.responseHeaders);
+        }
+
+        res.status(jsonData.responseCode).send(jsonData.responseBody);
+      } else {
+        console.log('wdfReport::responseGet: Response code was not numeric', jsonData);
+
+        throw new Error('Response code was not numeric');
+      }
+    })
+    .catch(err => {
+      console.log('wdfReport::responseGet: getting data returned an error:', err);
+
+      res.status(404).send({
+        message: 'Not Found'
+      });
+    });
 };
 
 const lockStatusGet = async (req, res) => {
@@ -1472,35 +1553,29 @@ const reportGet = async () => {
         const report = await getReport(date, thisEstablishment);
 
         if (report) {
-          res.setHeader('Content-disposition',
-              `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`);
-          res.setHeader('Content-Type',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-          res.setHeader('Content-Length', report.length);
-
+          await saveResponse(req, res, 200, report, {
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`
+          });
           console.log('report/wdf/parent - 200 response');
-
-          return res.status(200).end(report);
         } else {
           // failed to run the report
           console.error('report/wdf/parent - failed to run the report');
-
-          return res.status(503).send('ERR: Failed to run report');
+          await saveResponse(req, res, 503, {});
         }
       } else {
         // only allow on those establishments being a parent
 
         console.log('report/wdf/parent 403 response');
-
-        return res.status(403).send();
+        await saveResponse(req, res, 403, {});
       }
     } else {
       console.error('report/wdf/parent - failed restoring establisment');
-      return res.status(503).send('ERR: Failed to restore establishment');
+      await saveResponse(req, res, 503, {});
     }
   } catch (err) {
     console.error('report/wdf/parent - failed', err);
-    return res.status(503).send('ERR: Failed to retrieve report');
+    await saveResponse(req, res, 503, {});
   }
 }
 
@@ -1513,7 +1588,6 @@ const router = express.Router();
 
 router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
 router.route('/report').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
-router.route('/complete').get(acquireLock.bind(null, uploadedStarGet, buStates.COMPLETING));
 router.route('/lockstatus').get(lockStatusGet);
 router.route('/unlock').get(releaseLock);
 router.route('/response/:buRequestId').get(responseGet);
