@@ -88,7 +88,7 @@ export class ReportService {
               )
           )
         )
-        .pipe(filter(state => state.wdfReportdLockHeld === false))
+        .pipe(filter(state => state.WdfReportLockHeld === false))
         .pipe(take(1))
         .pipe(
           concatMap(() =>

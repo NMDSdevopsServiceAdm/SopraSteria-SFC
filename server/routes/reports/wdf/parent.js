@@ -7,6 +7,8 @@ const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 const JsZip = require('jszip');
+const config = rfr('server/config/config');
+const uuid = require('uuid');
 
 const s3 = new (require('aws-sdk')).S3({
   region: String(config.get('wdfExcelReport.region'))
@@ -1370,7 +1372,7 @@ const acquireLock = async function (logic, newState, req, res) {
 
       if (currentState.length === 1) {
         // don't update the status for downloads, just hold the lock
-        newState = currentState[0].wdfReportState;
+        newState = currentState[0].WdfReportState;
         nextState = null;
       } else {
         nextState = buStates.READY;
@@ -1520,15 +1522,15 @@ const lockStatusGet = async (req, res) => {
       currentLockState.length === 0
         ? {
           establishmentId,
-          wdfReportState: buStates.READY,
-          wdfReportdLockHeld: true
+          WdfReportState: buStates.READY,
+          WdfReportdLockHeld: true
         } : currentLockState[0]
     );
 
   return currentLockState[0];
 };
 
-const reportGet = async () => {
+const reportGet = async (req, res) => {
   try {
     // first ensure this report can only be run by those establishments that are a parent
     const thisEstablishment = new Establishment(req.username);
