@@ -4,6 +4,7 @@ const router = express.Router();
 const Establishment = require('../../models/classes/establishment');
 const uuid = require('uuid');
 const linkSubToParent = rfr('server/data/linkToParent');
+const notifications = rfr('server/data/notifications');
 
 router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -65,7 +66,7 @@ router.route('/').post(async (req, res) => {
                         recipientUserUid: getRecipientUserDetails[i].UserUID,
                         userUid: params.userUid,
                       };
-                      let addNotificationResp = await linkSubToParent.insertNewNotification(notificationParams);
+                      let addNotificationResp = await notifications.insertNewNotification(notificationParams);
                 }
               return res.status(201).send(lastLinkToParentRequest[0]);
             }
@@ -189,8 +190,12 @@ router.route('/action').put(async (req, res) => {
             if(params.approvalStatus === 'APPROVED') {
               let getParentUid = await linkSubToParent.getParentUid(params);
               if(getParentUid) {
-                params.parentUid = getParentUid[0].EstablishmentUID;
+                let getPermissionRequest = await linkSubToParent.getPermissionRequest(params);
+                if(getPermissionRequest) {
+                  params.permissionRequest = getPermissionRequest[0].PermissionRequest;
+                  params.parentUid = getParentUid[0].EstablishmentUID;
                 let updateParentId = await linkSubToParent.updatedLinkToParentId(params);
+                }
               }
             }
             const updateNotification = await linkSubToParent.updateNotification(params);
@@ -206,7 +211,7 @@ router.route('/action').put(async (req, res) => {
                 console.error('Invalid notification UUID');
                 return res.status(400).send();
               }
-              let addNotificationResp = await linkSubToParent.insertNewNotification(notificationParams);
+              let addNotificationResp = await notifications.insertNewNotification(notificationParams);
               if (addNotificationResp) {
                 let notificationDetailsParams = {
                   typeUid : params.linkToParentUid,

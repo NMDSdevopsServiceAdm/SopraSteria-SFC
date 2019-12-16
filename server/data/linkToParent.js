@@ -184,24 +184,6 @@ exports.updateNotification = async params =>
     type: db.QueryTypes.UPDATE,
   });
 
-const insertNotificationQuery = `INSERT INTO
-cqc."Notifications"
-("notificationUid", "type", "typeUid", "recipientUserUid", "isViewed", "createdByUserUID")
-VALUES (:nuid, :type, :typeUid, :recipientUserUid, :isViewed, :createdByUserUID);
-`;
-exports.insertNewNotification = async params =>
-  db.query(insertNotificationQuery, {
-    replacements: {
-      nuid: params.notificationUid,
-      type: params.type,
-      typeUid: params.typeUid,
-      recipientUserUid: params.recipientUserUid,
-      isViewed: false,
-      createdByUserUID: params.userUid,
-    },
-    type: db.QueryTypes.INSERT,
-  });
-
 const getSubUserDetailsQuery = `
   select "UserUID" from cqc."Establishment" est
   LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
@@ -220,7 +202,7 @@ exports.getSubUserDetails = async params =>
 
 const updatedLinkToParentIdQuery = `
   UPDATE cqc."Establishment"
-SET "ParentID" = :parentId, "ParentUID" = :parentUid
+SET "ParentID" = :parentId, "ParentUID" = :parentUid, "DataPermissions" = :permissionRequest
 WHERE "EstablishmentID" = :estID;`;
 
 exports.updatedLinkToParentId = async params =>
@@ -229,6 +211,7 @@ exports.updatedLinkToParentId = async params =>
       parentId: params.parentEstablishmentId,
       parentUid: params.parentUid,
       estID: params.subEstablishmentId,
+      permissionRequest: params.permissionRequest,
     },
     type: db.QueryTypes.UPDATE,
   });
@@ -242,6 +225,19 @@ exports.getParentUid = async params =>
   db.query(getParentUidQuery, {
     replacements: {
       subEstId: params.parentEstablishmentId,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+  const getPermissionRequestQuery = `
+  SELECT "PermissionRequest"
+  FROM cqc."LinkToParent"
+  WHERE "LinkToParentUID" = :linkToParentUid;
+  `;
+exports.getPermissionRequest = async params =>
+  db.query(getPermissionRequestQuery, {
+    replacements: {
+      linkToParentUid: params.linkToParentUid,
     },
     type: db.QueryTypes.SELECT,
   });
