@@ -98,13 +98,13 @@ exports.getLinkToParentUid = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-const cancelLinkToParentQuery = `
+const updatedLinkToParentQuery = `
   UPDATE cqc."LinkToParent"
 SET "ApprovalStatus" = :approvalStatus
 WHERE "LinkToParentUID" = :uid;`;
 
-exports.cancelLinkToParent = async params =>
-  db.query(cancelLinkToParentQuery, {
+exports.updatedLinkToParent = async params =>
+  db.query(updatedLinkToParentQuery, {
     replacements: {
       uid: params.linkToParentUid,
       approvalStatus: params.approvalStatus,
@@ -127,7 +127,7 @@ exports.updateLinkToParent = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-  const getNotificationDetailsQuery = `
+const getNotificationDetailsQuery = `
   select "ApprovalStatus" as "approvalStatus", "PermissionRequest" as "permissionRequest",
   parent."NameValue" as "parentEstablishmentName"
   from cqc."LinkToParent" as sub
@@ -142,8 +142,8 @@ exports.getNotificationDetails = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-  const getSubEstablishmentNameQuery = `
-  select  parent."NameValue" as "subEstablishmentName"
+const getSubEstablishmentNameQuery = `
+  select  parent."NameValue" as "subEstablishmentName", sub."ParentEstablishmentID" as parentEstablishmentId, sub."SubEstablishmentID" as subEstablishmentId
   from cqc."LinkToParent" as sub
   JOIN cqc."Establishment" as parent on sub."SubEstablishmentID" =  parent."EstablishmentID"
   where "LinkToParentUID" = :uid `;
@@ -152,6 +152,92 @@ exports.getSubEstablishmentName = async params =>
   db.query(getSubEstablishmentNameQuery, {
     replacements: {
       uid: params.typeUid,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const checkLinkToParentUidQuery = `
+  select  notify."typeUid", link."ApprovalStatus"  as "approvalStatus"
+  from cqc."Notifications" as notify
+  JOIN cqc."LinkToParent" as link on notify."typeUid" =  link."LinkToParentUID"
+  where "notificationUid" = :notificationUid `;
+
+exports.checkLinkToParentUid = async params =>
+  db.query(checkLinkToParentUidQuery, {
+    replacements: {
+      notificationUid: params.notificationUid,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const updateNotificationQuery = `
+  UPDATE cqc."Notifications"
+  SET "isViewed" = :isViewed
+  WHERE "Notifications"."notificationUid" = :notificationUid`;
+
+exports.updateNotification = async params =>
+  db.query(updateNotificationQuery, {
+    replacements: {
+      notificationUid: params.notificationUid,
+      isViewed: false,
+    },
+    type: db.QueryTypes.UPDATE,
+  });
+
+const getSubUserDetailsQuery = `
+  select "UserUID" from cqc."Establishment" est
+  LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
+  JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
+  WHERE :estID = est."EstablishmentUID" AND individual."UserRoleValue" = :userRole AND est."IsParent" = :isParent `;
+
+exports.getSubUserDetails = async params =>
+  db.query(getSubUserDetailsQuery, {
+    replacements: {
+      estID: params.parentWorkplaceUId,
+      userRole: 'Edit',
+      isParent: true,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const updatedLinkToParentIdQuery = `
+  UPDATE cqc."Establishment"
+SET "ParentID" = :parentId, "ParentUID" = :parentUid, "DataPermissions" = :permissionRequest
+WHERE "EstablishmentID" = :estID;`;
+
+exports.updatedLinkToParentId = async params =>
+  db.query(updatedLinkToParentIdQuery, {
+    replacements: {
+      parentId: params.parentEstablishmentId,
+      parentUid: params.parentUid,
+      estID: params.subEstablishmentId,
+      permissionRequest: params.permissionRequest,
+    },
+    type: db.QueryTypes.UPDATE,
+  });
+
+  const getParentUidQuery = `
+  SELECT "EstablishmentUID"
+  FROM cqc."Establishment"
+  WHERE "EstablishmentID" = :subEstId;
+  `;
+exports.getParentUid = async params =>
+  db.query(getParentUidQuery, {
+    replacements: {
+      subEstId: params.parentEstablishmentId,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+  const getPermissionRequestQuery = `
+  SELECT "PermissionRequest"
+  FROM cqc."LinkToParent"
+  WHERE "LinkToParentUID" = :linkToParentUid;
+  `;
+exports.getPermissionRequest = async params =>
+  db.query(getPermissionRequestQuery, {
+    replacements: {
+      linkToParentUid: params.linkToParentUid,
     },
     type: db.QueryTypes.SELECT,
   });
