@@ -823,7 +823,7 @@ const addTypeContent = async notification => {
     case 'LINKTOPARENTREQUEST':
       let fetchNotificationDetails = await getNotificationDetails(notification);
       if (fetchNotificationDetails) {
-          fetchNotificationDetails[0].requesterName = fetchNotificationDetails[0].subEstablishmentName;
+          fetchNotificationDetails[0].requestorName  = fetchNotificationDetails[0].subEstablishmentName;
         notification.typeContent = fetchNotificationDetails[0];
       }
       break;
@@ -831,7 +831,7 @@ const addTypeContent = async notification => {
     case 'LINKTOPARENTAPPROVED':
       let fetchApprovedNotificationDetails = await getNotificationDetails(notification);
       if (fetchApprovedNotificationDetails) {
-        fetchApprovedNotificationDetails[0].requesterName = fetchApprovedNotificationDetails[0].parentEstablishmentName;
+        fetchApprovedNotificationDetails[0].requestorName  = fetchApprovedNotificationDetails[0].parentEstablishmentName;
         notification.typeContent = fetchApprovedNotificationDetails[0];
       }
       break;
@@ -839,7 +839,7 @@ const addTypeContent = async notification => {
       case 'LINKTOPARENTREJECTED':
           let fetchRejectNotificationDetails = await getNotificationDetails(notification);
           if (fetchRejectNotificationDetails) {
-            fetchRejectNotificationDetails[0].requesterName = fetchRejectNotificationDetails[0].parentEstablishmentName;
+            fetchRejectNotificationDetails[0].requestorName  = fetchRejectNotificationDetails[0].parentEstablishmentName;
             notification.typeContent = fetchRejectNotificationDetails[0];
           }
           break;
