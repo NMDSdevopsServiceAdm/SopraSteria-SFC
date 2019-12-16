@@ -139,6 +139,9 @@ router.route('/cancel').post(async (req, res) => {
   }
 });
 
+ /**
+   * Route will Approve/Reject link to Parent Request.
+   */
 router.route('/action').put(async (req, res) => {
   const thisEstablishment = new Establishment.Establishment(req.username);
   try {

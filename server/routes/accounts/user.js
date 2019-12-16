@@ -770,7 +770,10 @@ router.route('/my/notifications').get(async (req, res) => {
     });
   }
 });
-
+ /**
+   * Method will fetch the notification details.
+   * @param notification
+   */
 const getNotificationDetails = async notification => {
   let notificationDetailsParams = {
     typeUid: notification.typeUid,
