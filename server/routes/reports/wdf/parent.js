@@ -10,6 +10,7 @@ const JsZip = require('jszip');
 
 const { Establishment } = require('../../../models/classes/establishment');
 const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData, getServiceCapacityDetails } = rfr('server/data/parentWDFReport');
+const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('server/data/parentWDFReportLock');
 
 // Constants string needed by this file in several places
 const folderName = 'template';
@@ -21,6 +22,19 @@ const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 //const debuglog = console.log.bind(console);
 const debuglog = () => {};
+
+const buStates = [
+  'READY',
+  'DOWNLOADING',
+  'FAILED',
+  'WARNINGS',
+  'PASSED',
+  'COMPLETING'
+].reduce((acc, item) => {
+  acc[item] = item;
+
+  return acc;
+}, Object.create(null));
 
 // XML DOM manipulation helper functions
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
@@ -1314,14 +1328,126 @@ const getReport = async (date, thisEstablishment) => {
     }));
 };
 
-// gets report
-// NOTE - the Local Authority report is driven mainly by pgsql (postgres functions) and therefore does not
-//    pass through the Establishment/Worker entities. This is done for performance, as these reports
-//    are expected to operate across large sets of data
-const express = require('express');
-const router = express.Router();
+// Prevent multiple wdf report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
+// This function can't be an express middleware as it needs to run both before and after the regular logic
+const acquireLock = async function (logic, newState, req, res) {
+  const { establishmentId } = req;
 
-router.route('/').get(async (req, res) => {
+  req.startTime = (new Date()).toISOString();
+
+  console.log(`Acquiring lock for establishment ${establishmentId}.`);
+
+  // attempt to acquire the lock
+  const currentLockState = await attemptToAcquireLock(establishmentId);
+
+  // if no records were updated the lock could not be acquired
+  // Just respond with a 409 http code and don't call the regular logic
+  // close the response either way and continue processing in the background
+  if (currentLockState[1] === 0) {
+    console.log('Lock *NOT* acquired.');
+    res
+      .status(409)
+      .send({
+        message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`
+      });
+
+    return;
+  }
+
+  console.log('Lock acquired.', newState);
+
+  let nextState;
+
+  switch (newState) {
+    case buStates.DOWNLOADING: {
+      // get the current wdf report state
+      const currentState = await lockStatus(establishmentId);
+
+      if (currentState.length === 1) {
+        // don't update the status for downloads, just hold the lock
+        newState = currentState[0].wdfReportState;
+        nextState = null;
+      } else {
+        nextState = buStates.READY;
+      }
+    } break;
+
+    case buStates.COMPLETING:
+      nextState = buStates.READY;
+      break;
+
+    default:
+      newState = buStates.READY;
+      nextState = buStates.READY;
+      break;
+  }
+
+  // update the current state
+  await updateLockState(establishmentId, newState);
+
+  req.buRequestId = String(uuid()).toLowerCase();
+
+  res
+    .status(200)
+    .send({
+      message: `Lock for establishment ${establishmentId} acquired.`,
+      requestId: req.buRequestId
+    });
+
+  // run whatever the original logic was
+  try {
+    await logic(req, res);
+  } catch (e) {
+
+  }
+
+  // release the lock
+  await releaseLock(req, null, null, nextState);
+};
+
+const signedUrlGet = async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+
+    await saveResponse(req, res, 200, {
+      urls: s3.getSignedUrl('putObject', {
+        Bucket,
+        Key: `${establishmentId}/latest/${req.query.filename}`,
+        ContentType: req.query.type,
+        Metadata: {
+          username: String(req.username),
+          establishmentId: String(establishmentId),
+          dataCounts: 'pending'
+        },
+        Expires: config.get('wdfReport.reportSignedUrlExpire')
+      })
+    });
+  } catch (err) {
+    console.error('report/wdf/parent:PreSigned - failed', err.message);
+    await saveResponse(req, res, 503, {});
+  }
+};
+
+const lockStatusGet = async (req, res) => {
+  const { establishmentId } = req;
+
+  const currentLockState = await lockStatus(establishmentId);
+
+  res
+    .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
+    .send(
+      currentLockState.length === 0
+        ? {
+          establishmentId,
+          wdfReportState: buStates.READY,
+          wdfReportdLockHeld: true
+        } : currentLockState[0]
+    );
+
+  return currentLockState[0];
+};
+
+const reportGet = async () => {
   try {
     // first ensure this report can only be run by those establishments that are a parent
     const thisEstablishment = new Establishment(req.username);
@@ -1362,6 +1488,20 @@ router.route('/').get(async (req, res) => {
     console.error('report/wdf/parent - failed', err);
     return res.status(503).send('ERR: Failed to retrieve report');
   }
-});
+}
+
+// gets report
+// NOTE - the Local Authority report is driven mainly by pgsql (postgres functions) and therefore does not
+//    pass through the Establishment/Worker entities. This is done for performance, as these reports
+//    are expected to operate across large sets of data
+const express = require('express');
+const router = express.Router();
+
+router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
+router.route('/report').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
+router.route('/complete').get(acquireLock.bind(null, uploadedStarGet, buStates.COMPLETING));
+router.route('/lockstatus').get(lockStatusGet);
+router.route('/unlock').get(releaseLock);
+router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;
