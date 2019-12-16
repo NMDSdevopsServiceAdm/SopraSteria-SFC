@@ -23,13 +23,13 @@
             >
 
             <a
-              *ngIf="notification.type === 'LINKTOPARENTREQUEST'"
+              *ngIf="notification.type !== 'OWNERCHANGE'"
               [routerLink]="['/notifications', 'notification-link-to-parent', notification.notificationUid]"
               class="notification-list-item__link"
               >{{ notification.type | notificationType }}</a
             >
             <a
-              *ngIf="notification.type !== 'LINKTOPARENTREQUEST'"
+              *ngIf="notification.type === 'OWNERCHANGE'"
               [routerLink]="[notification.notificationUid]"
               class="notification-list-item__link"
               >{{ notification.type | notificationType }}</a

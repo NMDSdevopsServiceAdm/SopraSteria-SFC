@@ -23,7 +23,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public displayActionButtons;
   public notificationUid: string;
-  public isWorkPlaceIsRequester: boolean;
+  public isWorkPlaceRequester: boolean;
   public ownerShipRequestedFrom: string;
   public ownerShipRequestedTo: string;
   public isSubWorkplace: boolean;
@@ -50,7 +50,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
       this.notificationRequestedFrom = details.typeContent.subEstablishmentName;
       this.requestorName = details.typeContent.requestorName;
-      this.isWorkPlaceIsRequester = this.workplace.name === this.requestorName;
+      this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });

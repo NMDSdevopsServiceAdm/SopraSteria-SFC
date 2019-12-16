@@ -29,8 +29,8 @@
           <p>Approve the request to set the following permissions:</p>
         </div>
         <div *ngSwitchCase="'DENIED'">
-          <ng-container *ngIf="isWorkPlaceIsRequester; else nonWorkplaceRequester">
-            <p>you have rejected a request from {{ notificationRequestedFrom }} to link to you.</p>
+          <ng-container *ngIf="isWorkPlaceRequester; else nonWorkplaceRequester">
+            <p>You have rejected a request from {{ notificationRequestedFrom }} to link to you.</p>
             <h2 class="govuk-heading-s">Reason</h2>
             <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
               <p>{{ notification.typeContent.rejectionReason }}</p>
@@ -51,7 +51,7 @@
           </ng-template>
         </div>
         <div *ngSwitchCase="'APPROVED'">
-          <ng-container *ngIf="isWorkPlaceIsRequester; else nonWorkplaceRequester">
+          <ng-container *ngIf="isWorkPlaceRequester; else nonWorkplaceRequester">
             <p>You have approved a request from {{ notificationRequestedFrom }} to link to you.</p>
           </ng-container>
           <ng-template #nonWorkplaceRequester>
