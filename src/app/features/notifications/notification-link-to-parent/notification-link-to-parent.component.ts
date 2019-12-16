@@ -49,11 +49,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       this.notification = details;
       this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
       this.notificationRequestedFrom = details.typeContent.subEstablishmentName;
-      if (details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED') {
-        this.requestorName = this.notificationRequestedFrom;
-      } else {
-        this.requestorName = this.notificationRequestedTo;
-      }
+      this.requestorName = details.typeContent.requestorName || '';
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });
@@ -72,11 +68,12 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
         rejectionReason: null,
         type: 'LINKTOPARENTAPPROVED',
         approvalStatus: 'APPROVED',
-        subEstablishmentId: this.notification.typeContent.subEstablishmentId || '',
+        subEstablishmentId: this.notification.typeContent.subEstablishmentId || null,
+        parentEstablishmentId: this.notification.typeContent.parentEstablishmentId || null,
       };
       this.subscriptions.add(
         this.notificationsService
-          .setNotificationRequestLinkToParent(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+          .setNotificationRequestLinkToParent(this.establishmentService.establishmentId, requestParameter)
           .subscribe(
             request => {
               if (request) {
@@ -153,11 +150,12 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       rejectionReason: requestRejected.rejectionReason,
       type: 'LINKTOPARENTREJECTED',
       approvalStatus: 'DENIED',
-      subEstablishmentId: this.notification.typeContent.subEstablishmentId || '',
+      subEstablishmentId: this.notification.typeContent.subEstablishmentId || null,
+      parentEstablishmentId: this.notification.typeContent.parentEstablishmentId || null,
     };
     this.subscriptions.add(
       this.notificationsService
-        .setNotificationRequestLinkToParent(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+        .setNotificationRequestLinkToParent(this.establishmentService.establishmentId, requestParameter)
         .subscribe(
           request => {
             if (request) {
