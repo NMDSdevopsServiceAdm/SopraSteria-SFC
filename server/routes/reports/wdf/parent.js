@@ -7,10 +7,10 @@ const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 const JsZip = require('jszip');
-const config = rfr('server/config/config');
+const config = require('../../../../server/config/config');
 const uuid = require('uuid');
-
-const s3 = new (require('aws-sdk')).S3({
+const AWS = require('aws-sdk')
+const s3 = new AWS.S3({
   region: String(config.get('bulkupload.region'))
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
@@ -1457,7 +1457,7 @@ const signedUrlGet = async (req, res) => {
           username: String(req.username),
           establishmentId: String(establishmentId)
         },
-        Expires: config.get('wdfReport.reportSignedUrlExpire')
+        Expires: config.get('bulkupload.uploadSignedUrlExpire')
       })
     });
   } catch (err) {
