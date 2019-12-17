@@ -68,9 +68,12 @@ export class AuthService {
 
   public authenticate(username: string, password: string) {
     console.log('Authservice has been asked to authenticate a user');
-    return this.http
-      .post<any>('/api/login/', { username, password }, { observe: 'response' })
-      .pipe(tap(response => (this.token = response.headers.get('authorization'))));
+    return this.http.post<any>('/api/login/', { username, password }, { observe: 'response' }).pipe(
+      tap(
+        response => (this.token = response.headers.get('authorization')),
+        error => console.error(error)
+      )
+    );
   }
 
   public refreshToken() {
