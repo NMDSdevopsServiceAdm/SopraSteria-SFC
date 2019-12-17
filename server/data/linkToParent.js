@@ -100,7 +100,7 @@ exports.getLinkToParentUid = async params =>
 
 const updatedLinkToParentQuery = `
   UPDATE cqc."LinkToParent"
-SET "ApprovalStatus" = :approvalStatus
+SET "ApprovalStatus" = :approvalStatus, "RejectionReason" = :rejectionReason
 WHERE "LinkToParentUID" = :uid;`;
 
 exports.updatedLinkToParent = async params =>
@@ -108,6 +108,7 @@ exports.updatedLinkToParent = async params =>
     replacements: {
       uid: params.linkToParentUid,
       approvalStatus: params.approvalStatus,
+      rejectionReason: params.rejectionReason,
     },
     type: db.QueryTypes.UPDATE,
   });
