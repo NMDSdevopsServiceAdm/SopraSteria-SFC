@@ -120,3 +120,29 @@ exports.markOneAsRead = async ({ userUid, notificationUid }) =>
       },
       type: db.QueryTypes.SELECT,
   });
+
+  const getEstablishmentIdQuery = `
+  select "EstablishmentID" from cqc."Establishment"
+  WHERE "NmdsID" = :nmsdId;
+  `;
+
+exports.getEstablishmentId = async (params) =>
+  db.query(getEstablishmentIdQuery, {
+    replacements: {
+      nmsdId: params.nmsdId,
+    },
+    type: db.QueryTypes.SELECT,
+});
+
+const getAllUserQuery = `
+  select "UserUID" from cqc."User"
+  WHERE "EstablishmentID" = :establishmentId;
+  `;
+
+exports.getAllUser = async (params) =>
+  db.query(getAllUserQuery, {
+    replacements: {
+      establishmentId: params.establishmentId,
+    },
+    type: db.QueryTypes.SELECT,
+});

@@ -18,6 +18,7 @@ export class SearchComponent implements OnInit {
   public results = [];
   public registrations = [];
   public selectedWorkplaceUid: string;
+  public notificationData: any;
   public form = {
     type: '',
     title: '',
@@ -87,9 +88,18 @@ export class SearchComponent implements OnInit {
     };
     return this.http.post<any>('/api/user/swap/establishment/' + id, data, { observe: 'response' });
   }
-
-  public setEsblishmentId(id, username, e): void {
+  public getAllNotificationWorkplace(nmdsId) {
+    return this.http.get<any>(`/api/user/swap/establishment/notification/${nmdsId}`);
+  }
+  public setEsblishmentId(id, username, nmdsId, e): void {
     e.preventDefault();
+    if (!username && nmdsId) {
+      this.getAllNotificationWorkplace(nmdsId).subscribe(data => {
+        if (data) {
+          this.notificationData = data;
+        }
+      });
+    }
     this.getNewEstablishmentId(id, username).subscribe(
       data => {
         this.permissionsService.clearPermissions();
@@ -146,7 +156,7 @@ export class SearchComponent implements OnInit {
         .subscribe(
           workplace => {
             this.notificationsService.getAllNotifications().subscribe(notify => {
-              this.notificationsService.notifications$.next(notify);
+              this.notificationsService.notifications$.next(this.notificationData ? this.notificationData : notify);
               this.establishmentService.setState(workplace);
               this.establishmentService.setPrimaryWorkplace(workplace);
               this.establishmentService.establishmentId = workplace.uid;
