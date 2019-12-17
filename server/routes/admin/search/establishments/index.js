@@ -38,7 +38,7 @@ router.route('/').post(async function (req, res) {
         on "User"."EstablishmentID" = e1."EstablishmentID"
         where e1."Archived"=false
           and e1."Status" is NULL
-          and "User"."IsPrimary" = true
+          and  ("User"."UserRoleValue" = 'Edit' OR "User"."UserRoleValue" = 'Admin')
           and e1."PostCode" ilike :searchPostcode
         order by e1."NameValue" ASC`;
       results = await models.sequelize.query(sqlQuery, { replacements: { searchPostcode: postcodeSearchField },type: models.sequelize.QueryTypes.SELECT });
@@ -66,7 +66,7 @@ router.route('/').post(async function (req, res) {
         on "User"."EstablishmentID" = e1."EstablishmentID"
       where e1."Archived"=false
       and e1."Status" is NULL
-      and "User"."IsPrimary" = true
+      and  ("User"."UserRoleValue" = 'Edit' OR "User"."UserRoleValue" = 'Admin')
       and e1."NmdsID" ilike :searchNmdsID
       order by e1."NameValue" ASC`;
       results = await models.sequelize.query(sqlQuery, { replacements: { searchNmdsID: nmdsIdSearchField },type: models.sequelize.QueryTypes.SELECT });
@@ -94,7 +94,7 @@ router.route('/').post(async function (req, res) {
         on "User"."EstablishmentID" = e1."EstablishmentID"
       where e1."Archived"=false
         and e1."Status" is NULL
-        and "User"."IsPrimary" = true
+        and  ("User"."UserRoleValue" = 'Edit' OR "User"."UserRoleValue" = 'Admin')
         and e1."LocationID" ilike :searchLocationID
       order by e1."NameValue" ASC`;
       results = await models.sequelize.query(sqlQuery, { replacements: { searchLocationID: locationIdSearchField },type: models.sequelize.QueryTypes.SELECT });
