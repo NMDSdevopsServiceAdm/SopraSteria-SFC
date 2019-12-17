@@ -56,7 +56,11 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     });
     this.setNotificationViewed(this.notificationUid);
   }
-
+  /**
+   * Function used to approve link to parent request
+   * @param {void}
+   * @return {void}
+   */
   public approveRequest() {
     if (this.notification) {
       if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
@@ -80,6 +84,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
               if (request) {
                 this.establishmentService.getEstablishment(this.workplace.uid).subscribe(workplace => {
                   if (workplace) {
+                    //get permission and reset
                     this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermission => {
                       if (hasPermission) {
                         this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
@@ -94,6 +99,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
                     });
                   }
                 });
+                //get all notification and update with latest
                 this.notificationsService.getAllNotifications().subscribe(notify => {
                   this.notificationsService.notifications$.next(notify);
                 });
@@ -106,7 +112,11 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       );
     }
   }
-
+  /**
+   * Function used to set nothification as read
+   * @param {string} notification uid
+   * @return {void}
+   */
   private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
@@ -124,14 +134,18 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       )
     );
   }
-
+  /**
+   * Function used to get reject request event for link to parent request rejection
+   * @param {$event} triggred event
+   * @return {void}
+   */
   public rejectRequest($event: Event) {
+    $event.preventDefault();
     if (this.notification) {
       if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
         this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
         return true;
       }
-      $event.preventDefault();
       const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
       dialog.afterClosed.subscribe(
         requestRejected => {
@@ -143,7 +157,11 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       );
     }
   }
-
+  /**
+   * Function used to reject link to parent request and triggred from rejectRequest
+   * @param {$event} triggred event
+   * @return {void}
+   */
   private rejectLinkToParentRequest(requestRejected) {
     const requestParameter = {
       createdByUserUID: this.notification.createdByUserUID,
@@ -160,6 +178,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
         .subscribe(
           request => {
             if (request) {
+              //get all notification and update with latest status
               this.notificationsService.getAllNotifications().subscribe(notify => {
                 this.notificationsService.notifications$.next(notify);
               });
