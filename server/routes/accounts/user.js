@@ -784,6 +784,7 @@ const getNotificationDetails = async notification => {
     notificationDetails[0].subEstablishmentName = subEstablishmentName[0].subEstablishmentName;
     notificationDetails[0].subEstablishmentId = subEstablishmentName[0].subestablishmentid;
     notificationDetails[0].parentEstablishmentId = subEstablishmentName[0].parentestablishmentid;
+    notificationDetails[0].rejectionReason = subEstablishmentName[0].rejectionreason;
   }
   return notificationDetails;
 };

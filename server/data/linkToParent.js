@@ -143,7 +143,7 @@ exports.getNotificationDetails = async params =>
   });
 
 const getSubEstablishmentNameQuery = `
-  select  parent."NameValue" as "subEstablishmentName", sub."ParentEstablishmentID" as parentEstablishmentId, sub."SubEstablishmentID" as subEstablishmentId
+  select  parent."NameValue" as "subEstablishmentName", sub."ParentEstablishmentID" as parentEstablishmentId,sub."RejectionReason" as rejectionReason, sub."SubEstablishmentID" as subEstablishmentId
   from cqc."LinkToParent" as sub
   JOIN cqc."Establishment" as parent on sub."SubEstablishmentID" =  parent."EstablishmentID"
   where "LinkToParentUID" = :uid `;
