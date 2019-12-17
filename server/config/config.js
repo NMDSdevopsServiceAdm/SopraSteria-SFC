@@ -357,37 +357,6 @@ const config = convict({
       },
     }
   },
-  wdfExcelReport: {
-    region: {
-      doc: 'AWS region override for wdf report S3 only',
-      format: '*',
-      default: 'eu-west-2',
-    },
-    bucketname: {
-      doc: 'Bucket used to store report data',
-      format: '*',
-      default: 'sfcwdfreportdata',
-    },
-    reportSignedUrlExpire: {
-      doc: 'The duration in seconds for the report signed URL to expire',
-      format: 'int',
-      default: 300,
-    },
-    completion: {
-      timeout: {
-        doc: 'The timeout in seconds for report completion',
-        format: 'int',
-        default: 300
-      },
-    },
-    download: {
-      timeout: {
-        doc: 'The timeout in seconds for report download',
-        format: 'int',
-        default: 300
-      },
-    }
-  },
   public: {
     download: {
       baseurl: {
