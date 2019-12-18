@@ -1,6 +1,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
-    <h2 class="govuk-heading-m">Staff records ({{ workers?.length }})</h2>
+    <h2 class="govuk-heading-m">Staff records ({{ totalStaff }})</h2>
   </div>
   <div *ngIf="canAddWorker" class="govuk-grid-column-one-half govuk-util__align-right">
     <a
@@ -33,7 +33,7 @@
   }}
 </app-status>
 
-<ng-container *ngIf="workers?.length > 0; else noStaffRecords">
+<ng-container *ngIf="workers?.length > 0 && totalStaff > 0; else noStaffRecords">
   <app-total-staff-panel
     [workplace]="workplace"
     [totalStaff]="totalStaff"
