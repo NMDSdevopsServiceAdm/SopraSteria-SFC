@@ -38,7 +38,7 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.establishmentService.getStaff(this.workplace.uid).subscribe(totalStaff => {
-        this.totalStaff = totalStaff;
+        this.totalStaff = totalStaff || 0;
       })
     );
 
