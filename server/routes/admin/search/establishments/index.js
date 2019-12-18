@@ -29,13 +29,9 @@ router.route('/').post(async function (req, res) {
           e1."Status" AS "Status",
           p1."NmdsID" AS "ParentNmdsID",
           p1."PostCode" AS "ParentPostCode",
-          "Login"."Username" AS "Username",
           p1."NameValue" AS "ParentName"
         from cqc."Establishment" e1
           left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
-          inner join cqc."User"
-        inner join cqc."Login" on "Login"."RegistrationID" = "User"."RegistrationID"
-        on "User"."EstablishmentID" = e1."EstablishmentID"
         where e1."Archived"=false
           and e1."Status" is NULL
           and "User"."IsPrimary" = true
@@ -85,13 +81,9 @@ router.route('/').post(async function (req, res) {
         e1."Status" AS "Status",
         p1."NmdsID" AS "ParentNmdsID",
         p1."PostCode" AS "ParentPostCode",
-        "Login"."Username" AS "Username",
         p1."NameValue" AS "ParentName"
       from cqc."Establishment" e1
         left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
-        inner join cqc."User"
-        inner join cqc."Login" on "Login"."RegistrationID" = "User"."RegistrationID"
-        on "User"."EstablishmentID" = e1."EstablishmentID"
       where e1."Archived"=false
         and e1."Status" is NULL
         and "User"."IsPrimary" = true
@@ -112,7 +104,6 @@ router.route('/').post(async function (req, res) {
       return {
         uid: thisEstablishment.EstablishmentUID,
         name: thisEstablishment.EstablishmentName,
-        username: thisEstablishment.Username,
         nmdsId: thisEstablishment.NmdsID,
         postcode: thisEstablishment.PostCode,
         isRegulated: thisEstablishment.IsRegulated,

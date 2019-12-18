@@ -159,6 +159,7 @@ export interface CancelOwnerShip {
 export interface setPermission {
   permissionToSet: string;
 }
+
 export enum SortStaffOptions {
   '0_asc' = 'Staff name ascending',
   '0_dsc' = 'Staff name descending',
