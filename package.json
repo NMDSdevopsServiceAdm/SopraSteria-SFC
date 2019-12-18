@@ -94,6 +94,7 @@
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
+    "aws-sdk-mock": "^4.5.0",
     "chai": "^4.2.0",
     "codelyzer": "^5.0.0",
     "cross-env": "^5.2.1",
