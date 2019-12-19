@@ -52,6 +52,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public primaryWorkplace: Establishment;
   public canLinkToParent: boolean;
   public linkToParentRequestedStatus: boolean;
+  public canRemoveParentAssociation: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -94,6 +95,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canLinkToParent && this.workplace.linkToParentRequested) {
       this.linkToParentRequestedStatus = true;
     }
+    this.canRemoveParentAssociation = true;
   }
 
   public onChangeDataOwner($event: Event) {
@@ -195,6 +197,35 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     dialog.afterClosed.subscribe(confirmToClose => {
       if (confirmToClose) {
         this.linkToParentRequestedStatus = false;
+      }
+    });
+  }
+
+  public removeLinkToParent($event: Event) {
+    $event.preventDefault();
+    let dialog;
+    if (this.canViewChangeDataOwner) {
+      dialog = this.dialogService.open(OwnershipChangeMessageDialogComponent, this.workplace);
+    } else {
+      dialog = this.dialogService.open(RemoveLinkToParentDialogComponent, this.workplace);
+    }
+    dialog.afterClosed.subscribe(returnToClose => {
+      if (returnToClose) {
+        if (returnToClose.closeFrom === 'remove-link') {
+          //to do
+          this.router.navigate(['/dashboard']);
+          this.alertService.addAlert({
+            type: 'success',
+            message: `You are no longer linked to your parent orgenisation.`,
+          });
+        }
+        if (returnToClose.closeFrom === 'ownership-change') {
+          if (this.isOwnershipRequested) {
+            this.cancelChangeDataOwnerRequest($event);
+          } else {
+            this.onChangeDataOwner($event);
+          }
+        }
       }
     });
   }

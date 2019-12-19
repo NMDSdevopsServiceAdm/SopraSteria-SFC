@@ -22,10 +22,16 @@ import {
 } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { MessagesComponent } from './components/messages/messages.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
+import {
+  RemoveLinkToParentDialogComponent,
+} from './components/remove-link-to-parent/remove-link-to-parent-dialog.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
@@ -124,6 +130,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TainingInfoPanelComponent,
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
+    RemoveLinkToParentDialogComponent,
+    OwnershipChangeMessageDialogComponent,
   ],
   exports: [
     AlertComponent,
@@ -179,6 +187,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TainingInfoPanelComponent,
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
+    RemoveLinkToParentDialogComponent,
+    OwnershipChangeMessageDialogComponent,
   ],
   entryComponents: [
     ChangeDataOwnerDialogComponent,
@@ -187,6 +197,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SetDataPermissionDialogComponent,
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
+    RemoveLinkToParentDialogComponent,
+    OwnershipChangeMessageDialogComponent,
   ],
 })
 export class SharedModule {}
