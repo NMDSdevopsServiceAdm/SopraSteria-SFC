@@ -220,7 +220,7 @@ class BUDI {
 
     if (direction === BUDI.TO_ASC) {
       const found = fixedMapping.find(thisTrainingCategory => thisTrainingCategory.BUDI === originalCode);
-      return found ? { type: found.ASC } : null;
+      return found ? found.ASC : null;
     }
 
     const found = fixedMapping.find(thisType => thisType.ASC === originalCode);
