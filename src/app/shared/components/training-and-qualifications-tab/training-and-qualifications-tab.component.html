@@ -1,9 +1,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
-    <h2 class="govuk-heading-m">Training and qualifications ({{ totalStaff === 0 ? totalStaff : totalRecords }})</h2>
+    <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
   </div>
 </div>
-<ng-container *ngIf="totalStaff > 0; else noStaffRecords">
+<ng-container *ngIf="workers; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0">
     <div class="govuk-grid-column-two-thirds">
       <app-inset-text color="warning">Start adding your training and qualifications records.</app-inset-text>

@@ -1,16 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-training-and-qualifications-tab',
   templateUrl: './training-and-qualifications-tab.component.html',
 })
-export class TrainingAndQualificationsTabComponent implements OnInit {
+export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
 
   private subscriptions: Subscription = new Subscription();
@@ -22,29 +21,26 @@ export class TrainingAndQualificationsTabComponent implements OnInit {
   constructor(private workerService: WorkerService, private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
-    //get total number of staff. If it's 0 or undefined then training list should not display
     this.subscriptions.add(
-      this.establishmentService.getStaff(this.workplace.uid).subscribe(totalStaff => {
-        this.totalStaff = totalStaff || 0;
-        if (this.totalStaff > 0) {
-          this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(
-            workers => {
-              this.workers = workers;
-              this.totalRecords = 0;
-              this.totalExpiredTraining = 0;
-              this.totalExpiringTraining = 0;
-              this.workers.forEach((worker: Worker) => {
-                this.totalRecords += worker.trainingCount + worker.qualificationCount;
-                this.totalExpiredTraining += worker.expiredTrainingCount;
-                this.totalExpiringTraining += worker.expiringTrainingCount;
-              });
-            },
-            error => {
-              console.error(error.error);
-            }
-          );
+      this.workerService.getAllWorkers(this.workplace.uid).subscribe(
+        workers => {
+          this.workers = workers;
+          this.totalRecords = 0;
+          this.totalExpiredTraining = 0;
+          this.totalExpiringTraining = 0;
+          this.workers.forEach((worker: Worker) => {
+            this.totalRecords += worker.trainingCount + worker.qualificationCount;
+            this.totalExpiredTraining += worker.expiredTrainingCount;
+            this.totalExpiringTraining += worker.expiringTrainingCount;
+          });
+        },
+        error => {
+          console.error(error.error);
         }
-      })
+      )
     );
+  }
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
