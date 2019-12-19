@@ -248,6 +248,14 @@ let ALL_PERMISSIONS = [
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
     isAdmin: false,
+  },
+  {
+    code: 'canRemoveParentAssociation',
+    description: 'Remove Parent Association',
+    role: ['Edit'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   }
 ];
 
