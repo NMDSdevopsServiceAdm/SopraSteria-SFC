@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-training-and-qualifications-tab',
   templateUrl: './training-and-qualifications-tab.component.html',
 })
-export class TrainingAndQualificationsTabComponent implements OnInit {
+export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
 
   private subscriptions: Subscription = new Subscription();
@@ -39,5 +39,8 @@ export class TrainingAndQualificationsTabComponent implements OnInit {
         }
       )
     );
+  }
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
