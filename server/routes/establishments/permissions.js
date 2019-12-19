@@ -18,10 +18,15 @@ router.route('/').get(async (req, res) => {
             }
           });
           permissions.forEach(permission => {
-            if (permission.canLinkToParent && !thisEstablishment.isParent && !thisEstablishment.parentId) {
-              permission.canLinkToParent = true;
-            } else {
-              permission.canLinkToParent = false;
+            if (permission.canLinkToParent) {
+              permission.canLinkToParent =
+                permission.canLinkToParent && !thisEstablishment.isParent && !thisEstablishment.parentId ? true : false;
+            }
+            if (permission.canRemoveParentAssociation) {
+              permission.canRemoveParentAssociation =
+                permission.canRemoveParentAssociation && !thisEstablishment.isParent && thisEstablishment.parentId
+                  ? true
+                  : false;
             }
           });
 

@@ -232,4 +232,69 @@ router.route('/action').put(async (req, res) => {
     return res.status(503).send({});
   }
 });
+
+ /**
+   * Route will De link link Parent from the sub.
+   */
+  router.route('/delink').put(async (req, res) => {
+    try {
+      const thisEstablishment = new Establishment.Establishment(req.username);
+      const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+      if (await thisEstablishment.restore(req.establishmentId, false)) {
+        const isValidEstablishment = await thisEstablishment.load(req.body);
+        if (!isValidEstablishment) {
+          return res.status(400).send('Unexpected Input.');
+        } else {
+         const params = {
+           establishmentId : req.establishmentId,
+           userUid: req.userUid,
+           parentWorkplaceUId: req.body.parentWorkplaceUId,
+         }
+         const delinkParent = await linkSubToParent.delinkParent(params);
+         if(delinkParent) {
+          let parentEstablishmentId = await thisEstablishment.fetchParentDetails(params.parentWorkplaceUId);
+          if(parentEstablishmentId) {
+              params.parentEstablishmentId = parentEstablishmentId.id;
+              params.deLinkToParentUID = uuid.v4();
+              if (!uuidRegex.test(params.deLinkToParentUID.toUpperCase())) {
+                console.error('Invalid de link to parent request UUID');
+                return res.status(400).send();
+              }
+            let getRecipientUserDetails = await linkSubToParent.getRecipientUserDetails(params);
+            for (let i =0; i < getRecipientUserDetails.length; i++) {
+              params.notificationUid = uuid.v4();
+              if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
+                console.error('Invalid notification UUID');
+                return res.status(400).send();
+              }
+              let notificationParams = {
+                  notificationUid: params.notificationUid,
+                  type: 'DELINKTOPARENT',
+                  typeUid: params.deLinkToParentUID,
+                  recipientUserUid: getRecipientUserDetails[i].UserUID,
+                  userUid: params.userUid,
+                };
+                let addNotificationResp = await notifications.insertNewNotification(notificationParams);
+                if(addNotificationResp) {
+                  let lastDeLinkToParentRequest = await linkSubToParent.getLastDeLinkToParentRequest(params);
+                  if(lastDeLinkToParentRequest) {
+                    return res.status(201).send(lastDeLinkToParentRequest[0]);
+                  }
+                }
+          }
+          }
+         }
+
+        }
+      } else {
+        return res.status(404).send({
+          message: 'Establishment is not found',
+        });
+      }
+    } catch (e) {
+      console.error(' /establishment/:id/linkToParent/delink : ERR: ', e.message);
+      return res.status(503).send({}); //intentionally an empty JSON response
+    }
+  });
+
 module.exports = router;

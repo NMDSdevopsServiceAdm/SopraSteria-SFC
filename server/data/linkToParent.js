@@ -217,7 +217,7 @@ exports.updatedLinkToParentId = async params =>
     type: db.QueryTypes.UPDATE,
   });
 
-  const getParentUidQuery = `
+const getParentUidQuery = `
   SELECT "EstablishmentUID"
   FROM cqc."Establishment"
   WHERE "EstablishmentID" = :subEstId;
@@ -230,7 +230,7 @@ exports.getParentUid = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-  const getPermissionRequestQuery = `
+const getPermissionRequestQuery = `
   SELECT "PermissionRequest"
   FROM cqc."LinkToParent"
   WHERE "LinkToParentUID" = :linkToParentUid;
@@ -239,6 +239,34 @@ exports.getPermissionRequest = async params =>
   db.query(getPermissionRequestQuery, {
     replacements: {
       linkToParentUid: params.linkToParentUid,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const delinkParentQuery = `
+  UPDATE cqc."Establishment"
+SET "ParentID" = :parentId, "ParentUID" = :parentUid
+WHERE "EstablishmentID" = :estID;`;
+
+exports.delinkParent = async params =>
+  db.query(delinkParentQuery, {
+    replacements: {
+      estID: params.establishmentId,
+      parentId: null,
+      parentUid: null,
+    },
+    type: db.QueryTypes.UPDATE,
+  });
+
+const getLastDeLinkToParentRequestQuery = `
+SELECT "EstablishmentID", "IsParent", "ParentID", "ParentUID"
+FROM cqc."Establishment"
+WHERE "EstablishmentID" = :estID;
+  `;
+exports.getLastDeLinkToParentRequest = async params =>
+  db.query(getLastDeLinkToParentRequestQuery, {
+    replacements: {
+      estID: params.establishmentId,
     },
     type: db.QueryTypes.SELECT,
   });
