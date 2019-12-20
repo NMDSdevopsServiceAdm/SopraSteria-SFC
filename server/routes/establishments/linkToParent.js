@@ -278,7 +278,11 @@ router.route('/action').put(async (req, res) => {
                 if(addNotificationResp) {
                   let lastDeLinkToParentRequest = await linkSubToParent.getLastDeLinkToParentRequest(params);
                   if(lastDeLinkToParentRequest) {
-                    return res.status(201).send(lastDeLinkToParentRequest[0]);
+                    let getParentName = await linkSubToParent.getParentName(params);
+                    if(getParentName) {
+                      lastDeLinkToParentRequest[0].parentEstablishmentName = getParentName[0].NameValue;
+                      return res.status(201).send(lastDeLinkToParentRequest[0]);
+                    }
                   }
                 }
           }
