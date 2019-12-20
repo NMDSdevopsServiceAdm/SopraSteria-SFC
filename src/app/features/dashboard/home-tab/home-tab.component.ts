@@ -21,7 +21,13 @@ import {
 import {
   LinkToParentCancelDialogComponent,
 } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import {
+  LinkToParentRemoveDialogComponent,
+} from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import {
   SetDataPermissionDialogComponent,
 } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
@@ -95,7 +101,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canLinkToParent && this.workplace.linkToParentRequested) {
       this.linkToParentRequestedStatus = true;
     }
-    this.canRemoveParentAssociation = true;
+    this.canRemoveParentAssociation = this.permissionsService.can(workplaceUid, 'canRemoveParentAssociation');
   }
 
   public onChangeDataOwner($event: Event) {
@@ -207,16 +213,27 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canViewChangeDataOwner) {
       dialog = this.dialogService.open(OwnershipChangeMessageDialogComponent, this.workplace);
     } else {
-      dialog = this.dialogService.open(RemoveLinkToParentDialogComponent, this.workplace);
+      dialog = this.dialogService.open(LinkToParentRemoveDialogComponent, this.workplace);
     }
     dialog.afterClosed.subscribe(returnToClose => {
       if (returnToClose) {
         if (returnToClose.closeFrom === 'remove-link') {
-          //to do
-          this.router.navigate(['/dashboard']);
-          this.alertService.addAlert({
-            type: 'success',
-            message: `You are no longer linked to your parent orgenisation.`,
+          this.establishmentService.getEstablishment(this.workplace.uid).subscribe(workplace => {
+            if (workplace) {
+              //get permission and reset
+              this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermission => {
+                if (hasPermission) {
+                  this.router.navigate(['/dashboard']);
+                  this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
+                  this.establishmentService.setState(workplace);
+                  this.establishmentService.setPrimaryWorkplace(workplace);
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `You are no longer linked to your parent orgenisation.`,
+                  });
+                }
+              });
+            }
           });
         }
         if (returnToClose.closeFrom === 'ownership-change') {

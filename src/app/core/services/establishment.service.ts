@@ -251,4 +251,8 @@ export class EstablishmentService {
   public cancelRequestToParentForLink(establishmentId, data): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent/cancel`, data);
   }
+  //Send data for de-link to parent
+  public removeParentAssociation(establishmentId, data): Observable<Establishment> {
+    return this.http.put<Establishment>(`/api/establishment/${establishmentId}/linkToParent/delink`, data);
+  }
 }
