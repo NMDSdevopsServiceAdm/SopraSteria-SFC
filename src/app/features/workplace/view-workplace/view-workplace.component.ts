@@ -28,6 +28,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public canViewListOfWorkers: boolean;
   public totalStaffRecords: number;
   private subscriptions: Subscription = new Subscription();
+  public trainingAlert: number;
 
   constructor(
     private alertService: AlertService,
@@ -51,9 +52,15 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
 
     if (this.canViewListOfWorkers) {
       this.subscriptions.add(
-        this.workerService
-          .getAllWorkers(this.workplace.uid)
-          .subscribe(workers => this.workerService.setWorkers(workers))
+        this.workerService.getAllWorkers(this.workplace.uid).subscribe(
+          workers => {
+            this.workerService.setWorkers(workers);
+            this.trainingAlert = this.getTrainingAlertFlag(workers);
+          },
+          error => {
+            console.error(error.error);
+          }
+        )
       );
     }
 
@@ -109,6 +116,27 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
         }
       )
     );
+  }
+
+  /**
+   * Function used to display training alert flag over the traing and qualifications tab
+   * @param {workers} list of workers
+   * @return {number} 0 for up-to-date, 1 for expiring soon and 2 for expired.
+   */
+  public getTrainingAlertFlag(workers) {
+    if (workers.length > 0) {
+      const expariedTrainingCount = workers.filter(worker => worker.expiredTrainingCount > 0).length || 0;
+      const expiringTrainingCount = workers.filter(worker => worker.expiringTrainingCount > 0).length || 0;
+      if (expariedTrainingCount > 0) {
+        return 2;
+      } else if (expiringTrainingCount > 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    } else {
+      return 0;
+    }
   }
 
   ngOnDestroy() {

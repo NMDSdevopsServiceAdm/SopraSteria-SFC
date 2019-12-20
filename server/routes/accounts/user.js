@@ -671,6 +671,7 @@ router.route('/add').post(async (req, res) => {
           ...req.body,
           isActive: true,
           status: null,
+          agreedUpdatedTerms: true,
           role: trackingResponse.user.UserRoleValue,
         };
 
@@ -875,6 +876,34 @@ router.route('/my/notifications/:notificationUid').post(async (req, res) => {
   }
 });
 
+router.use('/swap/establishment/notification/:nmsdId', Authorization.isAdmin);
+router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) => {
+  try {
+    const params = {
+      nmsdId: req.params.nmsdId,
+    };
+    const getEstablishmentId = await notifications.getEstablishmentId(params);
+    if (getEstablishmentId) {
+      params.establishmentId = getEstablishmentId[0].EstablishmentID;
+      const getAllUser = await notifications.getAllUser(params);
+      let notificationArr = [];
+      if (getAllUser) {
+        for (let i = 0; i < getAllUser.length; i++) {
+          let userParams = {
+            userUid: getAllUser[i].UserUID,
+          };
+          notificationArr.push(...(await notifications.getListByUser(userParams)));
+        }
+        return res.status(200).send(notificationArr);
+      }
+    }
+  } catch (e) {
+    return res.status(500).send({
+      message: e.message,
+    });
+  }
+});
+
 router.use('/swap/establishment/:id', Authorization.isAdmin);
 router.route('/swap/establishment/:id').post(async (req, res) => {
   const newEstablishmentId = req.params.id;
@@ -922,7 +951,7 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
   const thisUser = await models.login.findOne({
     attributes: ['username', 'lastLogin'],
     where: {
-      username: req.username,
+      username: req.body.username ? req.body.username : req.username,
     },
     include: [
       {
