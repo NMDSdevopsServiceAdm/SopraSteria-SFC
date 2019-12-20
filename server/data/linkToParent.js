@@ -270,3 +270,16 @@ exports.getLastDeLinkToParentRequest = async params =>
     },
     type: db.QueryTypes.SELECT,
   });
+
+  const getParentNameQuery = `
+  SELECT "NameValue"
+  FROM cqc."Establishment"
+  WHERE "EstablishmentID" = :parentEstablishmentId;
+  `;
+exports.getParentName = async params =>
+  db.query(getParentNameQuery, {
+    replacements: {
+      parentEstablishmentId: params.parentEstablishmentId,
+    },
+    type: db.QueryTypes.SELECT,
+  });
