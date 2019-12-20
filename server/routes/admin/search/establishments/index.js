@@ -6,7 +6,6 @@ const models = require('../../../../models');
 // search for establishments using wildcard on postcode and NMDS ID
 router.route('/').post(async function (req, res) {
   const establishmentSearchFields = req.body;
-
   let searchFilter = null;
   const postcodeSearchField = establishmentSearchFields.postcode ? establishmentSearchFields.postcode.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
   const nmdsIdSearchField = establishmentSearchFields.nmdsId ? establishmentSearchFields.nmdsId.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
@@ -34,7 +33,6 @@ router.route('/').post(async function (req, res) {
           left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
         where e1."Archived"=false
           and e1."Status" is NULL
-          and "User"."IsPrimary" = true
           and e1."PostCode" ilike :searchPostcode
         order by e1."NameValue" ASC`;
       results = await models.sequelize.query(sqlQuery, { replacements: { searchPostcode: postcodeSearchField },type: models.sequelize.QueryTypes.SELECT });
@@ -53,16 +51,11 @@ router.route('/').post(async function (req, res) {
       e1."Status" AS "Status",
       p1."NmdsID" AS "ParentNmdsID",
       p1."PostCode" AS "ParentPostCode",
-      "Login"."Username" AS "Username",
       p1."NameValue" AS "ParentName"
       from cqc."Establishment" e1
       left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
-      inner join cqc."User"
-        inner join cqc."Login" on "Login"."RegistrationID" = "User"."RegistrationID"
-        on "User"."EstablishmentID" = e1."EstablishmentID"
       where e1."Archived"=false
       and e1."Status" is NULL
-      and "User"."IsPrimary" = true
       and e1."NmdsID" ilike :searchNmdsID
       order by e1."NameValue" ASC`;
       results = await models.sequelize.query(sqlQuery, { replacements: { searchNmdsID: nmdsIdSearchField },type: models.sequelize.QueryTypes.SELECT });
@@ -86,7 +79,6 @@ router.route('/').post(async function (req, res) {
         left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
       where e1."Archived"=false
         and e1."Status" is NULL
-        and "User"."IsPrimary" = true
         and e1."LocationID" ilike :searchLocationID
       order by e1."NameValue" ASC`;
       results = await models.sequelize.query(sqlQuery, { replacements: { searchLocationID: locationIdSearchField },type: models.sequelize.QueryTypes.SELECT });
@@ -104,6 +96,7 @@ router.route('/').post(async function (req, res) {
       return {
         uid: thisEstablishment.EstablishmentUID,
         name: thisEstablishment.EstablishmentName,
+        username: thisEstablishment.Username,
         nmdsId: thisEstablishment.NmdsID,
         postcode: thisEstablishment.PostCode,
         isRegulated: thisEstablishment.IsRegulated,
