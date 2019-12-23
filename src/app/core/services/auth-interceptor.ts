@@ -21,6 +21,7 @@ export class AuthInterceptor implements HttpInterceptor {
     console.log(this.jwt.isTokenExpired(token));
     if (token) {
       if (this.jwt.isTokenExpired(token)) {
+        this.authService.logout();
         return throwError(new HttpErrorResponse({ error: 'Not Authorised', status: 403 }));
       }
 
