@@ -5,23 +5,23 @@ const db = rfr('server/utils/datastore');
 const getTrainingDataQuery =
 `
 SELECT
-  a."NameOrIdValue", c."Category", b."Title", b."Completed", e."JobName",
+  a."NameOrIdValue", a."ID",  c."Category", b."Title", b."Completed", e."JobName",
   b."Expires", b."Accredited"
 FROM
   cqc."Worker" a
-JOIN
+LEFT JOIN
   cqc."WorkerTraining" b
 ON
   a."ID" = b."WorkerFK"
-JOIN
+LEFT JOIN
   cqc."TrainingCategories" c
 ON
   b."CategoryFK" = c."ID"
-JOIN
+LEFT JOIN
   cqc."WorkerJobs" d
 ON
   a."ID" = d."WorkerFK"
-JOIN
+LEFT JOIN
   cqc."Job" e
 ON d."JobFK" = e."JobID"
 WHERE
