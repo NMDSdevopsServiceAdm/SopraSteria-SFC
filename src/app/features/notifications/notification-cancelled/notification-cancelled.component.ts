@@ -7,7 +7,7 @@ import { NotificationsService } from '@core/services/notifications/notifications
   templateUrl: './notification-cancelled.component.html',
 })
 export class NotificationCancelledComponent implements OnInit {
-  public requestFrom;
+  public cancelledMessage;
   constructor(
     private route: ActivatedRoute,
     private notificationsService: NotificationsService,
@@ -17,7 +17,12 @@ export class NotificationCancelledComponent implements OnInit {
   ngOnInit() {
     const notificationUid = this.route.snapshot.params.notificationuid;
     this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
-      this.requestFrom = details.typeContent.requestorName || '';
+      if (details.type === 'LINKTOPARENTREQUEST') {
+        this.cancelledMessage = details.typeContent.requestorName + ' cancelled their request to link to you.';
+      } else {
+        this.cancelledMessage =
+          details.typeContent.requestorName + ' cancelled the request to change ownership of the data.';
+      }
     });
   }
 
