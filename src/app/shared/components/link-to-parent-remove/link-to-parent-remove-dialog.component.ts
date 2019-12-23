@@ -1,8 +1,8 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
-import { Workplace } from '@core/model/my-workplaces.model';
+import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './link-to-parent-remove-dialog.component.html',
 })
 export class LinkToParentRemoveDialogComponent extends DialogComponent implements OnInit, OnDestroy {
-  public workplace: Workplace;
+  public workplace: Establishment;
   protected subscriptions: Subscription = new Subscription();
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
@@ -27,6 +27,7 @@ export class LinkToParentRemoveDialogComponent extends DialogComponent implement
     private router: Router,
     private alertService: AlertService,
     private permissionsService: PermissionsService,
+    private ref: ChangeDetectorRef,
     public dialog: Dialog<LinkToParentRemoveDialogComponent>
   ) {
     super(data, dialog);
@@ -66,9 +67,7 @@ export class LinkToParentRemoveDialogComponent extends DialogComponent implement
         .removeParentAssociation(this.workplace.uid, { parentWorkplaceUId: this.workplace.parentUid })
         .subscribe(
           data => {
-            if (data) {
-              this.close({ closeFrom: 'remove-link' });
-            }
+            this.close({ closeFrom: 'remove-link' });
           },
           error => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

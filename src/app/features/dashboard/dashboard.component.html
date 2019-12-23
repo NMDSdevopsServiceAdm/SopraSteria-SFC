@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
       <span *ngIf="workplace?.isParent" class="govuk-caption-xl govuk-!-margin-bottom-3">Parent</span>
-      <span *ngIf="!workplace?.isParent && workplace?.parentName" class="govuk-caption-xl govuk-!-margin-bottom-3">{{
+      <span *ngIf="workplace.parentUid" class="govuk-caption-xl govuk-!-margin-bottom-3">{{
         workplace.parentName
       }}</span>
       {{ workplace?.name }}

@@ -1,5 +1,5 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
@@ -69,7 +69,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private alertService: AlertService,
     private router: Router,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
+    private ref: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -226,7 +227,9 @@ export class HomeTabComponent implements OnInit, OnDestroy {
                   this.router.navigate(['/dashboard']);
                   this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
                   this.establishmentService.setState(workplace);
-                  this.establishmentService.setPrimaryWorkplace(workplace);
+                  this.workplace = workplace;
+                  this.primaryWorkplace = workplace;
+                  this.ref.markForCheck();
                   this.alertService.addAlert({
                     type: 'success',
                     message: `You are no longer linked to your parent orgenisation.`,
@@ -236,6 +239,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
             }
           });
         }
+
         if (returnToClose.closeFrom === 'ownership-change') {
           if (this.isOwnershipRequested) {
             this.cancelChangeDataOwnerRequest($event);
