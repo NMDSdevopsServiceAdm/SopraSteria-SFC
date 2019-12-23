@@ -238,4 +238,17 @@ export class EstablishmentService {
   public setDataPermission(establishmentId, data: setPermission): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/dataPermissions`, data);
   }
+  //get all parent with Post code
+  public getAllParentWithPostCode(): Observable<any> {
+    return this.http.get<any>(`/api/parentLinkingDetails/parents`);
+  }
+
+  //Send data for link to parent
+  public setRequestToParentForLink(establishmentId, data: setPermission): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent`, data);
+  }
+  //Send data for link to parent
+  public cancelRequestToParentForLink(establishmentId, data): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent/cancel`, data);
+  }
 }

@@ -475,6 +475,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"DataOwnershipRequested"'
     },
+    linkToParentRequested: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LinkToParentRequested"'
+    },
     reasonsForLeaving: {
       type: DataTypes.TEXT,
       allowNull: true,

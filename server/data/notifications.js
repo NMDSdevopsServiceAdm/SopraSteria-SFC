@@ -88,7 +88,7 @@ exports.markOneAsRead = async ({ userUid, notificationUid }) =>
         replacements: {
             nuid: params.notificationUid,
             type: params.type,
-            typUid: params.ownerRequestChangeUid,
+            typUid: params.ownerRequestChangeUid ? params.ownerRequestChangeUid : params.typeUid,
             recipientUserUid: params.recipientUserUid,
             isViewed: false,
             createdByUserUID: params.userUid

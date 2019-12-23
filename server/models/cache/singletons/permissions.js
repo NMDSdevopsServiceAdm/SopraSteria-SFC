@@ -241,6 +241,22 @@ let ALL_PERMISSIONS = [
     subOwnedByParentAccessBySub: [],
     isAdmin: true,
   },
+ {
+    code: 'canLinkToParent',
+    description: 'Link to any parent',
+    role: ['Edit'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: false,
+  },
+  {
+    code: 'canRemoveParentAssociation',
+    description: 'Remove Parent Association',
+    role: ['Edit'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: false,
+  }
 ];
 
 class PermissionCache {
@@ -255,7 +271,6 @@ class PermissionCache {
     const estabType = this.getEstablishmentType(requestData.establishment);
     let permissions = [];
     const isLoggedInAsParent = requestData.isParent;
-
     if (requestData.role === 'Admin') {
       // console.log("0")
       permissions = this.filterForAdminRole();
