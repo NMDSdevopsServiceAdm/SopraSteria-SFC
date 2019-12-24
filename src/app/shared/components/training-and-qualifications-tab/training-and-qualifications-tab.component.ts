@@ -1,15 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-training-and-qualifications-tab',
   templateUrl: './training-and-qualifications-tab.component.html',
 })
-export class TrainingAndQualificationsTabComponent implements OnInit {
+export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
 
   private subscriptions: Subscription = new Subscription();
@@ -17,11 +17,12 @@ export class TrainingAndQualificationsTabComponent implements OnInit {
   public totalRecords;
   public totalExpiredTraining;
   public totalExpiringTraining;
-  constructor(private workerService: WorkerService) {}
+  public totalStaff: number;
+  constructor(private workerService: WorkerService, private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
     this.subscriptions.add(
-      this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(
+      this.workerService.getAllWorkers(this.workplace.uid).subscribe(
         workers => {
           this.workers = workers;
           this.totalRecords = 0;
@@ -38,5 +39,8 @@ export class TrainingAndQualificationsTabComponent implements OnInit {
         }
       )
     );
+  }
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
