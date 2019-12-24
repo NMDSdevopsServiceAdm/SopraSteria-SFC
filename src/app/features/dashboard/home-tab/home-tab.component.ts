@@ -1,5 +1,5 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
@@ -37,10 +37,12 @@ import { filter } from 'rxjs/operators';
 @Component({
   selector: 'app-home-tab',
   templateUrl: './home-tab.component.html',
+
   providers: [DialogService, Overlay],
 })
 export class HomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
+  @Output() public workplaceChangedEvent = new EventEmitter();
 
   private subscriptions: Subscription = new Subscription();
   public adminRole: Roles = Roles.Admin;
@@ -59,6 +61,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canLinkToParent: boolean;
   public linkToParentRequestedStatus: boolean;
   public canRemoveParentAssociation: boolean;
+  public _workplace: Establishment;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -74,6 +77,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this._workplace = this.workplace;
     this.user = this.userService.loggedInUser;
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
@@ -224,15 +228,15 @@ export class HomeTabComponent implements OnInit, OnDestroy {
               //get permission and reset
               this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermission => {
                 if (hasPermission) {
-                  this.router.navigate(['/dashboard']);
                   this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
                   this.establishmentService.setState(workplace);
-                  this.workplace = workplace;
-                  this.primaryWorkplace = workplace;
-                  this.ref.markForCheck();
-                  this.alertService.addAlert({
-                    type: 'success',
-                    message: `You are no longer linked to your parent orgenisation.`,
+                  this.establishmentService.setPrimaryWorkplace(workplace);
+                  this.router.navigateByUrl('/refresh', { skipLocationChange: true }).then(() => {
+                    this.router.navigate(['/dashboard']);
+                    this.alertService.addAlert({
+                      type: 'success',
+                      message: `You are no longer linked to your parent orgenisation.`,
+                    });
                   });
                 }
               });
@@ -249,6 +253,13 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  ngDoCheck__() {
+    if (this._workplace !== this.workplace) {
+      this._workplace = this.workplace;
+      this.ref.markForCheck();
+    }
   }
 
   ngOnDestroy(): void {
