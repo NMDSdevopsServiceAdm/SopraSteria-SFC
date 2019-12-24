@@ -5,7 +5,7 @@ aws:
 log:
   sequelize: false
 db:
-  ssl: true
+  ssl: false
   client_ssl:
-    status: true
+    status: false
     usingFiles: false
