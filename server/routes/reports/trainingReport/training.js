@@ -443,6 +443,10 @@ const updateOverviewSheet = (
     currentRowExpiring = templateRowExpiring;
   }
 
+  // fix the dimensions tag value
+  const dimension = overviewSheet.querySelector('dimension');
+  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndexExpiring);
+
   // update the cell values
   for (let row = 0; row < expiringWorkerTrainings.length; row++) {
     debuglog('updating training sheet', row);
@@ -524,10 +528,6 @@ const updateOverviewSheet = (
 
   // fix the last row in the table
   overviewSheet.querySelector('sheetData row:last-child').setAttribute('r', rowIndex);
-
-  // fix the dimensions tag value
-  const dimension = overviewSheet.querySelector('dimension');
-  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndex);
 
   // update the cell values
   for (let row = 0; row < expiredWorkerTrainings.length; row++) {
