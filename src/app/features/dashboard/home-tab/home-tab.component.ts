@@ -1,5 +1,5 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
@@ -42,7 +42,6 @@ import { filter } from 'rxjs/operators';
 })
 export class HomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
-  @Output() public workplaceChangedEvent = new EventEmitter();
 
   private subscriptions: Subscription = new Subscription();
   public adminRole: Roles = Roles.Admin;
@@ -72,8 +71,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private alertService: AlertService,
     private router: Router,
-    private establishmentService: EstablishmentService,
-    private ref: ChangeDetectorRef
+    private establishmentService: EstablishmentService
   ) {}
 
   ngOnInit() {
@@ -211,7 +209,16 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       }
     });
   }
-
+  /**
+   * This function is used to open a conditional dialog window
+   * open ownership change message dialog if canViewChangeDataOwner flag is true
+   * else remove link to parent dialog.
+   * his method is also reset the current estrablishment and permissions after delink api return 200
+   * from LinkToParentRemoveDialogComponent.
+   *
+   * @param {event} triggred event
+   * @return {void}
+   */
   public removeLinkToParent($event: Event) {
     $event.preventDefault();
     let dialog;
@@ -222,10 +229,11 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     }
     dialog.afterClosed.subscribe(returnToClose => {
       if (returnToClose) {
+        //if return  from LinkToParentRemoveDialogComponent then proceed to delink request
         if (returnToClose.closeFrom === 'remove-link') {
           this.establishmentService.getEstablishment(this.workplace.uid).subscribe(workplace => {
             if (workplace) {
-              //get permission and reset
+              //get permission and reset latest value
               this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermission => {
                 if (hasPermission) {
                   this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
@@ -243,7 +251,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
             }
           });
         }
-
+        //if return from OwnershipChangeMessageDialogComponent then open change data owner dialog in case
+        //of isOwnershipRequested flag false else cancel change data owner dialog .
         if (returnToClose.closeFrom === 'ownership-change') {
           if (this.isOwnershipRequested) {
             this.cancelChangeDataOwnerRequest($event);
@@ -253,13 +262,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         }
       }
     });
-  }
-
-  ngDoCheck__() {
-    if (this._workplace !== this.workplace) {
-      this._workplace = this.workplace;
-      this.ref.markForCheck();
-    }
   }
 
   ngOnDestroy(): void {

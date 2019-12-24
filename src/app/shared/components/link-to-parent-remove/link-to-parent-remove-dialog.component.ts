@@ -59,7 +59,7 @@ export class LinkToParentRemoveDialogComponent extends DialogComponent implement
   close(returnToClose: any) {
     this.dialog.close(returnToClose);
   }
-
+  //sned request to backend for delink to parent
   public removeLinkToParent($event: Event) {
     $event.preventDefault();
     this.subscriptions.add(
