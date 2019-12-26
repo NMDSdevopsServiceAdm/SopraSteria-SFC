@@ -111,6 +111,7 @@ router.route('/cancel').post(async (req, res) => {
             subEstablishmentId: req.establishmentId,
             linkToParentUid: getLinkToParentUid[0].LinkToParentUID,
             approvalStatus: req.body.approvalStatus,
+            rejectionReason: null,
           };
           let cancelLinkToParent = await linkSubToParent.updatedLinkToParent(params);
           if (!cancelLinkToParent.length) {
