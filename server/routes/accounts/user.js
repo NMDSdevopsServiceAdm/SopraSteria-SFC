@@ -844,6 +844,13 @@ const addTypeContent = async notification => {
             notification.typeContent = fetchRejectNotificationDetails[0];
           }
           break;
+
+          case 'DELINKTOPARENT':
+          let deLinkNotificationDetails = await notifications.getRequesterName(notification.createdByUserUID);
+          if (deLinkNotificationDetails) {
+            notification.typeContent.requestorName = deLinkNotificationDetails[0].NameValue;
+          }
+          break;
   }
 
   delete notification.typeUid;
