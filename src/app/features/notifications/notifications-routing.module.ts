@@ -23,6 +23,10 @@ const routes: Routes = [
     path: 'notification-link-to-parent/:notificationuid',
     component: NotificationLinkToParentComponent,
   },
+  {
+    path: 'notification-delink-to-parent/:notificationuid',
+    component: NotificationLinkToParentComponent,
+  },
 ];
 
 @NgModule({
