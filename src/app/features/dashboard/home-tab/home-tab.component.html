@@ -45,7 +45,8 @@
         canViewReports ||
         canViewChangeDataOwner ||
         canViewDataPermissionsLink ||
-        canLinkToParent
+        canLinkToParent ||
+        canRemoveParentAssociation
       "
     >
       <h3 class="govuk-heading-s govuk-!-margin-top-6">Other things you can do</h3>
@@ -75,6 +76,9 @@
           <ng-template #requestLinkToParent>
             <a (click)="linkToParent($event)" href="#">Link to your parent organisation</a>
           </ng-template>
+        </li>
+        <li *ngIf="canRemoveParentAssociation">
+          <a (click)="removeLinkToParent($event)" href="#">Remove link to parent organisation</a>
         </li>
       </ul>
     </ng-container>
