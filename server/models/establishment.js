@@ -50,6 +50,26 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"LocationID"'
     },
+    LocationIdSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocationIdSavedAt"'
+    },
+    LocationIdChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocationIdChangedAt"'
+    },
+    LocationIdSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocationIdSavedBy"'
+    },
+    LocationIdChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocationIdChangedBy"'
+    },
     provId: {
       type: DataTypes.INTEGER,
       allowNull: true,

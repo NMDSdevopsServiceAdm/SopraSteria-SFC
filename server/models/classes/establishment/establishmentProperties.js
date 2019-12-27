@@ -15,6 +15,7 @@ const serviceUsersProperty = require("./properties/serviceUsersProperty").Servic
 const nameProperty = require("./properties/nameProperty").NameProperty;
 const mainServiceProperty = require("./properties/mainServiceProperty").MainServiceProperty;
 const localIdentifierProperty = require("./properties/localIdentifierProperty").LocalIdentifierProperty;
+const locationIdProperty = require("./properties/locationIdProperty").LocationIdProperty;
 
 class EstablishmentPropertyManager {
     constructor() {
@@ -33,6 +34,7 @@ class EstablishmentPropertyManager {
         this._thisManager.registerProperty(startersProperty);
         this._thisManager.registerProperty(leaversProperty);
         this._thisManager.registerProperty(localIdentifierProperty);
+        this._thisManager.registerProperty(locationIdProperty);
     }
 
     get manager() {
