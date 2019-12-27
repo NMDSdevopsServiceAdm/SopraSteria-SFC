@@ -20,8 +20,14 @@ import { InsetTextComponent } from './components/inset-text/inset-text.component
 import {
   LinkToParentCancelDialogComponent,
 } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import {
+  LinkToParentRemoveDialogComponent,
+} from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { MessagesComponent } from './components/messages/messages.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
@@ -124,6 +130,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TainingInfoPanelComponent,
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
+    LinkToParentRemoveDialogComponent,
+    OwnershipChangeMessageDialogComponent,
   ],
   exports: [
     AlertComponent,
@@ -179,6 +187,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TainingInfoPanelComponent,
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
+    LinkToParentRemoveDialogComponent,
+    OwnershipChangeMessageDialogComponent,
   ],
   entryComponents: [
     ChangeDataOwnerDialogComponent,
@@ -187,6 +197,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SetDataPermissionDialogComponent,
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
+    LinkToParentRemoveDialogComponent,
+    OwnershipChangeMessageDialogComponent,
   ],
 })
 export class SharedModule {}
