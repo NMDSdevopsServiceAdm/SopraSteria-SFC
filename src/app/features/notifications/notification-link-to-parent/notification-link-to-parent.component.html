@@ -40,7 +40,7 @@
             </ng-template>
           </ng-container>
           <ng-template #nonWorkplaceRequester>
-            <p>{{ notificationRequestedTo }} has rejected your request to link to them.</p>
+            <p>{{ notificationRequestedTo }}, {{ postCode }} has rejected your request to link to them.</p>
             <h2 class="govuk-heading-s">Reason</h2>
             <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
               <p>{{ notification.typeContent.rejectionReason }}</p>
@@ -55,7 +55,7 @@
             <p>You have approved a request from {{ notificationRequestedFrom }} to link to you.</p>
           </ng-container>
           <ng-template #nonWorkplaceRequester>
-            <p>{{ notificationRequestedTo }} has approved your request to link to them.</p>
+            <p>{{ notificationRequestedTo }}, {{ postCode }} has approved your request to link to them.</p>
           </ng-template>
           <p>The following permissions have been set:</p>
         </div>
