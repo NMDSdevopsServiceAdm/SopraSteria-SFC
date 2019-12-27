@@ -824,7 +824,7 @@ const addTypeContent = async notification => {
     case 'LINKTOPARENTREQUEST':
       let fetchNotificationDetails = await getNotificationDetails(notification);
       if (fetchNotificationDetails) {
-          fetchNotificationDetails[0].requestorName  = fetchNotificationDetails[0].subEstablishmentName;
+        fetchNotificationDetails[0].requestorName = fetchNotificationDetails[0].subEstablishmentName;
         notification.typeContent = fetchNotificationDetails[0];
       }
       break;
@@ -832,25 +832,32 @@ const addTypeContent = async notification => {
     case 'LINKTOPARENTAPPROVED':
       let fetchApprovedNotificationDetails = await getNotificationDetails(notification);
       if (fetchApprovedNotificationDetails) {
-        fetchApprovedNotificationDetails[0].requestorName  = fetchApprovedNotificationDetails[0].parentEstablishmentName;
+        fetchApprovedNotificationDetails[0].requestorName = fetchApprovedNotificationDetails[0].parentEstablishmentName;
         notification.typeContent = fetchApprovedNotificationDetails[0];
       }
       break;
 
-      case 'LINKTOPARENTREJECTED':
-          let fetchRejectNotificationDetails = await getNotificationDetails(notification);
-          if (fetchRejectNotificationDetails) {
-            fetchRejectNotificationDetails[0].requestorName  = fetchRejectNotificationDetails[0].parentEstablishmentName;
-            notification.typeContent = fetchRejectNotificationDetails[0];
-          }
-          break;
+    case 'LINKTOPARENTREJECTED':
+      let fetchRejectNotificationDetails = await getNotificationDetails(notification);
+      if (fetchRejectNotificationDetails) {
+        fetchRejectNotificationDetails[0].requestorName = fetchRejectNotificationDetails[0].parentEstablishmentName;
+        notification.typeContent = fetchRejectNotificationDetails[0];
+      }
+      break;
 
-          case 'DELINKTOPARENT':
-          let deLinkNotificationDetails = await notifications.getRequesterName(notification.createdByUserUID);
-          if (deLinkNotificationDetails) {
+    case 'DELINKTOPARENT':
+      let deLinkNotificationDetails = await notifications.getRequesterName(notification.createdByUserUID);
+      if (deLinkNotificationDetails) {
+        let deLinkParentDetails = await notifications.getDeLinkParentDetails(notification.typeUid);
+        if (deLinkParentDetails) {
+          let deLinkParentName = await notifications.getDeLinkParentName(deLinkParentDetails[0].EstablishmentID);
+          if (deLinkParentName) {
+            notification.typeContent.parentEstablishmentName = deLinkParentName[0].NameValue;
             notification.typeContent.requestorName = deLinkNotificationDetails[0].NameValue;
           }
-          break;
+        }
+      }
+      break;
   }
 
   delete notification.typeUid;
