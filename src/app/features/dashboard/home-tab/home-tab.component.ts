@@ -60,7 +60,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canLinkToParent: boolean;
   public linkToParentRequestedStatus: boolean;
   public canRemoveParentAssociation: boolean;
-  public _workplace: Establishment;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -75,21 +74,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this._workplace = this.workplace;
     this.user = this.userService.loggedInUser;
-    const workplaceUid: string = this.workplace ? this.workplace.uid : null;
-    this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
-    this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
-    this.canViewWorkplaces = this.workplace && this.workplace.isParent;
-    this.canViewChangeDataOwner =
-      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner !== 'Workplace';
-    this.canViewDataPermissionsLink =
-      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner === 'Workplace';
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.canViewReports =
-      this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
-      this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
-
     if (this.workplace && this.canEditEstablishment) {
       this.subscriptions.add(
         this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(workers => {
@@ -97,14 +83,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         })
       );
     }
-    if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
-      this.isOwnershipRequested = true;
-    }
-    this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
-    if (this.canLinkToParent && this.workplace.linkToParentRequested) {
-      this.linkToParentRequestedStatus = true;
-    }
-    this.canRemoveParentAssociation = this.permissionsService.can(workplaceUid, 'canRemoveParentAssociation');
+    this.setPermissionLinks();
   }
 
   public onChangeDataOwner($event: Event) {
@@ -239,12 +218,12 @@ export class HomeTabComponent implements OnInit, OnDestroy {
                   this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
                   this.establishmentService.setState(workplace);
                   this.establishmentService.setPrimaryWorkplace(workplace);
-                  this.router.navigateByUrl('/refresh', { skipLocationChange: true }).then(() => {
-                    this.router.navigate(['/dashboard']);
-                    this.alertService.addAlert({
-                      type: 'success',
-                      message: `You are no longer linked to your parent orgenisation.`,
-                    });
+                  this.workplace.parentUid = null; // update on @input object
+                  this.setPermissionLinks();
+                  this.router.navigate(['/dashboard']);
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `You are no longer linked to your parent orgenisation.`,
                   });
                 }
               });
@@ -262,6 +241,33 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+  /**
+   * This function is used to set the permission links
+   * @param {void}
+   * @return {void}
+   */
+  public setPermissionLinks() {
+    const workplaceUid: string = this.workplace ? this.workplace.uid : null;
+    this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
+    this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
+    this.canViewWorkplaces = this.workplace && this.workplace.isParent;
+    this.canViewChangeDataOwner =
+      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner !== 'Workplace';
+    this.canViewDataPermissionsLink =
+      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner === 'Workplace';
+    this.canViewReports =
+      this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
+      this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
+
+    if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
+      this.isOwnershipRequested = true;
+    }
+    this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
+    if (this.canLinkToParent && this.workplace.linkToParentRequested) {
+      this.linkToParentRequestedStatus = true;
+    }
+    this.canRemoveParentAssociation = this.permissionsService.can(workplaceUid, 'canRemoveParentAssociation');
   }
 
   ngOnDestroy(): void {
