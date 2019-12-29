@@ -141,6 +141,8 @@ const createExpireExpiringData = async (trainingData, reportData) => {
  * @return {Object} All customized training report data
  */
 const getTrainingReportData = async establishmentId => {
+  expiredWorkerTrainings = [];
+  expiringWorkerTrainings = [];
   const trainingData = await getTrainingData(establishmentId);
     await createExpireExpiringData(trainingData, expiredWorkerTrainings);
     await createExpireExpiringData(trainingData, expiringWorkerTrainings);
@@ -199,7 +201,7 @@ const styleLookup = {
       F: 3,
       G: 11,
       H: 12,
-      I: 1,
+     // I: 1,
       J: 12,
       K: 12
     },
@@ -212,7 +214,7 @@ const styleLookup = {
       F: 3,
       G: 21,
       H: 22,
-      I: 22,
+      //I: 22,
       J: 22,
       K: 22
     },
