@@ -12,25 +12,25 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { RejectRequestDialogComponent } from '@shared/components/reject-request-dialog/reject-request-dialog.component';
 import { Subscription } from 'rxjs';
 
-const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
-const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
-
 @Component({
-  selector: 'app-notification',
-  templateUrl: './notification.component.html',
+  selector: 'app-notification-link-to-parent',
+  templateUrl: './notification-link-to-parent.component.html',
   providers: [DialogService, Overlay],
 })
-export class NotificationComponent implements OnInit, OnDestroy {
+export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public notification;
   private subscriptions: Subscription = new Subscription();
   public displayActionButtons;
   public notificationUid: string;
-  public isWorkPlaceIsRequester: boolean;
+  public isWorkPlaceRequester: boolean;
   public ownerShipRequestedFrom: string;
   public ownerShipRequestedTo: string;
   public isSubWorkplace: boolean;
-
+  public notificationRequestedFrom: string;
+  public notificationRequestedTo: string;
+  public requestorName: string;
+  public postCode: string;
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -46,56 +46,49 @@ export class NotificationComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
     this.notificationUid = this.route.snapshot.params.notificationuid;
-
-    this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
-      this.notification = details;
-
-      this.isSubWorkplace =
-        this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
-
-      this.ownerShipRequestedFrom =
-        details.typeContent.requestedOwnerType === 'Workplace'
-          ? details.typeContent.parentEstablishmentName
-          : details.typeContent.subEstablishmentName;
-      this.ownerShipRequestedTo =
-        details.typeContent.requestedOwnerType === 'Workplace'
-          ? details.typeContent.subEstablishmentName
-          : details.typeContent.parentEstablishmentName;
-
-      if (details.typeContent.approvalStatus === 'APPROVED') {
-        this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
-      } else {
-        this.isWorkPlaceIsRequester = this.workplace.name === this.ownerShipRequestedFrom;
-      }
-      this.displayActionButtons =
-        details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
-    });
+    this.subscriptions.add(
+      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
+        this.notification = details;
+        this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
+        this.notificationRequestedFrom = details.typeContent.subEstablishmentName;
+        this.requestorName = details.typeContent.requestorName;
+        this.postCode = details.typeContent.postCode;
+        this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
+        this.displayActionButtons =
+          details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
+      })
+    );
     this.setNotificationViewed(this.notificationUid);
   }
+  /**
+   * Function used to approve link to parent request
+   * @param {void}
+   * @return {void}
+   */
   public approveRequest() {
     if (this.notification) {
       if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
         this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
         return true;
       }
-
-      let requestParameter = {
-        ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
-        approvalStatus: 'APPROVED',
-        approvalReason: '',
+      const requestParameter = {
+        createdByUserUID: this.notification.createdByUserUID,
+        notificationUid: this.notification.notificationUid,
         rejectionReason: null,
-        type: OWNERSHIP_APPROVED,
-        exsistingNotificationUid: this.notificationUid,
-        requestedOwnership: this.notification.typeContent.permissionRequest,
+        type: 'LINKTOPARENTAPPROVED',
+        approvalStatus: 'APPROVED',
+        subEstablishmentId: this.notification.typeContent.subEstablishmentId || null,
+        parentEstablishmentId: this.notification.typeContent.parentEstablishmentId || null,
       };
       this.subscriptions.add(
         this.notificationsService
-          .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+          .setNotificationRequestLinkToParent(this.establishmentService.establishmentId, requestParameter)
           .subscribe(
             request => {
               if (request) {
                 this.establishmentService.getEstablishment(this.workplace.uid).subscribe(workplace => {
                   if (workplace) {
+                    //get permission and reset
                     this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermission => {
                       if (hasPermission) {
                         this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
@@ -104,13 +97,13 @@ export class NotificationComponent implements OnInit, OnDestroy {
                         this.router.navigate(['/dashboard']);
                         this.alertService.addAlert({
                           type: 'success',
-                          message: `Your decision to transfer ownership of data has been sent to
-                      ${this.notification.typeContent.requestorName} `,
+                          message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
                         });
                       }
                     });
                   }
                 });
+                //get all notification and update with latest
                 this.notificationsService.getAllNotifications().subscribe(notify => {
                   this.notificationsService.notifications$.next(notify);
                 });
@@ -123,6 +116,11 @@ export class NotificationComponent implements OnInit, OnDestroy {
       );
     }
   }
+  /**
+   * Function used to set nothification as read
+   * @param {string} notification uid
+   * @return {void}
+   */
   private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
@@ -140,45 +138,58 @@ export class NotificationComponent implements OnInit, OnDestroy {
       )
     );
   }
-
+  /**
+   * Function used to get reject request event for link to parent request rejection
+   * @param {$event} triggred event
+   * @return {void}
+   */
   public rejectRequest($event: Event) {
+    $event.preventDefault();
     if (this.notification) {
       if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
         this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
         return true;
       }
-      $event.preventDefault();
       const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
-      dialog.afterClosed.subscribe(requestRejected => {
-        if (requestRejected) {
-          this.rejectPermissionRequest(requestRejected);
-        }
-      });
+      dialog.afterClosed.subscribe(
+        requestRejected => {
+          if (requestRejected) {
+            this.rejectLinkToParentRequest(requestRejected);
+          }
+        },
+        error => console.log('Could not update notification.')
+      );
     }
   }
-
-  private rejectPermissionRequest(requestRejected) {
-    let requestParameter = {
-      ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
-      approvalStatus: 'DENIED',
+  /**
+   * Function used to reject link to parent request and triggred from rejectRequest
+   * @param {$event} triggred event
+   * @return {void}
+   */
+  private rejectLinkToParentRequest(requestRejected) {
+    const requestParameter = {
+      createdByUserUID: this.notification.createdByUserUID,
+      notificationUid: this.notification.notificationUid,
       rejectionReason: requestRejected.rejectionReason,
-      type: OWNERSHIP_REJECTED,
-      exsistingNotificationUid: this.notification.notificationUid,
+      type: 'LINKTOPARENTREJECTED',
+      approvalStatus: 'DENIED',
+      subEstablishmentId: this.notification.typeContent.subEstablishmentId || null,
+      parentEstablishmentId: this.notification.typeContent.parentEstablishmentId || null,
     };
     this.subscriptions.add(
       this.notificationsService
-        .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+        .setNotificationRequestLinkToParent(this.establishmentService.establishmentId, requestParameter)
         .subscribe(
           request => {
             if (request) {
+              //get all notification and update with latest status
               this.notificationsService.getAllNotifications().subscribe(notify => {
                 this.notificationsService.notifications$.next(notify);
               });
               this.router.navigate(['/dashboard']);
               this.alertService.addAlert({
                 type: 'success',
-                message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.requestorName} `,
+                message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
               });
             }
           },

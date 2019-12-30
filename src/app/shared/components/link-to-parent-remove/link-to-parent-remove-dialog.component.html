@@ -1,0 +1,16 @@
+<app-error-summary *ngIf="serverError" [serverError]="serverError"> </app-error-summary>
+<div class="govuk-form-group">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <h1 id="dialogHeading" class="govuk-fieldset__heading">
+        You are about to remove your link to your parent organisation.
+      </h1>
+    </legend>
+    <p class="govuk">Would you link to continue?</p>
+  </fieldset>
+</div>
+
+<button type="button" (click)="removeLinkToParent($event)" class="govuk-button">Continue</button>
+<button type="button" (click)="close(null)" class="govuk-button govuk-button--secondary govuk-util__float-right">
+  Close
+</button>
