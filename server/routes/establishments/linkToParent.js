@@ -246,29 +246,29 @@ router.route('/action').put(async (req, res) => {
         if (!isValidEstablishment) {
           return res.status(400).send('Unexpected Input.');
         } else {
-         const params = {
-           establishmentId : req.establishmentId,
-           userUid: req.userUid,
-           parentWorkplaceUId: req.body.parentWorkplaceUId,
-         }
-         const delinkParent = await linkSubToParent.delinkParent(params);
-         if(delinkParent) {
-          let parentEstablishmentId = await thisEstablishment.fetchParentDetails(params.parentWorkplaceUId);
-          if(parentEstablishmentId) {
+          const params = {
+            establishmentId: req.establishmentId,
+            userUid: req.userUid,
+            parentWorkplaceUId: req.body.parentWorkplaceUId,
+          };
+          const delinkParent = await linkSubToParent.delinkParent(params);
+          if (delinkParent) {
+            let parentEstablishmentId = await thisEstablishment.fetchParentDetails(params.parentWorkplaceUId);
+            if (parentEstablishmentId) {
               params.parentEstablishmentId = parentEstablishmentId.id;
               params.deLinkToParentUID = uuid.v4();
               if (!uuidRegex.test(params.deLinkToParentUID.toUpperCase())) {
                 console.error('Invalid de link to parent request UUID');
                 return res.status(400).send();
               }
-            let getRecipientUserDetails = await linkSubToParent.getRecipientUserDetails(params);
-            for (let i =0; i < getRecipientUserDetails.length; i++) {
-              params.notificationUid = uuid.v4();
-              if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
-                console.error('Invalid notification UUID');
-                return res.status(400).send();
-              }
-              let notificationParams = {
+              let getRecipientUserDetails = await linkSubToParent.getRecipientUserDetails(params);
+              for (let i = 0; i < getRecipientUserDetails.length; i++) {
+                params.notificationUid = uuid.v4();
+                if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
+                  console.error('Invalid notification UUID');
+                  return res.status(400).send();
+                }
+                let notificationParams = {
                   notificationUid: params.notificationUid,
                   type: 'DELINKTOPARENT',
                   typeUid: params.deLinkToParentUID,
@@ -276,20 +276,18 @@ router.route('/action').put(async (req, res) => {
                   userUid: params.userUid,
                 };
                 let addNotificationResp = await notifications.insertNewNotification(notificationParams);
-                if(addNotificationResp) {
-                  let lastDeLinkToParentRequest = await linkSubToParent.getLastDeLinkToParentRequest(params);
-                  if(lastDeLinkToParentRequest) {
-                    let getParentName = await linkSubToParent.getParentName(params);
-                    if(getParentName) {
-                      lastDeLinkToParentRequest[0].parentEstablishmentName = getParentName[0].NameValue;
-                      return res.status(201).send(lastDeLinkToParentRequest[0]);
-                    }
+              }
+                let lastDeLinkToParentRequest = await linkSubToParent.getLastDeLinkToParentRequest(params);
+                if (lastDeLinkToParentRequest) {
+                  let getParentName = await linkSubToParent.getParentName(params);
+                  if (getParentName) {
+                    lastDeLinkToParentRequest[0].parentEstablishmentName = getParentName[0].NameValue;
+                    return res.status(201).send(lastDeLinkToParentRequest[0]);
                   }
                 }
-          }
-          }
-         }
 
+            }
+          }
         }
       } else {
         return res.status(404).send({
