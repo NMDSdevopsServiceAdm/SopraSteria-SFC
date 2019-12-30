@@ -1139,8 +1139,6 @@ const reportGet = async (req, res) => {
 // NOTE - the Local Authority report is driven mainly by pgsql (postgres functions) and therefore does not
 //    pass through the Establishment/Worker entities. This is done for performance, as these reports
 //    are expected to operate across large sets of data
-const express = require('express');
-const router = express.Router();
 
 /**
  * Handle GET API requests to get Training report data
