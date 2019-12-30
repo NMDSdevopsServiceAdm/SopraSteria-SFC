@@ -70,12 +70,15 @@
       Other job roles
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="!worker.otherJobs?.length; else otherJobs">
+      <ng-container *ngIf="!worker.otherJobs">
         -
       </ng-container>
-      <ng-template #otherJobs>
+      <ng-container *ngIf="worker.otherJobs?.value === 'No'">
+        No
+      </ng-container>
+      <ng-container *ngIf="worker.otherJobs?.value === 'Yes'">
         <ul class="govuk-list govuk-!-margin-bottom-0">
-          <li *ngFor="let otherJob of worker.otherJobs">
+          <li *ngFor="let otherJob of worker.otherJobs.jobs">
             <ng-container *ngIf="otherJob.other; else title">
               <span>{{ otherJob.other }}</span>
             </ng-container>
@@ -84,15 +87,15 @@
             </ng-template>
           </li>
         </ul>
-      </ng-template>
+      </ng-container>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('other-job-roles')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.otherJobs?.length">
+        <ng-container *ngIf="!worker.otherJobs">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.otherJobs?.length">
+        <ng-container *ngIf="worker.otherJobs">
           Change
         </ng-container>
         <span class="govuk-visually-hidden"> other job roles</span>

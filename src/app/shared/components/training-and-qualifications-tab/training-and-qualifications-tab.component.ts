@@ -1,15 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { HttpResponse } from '@angular/common/http';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-training-and-qualifications-tab',
   templateUrl: './training-and-qualifications-tab.component.html',
 })
-export class TrainingAndQualificationsTabComponent implements OnInit {
+export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
 
   private subscriptions: Subscription = new Subscription();
@@ -17,11 +19,16 @@ export class TrainingAndQualificationsTabComponent implements OnInit {
   public totalRecords;
   public totalExpiredTraining;
   public totalExpiringTraining;
-  constructor(private workerService: WorkerService) {}
+  public totalStaff: number;
+  constructor(
+    private workerService: WorkerService,
+    private establishmentService: EstablishmentService,
+    private reportService: ReportService
+  ) {}
 
   ngOnInit() {
     this.subscriptions.add(
-      this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(
+      this.workerService.getAllWorkers(this.workplace.uid).subscribe(
         workers => {
           this.workers = workers;
           this.totalRecords = 0;
@@ -38,5 +45,27 @@ export class TrainingAndQualificationsTabComponent implements OnInit {
         }
       )
     );
+  }
+  //Download Training Report
+  public downloadTrainingReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportService.getTrainingReport(this.workplace.uid).subscribe(
+        response => this.saveFile(response),
+        () => {}
+      )
+    );
+  }
+  //set content type and save file
+  private saveFile(response: HttpResponse<Blob>) {
+    const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+    const header = response.headers.get('content-disposition');
+    const filenameMatches = header && header.match(filenameRegEx);
+    const filename = filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
+    const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
+    saveAs(blob, filename);
+  }
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }

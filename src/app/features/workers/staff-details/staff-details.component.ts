@@ -127,8 +127,8 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
     // TODO: Removing Other Jobs should be handled by the Server
     // https://trello.com/c/x3N7dQJP
-    if (this.worker && this.worker.otherJobs) {
-      (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
+    if (this.worker && this.worker.otherJobs.jobs) {
+      (props as any).otherJobs.jobs = this.worker.otherJobs.jobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
     }
 
     return props;

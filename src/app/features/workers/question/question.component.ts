@@ -142,15 +142,17 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (!this.worker) {
       this.subscriptions.add(
-        this.workerService
-          .createWorker(this.workplace.uid, props)
-          .subscribe(data => this._onSuccess(data, payload.action), error => this.onError(error))
+        this.workerService.createWorker(this.workplace.uid, props).subscribe(
+          data => this._onSuccess(data, payload.action),
+          error => this.onError(error)
+        )
       );
     } else {
       this.subscriptions.add(
-        this.workerService
-          .updateWorker(this.workplace.uid, this.worker.uid, props)
-          .subscribe(data => this._onSuccess(data, payload.action), error => this.onError(error))
+        this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
+          data => this._onSuccess(data, payload.action),
+          error => this.onError(error)
+        )
       );
     }
   }

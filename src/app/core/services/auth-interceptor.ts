@@ -17,6 +17,8 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.getToken(request.url);
 
+    console.log(token);
+    console.log(this.jwt.isTokenExpired(token));
     if (token) {
       if (this.jwt.isTokenExpired(token)) {
         return throwError(new HttpErrorResponse({ error: 'Not Authorised', status: 403 }));
