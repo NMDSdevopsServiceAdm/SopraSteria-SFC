@@ -899,7 +899,7 @@ const getReport = async (date, thisEstablishment) => {
     }));
 };
 
-// Prevent multiple wdf report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
+// Prevent multiple training report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
 const acquireLock = async function (logic, newState, req, res) {
   const { establishmentId } = req;
@@ -931,12 +931,12 @@ const acquireLock = async function (logic, newState, req, res) {
 
   switch (newState) {
     case buStates.DOWNLOADING: {
-      // get the current wdf report state
+      // get the current training report state
       const currentState = await lockStatus(establishmentId);
 
       if (currentState.length === 1) {
         // don't update the status for downloads, just hold the lock
-        newState = currentState[0].WdfReportState;
+        newState = currentState[0].TrainingReportState;
         nextState = null;
       } else {
         nextState = buStates.READY;
