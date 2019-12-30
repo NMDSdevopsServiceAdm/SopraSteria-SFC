@@ -46,16 +46,18 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
     this.notificationUid = this.route.snapshot.params.notificationuid;
-    this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
-      this.notification = details;
-      this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
-      this.notificationRequestedFrom = details.typeContent.subEstablishmentName;
-      this.requestorName = details.typeContent.requestorName;
-      this.postCode = details.typeContent.postCode;
-      this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
-      this.displayActionButtons =
-        details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
-    });
+    this.subscriptions.add(
+      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
+        this.notification = details;
+        this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
+        this.notificationRequestedFrom = details.typeContent.subEstablishmentName;
+        this.requestorName = details.typeContent.requestorName;
+        this.postCode = details.typeContent.postCode;
+        this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
+        this.displayActionButtons =
+          details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
+      })
+    );
     this.setNotificationViewed(this.notificationUid);
   }
   /**

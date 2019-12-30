@@ -28,12 +28,14 @@ export class NotificationDeLinkToParentComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.notificationUid = this.route.snapshot.params.notificationuid;
-    this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
-      this.notification = details;
-      this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
-      this.notificationRequestedFrom = details.typeContent.requestorName;
-      this.requestorName = details.typeContent.requestorName;
-    });
+    this.subscriptions.add(
+      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
+        this.notification = details;
+        this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
+        this.notificationRequestedFrom = details.typeContent.requestorName;
+        this.requestorName = details.typeContent.requestorName;
+      })
+    );
     this.setNotificationViewed(this.notificationUid);
   }
 
