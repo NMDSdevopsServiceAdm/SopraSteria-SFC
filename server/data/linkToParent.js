@@ -59,7 +59,7 @@ exports.checkAlreadyRequestedLinkToParent = async params =>
   select "UserUID" from cqc."Establishment" est
   LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
   JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
-  WHERE :estID = est."EstablishmentUID" AND individual."UserRoleValue" = :userRole OR individual."UserRoleValue" = :userAdmin AND est."IsParent" = :isParent `;
+  WHERE :estID = est."EstablishmentUID" AND (individual."UserRoleValue" = :userRole OR individual."UserRoleValue" = :userAdmin) AND est."IsParent" = :isParent `;
 
 exports.getRecipientUserDetails = async params =>
   db.query(getRecipientUserDetailsQuery, {
