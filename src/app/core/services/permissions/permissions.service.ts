@@ -34,10 +34,8 @@ export class PermissionsService {
   }
 
   public can(workplaceUid: string, permissionType: PermissionType): boolean {
-    if (permissionType !== 'canLinkToParent' && permissionType !== 'canRemoveParentAssociation') {
-      if (this.userService.loggedInUser && this.userService.loggedInUser.role === Roles.Admin) {
-        return true;
-      }
+    if (this.userService.loggedInUser && this.userService.loggedInUser.role === Roles.Admin) {
+      return true;
     }
 
     const permissions = this.permissions(workplaceUid);
