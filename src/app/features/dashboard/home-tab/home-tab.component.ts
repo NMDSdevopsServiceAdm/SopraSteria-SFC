@@ -265,8 +265,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     }
 
     if (this.user.role === 'Admin') {
-      this.canLinkToParent = this.workplace.parentUid === null && !this.workplace.isParent;
-      this.canRemoveParentAssociation = this.workplace.parentUid !== null && !this.workplace.isParent;
+      this.canLinkToParent = this.workplace && this.workplace.parentUid === null && !this.workplace.isParent;
+      this.canRemoveParentAssociation = this.workplace && this.workplace.parentUid !== null && !this.workplace.isParent;
     } else {
       this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
       this.canRemoveParentAssociation = this.permissionsService.can(workplaceUid, 'canRemoveParentAssociation');
