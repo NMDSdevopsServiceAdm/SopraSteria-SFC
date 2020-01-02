@@ -263,11 +263,17 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
     }
-    this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
+
+    if (this.user.role === 'Admin') {
+      this.canLinkToParent = this.workplace.parentUid === null && !this.workplace.isParent;
+      this.canRemoveParentAssociation = this.workplace.parentUid !== null && !this.workplace.isParent;
+    } else {
+      this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
+      this.canRemoveParentAssociation = this.permissionsService.can(workplaceUid, 'canRemoveParentAssociation');
+    }
     if (this.canLinkToParent && this.workplace.linkToParentRequested) {
       this.linkToParentRequestedStatus = true;
     }
-    this.canRemoveParentAssociation = this.permissionsService.can(workplaceUid, 'canRemoveParentAssociation');
   }
 
   ngOnDestroy(): void {
