@@ -38,7 +38,17 @@
         <a [routerLink]="['/notifications']" class="notification-alert">You have no new notifications</a>
       </p>
     </ng-template>
-    <ng-container *ngIf="canBulkUpload || canViewWorkplaces || canViewReports || canViewChangeDataOwner">
+    <ng-container
+      *ngIf="
+        canBulkUpload ||
+        canViewWorkplaces ||
+        canViewReports ||
+        canViewChangeDataOwner ||
+        canViewDataPermissionsLink ||
+        canLinkToParent ||
+        canRemoveParentAssociation
+      "
+    >
       <h3 class="govuk-heading-s govuk-!-margin-top-6">Other things you can do</h3>
       <ul *ngIf="workplace" class="govuk-list">
         <li *ngIf="canBulkUpload">
@@ -58,6 +68,17 @@
         </li>
         <li *ngIf="canViewDataPermissionsLink">
           <a (click)="setDataPermissions($event)" href="#">Data permissions</a>
+        </li>
+        <li *ngIf="canLinkToParent">
+          <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
+            <a (click)="cancelLinkToParent($event)" href="#">Link to your parent organisation pending</a>
+          </ng-container>
+          <ng-template #requestLinkToParent>
+            <a (click)="linkToParent($event)" href="#">Link to your parent organisation</a>
+          </ng-template>
+        </li>
+        <li *ngIf="canRemoveParentAssociation">
+          <a (click)="removeLinkToParent($event)" href="#">Remove link to parent organisation</a>
         </li>
       </ul>
     </ng-container>
