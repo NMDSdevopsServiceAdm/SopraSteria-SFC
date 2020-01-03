@@ -118,13 +118,16 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
   generateUpdateProps() {
     const { selectedJobRoles, otherJobs } = this.form.value;
+
     return {
       otherJobs: {
         value: otherJobs,
         jobs: selectedJobRoles
           .filter(j => j.checked)
           .map(j => {
+            console.log(j);
             const isJobWithRole = this.jobsWithOtherRole.some(jbRole => jbRole.jobId === j.jobId);
+            console.log(isJobWithRole);
             if (isJobWithRole) {
               const otherValue = this.form.get(`otherSelectedJobRole${j.jobId}`).value;
               return {
@@ -133,7 +136,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
               };
             }
 
-            return { jobId: j.jobId };
+            return { jobId: j.jobId, title: j.title };
           }),
       },
     };
