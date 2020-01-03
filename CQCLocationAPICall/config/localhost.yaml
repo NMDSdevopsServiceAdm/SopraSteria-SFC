@@ -1,15 +1,11 @@
 aws:
-    region: eu-west-1
-    secrets:
-        use: false
-        wallet: dev/api
-
-
-db:
-    ssl: false
-    username: sfcadmin
-    client_ssl:
-        status: false
-        usingFiles: false
+  region: eu-west-1
+  secrets:
+    use: true
 log:
-    sequelize: false
+  sequelize: true
+db:
+  ssl: false
+  client_ssl:
+    status: false
+    usingFiles: false

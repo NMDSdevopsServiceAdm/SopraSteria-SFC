@@ -62,10 +62,8 @@ if (appConfig.get('db.client_ssl.status')) {
   }
 }
 
-console.log(`Connecting to the database at ${config.host}/${config.database} as ${config.username}`);
 sequelize = new Sequelize(config.database, config.username, config.password, config);
 
-console.log(sequelize);
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -95,9 +93,11 @@ if (AppConfig.ready) {
   AppConfig.on(AppConfig.READY_EVENT, () => {
     // rebind sensitive database connections
     sequelize.connectionManager.config.host = appConfig.get('db.host');
+    sequelize.connectionManager.config.database = appConfig.get('db.database');
     sequelize.connectionManager.config.username = appConfig.get('db.username');
+    sequelize.connectionManager.config.user = appConfig.get('db.username');
     sequelize.connectionManager.config.password = appConfig.get('db.password');
-
+    console.log(`Connecting to the database at ${sequelize.connectionManager.config.host}/${sequelize.connectionManager.config.database} as ${sequelize.connectionManager.config.username}`);
 
     // when initialising on config "ready" can only use SSL data
     if (appConfig.get('db.client_ssl.status')) {

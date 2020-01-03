@@ -78,31 +78,44 @@ async function sendMessages(locationIds, startdate, enddate) {
   }));
 }
 
-module.exports.handler =  async (event, context) => {
+async function changes () {
   const endDate=new Date().toISOString().split('.')[0]+"Z";
   let startDate = null;
   console.log('Looking for latest run');
-  try {
-    const log = await models.cqclog.findAll({
-      limit: 1,
-      where: {
-        success:true
-      },
-      order: [ [ 'createdat', 'DESC' ]]
-    });
-    if (log) {
-      startDate = log[0].dataValues.lastUpdatedAt;
-    }
-    console.log('Was last ran on ' + startDate);
-    const locations = await getChangedIds(startDate, endDate);
-    await uploadToS3(locations, startDate, endDate);
-    await sendMessages(locations, startDate, endDate);
-    models.sequelize.close();
+  const log = await models.cqclog.findAll({
+    limit: 1,
+    where: {
+      success:true
+    },
+    order: [ [ 'createdat', 'DESC' ]]
+  });
+  if (log) {
+    startDate = log[0].dataValues.lastUpdatedAt;
+  }
+  console.log('Was last ran on ' + startDate);
+  const locations = await getChangedIds(startDate, endDate);
+  await uploadToS3(locations, startDate, endDate);
+  await sendMessages(locations, startDate, endDate);
+  models.sequelize.close();
 
-    return {
-      status: 200,
-      body: "Call Successful"
-    };
+  return {
+    status: 200,
+    body: "Call Successful"
+  };
+}
+
+module.exports.handler =  async (event, context) => {
+  try {
+    if (models.status.ready) {
+      console.log('Sequelize is ready');
+      return await changes();
+    } else {
+      console.log('Waiting for sequelize to be ready');
+      models.status.on(models.status.READY_EVENT, async () => {
+        console.log('Got ready event');
+        return await changes();
+      });
+    }
   } catch (error) {
     return  error.message;
   }
