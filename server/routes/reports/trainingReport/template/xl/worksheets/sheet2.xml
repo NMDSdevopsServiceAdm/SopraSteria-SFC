@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac">
-  <dimension ref="A1:J8" />
+  <dimension ref="A1:I8" />
   <sheetViews>
     <sheetView showGridLines="0" topLeftCell="A1" workbookViewId="0">
-      <pane ySplit="3" topLeftCell="A5" activePane="bottomLeft" state="frozenSplit" />
-      <selection pane="bottomLeft" activeCell="B7" sqref="B7" />
+      <pane ySplit="4" topLeftCell="A5" activePane="bottomLeft" state="frozenSplit" />
+      <selection pane="bottomLeft" activeCell="A4" sqref="A4" />
     </sheetView>
   </sheetViews>
   <sheetFormatPr defaultRowHeight="12.5" x14ac:dyDescent="0.25" />
   <cols>
-    <col min="1" max="1" width="32.26953125" customWidth="1" />
-    <col min="2" max="2" width="32.26953125" customWidth="1" />
-    <col min="3" max="3" width="32.26953125" customWidth="1" />
-    <col min="4" max="4" width="32.26953125" customWidth="1" />
-    <col min="5" max="5" width="35.1796875" customWidth="1" />
-    <col min="6" max="7" width="32.26953125" customWidth="1" />
-    <col min="8" max="8" width="32.26953125" customWidth="1" />
-    <col min="9" max="9" width="32.26953125" customWidth="1" />
+    <col min="1" max="4" width="32.28515625" customWidth="1" />
+    <col min="5" max="5" width="35.140625" customWidth="1" />
+    <col min="6" max="9" width="32.28515625" customWidth="1" />
   </cols>
   <sheetData>
-    <row r="1" spans="1:25" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
+    <row r="1" spans="1:9" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
       <c r="A1" s="51" />
       <c r="B1" s="53" t="s">
         <v>7</v>
@@ -34,7 +29,7 @@
       <c r="H1" s="51" />
       <c r="I1" s="51" />
     </row>
-    <row r="2" spans="1:25" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
+    <row r="2" spans="1:9" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
       <c r="A2" s="50" t="s">
         <v>9</v>
       </c>
@@ -51,7 +46,7 @@
       <c r="H2" s="51" />
       <c r="I2" s="51" />
     </row>
-    <row r="3" spans="1:25" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
+    <row r="3" spans="1:9" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
       <c r="A3" s="51" />
       <c r="B3" s="53" t="s">
         <v>19</v>
@@ -66,7 +61,7 @@
       <c r="H3" s="51" />
       <c r="I3" s="51" />
     </row>
-    <row r="4" spans="1:25" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+    <row r="4" spans="1:9" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
       <c r="A4" s="51" />
       <c r="B4" s="54" t="s">
         <v>20</v>
@@ -81,8 +76,8 @@
       <c r="H4" s="51" />
       <c r="I4" s="51" />
     </row>
-    <row r="5" spans="1:25" ht="8.65" customHeight="1" x14ac:dyDescent="0.25" />
-    <row r="6" spans="1:25" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+    <row r="5" spans="1:9" ht="8.65" customHeight="1" x14ac:dyDescent="0.25" />
+    <row r="6" spans="1:9" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
       <c r="A6" s="51" t="s">
         <v>10</v>
       </c>
@@ -111,7 +106,7 @@
         <v>18</v>
       </c>
     </row>
-    <row r="7" spans="1:25" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+    <row r="7" spans="1:9" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
       <c r="A7" s="18" t="s">
         <v>27</v>
       </c>
@@ -140,7 +135,7 @@
         <v>32</v>
       </c>
     </row>
-    <row r="8" spans="2:12" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25" />
+    <row r="8" spans="1:9" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25" />
   </sheetData>
   <mergeCells count="4">
     <mergeCell ref="C1:I1" />
