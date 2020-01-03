@@ -151,13 +151,14 @@ if (config.get('aws.secrets.use')) {
     config.get('aws.secrets.wallet')
   ).then(ret => {
     // DB rebind
+    console.log('Setting AWS details');
     config.set('db.host', AWSSecrets.dbHost());
     config.set('db.database', AWSSecrets.dbName());
     config.set('db.password', AWSSecrets.dbPass());
     config.set('db.username', AWSSecrets.dbUser());
-    config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
-    config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
-    config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
+    // config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
+    // config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
+    // config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);
   });

@@ -62,8 +62,10 @@ if (appConfig.get('db.client_ssl.status')) {
   }
 }
 
+console.log(`Connecting to the database at ${config.host}/${config.database} as ${config.username}`);
 sequelize = new Sequelize(config.database, config.username, config.password, config);
 
+console.log(sequelize);
 fs
   .readdirSync(__dirname)
   .filter(file => {
