@@ -21,9 +21,28 @@
             <span *ngIf="!notification.isViewed" class="notification-list-item__icon">
               <span class="govuk-visually-hidden">Unread: </span></span
             >
-            <a [routerLink]="[notification.notificationUid]" class="notification-list-item__link">{{
-              notification.type | notificationType
-            }}</a>
+            <a
+              *ngIf="notification.type === 'OWNERCHANGE'"
+              [routerLink]="[notification.notificationUid]"
+              class="notification-list-item__link"
+              >{{ notification.type | notificationType }}</a
+            >
+            <a
+              *ngIf="
+                notification.type === 'LINKTOPARENTREQUEST' ||
+                notification.type === 'LINKTOPARENTAPPROVED' ||
+                notification.type === 'LINKTOPARENTREJECTED'
+              "
+              [routerLink]="['/notifications', 'notification-link-to-parent', notification.notificationUid]"
+              class="notification-list-item__link"
+              >{{ notification.type | notificationType }}</a
+            >
+            <a
+              *ngIf="notification.type === 'DELINKTOPARENT'"
+              [routerLink]="['/notifications', 'notification-delink-to-parent', notification.notificationUid]"
+              class="notification-list-item__link"
+              >{{ notification.type | notificationType }}</a
+            >
           </span>
         </td>
         <td class="govuk-table__cell">{{ notification.created | longDate }}</td>

@@ -116,6 +116,7 @@ export interface Establishment {
   dataPermissions: DataPermissions;
   dataOwnershipRequested: string;
   ownershipChangeRequestId?: string;
+  linkToParentRequested?: string;
 }
 
 export interface UpdateJobsRequest {
