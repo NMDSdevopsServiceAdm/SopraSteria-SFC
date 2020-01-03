@@ -16,6 +16,7 @@ const initialiseSecrets = async (region, wallet) => {
       throw error;
     });
     if (typeof mySecretsValue.SecretString !== 'undefined') {
+      console.log('Got Secrets');
       const mySecrets = JSON.parse(mySecretsValue.SecretString);
 
       if (typeof mySecrets == 'undefined') {
@@ -23,12 +24,13 @@ const initialiseSecrets = async (region, wallet) => {
       }
 
       myLocalSecrets = {
-        CQC_DB_USER: mySecrets.CQC_DB_USER,
-        CQC_DB_PASS: mySecrets.CQC_DB_PASS,
-        CQC_DB_HOST: mySecrets.CQC_DB_HOST,
-        CQC_DB_CLIENT_SSL_CERTIFICATE: mySecrets.CQC_DB_CLIENT_SSL_CERTIFICATE,
-        CQC_DB_CLIENT_SSL_KEY: mySecrets.CQC_DB_CLIENT_SSL_KEY,
-        CQC_DB_CLIENT_SSL_CA: mySecrets.CQC_DB_CLIENT_SSL_CA
+        DB_USER: mySecrets.DB_USER,
+        DB_PASS: mySecrets.DB_PASS,
+        DB_NAME: mySecrets.DB_NAME,
+        DB_HOST: mySecrets.DB_HOST,
+        DB_ROOT_CRT: mySecrets.DB_ROOT_CRT,
+        DB_APP_USER_KEY: mySecrets.DB_APP_USER_KEY,
+        DB_APP_USER_CERT: mySecrets.DB_APP_USER_CERT
       };
     }
 
@@ -43,10 +45,22 @@ const resetSecrets = () => {
 
 const dbHost = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.CQC_DB_HOST) {
-      throw new Error('Unknown CQC_DB_HOST secret');
+    if (!myLocalSecrets.DB_HOST) {
+      throw new Error('Unknown DB_HOST secret');
     } else {
-      return myLocalSecrets.CQC_DB_HOST;
+      return myLocalSecrets.DB_HOST;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+}
+
+const dbName = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.DB_NAME) {
+      throw new Error('Unknown DB_NAME secret');
+    } else {
+      return myLocalSecrets.DB_NAME;
     }
   } else {
     throw new Error('Unknown secrets');
@@ -55,10 +69,10 @@ const dbHost = () => {
 
 const dbPass = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.CQC_DB_PASS) {
-      throw new Error('Unknown CQC_DB_PASS secret');
+    if (!myLocalSecrets.DB_PASS) {
+      throw new Error('Unknown DB_PASS secret');
     } else {
-      return myLocalSecrets.CQC_DB_PASS;
+      return myLocalSecrets.DB_PASS;
     }
   } else {
     throw new Error('Unknown secrets');
@@ -67,10 +81,10 @@ const dbPass = () => {
 
 const dbUser = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.CQC_DB_USER) {
+    if (!myLocalSecrets.DB_USER) {
       throw new Error('Unknown CQC_DB_USER secret');
     } else {
-      return myLocalSecrets.CQC_DB_USER;
+      return myLocalSecrets.DB_USER;
     }
   } else {
     throw new Error('Unknown secrets');
@@ -79,10 +93,10 @@ const dbUser = () => {
 
 const dbAppUserKey = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.CQC_DB_CLIENT_SSL_KEY) {
-      throw new Error('Unknown DB_APP_USER_KEY secret');
+    if (!myLocalSecrets.DB_APP_USER_KEY) {
+      return '';
     } else {
-      return myLocalSecrets.CQC_DB_CLIENT_SSL_KEY;
+      return myLocalSecrets.DB_APP_USER_KEY;
     }
   } else {
     throw new Error('Unknown secrets');
@@ -90,10 +104,10 @@ const dbAppUserKey = () => {
 };
 const dbAppUserCertificate = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.CQC_DB_CLIENT_SSL_CERTIFICATE) {
-      throw new Error('Unknown DB_APP_USER_CERT secret');
+    if (!myLocalSecrets.DB_APP_USER_CERT) {
+      return '';
     } else {
-      return myLocalSecrets.CQC_DB_CLIENT_SSL_CERTIFICATE;
+      return myLocalSecrets.DB_APP_USER_CERT;
     }
   } else {
     throw new Error('Unknown secrets');
@@ -101,10 +115,10 @@ const dbAppUserCertificate = () => {
 };
 const dbAppRootCertificate = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.CQC_DB_CLIENT_SSL_CA) {
-      throw new Error('Unknown DB_ROOT_CRT secret');
+    if (!myLocalSecrets.DB_ROOT_CRT) {
+      return '';
     } else {
-      return myLocalSecrets.CQC_DB_CLIENT_SSL_CA;
+      return myLocalSecrets.DB_ROOT_CRT;
     }
   } else {
     throw new Error('Unknown secrets');
@@ -115,6 +129,7 @@ const dbAppRootCertificate = () => {
 module.exports = {
   initialiseSecrets,
   dbHost,
+  dbName,
   dbPass,
   dbUser,
   dbAppUserKey,

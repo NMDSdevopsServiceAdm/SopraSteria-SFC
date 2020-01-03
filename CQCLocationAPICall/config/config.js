@@ -27,31 +27,31 @@ const config = convict({
       doc: 'Database host name/IP',
       format: String,
       default: 'localhost',
-      env: 'CQC_DB_HOST'
+      env: 'DB_HOST'
     },
     database: {
       doc: 'Database name',
       format: String,
       default: 'sfcdevdb',
-      env: 'CQC_DB_NAME'
+      env: 'DB_NAME'
     },
     username: {
       doc: 'Database username',
       format: String,
       default: 'sfcadmin',
-      env: 'CQC_DB_USER'
+      env: 'DB_USER'
     },
     password: {
       doc: 'Database username',
       format: '*',
       default: 'unknown',
-      env: 'CQC_DB_PASS'
+      env: 'DB_PASS'
     },
     port: {
       doc: 'Database port',
       format: 'port',
       default: 5432,
-      env: 'CQC_DB_PORT'
+      env: 'DB_PORT'
     },
     dialect: {
       doc: 'Database dialect (sequelize)',
@@ -79,19 +79,19 @@ const config = convict({
           doc: 'The full path location of the client certificate file',
           format: String,
           default: 'TBC',
-          env: 'CQC_DB_CLIENT_SSL_CERTIFICATE'
+          env: 'DB_ROOT_CRT'
         },
         key: {
           doc: 'The full path location of the client key file',
           format: String,
           default: 'TBC',
-          env: 'CQC_DB_CLIENT_SSL_KEY'
+          env: 'DB_APP_USER_KEY'
         },
         ca: {
           doc: 'The full path location of the server certificate (authority - ca) file',
           format: String,
           default: 'TBC',
-          env: 'CQC_DB_CLIENT_SSL_CA'
+          env: 'DB_APP_USER_CERT'
         }
       }
     }
@@ -152,6 +152,7 @@ if (config.get('aws.secrets.use')) {
   ).then(ret => {
     // DB rebind
     config.set('db.host', AWSSecrets.dbHost());
+    config.set('db.database', AWSSecrets.dbName());
     config.set('db.password', AWSSecrets.dbPass());
     config.set('db.username', AWSSecrets.dbUser());
     config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
