@@ -5,6 +5,7 @@ import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
+import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 
 @Component({

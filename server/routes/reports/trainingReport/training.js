@@ -936,7 +936,7 @@ const acquireLock = async function (logic, newState, req, res) {
 
       if (currentState.length === 1) {
         // don't update the status for downloads, just hold the lock
-        newState = currentState[0].WdfReportState;
+        newState = currentState[0].TrainingReportState;
         nextState = null;
       } else {
         nextState = buStates.READY;
@@ -1104,7 +1104,6 @@ const reportGet = async (req, res) => {
     const thisEstablishment = new Establishment(req.username);
 
     if (await thisEstablishment.restore(req.establishment.id, false)) {
-      if (thisEstablishment.isParent) {
         const date = new Date();
         const report = await getReport(date, thisEstablishment);
 
@@ -1114,11 +1113,6 @@ const reportGet = async (req, res) => {
             'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`
           });
           console.log('report/training - 200 response');
-        } else {
-          // failed to run the report
-          console.error('report/training - failed to run the report');
-          await saveResponse(req, res, 503, {});
-        }
       } else {
         // only allow on those establishments being a parent
 
@@ -1139,8 +1133,6 @@ const reportGet = async (req, res) => {
 // NOTE - the Local Authority report is driven mainly by pgsql (postgres functions) and therefore does not
 //    pass through the Establishment/Worker entities. This is done for performance, as these reports
 //    are expected to operate across large sets of data
-const express = require('express');
-const router = express.Router();
 
 /**
  * Handle GET API requests to get Training report data
