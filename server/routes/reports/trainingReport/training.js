@@ -197,10 +197,10 @@ const styleLookup = {
     OVRREGULAR: {
       A: 2,
       B: 6,
-      C: 3,
-      D: 3,
-      E: 3,
-      F: 3,
+      C: 2,
+      D: 2,
+      E: 2,
+      F: 2,
       G: 11,
       H: 12,
      // I: 1,
@@ -210,10 +210,10 @@ const styleLookup = {
     OVRLAST: {
       A: 2,
       B: 16,
-      C: 3,
-      D: 3,
-      E: 3,
-      F: 3,
+      C: 2,
+      D: 2,
+      E: 2,
+      F: 2,
       G: 21,
       H: 22,
       //I: 22,
@@ -221,26 +221,26 @@ const styleLookup = {
       K: 22
     },
     TRNREGULAR: {
-      A: 18,
-      B: 18,
-      C: 18,
-      D: 18,
+      A: 8,
+      B: 8,
+      C: 8,
+      D: 8,
       E: 55,
-      F: 14,
-      G: 18,
-      H: 18,
-      I: 15
+      F: 7,
+      G: 8,
+      H: 8,
+      I: 7
     },
     TRNLAST: {
-      A: 19,
-      B: 19,
-      C: 19,
-      D: 19,
+      A: 9,
+      B: 9,
+      C: 9,
+      D: 9,
       E: 56,
-      F: 17,
-      G: 19,
-      H: 19,
-      I: 17
+      F: 13,
+      G: 9,
+      H: 9,
+      I: 8
     }
   },
   RED: {
@@ -271,26 +271,26 @@ const styleLookup = {
       K: 66
     },
     TRNREGULAR: {
-      A: 20,
-      B: 20,
-      C: 20,
-      D: 20,
-      E: 20,
-      F: 22,
-      G: 20,
-      H: 20,
-      I: 22
+      A: 10,
+      B: 10,
+      C: 10,
+      D: 10,
+      E: 10,
+      F: 12,
+      G: 10,
+      H: 10,
+      I: 12
     },
     TRNLAST: {
-      A: 21,
-      B: 21,
-      C: 21,
-      D: 21,
-      E: 21,
-      F: 23,
-      G: 21,
-      H: 21,
-      I: 23
+      A: 11,
+      B: 11,
+      C: 11,
+      D: 11,
+      E: 11,
+      F: 13,
+      G: 11,
+      H: 11,
+      I: 13
     }
   }
 };
@@ -368,7 +368,7 @@ const updateOverviewSheet = (
     overviewSheet.querySelector("c[r='I5']"),
     `You have ${trainingCounts.expiredTrainingCount} expired training counts`
   );
-  overviewSheet.querySelector("c[r='I5']").setAttribute('s', 1);
+  overviewSheet.querySelector("c[r='I5']").setAttribute('s', 24);
 
   // put total expiring soon training count
   putString(
@@ -379,7 +379,7 @@ const updateOverviewSheet = (
     overviewSheet.querySelector("c[r='I7']"),
     `You have ${trainingCounts.expiringTrainingCount} records expiring soon`
   );
-  overviewSheet.querySelector("c[r='I7']").setAttribute('s', 2);
+  overviewSheet.querySelector("c[r='I7']").setAttribute('s', 27);
 
   // put total expiring soon/expired training count
   putString(
@@ -391,13 +391,13 @@ const updateOverviewSheet = (
     overviewSheet.querySelector("c[r='I9']"),
     `You have ${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount} staff members with expired or`
   );
-  overviewSheet.querySelector("c[r='I9']").setAttribute('s', 10);
+  overviewSheet.querySelector("c[r='I9']").setAttribute('s', 30);
 
   putString(
     overviewSheet.querySelector("c[r='I10']"),
     `expiring training counts`
   );
-  overviewSheet.querySelector("c[r='I10']").setAttribute('s', 10);
+  overviewSheet.querySelector("c[r='I10']").setAttribute('s', 30);
 
   //put all expiring traing details
   let currentRowBottom = overviewSheet.querySelector("row[r='17']");
@@ -709,13 +709,13 @@ const updateTrainingsSheet = (
           );
           let styleCol;
           if(trainingArray[row].Status === 'Up-to-date'){
-            styleCol = 55;
+            styleCol = 19;
           }else if(trainingArray[row].Status === 'Expired'){
-            styleCol = 57;
+            styleCol = 20;
           }else if(trainingArray[row].Status === 'Expiring soon'){
-            styleCol = 59;
+            styleCol = 21;
           }else{
-            styleCol = 57;
+            styleCol = 20;
           }
           trainingsSheet.querySelector(`c[r='${columnText}${row + 7}']`).setAttribute('s', styleCol);
         } break;
