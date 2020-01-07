@@ -424,7 +424,7 @@ const updateOverviewSheet = (
   let rowIndexBottom = 17;
   let updateRowIndex = rowIndexBottom + expiringWorkerTrainings.length-1;
 
-  for(; rowIndexBottom >= 13; rowIndexBottom--, updateRowIndex--) {
+  for(rowIndexBottom >= 13; rowIndexBottom--; updateRowIndex--) {
     if(rowIndexBottom === 17) {
       // fix the dimensions tag value
       const dimension = overviewSheet.querySelector('dimension');
