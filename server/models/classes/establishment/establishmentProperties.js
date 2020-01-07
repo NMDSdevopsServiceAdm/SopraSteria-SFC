@@ -16,6 +16,11 @@ const nameProperty = require("./properties/nameProperty").NameProperty;
 const mainServiceProperty = require("./properties/mainServiceProperty").MainServiceProperty;
 const localIdentifierProperty = require("./properties/localIdentifierProperty").LocalIdentifierProperty;
 const locationIdProperty = require("./properties/locationIdProperty").LocationIdProperty;
+const address1Property = require("./properties/address1Property").Address1Property;
+const address2Property = require("./properties/address2Property").Address2Property;
+const address3Property = require("./properties/address3Property").Address3Property;
+const townProperty = require("./properties/townProperty").TownProperty;
+const countyProperty = require("./properties/countyProperty").CountyProperty;
 
 class EstablishmentPropertyManager {
     constructor() {
@@ -35,6 +40,11 @@ class EstablishmentPropertyManager {
         this._thisManager.registerProperty(leaversProperty);
         this._thisManager.registerProperty(localIdentifierProperty);
         this._thisManager.registerProperty(locationIdProperty);
+        this._thisManager.registerProperty(address1Property);
+        this._thisManager.registerProperty(address2Property);
+        this._thisManager.registerProperty(address3Property);
+        this._thisManager.registerProperty(townProperty);
+        this._thisManager.registerProperty(countyProperty);
     }
 
     get manager() {
