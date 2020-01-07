@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x15" xmlns:x15="http://schemas.microsoft.com/office/spreadsheetml/2010/11/main">
+	<fileVersion appName="xl" lastEdited="6" lowestEdited="6" rupBuild="14420" />
+	<workbookPr filterPrivacy="1" />
+	<bookViews>
+		<workbookView xWindow="0" yWindow="0" windowWidth="19200" windowHeight="7050" activeTab="0" />
+	</bookViews>
+	<sheets>
+		<sheet name="Overview" sheetId="2" r:id="rId1" />
+		<sheet name="Training View" sheetId="3" r:id="rId2" />
+	</sheets>
+	<definedNames>
+		<definedName name="_xlnm.Print_Titles" localSheetId="1">
+			'Training View'!$1:$3
+		</definedName>
+		<definedName name="_xlnm.Print_Titles" localSheetId="0">
+			Overview!$1:$3
+		</definedName>
+	</definedNames>
+	<calcPr calcId="80000" fullCalcOnLoad="1" />
+	<fileRecoveryPr autoRecover="0" />
+</workbook>
