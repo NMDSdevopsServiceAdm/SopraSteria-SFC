@@ -11,14 +11,14 @@ const walk = require('walk');
 const JsZip = require('jszip');
 const config = require('../../../../server/config/config');
 const uuid = require('uuid');
-const AWS = require('aws-sdk')
+const AWS = require('aws-sdk');
 const s3 = new AWS.S3({
-  region: String(config.get('bulkupload.region'))
+  region: String(config.get('bulkupload.region')),
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
 const { Establishment } = require('../../../models/classes/establishment');
-const { getTrainingData } = rfr('server/data/trainingReport');
+const { getTrainingData, getJobName } = rfr('server/data/trainingReport');
 const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('server/data/trainingReportLock');
 
 // Constants string needed by this file in several places
@@ -30,23 +30,17 @@ const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 
 const debuglog = () => {};
-const buStates = [
-  'READY',
-  'DOWNLOADING',
-  'FAILED',
-  'WARNINGS',
-  'PASSED',
-  'COMPLETING'
-].reduce((acc, item) => {
+const buStates = ['READY', 'DOWNLOADING', 'FAILED', 'WARNINGS', 'PASSED', 'COMPLETING'].reduce((acc, item) => {
   acc[item] = item;
 
   return acc;
 }, Object.create(null));
 
-const trainingCounts =
-{
-  expiredTrainingCount: 0, expiringTrainingCount: 0, missingMandatoryTrainingCount: 0,
-  missingExpiringMandatoryTrainingCount: 0
+const trainingCounts = {
+  expiredTrainingCount: 0,
+  expiringTrainingCount: 0,
+  missingMandatoryTrainingCount: 0,
+  missingExpiringMandatoryTrainingCount: 0,
 };
 
 let expiredWorkerTrainings = [];
@@ -55,13 +49,10 @@ let expiringWorkerTrainings = [];
 // XML DOM manipulation helper functions
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
 
-const parseXML = fileContent =>
-  (new DOMParser()).parseFromString(fileContent.toString('utf8'), 'application/xml');
+const parseXML = fileContent => new DOMParser().parseFromString(fileContent.toString('utf8'), 'application/xml');
 
 const serializeXML = dom =>
-  '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
-  (new XMLSerializer()).serializeToString(dom);
-
+  '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' + new XMLSerializer().serializeToString(dom);
 
 /**
  * Helper function to set a spreadsheet cell's value
@@ -73,15 +64,7 @@ const serializeXML = dom =>
  * @param {Element} element
  * @param {String} value
  */
-const putStringTemplate = (
-  sheetDoc,
-  stringsDoc,
-  sst,
-  sharedStringsUniqueCount,
-  sharedStringsCount,
-  element,
-  value
-) => {
+const putStringTemplate = (sheetDoc, stringsDoc, sst, sharedStringsUniqueCount, sharedStringsCount, element, value) => {
   let vTag = element.querySelector('v');
   const hasVTag = vTag !== null;
   const textValue = String(value);
@@ -124,11 +107,11 @@ const getReportData = async (date, thisEstablishment) => {
 
   return {
     date: date.toISOString(),
-    trainings: await getTrainingReportData(thisEstablishment.id)
+    trainings: await getTrainingReportData(thisEstablishment.id),
   };
 };
 
-const updateProps = ('JobName,Category,Title,Completed,Expires,Accredited').split(',');
+const updateProps = 'JobName,Category,Title,Expires,Accredited'.split(',');
 
 /**
  * Helper Function used to create expired/expiring traing data
@@ -137,24 +120,24 @@ const updateProps = ('JobName,Category,Title,Completed,Expires,Accredited').spli
  * @param {Object} All customized expired/expiring training report data
  */
 const createExpireExpiringData = async (trainingData, reportData) => {
-  if(trainingData.length && trainingData.length > 0){
+  if (trainingData.length && trainingData.length > 0) {
     trainingData.forEach(async value => {
-      if(reportData.length === 0){
-        reportData.push({ID: value.ID, NameOrIdValue: value.NameOrIdValue, Count: 0});
-      }else{
+      if (reportData.length === 0) {
+        reportData.push({ ID: value.ID, NameOrIdValue: value.NameOrIdValue, Count: 0 });
+      } else {
         let foundTrn = false;
         reportData.forEach(async (worker, key) => {
-          if(worker.ID === value.ID){
+          if (worker.ID === value.ID) {
             foundTrn = true;
           }
         });
-        if(!foundTrn){
-          reportData.push({ID: value.ID, NameOrIdValue: value.NameOrIdValue, Count: 0});
+        if (!foundTrn) {
+          reportData.push({ ID: value.ID, NameOrIdValue: value.NameOrIdValue, Count: 0 });
         }
       }
     });
   }
-}
+};
 
 /**
  * Function used to customize training report data
@@ -166,46 +149,54 @@ const getTrainingReportData = async establishmentId => {
   expiredWorkerTrainings = [];
   expiringWorkerTrainings = [];
   const trainingData = await getTrainingData(establishmentId);
-    await createExpireExpiringData(trainingData, expiredWorkerTrainings);
-    await createExpireExpiringData(trainingData, expiringWorkerTrainings);
-    trainingCounts.expiredTrainingCount = 0;
-    trainingCounts.expiringTrainingCount = 0;
-    if(expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0){
-      trainingData.forEach(async value => {
-        if(value.Expires && value.Expires !== null){
-          let expiringDate = moment(value.Expires);
-          let currentDate = moment();
-          if(currentDate > expiringDate){
-            trainingCounts.expiredTrainingCount++;
-            value.Status = 'Expired';
-            //create expired workers data
-            expiredWorkerTrainings.forEach(async worker => {
-              if(worker.ID === value.ID){
-                worker.Count++;
-              }
-            });
-          }else if(expiringDate.diff(currentDate, 'days') <= 90){
-            trainingCounts.expiringTrainingCount++;
-            value.Status = 'Expiring soon';
-            //create expiring workers data
-            expiringWorkerTrainings.forEach(worker => {
-              if(worker.ID === value.ID){
-                worker.Count++;
-              }
-            });
-          }else{
-            value.Status = 'Up-to-date';
-          }
-        }else{
-          value.Status = 'Missing';
+  await createExpireExpiringData(trainingData, expiredWorkerTrainings);
+  await createExpireExpiringData(trainingData, expiringWorkerTrainings);
+  trainingCounts.expiredTrainingCount = 0;
+  trainingCounts.expiringTrainingCount = 0;
+  if (expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0) {
+    for(let i = 0; i < trainingData.length; i++){
+      trainingData[i].Title = trainingData[i].Title.replace(/%20/g, " ");
+      trainingData[i].Completed = trainingData[i].Completed === null? '': trainingData[i].Completed;
+      let jobNameResult = await getJobName(trainingData[i].MainJobFKValue);
+      if(jobNameResult && jobNameResult.length > 0){
+        trainingData[i].JobName = jobNameResult[0].JobName;
+      }else{
+        trainingData[i].JobName = 'Missing';
+      }
+      if (trainingData[i].Expires && trainingData[i].Expires !== null) {
+        let expiringDate = moment(trainingData[i].Expires);
+        let currentDate = moment();
+        if (currentDate > expiringDate) {
+          trainingCounts.expiredTrainingCount++;
+          trainingData[i].Status = 'Expired';
+          //create expired workers data
+          expiredWorkerTrainings.forEach(async worker => {
+            if (worker.ID === trainingData[i].ID) {
+              worker.Count++;
+            }
+          });
+        } else if (expiringDate.diff(currentDate, 'days') <= 90) {
+          trainingCounts.expiringTrainingCount++;
+          trainingData[i].Status = 'Expiring soon';
+          //create expiring workers data
+          expiringWorkerTrainings.forEach(worker => {
+            if (worker.ID === trainingData[i].ID) {
+              worker.Count++;
+            }
+          });
+        } else {
+          trainingData[i].Status = 'Up-to-date';
         }
-        updateProps.forEach(prop => {
-          if (value[prop] === null) {
-            value[prop] = 'Missing';
-          }
-        });
+      } else {
+        trainingData[i].Status = 'Missing';
+      }
+      updateProps.forEach(prop => {
+        if (trainingData[i][prop] === null) {
+          trainingData[i][prop] = 'Missing';
+        }
       });
     }
+  }
   return trainingData;
 };
 
@@ -223,10 +214,10 @@ const styleLookup = {
       D: 2,
       E: 2,
       F: 11,
-     // G: 1,
+      // G: 1,
       H: 12,
       I: 12,
-      J: 12
+      J: 12,
     },
     OVRLAST: {
       A: 2,
@@ -240,7 +231,7 @@ const styleLookup = {
       //G: 22,
       H: 22,
       I: 22,
-      J: 22
+      J: 22,
     },
     TRNREGULAR: {
       A: 8,
@@ -251,7 +242,7 @@ const styleLookup = {
       //F: 7,
       F: 8,
       G: 8,
-      H: 7
+      H: 7,
     },
     TRNLAST: {
       A: 9,
@@ -262,8 +253,8 @@ const styleLookup = {
       //F: 13,
       F: 9,
       G: 9,
-      H: 7
-    }
+      H: 7,
+    },
   },
   RED: {
     OVRREGULAR: {
@@ -278,7 +269,7 @@ const styleLookup = {
       G: 11,
       H: 21,
       I: 12,
-      J: 66
+      J: 66,
     },
     OVRLAST: {
       A: 2,
@@ -292,7 +283,7 @@ const styleLookup = {
       G: 22,
       H: 22,
       I: 66,
-      J: 66
+      J: 66,
     },
     TRNREGULAR: {
       A: 10,
@@ -303,7 +294,7 @@ const styleLookup = {
       //F: 12,
       F: 10,
       G: 10,
-      H: 12
+      H: 12,
     },
     TRNLAST: {
       A: 11,
@@ -314,9 +305,9 @@ const styleLookup = {
       //F: 13,
       F: 11,
       G: 11,
-      H: 13
-    }
-  }
+      H: 13,
+    },
+  },
 };
 /**
  * Helper function used to set column's font style
@@ -347,10 +338,7 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
     isRed = true;
   }
 
-  putString(
-    cellToChange,
-    value
-  );
+  putString(cellToChange, value);
 
   setStyle(cellToChange, columnText, rowType, isRed);
 };
@@ -374,12 +362,16 @@ const updateOverviewSheet = (
 ) => {
   debuglog('updating overview sheet');
 
-  const putString = putStringTemplate.bind(null, overviewSheet, sharedStrings, sst, sharedStringsUniqueCount, sharedStringsCount);
-  // put total expired training count
-  putString(
-    overviewSheet.querySelector("c[r='D5']"),
-    trainingCounts.expiredTrainingCount
+  const putString = putStringTemplate.bind(
+    null,
+    overviewSheet,
+    sharedStrings,
+    sst,
+    sharedStringsUniqueCount,
+    sharedStringsCount
   );
+  // put total expired training count
+  putString(overviewSheet.querySelector("c[r='D5']"), trainingCounts.expiredTrainingCount);
 
   putString(
     overviewSheet.querySelector("c[r='G5']"),
@@ -388,10 +380,7 @@ const updateOverviewSheet = (
   overviewSheet.querySelector("c[r='G5']").setAttribute('s', 24);
 
   // put total expiring soon training count
-  putString(
-    overviewSheet.querySelector("c[r='D6']"),
-    trainingCounts.expiringTrainingCount
-  );
+  putString(overviewSheet.querySelector("c[r='D6']"), trainingCounts.expiringTrainingCount);
   putString(
     overviewSheet.querySelector("c[r='G7']"),
     `You have ${trainingCounts.expiringTrainingCount} records expiring soon`
@@ -406,23 +395,21 @@ const updateOverviewSheet = (
 
   putString(
     overviewSheet.querySelector("c[r='G9']"),
-    `You have ${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount} staff members with expired or`
+    `You have ${trainingCounts.expiredTrainingCount +
+      trainingCounts.expiringTrainingCount} staff members with expired or`
   );
   overviewSheet.querySelector("c[r='G9']").setAttribute('s', 30);
 
-  putString(
-    overviewSheet.querySelector("c[r='G10']"),
-    `expiring training counts`
-  );
+  putString(overviewSheet.querySelector("c[r='G10']"), `expiring training counts`);
   overviewSheet.querySelector("c[r='G10']").setAttribute('s', 30);
 
   //put all expiring traing details
   let currentRowBottom = overviewSheet.querySelector("row[r='17']");
   let rowIndexBottom = 17;
-  let updateRowIndex = rowIndexBottom + expiringWorkerTrainings.length-1;
+  let updateRowIndex = rowIndexBottom + expiringWorkerTrainings.length - 1;
 
-  for(; rowIndexBottom >= 13; rowIndexBottom--, updateRowIndex--) {
-    if(rowIndexBottom === 17) {
+  for (; rowIndexBottom >= 13; rowIndexBottom--, updateRowIndex--) {
+    if (rowIndexBottom === 17) {
       // fix the dimensions tag value
       const dimension = overviewSheet.querySelector('dimension');
       dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + updateRowIndex);
@@ -434,16 +421,16 @@ const updateOverviewSheet = (
 
     currentRowBottom.setAttribute('r', updateRowIndex);
 
-    while(currentRowBottom.previousSibling !== null) {
+    while (currentRowBottom.previousSibling !== null) {
       currentRowBottom = currentRowBottom.previousSibling;
 
-      if(currentRowBottom.nodeName === 'row') {
+      if (currentRowBottom.nodeName === 'row') {
         break;
       }
     }
   }
 
-  let bottomRowIndex = 17 + expiringWorkerTrainings.length-1;
+  let bottomRowIndex = 17 + expiringWorkerTrainings.length - 1;
   const templateRowExpiring = overviewSheet.querySelector(`row[r='${bottomRowIndex}']`);
   let currentRowExpiring = templateRowExpiring;
   let rowIndexExpiring = bottomRowIndex + 1;
@@ -477,26 +464,27 @@ const updateOverviewSheet = (
     for (let column = 0; column < 8; column++) {
       const columnText = String.fromCharCode(column + 65);
 
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRowExpiring.querySelector(`c[r='${columnText}${row + bottomRowIndex}']`);
+      const cellToChange =
+        typeof nextSibling.querySelector === 'function'
+          ? nextSibling
+          : currentRowExpiring.querySelector(`c[r='${columnText}${row + bottomRowIndex}']`);
       switch (columnText) {
-        case 'C': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            expiringWorkerTrainings[row].NameOrIdValue,
-            columnText,
-            rowType
-          );
-        } break;
-        case 'D': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            expiringWorkerTrainings[row].Count,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'C':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              expiringWorkerTrainings[row].NameOrIdValue,
+              columnText,
+              rowType
+            );
+          }
+          break;
+        case 'D':
+          {
+            basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].Count, columnText, rowType);
+          }
+          break;
       }
 
       nextSibling = cellToChange ? cellToChange.nextSibling : {};
@@ -506,7 +494,7 @@ const updateOverviewSheet = (
   }
 
   //put all expired training details
-   // clone the row the apropriate number of times
+  // clone the row the apropriate number of times
   const templateRow = overviewSheet.querySelector("row[r='12']");
   let currentRow = templateRow;
   let rowIndex = 13;
@@ -536,26 +524,27 @@ const updateOverviewSheet = (
     for (let column = 0; column < 10; column++) {
       const columnText = String.fromCharCode(column + 65);
 
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 12}']`);
+      const cellToChange =
+        typeof nextSibling.querySelector === 'function'
+          ? nextSibling
+          : currentRow.querySelector(`c[r='${columnText}${row + 12}']`);
       switch (columnText) {
-        case 'C': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            expiredWorkerTrainings[row].NameOrIdValue,
-            columnText,
-            rowType
-          );
-        } break;
-        case 'D': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            expiredWorkerTrainings[row].Count,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'C':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              expiredWorkerTrainings[row].NameOrIdValue,
+              columnText,
+              rowType
+            );
+          }
+          break;
+        case 'D':
+          {
+            basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].Count, columnText, rowType);
+          }
+          break;
       }
 
       nextSibling = cellToChange ? cellToChange.nextSibling : {};
@@ -588,16 +577,13 @@ const updateTrainingsSheet = (
 ) => {
   debuglog('updating trainings sheet');
 
-  const putString = putStringTemplate.bind(null, trainingsSheet, sharedStrings, sst, sharedStringsUniqueCount, sharedStringsCount);
-  // put expired training count
-  putString(
-    trainingsSheet.querySelector("c[r='C1']"),
-    `${trainingCounts.expiredTrainingCount}`
-  );
-  // put expiring soon training count
-  putString(
-    trainingsSheet.querySelector("c[r='C2']"),
-    `${trainingCounts.expiringTrainingCount}`
+  const putString = putStringTemplate.bind(
+    null,
+    trainingsSheet,
+    sharedStrings,
+    sst,
+    sharedStringsUniqueCount,
+    sharedStringsCount
   );
 
   // clone the row the apropriate number of times
@@ -641,95 +627,69 @@ const updateTrainingsSheet = (
       const columnText = String.fromCharCode(column + 65);
       const isRed = false;
 
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 7}']`);
+      const cellToChange =
+        typeof nextSibling.querySelector === 'function'
+          ? nextSibling
+          : currentRow.querySelector(`c[r='${columnText}${row + 7}']`);
       switch (columnText) {
-        case 'A': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            trainingArray[row].NameOrIdValue,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'B': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            trainingArray[row].JobName,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'C': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            trainingArray[row].Category,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'D': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            trainingArray[row].Title,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'E': {
-          putString(
-            trainingsSheet.querySelector(`c[r='${columnText}${row + 7}']`),
-            trainingArray[row].Status
-          );
-          let styleCol;
-          if(trainingArray[row].Status === 'Up-to-date'){
-            styleCol = 19;
-          }else if(trainingArray[row].Status === 'Expired'){
-            styleCol = 20;
-          }else if(trainingArray[row].Status === 'Expiring soon'){
-            styleCol = 21;
-          }else{
-            styleCol = 20;
+        case 'A':
+          {
+            basicValidationUpdate(putString, cellToChange, trainingArray[row].NameOrIdValue, columnText, rowType);
           }
-          trainingsSheet.querySelector(`c[r='${columnText}${row + 7}']`).setAttribute('s', styleCol);
-        } break;
+          break;
 
-        case 'F': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            trainingArray[row].ExpiredOn,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'B':
+          {
+            basicValidationUpdate(putString, cellToChange, trainingArray[row].JobName, columnText, rowType);
+          }
+          break;
 
-        case 'G': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            trainingArray[row].Completed,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'C':
+          {
+            basicValidationUpdate(putString, cellToChange, trainingArray[row].Category, columnText, rowType);
+          }
+          break;
 
-        case 'H': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            trainingArray[row].Accredited,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'D':
+          {
+            basicValidationUpdate(putString, cellToChange, trainingArray[row].Title, columnText, rowType);
+          }
+          break;
+
+        case 'E':
+          {
+            putString(trainingsSheet.querySelector(`c[r='${columnText}${row + 7}']`), trainingArray[row].Status);
+            let styleCol;
+            if (trainingArray[row].Status === 'Up-to-date') {
+              styleCol = 19;
+            } else if (trainingArray[row].Status === 'Expired') {
+              styleCol = 20;
+            } else if (trainingArray[row].Status === 'Expiring soon') {
+              styleCol = 21;
+            } else {
+              styleCol = 20;
+            }
+            trainingsSheet.querySelector(`c[r='${columnText}${row + 7}']`).setAttribute('s', styleCol);
+          }
+          break;
+
+        case 'F':
+          {
+            basicValidationUpdate(putString, cellToChange, trainingArray[row].ExpiredOn, columnText, rowType);
+          }
+          break;
+
+        case 'G':
+          {
+            basicValidationUpdate(putString, cellToChange, trainingArray[row].Completed, columnText, rowType);
+          }
+          break;
+
+        case 'H':
+          {
+            basicValidationUpdate(putString, cellToChange, trainingArray[row].Accredited, columnText, rowType);
+          }
+          break;
       }
 
       nextSibling = cellToChange ? cellToChange.nextSibling : {};
@@ -756,7 +716,7 @@ const getReport = async (date, thisEstablishment) => {
     return null;
   }
 
-  return (new Promise(resolve => {
+  return new Promise(resolve => {
     const thePath = path.join(__dirname, folderName);
     const walker = walk.walk(thePath);
     const outputZip = new JsZip();
@@ -766,8 +726,11 @@ const getReport = async (date, thisEstablishment) => {
     debuglog('iterating filesystem', thePath);
 
     walker.on('file', (root, fileStats, next) => {
-      const pathName = root.replace(thePath, '').replace('\\', '/').replace(/^\//, '');
-      const zipPath = (pathName === '' ? fileStats.name : path.join(pathName, fileStats.name));
+      const pathName = root
+        .replace(thePath, '')
+        .replace('\\', '/')
+        .replace(/^\//, '');
+      const zipPath = pathName === '' ? fileStats.name : path.join(pathName, fileStats.name);
       const readPath = path.join(thePath, zipPath);
       debuglog('file found', readPath);
 
@@ -776,21 +739,29 @@ const getReport = async (date, thisEstablishment) => {
 
         if (!err) {
           switch (zipPath) {
-            case overviewSheetName: {
-              overviewSheet = parseXML(fileContent);
-            } break;
+            case overviewSheetName:
+              {
+                overviewSheet = parseXML(fileContent);
+              }
+              break;
 
-            case trainingsSheetName: {
-              trainingsSheet = parseXML(fileContent);
-            } break;
+            case trainingsSheetName:
+              {
+                trainingsSheet = parseXML(fileContent);
+              }
+              break;
 
-            case sharedStringsName: {
-              sharedStrings = parseXML(fileContent);
-            } break;
+            case sharedStringsName:
+              {
+                sharedStrings = parseXML(fileContent);
+              }
+              break;
 
-            default: {
-              outputZip.file(zipPath, fileContent);
-            } break;
+            default:
+              {
+                outputZip.file(zipPath, fileContent);
+              }
+              break;
           }
         }
 
@@ -808,27 +779,37 @@ const getReport = async (date, thisEstablishment) => {
         const sharedStringsCount = [parseInt(sst.getAttribute('count'), 10)];
 
         // update the overview sheet with the report data and add it to the zip
-        outputZip.file(overviewSheetName, serializeXML(updateOverviewSheet(
-          overviewSheet,
-          reportData,
-          sharedStrings,
-          sst,
-          sharedStringsUniqueCount, // pass unique count by reference rather than by value
-          sharedStringsCount
-        )));
+        outputZip.file(
+          overviewSheetName,
+          serializeXML(
+            updateOverviewSheet(
+              overviewSheet,
+              reportData,
+              sharedStrings,
+              sst,
+              sharedStringsUniqueCount, // pass unique count by reference rather than by value
+              sharedStringsCount
+            )
+          )
+        );
 
         //outputZip.file(establishmentsSheetName, serializeXML(establishmentsSheet));
         //outputZip.file(trainingsSheetName, serializeXML(updateTrainingsSheet));
 
         // update the trainings sheet with the report data and add it to the zip
-        outputZip.file(trainingsSheetName, serializeXML(updateTrainingsSheet(
-          trainingsSheet,
-          reportData,
-          sharedStrings,
-          sst,
-          sharedStringsUniqueCount, // pass unique count by reference rather than by value
-          sharedStringsCount
-        )));
+        outputZip.file(
+          trainingsSheetName,
+          serializeXML(
+            updateTrainingsSheet(
+              trainingsSheet,
+              reportData,
+              sharedStrings,
+              sst,
+              sharedStringsUniqueCount, // pass unique count by reference rather than by value
+              sharedStringsCount
+            )
+          )
+        );
 
         // update the shared strings counts we've been keeping track of
         sst.setAttribute('uniqueCount', sharedStringsUniqueCount[0]);
@@ -842,20 +823,20 @@ const getReport = async (date, thisEstablishment) => {
 
       resolve(outputZip);
     });
-  }))
-
-    .then(outputZip => outputZip.generateAsync({
+  }).then(outputZip =>
+    outputZip.generateAsync({
       type: 'nodebuffer',
-      compression: 'DEFLATE'
-    }));
+      compression: 'DEFLATE',
+    })
+  );
 };
 
 // Prevent multiple training report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
-const acquireLock = async function (logic, newState, req, res) {
+const acquireLock = async function(logic, newState, req, res) {
   const { establishmentId } = req;
 
-  req.startTime = (new Date()).toISOString();
+  req.startTime = new Date().toISOString();
 
   console.log(`Acquiring lock for establishment ${establishmentId}.`);
 
@@ -867,11 +848,9 @@ const acquireLock = async function (logic, newState, req, res) {
   // close the response either way and continue processing in the background
   if (currentLockState[1] === 0) {
     console.log('Lock *NOT* acquired.');
-    res
-      .status(409)
-      .send({
-        message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`
-      });
+    res.status(409).send({
+      message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`,
+    });
 
     return;
   }
@@ -881,18 +860,20 @@ const acquireLock = async function (logic, newState, req, res) {
   let nextState;
 
   switch (newState) {
-    case buStates.DOWNLOADING: {
-      // get the current training report state
-      const currentState = await lockStatus(establishmentId);
+    case buStates.DOWNLOADING:
+      {
+        // get the current training report state
+        const currentState = await lockStatus(establishmentId);
 
-      if (currentState.length === 1) {
-        // don't update the status for downloads, just hold the lock
-        newState = currentState[0].TrainingReportState;
-        nextState = null;
-      } else {
-        nextState = buStates.READY;
+        if (currentState.length === 1) {
+          // don't update the status for downloads, just hold the lock
+          newState = currentState[0].TrainingReportState;
+          nextState = null;
+        } else {
+          nextState = buStates.READY;
+        }
       }
-    } break;
+      break;
 
     case buStates.COMPLETING:
       nextState = buStates.READY;
@@ -909,19 +890,15 @@ const acquireLock = async function (logic, newState, req, res) {
 
   req.buRequestId = String(uuid()).toLowerCase();
 
-  res
-    .status(200)
-    .send({
-      message: `Lock for establishment ${establishmentId} acquired.`,
-      requestId: req.buRequestId
-    });
+  res.status(200).send({
+    message: `Lock for establishment ${establishmentId} acquired.`,
+    requestId: req.buRequestId,
+  });
 
   // run whatever the original logic was
   try {
     await logic(req, res);
-  } catch (e) {
-
-  }
+  } catch (e) {}
 
   // release the lock
   await releaseLock(req, null, null, nextState);
@@ -937,11 +914,9 @@ const releaseLock = async (req, res, next, nextState = null) => {
   }
 
   if (res !== null) {
-    res
-      .status(200)
-      .send({
-        establishmentId
-      });
+    res.status(200).send({
+      establishmentId,
+    });
   }
 };
 
@@ -956,10 +931,10 @@ const signedUrlGet = async (req, res) => {
         ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         Metadata: {
           username: String(req.username),
-          establishmentId: String(establishmentId)
+          establishmentId: String(establishmentId),
         },
-        Expires: config.get('bulkupload.uploadSignedUrlExpire')
-      })
+        Expires: config.get('bulkupload.uploadSignedUrlExpire'),
+      }),
     });
   } catch (err) {
     console.error('report/training:PreSigned - failed', err.message);
@@ -972,18 +947,20 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
     statusCode = 500;
   }
 
-  return s3.putObject({
-    Bucket,
-    Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-    Body: JSON.stringify({
-      url: req.url,
-      startTime: req.startTime,
-      endTime: (new Date()).toISOString(),
-      responseCode: statusCode,
-      responseBody: body,
-      responseHeaders: (typeof headers === 'object' ? headers : undefined)
+  return s3
+    .putObject({
+      Bucket,
+      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
+      Body: JSON.stringify({
+        url: req.url,
+        startTime: req.startTime,
+        endTime: new Date().toISOString(),
+        responseCode: statusCode,
+        responseBody: body,
+        responseHeaders: typeof headers === 'object' ? headers : undefined,
+      }),
     })
-  }).promise();
+    .promise();
 };
 
 const responseGet = (req, res) => {
@@ -992,7 +969,7 @@ const responseGet = (req, res) => {
 
   if (!uuidRegex.test(buRequestId)) {
     res.status(400).send({
-      message: 'request id must be a uuid'
+      message: 'request id must be a uuid',
     });
 
     return;
@@ -1000,8 +977,9 @@ const responseGet = (req, res) => {
 
   s3.getObject({
     Bucket,
-    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`
-  }).promise()
+    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`,
+  })
+    .promise()
     .then(data => {
       const jsonData = JSON.parse(data.Body.toString());
 
@@ -1025,7 +1003,7 @@ const responseGet = (req, res) => {
       console.log('TrainingReport::responseGet: getting data returned an error:', err);
 
       res.status(404).send({
-        message: 'Not Found'
+        message: 'Not Found',
       });
     });
 };
@@ -1040,10 +1018,11 @@ const lockStatusGet = async (req, res) => {
     .send(
       currentLockState.length === 0
         ? {
-          establishmentId,
-          TrainingReportState: buStates.READY,
-          TrainingReportdLockHeld: true
-        } : currentLockState[0]
+            establishmentId,
+            TrainingReportState: buStates.READY,
+            TrainingReportdLockHeld: true,
+          }
+        : currentLockState[0]
     );
 
   return currentLockState[0];
@@ -1055,15 +1034,15 @@ const reportGet = async (req, res) => {
     const thisEstablishment = new Establishment(req.username);
 
     if (await thisEstablishment.restore(req.establishment.id, false)) {
-        const date = new Date();
-        const report = await getReport(date, thisEstablishment);
+      const date = new Date();
+      const report = await getReport(date, thisEstablishment);
 
-        if (report) {
-          await saveResponse(req, res, 200, report, {
-            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`
-          });
-          console.log('report/training - 200 response');
+      if (report) {
+        await saveResponse(req, res, 200, report, {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`,
+        });
+        console.log('report/training - 200 response');
       } else {
         // only allow on those establishments being a parent
 
@@ -1078,7 +1057,7 @@ const reportGet = async (req, res) => {
     console.error('report/training - failed', err);
     await saveResponse(req, res, 503, {});
   }
-}
+};
 
 // gets report
 // NOTE - the Local Authority report is driven mainly by pgsql (postgres functions) and therefore does not
@@ -1088,6 +1067,7 @@ const reportGet = async (req, res) => {
 /**
  * Handle GET API requests to get Training report data
  */
+
 router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
 router.route('/report').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
 router.route('/lockstatus').get(lockStatusGet);
