@@ -3,7 +3,7 @@ const router = express.Router({mergeParams: true});
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['LocationId'];
+const filteredProperties = ['LocationId', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'Postcode', 'Name'];
 
 // gets current employer type for the known establishment
 router.route('/').get(async (req, res) => {
@@ -56,9 +56,16 @@ router.route('/').post(async (req, res) => {
 
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
-      // With this endpoint we're only interested in name
+      // With this endpoint we're only interested in locationId and address
       const isValidEstablishment = await thisEstablishment.load({
-        locationId: req.body.locationId
+        locationId: req.body.locationId,
+        address1: req.body.addressLine1,
+        address2: req.body.addressLine2 ? req.body.addressLine2 : null,
+        address3: req.body.addressLine3 ? req.body.addressLine3 : null,
+        town: req.body.townCity,
+        county: req.body.county,
+        postcode: req.body.postalCode,
+        name: req.body.locationName
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
