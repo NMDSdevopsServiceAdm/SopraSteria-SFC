@@ -60,8 +60,8 @@ router.route('/').post(async (req, res) => {
       const isValidEstablishment = await thisEstablishment.load({
         locationId: req.body.locationId,
         address1: req.body.addressLine1,
-        address2: req.body.addressLine2,
-        address3: req.body.addressLine3,
+        address2: req.body.addressLine2 ? req.body.addressLine2 : null,
+        address3: req.body.addressLine3 ? req.body.addressLine3 : null,
         town: req.body.townCity,
         county: req.body.county,
         postcode: req.body.postalCode,
