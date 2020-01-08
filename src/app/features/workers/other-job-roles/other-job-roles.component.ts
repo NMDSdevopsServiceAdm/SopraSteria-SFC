@@ -118,6 +118,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
   generateUpdateProps() {
     const { selectedJobRoles, otherJobs } = this.form.value;
+
     return {
       otherJobs: {
         value: otherJobs,
@@ -133,7 +134,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
               };
             }
 
-            return { jobId: j.jobId };
+            return { jobId: j.jobId, title: j.title };
           }),
       },
     };

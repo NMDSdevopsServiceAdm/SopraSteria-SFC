@@ -88,7 +88,7 @@ exports.markOneAsRead = async ({ userUid, notificationUid }) =>
         replacements: {
             nuid: params.notificationUid,
             type: params.type,
-            typUid: params.ownerRequestChangeUid,
+            typUid: params.ownerRequestChangeUid ? params.ownerRequestChangeUid : params.typeUid,
             recipientUserUid: params.recipientUserUid,
             isViewed: false,
             createdByUserUID: params.userUid
@@ -117,6 +117,33 @@ exports.markOneAsRead = async ({ userUid, notificationUid }) =>
     db.query(getRequesterNameQuery, {
       replacements: {
         userUid: userUID,
+      },
+      type: db.QueryTypes.SELECT,
+  });
+
+  const getDeLinkParentDetailsQuery = `
+  select "EstablishmentID" from cqc."User" as individual
+  JOIN cqc."Notifications" as est on est."recipientUserUid" = individual."UserUID"
+  WHERE "typeUid" = :typeUid
+    `;
+
+  exports.getDeLinkParentDetails = async typeUid =>
+    db.query(getDeLinkParentDetailsQuery, {
+      replacements: {
+        typeUid: typeUid,
+      },
+      type: db.QueryTypes.SELECT,
+  });
+
+  const getDeLinkParentNameQuery = `
+  select "NameValue" from cqc."Establishment"
+  WHERE "EstablishmentID" = :estID;
+    `;
+
+  exports.getDeLinkParentName = async estID =>
+    db.query(getDeLinkParentNameQuery, {
+      replacements: {
+        estID: estID,
       },
       type: db.QueryTypes.SELECT,
   });
