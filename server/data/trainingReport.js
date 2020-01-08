@@ -5,11 +5,11 @@ const db = rfr('server/utils/datastore');
 const getTrainingDataQuery =
 `
 SELECT
-  a."NameOrIdValue", a."ID",  c."Category", b."Title", b."Completed", e."JobName",
-  b."Expires", b."Accredited"
+  a."NameOrIdValue", a."ID",  c."Category", b."Title", to_char(b."Completed", :timeFormat) as "Completed", e."JobName",
+  to_char(b."Expires", :timeFormat) as "ExpiredOn", b."Accredited", b."Expires"
 FROM
   cqc."Worker" a
-LEFT JOIN
+JOIN
   cqc."WorkerTraining" b
 ON
   a."ID" = b."WorkerFK"
@@ -33,7 +33,8 @@ exports.getTrainingData = async establishmentId =>
   db.query(getTrainingDataQuery, {
     replacements: {
       establishmentId,
-      falseValue: false
+      falseValue: false,
+      timeFormat: 'DD/MM/YYYY'
     },
     type: db.QueryTypes.SELECT
   });

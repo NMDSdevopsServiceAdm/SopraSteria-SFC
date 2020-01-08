@@ -218,27 +218,29 @@ const styleLookup = {
       A: 2,
       B: 6,
       C: 2,
+      // D: 2,
+      // E: 2,
       D: 2,
       E: 2,
-      F: 2,
-      G: 11,
+      F: 11,
+     // G: 1,
       H: 12,
-     // I: 1,
-      J: 12,
-      K: 12
+      I: 12,
+      J: 12
     },
     OVRLAST: {
       A: 2,
       B: 16,
       C: 2,
+      // D: 2,
+      // E: 2,
       D: 2,
       E: 2,
-      F: 2,
-      G: 21,
+      F: 21,
+      //G: 22,
       H: 22,
-      //I: 22,
-      J: 22,
-      K: 22
+      I: 22,
+      J: 22
     },
     TRNREGULAR: {
       A: 8,
@@ -246,10 +248,10 @@ const styleLookup = {
       C: 8,
       D: 8,
       E: 55,
-      F: 7,
+      //F: 7,
+      F: 8,
       G: 8,
-      H: 8,
-      I: 7
+      H: 7
     },
     TRNLAST: {
       A: 9,
@@ -257,10 +259,10 @@ const styleLookup = {
       C: 9,
       D: 9,
       E: 56,
-      F: 13,
+      //F: 13,
+      F: 9,
       G: 9,
-      H: 9,
-      I: 8
+      H: 13
     }
   },
   RED: {
@@ -268,27 +270,29 @@ const styleLookup = {
       A: 2,
       B: 6,
       C: 7,
+      // D: 67,
+      // E: 9,
       D: 67,
       E: 9,
       F: 65,
-      G: 65,
-      H: 11,
-      I: 21,
-      J: 12,
-      K: 66
+      G: 11,
+      H: 21,
+      I: 12,
+      J: 66
     },
     OVRLAST: {
       A: 2,
       B: 16,
       C: 17,
+      // D: 67,
+      // E: 19,
       D: 67,
       E: 19,
-      F: 65,
-      G: 65,
+      F: 66,
+      G: 22,
       H: 22,
-      I: 22,
-      J: 22,
-      K: 66
+      I: 66,
+      J: 66
     },
     TRNREGULAR: {
       A: 10,
@@ -296,10 +300,10 @@ const styleLookup = {
       C: 10,
       D: 10,
       E: 10,
-      F: 12,
+      //F: 12,
+      F: 10,
       G: 10,
-      H: 10,
-      I: 12
+      H: 12
     },
     TRNLAST: {
       A: 11,
@@ -307,10 +311,10 @@ const styleLookup = {
       C: 11,
       D: 11,
       E: 11,
-      F: 13,
+      //F: 13,
+      F: 11,
       G: 11,
-      H: 11,
-      I: 13
+      H: 13
     }
   }
 };
@@ -335,19 +339,12 @@ const setStyle = (cellToChange, columnText, rowType, isRed) => {
  * @param {String} rowType
  * @param {Boolean} percentColumn
  */
-const basicValidationUpdate = (putString, cellToChange, value, columnText, rowType, percentColumn = false) => {
+const basicValidationUpdate = (putString, cellToChange, value, columnText, rowType) => {
   let isRed = false;
   const stringValue = String(value);
 
-  if (stringValue === 'No' || stringValue === 'Not Eligible' || stringValue === 'Missing') {
+  if (stringValue === 'Missing') {
     isRed = true;
-  }
-
-  if (percentColumn && value) {
-    let percentValue = value.split('%');
-    if (Number(percentValue[0]) !== 100) {
-      isRed = true;
-    }
   }
 
   putString(
@@ -380,51 +377,51 @@ const updateOverviewSheet = (
   const putString = putStringTemplate.bind(null, overviewSheet, sharedStrings, sst, sharedStringsUniqueCount, sharedStringsCount);
   // put total expired training count
   putString(
-    overviewSheet.querySelector("c[r='F5']"),
+    overviewSheet.querySelector("c[r='D5']"),
     trainingCounts.expiredTrainingCount
   );
 
   putString(
-    overviewSheet.querySelector("c[r='I5']"),
+    overviewSheet.querySelector("c[r='G5']"),
     `You have ${trainingCounts.expiredTrainingCount} expired training counts`
   );
-  overviewSheet.querySelector("c[r='I5']").setAttribute('s', 24);
+  overviewSheet.querySelector("c[r='G5']").setAttribute('s', 24);
 
   // put total expiring soon training count
   putString(
-    overviewSheet.querySelector("c[r='F6']"),
+    overviewSheet.querySelector("c[r='D6']"),
     trainingCounts.expiringTrainingCount
   );
   putString(
-    overviewSheet.querySelector("c[r='I7']"),
+    overviewSheet.querySelector("c[r='G7']"),
     `You have ${trainingCounts.expiringTrainingCount} records expiring soon`
   );
-  overviewSheet.querySelector("c[r='I7']").setAttribute('s', 27);
+  overviewSheet.querySelector("c[r='G7']").setAttribute('s', 27);
 
   // put total expiring soon/expired training count
   putString(
-    overviewSheet.querySelector("c[r='F7']"),
+    overviewSheet.querySelector("c[r='D7']"),
     `${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount}`
   );
 
   putString(
-    overviewSheet.querySelector("c[r='I9']"),
+    overviewSheet.querySelector("c[r='G9']"),
     `You have ${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount} staff members with expired or`
   );
-  overviewSheet.querySelector("c[r='I9']").setAttribute('s', 30);
+  overviewSheet.querySelector("c[r='G9']").setAttribute('s', 30);
 
   putString(
-    overviewSheet.querySelector("c[r='I10']"),
+    overviewSheet.querySelector("c[r='G10']"),
     `expiring training counts`
   );
-  overviewSheet.querySelector("c[r='I10']").setAttribute('s', 30);
+  overviewSheet.querySelector("c[r='G10']").setAttribute('s', 30);
 
   //put all expiring traing details
   let currentRowBottom = overviewSheet.querySelector("row[r='17']");
   let rowIndexBottom = 17;
   let updateRowIndex = rowIndexBottom + expiringWorkerTrainings.length-1;
 
-  for(rowIndexBottom >= 13; rowIndexBottom--; updateRowIndex--) {
+  for(; rowIndexBottom >= 13; rowIndexBottom--, updateRowIndex--) {
     if(rowIndexBottom === 17) {
       // fix the dimensions tag value
       const dimension = overviewSheet.querySelector('dimension');
@@ -477,7 +474,7 @@ const updateOverviewSheet = (
     const rowType = row === expiringWorkerTrainings.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 10; column++) {
+    for (let column = 0; column < 8; column++) {
       const columnText = String.fromCharCode(column + 65);
 
       const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRowExpiring.querySelector(`c[r='${columnText}${row + bottomRowIndex}']`);
@@ -492,24 +489,6 @@ const updateOverviewSheet = (
           );
         } break;
         case 'D': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            '0',
-            columnText,
-            rowType
-          );
-        } break;
-        case 'E': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            '0',
-            columnText,
-            rowType
-          );
-        } break;
-        case 'F': {
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -569,24 +548,6 @@ const updateOverviewSheet = (
           );
         } break;
         case 'D': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            '0',
-            columnText,
-            rowType
-          );
-        } break;
-        case 'E': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            '0',
-            columnText,
-            rowType
-          );
-        } break;
-        case 'F': {
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -676,7 +637,7 @@ const updateTrainingsSheet = (
     const rowType = row === trainingArray.length - 1 ? 'TRNLAST' : 'TRNREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 10; column++) {
+    for (let column = 0; column < 9; column++) {
       const columnText = String.fromCharCode(column + 65);
       const isRed = false;
 
@@ -744,7 +705,7 @@ const updateTrainingsSheet = (
           basicValidationUpdate(
             putString,
             cellToChange,
-            'No',
+            trainingArray[row].ExpiredOn,
             columnText,
             rowType
           );
@@ -754,23 +715,13 @@ const updateTrainingsSheet = (
           basicValidationUpdate(
             putString,
             cellToChange,
-            trainingArray[row].Expires,
-            columnText,
-            rowType
-          );
-        } break;
-
-        case 'H': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
             trainingArray[row].Completed,
             columnText,
             rowType
           );
         } break;
 
-        case 'I': {
+        case 'H': {
           basicValidationUpdate(
             putString,
             cellToChange,
@@ -899,7 +850,7 @@ const getReport = async (date, thisEstablishment) => {
     }));
 };
 
-// Prevent multiple wdf report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
+// Prevent multiple training report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
 const acquireLock = async function (logic, newState, req, res) {
   const { establishmentId } = req;
@@ -931,7 +882,7 @@ const acquireLock = async function (logic, newState, req, res) {
 
   switch (newState) {
     case buStates.DOWNLOADING: {
-      // get the current wdf report state
+      // get the current training report state
       const currentState = await lockStatus(establishmentId);
 
       if (currentState.length === 1) {
