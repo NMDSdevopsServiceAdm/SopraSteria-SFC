@@ -14,45 +14,11 @@
 		<col min="6" max="9" width="32.28515625" customWidth="1"/>
 	</cols>
 	<sheetData>
-		<row r="1" spans="1:8" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
-			<c r="A1" s="15"/>
-			<c r="B1" s="17" t="s">
-				<v>
-					7
-				</v>
-			</c>
-			<c r="C1" s="22">
-				<v>8</v>
-			</c>
-			<c r="D1" s="23"/>
-			<c r="E1" s="23"/>
-			<c r="F1" s="23"/>
-			<c r="G1" s="23"/>
-			<c r="H1" s="23"/>
-		</row>
-		<row r="2" spans="1:8" ht="18.399999999999999" customHeight="1" x14ac:dyDescent="0.25">
-			<c r="A2" s="14" t="s">
-				<v>
-					8
-				</v>
-			</c>
-			<c r="B2" s="18" t="s">
-				<v>
-					0
-				</v>
-			</c>
-			<c r="C2" s="22">
-				<v>1</v>
-			</c>
-			<c r="D2" s="23"/>
-			<c r="E2" s="23"/>
-			<c r="F2" s="23"/>
-			<c r="G2" s="23"/>
-			<c r="H2" s="23"/>
-		</row>
-		<row r="3" spans="1:8" ht="8.65" customHeight="1" x14ac:dyDescent="0.25" />
-		<row r="4" spans="1:8" ht="8.65" customHeight="1" x14ac:dyDescent="0.25" />
-		<row r="5" spans="1:8" ht="8.65" customHeight="1" x14ac:dyDescent="0.25"/>
+		<row r="1" spans="1:8" ht="1" customHeight="1" x14ac:dyDescent="0.25" />
+		<row r="2" spans="1:8" ht="1" customHeight="1" x14ac:dyDescent="0.25" />
+		<row r="3" spans="1:8" ht="1" customHeight="1" x14ac:dyDescent="0.25" />
+		<row r="4" spans="1:8" ht="1" customHeight="1" x14ac:dyDescent="0.25" />
+		<row r="5" spans="1:8" ht="1" customHeight="1" x14ac:dyDescent="0.25"/>
 		<row r="6" spans="1:8" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
 			<c r="A6" s="15" t="s">
 				<v>
