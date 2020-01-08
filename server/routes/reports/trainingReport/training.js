@@ -168,9 +168,9 @@ const getTrainingReportData = async establishmentId => {
   const trainingData = await getTrainingData(establishmentId);
     await createExpireExpiringData(trainingData, expiredWorkerTrainings);
     await createExpireExpiringData(trainingData, expiringWorkerTrainings);
+    trainingCounts.expiredTrainingCount = 0;
+    trainingCounts.expiringTrainingCount = 0;
     if(expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0){
-      trainingCounts.expiredTrainingCount = 0;
-      trainingCounts.expiringTrainingCount = 0;
       trainingData.forEach(async value => {
         if(value.Expires && value.Expires !== null){
           let expiringDate = moment(value.Expires);
