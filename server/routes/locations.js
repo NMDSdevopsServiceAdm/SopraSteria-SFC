@@ -4,7 +4,7 @@ const pCodeCheck = require('../utils/postcodeSanitizer');
 const Authorization = require('../utils/security/isAuthenticated');
 const models = require('../models/index');
 
-async function getLocations(req, res, matching) {
+const getLocations = async (req, res, matching) => {
   let locationData = [];
 
   //Find matching location data
@@ -47,7 +47,7 @@ async function getLocations(req, res, matching) {
   }
 }
 
-async function getLocationsByPostcode(req, res, matching) {
+const getLocationsByPostcode = async (req, res, matching) => {
   let locationData = [];
 
   let locationIds = [];
@@ -153,3 +153,5 @@ function createLocationDetailsObject(data) {
 }
 
 module.exports = router;
+module.exports.getLocations = getLocations;
+module.exports.getLocationsByPostcode = getLocationsByPostcode;
