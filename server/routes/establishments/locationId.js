@@ -59,12 +59,12 @@ router.route('/').post(async (req, res) => {
       // With this endpoint we're only interested in locationId and address
       const isValidEstablishment = await thisEstablishment.load({
         locationId: req.body.locationId,
-        address1: req.body.address1,
-        address2: req.body.address2,
-        address3: req.body.address3,
-        town: req.body.town,
+        address1: req.body.addressLine1,
+        address2: req.body.addressLine2,
+        address3: req.body.addressLine3,
+        town: req.body.townCity,
         county: req.body.county,
-        postcode: req.body.postCode,
+        postcode: req.body.postalCode,
         name: req.body.locationName
       });
 
