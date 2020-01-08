@@ -22,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
     if (token) {
       if (this.jwt.isTokenExpired(token)) {
         this.authService.logout();
-        return throwError(new HttpErrorResponse({ error: 'Not Authorised', status: 403 }));
+        // return throwError(new HttpErrorResponse({ error: 'Not Authorised', status: 403 }));
       }
 
       const cloned = request.clone({
