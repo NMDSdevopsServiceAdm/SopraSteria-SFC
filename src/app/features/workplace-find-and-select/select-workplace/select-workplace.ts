@@ -74,7 +74,6 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.form.valid) {
       this.save();
-      this.router.navigate([`${this.flow}/select-main-service`]);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

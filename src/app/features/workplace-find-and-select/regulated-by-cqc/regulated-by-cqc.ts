@@ -95,6 +95,12 @@ export class RegulatedByCQC implements OnInit, OnDestroy, AfterViewInit {
     this.nonRegulatedPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
     this.nonRegulatedPostcode.updateValueAndValidity();
   }
+  public validateLocationChange(): void {
+    this.regulatedByCQC.setValue('yes');
+    this.group.setValidators([CustomValidators.checkMultipleInputValues]);
+    this.nonRegulatedPostcode.setValue('');
+    this.group.updateValueAndValidity();
+  }
 
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
@@ -200,32 +206,26 @@ export class RegulatedByCQC implements OnInit, OnDestroy, AfterViewInit {
     if (this.regulatedByCQC.value === 'yes') {
       if (this.regulatedPostcode.value.length) {
         this.subscriptions.add(
-          this.locationService
-            .getLocationByPostCode(this.regulatedPostcode.value)
-            .subscribe(
-              (data: LocationSearchResponse) => this.onSuccess(data),
-              (error: HttpErrorResponse) => this.onError(error)
-            )
+          this.locationService.getLocationByPostCode(this.regulatedPostcode.value).subscribe(
+            (data: LocationSearchResponse) => this.onSuccess(data),
+            (error: HttpErrorResponse) => this.onError(error)
+          )
         );
       } else if (this.locationId.value.length) {
         this.subscriptions.add(
-          this.locationService
-            .getLocationByLocationId(this.locationId.value)
-            .subscribe(
-              (data: LocationSearchResponse) => this.onSuccess(data),
-              (error: HttpErrorResponse) => this.onError(error)
-            )
+          this.locationService.getLocationByLocationId(this.locationId.value).subscribe(
+            (data: LocationSearchResponse) => this.onSuccess(data),
+            (error: HttpErrorResponse) => this.onError(error)
+          )
         );
       }
     } else if (this.regulatedByCQC.value === 'no') {
       if (this.nonRegulatedPostcode.value.length) {
         this.subscriptions.add(
-          this.locationService
-            .getAddressesByPostCode(this.nonRegulatedPostcode.value)
-            .subscribe(
-              (data: LocationSearchResponse) => this.onSuccess(data),
-              (error: HttpErrorResponse) => this.onError(error)
-            )
+          this.locationService.getAddressesByPostCode(this.nonRegulatedPostcode.value).subscribe(
+            (data: LocationSearchResponse) => this.onSuccess(data),
+            (error: HttpErrorResponse) => this.onError(error)
+          )
         );
       }
     }

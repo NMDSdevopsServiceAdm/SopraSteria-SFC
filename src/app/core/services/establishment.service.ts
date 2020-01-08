@@ -49,6 +49,18 @@ interface MainServiceRequest {
     other?: string;
   };
 }
+interface CQCDatilsRequest {
+  locationId?: string;
+  locationName: string;
+  addressLine1: string;
+  addressLine2: string;
+  county: string;
+  postalCode: string;
+  townCity: string;
+  isRegulated?: boolean;
+  mainService?: string;
+  mainServiceOther?: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -211,6 +223,10 @@ export class EstablishmentService {
       `/api/establishment/${this.establishmentId}/localIdentifier`,
       request
     );
+  }
+
+  updateCQCDetails(establishmentId, data: CQCDatilsRequest): Observable<any> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/locationId`, data);
   }
 
   public deleteWorkplace(workplaceUid: string): Observable<any> {
