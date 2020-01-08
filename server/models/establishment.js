@@ -180,6 +180,26 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"PostCode"'
     },
+    PostcodeSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"PostcodeSavedAt"'
+    },
+    PostcodeChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"PostcodeChangedAt"'
+    },
+    PostcodeSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"PostcodeSavedBy"'
+    },
+    PostcodeChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"PostcodeChangedBy"'
+    },
     isRegulated: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

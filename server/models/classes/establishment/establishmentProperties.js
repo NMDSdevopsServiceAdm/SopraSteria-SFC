@@ -21,6 +21,7 @@ const address2Property = require("./properties/address2Property").Address2Proper
 const address3Property = require("./properties/address3Property").Address3Property;
 const townProperty = require("./properties/townProperty").TownProperty;
 const countyProperty = require("./properties/countyProperty").CountyProperty;
+const postcodeProperty = require("./properties/postcodeProperty").PostcodeProperty;
 
 class EstablishmentPropertyManager {
     constructor() {
@@ -45,6 +46,7 @@ class EstablishmentPropertyManager {
         this._thisManager.registerProperty(address3Property);
         this._thisManager.registerProperty(townProperty);
         this._thisManager.registerProperty(countyProperty);
+        this._thisManager.registerProperty(postcodeProperty);
     }
 
     get manager() {
