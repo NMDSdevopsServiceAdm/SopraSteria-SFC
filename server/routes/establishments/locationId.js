@@ -3,7 +3,7 @@ const router = express.Router({mergeParams: true});
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['LocationId', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'Postcode'];
+const filteredProperties = ['LocationId', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'Postcode', 'Name'];
 
 // gets current employer type for the known establishment
 router.route('/').get(async (req, res) => {
@@ -64,7 +64,8 @@ router.route('/').post(async (req, res) => {
         address3: req.body.address3,
         town: req.body.town,
         county: req.body.county,
-        postcode: req.body.postcode
+        postcode: req.body.postCode,
+        name: req.body.locationName
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
