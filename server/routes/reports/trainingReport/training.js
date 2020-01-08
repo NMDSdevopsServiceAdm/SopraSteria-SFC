@@ -262,7 +262,7 @@ const styleLookup = {
       //F: 13,
       F: 9,
       G: 9,
-      H: 13
+      H: 7
     }
   },
   RED: {
