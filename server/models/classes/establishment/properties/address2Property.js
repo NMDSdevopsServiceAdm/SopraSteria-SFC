@@ -4,6 +4,7 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 exports.Address2Property = class Address2Property extends ChangePropertyPrototype {
     constructor() {
         super('Address2');
+        this._allowNull = true;
     }
 
     static clone() {
