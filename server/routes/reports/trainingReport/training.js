@@ -41,6 +41,7 @@ const trainingCounts = {
   expiringTrainingCount: 0,
   missingMandatoryTrainingCount: 0,
   missingExpiringMandatoryTrainingCount: 0,
+  upToDateTrainingCount: 0
 };
 
 let expiredWorkerTrainings = [];
@@ -111,7 +112,7 @@ const getReportData = async (date, thisEstablishment) => {
   };
 };
 
-const updateProps = 'JobName,Category,Title,Expires,Accredited'.split(',');
+const updateProps = 'JobName,Category,Title,Expires'.split(',');
 
 /**
  * Helper Function used to create expired/expiring traing data
@@ -153,10 +154,12 @@ const getTrainingReportData = async establishmentId => {
   await createExpireExpiringData(trainingData, expiringWorkerTrainings);
   trainingCounts.expiredTrainingCount = 0;
   trainingCounts.expiringTrainingCount = 0;
+  trainingCounts.upToDateTrainingCount = 0;
   if (expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0) {
     for(let i = 0; i < trainingData.length; i++){
       trainingData[i].Title = trainingData[i].Title.replace(/%20/g, " ");
       trainingData[i].Completed = trainingData[i].Completed === null? '': trainingData[i].Completed;
+      trainingData[i].Accredited = trainingData[i].Accredited === null? '': trainingData[i].Accredited;
       let jobNameResult = await getJobName(trainingData[i].MainJobFKValue);
       if(jobNameResult && jobNameResult.length > 0){
         trainingData[i].JobName = jobNameResult[0].JobName;
@@ -186,6 +189,7 @@ const getTrainingReportData = async establishmentId => {
           });
         } else {
           trainingData[i].Status = 'Up-to-date';
+          trainingCounts.upToDateTrainingCount++;
         }
       } else {
         trainingData[i].Status = 'Missing';
@@ -371,16 +375,18 @@ const updateOverviewSheet = (
     sharedStringsCount
   );
   // put total expired training count
-  putString(overviewSheet.querySelector("c[r='D5']"), trainingCounts.expiredTrainingCount);
+  putString(overviewSheet.querySelector("c[r='D6']"), trainingCounts.expiredTrainingCount);
+  // put total up-to-date training count
+  putString(overviewSheet.querySelector("c[r='D5']"), trainingCounts.upToDateTrainingCount);
 
   putString(
     overviewSheet.querySelector("c[r='G5']"),
-    `You have ${trainingCounts.expiredTrainingCount} expired training counts`
+    `You have ${trainingCounts.expiredTrainingCount} expired training records`
   );
   overviewSheet.querySelector("c[r='G5']").setAttribute('s', 24);
 
   // put total expiring soon training count
-  putString(overviewSheet.querySelector("c[r='D6']"), trainingCounts.expiringTrainingCount);
+  putString(overviewSheet.querySelector("c[r='D7']"), trainingCounts.expiringTrainingCount);
   putString(
     overviewSheet.querySelector("c[r='G7']"),
     `You have ${trainingCounts.expiringTrainingCount} records expiring soon`
@@ -389,8 +395,8 @@ const updateOverviewSheet = (
 
   // put total expiring soon/expired training count
   putString(
-    overviewSheet.querySelector("c[r='D7']"),
-    `${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount}`
+    overviewSheet.querySelector("c[r='D8']"),
+    `${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount + trainingCounts.upToDateTrainingCount}`
   );
 
   putString(
@@ -400,16 +406,16 @@ const updateOverviewSheet = (
   );
   overviewSheet.querySelector("c[r='G9']").setAttribute('s', 30);
 
-  putString(overviewSheet.querySelector("c[r='G10']"), `expiring training counts`);
+  putString(overviewSheet.querySelector("c[r='G10']"), `expiring training records`);
   overviewSheet.querySelector("c[r='G10']").setAttribute('s', 30);
 
   //put all expiring traing details
-  let currentRowBottom = overviewSheet.querySelector("row[r='17']");
-  let rowIndexBottom = 17;
+  let currentRowBottom = overviewSheet.querySelector("row[r='18']");
+  let rowIndexBottom = 18;
   let updateRowIndex = rowIndexBottom + expiringWorkerTrainings.length - 1;
 
-  for (; rowIndexBottom >= 13; rowIndexBottom--, updateRowIndex--) {
-    if (rowIndexBottom === 17) {
+  for (; rowIndexBottom >= 14; rowIndexBottom--, updateRowIndex--) {
+    if (rowIndexBottom === 18) {
       // fix the dimensions tag value
       const dimension = overviewSheet.querySelector('dimension');
       dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + updateRowIndex);
@@ -430,7 +436,7 @@ const updateOverviewSheet = (
     }
   }
 
-  let bottomRowIndex = 17 + expiringWorkerTrainings.length - 1;
+  let bottomRowIndex = 18 + expiringWorkerTrainings.length - 1;
   const templateRowExpiring = overviewSheet.querySelector(`row[r='${bottomRowIndex}']`);
   let currentRowExpiring = templateRowExpiring;
   let rowIndexExpiring = bottomRowIndex + 1;
@@ -495,9 +501,9 @@ const updateOverviewSheet = (
 
   //put all expired training details
   // clone the row the apropriate number of times
-  const templateRow = overviewSheet.querySelector("row[r='12']");
+  const templateRow = overviewSheet.querySelector("row[r='13']");
   let currentRow = templateRow;
-  let rowIndex = 13;
+  let rowIndex = 14;
   if (expiredWorkerTrainings.length > 0) {
     for (let i = 0; i < expiredWorkerTrainings.length - 1; i++) {
       const tempRow = templateRow.cloneNode(true);
@@ -527,7 +533,7 @@ const updateOverviewSheet = (
       const cellToChange =
         typeof nextSibling.querySelector === 'function'
           ? nextSibling
-          : currentRow.querySelector(`c[r='${columnText}${row + 12}']`);
+          : currentRow.querySelector(`c[r='${columnText}${row + 13}']`);
       switch (columnText) {
         case 'C':
           {
@@ -587,9 +593,9 @@ const updateTrainingsSheet = (
   );
 
   // clone the row the apropriate number of times
-  const templateRow = trainingsSheet.querySelector("row[r='7']");
+  const templateRow = trainingsSheet.querySelector("row[r='2']");
   let currentRow = templateRow;
-  let rowIndex = 8;
+  let rowIndex = 3;
   let trainingArray = reportData.trainings;
   if (trainingArray.length > 1) {
     for (let i = 0; i < trainingArray.length - 1; i++) {
@@ -630,7 +636,7 @@ const updateTrainingsSheet = (
       const cellToChange =
         typeof nextSibling.querySelector === 'function'
           ? nextSibling
-          : currentRow.querySelector(`c[r='${columnText}${row + 7}']`);
+          : currentRow.querySelector(`c[r='${columnText}${row + 2}']`);
       switch (columnText) {
         case 'A':
           {
@@ -658,7 +664,7 @@ const updateTrainingsSheet = (
 
         case 'E':
           {
-            putString(trainingsSheet.querySelector(`c[r='${columnText}${row + 7}']`), trainingArray[row].Status);
+            putString(trainingsSheet.querySelector(`c[r='${columnText}${row + 2}']`), trainingArray[row].Status);
             let styleCol;
             if (trainingArray[row].Status === 'Up-to-date') {
               styleCol = 19;
@@ -669,7 +675,7 @@ const updateTrainingsSheet = (
             } else {
               styleCol = 20;
             }
-            trainingsSheet.querySelector(`c[r='${columnText}${row + 7}']`).setAttribute('s', styleCol);
+            trainingsSheet.querySelector(`c[r='${columnText}${row + 2}']`).setAttribute('s', styleCol);
           }
           break;
 
