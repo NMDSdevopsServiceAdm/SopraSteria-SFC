@@ -16,6 +16,7 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
+  protected isCQCLocationUpdate: boolean;
 
   constructor(
     protected backService: BackService,

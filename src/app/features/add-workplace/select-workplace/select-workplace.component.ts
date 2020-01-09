@@ -9,7 +9,7 @@ import { SelectWorkplace } from '@features/workplace-find-and-select/select-work
 
 @Component({
   selector: 'app-select-workplace',
-  templateUrl: './select-workplace.component.html',
+  templateUrl: '../../workplace-find-and-select/select-workplace/select-workplace.component.html',
 })
 export class SelectWorkplaceComponent extends SelectWorkplace {
   constructor(
