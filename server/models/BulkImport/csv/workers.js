@@ -216,7 +216,7 @@ class Worker {
 
     return _headers_v1_without_chgUnique;
   }
-  
+
   headers (MAX_QUALS) {
     return Worker.headers(MAX_QUALS);
   }
@@ -3437,14 +3437,14 @@ class Worker {
     // "OTHERJOBROLE"
     columns.push(
       entity.otherJobs && entity.otherJobs.value === 'Yes'
-        ? entity.otherJobs.otherJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId)).join(';')
+        ? entity.otherJobs.jobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId)).join(';')
         : ''
     );
 
     // "OTHERJRDESC"
     columns.push(
       entity.otherJobs && entity.otherJobs.value === 'Yes'
-        ? entity.otherJobs.otherJobs.map(thisJob => thisJob.other).join(';')
+        ? entity.otherJobs.jobs.map(thisJob => thisJob.other).join(';')
         : ''
     );
 
