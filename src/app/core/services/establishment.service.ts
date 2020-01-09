@@ -49,9 +49,9 @@ interface MainServiceRequest {
     other?: string;
   };
 }
-interface CQCDatilsRequest {
+interface CQCLocationChangeRequest {
   addressLine1: string;
-  addressLine2: string;
+  addressLine2?: string;
   addressLine3?: string;
   county: string;
   isRegulated?: boolean;
@@ -226,7 +226,7 @@ export class EstablishmentService {
     );
   }
 
-  updateCQCDetails(establishmentId, data: CQCDatilsRequest): Observable<any> {
+  updateCQCDetails(establishmentId, data: CQCLocationChangeRequest): Observable<any> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/locationId`, data);
   }
 

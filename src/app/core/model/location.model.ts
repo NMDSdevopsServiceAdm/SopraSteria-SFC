@@ -1,6 +1,6 @@
 export interface LocationAddress {
   addressLine1: string;
-  addressLine2: string;
+  addressLine2?: string;
   addressLine3?: string;
   county: string;
   isRegulated?: boolean;
