@@ -1,6 +1,7 @@
 export interface AddWorkplaceRequest {
   addressLine1: string;
   addressLine2: string;
+  addressLine3?: string;
   county: string;
   isRegulated: boolean;
   locationId: string;

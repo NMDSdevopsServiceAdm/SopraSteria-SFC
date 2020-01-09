@@ -50,16 +50,17 @@ interface MainServiceRequest {
   };
 }
 interface CQCDatilsRequest {
-  locationId?: string;
-  locationName: string;
   addressLine1: string;
   addressLine2: string;
+  addressLine3?: string;
   county: string;
-  postalCode: string;
-  townCity: string;
   isRegulated?: boolean;
+  locationId?: string;
+  locationName: string;
   mainService?: string;
   mainServiceOther?: string;
+  postalCode: string;
+  townCity: string;
 }
 
 @Injectable({

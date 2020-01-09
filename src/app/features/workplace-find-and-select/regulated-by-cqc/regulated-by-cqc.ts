@@ -16,6 +16,7 @@ export class RegulatedByCQC implements OnInit, OnDestroy, AfterViewInit {
   protected flow: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
+  protected isCQCLocationUpdate: boolean;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
@@ -205,19 +206,39 @@ export class RegulatedByCQC implements OnInit, OnDestroy, AfterViewInit {
   private save(): void {
     if (this.regulatedByCQC.value === 'yes') {
       if (this.regulatedPostcode.value.length) {
-        this.subscriptions.add(
+        if(this.isCQCLocationUpdate){
+          this.subscriptions.add(
+          this.locationService.getUnassignedLocationByPostCode(this.regulatedPostcode.value).subscribe(
+            (data: LocationSearchResponse) => this.onSuccess(data),
+            (error: HttpErrorResponse) => this.onError(error)
+          )
+        );
+        } else {
+          this.subscriptions.add(
           this.locationService.getLocationByPostCode(this.regulatedPostcode.value).subscribe(
             (data: LocationSearchResponse) => this.onSuccess(data),
             (error: HttpErrorResponse) => this.onError(error)
           )
         );
+        }
+
       } else if (this.locationId.value.length) {
-        this.subscriptions.add(
+         if(this.isCQCLocationUpdate){
+           this.subscriptions.add(
+          this.locationService.getUnassignedLocationByLocationId(this.locationId.value).subscribe(
+            (data: LocationSearchResponse) => this.onSuccess(data),
+            (error: HttpErrorResponse) => this.onError(error)
+          )
+        );
+         } else {
+           this.subscriptions.add(
           this.locationService.getLocationByLocationId(this.locationId.value).subscribe(
             (data: LocationSearchResponse) => this.onSuccess(data),
             (error: HttpErrorResponse) => this.onError(error)
           )
         );
+         }
+
       }
     } else if (this.regulatedByCQC.value === 'no') {
       if (this.nonRegulatedPostcode.value.length) {

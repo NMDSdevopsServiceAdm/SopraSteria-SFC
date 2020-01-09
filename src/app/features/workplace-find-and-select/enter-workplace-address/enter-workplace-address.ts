@@ -73,6 +73,11 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     return this.form.get('address2');
   }
 
+   // Get address 2
+  get getAddress3() {
+    return this.form.get('address3');
+  }
+
   // Get town/city
   get getTownCity() {
     return this.form.get('townOrCity');
