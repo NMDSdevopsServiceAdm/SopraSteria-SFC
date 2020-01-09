@@ -23,7 +23,9 @@ import { DeleteWorkplaceDialogComponent } from './delete-workplace-dialog/delete
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
+import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
+import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StartersComponent } from './starters/starters.component';
@@ -44,6 +46,7 @@ import {
   WdfWorkplaceConfirmationDialogComponent,
 } from './wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
+import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 
 @NgModule({
@@ -78,6 +81,9 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     WdfWorkplaceConfirmationDialogComponent,
     SelectMainServiceComponent,
     UserAccountEditDetailsComponent,
+    RegulatedByCqcComponent,
+    SelectWorkplaceComponent,
+    WorkplaceNotFoundComponent,
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [
