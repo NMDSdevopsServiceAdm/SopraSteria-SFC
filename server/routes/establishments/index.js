@@ -26,7 +26,7 @@ const Permissions = require('./permissions');
 const OwnershipChange = require('./ownershipChange');
 const LinkToParent = require('./linkToParent')
 const DataPermissions = require('./dataPermissions');
-const LocationDetails = require('./locationDetails');
+const LocationDetails = require('./locationdetails');
 
 const Approve = require('./approve');
 const Reject = require('./reject');
