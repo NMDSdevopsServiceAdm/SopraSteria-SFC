@@ -26,6 +26,7 @@ import {
 } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
@@ -37,10 +38,6 @@ import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-
-import {
-  EnterWorkplaceAddressComponent
-} from '@features/registration/enter-workplace-address/enter-workplace-address.component';
 import {
   UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
@@ -48,11 +45,11 @@ import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const routes: Routes = [
-  {
+ /* {
     path: 'update-workplace-details',
     component: EnterWorkplaceAddressComponent,
     data: { title: 'Update Workplace Details' },
-  },
+  },*/
   {
     path: 'view-all-workplaces',
     component: ViewMyWorkplacesComponent,
@@ -114,6 +111,15 @@ const routes: Routes = [
         data: {
           roles: [Roles.Admin, Roles.Edit],
           title: 'Workplace Not Found',
+        },
+      },
+      {
+        path: 'update-workplace-details',
+        component: EnterWorkplaceAddressComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Update Workplace Details',
         },
       },
 

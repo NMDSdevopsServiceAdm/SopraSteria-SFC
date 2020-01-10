@@ -227,7 +227,7 @@ export class EstablishmentService {
   }
 
   updateCQCDetails(establishmentId, data: CQCLocationChangeRequest): Observable<any> {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/locationId`, data);
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/locationdetail`, data);
   }
 
   public deleteWorkplace(workplaceUid: string): Observable<any> {

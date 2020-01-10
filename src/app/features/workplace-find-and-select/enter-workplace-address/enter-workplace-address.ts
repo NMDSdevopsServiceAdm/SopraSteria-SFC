@@ -14,7 +14,9 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   protected postcodeMaxLength = 8;
   protected subscriptions: Subscription = new Subscription();
   protected workplaceNameMaxLength = 120;
+  protected isWorkPlaceUpdate: boolean;
   public form: FormGroup;
+
   public formControlsMap: any[] = [
     {
       label: 'Workplace name',
@@ -233,7 +235,6 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.form.valid) {
       this.setSelectedLocationAddress();
-      this.router.navigate([`${this.flow}/select-main-service`]);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

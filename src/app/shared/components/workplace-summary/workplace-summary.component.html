@@ -22,15 +22,15 @@
       </div>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace/update-workplace-details']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.name">
+     <!-- <a [routerLink]="['/workplace/update-workplace-details']" (click)="setReturn()"> -->
+       <a [routerLink]="['/workplace', workplace.uid, 'update-workplace-details']" (click)="setReturn()">
+        <span *ngIf="!workplace.name">
           Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.name">
+        </span>
+        <span *ngIf="workplace.name">
           Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> workplace name</span>
+        </span>
+
       </a>
     </dd>
   </div>

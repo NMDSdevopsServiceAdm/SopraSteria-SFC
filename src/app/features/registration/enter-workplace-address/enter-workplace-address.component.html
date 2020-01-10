@@ -5,14 +5,10 @@
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 *ngIf="isRegistrationFlow" class="govuk-fieldset__heading">
+          <h1 class="govuk-fieldset__heading">
             Enter your workplace address
           </h1>
-          <h1 *ngIf="!isRegistrationFlow" class="govuk-fieldset__heading">
-              Workplace details
-            </h1>
         </legend>
-
         <ng-container *ngFor="let item of formControlsMap">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
             <label class="govuk-label" for="{{ item.name }}" [innerHTML]="item.label"></label>
@@ -34,19 +30,7 @@
           </div>
         </ng-container>
       </fieldset>
-      <button *ngIf="isRegistrationFlow"class="govuk-button" type="submit">Continue</button>
-      <div *ngIf="!isRegistrationFlow">
-          <button class="govuk-button" type="submit">Save and return</button>
-          <a
-          role="button"
-          draggable="false"
-          class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-util__float-right"
-          [routerLink]="['/dashboard']"
-        >
-          Exit
-        </a>
-      </div>
-
+      <button class="govuk-button" type="submit">Continue</button>
     </form>
   </div>
 </div>

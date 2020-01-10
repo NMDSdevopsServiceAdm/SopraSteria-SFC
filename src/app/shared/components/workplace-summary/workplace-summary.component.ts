@@ -8,7 +8,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 import { isArray } from 'util';
-import { RegistrationService } from '@core/services/registration.service';
+
 
 @Component({
   selector: 'app-workplace-summary',
@@ -62,7 +62,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
-    private registrationService: RegistrationService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private workerService: WorkerService
@@ -90,7 +89,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.registrationService.isRegistrationFlow$.next(false);
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe(response => {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;

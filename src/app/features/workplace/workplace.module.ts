@@ -21,6 +21,7 @@ import {
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteWorkplaceDialogComponent } from './delete-workplace-dialog/delete-workplace-dialog.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
@@ -48,6 +49,7 @@ import {
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
   declarations: [
@@ -83,6 +85,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     RegulatedByCqcComponent,
     SelectWorkplaceComponent,
     WorkplaceNotFoundComponent,
+    EnterWorkplaceAddressComponent
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [

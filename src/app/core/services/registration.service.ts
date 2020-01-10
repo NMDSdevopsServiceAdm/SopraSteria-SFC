@@ -21,7 +21,6 @@ export class RegistrationService {
   public isRegulated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public manuallyEnteredWorkplace$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public returnTo$ = new BehaviorSubject<URLStructure>(null);
-  public isRegistrationFlow$ = new BehaviorSubject<boolean>(null);
 
   constructor(private http: HttpClient) {}
 
