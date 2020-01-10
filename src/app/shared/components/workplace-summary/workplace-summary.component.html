@@ -22,7 +22,6 @@
       </div>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-     <!-- <a [routerLink]="['/workplace/update-workplace-details']" (click)="setReturn()"> -->
        <a [routerLink]="['/workplace', workplace.uid, 'update-workplace-details']" (click)="setReturn()">
         <span *ngIf="!workplace.name">
           Provide information
