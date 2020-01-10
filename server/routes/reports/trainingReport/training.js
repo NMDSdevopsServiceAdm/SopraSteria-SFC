@@ -1075,41 +1075,6 @@ const reportGet = async (req, res) => {
 /**
  * Handle GET API requests to get Training report data
  */
-router.route('/').get(async (req, res) => {
-  try {
-    // first ensure this report can only be run by those establishments that are a parent
-    const thisEstablishment = new Establishment(req.username);
-
-    if (await thisEstablishment.restore(req.establishment.id, false)) {
-      const date = new Date();
-      const report = await getReport(date, thisEstablishment);
-
-      if (report) {
-        res.setHeader(
-          'Content-disposition',
-          `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xls`
-        );
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Length', report.length);
-
-        console.log('report/training - 200 response');
-
-        return res.status(200).end(report);
-      } else {
-        // failed to run the report
-        console.error('report/training - failed to run the report');
-
-        return res.status(503).send('ERR: Failed to run report');
-      }
-    } else {
-      console.error('report/training - failed restoring establisment');
-      return res.status(503).send('ERR: Failed to restore establishment');
-    }
-  } catch (err) {
-    console.error('report/training - failed', err);
-    return res.status(503).send('ERR: Failed to retrieve report');
-  }
-});
 router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
 router.route('/report').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
 router.route('/lockstatus').get(lockStatusGet);
