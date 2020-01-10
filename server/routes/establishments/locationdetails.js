@@ -58,7 +58,7 @@ router.route('/').post(async (req, res) => {
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in locationId and address
       const isValidEstablishment = await thisEstablishment.load({
-        locationId: req.body.locationId,
+        locationId: req.body.locationId ? req.body.locationId : null,
         address1: req.body.addressLine1,
         address2: req.body.addressLine2 ? req.body.addressLine2 : null,
         address3: req.body.addressLine3 ? req.body.addressLine3 : null,
