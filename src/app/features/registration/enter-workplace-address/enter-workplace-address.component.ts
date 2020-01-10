@@ -41,5 +41,6 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
   protected setSelectedLocationAddress(): void {
     this.registrationService.selectedLocationAddress$.next(this.getLocationAddress());
     this.registrationService.manuallyEnteredWorkplace$.next(true);
+    this.router.navigate([`${this.flow}/select-main-service`]);
   }
 }

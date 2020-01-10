@@ -54,7 +54,7 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
     this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation());
     const selectedLocation = this.getSelectedLocation();
     this.subscriptions.add(
-      this.establishmentService.updateCQCDetails(this.workplace.uid, selectedLocation).subscribe(data => {
+      this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe(data => {
         this.establishmentService.setState({ ...this.workplace, ...data });
         this.router.navigate(this.establishmentService.returnTo.url, {
           fragment: this.establishmentService.returnTo.fragment,

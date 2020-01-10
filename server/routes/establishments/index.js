@@ -26,7 +26,7 @@ const Permissions = require('./permissions');
 const OwnershipChange = require('./ownershipChange');
 const LinkToParent = require('./linkToParent')
 const DataPermissions = require('./dataPermissions');
-const LocationId = require('./locationId');
+const LocationDetails = require('./locationdetails');
 
 const Approve = require('./approve');
 const Reject = require('./reject');
@@ -81,7 +81,7 @@ router.use('/:id/permissions', Permissions);
 router.use('/:id/ownershipChange', OwnershipChange);
 router.use('/:id/linkToParent', LinkToParent);
 router.use('/:id/dataPermissions', DataPermissions);
-router.use('/:id/locationId', LocationId);
+router.use('/:id/locationDetails', LocationDetails);
 
 router.route('/:id').post(async (req, res) => {
   if (!req.body.isRegulated) {

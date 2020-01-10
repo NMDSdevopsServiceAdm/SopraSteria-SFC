@@ -28,12 +28,12 @@ router.route('/:postcode')
         for (let i = 0, len = results.length; i < len; i++) {
 
           let data = results[i].dataValues;
-
           let myObject = {
             locationName: data.rm_organisation_name,
             //Use Building Name if it exists, otherwise use building number
             addressLine1: (data.building_name !== "") ? data.building_name : data.building_number,
             addressLine2: data.street_description,
+            addressLine3: '',
             townCity: data.post_town,
             county: data.county,
             postalCode: data.postcode
