@@ -46,6 +46,7 @@ const trainingCounts = {
 
 let expiredWorkerTrainings = [];
 let expiringWorkerTrainings = [];
+let expiredOrExpiringWorkerRecords = [];
 
 // XML DOM manipulation helper functions
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
@@ -200,6 +201,11 @@ const getTrainingReportData = async establishmentId => {
         }
       });
     }
+
+    let expiredOrExpiringWorkerIds = new Set(expiredWorkerTrainings.map(d => d.ID));
+    expiredOrExpiringWorkerRecords = [...expiredWorkerTrainings, ...expiringWorkerTrainings.filter(d => !expiredOrExpiringWorkerIds.has(d.ID))];
+  }else{
+    expiredOrExpiringWorkerRecords = [];
   }
   return trainingData;
 };
@@ -246,7 +252,7 @@ const styleLookup = {
       //F: 7,
       F: 8,
       G: 8,
-      H: 7,
+      H: 6,
     },
     TRNLAST: {
       A: 9,
@@ -350,7 +356,6 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
  * Function used to create columns for overview sheet tab and then push data into those columns
  *
  * @param {Document} overviewSheet
- * @param {Object} reportData
  * @param {String} sharedStrings
  * @param {Element} sst
  * @param {Number} sharedStringsUniqueCount
@@ -358,7 +363,6 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
  */
 const updateOverviewSheet = (
   overviewSheet,
-  reportData,
   sharedStrings,
   sst,
   sharedStringsUniqueCount,
@@ -383,7 +387,7 @@ const updateOverviewSheet = (
     overviewSheet.querySelector("c[r='G5']"),
     `You have ${trainingCounts.expiredTrainingCount} expired training records`
   );
-  overviewSheet.querySelector("c[r='G5']").setAttribute('s', 24);
+  overviewSheet.querySelector("c[r='G5']").setAttribute('s', 32);
 
   // put total expiring soon training count
   putString(overviewSheet.querySelector("c[r='D7']"), trainingCounts.expiringTrainingCount);
@@ -391,7 +395,7 @@ const updateOverviewSheet = (
     overviewSheet.querySelector("c[r='G7']"),
     `You have ${trainingCounts.expiringTrainingCount} records expiring soon`
   );
-  overviewSheet.querySelector("c[r='G7']").setAttribute('s', 27);
+  overviewSheet.querySelector("c[r='G7']").setAttribute('s', 33);
 
   // put total expiring soon/expired training count
   putString(
@@ -401,13 +405,12 @@ const updateOverviewSheet = (
 
   putString(
     overviewSheet.querySelector("c[r='G9']"),
-    `You have ${trainingCounts.expiredTrainingCount +
-      trainingCounts.expiringTrainingCount} staff members with expired or`
+    `You have ${expiredOrExpiringWorkerRecords.length} staff members with expired or`
   );
-  overviewSheet.querySelector("c[r='G9']").setAttribute('s', 30);
+  overviewSheet.querySelector("c[r='G9']").setAttribute('s', 34);
 
   putString(overviewSheet.querySelector("c[r='G10']"), `expiring training records`);
-  overviewSheet.querySelector("c[r='G10']").setAttribute('s', 30);
+  overviewSheet.querySelector("c[r='G10']").setAttribute('s', 35);
 
   //put all expiring traing details
   let currentRowBottom = overviewSheet.querySelector("row[r='18']");
@@ -790,7 +793,6 @@ const getReport = async (date, thisEstablishment) => {
           serializeXML(
             updateOverviewSheet(
               overviewSheet,
-              reportData,
               sharedStrings,
               sst,
               sharedStringsUniqueCount, // pass unique count by reference rather than by value
@@ -1073,7 +1075,41 @@ const reportGet = async (req, res) => {
 /**
  * Handle GET API requests to get Training report data
  */
+router.route('/').get(async (req, res) => {
+  try {
+    // first ensure this report can only be run by those establishments that are a parent
+    const thisEstablishment = new Establishment(req.username);
 
+    if (await thisEstablishment.restore(req.establishment.id, false)) {
+      const date = new Date();
+      const report = await getReport(date, thisEstablishment);
+
+      if (report) {
+        res.setHeader(
+          'Content-disposition',
+          `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xls`
+        );
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Length', report.length);
+
+        console.log('report/training - 200 response');
+
+        return res.status(200).end(report);
+      } else {
+        // failed to run the report
+        console.error('report/training - failed to run the report');
+
+        return res.status(503).send('ERR: Failed to run report');
+      }
+    } else {
+      console.error('report/training - failed restoring establisment');
+      return res.status(503).send('ERR: Failed to restore establishment');
+    }
+  } catch (err) {
+    console.error('report/training - failed', err);
+    return res.status(503).send('ERR: Failed to retrieve report');
+  }
+});
 router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
 router.route('/report').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
 router.route('/lockstatus').get(lockStatusGet);
