@@ -265,6 +265,11 @@ router.route('/:workerId').put(async (req, res) => {
         //  is to restore from given UID
         if (await thisWorker.restore(workerId)) {
             // TODO: JSON validation
+            if (req.body.establishmentId) {
+              thisWorker.establishmentId = req.body.establishmentId;
+              thisWorker.establishmentFk = req.body.establishmentId;
+              req.body.establishmentFk = req.body.establishmentId;
+            }
 
             // by loading after the restore, only those properties defined in the
             //  PUT body will be updated (peristed)

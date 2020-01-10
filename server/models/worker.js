@@ -44,6 +44,26 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"EstablishmentFK"'
     },
+    EstablishmentFkSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EstablishmentFkSavedAt"'
+    },
+    EstablishmentFkChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EstablishmentFkChangedAt"'
+    },
+    EstablishmentFkSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EstablishmentFkSavedBy"'
+    },
+    EstablishmentFkChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EstablishmentFkChangedBy"'
+    },
     lastWdfEligibility: {
       type: DataTypes.DATE,
       allowNull: true,
