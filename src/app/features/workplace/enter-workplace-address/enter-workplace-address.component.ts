@@ -62,7 +62,7 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
     this.workplaceService.manuallyEnteredWorkplace$.next(true);
     const selectedLocation = this.getLocationAddress();
     this.subscriptions.add(
-      this.establishmentService.updateCQCDetails(this.workplace.uid, selectedLocation).subscribe(data => {
+      this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe(data => {
         this.establishmentService.setState({ ...this.workplace, ...data });
         this.router.navigate(this.establishmentService.returnTo.url, {
           fragment: this.establishmentService.returnTo.fragment,
