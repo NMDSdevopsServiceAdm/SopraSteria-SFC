@@ -32,18 +32,10 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
     this.workplace = this.establishmentService.establishment;
     this.isWorkPlaceUpdate = true;
     this.setLocationAddress();
-   // this.setupSubscription();
+
   }
 
-  private setupSubscription(): void {
-    this.subscriptions.add(
-      this.workplaceService.selectedLocationAddress$.subscribe((selectedLocation: LocationAddress) => {
-        if (selectedLocation) {
-          this.preFillForm(selectedLocation);
-        }
-      })
-    );
-  }
+
   protected setBackLink(): void {
     this.backService.setBackLink(this.establishmentService.returnTo);
   }

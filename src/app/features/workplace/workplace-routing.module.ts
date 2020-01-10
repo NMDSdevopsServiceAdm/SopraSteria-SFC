@@ -45,11 +45,6 @@ import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const routes: Routes = [
- /* {
-    path: 'update-workplace-details',
-    component: EnterWorkplaceAddressComponent,
-    data: { title: 'Update Workplace Details' },
-  },*/
   {
     path: 'view-all-workplaces',
     component: ViewMyWorkplacesComponent,

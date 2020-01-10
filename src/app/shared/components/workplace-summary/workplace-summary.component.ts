@@ -9,7 +9,6 @@ import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 import { isArray } from 'util';
 
-
 @Component({
   selector: 'app-workplace-summary',
   templateUrl: './workplace-summary.component.html',

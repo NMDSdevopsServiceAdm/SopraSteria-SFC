@@ -9,7 +9,7 @@ import { EnterWorkplaceAddress } from '@features/workplace-find-and-select/enter
 
 @Component({
   selector: 'app-enter-workplace-address',
-   templateUrl: '../../workplace-find-and-select/enter-workplace-address/enter-workplace-address.component.html',
+  templateUrl: '../../workplace-find-and-select/enter-workplace-address/enter-workplace-address.component.html',
 })
 export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
   constructor(

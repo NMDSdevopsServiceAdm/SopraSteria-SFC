@@ -31,7 +31,6 @@ import { FindWorkplaceAddressComponent } from './find-workplace-address/find-wor
 import { StartComponent } from './start/start.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
-
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule],
   declarations: [
@@ -51,7 +50,6 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     YourDetailsComponent,
     StartComponent,
     WorkplaceNotFoundComponent,
-
   ],
 })
 export class RegistrationModule {}
