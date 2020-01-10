@@ -10,9 +10,6 @@ import {
 } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
 import { CreateUsernameComponent } from '@features/registration/create-username/create-username.component';
 import {
-  EnterWorkplaceAddressComponent,
-} from '@features/registration/enter-workplace-address/enter-workplace-address.component';
-import {
   RegistrationAwaitingApprovalComponent,
 } from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
@@ -26,7 +23,6 @@ import {
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 import { SharedModule } from '@shared/shared.module';
-
 import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
 import { StartComponent } from './start/start.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
@@ -38,7 +34,6 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     ConfirmAccountDetailsComponent,
     ConfirmWorkplaceDetailsComponent,
     CreateUsernameComponent,
-    EnterWorkplaceAddressComponent,
     FindWorkplaceAddressComponent,
     RegistrationCompleteComponent,
     RegistrationAwaitingApprovalComponent,

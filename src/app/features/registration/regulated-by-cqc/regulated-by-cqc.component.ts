@@ -29,6 +29,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC implements AfterView
   protected init() {
     this.flow = '/registration';
     this.setBackLink();
+    this.registrationService.isRegistrationFlow$.next(true);
   }
 
   ngAfterViewInit() {

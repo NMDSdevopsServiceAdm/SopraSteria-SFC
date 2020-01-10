@@ -71,11 +71,15 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import {
+  EnterWorkplaceAddressComponent,
+} from '@features/registration/enter-workplace-address/enter-workplace-address.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   declarations: [
     AbsoluteNumberPipe,
+    EnterWorkplaceAddressComponent,
     AlertComponent,
     AutoSuggestComponent,
     BackLinkComponent,
@@ -136,6 +140,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
   exports: [
     AlertComponent,
     AutoSuggestComponent,
+    EnterWorkplaceAddressComponent,
     BackLinkComponent,
     BasicRecordComponent,
     BreadcrumbsComponent,

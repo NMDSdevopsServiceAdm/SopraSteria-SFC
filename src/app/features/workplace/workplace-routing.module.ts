@@ -37,6 +37,10 @@ import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
+
+import {
+  EnterWorkplaceAddressComponent
+} from '@features/registration/enter-workplace-address/enter-workplace-address.component';
 import {
   UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
@@ -44,6 +48,11 @@ import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const routes: Routes = [
+  {
+    path: 'update-workplace-details',
+    component: EnterWorkplaceAddressComponent,
+    data: { title: 'Update Workplace Details' },
+  },
   {
     path: 'view-all-workplaces',
     component: ViewMyWorkplacesComponent,
