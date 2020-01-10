@@ -73,7 +73,7 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
   public getWorkplaceLocation(): LocationAddress {
     return {
       addressLine1: this.workplace.address1,
-      addressLine2: this.workplace.address1,
+      addressLine2: this.workplace.address2,
       addressLine3: this.workplace.address3,
       county: this.workplace.county,
       locationName: this.workplace.name,
