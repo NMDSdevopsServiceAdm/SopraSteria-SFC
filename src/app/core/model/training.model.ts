@@ -41,3 +41,9 @@ export interface TrainingRecord {
   updatedBy: string;
   trainingStatus?: number;
 }
+
+export interface TrainingLockStatus {
+  establishmentId: number;
+  TrainingReportState: string;
+  TrainingReportLockHeld: boolean;
+}

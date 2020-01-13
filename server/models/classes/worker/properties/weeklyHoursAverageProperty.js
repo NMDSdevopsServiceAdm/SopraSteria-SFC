@@ -5,6 +5,7 @@ const WEEKLY_HOURS_TYPE = ['Yes', 'No'];
 exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAverageProperty extends ChangePropertyPrototype {
     constructor() {
         super('WeeklyHoursAverage');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -43,6 +44,11 @@ exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAveragePropert
                         value: document.weeklyHoursAverage.value
                     };
                 }
+            } else if (document.weeklyHoursAverage.value === null) {
+              this.property = {
+                value: document.weeklyHoursAverage.value,
+                hours: document.weeklyHoursAverage.hours
+              }
             } else {
                 this.property = null;
             }

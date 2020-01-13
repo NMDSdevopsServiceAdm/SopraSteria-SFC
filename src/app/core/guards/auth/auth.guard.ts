@@ -7,6 +7,7 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 
@@ -14,6 +15,8 @@ import { UserService } from '@core/services/user.service';
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate, CanActivateChild {
+  private jwt = new JwtHelperService();
+
   constructor(private router: Router, private authService: AuthService, private userService: UserService) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
@@ -25,6 +28,14 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   }
 
   private checkLogin(state: RouterStateSnapshot): boolean | UrlTree {
+    if (this.authService.token) {
+      console.log('Checking token in auth guard');
+      if (this.jwt.isTokenExpired(this.authService.token)) {
+        this.authService.logout();
+        return this.router.createUrlTree(['/logged-out']);
+      }
+    }
+
     if (!this.authService.token) {
       this.authService.logoutWithoutRouting();
       return this.router.createUrlTree(['/login']);

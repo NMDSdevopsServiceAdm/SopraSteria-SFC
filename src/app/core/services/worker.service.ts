@@ -68,7 +68,7 @@ export class WorkerService {
   }
 
   public hasJobRole(worker: Worker, id: number) {
-    return worker.mainJob.jobId === id || (worker.otherJobs && worker.otherJobs.some(j => j.jobId === id));
+    return worker.mainJob.jobId === id || (worker.otherJobs && worker.otherJobs.jobs.some(j => j.jobId === id));
   }
 
   setState(worker) {

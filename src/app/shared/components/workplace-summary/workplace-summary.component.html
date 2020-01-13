@@ -1,25 +1,49 @@
 <dl *ngIf="workplace" class="govuk-summary-list" [class.govuk-summary-list--contains-warnings]="totalStaffWarning">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
-      Workplace name
+      <div>
+          Workplace name
+      </div>
+      <div *ngIf="workplace && workplace.address" class="govuk-!-padding-top-2">
+          Workplace address
+      </div>
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ workplace.name }}
+      <div>
+          {{ workplace.name }}
+      </div>
+      <div *ngIf="workplace" class="govuk-!-padding-top-2">
+          <div *ngIf="workplace.address1">{{ workplace.address1 }}</div>
+          <div *ngIf="workplace.address2">{{ workplace.address2 }}</div>
+          <div *ngIf="workplace.address3">{{ workplace.address3 }}</div>
+          <div *ngIf="workplace.town">{{ workplace.town }}</div>
+          <div *ngIf="workplace.county">{{ workplace.county }}</div>
+          <div *ngIf="workplace.postcode">{{ workplace.postcode }}</div>
+      </div>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <!--
-      TODO uncomment once workplace name question section is created
-      <a [routerLink]="['/workplace', workplace.uid]" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.name">
+       <a [routerLink]="['/workplace', workplace.uid, 'update-workplace-details']" (click)="setReturn()">
+        <span *ngIf="!workplace.name">
           Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.name">
+        </span>
+        <span *ngIf="workplace.name">
           Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> workplace name</span>
+        </span>
+
       </a>
-      -->
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row" *ngIf="workplace?.isRegulated">
+    <dt class="govuk-summary-list__key">
+      CQC location ID
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ workplace.locationId }}
+    </dd>
+    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+      <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()">
+        Change
+      </a>
     </dd>
   </div>
 

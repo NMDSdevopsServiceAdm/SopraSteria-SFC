@@ -14,21 +14,28 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   protected postcodeMaxLength = 8;
   protected subscriptions: Subscription = new Subscription();
   protected workplaceNameMaxLength = 120;
+  protected isWorkPlaceUpdate: boolean;
   public form: FormGroup;
+
   public formControlsMap: any[] = [
     {
-      label: 'Postcode',
-      name: 'postcode',
-      width: 10,
+      label: 'Workplace name',
+      name: 'workplaceName',
+      width: 20,
     },
     {
-      label: 'Building and street <span class="govuk-visually-hidden">line 1 of 2</span>',
+      label: 'Building and street <span class="govuk-visually-hidden">line 1 of 3</span>',
       name: 'address1',
       width: 20,
     },
     {
-      label: '<span class="govuk-visually-hidden">Building and street line 2 of 2</span>',
+      label: '<span class="govuk-visually-hidden">Building and street line 2 of 3</span>',
       name: 'address2',
+      width: 20,
+    },
+    {
+      label: '<span class="govuk-visually-hidden">Building and street line 3 of 3</span>',
+      name: 'address3',
       width: 20,
     },
     {
@@ -42,9 +49,9 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
       width: 10,
     },
     {
-      label: 'Workplace name',
-      name: 'workplaceName',
-      width: 20,
+      label: 'Postcode',
+      name: 'postcode',
+      width: 10,
     },
   ];
   public formErrorsMap: Array<ErrorDetails>;
@@ -71,6 +78,11 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   // Get address 2
   get getAddress2() {
     return this.form.get('address2');
+  }
+
+  // Get address 3
+  get getAddress3() {
+    return this.form.get('address3');
   }
 
   // Get town/city
@@ -105,6 +117,7 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     this.form = this.formBuilder.group({
       address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
       address2: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      address3: ['', [Validators.maxLength(this.addressMaxLength)]],
       county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
       postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength)]],
       townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
@@ -116,6 +129,7 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     this.form.setValue({
       address1: selectedLocation.addressLine1,
       address2: selectedLocation.addressLine2,
+      address3: selectedLocation.addressLine3,
       county: selectedLocation.county,
       postcode: selectedLocation.postalCode,
       townOrCity: selectedLocation.townCity,
@@ -145,6 +159,15 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
             name: 'required',
             message: 'Please enter your address.',
           },
+          {
+            name: 'maxlength',
+            message: `'Your address must be no longer than ${this.addressMaxLength} characters.`,
+          },
+        ],
+      },
+      {
+        item: 'address3',
+        type: [
           {
             name: 'maxlength',
             message: `'Your address must be no longer than ${this.addressMaxLength} characters.`,
@@ -212,7 +235,6 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.form.valid) {
       this.setSelectedLocationAddress();
-      this.router.navigate([`${this.flow}/select-main-service`]);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
@@ -222,6 +244,7 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     return {
       addressLine1: this.getAddress1.value,
       addressLine2: this.getAddress2.value,
+      addressLine3: this.getAddress3.value,
       county: this.getCounty.value,
       locationName: this.getWorkplaceName.value,
       postalCode: this.getPostcode.value,

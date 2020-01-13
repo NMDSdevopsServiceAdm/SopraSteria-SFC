@@ -5,6 +5,7 @@ const HEALTH_WORKER_TYPE = ['Yes', 'No', "Don't know"];
 exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHealthWorkerProperty extends ChangePropertyPrototype {
     constructor() {
         super('ApprovedMentalHealthWorker');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -13,7 +14,7 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.approvedMentalHealthWorker) {
+        if (document.approvedMentalHealthWorker || document.approvedMentalHealthWorker === null) {
             if (HEALTH_WORKER_TYPE.includes(document.approvedMentalHealthWorker)) {
                 this.property = document.approvedMentalHealthWorker;
             } else {
@@ -44,7 +45,7 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
                 approvedMentalHealthWorker: this.property
             };
         }
-        
+
         return {
             approvedMentalHealthWorker : {
                 currentValue: this.property,

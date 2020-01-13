@@ -117,6 +117,12 @@ export interface Establishment {
   dataOwnershipRequested: string;
   ownershipChangeRequestId?: string;
   linkToParentRequested?: string;
+  address1?: string
+  address2?: string
+  address3?: string
+  town?: string
+  county?: string
+  locationId?: string
 }
 
 export interface UpdateJobsRequest {

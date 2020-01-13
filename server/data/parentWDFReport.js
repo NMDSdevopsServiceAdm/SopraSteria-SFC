@@ -35,7 +35,8 @@ SELECT
     WHERE
       "EstablishmentFK" = "Establishment"."EstablishmentID" AND
       "LastWdfEligibility" IS NOT NULL AND
-      "LastWdfEligibility" > :effectiveDate
+      "LastWdfEligibility" > :effectiveDate AND
+      "Archived" = :falseFlag
   ) AS "CompletedWorkerRecords",
   array_to_string(array(
     SELECT
@@ -96,6 +97,7 @@ SELECT
   "StartersValue",
   "LeaversValue",
   "NumberOfStaffValue",
+
   updated,
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
   "ShareDataWithCQC",

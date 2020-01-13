@@ -1,9 +1,5 @@
-<app-error-summary
-  *ngIf="(submitted && form.invalid) || serverError"
-  [formErrorsMap]="formErrorsMap"
-  [serverError]="serverError"
-  [form]="form"
->
+<app-error-summary *ngIf="(submitted && form.invalid) || serverError" [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError" [form]="form">
 </app-error-summary>
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
@@ -16,58 +12,65 @@
               Do they have any other job roles?
             </h1>
           </legend>
-          <span id="otherJobRoles-hint" class="govuk-hint">
-            Select all that apply.
-          </span>
-          <div class="govuk-checkboxes">
-            <ng-container *ngFor="let job of selectedJobRoles.controls; let idx = index">
-              <div class="govuk-checkboxes__item">
-                <input
-                  class="govuk-checkboxes__input"
-                  id="selectedJobRole-{{ job.value.jobId }}"
-                  name="jobRole"
-                  type="checkbox"
-                  (change)="onChange(job)"
-                  [checked]="job.value.checked"
-                  [value]="job.value.jobId"
-                />
-                <label class="govuk-label govuk-checkboxes__label" for="selectedJobRole-{{ job.value.jobId }}">
-                  {{ job.value.title }}
-                </label>
-              </div>
-              <div
-                class="govuk-checkboxes__conditional"
-                [class.govuk-checkboxes__conditional--hidden]="!job.value.checked"
-                *ngIf="showforOtherJobRole(job)"
-                id="otherSelectedJobRole-conditional-{{ idx }}"
-              >
-                <div class="govuk-form-group">
-                  <label class="govuk-label" for="otherSelectedJobRole-{{ job.value.jobId }}">
-                    Enter your job role
-                  </label>
-                  <span
-                    id="otherSelectedJobRole{{ job.value.jobId }}-error"
-                    class="govuk-error-message"
-                    *ngIf="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid"
-                  >
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('otherSelectedJobRole' + job.value.jobId, 'maxlength') }}
-                  </span>
-                  <span id="otherJobRole-hint" class="govuk-hint">
-                    Optional
-                  </span>
-                  <input
-                    class="govuk-input govuk-!-width-one-third"
-                    id="otherSelectedJobRole-{{ job.value.jobId }}"
-                    name="otherSelectedJobRole{{ job.value.jobId }}"
-                    type="text"
-                    [formControlName]="'otherSelectedJobRole' + job.value.jobId"
-                    [class.govuk-input--error]="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid"
-                    spellcheck="false"
-                  />
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" [formControlName]="'otherJobs'" id="otherJobs-conditional-1"
+                name="otherJobs" type="radio" value="Yes" aria-controls="conditional-otherJobs-conditional-1" />
+              <label class="govuk-label govuk-radios__label" for="otherJobs-conditional-1">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="form.get('otherJobs').value !== 'Yes'"
+              id="conditional-recruitmentKnown-conditional-1">
+              <div class="govuk-form-group">
+                <span id="otherJobRoles-hint" class="govuk-hint">
+                  Select all that apply.
+                </span>
+                <div class="govuk-checkboxes">
+                  <ng-container *ngFor="let job of selectedJobRoles.controls; let idx = index">
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="selectedJobRole-{{ job.value.jobId }}" name="jobRole"
+                        type="checkbox" (change)="onChange(job)" [checked]="job.value.checked"
+                        [value]="job.value.jobId" />
+                      <label class="govuk-label govuk-checkboxes__label" for="selectedJobRole-{{ job.value.jobId }}">
+                        {{ job.value.title }}
+                      </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional"
+                      [class.govuk-checkboxes__conditional--hidden]="!job.value.checked"
+                      *ngIf="showforOtherJobRole(job)" id="otherSelectedJobRole-conditional-{{ idx }}">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label" for="otherSelectedJobRole-{{ job.value.jobId }}">
+                          Enter your job role
+                        </label>
+                        <span id="otherSelectedJobRole{{ job.value.jobId }}-error" class="govuk-error-message"
+                          *ngIf="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid">
+                          <span class="govuk-visually-hidden">Error:</span>
+                          {{ getFormErrorMessage('otherSelectedJobRole' + job.value.jobId, 'maxlength') }}
+                        </span>
+                        <span id="otherJobRole-hint" class="govuk-hint">
+                          Optional
+                        </span>
+                        <input class="govuk-input govuk-!-width-one-third"
+                          id="otherSelectedJobRole-{{ job.value.jobId }}"
+                          name="otherSelectedJobRole{{ job.value.jobId }}" type="text"
+                          [formControlName]="'otherSelectedJobRole' + job.value.jobId"
+                          [class.govuk-input--error]="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid"
+                          spellcheck="false" />
+                      </div>
+                    </div>
+                  </ng-container>
                 </div>
               </div>
-            </ng-container>
+            </div>
+            <div class="govuk-radios__item">
+                <input class="govuk-radios__input" [formControlName]="'otherJobs'" id="otherJobs-2"
+                  name="otherJobs" type="radio" value="No" (change)="removeOtherJobs()">
+                <label class="govuk-label govuk-radios__label" for="otherJobs-2">
+                  No
+                </label>
+              </div>
           </div>
         </fieldset>
       </div>

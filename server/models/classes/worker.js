@@ -306,6 +306,56 @@ class Worker extends EntityValidator {
         this._status = document.status;
       }
 
+
+      // Consequential updates when one value means another should be empty or null
+
+      // If their job isn't a registered nurse, remove their specialism and category
+      if (document.mainJob) {
+        if (document.mainJob.jobId !== 23) {
+          document.registeredNurse = null;
+          document.nurseSpecialism = { id: null, specialism: null };
+        }
+        // If their job isn't a social worker - remove the approved mental health worker
+        if (document.mainJob.jobId !== 27) {
+          document.approvedMentalHealthWorker = null;
+        }
+      }
+
+      // Remove British citizenship if they are british
+      if (document.nationality) {
+        if (document.nationality.value === 'British') {
+          delete document.nationality.other;
+          document.britishCitizenship = null;
+        }
+      }
+
+      // Remove year arriced if born in the UK
+      if (document.countryOfBirth) {
+        if (document.countryOfBirth.value === 'United Kingdom') {
+          document.yearArrived = { value: null, year: null };
+        }
+      }
+
+      // Remove contracted hours If on a zero hour contract
+      if (document.zeroHoursContract === 'Yes' || document.contract === 'Agency') {
+        document.weeklyHoursContracted = { value: null, hours: null };
+      }
+
+      // Remove average hours if not on a zero hour contract
+      if (document.zeroHoursContract === 'No') {
+        document.weeklyHoursAverage = { value: null, hours: null };
+      }
+
+      // Remove social care qualification if they don't have one
+      if (document.qualificationInSocialCare === 'No') {
+        document.socialCareQualification = { qualificationId: null, title: null };
+      }
+
+      // Remove highest qualification if no other qualifications
+      if (document.otherQualification === 'No') {
+        document.highestQualification = { qualificationId: null, title: null };
+      }
+
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();
 

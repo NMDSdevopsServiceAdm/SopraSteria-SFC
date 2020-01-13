@@ -17,20 +17,19 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
     // concrete implementations
     async restoreFromJson(document) {
         if (document.otherJobs) {
-            if (Array.isArray(document.otherJobs) && document.otherJobs.length > 0) {
-                const validatedJobs = await this._validateJobs(document.otherJobs);
+            if (Array.isArray(document.otherJobs.jobs) && document.otherJobs.jobs.length > 0 && document.otherJobs.value === 'Yes') {
+                const validatedJobs = await this._validateJobs(document.otherJobs.jobs);
 
                 if (validatedJobs) {
                     this.property = {
-                        value: 'Yes',
-                        otherJobs: validatedJobs
+                        ...document.otherJobs
                     };
 
                 } else {
                     this.property = null;
                 }
 
-            } else if (Array.isArray(document.otherJobs)) {
+            } else if (document.otherJobs.value === 'No') {
                 // other jobs property needs to be an array of
                 this.property = {
                     value: 'No'
@@ -43,12 +42,11 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
 
     restorePropertyFromSequelize(document) {
         const otherJobsDocument = {
-            value: document.OtherJobsValue
+            value: document.OtherJobsValue,
         };
 
         if (document.OtherJobsValue === 'Yes') {
-
-            otherJobsDocument.otherJobs = document.otherJobs.map(thisJob => {
+            otherJobsDocument.jobs = document.otherJobs.map(thisJob => {
                 return {
                     jobId: thisJob.workerJobs.jobFk,
                     title: thisJob.title,
@@ -67,7 +65,7 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
         // note - only the jobFk is required and that is mapped from the otherJobs.jobId; workerFk will be provided by Worker class
         if (this.property.value === 'Yes') {
             otherJobsDocument.additionalModels = {
-                workerJobs : this.property.otherJobs.map(thisJob => {
+                workerJobs : this.property.jobs.map(thisJob => {
                     return {
                         jobFk : thisJob.jobId,
                         other: thisJob.other ? thisJob.other : null
@@ -80,7 +78,6 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                 workerJobs: []
             };
         }
-
         return otherJobsDocument;
     }
 
@@ -90,15 +87,15 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
         let arraysEqual = true;
 
         if (currentValue && newValue && currentValue.value === 'Yes' && newValue.value === 'Yes' &&
-            currentValue.otherJobs && newValue.otherJobs) {
-                if (currentValue.otherJobs.length == newValue.otherJobs.length) {
+            currentValue.jobs && newValue.jobs) {
+                if (currentValue.jobs.length == newValue.jobs.length) {
                     // the preconditions are set to want to compare the array values themselves
 
                     // we haven't got large arrays here; so simply iterate around every
                     //  current value, and confirm it is in the the new data set.
                     //  Array.every will drop out on the first iteration to return false
-                    arraysEqual = currentValue.otherJobs.every(thisJob => {
-                        return newValue.otherJobs.find(newJob => newJob.jobId === thisJob.jobId
+                    arraysEqual = currentValue.jobs.every(thisJob => {
+                        return newValue.jobs.find(newJob => newJob.jobId === thisJob.jobId
                             && ((newJob.other === thisJob.other) || (!newJob.other && !thisJob.other)) );
                     });
                 } else {
@@ -115,13 +112,17 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
         if (!withHistory) {
             // simple form
             return {
-                otherJobs: this.property.value === 'Yes' ? this.property.otherJobs : []
+                otherJobs: {
+                  value: this.property.value ? this.property.value : null,
+                  jobs: this.property.jobs ? this.property.jobs : [],
+                }
             };
         }
 
         return {
             otherJobs : {
-                currentValue: this.property.value === 'Yes' ? this.property.otherJobs : [],
+                value: this.property.value ? this.property.value : null,
+                jobs: this.property.jobs ? this.property.jobs : [],
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
         };
