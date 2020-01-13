@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
+const pCodeCheck = require('../../utils/postcodeSanitizer');
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
@@ -64,7 +65,7 @@ router.route('/').post(async (req, res) => {
         address3: req.body.addressLine3 ? req.body.addressLine3 : null,
         town: req.body.townCity,
         county: req.body.county,
-        postcode: req.body.postalCode,
+        postcode: pCodeCheck.sanitisePostcode(req.body.postalCode),
         name: req.body.locationName
       });
 
