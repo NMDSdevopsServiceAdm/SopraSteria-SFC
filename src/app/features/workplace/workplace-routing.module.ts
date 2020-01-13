@@ -26,6 +26,7 @@ import {
 } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
@@ -105,6 +106,15 @@ const routes: Routes = [
         data: {
           roles: [Roles.Admin, Roles.Edit],
           title: 'Workplace Not Found',
+        },
+      },
+      {
+        path: 'update-workplace-details',
+        component: EnterWorkplaceAddressComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Update Workplace Details',
         },
       },
 
