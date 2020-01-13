@@ -23,12 +23,12 @@ jwt:
 
 db:
     pool:
-        min: 15
-        max: 15
+        min: 10
+        max: 10
     ssl: true
     username: sfcapp
     client_ssl:
-        status: true
+        status: false
         usingFiles: false
 
 notify:

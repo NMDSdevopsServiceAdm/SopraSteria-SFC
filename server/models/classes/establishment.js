@@ -399,27 +399,27 @@ class Establishment extends EntityValidator {
       // Consequential updates when one value means another should be empty or null
 
       // When sharing is disabled, the local authority shared with should be removed
-      if (document.share) {
-        if (!document.share.enabled) {
-          document.share.with = [];
-          document.localAuthorities = [];
-        }
-      }
+      // if (document.share) {
+      //   if (!document.share.enabled) {
+      //     document.share.with = [];
+      //     document.localAuthorities = [];
+      //   }
+      // }
 
       // If an establishment is not CQC regulated, remove CQC sharing and remove a location ID if set
-      if (document.IsCQCRegulated === false || document.isRegulated === false) {
-        if (document.share && document.share.with) {
-          document.share.with = document.share.with.filter(item => item !== 'CQC');
-        }
-        document.locationId = null;
-      }
+      // if (document.IsCQCRegulated === false || document.isRegulated === false) {
+      //   if (document.share && document.share.with) {
+      //     document.share.with = document.share.with.filter(item => item !== 'CQC');
+      //   }
+      //   document.locationId = null;
+      // }
 
       // If the main service is not a care provider, remove the capacities and utilisations
-      if (document.mainService) {
-        if (nonCareServices.includes(document.mainService.id)) {
-          document.capacities = [];
-        }
-      }
+      // if (document.mainService) {
+      //   if (nonCareServices.includes(document.mainService.id)) {
+      //     document.capacities = [];
+      //   }
+      // }
 
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();

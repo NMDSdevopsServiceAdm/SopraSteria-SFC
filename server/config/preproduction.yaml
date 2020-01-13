@@ -23,8 +23,8 @@ jwt:
 
 db:
     pool:
-        min: 15
-        max: 15
+        min: 10
+        max: 10
     ssl: true
     client_ssl:
         status: false
