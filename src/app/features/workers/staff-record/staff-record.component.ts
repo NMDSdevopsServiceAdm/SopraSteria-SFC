@@ -11,6 +11,8 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { Roles } from '@core/model/roles.enum';
+import { UserService } from '@core/services/user.service';
 import { take } from 'rxjs/operators';
 
 import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
@@ -22,6 +24,8 @@ import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-work
 export class StaffRecordComponent implements OnInit, OnDestroy {
   public canDeleteWorker: boolean;
   public canEditWorker: boolean;
+  public isAdmin: boolean;
+  public isParent: boolean;
   public returnToRecord: URLStructure;
   public worker: Worker;
   public workplace: Establishment;
@@ -34,11 +38,14 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
+    private userService: UserService,
     private route: ActivatedRoute,
     private workerService: WorkerService
   ) {}
 
   ngOnInit() {
+    this.isAdmin = [Roles.Admin].includes(this.userService.loggedInUser.role);
+    this.isParent = this.establishmentService.primaryWorkplace.isParent;
     this.workplace = this.route.parent.snapshot.data.establishment;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
