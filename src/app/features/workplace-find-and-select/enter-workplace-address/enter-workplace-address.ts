@@ -116,9 +116,9 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   protected setupForm(): void {
     this.form = this.formBuilder.group({
       address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      address2: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      address2: ['', [Validators.maxLength(this.addressMaxLength)]],
       address3: ['', [Validators.maxLength(this.addressMaxLength)]],
-      county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      county: ['', [Validators.maxLength(this.addressMaxLength)]],
       postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength)]],
       townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
       workplaceName: ['', [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)]],
