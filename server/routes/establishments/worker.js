@@ -248,61 +248,72 @@ router.route('/').post(async (req, res) => {
     }
 });
 
+const editWorker = async (req, res) => {
+  const workerId = req.params.workerId;
+  const establishmentId = req.establishmentId;
+
+  // validating worker id - must be a V4 UUID
+  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+  if (!uuidRegex.test(workerId.toUpperCase())) {
+    res.status(400)
+    return res.send('Unexpected worker id');
+  }
+
+  const thisWorker = new Workers.Worker(establishmentId);
+
+  try {
+      // before updating a Worker, we need to be sure the Worker is
+      //  available to the given establishment. The best way of doing that
+      //  is to restore from given UID
+      if (await thisWorker.restore(workerId)) {
+          // TODO: JSON validation
+          if (req.body.establishmentId) {
+            thisWorker.establishmentId = req.body.establishmentId;
+            thisWorker.establishmentFk = req.body.establishmentId;
+            req.body.establishmentFk = req.body.establishmentId;
+          }
+
+          // by loading after the restore, only those properties defined in the
+          //  PUT body will be updated (peristed)
+          const isValidWorker = await thisWorker.load(req.body);
+          // this is an update to an existing Worker, so no mandatory properties!
+          if (isValidWorker) {
+              await thisWorker.save(req.username);
+
+              const exceptionalOverrideHeader = req.headers['x-override-put-return-all'];
+              const showModifiedOnly = exceptionalOverrideHeader ? false : true;
+              res.status(200)
+              return res.json(thisWorker.toJSON(false, false, false, showModifiedOnly));
+          } else {
+              res.status(400)
+              return res.send('Unexpected Input.');
+          }
+
+      } else {
+          // not found worker
+          res.status(404)
+          return res.send('Not Found');
+      }
+
+  } catch (err) {
+      if (err instanceof Workers.WorkerExceptions.WorkerSaveException && err.message == 'Duplicate LocalIdentifier') {
+          console.error("Worker::localidentifier PUT: ", err.message);
+          res.status(400)
+          return res.send(err.safe);
+      } else if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
+          console.error("Worker PUT: ", err.message);
+          res.status(400)
+          return res.send(err.safe);
+      } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
+          console.error("Worker PUT: ", err.message);
+          res.status(503)
+          return res.send(err.safe);
+      }
+  }
+};
 // updates given worker id
 router.route('/:workerId').put(async (req, res) => {
-    const workerId = req.params.workerId;
-    const establishmentId = req.establishmentId;
-
-    // validating worker id - must be a V4 UUID
-    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-    if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
-
-    const thisWorker = new Workers.Worker(establishmentId);
-
-    try {
-        // before updating a Worker, we need to be sure the Worker is
-        //  available to the given establishment. The best way of doing that
-        //  is to restore from given UID
-        if (await thisWorker.restore(workerId)) {
-            // TODO: JSON validation
-            if (req.body.establishmentId) {
-              thisWorker.establishmentId = req.body.establishmentId;
-              thisWorker.establishmentFk = req.body.establishmentId;
-              req.body.establishmentFk = req.body.establishmentId;
-            }
-
-            // by loading after the restore, only those properties defined in the
-            //  PUT body will be updated (peristed)
-            const isValidWorker = await thisWorker.load(req.body);
-
-            // this is an update to an existing Worker, so no mandatory properties!
-            if (isValidWorker) {
-                await thisWorker.save(req.username);
-
-                const exceptionalOverrideHeader = req.headers['x-override-put-return-all'];
-                const showModifiedOnly = exceptionalOverrideHeader ? false : true;
-                return res.status(200).json(thisWorker.toJSON(false, false, false, showModifiedOnly));
-            } else {
-                return res.status(400).send('Unexpected Input.');
-            }
-
-        } else {
-            // not found worker
-            return res.status(404).send('Not Found');
-        }
-
-    } catch (err) {
-        if (err instanceof Workers.WorkerExceptions.WorkerSaveException && err.message == 'Duplicate LocalIdentifier') {
-            console.error("Worker::localidentifier PUT: ", err.message);
-            return res.status(400).send(err.safe);
-        } else if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
-            console.error("Worker PUT: ", err.message);
-            return res.status(400).send(err.safe);
-        } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
-            console.error("Worker PUT: ", err.message);
-            return res.status(503).send(err.safe);
-        }
-    }
+  await editWorker(req, res);
 });
 
 // deletes given worker id
@@ -357,3 +368,4 @@ router.route('/:workerId').delete(async (req, res) => {
 });
 
 module.exports = router;
+module.exports.editWorker = editWorker;
