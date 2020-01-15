@@ -103,7 +103,7 @@ describe('worker route', () => {
         },
       }, {status: updateStatus, json: updateJson, send: updateJson});
     });
-    it('should return an error when the worker is not valid', async() => {
+    it('should return an error when the worker is not found', async() => {
       const updateStatus = (status) => {
         expect(status).to.deep.equal(404);
       };
