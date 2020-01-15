@@ -1311,6 +1311,9 @@ class Establishment {
     const starters = this._currentLine.STARTERS.split(';');
     const leavers = this._currentLine.LEAVERS.split(';');
 
+    const regManager = 4;
+    const isCQCRegulated = this._regType === 2;
+
     // allJobs can only be empty, if TOTALPERMTEMP is 0
     if (!this._currentLine.ALLJOBROLES || this._currentLine.ALLJOBROLES.length === 0) {
       if(
@@ -1356,6 +1359,21 @@ class Establishment {
           name: this._currentLine.LOCALESTID
         });
       }
+    }
+
+    console.log('Checking to see if we validate all jobs');
+    console.log(allJobs);
+
+    const hasRegisteredManager = () => {
+      allJobs.map((job, index) => {
+        console.log(job);
+        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) return true;
+      });
+      return false;
+    }
+
+    if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && !isCQCRegulated && !hasRegisteredManager()) {
+      console.log('They have no registered manager');
     }
 
     if (localValidationErrors.length > 0) {
