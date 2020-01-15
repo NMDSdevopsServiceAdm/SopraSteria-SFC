@@ -4,6 +4,7 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 exports.LocationIdProperty = class LocationIdProperty extends ChangePropertyPrototype {
     constructor() {
         super('LocationId');
+        this._allowNull = true;
     }
 
     static clone() {
