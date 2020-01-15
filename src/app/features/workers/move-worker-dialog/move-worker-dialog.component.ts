@@ -54,7 +54,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   }
 
 
-  //function is use to get all available workplaces name, uid and Postcode
+  //function is use to get all available workplaces
   private getMyAllWorkPlaces() {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe(
@@ -100,6 +100,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     this.dialog.close();
   }
 
+  //function is use to move worker in selected  workplace
   public onSubmit() {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -108,22 +109,21 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
-
-
     const newEstablishmentId = this.getWorkplaceEstablishmentId(this.form.value.workplaceNameOrPostCode);
-
     this.subscriptions.add(
       this.workerService
         .updateWorker(this.data.workplace.uid, this.data.worker.uid, {'establishmentId': newEstablishmentId})
         .subscribe(() => this.onSuccess(this.form.value.workplaceNameOrPostCode), error => this.onError(error))
     );
   }
+  /**
+   * Function is used to move workker in selected workplace.
+   * @param {string} nameAndPostCode of selected workplace
+   * @return {void}
+   **/
 
-  private onSuccess(newWorkplace): void {
-    const url =
-      this.data.workplace.uid === this.data.primaryWorkplaceUid
-        ? ['/dashboard']
-        : ['/workplace', this.data.workplace.uid];
+  private onSuccess(newWorkplace: string): void {
+    const url = ['/workplace', this.data.workplace.uid, 'staff-record', this.data.worker.uid];
     this.router.navigate(url, { fragment: 'staff-records' });
     this.alertService.addAlert({ type: 'success', message: `${this.data.worker.nameOrId} has been moved to ${newWorkplace}` });
     this.close();
@@ -213,7 +213,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
         .filter(
           wp =>
             wp.name.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
-            wp.postcode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
+            wp.postCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
             wp.nameAndPostCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase)
         )
         .filter(wp => wp.nameAndPostCode.toLowerCase() !== workplaceNameOrPostCodeLowerCase)
