@@ -55,6 +55,13 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
     const selectedLocation = this.getLocationAddress();
     this.subscriptions.add(
       this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe(data => {
+        //check if address2 and address3 is not available
+        if (!data.address2) {
+          data.address2 = null;
+        }
+        if (!data.address3) {
+          data.address3 = null;
+        }
         this.establishmentService.setState({ ...this.workplace, ...data });
         this.router.navigate(this.establishmentService.returnTo.url, {
           fragment: this.establishmentService.returnTo.fragment,
