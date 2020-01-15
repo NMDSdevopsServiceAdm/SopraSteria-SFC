@@ -2106,6 +2106,7 @@ class Establishment extends EntityValidator {
     if (isWDF) {
       params = {
         attributes: [
+          'id',
           'uid',
           'updated',
           'parentUid',
@@ -2173,6 +2174,7 @@ class Establishment extends EntityValidator {
     } else {
       params = {
         attributes: [
+          'id',
           'uid',
           'updated',
           'parentUid',
@@ -2207,6 +2209,7 @@ class Establishment extends EntityValidator {
     const mappedResults = await Promise.all(
       fetchResults.map(async thisSub => {
         const {
+          id,
           uid,
           updated,
           parentUid,
@@ -2220,6 +2223,7 @@ class Establishment extends EntityValidator {
         } = thisSub;
 
         return {
+          id,
           uid,
           updated,
           parentUid,
@@ -2229,7 +2233,7 @@ class Establishment extends EntityValidator {
           dataOwner,
           dataPermissions,
           dataOwnershipRequested,
-          postcode,
+          postCode: postcode,
           wdf: isWDF
             ? await WdfCalculator.calculateData({
                 thisEstablishment: thisSub,
