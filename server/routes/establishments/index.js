@@ -1,7 +1,8 @@
 // default route and registration of all sub routes
 const express = require('express');
 const router = express.Router();
-
+const slack = require('../../utils/slack/slack-logger');
+const sns = require('../../aws/sns');
 const Authorization = require('../../utils/security/isAuthenticated');
 
 // all user functionality is encapsulated
@@ -181,6 +182,13 @@ router.route('/:id').post(async (req, res) => {
           responseErrors.invalidEstablishment.errMessage
         );
       }
+      // post via Slack
+      const slackMsg = req.body[0];
+      slackMsg.nmdsId = estblistmentdata.NmdsId;
+      slackMsg.establishmentUid = estblistmentdata.eUID;
+      slack.info("Registration", JSON.stringify(slackMsg, null, 2));
+      // post through feedback topic - async method but don't wait for a responseThe
+      sns.postToRegistrations(slackMsg);
 
       res.status(201);
       res.json({
