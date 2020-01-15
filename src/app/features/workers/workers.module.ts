@@ -38,6 +38,7 @@ import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
+import { MoveWorkerDialogComponent } from './move-worker-dialog/move-worker-dialog.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
@@ -121,6 +122,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WdfWorkerConfirmationDialogComponent,
     TrainingAndQualificationsRecordComponent,
     SelectRecordTypeComponent,
+    MoveWorkerDialogComponent,
   ],
   providers: [DialogService, WorkerResolver],
   entryComponents: [
@@ -128,6 +130,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DeleteTrainingDialogComponent,
     DeleteWorkerDialogComponent,
     WdfWorkerConfirmationDialogComponent,
+    MoveWorkerDialogComponent,
   ],
 })
 export class WorkersModule {}

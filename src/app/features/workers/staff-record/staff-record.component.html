@@ -11,6 +11,7 @@
         <a
         *ngIf="(canEditWorker && isParent)"
         class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+        (click)="moveWorker($event)"
         >
           Move this worker
         </a>
