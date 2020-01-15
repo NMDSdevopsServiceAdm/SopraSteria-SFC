@@ -17,13 +17,6 @@ LEFT JOIN
   cqc."TrainingCategories" c
 ON
   b."CategoryFK" = c."ID"
-LEFT JOIN
-  cqc."WorkerJobs" d
-ON
-  a."ID" = d."WorkerFK"
-LEFT JOIN
-  cqc."Job" e
-ON d."JobFK" = e."JobID"
 WHERE
   a."EstablishmentFK" = :establishmentId AND
   a."Archived" = :falseValue;
