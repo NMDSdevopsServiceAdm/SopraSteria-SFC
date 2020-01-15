@@ -167,6 +167,7 @@ router.route('/:id').post(async (req, res) => {
           id: establishmentData.MainServiceId,
           other: establishmentData.MainServiceOther,
         },
+        ustatus: 'PENDING'
       });
 
       // no Establishment properties on registration
@@ -174,6 +175,7 @@ router.route('/:id').post(async (req, res) => {
         await newEstablishment.save(req.username, 0, t);
         establishmentData.id = newEstablishment.id;
         establishmentData.eUID = newEstablishment.uid;
+        establishmentData.NmdsId = newEstablishment.nmdsId;
       } else {
         // Establishment properties not valid
         throw new RegistrationException(
@@ -183,9 +185,9 @@ router.route('/:id').post(async (req, res) => {
         );
       }
       // post via Slack
-      const slackMsg = req.body[0];
-      slackMsg.nmdsId = estblistmentdata.NmdsId;
-      slackMsg.establishmentUid = estblistmentdata.eUID;
+      const slackMsg = req.body;
+      slackMsg.nmdsId = establishmentData.NmdsId;
+      slackMsg.establishmentUid = establishmentData.eUID;
       slack.info("Registration", JSON.stringify(slackMsg, null, 2));
       // post through feedback topic - async method but don't wait for a responseThe
       sns.postToRegistrations(slackMsg);
@@ -196,7 +198,7 @@ router.route('/:id').post(async (req, res) => {
         message: 'Establishment successfully created',
         establishmentId: establishmentData.id,
         establishmentUid: establishmentData.eUID,
-        nmdsId: newEstablishment.nmdsId ? newEstablishment.nmdsId : 'undefined',
+        nmdsId: establishmentData.nmdsId ? establishmentData.nmdsId : 'undefined',
       });
     });
   } catch (err) {
