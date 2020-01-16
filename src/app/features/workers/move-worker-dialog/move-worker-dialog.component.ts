@@ -29,6 +29,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   public workplaceNameOrPostCode: string;
 
 
+
   constructor(
     @Inject(DIALOG_DATA) public data: { worker: Worker; workplace: Establishment; primaryWorkplaceUid: string },
     public dialog: Dialog<MoveWorkerDialogComponent>,
@@ -48,7 +49,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
 
 
   ngOnInit() {
-   this.getMyAllWorkPlaces();
+    this.getMyAllWorkPlaces();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
@@ -59,22 +60,22 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe(
         myAllEstablishment => {
-           let allEstablishments;
-           const { primary, subsidaries } = myAllEstablishment;
-           const subsidaryEstablishments  = subsidaries.count > 0?subsidaries.establishments: [];
-           allEstablishments = subsidaryEstablishments;
-           if(subsidaries.count > 0){
+          let allEstablishments;
+          const { primary, subsidaries } = myAllEstablishment;
+          const subsidaryEstablishments = subsidaries.count > 0 ? subsidaries.establishments : [];
+          allEstablishments = subsidaryEstablishments;
+          if (subsidaries.count > 0) {
             allEstablishments = subsidaryEstablishments.concat([primary]);
-           }
-           const currentWorkplaceUid = this.data.workplace.uid;
-           this.availableWorkPlaces = allEstablishments.filter(wp =>
-           wp.uid !== currentWorkplaceUid)
-           .map(wp =>{
-             wp.nameAndPostCode = wp.name +', '+ wp.postCode;
-             return wp;
-           }
+          }
+          const currentWorkplaceUid = this.data.workplace.uid;
+          this.availableWorkPlaces = allEstablishments.filter(wp =>
+            wp.uid !== currentWorkplaceUid)
+            .map(wp => {
+              wp.nameAndPostCode = wp.name + ', ' + wp.postCode;
+              return wp;
+            }
 
-           );
+            );
         },
 
         error => {
@@ -86,11 +87,11 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     );
   }
 
-/**
-   * Pass in formGroup or formControl name
-   * Then return error message
-   * @param error item
-   */
+  /**
+     * Pass in formGroup or formControl name
+     * Then return error message
+     * @param error item
+     */
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
@@ -109,23 +110,30 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
-    const newEstablishmentId = this.getWorkplaceEstablishmentId(this.form.value.workplaceNameOrPostCode);
+    const newEstablishmentId = this.getWorkplaceEstablishmentIdOrName(this.form.value.workplaceNameOrPostCode, 'id');
     this.subscriptions.add(
       this.workerService
-        .updateWorker(this.data.workplace.uid, this.data.worker.uid, {'establishmentId': newEstablishmentId})
+        .updateWorker(this.data.workplace.uid, this.data.worker.uid, { establishmentId: newEstablishmentId })
         .subscribe(() => this.onSuccess(this.form.value.workplaceNameOrPostCode), error => this.onError(error))
     );
   }
   /**
    * Function is used to move workker in selected workplace.
-   * @param {string} nameAndPostCode of selected workplace
+   * @param {string} nameOrPostCode of selected workplace
    * @return {void}
    **/
 
-  private onSuccess(newWorkplace: string): void {
-    const url = ['/workplace', this.data.workplace.uid, 'staff-record', this.data.worker.uid];
+  private onSuccess(nameAndPostCode: string): void {
+    const newEstablishmentName = this.getWorkplaceEstablishmentIdOrName(nameAndPostCode, 'name');
+    const url =
+      this.data.workplace.uid === this.data.primaryWorkplaceUid
+        ? ['/dashboard']
+        : ['/workplace', this.data.workplace.uid];
     this.router.navigate(url, { fragment: 'staff-records' });
-    this.alertService.addAlert({ type: 'success', message: `${this.data.worker.nameOrId} has been moved to ${newWorkplace}` });
+    this.alertService.addAlert({
+      type: 'success',
+      message: `${this.data.worker.nameOrId} has been moved to ${newEstablishmentName}.`
+    });
     this.close();
   }
 
@@ -140,7 +148,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     });
   }
 
-   //setup  form error message
+  //setup  form error message
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -186,7 +194,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
    */
   public workplaceNameOrPostCodeValidator() {
     if (this.form && this.availableWorkPlaces) {
-      const { workplaceNameOrPostCode} = this.form.controls;
+      const { workplaceNameOrPostCode } = this.form.controls;
       if (workplaceNameOrPostCode.value !== null) {
         const workplaceNameOrPostCodeLowerCase = workplaceNameOrPostCode.value.toLowerCase();
         return this.availableWorkPlaces.some(
@@ -194,6 +202,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
         )
           ? null
           : { validNameOrPostCode: true };
+
       }
     }
 
@@ -226,17 +235,24 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   /**
    * Function is used to get selected parent's uid.
    * @param {string} nameAndPostCode of selected parent
+   * @param {string} nameOrId of selected parent
    * @return {array}  array of string
    */
-  public getWorkplaceEstablishmentId(nameAndPostCode: string) {
+  public getWorkplaceEstablishmentIdOrName(nameAndPostCode: string, nameOrId: string) {
     if (nameAndPostCode) {
       const filterArray = this.availableWorkPlaces.filter(
         wp => wp.nameAndPostCode.toLowerCase() === nameAndPostCode.toLowerCase()
       );
-      return filterArray[0].id;
+      if (nameOrId === 'id') {
+        return filterArray[0].id;
+      }
+      return filterArray[0].name;
     }
   }
+
+
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 }
+

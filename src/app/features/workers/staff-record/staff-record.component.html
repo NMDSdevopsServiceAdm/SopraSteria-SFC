@@ -8,13 +8,13 @@
     </div>
 
     <div class="govuk-grid-column-one-half govuk-util__align-right">
-        <a
-        *ngIf="(canEditWorker && isParent)"
-        class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
-        (click)="moveWorker($event)"
-        >
-          Move this worker
-        </a>
+      <a
+      *ngIf="(canEditWorker && isParent)"
+      class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+      (click)="moveWorker($event)"
+      >
+        Move this staff
+      </a>
       <button
         *ngIf="canDeleteWorker"
         class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-margin-bottom-0 govuk-util__float-right"
@@ -25,6 +25,7 @@
           Delete staff record
         </span>
       </button>
+
       <a
         *ngIf="canEditWorker"
         class="govuk-button govuk-button--link govuk-util__float-right govuk-!-margin-left-4"

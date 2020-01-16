@@ -6,11 +6,11 @@
 >
 </app-error-summary>
 <h1 id="dialogHeading" class="govuk-heading-l">Move this Worker</h1>
-<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" autocomplete="off">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
       <h1 class="govuk-fieldset__heading">
-        Find the worplace to move to
+        Find the workplace to move to
       </h1>
     </legend>
     <div class="govuk-form-group">
@@ -31,6 +31,7 @@
           [formControlName]="'workplaceNameOrPostCode'"
         ></app-auto-suggest>
     </div>
+    <p *ngIf="form.valid"><strong>You are about to move {{ data.worker.nameOrId }} to {{ form.get('workplaceNameOrPostCode').value }}.</strong></p>
   </fieldset>
 
   <button type="submit" class="govuk-button">Move Worker</button>

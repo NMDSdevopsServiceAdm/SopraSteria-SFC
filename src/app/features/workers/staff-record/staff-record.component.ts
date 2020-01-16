@@ -83,10 +83,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     event.preventDefault();
      this.dialogService.open(MoveWorkerDialogComponent, {
       worker: this.worker,
-      workplace: this.workplace,
-      primaryWorkplaceUid: this.route.parent.snapshot.data.primaryWorkplace
-        ? this.route.parent.snapshot.data.primaryWorkplace.uid
-        : null,
+      workplace: this.workplace
     });
   }
 
