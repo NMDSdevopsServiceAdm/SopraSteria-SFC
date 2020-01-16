@@ -347,12 +347,12 @@ class Worker extends EntityValidator {
       }
 
       // Remove social care qualification if they don't have one
-      if (document.qualificationInSocialCare === 'No') {
+      if (document.qualificationInSocialCare !== 'Yes') {
         document.socialCareQualification = { qualificationId: null, title: null };
       }
 
       // Remove highest qualification if no other qualifications
-      if (document.otherQualification === 'No') {
+      if (document.otherQualification !== 'Yes') {
         document.highestQualification = { qualificationId: null, title: null };
       }
 
