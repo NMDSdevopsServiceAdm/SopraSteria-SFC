@@ -34,9 +34,26 @@ router.route('/').get(async (req, res) => {
         }
       ]
     });
+    // Get the pending workplace records
+    const workplaceResults = await models.establishment.findAll({
+      attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID', 'created'],
+      where: {
+          ustatus: 'PENDING'
+      },
+      order: [
+        ['id', 'DESC']
+      ],
+      include: [{
+        model: models.services,
+        as: 'mainService',
+        attributes: ['id', 'name']
+      }]
+    });
+    console.log(workplaceResults);
+    let arrToReturn, loginReturnArr, workplaceReturnArr;
     if (loginResults){
       // Reply with mapped results
-      res.status(200).send(loginResults.map(registration => {
+      loginReturnArr = loginResults.map(registration => {
         registration = registration.toJSON();
         return {
           name: registration.user.FullNameValue,
@@ -45,7 +62,7 @@ router.route('/').get(async (req, res) => {
           securityQuestionAnswer: registration.user.SecurityQuestionAnswerValue,
           email: registration.user.EmailValue,
           phone: registration.user.PhoneValue,
-          created: moment(registration.user.created).format('D/M/YYYY h:mma'),
+          created: registration.user.created,
           establishment: {
             name: registration.user.establishment.NameValue,
             isRegulated: registration.user.establishment.IsRegulated,
@@ -61,8 +78,51 @@ router.route('/').get(async (req, res) => {
             mainService: registration.user.establishment.mainService.name
           }
         };
-      }));
-    } else {
+      });
+    }
+    if(workplaceResults){
+      workplaceReturnArr = workplaceResults.map(registration => {
+        registration = registration.toJSON();
+        return {
+          created: registration.created,
+          establishment: {
+            name: registration.NameValue,
+            isRegulated: registration.IsRegulated,
+            nmdsId: registration.NmdsID,
+            address: registration.Address1,
+            address2: registration.Address2,
+            address3: registration.Address3,
+            postcode: registration.PostCode,
+            town: registration.Town,
+            county: registration.County,
+            locationId: registration.LocationID,
+            provid: registration.ProvID,
+            mainService: registration.mainService.name
+          }
+        };
+      });
+    }
+    if(loginResults && workplaceResults){
+      arrToReturn = loginReturnArr.concat(workplaceReturnArr);
+      arrToReturn.sort(function(a,b){
+        var dateA = new Date(a.created).getTime();
+        var dateB = new Date(b.created).getTime();
+        return dateB > dateA ? 1 : -1;
+      }).map(registration => {
+        registration.created = moment(registration.created).format('D/M/YYYY h:mma');
+      });
+      res.status(200).send(arrToReturn);
+    }else if(loginReturnArr && !workplaceReturnArr){
+      loginReturnArr.map(registration => {
+        registration.created = moment(registration.created).format('D/M/YYYY h:mma');
+      });
+      res.status(200).send(loginReturnArr);
+    }else if(!loginReturnArr && workplaceReturnArr){
+      workplaceReturnArr.map(registration => {
+        registration.created = moment(registration.created).format('D/M/YYYY h:mma');
+      });
+      res.status(200).send(workplaceReturnArr);
+    }else{
       res.status(200);
     }
   } catch(error) {
