@@ -1361,19 +1361,26 @@ class Establishment {
       }
     }
 
-    console.log('Checking to see if we validate all jobs');
-    console.log(allJobs);
-
-    const hasRegisteredManager = () => {
+    const hasRegisteredManagerVacancy = () => {
       allJobs.map((job, index) => {
         console.log(job);
-        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) return true;
+        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) {
+          allJobs.splice(index, 1);
+          return true;
+        }
       });
       return false;
-    }
+    };
 
-    if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && !isCQCRegulated && !hasRegisteredManager()) {
-      console.log('They have no registered manager');
+    if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && !isCQCRegulated && !hasRegisteredManagerVacancy()) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: Establishment.ALL_JOBS_WARNING,
+        warnType: 'ALL_JOBS_WARNING',
+        warning: 'Vacancy for Registered Manager should not be included for this service and will be ignored',
+        source: this._currentLine.ALLJOBROLES,
+        name: this._currentLine.LOCALESTID
+      });
     }
 
     if (localValidationErrors.length > 0) {
