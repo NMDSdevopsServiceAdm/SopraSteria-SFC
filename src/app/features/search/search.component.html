@@ -226,18 +226,18 @@
               <td class="govuk-table__cell">
                 {{ registration.created }}
               </td>
-              <th class="govuk-table__cell">Username</th>
-              <td class="govuk-table__cell">
+              <th *ngIf="registration.username" class="govuk-table__cell">Username</th>
+              <td *ngIf="registration.username" class="govuk-table__cell">
                 {{ registration.username }}
               </td>
             </tr>
-            <tr class="govuk-table__row">
+            <tr *ngIf="registration.name"class="govuk-table__row">
               <th class="govuk-table__cell">Name</th>
               <td class="govuk-table__cell" colspan="3">
                 {{ registration.name }}
               </td>
             </tr>
-            <tr class="govuk-table__row">
+            <tr *ngIf="registration.email" class="govuk-table__row">
               <th class="govuk-table__cell">Email</th>
               <td class="govuk-table__cell">
                 <a href="mailto:{{ registration.email }}">{{ registration.email }}</a>
@@ -247,7 +247,7 @@
                 {{ registration.phone }}
               </td>
             </tr>
-            <tr class="govuk-table__row">
+            <tr *ngIf="registration.securityQuestion" class="govuk-table__row">
               <th class="govuk-table__cell">Security question</th>
               <td class="govuk-table__cell">
                 {{ registration.securityQuestion }}
