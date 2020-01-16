@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac">
+	<dimension ref="A1:I3"/>
+	<sheetViews>
+		<sheetView showGridLines="0" tabSelected="1" workbookViewId="0">
+			<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozenSplit"/>
+			<selection pane="bottomLeft" activeCell="A1" sqref="A1"/>
+		</sheetView>
+	</sheetViews>
+	<sheetFormatPr defaultRowHeight="12.5" x14ac:dyDescent="0.25"/>
+	<cols>
+		<col min="1" max="4" width="32.28515625" customWidth="1"/>
+		<col min="5" max="5" width="35.140625" customWidth="1"/>
+		<col min="6" max="9" width="32.28515625" customWidth="1"/>
+	</cols>
+	<sheetData>
+		<row r="1" spans="1:8" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+			<c r="A1" s="15" t="s">
+				<v>
+					9
+				</v>
+			</c>
+			<c r="B1" s="15" t="s">
+				<v>
+					10
+				</v>
+			</c>
+			<c r="C1" s="15" t="s">
+				<v>
+					11
+				</v>
+			</c>
+			<c r="D1" s="15" t="s">
+				<v>
+					12
+				</v>
+			</c>
+			<c r="E1" s="15" t="s">
+				<v>
+					13
+				</v>
+			</c>
+			<c r="F1" s="15" t="s">
+				<v>
+					15
+				</v>
+			</c>
+			<c r="G1" s="15" t="s">
+				<v>
+					16
+				</v>
+			</c>
+			<c r="H1" s="15" t="s">
+				<v>
+					17
+				</v>
+			</c>
+		</row>
+		<row r="2" spans="1:8" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25">
+			<c r="A2" s="8" />
+			<c r="B2" s="10" />
+			<c r="C2" s="8" />
+			<c r="D2" s="8" />
+			<c r="E2" s="20" />
+			<c r="F2" s="8" />
+			<c r="G2" s="8" />
+			<c r="H2" s="7" />
+		</row>
+		<row r="3" spans="1:8" ht="17.149999999999999" customHeight="1" x14ac:dyDescent="0.25"/>
+	</sheetData>
+	<phoneticPr fontId="0" type="noConversion"/>
+	<pageMargins left="0.19685039370078741" right="0.19685039370078741" top="0.19685039370078741" bottom="0.63900393700787406" header="0.19685039370078741" footer="0.19685039370078741"/>
+	<pageSetup paperSize="9" orientation="landscape" horizontalDpi="0" verticalDpi="0"/>
+	<headerFooter alignWithMargins="0">
+		<oddFooter>
+			&amp;L&amp;"Arial"&amp;8&amp;I28/01/2019 09:00:29&amp;I &amp;C&amp;R
+		</oddFooter>
+	</headerFooter>
+</worksheet>

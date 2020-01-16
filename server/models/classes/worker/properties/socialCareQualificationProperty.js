@@ -7,6 +7,7 @@ const models = require('../../../index');
 exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificationProperty extends ChangePropertyPrototype {
     constructor() {
         super('SocialCareQualification', 'SocialCareQualificationFk');
+        this._allowNull = false;
     }
 
     static clone() {
@@ -67,6 +68,8 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
     _valid(qualificationDef) {
         if (!qualificationDef) return false;
 
+        if (qualificationDef.qualificationId === null && qualificationDef.title === null) return true;
+
         // must exist a qualificationId or title
         if (!(qualificationDef.qualificationId || qualificationDef.title)) return false;
 
@@ -106,6 +109,10 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
                 qualificationId: referencedQualification.id,
                 title: referencedQualification.level
             };
+        }
+
+        if (qualificationDef.qualificationId === null) {
+          return qualificationDef;
         } else {
             return false;
         }

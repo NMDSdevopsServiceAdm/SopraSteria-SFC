@@ -5,6 +5,7 @@ const YEAR_ARRIVED_TYPE = ['Yes', 'No'];
 exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends ChangePropertyPrototype {
     constructor() {
         super('YearArrived');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -19,7 +20,7 @@ exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends Chan
             if (YEAR_ARRIVED_TYPE.includes(document.yearArrived.value)) {
                 if (document.yearArrived.value === 'Yes') {
                     const thisYear = new Date().getFullYear();
-                    
+
                     // need to validate the year - it's only four character integer - YYYY
                     // it has to be less than equal to this year
                     // it cannot be less than MAXIMUM AGE
@@ -27,7 +28,7 @@ exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends Chan
                         Number.isInteger(document.yearArrived.year) &&
                         document.yearArrived.year <= thisYear &&
                         document.yearArrived.year >= (thisYear - MAXIMUM_AGE)) {
-                        
+
                         this.property = {
                             value: document.yearArrived.value,
                             year: document.yearArrived.year
@@ -44,6 +45,11 @@ exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends Chan
                         value: document.yearArrived.value
                     };
                 }
+            } else if (document.yearArrived.value === null) {
+              this.property = {
+                value: document.yearArrived.value,
+                year: document.yearArrived.year
+              };
             } else {
                 this.property = null;
             }
@@ -76,7 +82,7 @@ exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends Chan
             yearEqual = true;
         }
 
-        return currentValue && newValue && currentValue.value == newValue.value && yearEqual;
+        return currentValue && newValue && currentValue.value === newValue.value && yearEqual;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
@@ -86,7 +92,7 @@ exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends Chan
                 yearArrived: this.property
             };
         }
-        
+
         return {
             yearArrived : {
                 currentValue: this.property,

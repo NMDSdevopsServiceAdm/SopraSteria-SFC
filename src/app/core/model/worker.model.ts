@@ -9,7 +9,10 @@ export interface Worker {
   mainJob: JobRole;
   localIdentifier: string;
   approvedMentalHealthWorker?: string;
-  otherJobs?: JobRole[];
+  otherJobs?: {
+    value: string;
+    jobs: JobRole[];
+  };
   mainJobStartDate?: string;
   nationalInsuranceNumber?: string;
   dateOfBirth?: string;
