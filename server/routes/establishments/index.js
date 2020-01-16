@@ -93,6 +93,7 @@ router.route('/:id').post(async (req, res) => {
     Name: req.body.locationName,
     Address1: req.body.addressLine1,
     Address2: req.body.addressLine2,
+    Address3: req.body.addressLine3,
     Town: req.body.townCity,
     County: req.body.county,
     LocationID: req.body.locationId,
@@ -150,7 +151,7 @@ router.route('/:id').post(async (req, res) => {
       newEstablishment.initialise(
         establishmentData.Address1,
         establishmentData.Address2,
-        null,
+        establishmentData.Address3,
         establishmentData.Town,
         establishmentData.County,
         establishmentData.LocationID,
@@ -189,7 +190,7 @@ router.route('/:id').post(async (req, res) => {
       slackMsg.nmdsId = establishmentData.NmdsId;
       slackMsg.establishmentUid = establishmentData.eUID;
       slackMsg.username = req.username;
-      slack.info("Registration", JSON.stringify(slackMsg, null, 2));
+      slack.info("New Workplace", JSON.stringify(slackMsg, null, 2));
       // post through feedback topic - async method but don't wait for a responseThe
       sns.postToRegistrations(slackMsg);
 

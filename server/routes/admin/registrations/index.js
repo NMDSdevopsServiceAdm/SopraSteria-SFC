@@ -64,6 +64,7 @@ router.route('/').get(async (req, res) => {
           phone: registration.user.PhoneValue,
           created: registration.user.created,
           establishment: {
+            id: registration.user.establishment.EstablishmentID,
             name: registration.user.establishment.NameValue,
             isRegulated: registration.user.establishment.IsRegulated,
             nmdsId: registration.user.establishment.NmdsID,
@@ -86,6 +87,7 @@ router.route('/').get(async (req, res) => {
         return {
           created: registration.created,
           establishment: {
+            id: registration.EstablishmentID,
             name: registration.NameValue,
             isRegulated: registration.IsRegulated,
             nmdsId: registration.NmdsID,
@@ -103,7 +105,8 @@ router.route('/').get(async (req, res) => {
       });
     }
     if(loginResults && workplaceResults){
-      arrToReturn = loginReturnArr.concat(workplaceReturnArr);
+      let loginWorkplaceIds = new Set(loginReturnArr.map(d => d.establishment.id));
+      arrToReturn = [...loginReturnArr, ...workplaceReturnArr.filter(d => !loginWorkplaceIds.has(d.establishment.id))];
       arrToReturn.sort(function(a,b){
         var dateA = new Date(a.created).getTime();
         var dateB = new Date(b.created).getTime();
