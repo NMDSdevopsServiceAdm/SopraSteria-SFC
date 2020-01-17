@@ -5,9 +5,7 @@ const models = require('../../../models');
 
 router.route('/').post(async (req, res) => {
   // parse input - escaped to prevent SQL injection
-  if (!req.body.username) {
-    return res.status(400).send();
-  }
+
   // Sanatize username
   if(req.body.username){
     const username = escape(req.body.username.toLowerCase());

@@ -230,6 +230,10 @@
               <td *ngIf="registration.username" class="govuk-table__cell">
                 {{ registration.username }}
               </td>
+              <th *ngIf="registration.establishment.parentEstablishmentId" class="govuk-table__cell">Parent Establishment ID</th>
+              <td *ngIf="registration.establishment.parentEstablishmentId" class="govuk-table__cell">
+                {{ registration.establishment.parentEstablishmentId }}
+              </td>
             </tr>
             <tr *ngIf="registration.name"class="govuk-table__row">
               <th class="govuk-table__cell">Name</th>
@@ -300,14 +304,25 @@
             </tr>
             <tr class="govuk-table__row">
               <td class="gov-uk-table__cell" colspan="4">
-                <div class="govuk-button-group">
+                <div class="govuk-button-group" *ngIf="registration.username" >
                   <button
                     class="govuk-button govuk-button--warning govuk-util__float-right"
-                    (click)="approveUser(registration.username, false, i)"
+                    (click)="approveRegistration(registration.username, false, i,false)"
                   >
                     Reject
                   </button>
-                  <button class="govuk-button" (click)="approveUser(registration.username, true, i)">
+                  <button class="govuk-button" (click)="approveRegistration(registration.username, true, i,false)">
+                    Approve
+                  </button>
+                </div>
+                <div class="govuk-button-group" *ngIf="!registration.username" >
+                  <button
+                    class="govuk-button govuk-button--warning govuk-util__float-right"
+                    (click)="approveRegistration(registration.establishment.id, false, i,true)"
+                  >
+                    Reject
+                  </button>
+                  <button class="govuk-button" (click)="approveRegistration(registration.establishment.id, true, i,true)">
                     Approve
                   </button>
                 </div>
