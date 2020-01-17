@@ -1363,7 +1363,6 @@ class Establishment {
 
     const hasRegisteredManagerVacancy = () => {
       allJobs.map((job, index) => {
-        console.log(job);
         if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) {
           if (!isCQCRegulated) {
             allJobs.splice(index, 1);
@@ -1373,6 +1372,18 @@ class Establishment {
       });
       return false;
     };
+
+    // Need to add if they currently have a registered manager
+    if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && isCQCRegulated && !hasRegisteredManagerVacancy()) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ALL_JOBS_ERROR,
+        errType: 'ALL_JOBS_ERROR',
+        error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
+        source: this._currentLine.ALLJOBROLES,
+        name: this._currentLine.LOCALESTID
+      });
+    }
 
     if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && !isCQCRegulated && !hasRegisteredManagerVacancy()) {
       localValidationErrors.push({
