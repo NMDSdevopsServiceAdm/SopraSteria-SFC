@@ -38,7 +38,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private workerService: WorkerService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
@@ -79,11 +79,14 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     });
   }
 
-  public moveWorker(event){
+  public moveWorker(event) {
     event.preventDefault();
-     this.dialogService.open(MoveWorkerDialogComponent, {
+    this.dialogService.open(MoveWorkerDialogComponent, {
       worker: this.worker,
-      workplace: this.workplace
+      workplace: this.workplace,
+      primaryWorkplaceUid: this.route.parent.snapshot.data.primaryWorkplace
+        ? this.route.parent.snapshot.data.primaryWorkplace.uid
+        : null,
     });
   }
 
