@@ -4,6 +4,7 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 exports.CountyProperty = class CountyProperty extends ChangePropertyPrototype {
     constructor() {
         super('County');
+        this._allowNull = true;
     }
 
     static clone() {
