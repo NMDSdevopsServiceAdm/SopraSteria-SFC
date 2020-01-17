@@ -1365,7 +1365,9 @@ class Establishment {
       allJobs.map((job, index) => {
         console.log(job);
         if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) {
-          allJobs.splice(index, 1);
+          if (!isCQCRegulated) {
+            allJobs.splice(index, 1);
+          }
           return true;
         }
       });
