@@ -69,7 +69,7 @@ export class ReportService {
   }
 
   // Function to check for the lock status
-  private checkTrainingLockStatus(callback, httpOptions,workplaceUid): Observable<any> {
+  private checkTrainingLockStatus(callback, httpOptions, workplaceUid): Observable<any> {
     let requestId;
     // Run function every second until lock aquired
     return (
