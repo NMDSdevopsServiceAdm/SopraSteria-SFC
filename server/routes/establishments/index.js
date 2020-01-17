@@ -186,8 +186,16 @@ router.route('/:id').post(async (req, res) => {
         );
       }
       // post via Slack
+      //get parent establishment details
+      let fetchQuery = {
+        where: {
+          id: req.establishment.id,
+        },
+      };
+      let parentEstablishment = await models.establishment.findOne(fetchQuery);
       const slackMsg = req.body;
       slackMsg.nmdsId = establishmentData.NmdsId;
+      slackMsg.parentEstablishmentId = parentEstablishment.nmdsId;
       slackMsg.establishmentUid = establishmentData.eUID;
       slackMsg.username = req.username;
       slack.info("New Workplace", JSON.stringify(slackMsg, null, 2));

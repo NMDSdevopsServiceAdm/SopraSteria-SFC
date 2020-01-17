@@ -36,7 +36,7 @@ router.route('/').get(async (req, res) => {
     });
     // Get the pending workplace records
     const workplaceResults = await models.establishment.findAll({
-      attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID', 'created'],
+      attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID', 'ParentID', 'created'],
       where: {
           ustatus: 'PENDING'
       },
@@ -49,7 +49,7 @@ router.route('/').get(async (req, res) => {
         attributes: ['id', 'name']
       }]
     });
-    console.log(workplaceResults);
+
     let arrToReturn, loginReturnArr, workplaceReturnArr;
     if (loginResults){
       // Reply with mapped results
@@ -99,7 +99,8 @@ router.route('/').get(async (req, res) => {
             county: registration.County,
             locationId: registration.LocationID,
             provid: registration.ProvID,
-            mainService: registration.mainService.name
+            mainService: registration.mainService.name,
+            parentId: registration.ParentID
           }
         };
       });
@@ -107,13 +108,28 @@ router.route('/').get(async (req, res) => {
     if(loginResults && workplaceResults){
       let loginWorkplaceIds = new Set(loginReturnArr.map(d => d.establishment.id));
       arrToReturn = [...loginReturnArr, ...workplaceReturnArr.filter(d => !loginWorkplaceIds.has(d.establishment.id))];
+
       arrToReturn.sort(function(a,b){
         var dateA = new Date(a.created).getTime();
         var dateB = new Date(b.created).getTime();
         return dateB > dateA ? 1 : -1;
-      }).map(registration => {
-        registration.created = moment(registration.created).format('D/M/YYYY h:mma');
       });
+
+      for(let i = 0; i < arrToReturn.length; i++){
+        arrToReturn[i].created = moment(arrToReturn[i].created).format('D/M/YYYY h:mma');
+        //get parent establishment details
+        if(!arrToReturn[i].email){
+          let fetchQuery = {
+            where: {
+              id: arrToReturn[i].establishment.parentId,
+            },
+          };
+          let parentEstablishment = await models.establishment.findOne(fetchQuery);
+          if(parentEstablishment){
+            arrToReturn[i].establishment.parentEstablishmentId = parentEstablishment.nmdsId;
+          }
+        }
+      }
       res.status(200).send(arrToReturn);
     }else if(loginReturnArr && !workplaceReturnArr){
       loginReturnArr.map(registration => {
