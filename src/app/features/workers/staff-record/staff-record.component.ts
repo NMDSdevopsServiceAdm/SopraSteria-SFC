@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
+import { MoveWorkerDialogComponent } from '../move-worker-dialog/move-worker-dialog.component';
 
 @Component({
   selector: 'app-staff-record',
@@ -67,10 +68,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-  }
-
   deleteWorker(event) {
     event.preventDefault();
     this.dialogService.open(DeleteWorkerDialogComponent, {
@@ -80,5 +77,17 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         ? this.route.parent.snapshot.data.primaryWorkplace.uid
         : null,
     });
+  }
+
+  public moveWorker(event){
+    event.preventDefault();
+     this.dialogService.open(MoveWorkerDialogComponent, {
+      worker: this.worker,
+      workplace: this.workplace
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
