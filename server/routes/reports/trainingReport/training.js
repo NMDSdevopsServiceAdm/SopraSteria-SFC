@@ -194,7 +194,8 @@ const getTrainingReportData = async establishmentId => {
           trainingCounts.upToDateTrainingCount++;
         }
       } else {
-        trainingData[i].Status = 'Missing';
+        trainingData[i].Status = 'Up-to-date';
+        trainingData[i].ExpiredOn = '';
       }
       updateProps.forEach(prop => {
         if (trainingData[i][prop] === null) {
