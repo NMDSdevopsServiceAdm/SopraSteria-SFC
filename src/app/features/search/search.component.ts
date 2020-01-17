@@ -173,13 +173,20 @@ export class SearchComponent implements OnInit {
   protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/dashboard'] });
   }
-
-  public approveUser(username: string, approved: boolean, index: number) {
-    const data = {
-      username,
+  //used to approve workplace or user registration
+  public approveRegistration(usernameOrId: string, approved: boolean, index: number, isEstablishment: boolean) {
+    let data;
+    data = {
+      username: usernameOrId,
       approve: approved,
     };
+    if (isEstablishment) {
+      data = {
+        establishmentId: usernameOrId,
+        approve: approved,
+      };
+    }
     this.registrations.splice(index, 1);
-    this.registrationsService.userApproval(data).subscribe();
+    this.registrationsService.registrationApproval(data).subscribe();
   }
 }
