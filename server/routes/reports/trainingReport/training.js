@@ -10,6 +10,7 @@ const path = require('path');
 const walk = require('walk');
 const JsZip = require('jszip');
 const config = require('../../../../server/config/config');
+const models = require('../../../../server/models');
 const uuid = require('uuid');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3({
@@ -109,7 +110,7 @@ const getReportData = async (date, thisEstablishment) => {
 
   return {
     date: date.toISOString(),
-    trainings: await getTrainingReportData(thisEstablishment.id),
+    trainings: await getTrainingReportData(thisEstablishment),
   };
 };
 
@@ -1039,11 +1040,16 @@ const lockStatusGet = async (req, res) => {
 const reportGet = async (req, res) => {
   try {
     // first ensure this report can only be run by those establishments that are a parent
-    const thisEstablishment = new Establishment(req.username);
+    const thisEstablishment = await models.establishment.findOne({
+      where: {
+          id: req.establishmentId
+      },
+      attributes: ['id']
+    });
 
-    if (await thisEstablishment.restore(req.establishment.id, false)) {
+    if(thisEstablishment){
       const date = new Date();
-      const report = await getReport(date, thisEstablishment);
+      const report = await getReport(date, thisEstablishment.id);
 
       if (report) {
         await saveResponse(req, res, 200, report, {
@@ -1057,7 +1063,7 @@ const reportGet = async (req, res) => {
         console.log('report/training 403 response');
         await saveResponse(req, res, 403, {});
       }
-    } else {
+    }else{
       console.error('report/training - failed restoring establisment');
       await saveResponse(req, res, 503, {});
     }
