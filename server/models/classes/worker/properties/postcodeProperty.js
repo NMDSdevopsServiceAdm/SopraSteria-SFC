@@ -23,7 +23,6 @@ exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends ChangeProp
                 this.property = document.postcode;
             } else {
                 this.property = null;
-                console.log(this);
             }
         }
     }
