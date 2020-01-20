@@ -203,7 +203,8 @@ const getTrainingReportData = async establishmentId => {
         }
       });
     }
-
+    expiredWorkerTrainings = expiredWorkerTrainings.filter(item => item.Count !==0);
+    expiringWorkerTrainings = expiringWorkerTrainings.filter(item => item.Count !==0);
     let expiredOrExpiringWorkerIds = new Set(expiredWorkerTrainings.map(d => d.ID));
     expiredOrExpiringWorkerRecords = [...expiredWorkerTrainings, ...expiringWorkerTrainings.filter(d => !expiredOrExpiringWorkerIds.has(d.ID))];
   }else{
