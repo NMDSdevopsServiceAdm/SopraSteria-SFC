@@ -16,7 +16,6 @@ exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends ChangeProp
         const postcodeRegex = /^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})$/;
         // return this.property && ;
         if (document.postcode || document.postcode === null) {
-          console.log('We have a postcode');
             if (document.postcode !== null &&
                 document.postcode.length <= 8 &&
                 postcodeRegex.test(document.postcode)) {
