@@ -45,7 +45,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
     }
     savePropertyToSequelize() {
         return {
-            DateOfBirthValue: new Date(this.property)
+            DateOfBirthValue: this.property !== null ? new Date(this.property) : null
         };
     }
 
