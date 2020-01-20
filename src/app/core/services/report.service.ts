@@ -63,13 +63,13 @@ export class ReportService {
       {
         observe: 'response',
         responseType: 'blob' as 'json',
-      }
+      },
+      workplaceUid
     );
   }
 
   // Function to check for the lock status
-  private checkTrainingLockStatus(callback, httpOptions): Observable<any> {
-    const establishmentUid = this.establishmentService.establishmentId;
+  private checkTrainingLockStatus(callback, httpOptions, workplaceUid): Observable<any> {
     let requestId;
     // Run function every second until lock aquired
     return (
@@ -94,7 +94,7 @@ export class ReportService {
                 concatMap(() =>
                   from(
                     this.http.get<TrainingLockStatus>(
-                      `/api/reports/training/establishment/${establishmentUid}/training/lockstatus`
+                      `/api/reports/training/establishment/${workplaceUid}/training/lockstatus`
                     )
                   )
                 )
@@ -107,7 +107,7 @@ export class ReportService {
           concatMap(() =>
             from(
               this.http.get<any>(
-                `/api/reports/training/establishment/${establishmentUid}/training/response/${requestId}`,
+                `/api/reports/training/establishment/${workplaceUid}/training/response/${requestId}`,
                 httpOptions
               )
             )
