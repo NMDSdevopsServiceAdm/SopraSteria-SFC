@@ -322,11 +322,9 @@ class Worker extends EntityValidator {
       }
 
       // Remove British citizenship if they are british
-      if (document.nationality) {
-        if (document.nationality.value === 'British') {
-          delete document.nationality.other;
-          document.britishCitizenship = null;
-        }
+      if (document.nationality && document.nationality.value === 'British') {
+        delete document.nationality.other;
+        document.britishCitizenship = null;
       }
 
       // Remove year arriced if born in the UK
@@ -347,12 +345,12 @@ class Worker extends EntityValidator {
       }
 
       // Remove social care qualification if they don't have one
-      if (document.qualificationInSocialCare !== 'Yes') {
+      if (document.qualificationInSocialCare && document.qualificationInSocialCare !== 'Yes') {
         document.socialCareQualification = { qualificationId: null, title: null };
       }
 
       // Remove highest qualification if no other qualifications
-      if (document.otherQualification !== 'Yes') {
+      if (document.otherQualification && document.otherQualification !== 'Yes') {
         document.highestQualification = { qualificationId: null, title: null };
       }
 
