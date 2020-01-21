@@ -56,51 +56,5 @@ describe('Establishment Class', () => {
       expect(nonCqc.locationId).to.equal(nonCqc.locationId);
       expect(nonCQCEst).to.deep.equal(true);
     });
-    it('should remove capacity and utilisation when my main service is non-care', async () => {
-      const nonCare = {
-        mainService: {
-          id: 16,
-          name: 'Head office services'
-        },
-        capacities: [{
-          question: 'How many places do you currently have?',
-          questionId: 8,
-          seq: 1
-        },
-        {
-          question: 'Number of people using the service on the completion date',
-          questionId: 9,
-          seq: 2
-        }]
-      };
-      const nonCareEst = await establishment.load(nonCare);
-      expect(Array.isArray(nonCare.capacities)).to.deep.equal(true);
-      expect(nonCare.capacities.length).to.deep.equal(0);
-      expect(nonCareEst).to.deep.equal(true);
-    });
-    it('should not remove capacity and utilisation when my main service is care', async () => {
-      const nonCare = {
-        mainService: {
-          id: 9,
-          name: 'Day care and day services'
-        },
-        capacities: [{
-          question: 'How many places do you currently have?',
-          questionId: 8,
-          seq: 1,
-          answer: 65
-        },
-        {
-          question: 'Number of people using the service on the completion date',
-          questionId: 9,
-          seq: 2,
-          answer: 60
-        }]
-      };
-      const nonCareEst = await establishment.load(nonCare);
-      expect(Array.isArray(nonCare.capacities)).to.deep.equal(true);
-      expect(nonCare.capacities.length).to.deep.equal(2);
-      expect(nonCareEst).to.deep.equal(true);
-    });
   });
 });
