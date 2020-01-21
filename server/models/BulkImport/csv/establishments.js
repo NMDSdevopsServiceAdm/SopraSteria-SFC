@@ -1363,12 +1363,7 @@ class Establishment {
 
     const hasRegisteredManagerVacancy = () => {
       allJobs.map((job, index) => {
-        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) {
-          if (!isCQCRegulated) {
-            allJobs.splice(index, 1);
-          }
-          return true;
-        }
+        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) return true;
       });
       return false;
     };
@@ -1504,6 +1499,11 @@ class Establishment {
     this._vacancies = vacancies.map(thisCount => parseInt(thisCount, 10));
     this._starters = starters.map(thisCount => parseInt(thisCount, 10));
     this._leavers = leavers.map(thisCount => parseInt(thisCount, 10));
+
+    // remove RM vacancy
+    this._allJobs.map((job, index) => {
+      if (job === regManager && this._vacancies[index] > 0) this._vacancies[index] = 0;
+    });
 
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
