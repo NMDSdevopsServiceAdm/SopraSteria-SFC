@@ -3,6 +3,7 @@ const hasProp = (obj, prop) =>
   Object.prototype.hasOwnProperty.bind(obj)(prop);
 
 const BUDI = require('../BUDI').BUDI;
+const models = require('../../index');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
@@ -851,6 +852,11 @@ class Establishment {
 
     // do not use
     const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
+    const locationExists = models.establishment.findAll({
+      where: {
+        locationId: myLocationID
+      }
+    });
 
     if (this._regType === 2) {
       // ignore location i
@@ -871,6 +877,16 @@ class Establishment {
             errCode: Establishment.LOCATION_ID_ERROR,
             errType: 'LOCATION_ID_ERROR',
             error: 'LOCATIONID is incorrectly formatted',
+            source: myLocationID,
+            name: this._currentLine.LOCALESTID
+          });
+          return false;
+        } else if (locationExists.length > 0) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.LOCATION_ID_ERROR,
+            errType: 'LOCATION_ID_ERROR',
+            error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
             source: myLocationID,
             name: this._currentLine.LOCALESTID
           });
