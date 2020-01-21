@@ -24,7 +24,9 @@ const LocalIdentifier = require('./localIdentifier');
 const LocalIdentifiers = require('./localIdentifiers');
 const Permissions = require('./permissions');
 const OwnershipChange = require('./ownershipChange');
+const LinkToParent = require('./linkToParent')
 const DataPermissions = require('./dataPermissions');
+const LocationDetails = require('./locationdetails');
 
 const Approve = require('./approve');
 const Reject = require('./reject');
@@ -77,7 +79,9 @@ router.use('/:id/localIdentifier', LocalIdentifier);
 router.use('/:id/localIdentifiers', LocalIdentifiers);
 router.use('/:id/permissions', Permissions);
 router.use('/:id/ownershipChange', OwnershipChange);
+router.use('/:id/linkToParent', LinkToParent);
 router.use('/:id/dataPermissions', DataPermissions);
+router.use('/:id/locationDetails', LocationDetails);
 
 router.route('/:id').post(async (req, res) => {
   if (!req.body.isRegulated) {
@@ -245,8 +249,10 @@ router.route('/:id').get(async (req, res) => {
         jsonResponse.totalWorkers = await thisEstablishment.getTotalWorkers();
       }
       if (!jsonResponse.isParent && jsonResponse.parentUid !== null) {
-        const parentEstablishmentName = await thisEstablishment.fetchParentName(jsonResponse.parentUid);
-        jsonResponse.parentName = parentEstablishmentName;
+        const parentEstablishmentName = await thisEstablishment.fetchParentDetails(jsonResponse.parentUid);
+        if (parentEstablishmentName) {
+          jsonResponse.parentName = parentEstablishmentName.parentName;
+        }
       }
       return res.status(200).json(jsonResponse);
     } else {

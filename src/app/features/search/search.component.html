@@ -162,7 +162,9 @@
             <td class="govuk-table__cell">{{ item.username }}</td>
             <td class="govuk-table__cell">{{ item.name }}</td>
             <td class="govuk-table__cell">
-              <a (click)="setEsblishmentId(item.establishment.uid, $event)" href="#">{{ item.establishment.name }}</a>
+              <a (click)="setEsblishmentId(item.establishment.uid, item.username, null, $event)" href="#">{{
+                item.establishment.name
+              }}</a>
             </td>
             <td class="govuk-table__cell">{{ item.establishment.nmdsId }}</td>
             <td class="govuk-table__cell">{{ item.establishment.postcode }}</td>
@@ -195,7 +197,7 @@
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row" *ngFor="let item of results">
             <td class="govuk-table__cell">
-              <a (click)="setEsblishmentId(item.uid, $event)" href="#">{{ item.name }}</a>
+              <a (click)="setEsblishmentId(item.uid, item.username, item.nmdsId, $event)" href="#">{{ item.name }}</a>
             </td>
             <td class="govuk-table__cell">{{ item.nmdsId }}</td>
             <td class="govuk-table__cell">{{ item.postcode }}</td>

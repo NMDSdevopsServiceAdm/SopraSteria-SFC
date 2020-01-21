@@ -220,7 +220,7 @@ class BUDI {
 
     if (direction === BUDI.TO_ASC) {
       const found = fixedMapping.find(thisTrainingCategory => thisTrainingCategory.BUDI === originalCode);
-      return found ? { type: found.ASC } : null;
+      return found ? found.ASC : null;
     }
 
     const found = fixedMapping.find(thisType => thisType.ASC === originalCode);
@@ -995,8 +995,8 @@ class BUDI {
       { BUDI: 62, ASC: 86 },
       { BUDI: 63, ASC: 87 },
       { BUDI: 64, ASC: 88 },
-      { BUDI: 67, ASC: 21 },
-      { BUDI: 68, ASC: 22 },
+      { BUDI: 67, ASC: 66 },
+      { BUDI: 68, ASC: 67 },
       { BUDI: 72, ASC: 23 },
       { BUDI: 73, ASC: 32 },
       { BUDI: 74, ASC: 19 },
@@ -1012,10 +1012,10 @@ class BUDI {
       { BUDI: 89, ASC: 69 },
       { BUDI: 90, ASC: 12 },
       { BUDI: 91, ASC: 18 },
-      { BUDI: 92, ASC: 130 },
+      { BUDI: 92, ASC: 13 },
       { BUDI: 93, ASC: 62 },
-      { BUDI: 94, ASC: 66 },
-      { BUDI: 95, ASC: 67 },
+      { BUDI: 94, ASC: 21 },
+      { BUDI: 95, ASC: 22 },
       { BUDI: 96, ASC: 11 },
       { BUDI: 98, ASC: 59 },
       { BUDI: 99, ASC: 6 },
@@ -1035,7 +1035,6 @@ class BUDI {
       { BUDI: 114, ASC: 135 },
       { BUDI: 115, ASC: 90 },
       { BUDI: 116, ASC: 91 },
-      { BUDI: 92, ASC: 13 },
       { BUDI: 119, ASC: 33 },
       { BUDI: 121, ASC: 34 },
       { BUDI: 136, ASC: 35 },
@@ -1072,6 +1071,7 @@ class BUDI {
       { BUDI: 301, ASC: 127 },
       { BUDI: 305, ASC: 128 },
       { BUDI: 307, ASC: 129 },
+      { BUDI: 309, ASC: 130 },
       { BUDI: 312, ASC: 131 },
       { BUDI: 313, ASC: 132 },
       { BUDI: 311, ASC: 133 }

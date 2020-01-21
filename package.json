@@ -22,7 +22,7 @@
     "server:test:unit": "mocha --exit server/test/unit/**/*.spec.js",
     "server:test:integration": "mocha server/test/integration/**/*.spec.js",
     "server:cover": "nyc --reporter=html mocha server/test/**/*.spec.js",
-    "server:cover:unit": "nyc --reporter=html mocha --exit server/test/unit/**/*.spec.js",
+    "server:cover:unit": "nyc --reporter=html mocha --exit 'server/test/unit/**/*.spec.js'",
     "server:cover:integration": "nyc --reporter=html mocha server/test/integration/**/*.spec.js"
   },
   "private": true,
@@ -94,6 +94,7 @@
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
+    "aws-sdk-mock": "^4.5.0",
     "chai": "^4.2.0",
     "codelyzer": "^5.0.0",
     "cross-env": "^5.2.1",

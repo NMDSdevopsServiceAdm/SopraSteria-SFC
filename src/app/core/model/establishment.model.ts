@@ -116,6 +116,13 @@ export interface Establishment {
   dataPermissions: DataPermissions;
   dataOwnershipRequested: string;
   ownershipChangeRequestId?: string;
+  linkToParentRequested?: string;
+  address1?: string
+  address2?: string
+  address3?: string
+  town?: string
+  county?: string
+  locationId?: string
 }
 
 export interface UpdateJobsRequest {
@@ -164,4 +171,13 @@ export enum SortStaffOptions {
   '0_dsc' = 'Staff name descending',
   '1_asc' = 'Job role ascending',
   '1_dsc' = 'Job role descending',
+}
+
+export enum SortTrainingAndQualsOptions {
+  '0_asc' = 'Staff name ascending',
+  '0_dsc' = 'Staff name descending',
+  '1_asc' = 'Records ascending',
+  '1_dsc' = 'Records descending',
+  '2_asc' = 'Status ascending',
+  '2_dsc' = 'Status descending',
 }

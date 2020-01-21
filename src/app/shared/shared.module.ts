@@ -17,7 +17,17 @@ import { DetailsComponent } from './components/details/details.component';
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
+import {
+  LinkToParentCancelDialogComponent,
+} from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import {
+  LinkToParentRemoveDialogComponent,
+} from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { MessagesComponent } from './components/messages/messages.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
@@ -39,6 +49,13 @@ import { SummaryListComponent } from './components/summary-list/summary-list.com
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
+import {
+  TrainingAndQualificationsSummaryComponent,
+} from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
+import {
+  TrainingAndQualificationsTabComponent,
+} from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
+import { TainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
@@ -50,6 +67,7 @@ import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
+import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
@@ -68,6 +86,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     CharacterCountComponent,
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
+    SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
     EligibilityIconComponent,
@@ -106,6 +125,13 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LongDatePipe,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
+    TrainingAndQualificationsTabComponent,
+    TrainingAndQualificationsSummaryComponent,
+    TainingInfoPanelComponent,
+    LinkToParentDialogComponent,
+    LinkToParentCancelDialogComponent,
+    LinkToParentRemoveDialogComponent,
+    OwnershipChangeMessageDialogComponent,
   ],
   exports: [
     AlertComponent,
@@ -118,6 +144,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     CharacterCountComponent,
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
+    SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
     EligibilityIconComponent,
@@ -155,12 +182,23 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LongDatePipe,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
+    TrainingAndQualificationsTabComponent,
+    TrainingAndQualificationsSummaryComponent,
+    TainingInfoPanelComponent,
+    LinkToParentDialogComponent,
+    LinkToParentCancelDialogComponent,
+    LinkToParentRemoveDialogComponent,
+    OwnershipChangeMessageDialogComponent,
   ],
   entryComponents: [
     ChangeDataOwnerDialogComponent,
     CancelDataOwnerDialogComponent,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
+    LinkToParentDialogComponent,
+    LinkToParentCancelDialogComponent,
+    LinkToParentRemoveDialogComponent,
+    OwnershipChangeMessageDialogComponent,
   ],
 })
 export class SharedModule {}

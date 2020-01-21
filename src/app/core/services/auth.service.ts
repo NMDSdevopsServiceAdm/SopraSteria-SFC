@@ -45,6 +45,7 @@ export class AuthService {
   }
 
   public set token(token: string) {
+    console.log('Setting the token in localStorage');
     localStorage.setItem('auth-token', token);
   }
 
@@ -65,9 +66,17 @@ export class AuthService {
   }
 
   public authenticate(username: string, password: string) {
-    return this.http
-      .post<any>('/api/login/', { username, password }, { observe: 'response' })
-      .pipe(tap(response => (this.token = response.headers.get('authorization'))));
+    console.log('Authservice has been asked to authenticate a user');
+    return this.http.post<any>('/api/login/', { username, password }, { observe: 'response' }).pipe(
+      tap(
+        response => {
+          console.log('Got response from API');
+          console.log(response);
+          this.token = response.headers.get('authorization');
+        },
+        error => console.error(error)
+      )
+    );
   }
 
   public refreshToken() {
@@ -90,6 +99,7 @@ export class AuthService {
     localStorage.clear();
     this._isAuthenticated$.next(false);
     this.userService.loggedInUser = null;
+    this.userService.resetAgreedUpdatedTermsStatus = null;
     this.establishmentService.resetState();
     this.permissionsService.clearPermissions();
   }

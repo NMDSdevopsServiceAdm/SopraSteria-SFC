@@ -4,7 +4,7 @@
 <ng-template #alert>
   <app-inset-text *ngIf="updateWorkplaceAlert" color="todo">
     You need to provide information on your workplace.<br />
-    <a [routerLink]="['/workplace', workplace.id, 'start']">Add workplace information</a>
+    <a [routerLink]="['/workplace', workplace?.uid, 'start']">Add workplace information</a>
   </app-inset-text>
 </ng-template>
 
