@@ -159,7 +159,7 @@ const getTrainingReportData = async establishmentId => {
   trainingCounts.upToDateTrainingCount = 0;
   if (expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0) {
     for(let i = 0; i < trainingData.length; i++){
-      trainingData[i].Title = trainingData[i].Title.replace(/%20/g, " ");
+      trainingData[i].Title = decodeURIComponent(trainingData[i].Title);
       trainingData[i].Completed = trainingData[i].Completed === null? '': trainingData[i].Completed;
       trainingData[i].Accredited = trainingData[i].Accredited === null? '': trainingData[i].Accredited;
       let jobNameResult = await getJobName(trainingData[i].MainJobFKValue);
@@ -194,7 +194,9 @@ const getTrainingReportData = async establishmentId => {
           trainingCounts.upToDateTrainingCount++;
         }
       } else {
-        trainingData[i].Status = 'Missing';
+        trainingData[i].Status = 'Up-to-date';
+        trainingCounts.upToDateTrainingCount++;
+        trainingData[i].ExpiredOn = '';
       }
       updateProps.forEach(prop => {
         if (trainingData[i][prop] === null) {
@@ -202,7 +204,8 @@ const getTrainingReportData = async establishmentId => {
         }
       });
     }
-
+    expiredWorkerTrainings = expiredWorkerTrainings.filter(item => item.Count !==0);
+    expiringWorkerTrainings = expiringWorkerTrainings.filter(item => item.Count !==0);
     let expiredOrExpiringWorkerIds = new Set(expiredWorkerTrainings.map(d => d.ID));
     expiredOrExpiringWorkerRecords = [...expiredWorkerTrainings, ...expiringWorkerTrainings.filter(d => !expiredOrExpiringWorkerIds.has(d.ID))];
   }else{
