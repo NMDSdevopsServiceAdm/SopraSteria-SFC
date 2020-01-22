@@ -1,5 +1,10 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
+  {{bulkUploadError}} {{name}}
+  <div class="govuk-grid-column-two-thirds-from-desktop" *ngIf="bulkUploadError">
+    <h1 class="govuk-heading-xl">Bulk upload is unable to continue processing your data due to an issue with your files.
+       Please check and try again or contact Support on 0113 2410969</h1>
+  </div>
+  <div class="govuk-grid-column-two-thirds-from-desktop" *ngIf="!bulkUploadError">
     <h1 class="govuk-heading-xl">Sorry, there is a problem with this service</h1>
     <p>Try again later.</p>
     <p>If you need help you can <a [routerLink]="['/contact-us']">contact us</a></p>
