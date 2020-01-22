@@ -7,6 +7,7 @@ const models = require('../../../index');
 exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePropertyPrototype {
     constructor() {
         super('Ethnicity', 'EthnicityFk');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -16,7 +17,7 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
     // concrete implementations
     async restoreFromJson(document) {
         // TODO: it's a little more than assuming the JSON representation
-        if (document.ethnicity) {
+        if (document.ethnicity || document.ethnicity === null) {
             const validatedEthnicity = await this._validateEthnicity(document.ethnicity);
             if (validatedEthnicity) {
                 this.property = validatedEthnicity;
@@ -35,7 +36,7 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
     }
     savePropertyToSequelize() {
         return {
-            EthnicityFkValue: this.property.ethnicityId
+            EthnicityFkValue: this.property !== null ? this.property.ethnicityId : null
         };
     }
 
@@ -51,7 +52,7 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
                 ethnicity: this.property
             };
         }
-        
+
         return {
             ethnicity : {
                 currentValue: this.property,

@@ -5,6 +5,7 @@ const moment = require('moment');
 exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends ChangePropertyPrototype {
     constructor() {
         super('DateOfBirth');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -15,7 +16,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
     async restoreFromJson(document) {
         const MINIMUM_AGE=14;
         const MAXIMUM_AGE=100;
-        if (document.dateOfBirth) {
+        if (document.dateOfBirth || document.dateOfBirth === null) {
             // mimics main job start date property by ensuring date is a valid date
             //  based on leap year/days in month and that date of birth is more than
             //  sixteen years ago.
@@ -26,7 +27,8 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
             // TODO - cross validation checks against Social Care Start Date
             //        and main job start date
 
-            if (document.dateOfBirth.length === 10 &&
+            if (document.dateOfBirth !== null &&
+                document.dateOfBirth.length === 10 &&
                 expectedDate.isValid() &&
                 expectedDate.isBefore(maxDate) &&
                 expectedDate.isAfter(minDate)) {
@@ -43,7 +45,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
     }
     savePropertyToSequelize() {
         return {
-            DateOfBirthValue: new Date(this.property)
+            DateOfBirthValue: this.property !== null ? new Date(this.property) : null
         };
     }
 

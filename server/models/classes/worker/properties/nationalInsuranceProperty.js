@@ -7,6 +7,7 @@ const models = require('../../../index');
 exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNumberProperty extends ChangePropertyPrototype {
     constructor() {
         super('NationalInsuranceNumber');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -16,9 +17,9 @@ exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNum
     // concrete implementations
     async restoreFromJson(document) {
         const niRegex = /^(?!BG)(?!GB)(?!NK)(?!KN)(?!TN)(?!NT)(?!ZZ)(?:[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z])(?:\s*\d\s*){6}([A-D]|\s)$/;
-            
-        if (document.nationalInsuranceNumber) {
-            if (document.nationalInsuranceNumber.length <= 13 &&
+          if (document.nationalInsuranceNumber || document.nationalInsuranceNumber === null) {
+            if (document.nationalInsuranceNumber !== null &&
+                document.nationalInsuranceNumber.length <= 13 &&
                 niRegex.test(document.nationalInsuranceNumber)) {
                 this.property = document.nationalInsuranceNumber;
             } else {
@@ -48,7 +49,7 @@ exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNum
                 nationalInsuranceNumber: this.property
             };
         }
-        
+
         return {
             nationalInsuranceNumber : {
                 currentValue: this.property,

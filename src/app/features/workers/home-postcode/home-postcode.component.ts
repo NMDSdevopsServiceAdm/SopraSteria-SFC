@@ -60,7 +60,7 @@ export class HomePostcodeComponent extends QuestionComponent {
       ? {
           postcode: postcode.value,
         }
-      : null;
+      : {postcode: null};
   }
 
   postcodeValidator(control: AbstractControl) {
