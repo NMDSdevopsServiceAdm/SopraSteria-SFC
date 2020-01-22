@@ -1,58 +1,45 @@
 <ng-container *ngIf="worker">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-one-half">
+      <h1 class="govuk-heading-l">
         <span class="govuk-caption-xl govuk-!-margin-bottom-3">{{ worker.nameOrId }}</span>
-        Staff record summary
+        Staff record
       </h1>
-    </div>
 
-    <div class="govuk-grid-column-one-third govuk-util__align-right">
-      <a
-        *ngIf="canEditWorker"
-        class="govuk-button govuk-button--link govuk-util__float-right govuk-!-margin-bottom-0"
-        role="button"
+      <a *ngIf="canEditWorker" class="govuk-list govuk-list--inline govuk-!-padding-left-0" role="button"
         draggable="false"
-        [routerLink]="['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training']"
-      >
+        [routerLink]="['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training']">
         Training and qualifications
       </a>
-      <a
-      *ngIf="(canEditWorker && isParent)"
-      class="govuk-button govuk-button--link govuk-util__float-right govuk-!-margin-bottom-0"
-      (click)="moveWorker($event)"
-      >
-        Move this staff record
-      </a>
-      <button
-        *ngIf="canDeleteWorker"
-        class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-margin-bottom-1   govuk-util__float-right"
-        (click)="deleteWorker($event)"
-      >
-        <img src="/assets/images/bin.svg" alt="" />
-        <span class="govuk-!-margin-left-1">
-          Delete staff record
-        </span>
-      </button>
 
-
-      <a
-        *ngIf="canEditWorker && !worker.completed"
-        class="govuk-button"
-        role="button"
-        draggable="false"
-        [routerLink]="['../main-job-start-date']"
-      >
-        Complete Full Record
-      </a>
     </div>
+
+    <div class="govuk-grid-column-one-half govuk-!-margin-top-8">
+      <div class="govuk-grid-row govuk-!-margin-bottom-3">
+        <a class="govuk-list govuk-list--inline govuk-!-margin-left-9" *ngIf="(canEditWorker && isParent)"
+          draggable="false" role="button" href="#" (click)="moveWorker($event)"> Transfer staff record</a>
+
+        <a class="govuk-list govuk-list--inline govuk__flex govuk__align-items-center govuk-util__float-right"
+          *ngIf="canDeleteWorker" draggable="false" role="button" href="#" (click)="deleteWorker($event)"> <img
+            src="/assets/images/bin.svg" alt="" />
+          <span class="govuk-!-margin-left-1">
+            Delete staff record
+          </span></a>
+      </div>
+      <div class="govuk-grid-row govuk-util__float-right">
+        <a *ngIf="canEditWorker && !worker.completed" class="govuk-button  " role="button" draggable="false"
+          [routerLink]="['../main-job-start-date']">
+          Complete Full Record
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-5">
+    <p class="govuk-!-margin-left-3">Check the information provided on this staff record is correct.</p>
   </div>
   <app-basic-record [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-basic-record>
   <app-personal-details [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-personal-details>
   <app-employment [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-employment>
-  <app-qualifications-and-training
-    [workplace]="workplace"
-    [worker]="worker"
-    [return]="returnToRecord"
-  ></app-qualifications-and-training>
+  <app-qualifications-and-training [workplace]="workplace" [worker]="worker" [return]="returnToRecord">
+  </app-qualifications-and-training>
 </ng-container>
