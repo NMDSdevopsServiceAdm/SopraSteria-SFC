@@ -53,7 +53,12 @@ export class EthnicityComponent extends QuestionComponent {
             ethnicityId: parseInt(ethnicity, 10),
           },
         }
-      : null;
+      : {
+        ethnicity: {
+          ethnicityId: null,
+          ethnicity: null
+        }
+      };
   }
 
   ethnicitiesUngrouped() {

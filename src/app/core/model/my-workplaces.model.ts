@@ -20,6 +20,9 @@ export interface Workplace {
   ownershipChangeRequestId?: any;
   parentName: string;
   linkToParentRequested?: string;
+  postCode: string;
+  nameAndPostCode?: string;
+  id?:number;
 }
 
 export enum WorkplaceDataOwner {

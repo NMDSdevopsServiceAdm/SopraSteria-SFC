@@ -90,6 +90,6 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
       };
     }
 
-    return null;
+    return {dateOfBirth: null};
   }
 }
