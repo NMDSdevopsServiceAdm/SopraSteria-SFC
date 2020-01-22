@@ -10,7 +10,7 @@ const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
 const employedContractStatusIds = [1, 2];
-const dbNotCqcRegulatedServiceCodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+const cqcRegulatedServiceCodes = [24, 25, 20, 22, 21, 23, 19, 27, 28, 26, 29, 30, 32, 31, 33, 34];
 
 const csvQuote = toCsv => {
   if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
@@ -786,9 +786,8 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if(
-      false &&
-      myRegType === 2 && dbNotCqcRegulatedServiceCodes.includes(dbServiceCode) && dbServiceCode !== dbMainServiceCode) {
+    } else if(myRegType === 2 &&
+      !cqcRegulatedServiceCodes.includes(dbServiceCode) && (dbServiceCode !== dbMainServiceCode)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.REGTYPE_ERROR,
