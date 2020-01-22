@@ -845,19 +845,18 @@ class Establishment {
     }
   }
 
-  _validateLocationID () {
+  async _validateLocationID () {
     // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
     const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
     const myLocationID = this._currentLine.LOCATIONID;
 
     // do not use
     const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
-    const locationExists = models.establishment.findAll({
+    const locationExists = await models.establishment.findAll({
       where: {
         locationId: myLocationID
       }
     });
-
     if (this._regType === 2) {
       // ignore location i
       if (!mainServiceIsHeadOffice) {
