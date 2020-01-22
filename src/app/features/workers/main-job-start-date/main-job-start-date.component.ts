@@ -87,6 +87,6 @@ export class MainJobStartDateComponent extends QuestionComponent {
       };
     }
 
-    return null;
+    return { mainJobStartDate: null };
   }
 }

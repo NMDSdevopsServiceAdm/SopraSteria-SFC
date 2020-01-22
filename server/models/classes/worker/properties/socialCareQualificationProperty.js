@@ -7,7 +7,7 @@ const models = require('../../../index');
 exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificationProperty extends ChangePropertyPrototype {
     constructor() {
         super('SocialCareQualification', 'SocialCareQualificationFk');
-        this._allowNull = false;
+        this._allowNull = true;
     }
 
     static clone() {

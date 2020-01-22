@@ -8,6 +8,7 @@ const models = require('../../../index');
 exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty extends ChangePropertyPrototype {
     constructor() {
         super('MainJobStartDate');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -16,7 +17,7 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.mainJobStartDate) {
+        if (document.mainJobStartDate || document.mainJobStartDate === null) {
             // this is a little more than simply assuming the date as given. JSON
             //  has no specific Date type (JSON Schema supports a date type through
             //  string pattern matching).
@@ -40,7 +41,8 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
 
             // TODO - cross validatin checks with Date of Birth
 
-            if (document.mainJobStartDate.length === 10 &&
+            if (document.mainJobStartDate !== null &&
+                document.mainJobStartDate.length === 10 &&
                 expectedDate.isValid() &&
                 expectedDate.isBefore(thisDate)) {
                 // we have a valid date - normalise the date to a string (to ensure date only - no time)
@@ -57,7 +59,7 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
     }
     savePropertyToSequelize() {
         return {
-            MainJobStartDateValue: new Date(this.property)
+            MainJobStartDateValue: this.property !== null ? new Date(this.property) : null
         };
     }
 
