@@ -78,6 +78,15 @@ export class SearchComponent implements OnInit {
     );
   }
 
+  public unlockUser(username: string, e) {
+    e.preventDefault();
+    this.registrationsService.unlockAccount({username}).subscribe(
+      data => {
+      },
+      error => this.onError(error)
+    );
+  }
+
   public searchType(data, type) {
     return this.http.post<any>('/api/admin/search/' + type, data, { observe: 'response' });
   }
