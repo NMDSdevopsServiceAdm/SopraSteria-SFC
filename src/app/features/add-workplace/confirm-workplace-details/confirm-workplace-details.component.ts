@@ -48,12 +48,8 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   }
 
   public continue(): void {
-    if (this.workplace.isCQC) {
-      this.router.navigate([`${this.flow}/create-user-account`]);
-    } else {
-      this.addWorkplace();
-    }
-  }
+     this.addWorkplace();
+   }
 
   private addWorkplace(): void {
     this.subscriptions.add(
