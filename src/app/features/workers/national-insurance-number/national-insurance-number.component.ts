@@ -67,7 +67,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
       ? {
           nationalInsuranceNumber: nationalInsuranceNumber.value.toUpperCase(),
         }
-      : null;
+      : {nationalInsuranceNumber: null};
   }
 
   ninValidator(control: AbstractControl) {

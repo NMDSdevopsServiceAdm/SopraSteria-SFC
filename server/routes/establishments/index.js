@@ -1,7 +1,8 @@
 // default route and registration of all sub routes
 const express = require('express');
 const router = express.Router();
-
+const slack = require('../../utils/slack/slack-logger');
+const sns = require('../../aws/sns');
 const Authorization = require('../../utils/security/isAuthenticated');
 
 // all user functionality is encapsulated
@@ -92,6 +93,7 @@ router.route('/:id').post(async (req, res) => {
     Name: req.body.locationName,
     Address1: req.body.addressLine1,
     Address2: req.body.addressLine2,
+    Address3: req.body.addressLine3,
     Town: req.body.townCity,
     County: req.body.county,
     LocationID: req.body.locationId,
@@ -149,7 +151,7 @@ router.route('/:id').post(async (req, res) => {
       newEstablishment.initialise(
         establishmentData.Address1,
         establishmentData.Address2,
-        null,
+        establishmentData.Address3,
         establishmentData.Town,
         establishmentData.County,
         establishmentData.LocationID,
@@ -166,6 +168,7 @@ router.route('/:id').post(async (req, res) => {
           id: establishmentData.MainServiceId,
           other: establishmentData.MainServiceOther,
         },
+        ustatus: 'PENDING'
       });
 
       // no Establishment properties on registration
@@ -173,6 +176,7 @@ router.route('/:id').post(async (req, res) => {
         await newEstablishment.save(req.username, 0, t);
         establishmentData.id = newEstablishment.id;
         establishmentData.eUID = newEstablishment.uid;
+        establishmentData.NmdsId = newEstablishment.nmdsId;
       } else {
         // Establishment properties not valid
         throw new RegistrationException(
@@ -181,6 +185,22 @@ router.route('/:id').post(async (req, res) => {
           responseErrors.invalidEstablishment.errMessage
         );
       }
+      // post via Slack
+      //get parent establishment details
+      let fetchQuery = {
+        where: {
+          id: req.establishment.id,
+        },
+      };
+      let parentEstablishment = await models.establishment.findOne(fetchQuery);
+      const slackMsg = req.body;
+      slackMsg.nmdsId = establishmentData.NmdsId;
+      slackMsg.parentEstablishmentId = parentEstablishment.nmdsId;
+      slackMsg.establishmentUid = establishmentData.eUID;
+      slackMsg.username = req.username;
+      slack.info("New Workplace", JSON.stringify(slackMsg, null, 2));
+      // post through feedback topic - async method but don't wait for a responseThe
+      sns.postToRegistrations(slackMsg);
 
       res.status(201);
       res.json({
@@ -188,7 +208,7 @@ router.route('/:id').post(async (req, res) => {
         message: 'Establishment successfully created',
         establishmentId: establishmentData.id,
         establishmentUid: establishmentData.eUID,
-        nmdsId: newEstablishment.nmdsId ? newEstablishment.nmdsId : 'undefined',
+        nmdsId: establishmentData.nmdsId ? establishmentData.nmdsId : 'undefined',
       });
     });
   } catch (err) {

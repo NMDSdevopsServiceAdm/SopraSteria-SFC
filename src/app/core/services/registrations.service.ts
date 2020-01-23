@@ -13,7 +13,7 @@ export class RegistrationsService {
     return this.http.get<Registrations[]>('/api/admin/registrations/');
   }
 
-  public userApproval(data: object) {
+  public registrationApproval(data: object) {
     return this.http.post<any>('/api/admin/approval/', data);
   }
 }

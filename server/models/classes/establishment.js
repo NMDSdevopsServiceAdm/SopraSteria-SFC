@@ -45,7 +45,9 @@ const CapacitiesCache = require('../cache/singletons/capacities').CapacitiesCach
 const db = require('../../utils/datastore');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
-const nonCareServices = [16];
+// const nonCareServices = [16, 20, 35, 11, 21, 23, 18, 22, 1, 7, 2, 8, 3, 5, 4, 6, 27, 28, 26, 29, 30, 32, 31, 33, 34, 17, 15, 36, 14];
+// const careBeds = [24, 25, 12];
+// const carePlaces = [9, 10, 19];
 
 class Establishment extends EntityValidator {
   constructor(username, bulkUploadStatus = null) {
@@ -412,13 +414,6 @@ class Establishment extends EntityValidator {
       //     document.share.with = document.share.with.filter(item => item !== 'CQC');
       //   }
       //   document.locationId = null;
-      // }
-
-      // If the main service is not a care provider, remove the capacities and utilisations
-      // if (document.mainService) {
-      //   if (nonCareServices.includes(document.mainService.id)) {
-      //     document.capacities = [];
-      //   }
       // }
 
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
@@ -2106,6 +2101,7 @@ class Establishment extends EntityValidator {
     if (isWDF) {
       params = {
         attributes: [
+          'id',
           'uid',
           'updated',
           'parentUid',
@@ -2118,6 +2114,8 @@ class Establishment extends EntityValidator {
           'lastWdfEligibility',
           'establishmentWdfEligibility',
           'NumberOfStaffValue',
+          'ustatus',
+          'postcode',
           [models.sequelize.fn('COUNT', models.sequelize.col('"workers"."ID"')), 'workerCount'],
           [
             models.sequelize.fn(
@@ -2167,11 +2165,13 @@ class Establishment extends EntityValidator {
           'lastWdfEligibility',
           'establishmentWdfEligibility',
           'NumberOfStaffValue',
+          'ustatus'
         ],
       };
     } else {
       params = {
         attributes: [
+          'id',
           'uid',
           'updated',
           'parentUid',
@@ -2180,6 +2180,8 @@ class Establishment extends EntityValidator {
           'dataOwner',
           'dataPermissions',
           'dataOwnershipRequested',
+          'ustatus',
+          'postcode'
         ],
         include: [
           {
@@ -2205,6 +2207,7 @@ class Establishment extends EntityValidator {
     const mappedResults = await Promise.all(
       fetchResults.map(async thisSub => {
         const {
+          id,
           uid,
           updated,
           parentUid,
@@ -2214,9 +2217,12 @@ class Establishment extends EntityValidator {
           dataOwner,
           dataPermissions,
           dataOwnershipRequested,
+          ustatus,
+          postcode
         } = thisSub;
 
         return {
+          id,
           uid,
           updated,
           parentUid,
@@ -2226,6 +2232,8 @@ class Establishment extends EntityValidator {
           dataOwner,
           dataPermissions,
           dataOwnershipRequested,
+          ustatus,
+          postCode: postcode,
           wdf: isWDF
             ? await WdfCalculator.calculateData({
                 thisEstablishment: thisSub,

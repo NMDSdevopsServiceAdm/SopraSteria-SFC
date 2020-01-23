@@ -23,6 +23,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public serverErrorsMap: ErrorDefinition[] = [];
   public workplaces: Workplace[] = [];
   public workplacesCount = 0;
+  public pendingWorkplaces: any;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -55,6 +56,13 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
         (workplaces: GetWorkplacesResponse) => {
           if (workplaces.subsidaries) {
             this.workplaces = workplaces.subsidaries.establishments;
+            this.workplaces = this.workplaces.filter(item => item.ustatus !== 'PENDING');
+            this.pendingWorkplaces = workplaces.subsidaries.establishments.filter(item => item.ustatus === 'PENDING');
+            this.pendingWorkplaces.sort((a: any,b: any) => {
+              const dateA = new Date(a.updated).getTime();
+              const dateB = new Date(b.updated).getTime();
+              return dateB > dateA ? 1 : -1;
+            });
             this.workplacesCount = workplaces.subsidaries.count;
           }
         },
