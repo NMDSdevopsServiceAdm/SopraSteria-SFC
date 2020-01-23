@@ -30,7 +30,6 @@ router.route('/').post(async (req, res) => {
           try {
             const updateduser = await login.update({
                 isActive: true,
-                status: null,
                 invalidAttempt: 9
             });
             if (updateduser) {
