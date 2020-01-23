@@ -218,7 +218,8 @@ router.post('/', async (req, res) => {
           if (establishmentUser.invalidAttempt === (maxNumberOfFailedAttempts+1)) {
             // lock the account
             const loginUpdate = {
-              isActive: false
+              isActive: false,
+              status: 'Locked'
             };
             await establishmentUser.update(loginUpdate, {transaction: t});
 
