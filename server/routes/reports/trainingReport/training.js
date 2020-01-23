@@ -10,6 +10,7 @@ const path = require('path');
 const walk = require('walk');
 const JsZip = require('jszip');
 const config = require('../../../../server/config/config');
+const models = require('../../../../server/models');
 const uuid = require('uuid');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3({
@@ -109,7 +110,7 @@ const getReportData = async (date, thisEstablishment) => {
 
   return {
     date: date.toISOString(),
-    trainings: await getTrainingReportData(thisEstablishment.id),
+    trainings: await getTrainingReportData(thisEstablishment),
   };
 };
 
@@ -158,7 +159,7 @@ const getTrainingReportData = async establishmentId => {
   trainingCounts.upToDateTrainingCount = 0;
   if (expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0) {
     for(let i = 0; i < trainingData.length; i++){
-      trainingData[i].Title = trainingData[i].Title.replace(/%20/g, " ");
+      trainingData[i].Title = decodeURIComponent(trainingData[i].Title);
       trainingData[i].Completed = trainingData[i].Completed === null? '': trainingData[i].Completed;
       trainingData[i].Accredited = trainingData[i].Accredited === null? '': trainingData[i].Accredited;
       let jobNameResult = await getJobName(trainingData[i].MainJobFKValue);
@@ -193,7 +194,9 @@ const getTrainingReportData = async establishmentId => {
           trainingCounts.upToDateTrainingCount++;
         }
       } else {
-        trainingData[i].Status = 'Missing';
+        trainingData[i].Status = 'Up-to-date';
+        trainingCounts.upToDateTrainingCount++;
+        trainingData[i].ExpiredOn = '';
       }
       updateProps.forEach(prop => {
         if (trainingData[i][prop] === null) {
@@ -201,7 +204,8 @@ const getTrainingReportData = async establishmentId => {
         }
       });
     }
-
+    expiredWorkerTrainings = expiredWorkerTrainings.filter(item => item.Count !==0);
+    expiringWorkerTrainings = expiringWorkerTrainings.filter(item => item.Count !==0);
     let expiredOrExpiringWorkerIds = new Set(expiredWorkerTrainings.map(d => d.ID));
     expiredOrExpiringWorkerRecords = [...expiredWorkerTrainings, ...expiringWorkerTrainings.filter(d => !expiredOrExpiringWorkerIds.has(d.ID))];
   }else{
@@ -1039,11 +1043,16 @@ const lockStatusGet = async (req, res) => {
 const reportGet = async (req, res) => {
   try {
     // first ensure this report can only be run by those establishments that are a parent
-    const thisEstablishment = new Establishment(req.username);
+    const thisEstablishment = await models.establishment.findOne({
+      where: {
+          id: req.establishmentId
+      },
+      attributes: ['id']
+    });
 
-    if (await thisEstablishment.restore(req.establishment.id, false)) {
+    if(thisEstablishment){
       const date = new Date();
-      const report = await getReport(date, thisEstablishment);
+      const report = await getReport(date, thisEstablishment.id);
 
       if (report) {
         await saveResponse(req, res, 200, report, {
@@ -1057,7 +1066,7 @@ const reportGet = async (req, res) => {
         console.log('report/training 403 response');
         await saveResponse(req, res, 403, {});
       }
-    } else {
+    }else{
       console.error('report/training - failed restoring establisment');
       await saveResponse(req, res, 503, {});
     }

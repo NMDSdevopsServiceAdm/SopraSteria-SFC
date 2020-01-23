@@ -45,6 +45,13 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
     this.subscriptions.add(
       this.jobService.getJobs().subscribe(jobs => {
+        // TODO: Removing Other Jobs should be handled by the Server
+        // https://trello.com/c/x3N7dQJP
+        if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
+          this.worker.otherJobs.jobs.map((otherjob) => {
+            jobs = jobs.filter(j => j.id !== otherjob.jobId);
+          })
+        }
         this.jobsAvailable = jobs;
         if (this.worker) {
           this.renderInEditMode();
@@ -125,10 +132,11 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       },
     };
 
-    // TODO: Removing Other Jobs should be handled by the Server
-    // https://trello.com/c/x3N7dQJP
-    if (this.worker && this.worker.otherJobs.jobs) {
-      (props as any).otherJobs.jobs = this.worker.otherJobs.jobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
+    if (parseInt(mainJob.value, 10) !== 23) {
+      this.worker.registeredNurse = null;
+      if (this.worker.nurseSpecialism) {
+        this.worker.nurseSpecialism.specialism = null;
+      }
     }
 
     return props;

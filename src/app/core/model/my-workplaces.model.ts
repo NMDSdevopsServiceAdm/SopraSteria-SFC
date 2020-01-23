@@ -21,6 +21,9 @@ export interface Workplace {
   parentName: string;
   ustatus?: string;
   linkToParentRequested?: string;
+  postCode: string;
+  nameAndPostCode?: string;
+  id?:number;
 }
 
 export enum WorkplaceDataOwner {
