@@ -20,6 +20,11 @@
 
 <ng-container *ngIf="workplaces.length; else noWorkPlaces">
   <ul class="govuk-list">
+    <li class="govuk-util__list-record govuk-!-margin-bottom-0 govuk-panel--light-blue" *ngFor="let workplaces of pendingWorkplaces">
+            <div>
+              Your application for {{workplaces.name}} is being reviewed by Skills for Care. <span class="govuk-util__float-right">Pending</span>
+            </div>
+    </li>
     <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngFor="let workplace of workplaces">
       <app-workplace-info-panel
         [workplace]="workplace"

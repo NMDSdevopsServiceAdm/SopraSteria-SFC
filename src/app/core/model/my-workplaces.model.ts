@@ -19,6 +19,7 @@ export interface Workplace {
   updated: string;
   ownershipChangeRequestId?: any;
   parentName: string;
+  ustatus?: string;
   linkToParentRequested?: string;
   postCode: string;
   nameAndPostCode?: string;
