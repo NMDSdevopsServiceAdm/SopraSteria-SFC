@@ -2114,6 +2114,7 @@ class Establishment extends EntityValidator {
           'lastWdfEligibility',
           'establishmentWdfEligibility',
           'NumberOfStaffValue',
+          'ustatus',
           'postcode',
           [models.sequelize.fn('COUNT', models.sequelize.col('"workers"."ID"')), 'workerCount'],
           [
@@ -2164,6 +2165,7 @@ class Establishment extends EntityValidator {
           'lastWdfEligibility',
           'establishmentWdfEligibility',
           'NumberOfStaffValue',
+          'ustatus'
         ],
       };
     } else {
@@ -2178,6 +2180,7 @@ class Establishment extends EntityValidator {
           'dataOwner',
           'dataPermissions',
           'dataOwnershipRequested',
+          'ustatus',
           'postcode'
         ],
         include: [
@@ -2214,6 +2217,7 @@ class Establishment extends EntityValidator {
           dataOwner,
           dataPermissions,
           dataOwnershipRequested,
+          ustatus,
           postcode
         } = thisSub;
 
@@ -2228,6 +2232,7 @@ class Establishment extends EntityValidator {
           dataOwner,
           dataPermissions,
           dataOwnershipRequested,
+          ustatus,
           postCode: postcode,
           wdf: isWDF
             ? await WdfCalculator.calculateData({
