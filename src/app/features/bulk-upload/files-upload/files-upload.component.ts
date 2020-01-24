@@ -232,6 +232,4 @@ export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.bulkUploadService.formErrorsMap());
   }
-
-
 }
