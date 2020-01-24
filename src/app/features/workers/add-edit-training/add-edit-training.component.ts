@@ -29,6 +29,7 @@ export class AddEditTrainingComponent implements OnInit {
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
   private titleMaxLength = 120;
+  private titleMinLength = 3;
   private subscriptions: Subscription = new Subscription();
   public previousUrl: string;
 
@@ -157,7 +158,7 @@ export class AddEditTrainingComponent implements OnInit {
         type: [
           {
             name: 'maxlength',
-            message: `Training name max ${this.titleMaxLength} characters in length`,
+            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters in length`,
           },
         ],
       },
