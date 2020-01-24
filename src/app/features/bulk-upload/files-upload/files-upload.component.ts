@@ -1,5 +1,5 @@
 import { HttpEventType } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
@@ -19,7 +19,7 @@ import { tap } from 'rxjs/operators';
   selector: 'app-files-upload',
   templateUrl: './files-upload.component.html',
 })
-export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
+export class FilesUploadComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public form: FormGroup;
   public filesUploading = false;
@@ -27,7 +27,6 @@ export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
   public selectedFiles: File[];
   public bulkUploadStatus: string;
-  public status: Subscription;
   public stopPolling: boolean;
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
@@ -45,10 +44,6 @@ export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.setupForm();
     this.checkForUploadedFiles();
-  }
-
-  ngOnDestroy() {
-    this.status.unsubscribe();
   }
 
   ngAfterViewInit() {
