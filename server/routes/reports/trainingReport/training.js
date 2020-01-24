@@ -419,8 +419,7 @@ const updateOverviewSheet = (
   //put all expiring traing details
   let currentRowBottom = overviewSheet.querySelector("row[r='18']");
   let rowIndexBottom = 18;
-  let updateRowIndex = rowIndexBottom + expiringWorkerTrainings.length - 1;
-
+  let updateRowIndex = rowIndexBottom + expiredWorkerTrainings.length - 1;
   for (; rowIndexBottom >= 14; rowIndexBottom--, updateRowIndex--) {
     if (rowIndexBottom === 18) {
       // fix the dimensions tag value
@@ -443,7 +442,7 @@ const updateOverviewSheet = (
     }
   }
 
-  let bottomRowIndex = 18 + expiringWorkerTrainings.length - 1;
+  let bottomRowIndex = 18 + expiredWorkerTrainings.length - 1;
   const templateRowExpiring = overviewSheet.querySelector(`row[r='${bottomRowIndex}']`);
   let currentRowExpiring = templateRowExpiring;
   let rowIndexExpiring = bottomRowIndex + 1;
