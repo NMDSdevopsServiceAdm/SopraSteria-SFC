@@ -12,7 +12,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { filter } from 'lodash';
-import { combineLatest, interval, Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 @Component({
@@ -45,11 +45,6 @@ export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.setupForm();
     this.checkForUploadedFiles();
-    this.status = interval(5000).subscribe(() => {
-      if (!this.stopPolling) {
-        this.checkForUploadedFiles();
-      }
-    });
   }
 
   ngOnDestroy() {
