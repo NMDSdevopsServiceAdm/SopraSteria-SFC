@@ -269,15 +269,16 @@ class Training extends EntityValidator {
         if (document.title) {
             // validate title
             const MAX_LENGTH=120;
-            if (
+            const MIN_LENGTH=3;
+            if (document.title.length < MIN_LENGTH ||
                 document.title.length > MAX_LENGTH) {
                     this._validations.push(new ValidationMessage(
                         ValidationMessage.ERROR,
                         110,
-                        `validation: MAX(${MAX_LENGTH}) length`,
+                        `validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`,
                         ['Title']
                     ));
-                    this._log(Training.LOG_ERROR, `title failed validation: title failed validation: MAX(${MAX_LENGTH}) length`);
+                    this._log(Training.LOG_ERROR, `title failed validation: title failed validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`);
                 returnStatus = false;
             }
 
