@@ -65,9 +65,12 @@ export class AdminUnlockConfirmationDialogComponent extends DialogComponent impl
    * @param {string}
    * @return {void}
    */
-  public unlockUser(username: string) {
-    this.registrationsService.unlockAccount({username}).subscribe(
-      data => {
+  public unlockUser(data: any) {
+    this.registrationsService.unlockAccount({
+      username: data.username
+    }).subscribe(
+      result => {
+        data.removeUnlock();
         this.alertService.addAlert({
           type: 'success',
           message: `User account has been unlocked.`,

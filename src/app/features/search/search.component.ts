@@ -85,9 +85,16 @@ export class SearchComponent implements OnInit {
     );
   }
 
-  public unlockUser(username: string, e) {
+  public unlockUser(username: string, index: number, e) {
     e.preventDefault();
-    this.dialogService.open(AdminUnlockConfirmationDialogComponent, username);
+    const data = {
+      username,
+      index,
+      removeUnlock: () => {
+        this.results[index].isLocked = false;
+      }
+    }
+    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
   }
 
   public searchType(data, type) {
