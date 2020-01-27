@@ -29,11 +29,13 @@ const unlockAccount = async (req, res) => {
               res.status(200);
               return res.json({status: '0', message: 'User has been set as active'})
             } else {
-              return res.status(503).send();
+              res.status(503)
+              return res.send();
             }
           } catch(error) {
             console.error(error);
-            return res.status(503).send();
+            res.status(503)
+            return res.send();
           }
         } else {
           res.status(400);
@@ -43,7 +45,8 @@ const unlockAccount = async (req, res) => {
       console.log(error);
     }
   } else {
-    return res.status(400).send();
+    res.status(400)
+    return res.send();
   }
 };
 
