@@ -63,7 +63,7 @@ export class DataSharingComponent extends Question {
       shareWith.push(DataSharingOptions.LOCAL);
     }
 
-    if (!shareWith.length) {
+    if (this.establishment && !shareWith.length) {
       this.establishment.localAuthorities = [];
     }
 
