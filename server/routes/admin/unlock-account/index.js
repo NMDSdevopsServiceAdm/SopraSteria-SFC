@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
 
-router.route('/').post(async (req, res) => {
-  // parse input - escaped to prevent SQL injection
+const unlockAccount = async (req, res) => {
+    // parse input - escaped to prevent SQL injection
 
   // Sanatize username
   if(req.body.username){
@@ -14,26 +14,20 @@ router.route('/').post(async (req, res) => {
       // Find the user matching the username
       const login = await models.login.findOne({
         where: {
-            username: {
-              [models.Sequelize.Op.iLike] : username
-            }
+            username: username
         },
         attributes: ['id', 'username'],
-        include: [{
-          model: models.user,
-          attributes: ['id']
-        }]
       });
       // Make sure we have the matching user
       if ((login && login.id) && (username === login.username)) {
-        // If approving user
           try {
             const updateduser = await login.update({
                 isActive: true,
                 invalidAttempt: 9
             });
             if (updateduser) {
-              return res.status(200).json({status: '0', message: 'User has been set as active'})
+              res.status(200);
+              return res.json({status: '0', message: 'User has been set as active'})
             } else {
               return res.status(503).send();
             }
@@ -42,7 +36,8 @@ router.route('/').post(async (req, res) => {
             return res.status(503).send();
           }
         } else {
-          return res.status(400).send();
+          res.status(400);
+          return res.send();
         }
     } catch (error) {
       console.log(error);
@@ -50,6 +45,11 @@ router.route('/').post(async (req, res) => {
   } else {
     return res.status(400).send();
   }
+};
+
+router.route('/').post(async (req, res) => {
+  await unlockAccount(req, res);
 });
 
 module.exports = router;
+module.exports.unlockAccount = unlockAccount;
