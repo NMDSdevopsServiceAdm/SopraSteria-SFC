@@ -2194,7 +2194,6 @@ class Establishment extends EntityValidator {
         order: [models.sequelize.literal('"ParentID" IS NOT NULL'), 'NameValue'],
       };
     }
-
     // first - get the user's primary establishment (every user will have a primary establishment)
     const fetchResults = await models.establishment.findAll(params);
 
@@ -2252,13 +2251,13 @@ class Establishment extends EntityValidator {
 
     // Add a boolean flag to indicate the establishment is a parent
     primary.isParent = !!mappedResults.length;
-
+    let filteredResults = mappedResults.filter(item => item.dataOwner === 'Parent');
     return {
       primary,
       subsidaries: primary.isParent
         ? {
-            count: mappedResults.length,
-            establishments: mappedResults,
+            count: filteredResults.length,
+            establishments: filteredResults,
           }
         : undefined,
     };
