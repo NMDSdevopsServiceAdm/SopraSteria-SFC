@@ -132,7 +132,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       },
     };
 
-    if (parseInt(mainJob.value, 10) !== 23) {
+    if (this.worker && parseInt(mainJob.value, 10) !== 23) {
       this.worker.registeredNurse = null;
       if (this.worker.nurseSpecialism) {
         this.worker.nurseSpecialism.specialism = null;
