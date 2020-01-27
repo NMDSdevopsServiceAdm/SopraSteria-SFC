@@ -211,6 +211,14 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Encode the filename so we have valid HTML
+   * @param url string
+   */
+  public encodeUrl(url: string): string {
+    return encodeURI(url);
+  }
+
+  /**
    * Set validate success update uploaded files
    * And then set total warnings and/or errors and status
    * @param response
