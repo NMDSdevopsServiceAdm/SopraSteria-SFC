@@ -2258,8 +2258,6 @@ class Establishment extends EntityValidator {
       primary,
       subsidaries: primary.isParent
         ? {
-            count: mappedResults.length,
-            establishments: mappedResults,
             count: filteredResults.length,
             establishments: filteredResults,
           }
