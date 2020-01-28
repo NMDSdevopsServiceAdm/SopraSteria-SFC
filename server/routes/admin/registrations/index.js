@@ -36,7 +36,7 @@ router.route('/').get(async (req, res) => {
     });
     // Get the pending workplace records
     const workplaceResults = await models.establishment.findAll({
-      attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID', 'ParentID', 'created'],
+      attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID', 'ParentID', 'created', 'updatedBy'],
       where: {
           ustatus: 'PENDING'
       },
@@ -86,6 +86,7 @@ router.route('/').get(async (req, res) => {
         registration = registration.toJSON();
         return {
           created: registration.created,
+          username: registration.updatedBy,
           establishment: {
             id: registration.EstablishmentID,
             name: registration.NameValue,
