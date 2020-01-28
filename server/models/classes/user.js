@@ -1204,12 +1204,12 @@ class User {
   // returns the set Establishments associated to this user
   //   the primary establishment is identified within the JWT
   // returns false if primary establishment is not found
-  async myEstablishments(isParent, isWDF, filters = null) {
+  async myEstablishments(isParent, isWDF, filters = null, isMoveWorker) {
     if (filters) throw new Error('Filters not implemented');
 
     const primaryEstablishmentId = this._establishmentId;
 
-    return await Establishment.fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF);
+    return await Establishment.fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF, isMoveWorker);
   }
 }
 

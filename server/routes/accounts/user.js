@@ -728,13 +728,14 @@ router.route('/my/establishments').get(async (req, res) => {
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
   const isParent = req.isParent;
-  const isWDF = req.query.wdf ? true : false;
+  const isWDF = req.query.wdf === 'true' ? true : false;
+  const isMoveWorker = req.query.moveWorker === 'true' ? true : false;
 
   try {
     const thisUser = new User.User(primaryEstablishmentId);
     await thisUser.restore(null, theLoggedInUser, false);
 
-    const myEstablishments = await thisUser.myEstablishments(isParent, isWDF, null);
+    const myEstablishments = await thisUser.myEstablishments(isParent, isWDF, null, isMoveWorker);
     return res.status(200).send(myEstablishments);
   } catch (err) {
     console.error('/user/my/establishments: ERR: ', err.message);

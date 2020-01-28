@@ -2068,7 +2068,7 @@ class Establishment extends EntityValidator {
   }
 
   // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
-  static async fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF) {
+  static async fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF, isMoveWorker) {
     // for each establishment, need:
     //  1. Name
     //  2. Main Service (by title)
@@ -2252,14 +2252,13 @@ class Establishment extends EntityValidator {
 
     // Add a boolean flag to indicate the establishment is a parent
     primary.isParent = !!mappedResults.length;
-
-    let filteredResults = mappedResults.filter(item => item.dataOwner === 'Parent');
+    let results = isMoveWorker ? mappedResults.filter(item => item.dataOwner === 'Parent') : mappedResults;
     return {
       primary,
       subsidaries: primary.isParent
         ? {
-            count: filteredResults.length,
-            establishments: filteredResults,
+            count: results.length,
+            establishments: results,
           }
         : undefined,
     };
