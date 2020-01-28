@@ -304,7 +304,7 @@
             </tr>
             <tr class="govuk-table__row">
               <td class="gov-uk-table__cell" colspan="4">
-                <div class="govuk-button-group" *ngIf="registration.username" >
+                <div class="govuk-button-group" *ngIf="registration.email" >
                   <button
                     class="govuk-button govuk-button--warning govuk-util__float-right"
                     (click)="approveRegistration(registration.username, false, i,false)"
@@ -315,7 +315,7 @@
                     Approve
                   </button>
                 </div>
-                <div class="govuk-button-group" *ngIf="!registration.username" >
+                <div class="govuk-button-group" *ngIf="!registration.email" >
                   <button
                     class="govuk-button govuk-button--warning govuk-util__float-right"
                     (click)="approveRegistration(registration.establishment.id, false, i,true)"
