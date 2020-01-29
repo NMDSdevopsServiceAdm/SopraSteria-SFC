@@ -58,7 +58,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   //function is use to get all available workplaces
   private getMyAllWorkPlaces() {
     this.subscriptions.add(
-      this.userService.getEstablishments(false, true).subscribe(
+      this.userService.getEstablishments().subscribe(
         myAllEstablishment => {
           let allEstablishments;
           const { primary, subsidaries } = myAllEstablishment;
@@ -76,6 +76,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
             }
 
             );
+          this.availableWorkPlaces = this.availableWorkPlaces.filter(item => item.dataOwner === 'Parent');
         },
 
         error => {

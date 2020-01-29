@@ -127,11 +127,8 @@ export class UserService {
   /*
    * GET /api/user/my/establishments
    */
-  public getEstablishments(wdf: boolean = false, isMoveWorker: boolean = false): Observable<GetWorkplacesResponse> {
-    const wdfValue = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
-    let params = new HttpParams();
-    params = params.append('wdf', `${wdfValue}`);
-    params = params.append('moveWorker', `${isMoveWorker}`);
+  public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
+    const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
     return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`, { params });
   }
 
