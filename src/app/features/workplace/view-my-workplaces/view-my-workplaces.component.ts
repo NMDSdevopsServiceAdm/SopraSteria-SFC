@@ -63,7 +63,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
               const dateB = new Date(b.updated).getTime();
               return dateB > dateA ? 1 : -1;
             });
-            this.workplacesCount = workplaces.subsidaries.count;
+            this.workplacesCount = workplaces.subsidaries.count - this.pendingWorkplaces.length;
           }
         },
         (error: HttpErrorResponse) => {

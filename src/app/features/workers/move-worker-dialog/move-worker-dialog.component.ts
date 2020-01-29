@@ -76,7 +76,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
             }
 
             );
-          this.availableWorkPlaces = this.availableWorkPlaces.filter(item => item.dataOwner === 'Parent');
+          this.availableWorkPlaces = this.availableWorkPlaces.filter(item => item.dataOwner === 'Parent' && item.ustatus !== 'PENDING');
         },
 
         error => {
