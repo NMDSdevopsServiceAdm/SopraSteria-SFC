@@ -2251,6 +2251,7 @@ class Establishment extends EntityValidator {
     const primary = mappedResults.shift();
 
     // Add a boolean flag to indicate the establishment is a parent
+
     primary.isParent = !!mappedResults.length;
     return {
       primary,
