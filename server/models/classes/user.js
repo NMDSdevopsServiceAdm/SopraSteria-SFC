@@ -952,7 +952,7 @@ class User {
       include: [
         {
           model: models.login,
-          attributes: ['username', 'lastLogin'],
+          attributes: ['username', 'lastLogin', 'status'],
         },
       ],
       attributes: [
@@ -963,7 +963,7 @@ class User {
         'created',
         'updated',
         'updatedBy',
-        'isPrimary',
+        'isPrimary'
       ],
       order: [['updated', 'DESC']],
     });
@@ -981,11 +981,12 @@ class User {
           updated: thisUser.updated.toJSON(),
           updatedBy: thisUser.updatedBy,
           isPrimary: thisUser.isPrimary ? true : false,
+          status: thisUser.login && thisUser.login.status ? thisUser.login.status : null
         });
       });
 
       allUsers = allUsers.map(user => {
-        return Object.assign(user, { status: user.username == null ? 'Pending' : 'Active' });
+        return Object.assign(user, { status: user.username == null ? 'Pending' : (user.status !== null)? user.status: 'Active' });
       });
 
       allUsers.sort((a, b) => {
