@@ -43,7 +43,9 @@ router.route('/byCategory')
       if (filterByCqc) {
         results = await models.services.findAll({
           where: {
-            iscqcregistered: true,
+            iscqcregistered: {
+              [models.Sequelize.Op.or]: [true, null],
+            },
             isMain: true
           },
           order: [
@@ -54,18 +56,20 @@ router.route('/byCategory')
       } else {
         results = await models.services.findAll({
           where: {
-            iscqcregistered: false,
+            iscqcregistered: {
+              [models.Sequelize.Op.or]: [false, null],
+            },
             isMain: true
           },
           order: [
             ['category', 'ASC'],
             ['name', 'ASC']
           ]
-        });  
+        });
       }
-  
+
       let servicesData = ServiceFormatters.createServicesByCategoryJSON(results);
-  
+
       if (servicesData.length === 0) {
         return res.sendStatus(404);
       } else {
@@ -132,7 +136,7 @@ function createServicesJSON(results){
       serviceId: data.id,
       category: data.category,
       name: data.name,
-      other: data.other ? true : undefined      
+      other: data.other ? true : undefined
       // cqcRegistered: data.iscqcregistered,
       // capacityQuestion: data.capacityquestion,
       // currentUptakeQuestion: data.currentuptakequestion
