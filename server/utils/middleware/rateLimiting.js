@@ -29,9 +29,7 @@ exports.rateLimiting = (req, res, next) => {
         "X-RateLimit-Remaining": rateLimiterRes.remainingPoints,
         "X-RateLimit-Reset": new Date(Date.now() + rateLimiterRes.msBeforeNext)
       };
-      if (appConfig.get('env') !== 'production') {
-        res.set(headers);
-      }
+      res.set(headers);
       next();
     })
     .catch(() => {
