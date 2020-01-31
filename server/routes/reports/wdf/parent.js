@@ -107,7 +107,8 @@ const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,Service
 'NumberOfStaffValue').split(',');
 
 const getEstablishmentReportData = async establishmentId => {
-  const establishmentData = await getEstablishmentData(establishmentId);
+  const establishmentReturnData = await getEstablishmentData(establishmentId);
+  const establishmentData = establishmentReturnData.filter(est => est.Status !== "PENDING");
   for(let i = 0; i< establishmentData.length; i++) {
     let value = establishmentData[i];
     let getServiceCapacityData = await getServiceCapacityDetails(value.MainServiceFKValue);

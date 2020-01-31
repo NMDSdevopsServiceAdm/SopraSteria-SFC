@@ -2251,8 +2251,8 @@ class Establishment extends EntityValidator {
     const primary = mappedResults.shift();
 
     // Add a boolean flag to indicate the establishment is a parent
-    primary.isParent = !!mappedResults.length;
 
+    primary.isParent = !!mappedResults.length;
     return {
       primary,
       subsidaries: primary.isParent
@@ -2424,6 +2424,7 @@ class Establishment extends EntityValidator {
             "Establishment"."EstablishmentID",
             "EstablishmentUID",
             "NameValue",
+            "Status",
             "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
             CASE WHEN "WorkerTotals"."TotalWorkers" IS NULL THEN 0 ELSE "WorkerTotals"."TotalWorkers" END AS "TotalWorkers"
           from cqc."Establishment"
@@ -2466,6 +2467,7 @@ class Establishment extends EntityValidator {
           missingEstablishments.push({
             uid: thisEstablishment.EstablishmentUID,
             name: thisEstablishment.NameValue,
+            status: thisEstablishment.Status,
             missing: thisEstablishment.EstablishmentLocal === null ? true : undefined,
             workers: parseInt(thisEstablishment.TotalWorkers, 10),
           });

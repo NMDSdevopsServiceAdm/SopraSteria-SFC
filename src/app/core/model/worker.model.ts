@@ -4,6 +4,7 @@ import { WDFValue } from './wdf.model';
 
 export interface Worker {
   uid?: string;
+  ustatus?: string;
   nameOrId: string;
   contract: Contracts;
   mainJob: JobRole;
