@@ -26,6 +26,7 @@ export interface NullLocalIdentifiersResponse {
   establishments: Array<{
     uid: string;
     name: string;
+    status?: string;
     missing: boolean;
     workers: number;
   }>;
