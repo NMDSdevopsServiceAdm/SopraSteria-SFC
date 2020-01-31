@@ -1206,9 +1206,7 @@ class User {
   // returns false if primary establishment is not found
   async myEstablishments(isParent, isWDF, filters = null) {
     if (filters) throw new Error('Filters not implemented');
-
     const primaryEstablishmentId = this._establishmentId;
-
     return await Establishment.fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF);
   }
 }

@@ -733,7 +733,6 @@ router.route('/my/establishments').get(async (req, res) => {
   try {
     const thisUser = new User.User(primaryEstablishmentId);
     await thisUser.restore(null, theLoggedInUser, false);
-
     const myEstablishments = await thisUser.myEstablishments(isParent, isWDF, null);
     return res.status(200).send(myEstablishments);
   } catch (err) {

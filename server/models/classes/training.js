@@ -478,7 +478,7 @@ class Training extends EntityValidator {
                         updatedBy: savedBy.toLowerCase(),
                         source: bulkUploaded ? 'Bulk' : 'Online',
                         categoryFk: this._category.id,
-                        title: this._title,
+                        title: this.title,
                         accredited: this._accredited,
                         completed: this._completed,
                         expires: this._expires,
@@ -530,7 +530,7 @@ class Training extends EntityValidator {
                     // note - if the training was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         categoryFk: this._category.id,
-                        title: this._title,
+                        title: this.title,
                         accredited: this._accredited,
                         completed: this._completed,
                         expires: this._expires,

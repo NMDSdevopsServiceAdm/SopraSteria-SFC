@@ -102,7 +102,8 @@ SELECT
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
   "ShareDataWithCQC",
   "ShareDataWithLA",
-  (select count("LeaveReasonFK") from cqc."Worker" where "EstablishmentFK" = "Establishment"."EstablishmentID") as "ReasonsForLeaving"
+  (select count("LeaveReasonFK") from cqc."Worker" where "EstablishmentFK" = "Establishment"."EstablishmentID") as "ReasonsForLeaving",
+  "Status"
 FROM
   cqc."Establishment"
 LEFT JOIN
@@ -220,6 +221,7 @@ INNER JOIN
 ON
   "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK" AND
   "Establishment"."Archived" = :falseValue AND
+  "Establishment"."Status" IS NULL AND
   ("Establishment"."EstablishmentID" = :establishmentId OR "Establishment"."ParentID" = :establishmentId)
 LEFT JOIN
   cqc."Job"

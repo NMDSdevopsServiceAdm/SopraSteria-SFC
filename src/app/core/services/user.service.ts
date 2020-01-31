@@ -125,7 +125,7 @@ export class UserService {
   }
 
   /*
-   * GET /api/user/my/establishments
+   * GET Api to fetch all the establishmnet
    */
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;

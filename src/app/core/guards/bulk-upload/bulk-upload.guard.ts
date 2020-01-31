@@ -18,6 +18,7 @@ export class BulkUploadGuard implements CanActivate {
   canActivate(): Observable<boolean> {
     return this.bulkUploadService.getNullLocalIdentifiers(this.establishmentService.primaryWorkplace.uid).pipe(
       map(response => {
+        response.establishments = response.establishments.filter(item => item.status !== 'PENDING');
         if (response.establishments.length > 0) {
           this.router.navigate(['bulk-upload', 'start']);
           return false;

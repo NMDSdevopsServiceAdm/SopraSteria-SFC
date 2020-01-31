@@ -36,7 +36,7 @@ export class WorkplacesComponent implements OnInit {
     this.subscriptions.add(
       this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
         if (workplaces.subsidaries) {
-          this.workplaces = workplaces.subsidaries.establishments;
+          this.workplaces = workplaces.subsidaries.establishments.filter(item => item.ustatus !== 'PENDING');
 
           if (this.workplaces.length) {
             this.workplaces = filter(this.workplaces, this.exclusionCheck);
