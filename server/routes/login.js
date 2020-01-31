@@ -115,10 +115,10 @@ router.post('/', async (req, res) => {
         return res.status(409).send({
           message: 'Authentication failed.',
         });
-      }else if(!establishmentUser.isActive && establishmentUser.status === 'Pending'){
+      } else if(!establishmentUser.isActive && establishmentUser.status === 'PENDING'){
         //check for Pending status, if Pending then return with 403 error
         console.error(`POST .../login failed: User status is pending`);
-        return res.status(403).send({
+        return res.status(405).send({
           message: 'Authentication failed.',
         });
       }
