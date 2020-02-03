@@ -58,6 +58,6 @@ export class ReportDownloadLinkComponent {
       Training: 'TrainingResults.txt',
       Worker: 'StaffrecordsResults.txt',
     };
-    return filenameMap[this.fileType];
+    return encodeURI(filenameMap[this.fileType]);
   }
 }
