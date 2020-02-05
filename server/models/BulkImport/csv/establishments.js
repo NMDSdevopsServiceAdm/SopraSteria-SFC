@@ -845,65 +845,69 @@ class Establishment {
   }
 
   async _validateLocationID () {
-    // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
-    const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
-    const myLocationID = this._currentLine.LOCATIONID;
+    try {
+      // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
+      const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
+      const myLocationID = this._currentLine.LOCATIONID;
 
-    // do not use
-    const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
-    const locationExists = await models.establishment.findAll({
-      where: {
-        locationId: myLocationID
-      }
-    });
-    if (this._regType === 2) {
-      // ignore location i
-      if (!mainServiceIsHeadOffice) {
-        if (!myLocationID || myLocationID.length === 0) {
-          this._validationErrors.push({
-            lineNumber: this._lineNumber,
-            errCode: Establishment.LOCATION_ID_ERROR,
-            errType: 'LOCATION_ID_ERROR',
-            error: 'LOCATIONID has not been supplied',
-            source: myLocationID,
-            name: this._currentLine.LOCALESTID
-          });
-          return false;
-        } else if (!locationIDRegex.test(myLocationID)) {
-          this._validationErrors.push({
-            lineNumber: this._lineNumber,
-            errCode: Establishment.LOCATION_ID_ERROR,
-            errType: 'LOCATION_ID_ERROR',
-            error: 'LOCATIONID is incorrectly formatted',
-            source: myLocationID,
-            name: this._currentLine.LOCALESTID
-          });
-          return false;
-        } else if (locationExists.length > 0) {
-          this._validationErrors.push({
-            lineNumber: this._lineNumber,
-            errCode: Establishment.LOCATION_ID_ERROR,
-            errType: 'LOCATION_ID_ERROR',
-            error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
-            source: myLocationID,
-            name: this._currentLine.LOCALESTID
-          });
-          return false;
+      // do not use
+      const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
+      const locationExists = await models.establishment.findAll({
+        where: {
+          locationId: myLocationID
         }
-      }
-
-      this._locationID = myLocationID;
-      return true;
-    } else if (this._regType === 0 && myLocationID && myLocationID.length > 0) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: Establishment.LOCATION_ID_WARNING,
-        warnType: 'LOCATION_ID_WARNING',
-        warning: 'LOCATIONID will be ignored as not required for this REGTYPE',
-        source: myLocationID,
-        name: this._currentLine.LOCALESTID
       });
-      return false;
+      if (this._regType === 2) {
+        // ignore location i
+        if (!mainServiceIsHeadOffice) {
+          if (!myLocationID || myLocationID.length === 0) {
+            this._validationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.LOCATION_ID_ERROR,
+              errType: 'LOCATION_ID_ERROR',
+              error: 'LOCATIONID has not been supplied',
+              source: myLocationID,
+              name: this._currentLine.LOCALESTID
+            });
+            return false;
+          } else if (!locationIDRegex.test(myLocationID)) {
+            this._validationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.LOCATION_ID_ERROR,
+              errType: 'LOCATION_ID_ERROR',
+              error: 'LOCATIONID is incorrectly formatted',
+              source: myLocationID,
+              name: this._currentLine.LOCALESTID
+            });
+            return false;
+          } else if (locationExists.length > 0) {
+            this._validationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.LOCATION_ID_ERROR,
+              errType: 'LOCATION_ID_ERROR',
+              error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
+              source: myLocationID,
+              name: this._currentLine.LOCALESTID
+            });
+            return false;
+          }
+        }
+
+        this._locationID = myLocationID;
+        return true;
+      } else if (this._regType === 0 && myLocationID && myLocationID.length > 0) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          warnCode: Establishment.LOCATION_ID_WARNING,
+          warnType: 'LOCATION_ID_WARNING',
+          warning: 'LOCATIONID will be ignored as not required for this REGTYPE',
+          source: myLocationID,
+          name: this._currentLine.LOCALESTID
+        });
+        return false;
+      }
+    } catch (error) {
+      throw new Error(error);
     }
   }
 
@@ -1324,9 +1328,16 @@ class Establishment {
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
     const leavers = this._currentLine.LEAVERS.split(';');
+    const myRegType = parseInt(this._currentLine.REGTYPE, 10);
 
     const regManager = 4;
-    const isCQCRegulated = this._regType === 2;
+    const isCQCRegulated = myRegType === 2;
+
+    const hasRegisteredManagerVacancy = () => {
+      return allJobs.map((job, index) => {
+        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) return true;
+      });
+    };
 
     // allJobs can only be empty, if TOTALPERMTEMP is 0
     if (!this._currentLine.ALLJOBROLES || this._currentLine.ALLJOBROLES.length === 0) {
@@ -1373,38 +1384,29 @@ class Establishment {
           name: this._currentLine.LOCALESTID
         });
       }
+      if (!isCQCRegulated && hasRegisteredManagerVacancy()) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          warnCode: Establishment.ALL_JOBS_WARNING,
+          warnType: 'ALL_JOBS_WARNING',
+          warning: 'Vacancy for Registered Manager should not be included for this service and will be ignored',
+          source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID
+        });
+      }
     }
-
-    const hasRegisteredManagerVacancy = () => {
-      allJobs.map((job, index) => {
-        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) return true;
-      });
-      return false;
-    };
 
     // Need to add if they currently have a registered manager
-    if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && isCQCRegulated && !hasRegisteredManagerVacancy()) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.ALL_JOBS_ERROR,
-        errType: 'ALL_JOBS_ERROR',
-        error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
-        source: this._currentLine.ALLJOBROLES,
-        name: this._currentLine.LOCALESTID
-      });
-    }
-
-    if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && !isCQCRegulated && !hasRegisteredManagerVacancy()) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: Establishment.ALL_JOBS_WARNING,
-        warnType: 'ALL_JOBS_WARNING',
-        warning: 'Vacancy for Registered Manager should not be included for this service and will be ignored',
-        source: this._currentLine.ALLJOBROLES,
-        name: this._currentLine.LOCALESTID
-      });
-    }
-
+    // if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && isCQCRegulated && !hasRegisteredManagerVacancy()) {
+    //   localValidationErrors.push({
+    //     lineNumber: this._lineNumber,
+    //     errCode: Establishment.ALL_JOBS_ERROR,
+    //     errType: 'ALL_JOBS_ERROR',
+    //     error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
+    //     source: this._currentLine.ALLJOBROLES,
+    //     name: this._currentLine.LOCALESTID
+    //   });
+    // }
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
       return false;
@@ -1515,9 +1517,11 @@ class Establishment {
     this._leavers = leavers.map(thisCount => parseInt(thisCount, 10));
 
     // remove RM vacancy
-    this._allJobs.map((job, index) => {
-      if (job === regManager && this._vacancies[index] > 0) this._vacancies[index] = 0;
-    });
+    if (this._allJobs && this._allJobs.length) {
+      this._allJobs.map((job, index) => {
+        if (job === regManager && this._vacancies[index] > 0) this._vacancies[index] = 0;
+      });
+    }
 
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
