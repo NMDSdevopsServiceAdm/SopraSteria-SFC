@@ -19,7 +19,7 @@ slack:
 jwt:
     iss: 'asc-wds.skillsforcare.org.uk'
     ttl:
-        login: 5
+        login: 30
 
 db:
     pool:

@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
   BulkUploadFileType,
+  BulkUploadLock,
+  BulkUploadStatus,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
@@ -15,8 +17,8 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, from, interval, Observable } from 'rxjs';
+import { concatMap, filter, map, startWith, take, tap } from 'rxjs/operators';
 
 import { UserService } from './user.service';
 
@@ -24,6 +26,7 @@ export interface NullLocalIdentifiersResponse {
   establishments: Array<{
     uid: string;
     name: string;
+    status?: string;
     missing: boolean;
     workers: number;
   }>;
@@ -80,14 +83,19 @@ export class BulkUploadService {
   }
 
   public getPresignedUrls(payload: PresignedUrlsRequest): Observable<PresignedUrlResponseItem[]> {
-    return this.http.post<PresignedUrlResponseItem[]>(
-      `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/uploaded`,
-      payload
+    return this.checkLockStatus(
+      () =>
+        this.http.post<BulkUploadLock>(
+          `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/uploaded`,
+          payload
+        ),
+      undefined
     );
   }
 
   public uploadFile(file: File, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
+    console.log('Trying to upload');
     return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
   }
 
@@ -97,30 +105,44 @@ export class BulkUploadService {
   }
 
   public preValidateFiles(workplaceUid: string): Observable<ValidatedFile[]> {
-    return this.http.put<ValidatedFile[]>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`, null);
+    return this.checkLockStatus(
+      () => this.http.put<ValidatedFile[]>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`, null),
+      undefined
+    );
   }
 
   public getUploadedFiles(workplaceUid: string): Observable<ValidatedFile[]> {
-    return this.http
-      .get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`)
-      .pipe(map(response => response.files));
+    return this.checkLockStatus(
+      () => this.http.get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`),
+      undefined
+    ).pipe(map(response => response.files));
   }
 
   public getUploadedFileSignedURL(workplaceUid: string, key: string): Observable<string> {
-    return this.http
-      .get<UploadedFilesRequestToDownloadResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded/${key}`)
-      .pipe(map(response => response.file.signedUrl));
+    return this.checkLockStatus(
+      () =>
+        this.http.get<UploadedFilesRequestToDownloadResponse>(
+          `/api/establishment/${workplaceUid}/bulkupload/uploaded/${key}`
+        ),
+      undefined
+    ).pipe(map(response => response.file.signedUrl));
   }
 
   public validateFiles(workplaceUid: string): Observable<ValidatedFilesResponse> {
-    return this.http.put<ValidatedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/validate`, null);
+    return this.checkLockStatus(
+      () => this.http.put<ValidatedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/validate`, null),
+      undefined
+    );
   }
 
   public getReport(workplaceUid: string, reportType: ReportTypeRequestItem): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/report/${reportType}`, {
-      observe: 'response',
-      responseType: 'blob' as 'json',
-    });
+    return this.checkLockStatus(
+      () => this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/report/${reportType}`),
+      {
+        observe: 'response',
+        responseType: 'blob' as 'json',
+      }
+    );
   }
 
   public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
@@ -143,14 +165,17 @@ export class BulkUploadService {
         url = 'training';
         break;
     }
-    return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/download/${url}`, {
-      observe: 'response',
-      responseType: 'blob' as 'json',
-    });
+    return this.checkLockStatus(
+      () => this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/download/${url}`),
+      {
+        observe: 'response',
+        responseType: 'blob' as 'json',
+      }
+    );
   }
 
   public complete(workplaceUid: string) {
-    return this.http.post(`/api/establishment/${workplaceUid}/bulkupload/complete`, {
+    return this.checkLockStatus(() => this.http.post(`/api/establishment/${workplaceUid}/bulkupload/complete`, null), {
       observe: 'body',
       responseType: 'json',
     });
@@ -203,5 +228,46 @@ export class BulkUploadService {
         message: 'There is a problem with the service.',
       },
     ];
+  }
+  // Function to check for the lock status
+  private checkLockStatus(callback, httpOptions): Observable<any> {
+    const establishmentUid = this.establishmentService.establishmentId;
+    let requestId;
+    // Run function every second until lock aquired
+    return (
+      interval(1000)
+        // Start he function straight away rather than waiting for the first second
+        .pipe(startWith(0))
+        .pipe(concatMap(() => from(callback())))
+        // Don't go any further unless there's a request ID
+        .pipe(filter((request: any) => typeof request.requestId === 'string'))
+        .pipe(take(1))
+        .pipe(
+          map((request: any) => {
+            requestId = request.requestId;
+          })
+        )
+        .pipe(
+          // Run serperate function to get the current lock status
+          concatMap(() =>
+            interval(1000)
+              .pipe(startWith(0))
+              .pipe(
+                concatMap(() =>
+                  from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`))
+                )
+              )
+          )
+        )
+        .pipe(filter(state => state.bulkUploadLockHeld === false))
+        .pipe(take(1))
+        .pipe(
+          concatMap(() =>
+            from(
+              this.http.get<any>(`/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`, httpOptions)
+            )
+          )
+        )
+    );
   }
 }

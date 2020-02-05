@@ -26,6 +26,8 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   public filesUploaded = false;
   public submitted = false;
   public selectedFiles: File[];
+  public bulkUploadStatus: string;
+  public stopPolling: boolean;
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
   private subscriptions: Subscription = new Subscription();
@@ -90,6 +92,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   }
 
   public onFilesSelection($event: Event): void {
+    this.stopPolling = true;
     this.bulkUploadService.resetBulkUpload();
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target[`files`]);
@@ -116,7 +119,21 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
     this.subscriptions.add(
       this.bulkUploadService
         .getPresignedUrls(this.getPresignedUrlsRequest())
-        .subscribe((response: PresignedUrlResponseItem[]) => this.prepForUpload(response))
+        .subscribe((
+          response: PresignedUrlResponseItem[]) => this.prepForUpload(response),
+        error => {
+          //handle 503 with custom message to prevent service unavailable redirection
+          if (error.status === 503) {
+            const customeMessage = [{
+              name: error.status,
+              message: `Bulk upload is unable to continue processing your data due to an issue with your files.
+                Please check and try again or contact Support on 0113 2410969.`,
+            }];
+            this.bulkUploadService.serverError$.next(this.errorSummaryService.getServerErrorMessage(error.status, customeMessage));
+          } else {
+            console.log(error);
+          }
+        })
     );
   }
 
@@ -134,7 +151,6 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
   private prepForUpload(response: PresignedUrlResponseItem[]): void {
     this.bytesUploaded = [];
     const request: UploadFileRequestItem[] = [];
-
     this.selectedFiles.forEach((file: File) => {
       this.bytesTotal += file.size;
       this.bytesUploaded.push(0);
@@ -151,6 +167,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
 
   private uploadFiles(request: UploadFileRequestItem[]): void {
     this.filesUploading = true;
+    this.stopPolling = false;
 
     this.uploadSubscription$ = combineLatest(
       request.map(data => this.bulkUploadService.uploadFile(data.file, data.signedUrl))

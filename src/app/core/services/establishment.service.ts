@@ -49,6 +49,19 @@ interface MainServiceRequest {
     other?: string;
   };
 }
+interface CQCLocationChangeRequest {
+  addressLine1: string;
+  addressLine2?: string;
+  addressLine3?: string;
+  county: string;
+  isRegulated?: boolean;
+  locationId?: string;
+  locationName: string;
+  mainService?: string;
+  mainServiceOther?: string;
+  postalCode: string;
+  townCity: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -213,6 +226,10 @@ export class EstablishmentService {
     );
   }
 
+  updateLocationDetails(establishmentId, data: CQCLocationChangeRequest): Observable<any> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/locationDetails`, data);
+  }
+
   public deleteWorkplace(workplaceUid: string): Observable<any> {
     return this.http.delete<any>(`/api/establishment/${workplaceUid}`);
   }
@@ -237,5 +254,22 @@ export class EstablishmentService {
 
   public setDataPermission(establishmentId, data: setPermission): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/dataPermissions`, data);
+  }
+  //get all parent with Post code
+  public getAllParentWithPostCode(): Observable<any> {
+    return this.http.get<any>(`/api/parentLinkingDetails/parents`);
+  }
+
+  //Send data for link to parent
+  public setRequestToParentForLink(establishmentId, data: setPermission): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent`, data);
+  }
+  //Send data for link to parent
+  public cancelRequestToParentForLink(establishmentId, data): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent/cancel`, data);
+  }
+  //Send data for de-link to parent
+  public removeParentAssociation(establishmentId, data): Observable<Establishment> {
+    return this.http.put<Establishment>(`/api/establishment/${establishmentId}/linkToParent/delink`, data);
   }
 }

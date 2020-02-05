@@ -62,7 +62,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy, AfterViewInit {
   protected setupForm(): void {
     this.submitted = false;
     this.form = this.formBuilder.group({});
-
+    this.references = this.references.filter(item => item.ustatus !== 'PENDING');
     this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
         `reference-${reference.uid}`,

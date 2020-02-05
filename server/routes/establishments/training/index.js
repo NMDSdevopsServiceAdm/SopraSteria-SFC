@@ -54,7 +54,7 @@ router.route('/').post(async (req, res) => {
     const workerUid = req.params.workerId;
 
     const thisTrainingRecord = new Training(establishmentId, workerUid);
-    
+
     try {
         // by loading after the restore, only those properties defined in the
         //  PUT body will be updated (peristed)
@@ -83,7 +83,7 @@ router.route('/:trainingUid').put(async (req, res) => {
     const workerUid = req.params.workerId;
 
     const thisTrainingRecord = new Training(establishmentId, workerUid);
-    
+
     try {
         // before updating a Worker, we need to be sure the Worker is
         //  available to the given establishment. The best way of doing that
@@ -103,7 +103,7 @@ router.route('/:trainingUid').put(async (req, res) => {
             } else {
                 return res.status(400).send('Unexpected Input.');
             }
-            
+
         } else {
             // not found worker
             return res.status(404).send('Not Found');
@@ -123,7 +123,7 @@ router.route('/:trainingUid').delete(async (req, res) => {
     const workerUid = req.params.workerId;
 
     const thisTrainingRecord = new Training(establishmentId, workerUid);
-    
+
     try {
         // before updating a Worker, we need to be sure the Worker is
         //  available to the given establishment. The best way of doing that
@@ -139,7 +139,7 @@ router.route('/:trainingUid').delete(async (req, res) => {
             } else {
                 return res.status(404).json('Not Found');
             }
-            
+
         } else {
             // not found worker
             return res.status(404).send('Not Found');

@@ -269,16 +269,15 @@ class Training extends EntityValidator {
         if (document.title) {
             // validate title
             const MAX_LENGTH=120;
-            const MIN_LENGTH=3;
-            if (document.title.length < MIN_LENGTH ||
+            if (
                 document.title.length > MAX_LENGTH) {
                     this._validations.push(new ValidationMessage(
                         ValidationMessage.ERROR,
                         110,
-                        `validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`,
+                        `validation: MAX(${MAX_LENGTH}) length`,
                         ['Title']
                     ));
-                    this._log(Training.LOG_ERROR, `title failed validation: title failed validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`);
+                    this._log(Training.LOG_ERROR, `title failed validation: title failed validation: MAX(${MAX_LENGTH}) length`);
                 returnStatus = false;
             }
 
@@ -479,7 +478,7 @@ class Training extends EntityValidator {
                         updatedBy: savedBy.toLowerCase(),
                         source: bulkUploaded ? 'Bulk' : 'Online',
                         categoryFk: this._category.id,
-                        title: this._title,
+                        title: this.title,
                         accredited: this._accredited,
                         completed: this._completed,
                         expires: this._expires,
@@ -531,7 +530,7 @@ class Training extends EntityValidator {
                     // note - if the training was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         categoryFk: this._category.id,
-                        title: this._title,
+                        title: this.title,
                         accredited: this._accredited,
                         completed: this._completed,
                         expires: this._expires,
@@ -807,6 +806,44 @@ class Training extends EntityValidator {
         if (this.category === null) allExistAndValid = false
 
         return allExistAndValid;
+    }
+
+    /**
+     * Function used to get all training expired and expiring soon counts for a worker id
+     * @param {number} establishmentId
+     * @param {object} workerRecords
+     * @return {array} Modified worker records while adding training counts for each worker object
+     */
+    static async getExpiringAndExpiredTrainingCounts(establishmentId, workerRecords){
+      if(workerRecords.length !== 0){
+        let currentDate = moment();
+        for(let i = 0; i < workerRecords.length; i++){
+          const allTrainingRecords = await Training.fetch(establishmentId, workerRecords[i].uid);
+          if(allTrainingRecords && allTrainingRecords.training.length > 0){
+            workerRecords[i].trainingCount = allTrainingRecords.training.length;
+            workerRecords[i].expiredTrainingCount = 0;
+            workerRecords[i].expiringTrainingCount = 0;
+            //calculate all expired and expiring soon trainings count
+            let trainings = allTrainingRecords.training.length;
+            for(let j = 0; j < trainings; j++){
+              if(allTrainingRecords.training[j].expires){
+                let expiringDate = moment(allTrainingRecords.training[j].expires);
+                let daysDiffrence = expiringDate.diff(currentDate, 'days');
+                if(daysDiffrence < 0){
+                  workerRecords[i].expiredTrainingCount++;
+                }else if(daysDiffrence >= 0 && daysDiffrence <= 90){
+                  workerRecords[i].expiringTrainingCount++;
+                }
+              }
+            }
+          }else{
+            workerRecords[i].trainingCount = 0;
+            workerRecords[i].expiredTrainingCount = 0;
+            workerRecords[i].expiringTrainingCount = 0;
+          }
+        }
+        return workerRecords;
+      }
     }
 };
 

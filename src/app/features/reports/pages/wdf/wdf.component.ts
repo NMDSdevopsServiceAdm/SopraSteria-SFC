@@ -59,7 +59,7 @@ export class WdfComponent implements OnInit, OnDestroy {
 
     this.canViewWorker = this.permissionsService.can(workplaceUid, 'canViewWorker');
     this.returnUrl = { url: ['/reports', 'workplace', workplaceUid, 'wdf'] };
-    this.exitUrl = { url: ['/reports', 'reports'] };
+    this.exitUrl = { url: ['/reports'] };
     this.workerService.setReturnTo(null);
 
     this.subscriptions.add(

@@ -5,6 +5,7 @@ const CITIZENSHIP_TYPE = ['Yes', 'No', "Don't know"];
 exports.WorkerBritishCitizenshipProperty = class WorkerBritishCitizenshipProperty extends ChangePropertyPrototype {
     constructor() {
         super('BritishCitizenship');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -13,7 +14,7 @@ exports.WorkerBritishCitizenshipProperty = class WorkerBritishCitizenshipPropert
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.britishCitizenship) {
+        if (document.britishCitizenship || document.britishCitizenship === null) {
             if (CITIZENSHIP_TYPE.includes(document.britishCitizenship)) {
                 this.property = document.britishCitizenship;
             } else {
@@ -43,7 +44,7 @@ exports.WorkerBritishCitizenshipProperty = class WorkerBritishCitizenshipPropert
                 britishCitizenship: this.property
             };
         }
-        
+
         return {
             britishCitizenship : {
                 currentValue: this.property,

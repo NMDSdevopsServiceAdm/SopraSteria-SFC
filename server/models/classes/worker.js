@@ -306,6 +306,54 @@ class Worker extends EntityValidator {
         this._status = document.status;
       }
 
+
+      // Consequential updates when one value means another should be empty or null
+
+      // If their job isn't a registered nurse, remove their specialism and category
+      if (document.mainJob) {
+        if (document.mainJob.jobId !== 23) {
+          document.registeredNurse = null;
+          document.nurseSpecialism = { id: null, specialism: null };
+        }
+        // If their job isn't a social worker - remove the approved mental health worker
+        if (document.mainJob.jobId !== 27) {
+          document.approvedMentalHealthWorker = null;
+        }
+      }
+
+      // Remove British citizenship if they are british
+      if (document.nationality && document.nationality.value === 'British') {
+        delete document.nationality.other;
+        document.britishCitizenship = null;
+      }
+
+      // Remove year arriced if born in the UK
+      if (document.countryOfBirth) {
+        if (document.countryOfBirth.value === 'United Kingdom') {
+          document.yearArrived = { value: null, year: null };
+        }
+      }
+
+      // Remove contracted hours If on a zero hour contract
+      if (document.zeroHoursContract === 'Yes' || document.contract === 'Agency') {
+        document.weeklyHoursContracted = { value: null, hours: null };
+      }
+
+      // Remove average hours if not on a zero hour contract
+      if (document.zeroHoursContract === 'No') {
+        document.weeklyHoursAverage = { value: null, hours: null };
+      }
+
+      // Remove social care qualification if they don't have one
+      if (document.qualificationInSocialCare && document.qualificationInSocialCare !== 'Yes') {
+        document.socialCareQualification = { qualificationId: null, title: null };
+      }
+
+      // Remove highest qualification if no other qualifications
+      if (document.otherQualification && document.otherQualification !== 'Yes') {
+        document.highestQualification = { qualificationId: null, title: null };
+      }
+
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();
 
@@ -1009,7 +1057,7 @@ class Worker extends EntityValidator {
             attributes: ['id', 'title']
           }
         ],
-        attributes: ['uid', 'LocalIdentifierValue', 'NameOrIdValue', 'ContractValue', 'CompletedValue', 'MainJobFkOther', 'lastWdfEligibility', 'created', 'updated', 'updatedBy'],
+        attributes: ['uid', 'LocalIdentifierValue', 'NameOrIdValue', 'ContractValue', 'CompletedValue', 'MainJobFkOther', 'lastWdfEligibility', 'created', 'updated', 'updatedBy', 'establishmentFk'],
         order: [
           ['updated', 'DESC']
         ]
@@ -1017,10 +1065,18 @@ class Worker extends EntityValidator {
 
       if (fetchResults) {
         const workerPromise = [];
-        const effectiveFromTime = WdfCalculator.effectiveTime;
+        const effectiveFromDate = WdfCalculator.effectiveDate;
         const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
 
-        fetchResults.forEach(thisWorker => {
+        await Promise.all(fetchResults.map(async thisWorker => {
+          const worker = new Worker(thisWorker.establishmentFk);
+          await worker.restore(thisWorker.uid);
+
+          const isEligible = await worker.isWdfEligible(effectiveFromDate);
+
+          if (thisWorker.lastWdfEligibility === null && isEligible.isEligible) {
+            thisWorker.lastWdfEligibility = new Date();
+          }
           allWorkers.push({
             uid: thisWorker.uid,
             localIdentifier: thisWorker.LocalIdentifierValue ? thisWorker.LocalIdentifierValue : null,
@@ -1036,10 +1092,10 @@ class Worker extends EntityValidator {
             updated: thisWorker.updated.toJSON(),
             updatedBy: thisWorker.updatedBy,
             effectiveFrom: effectiveFromIso,
-            wdfEligible: !!(thisWorker.lastWdfEligibility && thisWorker.lastWdfEligibility.getTime() > effectiveFromTime),
+            wdfEligible: isEligible.isEligible,
             wdfEligibilityLastUpdated: thisWorker.lastWdfEligibility ? thisWorker.lastWdfEligibility.toISOString() : undefined
           });
-        });
+        }));
         await Promise.all(workerPromise);
         return allWorkers;
       }

@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { WdfConfirmationPanelComponent } from './wdf-confirmation-panel.component';
 
@@ -8,6 +9,7 @@ describe('WdfConfirmationPanelComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
       declarations: [WdfConfirmationPanelComponent],
     }).compileComponents();
   }));
@@ -15,6 +17,7 @@ describe('WdfConfirmationPanelComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WdfConfirmationPanelComponent);
     component = fixture.componentInstance;
+    component.exitUrl = { url: ['/dashboard'], fragment: 'dashboard' }
     fixture.detectChanges();
   });
 

@@ -29,7 +29,9 @@ export class AddEditTrainingComponent implements OnInit {
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
   private titleMaxLength = 120;
+  private titleMinLength = 3;
   private subscriptions: Subscription = new Subscription();
+  public previousUrl: string;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -45,14 +47,20 @@ export class AddEditTrainingComponent implements OnInit {
     this.worker = this.workerService.worker;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
-
+    this.workerService.getRoute$.subscribe(route => {
+      if (route) {
+        this.previousUrl = route;
+      }
+    });
     this.backService.setBackLink({
-      url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
-      fragment: 'qualifications-and-training',
+      url: [this.previousUrl],
     });
 
     this.form = this.formBuilder.group({
-      title: [null, [Validators.required, Validators.maxLength(120)]],
+      title: [
+        null,
+        [Validators.maxLength(this.titleMaxLength)],
+      ],
       category: [null, Validators.required],
       accredited: null,
       completed: this.formBuilder.group({
@@ -149,12 +157,8 @@ export class AddEditTrainingComponent implements OnInit {
         item: 'title',
         type: [
           {
-            name: 'required',
-            message: `Enter a training name`,
-          },
-          {
             name: 'maxlength',
-            message: `max length is ${this.titleMaxLength}`,
+            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters in length`,
           },
         ],
       },
@@ -268,14 +272,12 @@ export class AddEditTrainingComponent implements OnInit {
 
   private onSuccess() {
     this.router
-      .navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid], {
-        fragment: 'qualifications-and-training',
-      })
+      .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
       .then(() => {
         if (this.trainingRecordId) {
-          this.workerService.alert = { type: 'success', message: 'Training has been saved' };
+          this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
         } else {
-          this.workerService.alert = { type: 'success', message: 'Training has been added' };
+          this.workerService.alert = { type: 'success', message: 'Training has been added.' };
         }
       });
   }
@@ -313,5 +315,8 @@ export class AddEditTrainingComponent implements OnInit {
       }
     }
     return null;
+  }
+  public navigateToPreviousPage() {
+    this.router.navigate([this.previousUrl]);
   }
 }

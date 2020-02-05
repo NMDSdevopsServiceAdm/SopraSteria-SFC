@@ -7,9 +7,17 @@ const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 const JsZip = require('jszip');
+const config = require('../../../../server/config/config');
+const uuid = require('uuid');
+const AWS = require('aws-sdk')
+const s3 = new AWS.S3({
+  region: String(config.get('bulkupload.region'))
+});
+const Bucket = String(config.get('bulkupload.bucketname'));
 
 const { Establishment } = require('../../../models/classes/establishment');
-const { getEstablishmentData, getWorkerData } = rfr('server/data/parentWDFReport');
+const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData, getServiceCapacityDetails } = rfr('server/data/parentWDFReport');
+const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('server/data/parentWDFReportLock');
 
 // Constants string needed by this file in several places
 const folderName = 'template';
@@ -21,6 +29,19 @@ const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 //const debuglog = console.log.bind(console);
 const debuglog = () => {};
+
+const buStates = [
+  'READY',
+  'DOWNLOADING',
+  'FAILED',
+  'WARNINGS',
+  'PASSED',
+  'COMPLETING'
+].reduce((acc, item) => {
+  acc[item] = item;
+
+  return acc;
+}, Object.create(null));
 
 // XML DOM manipulation helper functions
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
@@ -83,12 +104,54 @@ const getReportData = async (date, thisEstablishment) => {
 };
 
 const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,ServiceUsers,' +
-'StartersValue,LeaversValue,VacanciesValue,NumberOfStaffValue').split(',');
+'NumberOfStaffValue').split(',');
 
 const getEstablishmentReportData = async establishmentId => {
-  const establishmentData = await getEstablishmentData(establishmentId);
+  const establishmentReturnData = await getEstablishmentData(establishmentId);
+  const establishmentData = establishmentReturnData.filter(est => est.Status !== "PENDING");
+  for(let i = 0; i< establishmentData.length; i++) {
+    let value = establishmentData[i];
+    let getServiceCapacityData = await getServiceCapacityDetails(value.MainServiceFKValue);
+    if(getServiceCapacityData && getServiceCapacityData.length === 0){
+      value.Capacities = 'N/A';
+      value.Utilisations = 'N/A';
+    }else{
+      let capicityDetails = [];
+      let utilisationDetails = [];
+      if(getServiceCapacityData.length === 2){
+        capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
+        utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
+      }else if(getServiceCapacityData[0].Type === 'Capacity'){
+        capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
+        utilisationDetails = [{"Answer": 'N/A'}];
+      }else if(getServiceCapacityData[0].Type === 'Utilisation'){
+        utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
+        capicityDetails = [{"Answer": 'N/A'}];
+      }
 
-  establishmentData.forEach((value, key) => {
+      if(capicityDetails && capicityDetails.length > 0){
+        if(capicityDetails[0].Answer === null){
+          value.Capacities = 'Missing';
+        }else if(capicityDetails[0].Answer === 'N/A'){
+          value.Capacities = 'N/A';
+        }else{
+          value.Capacities = capicityDetails[0].Answer;
+        }
+      }else{
+        value.Capacities = 'Missing';
+      }
+      if(utilisationDetails && utilisationDetails.length > 0){
+        if(utilisationDetails[0].Answer === null){
+          value.Utilisations = 'Missing';
+        }else if(utilisationDetails[0].Answer === 'N/A'){
+          value.Utilisations = 'N/A';
+        }else{
+          value.Utilisations = utilisationDetails[0].Answer;
+        }
+      }else{
+        value.Utilisations = 'Missing';
+      }
+    }
     if (value.ShareDataWithCQC && value.ShareDataWithLA) {
       value.SubsidiarySharingPermissions = 'All';
     } else if (value.ShareDataWithCQC && !value.ShareDataWithLA) {
@@ -124,24 +187,32 @@ const getEstablishmentReportData = async establishmentId => {
       value.PercentageOfWorkerRecords = '0.0%';
     }
 
-    if (value.Capacities === null) {
-      value.Capacities = 'N/A';
+    if(value.VacanciesValue === 'None' || value.VacanciesValue === null){
+      value.Vacancies = 0;
+    }else if(value.VacanciesValue === "Don't know"){
+      value.Vacancies =  "Don't know";
+    }else if(value.VacanciesValue === "With Jobs"){
+      value.Vacancies = (value.VacanciesCount === null)? 'Missing':  value.VacanciesCount;
     }
 
-    if (value.Utilisations === null) {
-      value.Utilisations = 'N/A';
+    if(value.StartersValue === 'None' || value.StartersValue === null){
+      value.Starters = 0;
+    }else if(value.StartersValue === "Don't know"){
+      value.Starters =  "Don't know";
+    }else if(value.StartersValue === "With Jobs"){
+      value.Starters = (value.StartersCount === null)? 'Missing':  value.StartersCount;
     }
 
-    if (value.VacanciesValue === null) {
-      value.VacanciesValue = 0;
+    if(value.LeaversValue === 'None' || value.LeaversValue === null){
+      value.Leavers = 0;
+    }else if(value.LeaversValue === "Don't know"){
+      value.Leavers =  "Don't know";
+    }else if(value.LeaversValue === "With Jobs"){
+      value.Leavers = (value.LeaversCount === null)? 'Missing':  value.LeaversCount;
     }
 
-    if (value.StartersValue === null) {
-      value.StartersValue = 0;
-    }
-
-    if (value.LeaversValue === null) {
-      value.LeaversValue = 0;
+    if(value.EmployerTypeValue === null){
+      value.EmployerTypeValue = '';
     }
 
     if(value.ServiceUsers === ''){
@@ -159,7 +230,7 @@ const getEstablishmentReportData = async establishmentId => {
       (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
         ? '0.0%'
         : `${parseFloat(+value.CompletedWorkerRecords / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
-  });
+  }
 
   return establishmentData;
 };
@@ -170,26 +241,57 @@ const updateProps = ('DateOfBirthValue,GenderValue,NationalityValue,MainJobStart
 
 const getWorkersReportData = async establishmentId => {
   const workerData = await getWorkerData(establishmentId);
+  let workersArray = workerData.
+      filter(worker => {
+        if(establishmentId !== worker.EstablishmentID){
+          return (worker.DataOwner === 'Parent' || worker.DataPermissions === "Workplace and Staff")
+        }else{
+          return true;
+        }
+      });
 
-  workerData.forEach(value => {
+  workersArray.forEach((value, key) => {
     if(value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know"){
-      value.QualificationInSocialCareValue = 'N/A';
+      value.QualificationInSocialCare = 'N/A';
     }
-    if(value.AnnualHourlyPayRate === "Don't know"){
+    if(value.AnnualHourlyPayRate === "Don't know" || value.AnnualHourlyPayValue === "Don't know"){
       value.AnnualHourlyPayRate = 'N/A';
     }
     if(value.DaysSickValue === 'No'){
       value.DaysSickValue = "Don't know";
+    }else if(value.DaysSickValue === 'Yes'){
+      value.DaysSickValue = value.DaysSickDays;
     }
+
     if(value.RecruitedFromValue === 'No'){
       value.RecruitedFromValue = "Don't know";
+    }else if(value.RecruitedFromValue === "Yes"){
+      value.RecruitedFromValue = value.From;
     }
-    if(value.WeeklyHoursContractedValue === 'No'){
-      value.WeeklyHoursContractedValue = "Don't know";
+
+    if(value.NationalityValue === "Other"){
+      value.NationalityValue = value.Nationality;
     }
-    if(value.ZeroHoursContractValue === 'No'){
-      value.ZeroHoursContractValue = "Don't know";
+
+    if((value.ContractValue === 'Permanent' || value.ContractValue === 'Temporary')
+    && value.ZeroHoursContractValue === 'No'){
+      if(value.WeeklyHoursContractedValue === 'Yes'){
+        value.HoursValue = value.WeeklyHoursContractedHours;
+      }else if(value.WeeklyHoursContractedValue === 'No'){
+        value.HoursValue = "Don't know";
+      }else if(value.WeeklyHoursContractedValue === null){
+        value.HoursValue = 'Missing';
+      }
+    }else{
+      if(value.WeeklyHoursAverageValue === 'Yes'){
+        value.HoursValue = value.WeeklyHoursAverageHours;
+      }else if(value.WeeklyHoursAverageValue === 'No'){
+        value.HoursValue = "Don't know";
+      }else if(value.WeeklyHoursAverageValue === null){
+        value.HoursValue = 'Missing';
+      }
     }
+
     updateProps.forEach(prop => {
       if (value[prop] === null) {
         value[prop] = 'Missing';
@@ -197,7 +299,7 @@ const getWorkersReportData = async establishmentId => {
     });
   });
 
-  return workerData;
+  return workersArray;
 };
 
 const styleLookup = {
@@ -208,7 +310,7 @@ const styleLookup = {
       C: 7,
       D: 15,
       E: 9,
-      F: 15,
+      F: 11,
       G: 11,
       H: 12,
       I: 12,
@@ -221,7 +323,7 @@ const styleLookup = {
       C: 17,
       D: 15,
       E: 19,
-      F: 20,
+      F: 21,
       G: 21,
       H: 22,
       I: 22,
@@ -231,42 +333,40 @@ const styleLookup = {
     ESTREGULAR: {
       A: 2,
       B: 6,
-      C: 7,
-      D: 24,
-      E: 15,
-      F: 12,
-      G: 12,
+      C: 6,
+      D: 7,
+      E: 24,
+      F: 15,
+      G: 15,
       H: 15,
-      I: 9,
-      J: 26,
-      K: 27,
-      L: 12,
+      I: 15,
+      J: 9,
+      K: 26,
+      L: 27,
       M: 12,
-      N: 27,
-      O: 12,
-      P: 29,
-      Q: 24,
-      R: 9
+      N: 12,
+      O: 15,
+      P: 15,
+      Q: 15
     },
     ESTLAST: {
       A: 2,
       B: 16,
-      C: 17,
-      D: 31,
-      E: 20,
-      F: 22,
-      G: 22,
+      C: 16,
+      D: 17,
+      E: 31,
+      F: 20,
+      G: 20,
       H: 20,
-      I: 9,
-      J: 32,
-      K: 33,
-      L: 22,
-      M: 12,
-      N: 33,
-      O: 22,
-      P: 35,
-      Q: 31,
-      R: 9
+      I: 20,
+      J: 9,
+      K: 32,
+      L: 33,
+      M: 22,
+      N: 12,
+      O: 20,
+      P: 20,
+      Q: 20
     },
     WKRREGULAR: {
       A: 2,
@@ -279,7 +379,7 @@ const styleLookup = {
       H: 15,
       I: 9,
       J: 15,
-      K: 9,
+      K: 15,
       L: 9,
       M: 9,
       N: 15,
@@ -300,7 +400,7 @@ const styleLookup = {
       H: 20,
       I: 9,
       J: 20,
-      K: 9,
+      K: 20,
       L: 9,
       M: 9,
       N: 20,
@@ -341,42 +441,40 @@ const styleLookup = {
     ESTREGULAR: {
       A: 2,
       B: 6,
-      C: 7,
-      D: 24,
-      E: 15,
-      F: 12,
-      G: 12,
-      H: 15,
-      I: 65,
-      J: 26,
-      K: 27,
-      L: 12,
-      M: 66,
-      N: 27,
-      O: 12,
-      P: 29,
-      Q: 65,
-      R: 65
+      C: 6,
+      D: 7,
+      E: 24,
+      F: 15,
+      G: 67,
+      H: 67,
+      I: 15,
+      J: 65,
+      K: 26,
+      L: 27,
+      M: 12,
+      N: 66,
+      O: 67,
+      P: 67,
+      Q: 67
     },
     ESTLAST: {
       A: 2,
       B: 16,
-      C: 17,
-      D: 31,
-      E: 20,
-      F: 22,
-      G: 22,
-      H: 20,
-      I: 65,
-      J: 32,
-      K: 33,
-      L: 22,
-      M: 66,
-      N: 33,
-      O: 22,
-      P: 35,
-      Q: 65,
-      R: 65
+      C: 16,
+      D: 17,
+      E: 31,
+      F: 20,
+      G: 67,
+      H: 67,
+      I: 20,
+      J: 65,
+      K: 32,
+      L: 33,
+      M: 22,
+      N: 66,
+      O: 67,
+      P: 67,
+      Q: 67
     },
     WKRREGULAR: {
       A: 2,
@@ -389,7 +487,7 @@ const styleLookup = {
       H: 67,
       I: 65,
       J: 15,
-      K: 65,
+      K: 67,
       L: 65,
       M: 65,
       N: 67,
@@ -410,7 +508,7 @@ const styleLookup = {
       H: 67,
       I: 65,
       J: 20,
-      K: 65,
+      K: 67,
       L: 65,
       M: 65,
       N: 67,
@@ -435,9 +533,9 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
     isRed = true;
   }
 
-  if (percentColumn) {
+  if (percentColumn && value) {
     let percentValue = value.split('%');
-    if (Number(percentValue[0]) < 100) {
+    if (Number(percentValue[0]) !== 100) {
       isRed = true;
     }
   }
@@ -653,7 +751,8 @@ const updateEstablishmentsSheet = (
   reportData,
   sharedStrings,
   sst,
-  sharedStringsUniqueCount
+  sharedStringsUniqueCount,
+  thisEstablishment
 ) => {
   debuglog('updating establishments sheet');
 
@@ -674,9 +773,17 @@ const updateEstablishmentsSheet = (
   const templateRow = establishmentsSheet.querySelector("row[r='11']");
   let currentRow = templateRow;
   let rowIndex = 12;
-
-  if (reportData.establishments.length > 1) {
-    for (let i = 0; i < reportData.establishments.length - 1; i++) {
+  let establishmentReportData = [...reportData.establishments];
+  let establishmentArray = establishmentReportData.
+      filter(est => {
+        if(thisEstablishment.id !== est.EstablishmentID){
+          return (est.DataOwner === 'Parent' || est.DataPermissions !== "None")
+        }else{
+          return true;
+        }
+      });
+  if (establishmentArray.length > 1) {
+    for (let i = 0; i < establishmentArray.length - 1; i++) {
       const tempRow = templateRow.cloneNode(true);
 
       tempRow.setAttribute('r', rowIndex);
@@ -702,13 +809,13 @@ const updateEstablishmentsSheet = (
   dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndex);
 
   // update the cell values
-  for (let row = 0; row < reportData.establishments.length; row++) {
+  for (let row = 0; row < establishmentArray.length; row++) {
     debuglog('updating establishment', row);
 
-    const rowType = row === reportData.establishments.length - 1 ? 'ESTLAST' : 'ESTREGULAR';
+    const rowType = row === establishmentArray.length - 1 ? 'ESTLAST' : 'ESTREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 16; column++) {
+    for (let column = 0; column < 17; column++) {
       const columnText = String.fromCharCode(column + 65);
       const isRed = false;
 
@@ -718,7 +825,7 @@ const updateEstablishmentsSheet = (
         case 'B': {
           putString(
             cellToChange,
-            reportData.establishments[row].SubsidiaryName
+            establishmentArray[row].SubsidiaryName
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -726,7 +833,7 @@ const updateEstablishmentsSheet = (
         case 'C': {
           putString(
             cellToChange,
-            reportData.establishments[row].SubsidiarySharingPermissions
+            establishmentArray[row].SubsidiarySharingPermissions
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -734,7 +841,7 @@ const updateEstablishmentsSheet = (
         case 'D': {
           putString(
             cellToChange,
-            reportData.establishments[row].EmployerTypeValue
+            establishmentArray[row].NmdsID
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -742,7 +849,7 @@ const updateEstablishmentsSheet = (
         case 'E': {
           putString(
             cellToChange,
-            reportData.establishments[row].MainService
+            establishmentArray[row].EmployerTypeValue
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -750,50 +857,53 @@ const updateEstablishmentsSheet = (
         case 'F': {
           putString(
             cellToChange,
-            reportData.establishments[row].Capacities
+            establishmentArray[row].MainService
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'G': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].Utilisations
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-
-        case 'H': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].OtherServices
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-
-        case 'I': {
           basicValidationUpdate(
             putString,
             cellToChange,
-            reportData.establishments[row].ServiceUsers,
+            establishmentArray[row].Capacities,
             columnText,
-            rowType,
-            true
+            rowType
           );
         } break;
 
-        case 'J': {
+        case 'H': {
+          basicValidationUpdate(
+            putString,
+            cellToChange,
+            establishmentArray[row].Utilisations,
+            columnText,
+            rowType
+          );
+        } break;
+
+        case 'I': {
           putString(
             cellToChange,
-            reportData.establishments[row].LastUpdatedDate
+            establishmentArray[row].OtherServices
           );
           setStyle(cellToChange, columnText, rowType, isRed);
+        } break;
+
+        case 'J': {
+          basicValidationUpdate(
+            putString,
+            cellToChange,
+            establishmentArray[row].ServiceUsers,
+            columnText,
+            rowType
+          );
         } break;
 
         case 'K': {
           putString(
             cellToChange,
-            reportData.establishments[row].NumberOfStaffValue
+            establishmentArray[row].LastUpdatedDate
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -801,44 +911,58 @@ const updateEstablishmentsSheet = (
         case 'L': {
           putString(
             cellToChange,
-            reportData.establishments[row].TotalIndividualWorkerRecord
+            establishmentArray[row].NumberOfStaffValue
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'M': {
+          putString(
+            cellToChange,
+            establishmentArray[row].TotalIndividualWorkerRecord
+          );
+          setStyle(cellToChange, columnText, rowType, isRed);
+        } break;
+
+        case 'N': {
           basicValidationUpdate(
             putString,
             cellToChange,
-            reportData.establishments[row].PercentageOfWorkerRecords,
+            establishmentArray[row].PercentageOfWorkerRecords,
             columnText,
             rowType,
             true
           );
         } break;
 
-        case 'N': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].StartersValue
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-
         case 'O': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            reportData.establishments[row].LeaversValue
+            establishmentArray[row].Starters,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'P': {
-          putString(
+          basicValidationUpdate(
+            putString,
             cellToChange,
-            reportData.establishments[row].VacanciesValue
+            establishmentArray[row].Leavers,
+            columnText,
+            rowType
           );
-          setStyle(cellToChange, columnText, rowType, isRed);
+        } break;
+
+        case 'Q': {
+          basicValidationUpdate(
+            putString,
+            cellToChange,
+            establishmentArray[row].Vacancies,
+            columnText,
+            rowType
+          );
         } break;
       }
 
@@ -1011,10 +1135,10 @@ const updateWorkersSheet = (
         case 'K': {
           putString(
             cellToChange,
-            reportData.workers[row].WeeklyHoursContractedValue
+            reportData.workers[row].HoursValue
           );
 
-          isRed = (reportData.workers[row].WeeklyHoursContractedValue === 'Missing');
+          isRed = (reportData.workers[row].HoursValue === 'Missing');
 
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -1194,7 +1318,8 @@ const getReport = async (date, thisEstablishment) => {
           reportData,
           sharedStrings,
           sst,
-          sharedStringsUniqueCount // pass unique count by reference rather than by value
+          sharedStringsUniqueCount, // pass unique count by reference rather than by value
+          thisEstablishment
         )));
 
         // update the workplaces sheet with the report data and add it to the zip
@@ -1225,14 +1350,206 @@ const getReport = async (date, thisEstablishment) => {
     }));
 };
 
-// gets report
-// NOTE - the Local Authority report is driven mainly by pgsql (postgres functions) and therefore does not
-//    pass through the Establishment/Worker entities. This is done for performance, as these reports
-//    are expected to operate across large sets of data
-const express = require('express');
-const router = express.Router();
+// Prevent multiple wdf report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
+// This function can't be an express middleware as it needs to run both before and after the regular logic
+const acquireLock = async function (logic, newState, req, res) {
+  const { establishmentId } = req;
 
-router.route('/').get(async (req, res) => {
+  req.startTime = (new Date()).toISOString();
+
+  console.log(`Acquiring lock for establishment ${establishmentId}.`);
+
+  // attempt to acquire the lock
+  const currentLockState = await attemptToAcquireLock(establishmentId);
+
+  // if no records were updated the lock could not be acquired
+  // Just respond with a 409 http code and don't call the regular logic
+  // close the response either way and continue processing in the background
+  if (currentLockState[1] === 0) {
+    console.log('Lock *NOT* acquired.');
+    res
+      .status(409)
+      .send({
+        message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`
+      });
+
+    return;
+  }
+
+  console.log('Lock acquired.', newState);
+
+  let nextState;
+
+  switch (newState) {
+    case buStates.DOWNLOADING: {
+      // get the current wdf report state
+      const currentState = await lockStatus(establishmentId);
+
+      if (currentState.length === 1) {
+        // don't update the status for downloads, just hold the lock
+        newState = currentState[0].WdfReportState;
+        nextState = null;
+      } else {
+        nextState = buStates.READY;
+      }
+    } break;
+
+    case buStates.COMPLETING:
+      nextState = buStates.READY;
+      break;
+
+    default:
+      newState = buStates.READY;
+      nextState = buStates.READY;
+      break;
+  }
+
+  // update the current state
+  await updateLockState(establishmentId, newState);
+
+  req.buRequestId = String(uuid()).toLowerCase();
+
+  res
+    .status(200)
+    .send({
+      message: `Lock for establishment ${establishmentId} acquired.`,
+      requestId: req.buRequestId
+    });
+
+  // run whatever the original logic was
+  try {
+    await logic(req, res);
+  } catch (e) {
+
+  }
+
+  // release the lock
+  await releaseLock(req, null, null, nextState);
+};
+
+const releaseLock = async (req, res, next, nextState = null) => {
+  const establishmentId = req.query.subEstId || req.establishmentId;
+
+  if (Number.isInteger(establishmentId)) {
+    await releaseLockQuery(establishmentId, nextState);
+
+    console.log(`Lock released for establishment ${establishmentId}`);
+  }
+
+  if (res !== null) {
+    res
+      .status(200)
+      .send({
+        establishmentId
+      });
+  }
+};
+
+const signedUrlGet = async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+
+    await saveResponse(req, res, 200, {
+      urls: s3.getSignedUrl('putObject', {
+        Bucket,
+        Key: `${establishmentId}/latest/${moment(date).format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`,
+        ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        Metadata: {
+          username: String(req.username),
+          establishmentId: String(establishmentId)
+        },
+        Expires: config.get('bulkupload.uploadSignedUrlExpire')
+      })
+    });
+  } catch (err) {
+    console.error('report/wdf/parent:PreSigned - failed', err.message);
+    await saveResponse(req, res, 503, {});
+  }
+};
+
+const saveResponse = async (req, res, statusCode, body, headers) => {
+  if (!Number.isInteger(statusCode) || statusCode < 100) {
+    statusCode = 500;
+  }
+
+  return s3.putObject({
+    Bucket,
+    Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
+    Body: JSON.stringify({
+      url: req.url,
+      startTime: req.startTime,
+      endTime: (new Date()).toISOString(),
+      responseCode: statusCode,
+      responseBody: body,
+      responseHeaders: (typeof headers === 'object' ? headers : undefined)
+    })
+  }).promise();
+};
+
+const responseGet = (req, res) => {
+  const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+  const buRequestId = String(req.params.buRequestId).toLowerCase();
+
+  if (!uuidRegex.test(buRequestId)) {
+    res.status(400).send({
+      message: 'request id must be a uuid'
+    });
+
+    return;
+  }
+
+  s3.getObject({
+    Bucket,
+    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`
+  }).promise()
+    .then(data => {
+      const jsonData = JSON.parse(data.Body.toString());
+
+      if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
+        if (jsonData.responseHeaders) {
+          res.set(jsonData.responseHeaders);
+        }
+
+        if (jsonData.responseBody && jsonData.responseBody.type && jsonData.responseBody.type === 'Buffer') {
+          res.status(jsonData.responseCode).send(Buffer.from(jsonData.responseBody));
+        } else {
+          res.status(jsonData.responseCode).send(jsonData.responseBody);
+        }
+      } else {
+        console.log('wdfReport::responseGet: Response code was not numeric', jsonData);
+
+        throw new Error('Response code was not numeric');
+      }
+    })
+    .catch(err => {
+      console.log('wdfReport::responseGet: getting data returned an error:', err);
+
+      res.status(404).send({
+        message: 'Not Found'
+      });
+    });
+};
+
+const lockStatusGet = async (req, res) => {
+  const { establishmentId } = req;
+
+  const currentLockState = await lockStatus(establishmentId);
+
+  res
+    .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
+    .send(
+      currentLockState.length === 0
+        ? {
+          establishmentId,
+          WdfReportState: buStates.READY,
+          WdfReportdLockHeld: true
+        } : currentLockState[0]
+    );
+
+  return currentLockState[0];
+};
+
+const reportGet = async (req, res) => {
   try {
     // first ensure this report can only be run by those establishments that are a parent
     const thisEstablishment = new Establishment(req.username);
@@ -1243,36 +1560,43 @@ router.route('/').get(async (req, res) => {
         const report = await getReport(date, thisEstablishment);
 
         if (report) {
-          res.setHeader('Content-disposition',
-              `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`);
-          res.setHeader('Content-Type',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-          res.setHeader('Content-Length', report.length);
-
+          await saveResponse(req, res, 200, report, {
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`
+          });
           console.log('report/wdf/parent - 200 response');
-
-          return res.status(200).end(report);
         } else {
           // failed to run the report
           console.error('report/wdf/parent - failed to run the report');
-
-          return res.status(503).send('ERR: Failed to run report');
+          await saveResponse(req, res, 503, {});
         }
       } else {
         // only allow on those establishments being a parent
 
         console.log('report/wdf/parent 403 response');
-
-        return res.status(403).send();
+        await saveResponse(req, res, 403, {});
       }
     } else {
       console.error('report/wdf/parent - failed restoring establisment');
-      return res.status(503).send('ERR: Failed to restore establishment');
+      await saveResponse(req, res, 503, {});
     }
   } catch (err) {
     console.error('report/wdf/parent - failed', err);
-    return res.status(503).send('ERR: Failed to retrieve report');
+    await saveResponse(req, res, 503, {});
   }
-});
+}
+
+// gets report
+// NOTE - the Local Authority report is driven mainly by pgsql (postgres functions) and therefore does not
+//    pass through the Establishment/Worker entities. This is done for performance, as these reports
+//    are expected to operate across large sets of data
+const express = require('express');
+const router = express.Router();
+
+router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
+router.route('/report').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
+router.route('/lockstatus').get(lockStatusGet);
+router.route('/unlock').get(releaseLock);
+router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;

@@ -6,7 +6,7 @@ class PropertyManager {
         this._properties = {};  // intentionally an object not array
         this._propertyTypes = [];
 
-        
+
         // this is a collection of audit events
         //  that are accummulated during saving
         //  of all properties
@@ -41,7 +41,7 @@ class PropertyManager {
                 if (thisProperty.name === propertyTypeName) {
                     haveProperty = thisProperty;
                 }
-            }); 
+            });
         } catch (err) {
             console.error(err);
         }
@@ -73,13 +73,13 @@ class PropertyManager {
                     invalidProperties.push(thisPropertyType);
                 }
             });
-    
+
             if (!isValid) {
                 return invalidProperties;
             } else {
                 return true;
             }
-                
+
         } catch (err) {
             console.error(err);
         }
@@ -197,7 +197,7 @@ class PropertyManager {
         allProperties.forEach(thisPropertyName => {
             const thisProperty = this._properties[thisPropertyName];
 
-            if (thisProperty.property !== null &&
+            if ((thisProperty.allowNull || thisProperty.property !== null) &&
                 (!modifiedPropertiesOnly || (modifiedPropertiesOnly && thisProperty.modified)) &&
                 (filteredPropertiesByName === null || filteredPropertiesByName.includes(thisProperty.name))
                ) {

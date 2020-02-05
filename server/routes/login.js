@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
         username: givenUsername,
         isActive:true
       },
-      attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt'],
+      attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt', 'agreedUpdatedTerms'],
       include: [ {
         model: models.user,
         attributes: ['id', 'uid', 'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
           username: givenUsername,
           isActive:true,
         },
-        attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt'],
+        attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt', 'agreedUpdatedTerms'],
         include: [ {
           model: models.user,
           attributes: ['id', 'uid',  'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
@@ -164,6 +164,7 @@ router.post('/', async (req, res) => {
           establishmentUser.user.establishment,
           givenUsername,
           new Date(date).toISOString(),
+          establishmentUser.agreedUpdatedTerms,
           {
             migratedUserFirstLogon,
             migratedUser
