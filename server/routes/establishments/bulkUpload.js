@@ -820,7 +820,6 @@ const validateEstablishmentCsv = async (
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   await lineValidator.validate();
-  console.log(lineValidator);
   if (!lineValidator._ignore) {
     lineValidator.transform();
 
