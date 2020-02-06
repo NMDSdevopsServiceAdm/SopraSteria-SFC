@@ -842,7 +842,7 @@ const validateEstablishmentCsv = async (
 
     keepAlive('establishment loaded', currentLineNumber);
 
-    if (thisApiEstablishment.validate()) {
+    if (await thisApiEstablishment.validate()) {
       // No validation errors in the entity itself, so add it ready for completion
       myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
     } else {

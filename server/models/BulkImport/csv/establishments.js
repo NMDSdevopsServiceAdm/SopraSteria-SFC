@@ -852,10 +852,12 @@ class Establishment {
 
       // do not use
       const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
+      console.log('Checking for locationId');
       const locationExists = await models.establishment.findAll({
         where: {
           locationId: myLocationID
-        }
+        },
+        attributes: ['id', 'locationId']
       });
       if (this._regType === 2) {
         // ignore location i
@@ -880,17 +882,18 @@ class Establishment {
               name: this._currentLine.LOCALESTID
             });
             return false;
-          } else if (locationExists.length > 0) {
-            this._validationErrors.push({
-              lineNumber: this._lineNumber,
-              errCode: Establishment.LOCATION_ID_ERROR,
-              errType: 'LOCATION_ID_ERROR',
-              error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
-              source: myLocationID,
-              name: this._currentLine.LOCALESTID
-            });
-            return false;
           }
+        }
+        if (locationExists.length > 0) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.LOCATION_ID_ERROR,
+            errType: 'LOCATION_ID_ERROR',
+            error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
+            source: myLocationID,
+            name: this._currentLine.LOCALESTID
+          });
+          return false;
         }
 
         this._locationID = myLocationID;
@@ -2016,7 +2019,7 @@ class Establishment {
   }
 
   // returns true on success, false is any attribute of Establishment fails
-  validate () {
+  async validate () {
     let status = true;
 
     status = !this._validateLocalisedId() ? false : status;
@@ -2035,7 +2038,7 @@ class Establishment {
       status = !this._validateMainService() ? false : status;
       status = !this._validateRegType() ? false : status;
       status = !this._validateProvID() ? false : status;
-      status = !this._validateLocationID() ? false : status;
+      status = await this._validateLocationID() ? false : status;
 
       status = !this._validateAllServices() ? false : status;
       status = !this._validateServiceUsers() ? false : status;
