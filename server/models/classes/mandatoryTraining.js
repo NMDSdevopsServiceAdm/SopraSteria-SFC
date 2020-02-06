@@ -184,7 +184,6 @@ class MandatoryTraining extends EntityValidator {
         // save new mandatory training details
         for(let i = 0; i < this.mandatorytrainingDetails.length; i++){
           let row = this.mandatorytrainingDetails[i];
-          debugger
           if(row.allJobRoles){
             // fetch all job roles
             let allJobRoles = await models.job.findAll({
