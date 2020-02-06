@@ -820,6 +820,7 @@ const validateEstablishmentCsv = async (
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   await lineValidator.validate();
+  console.log(lineValidator);
   lineValidator.transform();
 
   const thisEstablishmentAsAPI = lineValidator.toAPI();
@@ -864,8 +865,9 @@ const validateEstablishmentCsv = async (
   if (lineValidator.validationErrors.length > 0) {
     lineValidator.validationErrors.forEach(thisError => csvEstablishmentSchemaErrors.push(thisError));
   }
-
-  myEstablishments.push(lineValidator);
+  if (!lineValidator._ignore) {
+    myEstablishments.push(lineValidator);
+  }
 };
 
 const loadWorkerQualifications = async (

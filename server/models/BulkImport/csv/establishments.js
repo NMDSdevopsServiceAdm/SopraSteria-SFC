@@ -92,6 +92,7 @@ class Establishment {
     this._reasonsForLeaving = null;
 
     this._id = null;
+    this._ignore = false;
 
     // console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   }
@@ -457,7 +458,7 @@ class Establishment {
     }
   }
 
-  _validateAddress () {
+  async _validateAddress () {
     const myAddress1 = this._currentLine.ADDRESS1;
     const myAddress2 = this._currentLine.ADDRESS2;
     const myAddress3 = this._currentLine.ADDRESS3;
@@ -469,6 +470,14 @@ class Establishment {
 
     // adddress 1 is mandatory and no more than 40 characters
     const MAX_LENGTH = 40;
+    const postcodeExists = await models.pcodedata.findAll({
+      where: {
+        postcode: myPostcode
+      },
+      order: [
+        ['uprn', 'ASC']
+      ]
+    });
 
     const localValidationErrors = [];
     if (!myAddress1 || myAddress1.length === 0) {
@@ -522,7 +531,6 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
     }
-
     // TODO - registration/establishment APIs do not validate postcode (relies on the frontend - this must be fixed)
     const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
     const POSTCODE_MAX_LENGTH = 10;
@@ -553,6 +561,16 @@ class Establishment {
         source: myPostcode,
         name: this._currentLine.LOCALESTID
       });
+    } else if (this._status === 'NEW' && !postcodeExists.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: Establishment.ADDRESS_ERROR,
+        warnType: 'ADDRESS_ERROR',
+        warning: 'Workplace will be ignored. The Postcode for this workplace cannot be found in our database and must be registered manually.',
+        source: myPostcode,
+        name: this._currentLine.LOCALESTID
+      });
+      this._ignore = true;
     }
 
     if (localValidationErrors.length > 0) {
@@ -2033,7 +2051,7 @@ class Establishment {
 
     // if the status is unchecked or deleted, then don't continue validation
     if (!STOP_VALIDATING_ON.includes(this._status)) {
-      status = !this._validateAddress() ? false : status;
+      status = await this._validateAddress() ? false : status;
       status = !this._validateEstablishmentType() ? false : status;
 
       status = !this._validateShareWithCQC() ? false : status;
