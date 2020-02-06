@@ -60,6 +60,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canLinkToParent: boolean;
   public linkToParentRequestedStatus: boolean;
   public canRemoveParentAssociation: boolean;
+  public canAddWorker: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -155,10 +156,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.bulkUploadService.setReturnTo({ url: ['/dashboard'] });
   }
 
-  get numberOfNewNotifications() {
-    const newNotifications = this.notificationsService.notifications.filter(notification => !notification.isViewed);
-    return newNotifications.length;
-  }
   /**
    * Function used to open modal box for link a workplace to parent organisation
    * @param {event} triggred event
@@ -250,6 +247,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public setPermissionLinks() {
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
+    this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =
