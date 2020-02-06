@@ -852,7 +852,6 @@ class Establishment {
 
       // do not use
       const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
-      console.log('Checking for locationId');
       const locationExists = await models.establishment.findAll({
         where: {
           locationId: myLocationID
