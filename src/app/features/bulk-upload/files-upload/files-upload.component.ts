@@ -19,7 +19,7 @@ import { tap } from 'rxjs/operators';
   selector: 'app-files-upload',
   templateUrl: './files-upload.component.html',
 })
-export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
+export class FilesUploadComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public form: FormGroup;
   public filesUploading = false;
@@ -45,15 +45,6 @@ export class FilesUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.setupForm();
     this.checkForUploadedFiles();
-    this.status = interval(5000).subscribe(() => {
-      if (!this.stopPolling) {
-        this.checkForUploadedFiles();
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    this.status.unsubscribe();
   }
 
   ngAfterViewInit() {
