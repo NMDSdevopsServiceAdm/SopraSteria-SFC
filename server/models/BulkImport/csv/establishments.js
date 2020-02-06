@@ -858,6 +858,12 @@ class Establishment {
         },
         attributes: ['id', 'locationId']
       });
+      console.log(this._id);
+      console.log(locationExists);
+      let existingEstablishment = false;
+      await locationExists.map(async (establishment) => {
+        if (establishment.id === this._id) existingEstablishment = true;
+      });
       if (this._regType === 2) {
         // ignore location i
         if (!mainServiceIsHeadOffice) {
@@ -883,7 +889,7 @@ class Establishment {
             return false;
           }
         }
-        if (locationExists.length > 0) {
+        if (locationExists.length > 0 && !existingEstablishment) {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
             errCode: Establishment.LOCATION_ID_ERROR,
