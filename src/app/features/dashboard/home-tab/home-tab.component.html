@@ -1,63 +1,62 @@
 <div class="govuk-grid-row govuk-!-margin-top-3">
   <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">Home</h2>
     <ng-container *ngIf="workplace && canEditEstablishment">
       <p *ngIf="!workplace.employerType || updateStaffRecords">What you need to do first.</p>
-      <app-inset-text *ngIf="!workplace?.employerType" [color]="'todo'">
-        You need to provide information on your workplace.<br />
-        <a [routerLink]="['/workplace', workplace?.uid, 'start']">Add workplace information</a>
-      </app-inset-text>
-
-      <app-inset-text *ngIf="updateStaffRecords" [color]="'todo'">
-        You need to provide information on all your staff.<br />
-        <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'basic-records-start-screen']">
+      <app-inset-text *ngIf="!workplace.employerType || updateStaffRecords" [color]="'todo'">
+        <a *ngIf="!workplace?.employerType" [routerLink]="['/workplace', workplace?.uid, 'start']">Add workplace
+          information</a>
+        <br><a *ngIf="updateStaffRecords"
+          [routerLink]="['/workplace', workplace.uid, 'staff-record', 'basic-records-start-screen']">
           Add staff records
         </a>
       </app-inset-text>
+
+
     </ng-container>
+    <div *ngIf="workplace">
+      <div *ngIf="canAddWorker">
+        <h2><a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'basic-records-start-screen']">
+          Add a staff records
+        </a></h2>
+        <p class="govuk-util__align-justify">
+          Create staff records for your workplace by providing current work
+          information, personal details, employment and qualifications and
+          training information.
+        </p>
+      </div>
+      <div *ngIf="canViewReports">
+        <h2><a [routerLink]="['/reports']">
+          View reports
+        </a></h2>
+        <p class="govuk-util__align-justify">
+          Access the Workplace Development Fund report, the CQC Provider
+          Information Return report and the Local Authority Progress Report.
+        </p>
+      </div>
+      <div *ngIf="canBulkUpload">
+        <h2><a [routerLink]="['/bulk-upload']" (click)="setReturn()">
+          Bulk upload
+        </a></h2>
+        <p class="govuk-util__align-justify">
+          Bulk upload is used to edit large quantities of staff, workplace and
+          training information.
+        </p>
+      </div>
+    </div>
   </div>
   <div class="govuk-grid-column-one-third">
-    <h3 class="govuk-heading-s">Notifications</h3>
-    <ng-container *ngIf="numberOfNewNotifications > 0; else noNotifications">
-      <p>
-        <a [routerLink]="['/notifications']" class="notification-alert">
-          You have <span class="notification-alert__count">{{ numberOfNewNotifications }}</span> new
-          {{
-            numberOfNewNotifications
-              | i18nPlural
-                : {
-                    '=1': 'notification',
-                    other: 'notifications'
-                  }
-          }}
-        </a>
-      </p>
-    </ng-container>
-    <ng-template #noNotifications>
-      <p>
-        <a [routerLink]="['/notifications']" class="notification-alert">You have no new notifications</a>
-      </p>
-    </ng-template>
-    <ng-container
-      *ngIf="
-        canBulkUpload ||
+    <ng-container *ngIf="
         canViewWorkplaces ||
-        canViewReports ||
         canViewChangeDataOwner ||
         canViewDataPermissionsLink ||
         canLinkToParent ||
         canRemoveParentAssociation
-      "
-    >
-      <h3 class="govuk-heading-s govuk-!-margin-top-6">Other things you can do</h3>
+      ">
+      <h3 class="govuk-heading-s govuk-!-margin-top-6">Related content</h3>
       <ul *ngIf="workplace" class="govuk-list">
-        <li *ngIf="canBulkUpload">
-          <a [routerLink]="['/bulk-upload']" (click)="setReturn()">Bulk upload</a>
-        </li>
         <li *ngIf="canViewWorkplaces">
           <a [routerLink]="['/workplace', 'view-all-workplaces']">View all workplaces</a>
         </li>
-        <li *ngIf="canViewReports"><a [routerLink]="['/reports']">View reports</a></li>
         <li *ngIf="canViewChangeDataOwner">
           <ng-container *ngIf="isOwnershipRequested; else changeDataOwner">
             <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
@@ -71,14 +70,14 @@
         </li>
         <li *ngIf="canLinkToParent">
           <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
-            <a (click)="cancelLinkToParent($event)" href="#">Link to your parent organisation pending</a>
+            <a (click)="cancelLinkToParent($event)" href="#">Link to my parent organisation pending</a>
           </ng-container>
           <ng-template #requestLinkToParent>
-            <a (click)="linkToParent($event)" href="#">Link to your parent organisation</a>
+            <a (click)="linkToParent($event)" href="#">Link to my parent organisation</a>
           </ng-template>
         </li>
         <li *ngIf="canRemoveParentAssociation">
-          <a (click)="removeLinkToParent($event)" href="#">Remove link to parent organisation</a>
+          <a (click)="removeLinkToParent($event)" href="#">Remove link to my parent organisation</a>
         </li>
       </ul>
     </ng-container>
