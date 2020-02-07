@@ -914,9 +914,12 @@ class Establishment extends EntityValidator {
           // the saving of an Establishment can be initiated within
           //  an external transaction
           const thisTransaction = externalTransaction || t;
-
           // now append the extendable properties
           const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
+          if(modifedUpdateDocument && !modifedUpdateDocument.ShareDataValue){
+            modifedUpdateDocument.shareWithCQC = false;
+            modifedUpdateDocument.shareWithLA = false;
+          }
 
           // note - if the establishment was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {
