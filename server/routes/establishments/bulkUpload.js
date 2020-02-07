@@ -3,6 +3,7 @@
 const moment = require('moment');
 const csv = require('csvtojson');
 const uuid = require('uuid');
+const rfr = require('rfr');
 
 const config = rfr('server/config/config');
 const dbModels = rfr('server/models');
@@ -2425,3 +2426,4 @@ router.route('/unlock').get(releaseLock);
 router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;
+module.exports.validateEstablishmentCsv = validateEstablishmentCsv;
