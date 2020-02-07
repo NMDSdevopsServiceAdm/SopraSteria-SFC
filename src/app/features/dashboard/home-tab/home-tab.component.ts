@@ -8,7 +8,6 @@ import { AlertService } from '@core/services/alert.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -67,7 +66,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private userService: UserService,
     private workerService: WorkerService,
-    private notificationsService: NotificationsService,
     private dialogService: DialogService,
     private alertService: AlertService,
     private router: Router,
