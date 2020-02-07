@@ -56,12 +56,12 @@ module.exports = function(sequelize, DataTypes) {
       as: 'establishment'
     });
     MandatoryTraining.belongsTo(models.workerTrainingCategories, {
-      foreignKey: 'trainingCategoryFk',
+      foreignKey: 'trainingCategoryFK',
       targetKey: 'id',
       as: 'workerTrainingCategories'
     });
     MandatoryTraining.belongsTo(models.job, {
-      foreignKey: 'jobFk',
+      foreignKey: 'jobFK',
       targetKey: 'id',
       as: 'job'
     });

@@ -6,6 +6,22 @@ const router = express.Router({mergeParams: true});
 
 const MandatoryTraining = require('../../../models/classes/mandatoryTraining').MandatoryTraining;
 
+
+/**
+ * Handle GET request for getting all saved mandatory training
+ */
+router.route('/').get(async (req, res) => {
+  const establishmentId = req.establishmentId;
+  try{
+    const allMandatoryTrainingRecords = await MandatoryTraining.fetch(establishmentId);
+    return res.status(200).json(allMandatoryTrainingRecords);
+  }catch(err){
+    console.error(err);
+    return res.status(503).send();
+  }
+});
+
+
 /**
  * Handle POST request for creating new mandatory training
  */
