@@ -317,7 +317,7 @@ class MandatoryTraining extends EntityValidator {
     if (fetchResults && fetchResults.length === 1) {
         lastUpdated = fetchResults[0];
     } else if (fetchResults && fetchResults.length > 1) {
-        lastUpdated = fetchResults.reduce((a, b) => { return a.updated > b.updated ? a : b; });;
+        lastUpdated = fetchResults.reduce((a, b) => { return a.updated > b.updated ? a : b; });
     }
 
     const allJobRoles = await models.job.findAll();
