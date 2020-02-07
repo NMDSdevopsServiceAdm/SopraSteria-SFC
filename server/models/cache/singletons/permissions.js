@@ -256,6 +256,14 @@ let ALL_PERMISSIONS = [
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace', 'None'],
     isAdmin: false,
+  },
+  {
+    code: 'canDownloadWdfReport',
+    description: 'download wdf report',
+    role: ['Edit','Read'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   }
 ];
 
