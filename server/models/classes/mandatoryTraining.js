@@ -108,6 +108,7 @@ class MandatoryTraining extends EntityValidator {
         if (trainingCategoryDetails && trainingCategoryDetails.id) {
           // get job details if doc.selectedJobRoles === true
           if(!doc.allJobRoles){
+            let foundJobRoles = true;
             if(doc.selectedJobRoles && Array.isArray(doc.jobs)){
               for(let j = 0; j < doc.jobs.length; j++){
                 let job = doc.jobs[j];
@@ -118,9 +119,8 @@ class MandatoryTraining extends EntityValidator {
                   attributes: ['id']
                 });
 
-                if (jobDetails && jobDetails.id) {
-                  validatedMandatoryTrainingRecord.push(doc);
-                }else{
+                if (!jobDetails || !jobDetails.id) {
+                  foundJobRoles = false;
                   console.error('POST:: create mandatoryTraining - Failed Validation - Job role record not found');
                   this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Job role record not found');
                   returnStatus = false;
@@ -130,6 +130,10 @@ class MandatoryTraining extends EntityValidator {
               console.error('POST:: create mandatoryTraining - Failed Validation - Selected job roles record not found');
               this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Selected job roles record not found');
               returnStatus = false;
+            }
+
+            if(foundJobRoles){
+              validatedMandatoryTrainingRecord.push(doc);
             }
           }else{
             validatedMandatoryTrainingRecord.push(doc);
@@ -257,6 +261,78 @@ class MandatoryTraining extends EntityValidator {
       }
     }
   }
+
+  /**
+   * Returns all saved mandatory training list including training category name, job name and establishment id
+   */
+  static async fetch(establishmentId){
+    const allMandatoryTrainingRecords = [];
+    const fetchResults = await models.MandatoryTraining.findAll({
+      include: [
+        {
+          model: models.workerTrainingCategories,
+          as: 'workerTrainingCategories',
+          attributes: ['id', 'category']
+        },
+        {
+          model: models.job,
+          as: 'job',
+          attributes: ['id', 'title']
+        }
+      ],
+      order: [
+          ['updated', 'DESC']
+      ],
+      where: {
+        establishmentFK: establishmentId
+      }
+    });
+
+    if(fetchResults){
+      fetchResults.forEach(result => {
+        if(allMandatoryTrainingRecords.length > 0){
+          const foundCategory = allMandatoryTrainingRecords.filter(el => el.trainingCategoryId === result.trainingCategoryFK);
+          if (foundCategory.length === 0){
+            allMandatoryTrainingRecords.push({
+              establishmentId: result.establishmentFK,
+              trainingCategoryId: result.trainingCategoryFK,
+              category: result.workerTrainingCategories.category,
+              jobs: [{id: result.jobFK, title: result.job.title}]
+            });
+          }else{
+            foundCategory[0].jobs.push({id: result.jobFK, title: result.job.title});
+          }
+        }else{
+          allMandatoryTrainingRecords.push({
+            establishmentId: result.establishmentFK,
+            trainingCategoryId: result.trainingCategoryFK,
+            category: result.workerTrainingCategories.category,
+            jobs: [{id: result.jobFK, title: result.job.title}]
+          });
+        }
+      });
+    }
+
+    let lastUpdated = null;
+    if (fetchResults && fetchResults.length === 1) {
+        lastUpdated = fetchResults[0];
+    } else if (fetchResults && fetchResults.length > 1) {
+        lastUpdated = fetchResults.reduce((a, b) => { return a.updated > b.updated ? a : b; });;
+    }
+
+    const allJobRoles = await models.job.findAll();
+    if(allJobRoles){
+      const response = {
+        mandatoryTrainingCount: allMandatoryTrainingRecords.length,
+        allJobRolesCount: allJobRoles.length,
+        lastUpdated: lastUpdated ? lastUpdated.updated.toISOString() : undefined,
+        mandatoryTraining: allMandatoryTrainingRecords
+      };
+
+      return response;
+    }
+  }
+
 }
 
 module.exports.MandatoryTraining = MandatoryTraining;
