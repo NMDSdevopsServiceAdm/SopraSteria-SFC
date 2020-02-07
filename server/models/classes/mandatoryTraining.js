@@ -95,7 +95,7 @@ class MandatoryTraining extends EntityValidator {
         if(!doc.trainingCategoryID){
           console.error('POST:: create mandatoryTraining - Failed Validation - Training Category ID missing');
           this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Training Category ID missing');
-          returnStatus = false;
+          return false;
         }
         // get training details
         const trainingCategoryDetails = await models.workerTrainingCategories.findOne({
@@ -139,15 +139,15 @@ class MandatoryTraining extends EntityValidator {
             validatedMandatoryTrainingRecord.push(doc);
           }
         }else{
-          console.error('POST:: create mandatoryTraining - Failed Validation - Training record not found');
+          console.error('POST:: create mandatoryTraining - Failed Validation - Training Category record not found');
           this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Training record not found');
-          returnStatus = false;
+          return false;
         }
       }
     }else{
       console.error('POST:: create mandatoryTraining - Failed Validation - Invalid Input');
       this._log(MandatoryTraining.LOG_ERROR, 'Invalid Input');
-      returnStatus = false;
+      return false;
     }
 
     if (returnStatus === false) {
