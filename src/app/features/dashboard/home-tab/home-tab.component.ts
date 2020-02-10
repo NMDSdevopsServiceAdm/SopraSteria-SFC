@@ -1,6 +1,6 @@
 import { Overlay } from '@angular/cdk/overlay';
 import { Location } from '@angular/common';
-import { Component, DoCheck, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
@@ -40,7 +40,7 @@ import { filter } from 'rxjs/operators';
 
   providers: [DialogService, Overlay],
 })
-export class HomeTabComponent implements OnInit, OnDestroy,DoCheck  {
+export class HomeTabComponent implements OnInit, OnDestroy  {
   @Input() workplace: Establishment;
 
   private subscriptions: Subscription = new Subscription();
