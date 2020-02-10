@@ -7,7 +7,7 @@ const effectiveDate = rfr('server/models/classes/wdfCalculator').WdfCalculator.e
 const getEstablishmentDataQuery =
 `
 SELECT
-  "Establishment"."EstablishmentID",
+  e."EstablishmentID",
   "NmdsID",
   "NameValue" AS "SubsidiaryName",
   "DataOwner",
@@ -24,7 +24,7 @@ SELECT
     FROM
       cqc."Worker"
     WHERE
-      "Worker"."EstablishmentFK" = "Establishment"."EstablishmentID"
+      "Worker"."EstablishmentFK" = e."EstablishmentID"
       and "Archived" = false
   ) AS "TotalIndividualWorkerRecord",
   (
@@ -33,7 +33,7 @@ SELECT
     FROM
       cqc."Worker"
     WHERE
-      "EstablishmentFK" = "Establishment"."EstablishmentID" AND
+      "EstablishmentFK" = e."EstablishmentID" AND
       "LastWdfEligibility" IS NOT NULL AND
       "LastWdfEligibility" > :effectiveDate AND
       "Archived" = :falseFlag
@@ -47,12 +47,8 @@ SELECT
       cqc."services" AS b
     ON
       a."ServiceID" = b.id
-    JOIN
-      cqc."Establishment" AS c
-    ON
-      a."EstablishmentID" = c."EstablishmentID"
     WHERE
-      c."EstablishmentID" = "Establishment"."EstablishmentID"
+      a."EstablishmentID" = e."EstablishmentID"
   ), :separator) AS "OtherServices",
   array_to_string(array(
     SELECT
@@ -64,7 +60,7 @@ SELECT
     ON
       a."ServiceUserID" = b."ID"
     WHERE
-      a."EstablishmentID" = "Establishment"."EstablishmentID"
+      a."EstablishmentID" = e."EstablishmentID"
   ), :separator) AS "ServiceUsers",
   (
     SELECT
@@ -72,7 +68,7 @@ SELECT
     FROM
       cqc."EstablishmentJobs"
     WHERE
-      "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
+      "EstablishmentJobs"."EstablishmentID" = e."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Vacancies
   ) AS "VacanciesCount",
   (
@@ -81,7 +77,7 @@ SELECT
     FROM
       cqc."EstablishmentJobs"
     WHERE
-      "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
+      "EstablishmentJobs"."EstablishmentID" = e."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Starters
   ) AS "StartersCount",
   (
@@ -90,35 +86,26 @@ SELECT
     FROM
       cqc."EstablishmentJobs"
     WHERE
-      "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
+      "EstablishmentJobs"."EstablishmentID" = e."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Leavers
   ) AS "LeaversCount",
   "VacanciesValue",
   "StartersValue",
   "LeaversValue",
   "NumberOfStaffValue",
-
   updated,
-  CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
+  CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END "LastUpdatedDate",
   "ShareDataWithCQC",
   "ShareDataWithLA",
-  (select count("LeaveReasonFK") from cqc."Worker" where "EstablishmentFK" = "Establishment"."EstablishmentID") as "ReasonsForLeaving",
-  "Status"
-FROM
-  cqc."Establishment"
-LEFT JOIN
-  cqc.services as MainService
-ON
-  "Establishment"."MainServiceFKValue" = MainService.id
-WHERE
-  ("Establishment"."EstablishmentID" = :establishmentId OR "Establishment"."ParentID" = :establishmentId) AND
-  "Archived" = :falseFlag
-ORDER BY
-  "EstablishmentID";
-`;
-
-const getCapicityOrUtilisationDataQuery =
-`SELECT
+  (select count(:zero) from cqc."Worker" where "EstablishmentFK" = e."EstablishmentID") "ReasonsForLeaving",
+  "Status",
+  array_to_string(array(SELECT "ServiceCapacityID"
+  FROM cqc."ServicesCapacity"
+  WHERE "ServiceID" = e."MainServiceFKValue"), :separator) "ServicesCapacity",
+  array_to_string(array(SELECT "Type"
+  FROM cqc."ServicesCapacity"
+  WHERE "ServiceID" = e."MainServiceFKValue"), :separator) "Type",
+  (SELECT
     b."Answer"
   FROM
     cqc."ServicesCapacity" AS a
@@ -127,14 +114,31 @@ const getCapicityOrUtilisationDataQuery =
   ON
     a."ServiceCapacityID" = b."ServiceCapacityID"
   WHERE
-    b."EstablishmentID" = :establishmentId AND
-    "ServiceID" = :mainServiceId AND
-    a."Type" = :type`;
-
-const getServiceCapacityDetailsQuery =
-  `SELECT "ServiceCapacityID", "Type"
-   FROM cqc."ServicesCapacity"
-   WHERE "ServiceID" = :mainServiceId`;
+    b."EstablishmentID" = e."EstablishmentID" AND
+    "ServiceID" = e."MainServiceFKValue" AND a."Type" = :Capacity) "Capacity",
+	(SELECT
+    b."Answer"
+  FROM
+    cqc."ServicesCapacity" AS a
+  JOIN
+    cqc."EstablishmentCapacity" AS b
+  ON
+    a."ServiceCapacityID" = b."ServiceCapacityID"
+  WHERE
+    b."EstablishmentID" = e."EstablishmentID" AND
+    "ServiceID" = e."MainServiceFKValue" AND a."Type" = :Utilisation) "Utilisation"
+FROM
+  cqc."Establishment" e
+LEFT JOIN
+  cqc.services as MainService
+ON
+  e."MainServiceFKValue" = MainService.id
+WHERE
+  (e."EstablishmentID" = :establishmentId OR e."ParentID" = :establishmentId) AND
+  "Archived" = :falseFlag AND e."Status" IS NULL
+ORDER BY
+  "EstablishmentID";
+`;
 
 exports.getEstablishmentData = async establishmentId =>
   db.query(getEstablishmentDataQuery, {
@@ -148,34 +152,8 @@ exports.getEstablishmentData = async establishmentId =>
       Vacancies: 'Vacancies',
       Starters: 'Starters',
       Leavers: 'Leavers',
-    },
-    type: db.QueryTypes.SELECT
-  });
-
-exports.getCapicityData = async (establishmentId, mainServiceId) =>
-  db.query(getCapicityOrUtilisationDataQuery, {
-    replacements: {
-      establishmentId,
-      mainServiceId,
-      type: 'Capacity'
-    },
-    type: db.QueryTypes.SELECT
-  });
-
-exports.getUtilisationData = async (establishmentId, mainServiceId) =>
-  db.query(getCapicityOrUtilisationDataQuery, {
-    replacements: {
-      establishmentId,
-      mainServiceId,
-      type: 'Utilisation'
-    },
-    type: db.QueryTypes.SELECT
-  });
-
-exports.getServiceCapacityDetails = async (mainServiceId) =>
-  db.query(getServiceCapacityDetailsQuery, {
-    replacements: {
-      mainServiceId
+      Capacity: 'Capacity',
+      Utilisation: 'Utilisation'
     },
     type: db.QueryTypes.SELECT
   });
