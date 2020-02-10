@@ -1,6 +1,8 @@
 import { Location } from '@angular/common';
-import { AfterContentInit, Component, ContentChildren, ElementRef, QueryList, ViewChild } from '@angular/core';
+import { AfterContentInit, Component, ContentChildren, ElementRef, OnInit, QueryList, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 import { TabComponent } from './tab.component';
 
@@ -8,13 +10,28 @@ import { TabComponent } from './tab.component';
   selector: 'app-tabs',
   templateUrl: './tabs.component.html',
 })
-export class TabsComponent implements AfterContentInit {
+export class TabsComponent implements OnInit, AfterContentInit {
   private currentTab: number;
+  private subscriptions: Subscription = new Subscription();
   @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
 
   @ViewChild('tablist', { static: false }) tablist: ElementRef;
 
-  constructor(private location: Location, private route: ActivatedRoute) {}
+  constructor(private location: Location, private route: ActivatedRoute, private workerService: WorkerService) {
+
+    //handle tab changes home page link
+    this.subscriptions.add(
+      this.workerService.tabChanged.subscribe((displayStaffTab: boolean) => {
+        let activeTabs: any[] = [];
+        if (this.tabs) {
+          activeTabs = this.tabs.filter(tab => tab.active)
+        }
+        if (displayStaffTab && activeTabs.length !== 0) {
+          this.selectTab(null, 2); //2 for staff tab;
+
+        }
+      }));
+  }
 
   ngAfterContentInit() {
     const hash = this.route.snapshot.fragment;
@@ -24,7 +41,6 @@ export class TabsComponent implements AfterContentInit {
         this.selectTab(null, activeTab, false);
       }
     }
-
     const activeTabs = this.tabs.filter(tab => tab.active);
 
     if (activeTabs.length === 0) {
@@ -86,4 +102,14 @@ export class TabsComponent implements AfterContentInit {
   private unselectTabs() {
     this.tabs.toArray().forEach(t => (t.active = false));
   }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
+
+
+
+
+
 }

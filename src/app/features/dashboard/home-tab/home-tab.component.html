@@ -16,8 +16,8 @@
     </ng-container>
     <div *ngIf="workplace">
       <div *ngIf="canAddWorker">
-        <h2><a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'basic-records-start-screen']">
-          Add a staff records
+        <h2><a href="#" (click)="selectStaffTab($event)">
+          Add a staff record
         </a></h2>
         <p class="govuk-util__align-justify">
           Create staff records for your workplace by providing current work
@@ -53,7 +53,7 @@
         canLinkToParent ||
         canRemoveParentAssociation
       ">
-      <h3 class="govuk-heading-s govuk-!-margin-top-6">Related content</h3>
+      <h3 class="govuk-heading-s govuk-!-margin-top-1">Related content</h3>
       <ul *ngIf="workplace" class="govuk-list">
         <li *ngIf="canViewWorkplaces">
           <a [routerLink]="['/workplace', 'view-all-workplaces']">View all workplaces</a>

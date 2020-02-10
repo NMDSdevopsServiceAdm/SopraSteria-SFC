@@ -1,5 +1,6 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
+import { Component, DoCheck, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
@@ -39,7 +40,7 @@ import { filter } from 'rxjs/operators';
 
   providers: [DialogService, Overlay],
 })
-export class HomeTabComponent implements OnInit, OnDestroy {
+export class HomeTabComponent implements OnInit, OnDestroy,DoCheck  {
   @Input() workplace: Establishment;
 
   private subscriptions: Subscription = new Subscription();
@@ -61,6 +62,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
 
+
   constructor(
     private bulkUploadService: BulkUploadService,
     private permissionsService: PermissionsService,
@@ -69,7 +71,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private alertService: AlertService,
     private router: Router,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
+    private location: Location,
   ) {}
 
   ngOnInit() {
@@ -271,6 +274,15 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.linkToParentRequestedStatus = true;
     }
   }
+
+  public selectStaffTab(event: Event) {
+    if (event) {
+      event.preventDefault();
+    }
+    this.workerService.tabChanged.next(true);
+  }
+
+
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
