@@ -16,7 +16,7 @@ const s3 = new AWS.S3({
 const Bucket = String(config.get('bulkupload.bucketname'));
 
 const { Establishment } = require('../../../models/classes/establishment');
-const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData, getServiceCapacityDetails } = rfr('server/data/parentWDFReport');
+const { getEstablishmentData, getWorkerData } = rfr('server/data/parentWDFReport');
 const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('server/data/parentWDFReportLock');
 
 // Constants string needed by this file in several places
@@ -103,60 +103,32 @@ const getReportData = async (date, thisEstablishment) => {
   };
 };
 
-const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,ServiceUsers,' +
-'NumberOfStaffValue').split(',');
-
 const getEstablishmentReportData = async establishmentId => {
-  const establishmentReturnData = await getEstablishmentData(establishmentId);
-  const establishmentData = establishmentReturnData.filter(est => est.Status !== "PENDING");
+  const establishmentData = await getEstablishmentData(establishmentId);
   for(let i = 0; i< establishmentData.length; i++) {
     let value = establishmentData[i];
-    let getServiceCapacityData = await getServiceCapacityDetails(value.MainServiceFKValue);
-    if(getServiceCapacityData && getServiceCapacityData.length === 0){
+    if(value.ServicesCapacity === ""){
       value.Capacities = 'N/A';
       value.Utilisations = 'N/A';
     }else{
-      let capicityDetails = [];
-      let utilisationDetails = [];
-      if(getServiceCapacityData.length === 2){
-        capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
-        utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
-      }else if(getServiceCapacityData[0].Type === 'Capacity'){
-        capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
-        utilisationDetails = [{"Answer": 'N/A'}];
-      }else if(getServiceCapacityData[0].Type === 'Utilisation'){
-        utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
-        capicityDetails = [{"Answer": 'N/A'}];
-      }
-
-      if(capicityDetails && capicityDetails.length > 0){
-        if(capicityDetails[0].Answer === null){
-          value.Capacities = 'Missing';
-        }else if(capicityDetails[0].Answer === 'N/A'){
-          value.Capacities = 'N/A';
-        }else{
-          value.Capacities = capicityDetails[0].Answer;
-        }
-      }else{
-        value.Capacities = 'Missing';
-      }
-      if(utilisationDetails && utilisationDetails.length > 0){
-        if(utilisationDetails[0].Answer === null){
-          value.Utilisations = 'Missing';
-        }else if(utilisationDetails[0].Answer === 'N/A'){
-          value.Utilisations = 'N/A';
-        }else{
-          value.Utilisations = utilisationDetails[0].Answer;
-        }
-      }else{
-        value.Utilisations = 'Missing';
+      let ServicesCapacityValue = value.Type.indexOf(',');
+      if(ServicesCapacityValue !== -1){
+        value.Capacities = (value.Capacity !== null)? value.Capacity: 'Missing';
+        value.Utilisations = (value.Utilisation !== null)? value.Utilisation: 'Missing';
+      }else if(value.Type === 'Capacity'){
+        value.Capacities = (value.Capacity !== null)? value.Capacity: 'Missing';
+        value.Utilisations = 'N/A';
+      }else if(value.Type === 'Utilisation'){
+        value.Utilisations = (value.Utilisation !== null)? value.Utilisation: 'Missing';
+        value.Capacities = 'N/A';
       }
     }
+
     if (value.ShareDataWithCQC && value.ShareDataWithLA) {
       value.SubsidiarySharingPermissions = 'All';
-    } else if (value.ShareDataWithCQC && !value.ShareDataWithLA) {
+    } else if (value.ShareDataWithCQC) {
       value.SubsidiarySharingPermissions = 'CQC';
-    } else if (!value.ShareDataWithCQC && value.ShareDataWithLA) {
+    } else if (value.ShareDataWithLA) {
       value.SubsidiarySharingPermissions = 'LA';
     } else {
       value.SubsidiarySharingPermissions = 'None';
@@ -164,11 +136,9 @@ const getEstablishmentReportData = async establishmentId => {
 
     value.EstablishmentDataFullyCompleted = 'Yes';
 
-    propsNeededToComplete.forEach(prop => {
-      if (value[prop] === null) {
-        value.EstablishmentDataFullyCompleted = 'No';
-      }
-    });
+    if(value.MainService === null || value.EmployerTypeValue === null || value.Capacities === null || value.ServiceUsers === null || value.NumberOfStaffValue === null){
+      value.EstablishmentDataFullyCompleted = 'No';
+    }
 
     value.CurrentWdfEligibilityStatus = value.CurrentWdfEligibilityStatus === null ? 'Not Eligible' : 'Eligible';
 
@@ -178,10 +148,7 @@ const getEstablishmentReportData = async establishmentId => {
 
     value.NumberOfStaffValue = (value.NumberOfStaffValue === null) ? 0: value.NumberOfStaffValue;
 
-    if (
-      value.NumberOfStaffValue !== 0 &&
-      value.NumberOfStaffValue !== null &&
-      (value.TotalIndividualWorkerRecord !== 0 || value.TotalIndividualWorkerRecord !== null)) {
+    if (value.NumberOfStaffValue !== 0 && value.TotalIndividualWorkerRecord !== null) {
       value.PercentageOfWorkerRecords = `${parseFloat(+value.TotalIndividualWorkerRecord / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
     } else {
       value.PercentageOfWorkerRecords = '0.0%';
@@ -215,10 +182,9 @@ const getEstablishmentReportData = async establishmentId => {
       value.EmployerTypeValue = '';
     }
 
+    value.ServiceUsers = 'Yes';
     if(value.ServiceUsers === ''){
       value.ServiceUsers = 'Missing';
-    }else{
-      value.ServiceUsers = 'Yes';
     }
 
     value.LeavingReasonsCountEqualsLeavers = (value.ReasonsForLeaving === value.LeaversValue) ? 'Yes' : 'No';
@@ -227,7 +193,7 @@ const getEstablishmentReportData = async establishmentId => {
     value.UpdatedInCurrentFinancialYear = value.LastUpdatedDate !== null ? 'Yes' : 'No';
 
     value.CompletedWorkerRecordsPercentage =
-      (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
+      (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0)
         ? '0.0%'
         : `${parseFloat(+value.CompletedWorkerRecords / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
   }
@@ -250,7 +216,8 @@ const getWorkersReportData = async establishmentId => {
         }
       });
 
-  workersArray.forEach((value, key) => {
+  for(let i = 0; i < workersArray.length; i++){
+    let value = workersArray[i];
     if(value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know"){
       value.QualificationInSocialCare = 'N/A';
     }
@@ -297,7 +264,7 @@ const getWorkersReportData = async establishmentId => {
         value[prop] = 'Missing';
       }
     });
-  });
+  }
 
   return workersArray;
 };
@@ -572,10 +539,6 @@ const updateOverviewSheet = (
 
   const templateRow = overviewSheet.querySelector("row[r='11']");
 
-  // move the footer rows down appropriately
-  //no rows = -1
-  //one row = 0
-  //two rows = 1
   let currentRow = overviewSheet.querySelector("row[r='16']");
   let rowIndex = 16;
   let updateRowIndex = 16 + reportData.establishments.length - 1;
@@ -607,8 +570,6 @@ const updateOverviewSheet = (
       }
     }
   }
-
-  // TODO: fix the page footer timestamp
 
   // clone the row the apropriate number of times
   currentRow = templateRow;
