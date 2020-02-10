@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { AfterContentInit, Component, ContentChildren, ElementRef, OnInit, QueryList, ViewChild } from '@angular/core';
+import { AfterContentInit, Component, ContentChildren, ElementRef, OnDestroy, QueryList, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -10,7 +10,7 @@ import { TabComponent } from './tab.component';
   selector: 'app-tabs',
   templateUrl: './tabs.component.html',
 })
-export class TabsComponent implements OnInit, AfterContentInit {
+export class TabsComponent implements AfterContentInit, OnDestroy {
   private currentTab: number;
   private subscriptions: Subscription = new Subscription();
   @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
@@ -28,7 +28,6 @@ export class TabsComponent implements OnInit, AfterContentInit {
         }
         if (displayStaffTab && activeTabs.length !== 0) {
           this.selectTab(null, 2); //2 for staff tab;
-
         }
       }));
   }
@@ -106,10 +105,5 @@ export class TabsComponent implements OnInit, AfterContentInit {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
-
-
-
-
-
 
 }
