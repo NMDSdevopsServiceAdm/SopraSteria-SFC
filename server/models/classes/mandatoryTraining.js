@@ -92,7 +92,7 @@ class MandatoryTraining extends EntityValidator {
     if(document && Array.isArray(document)){
       for(let i = 0; i < document.length; i++){
         let doc = document[i];
-        if(!doc.trainingCategoryID){
+        if(!doc.trainingCategoryId){
           console.error('POST:: create mandatoryTraining - Failed Validation - Training Category ID missing');
           this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Training Category ID missing');
           return false;
@@ -100,7 +100,7 @@ class MandatoryTraining extends EntityValidator {
         // get training details
         const trainingCategoryDetails = await models.workerTrainingCategories.findOne({
           where: {
-            id: doc.trainingCategoryID
+            id: doc.trainingCategoryId
           },
           attributes: ['id']
         });
@@ -185,6 +185,19 @@ class MandatoryTraining extends EntityValidator {
     if(initializedRecords && this._isNew){
       // create new Mandatory Training Record
       try{
+
+        //find already existing mandatory details, if found delete them
+        for(let i = 0; i < this.mandatorytrainingDetails.length; i++){
+          let row = this.mandatorytrainingDetails[i];
+          const fetchQuery = {
+            where: {
+              establishmentFK: this.establishmentId,
+              trainingCategoryFK: row.trainingCategoryId
+            }
+          };
+          await models.MandatoryTraining.destroy(fetchQuery);
+        }
+
         // save new mandatory training details
         for(let i = 0; i < this.mandatorytrainingDetails.length; i++){
           let row = this.mandatorytrainingDetails[i];
@@ -207,7 +220,7 @@ class MandatoryTraining extends EntityValidator {
               const now = new Date();
               let creationDocument = {
                 establishmentFK: this.establishmentId,
-                trainingCategoryFK: row.trainingCategoryID,
+                trainingCategoryFK: row.trainingCategoryId,
                 jobFK: job.id,
                 created: now,
                 updated: now,
