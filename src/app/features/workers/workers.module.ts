@@ -57,6 +57,7 @@ import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffComponent } from './total-staff/total-staff.component';
 import { QualificationsComponent } from './training-qualifications-record/qualifications/qualifications.component';
+import { MandatoryTrainingComponent } from './training-qualifications-record/mandatory-training/mandatory-training.component';
 import {
   TrainingAndQualificationsRecordComponent,
 } from './training-qualifications-record/training-and-qualifications-record.component';
@@ -107,6 +108,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     OtherQualificationsLevelComponent,
     QualificationFormComponent,
     QualificationsComponent,
+    MandatoryTrainingComponent,
     RecruitedFromComponent,
     SalaryComponent,
     SocialCareQualificationComponent,
