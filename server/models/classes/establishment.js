@@ -521,7 +521,7 @@ class Establishment extends EntityValidator {
               const newWorker = new Worker(null);
 
               // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-              this.associateWorker(newWorker);
+              this.associateWorker(thisWorker);
               promises.push(newWorker.load(thisWorker, true));
             }
           });
@@ -1492,7 +1492,7 @@ class Establishment extends EntityValidator {
 
                 // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
                 // without whitespace
-                this.associateWorker(newWorker.key, newWorker);
+                this.associateWorker(newWorker);
 
                 return {};
               })
