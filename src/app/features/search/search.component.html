@@ -155,10 +155,11 @@
             <th class="govuk-table__header" scope="col">Security Question</th>
             <th class="govuk-table__header" scope="col">Security Answer</th>
             <th class="govuk-table__header" scope="col">Parent ID</th>
+            <th class="govuk-table__header" scope="col">Locked</th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
-          <tr class="govuk-table__row" *ngFor="let item of results">
+          <tr class="govuk-table__row" *ngFor="let item of results; index as index">
             <td class="govuk-table__cell">{{ item.username }}</td>
             <td class="govuk-table__cell">{{ item.name }}</td>
             <td class="govuk-table__cell">
@@ -174,6 +175,9 @@
               {{
                 item.establishment.parent && item.establishment.parent.nmdsId ? item.establishment.parent.nmdsId : ''
               }}
+            </td>
+            <td class="govuk-table__cell">
+              <a (click)="unlockUser(item.username, index, $event)" href="#" *ngIf="item.isLocked">Unlock</a>
             </td>
           </tr>
         </tbody>

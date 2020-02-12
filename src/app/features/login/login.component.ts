@@ -79,11 +79,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
       {
         name: 401,
         message:
-          'Please Note<br>' +
-          'Your username / password is incorrect ' +
-          '(please consider resetting your password now, 5 incorrect attempts will lock your account)<br>' +
-          'Or<br>' +
-          'Your registration request is awaiting approval (contact support)',
+          'Your username/password is incorrect',
       },
       {
         name: 404,
@@ -93,6 +89,14 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
         name: 503,
         message: 'Unable to authenticate user.',
       },
+      {
+        name: 409,
+        message: 'There is a problem with your account, please contact support on 0113 241 0969',
+      },
+      {
+        name: 405,
+        message: 'Your registration request is awaiting approval, please contact support on 0113 241 0969',
+      }
     ];
   }
 
