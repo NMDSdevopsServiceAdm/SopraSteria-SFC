@@ -23,6 +23,10 @@
       <app-training [workplace]="workplace" [worker]="worker"
         (trainingChanged)="trainingAndQualificationsChangedHandler($event)"></app-training>
     </app-tab>
+    <app-tab [title]="'Mandatory Training'">
+      <app-mandatory-training [workplace]="workplace" [worker]="worker"
+        (mandatoryTrainingChanged)="trainingAndQualificationsChangedHandler($event)"></app-mandatory-training>
+    </app-tab>
     <app-tab [title]="'Qualifications'">
       <app-qualifications [workplace]="workplace" [worker]="worker"
         (qualificationsChanged)="trainingAndQualificationsChangedHandler($event)"></app-qualifications>

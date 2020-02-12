@@ -1,0 +1,69 @@
+<ng-container *ngIf="qualifications?.length">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h2 class="govuk-heading-m">Mandatory training ({{ qualifications.length }})</h2>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <p class="govuk-util__float-right">Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
+    </div>
+  </div>
+
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Training category</th>
+        <th class="govuk-table__header govuk-!-width-one-half" scope="col">Training name</th>
+        <th class="govuk-table__header" scope="col">Status</th>
+        <th class="govuk-table__header" scope="col">Quantity</th>
+        <th class="govuk-table__header" scope="col"></th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <ng-container *ngFor="let qualification of qualifications">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            {{ qualification.qualification.group }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ qualification.qualification.title }}
+          </td>
+
+          <td class="govuk-table__cell">
+            {{ qualification?.year ? qualification.year : '-' }}
+          </td>
+          <td class="govuk-table__cell">
+            {{'-' }}
+          </td>
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            <a
+              *ngIf="canEditWorker"
+              class="govuk-link--no-visited-state"
+              href="#"
+              (click)="toggleDetails(qualification.uid, $event)"
+              >{{
+                qualificationDetailsLabel[qualification.uid] ? qualificationDetailsLabel[qualification.uid] : 'Open'
+              }}</a
+            >
+          </td>
+        </tr>
+        <tr *ngIf="qualificationDetails[qualification.uid]" class="govuk-panel--gray ">
+          <td colspan="5">
+            <div class="govuk-grid-row govuk-!-margin-2">
+              <div class="govuk-grid-column-one-quarter">
+                <strong> Worker ID</strong>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
+                <strong> Job role</strong>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
+                <strong> Status</strong>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</ng-container>
