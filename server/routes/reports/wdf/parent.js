@@ -79,8 +79,8 @@ const putStringTemplate = (
   }
 
   if (isNumber) {
-    element.attr('t');
-    vTag.textContent = textValue;
+    element.attr('t', '');
+    vTag.text(textValue);
   } else {
     element.attr('t', 's');
 
