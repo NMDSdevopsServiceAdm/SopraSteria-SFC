@@ -521,7 +521,11 @@ class Establishment extends EntityValidator {
               const newWorker = new Worker(null);
 
               // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+<<<<<<< HEAD
               this.associateWorker(thisWorker);
+=======
+              this.associateWorker(newWorker);
+>>>>>>> 5ef946f445c71656efbdda4ab58e69f33516951c
               promises.push(newWorker.load(thisWorker, true));
             }
           });
