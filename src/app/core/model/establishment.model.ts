@@ -58,6 +58,11 @@ export interface Leaver {
   total: number;
 }
 
+export interface Category {
+  trainingId: number;
+  title: string;
+}
+
 export interface WDF {
   effectiveFrom: Date;
   overalWdfEligible: boolean;
@@ -129,12 +134,15 @@ export interface UpdateJobsRequest {
   leavers?: Leaver[] | string;
   starters?: Starter[] | string;
   vacancies?: Vacancy[] | string;
+  categories?: Category[] | string;
 }
 
 export enum jobOptionsEnum {
   // tslint:disable-next-line: quotemark
   DONT_KNOW = "Don't know",
   NONE = 'None',
+  ALL = 'All',
+  SELECTED ='selected',
 }
 
 export interface LocalIdentifiersRequest {

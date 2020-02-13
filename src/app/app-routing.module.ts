@@ -159,6 +159,15 @@ const routes: Routes = [
         path: 'notifications',
         loadChildren: '@features/notifications/notifications.module#NotificationsModule',
       },
+      {
+        path: 'add-mandatory-training',
+        loadChildren: '@features/add-mandatory-training/add-mandatory-training.module#AddMandatoryTrainingModule',
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canAddEstablishment'],
+          title: 'Add Mandatory Training',
+        },
+      },
     ],
   },
   {

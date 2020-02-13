@@ -1,0 +1,268 @@
+import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment, jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
+import { Job } from '@core/model/job.model';
+import { TrainingCategory } from '@core/model/training.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { JobService } from '@core/services/job.service';
+import { TrainingService } from '@core/services/training.service';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/internal/operators/take';
+
+@Component({
+  selector: 'app-add-mandatory-training',
+  templateUrl: './add-mandatory-training.component.html',
+})
+export class AddMandatoryTrainingComponent implements OnInit {
+  public form: FormGroup;
+  public submitted = false;
+  public categories: TrainingCategory[];
+  private subscriptions: Subscription = new Subscription();
+  public jobs: Job[] = [];
+  public trainings: TrainingCategory[] = [];
+  public establishment: Establishment;
+  public primaryWorkplace: Establishment;
+  public formErrorsMap: Array<ErrorDetails> = [];
+  public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition> = [];
+  public vacanciesOptions = [
+    {
+      label: 'For all job roles',
+      value: jobOptionsEnum.ALL,
+    },
+    {
+      label: `For selected job roles only.`,
+      value: jobOptionsEnum.SELECTED,
+    },
+  ];
+
+  constructor(
+    private breadcrumbService: BreadcrumbService,
+    private trainingService: TrainingService,
+    protected formBuilder: FormBuilder,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    private jobService: JobService
+    ) {
+
+     }
+
+    get categoriesArray(): FormArray {
+     return this.form.get('categories') as FormArray;
+   }
+
+   get allTrainingsSelected(): boolean {
+     return this.categoriesArray.length >= this.trainings.length;
+   }
+
+    get vacanciesArray(): FormArray {
+       console.log(this.form.get('vacancies'));
+      return this.form.get('vacancies') as FormArray;
+    }
+
+    get allJobsSelected(): boolean {
+      return this.vacanciesArray.length >= this.jobs.length;
+    }
+
+
+
+  ngOnInit(): void {
+    this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
+    this.getTrainings();
+    this.getJobs();
+    this.setupForm();
+
+    this.subscriptions.add(
+      this.establishmentService.establishment$.subscribe(establishment => {
+        this.establishment = establishment;
+        this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+
+
+      })
+    );
+
+    //for job role
+    this.subscriptions.add(
+      this.vacanciesArray.valueChanges.subscribe(() => {
+        this.vacanciesArray.controls[0].get('jobRole').setValidators([Validators.required]);
+
+
+      })
+    );
+    //training category
+    this.subscriptions.add(
+      this.categoriesArray.valueChanges.subscribe(() => {
+        this.categoriesArray.controls[0].get('trainingCategory').setValidators([Validators.required]);
+      })
+    );
+
+
+
+
+    this.prefill();
+
+  }
+
+  private setupForm(): void {
+    this.form = this.formBuilder.group({
+      categories: this.formBuilder.array([]),
+      vacancies: this.formBuilder.array([]),
+
+    });
+  }
+  private getJobs(): void {
+    this.subscriptions.add(
+      this.jobService
+        .getJobs()
+        .pipe(take(1))
+        .subscribe(jobs => (this.jobs = jobs))
+    );
+  }
+
+  private getTrainings(): void {
+    this.subscriptions.add(
+      this.trainingService
+        .getCategories()
+        .pipe(take(1))
+        .subscribe(trainings => (this.trainings = trainings))
+    );
+  }
+
+  private prefill(): void {
+    /*if(Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
+      this.establishment.vacancies.forEach(vacancy =>
+        this.vacanciesArray.push(this.createVacancyControl(vacancy.jobId))
+      );
+    } else {
+      this.vacanciesArray.push(this.createVacancyControl());
+    }*/
+    this.categoriesArray.push(this.createCategoryControl());
+    this.vacanciesArray.push(this.createVacancyControl());
+
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'categories.trainingCategory',
+        type: [
+          {
+            name: 'required',
+            message: 'Training category is required',
+          },
+        ],
+      },
+      {
+        item: 'vacancies.jobRole',
+        type: [
+          {
+            name: 'required',
+            message: 'Job Role is required',
+          },
+        ],
+      },
+
+    ];
+  }
+
+  public selectableJobs(index): Job[] {
+    return this.jobs.filter(
+      job =>
+        !this.vacanciesArray.controls.some(
+          vacancy =>
+            vacancy !== this.vacanciesArray.controls[index] && parseInt(vacancy.get('jobRole').value, 10) === job.id
+        )
+    );
+  }
+
+  public selectableTrainings(index): TrainingCategory[] {
+    return this.trainings.filter(
+      training =>
+        !this.categoriesArray.controls.some(
+          category =>
+            category !== this.categoriesArray.controls[index] && parseInt(category.get('trainingCategory').value, 10) === training.id
+        )
+    );
+  }
+
+  public addCategory(): void {
+    this.categoriesArray.push(this.createCategoryControl());
+  }
+
+  public removeCategory(event: Event, index): void {
+    event.preventDefault();
+    this.categoriesArray.removeAt(index);
+  }
+
+  private createCategoryControl(trainingId = null, vacancyType = 'All'): FormGroup {
+    return this.formBuilder.group({
+      trainingCategory: [trainingId, [Validators.required]],
+      vacancyType:[vacancyType],
+
+    });
+  }
+
+  public addVacancy(): void {
+    this.vacanciesArray.push(this.createVacancyControl());
+  }
+
+  public removeVacancy(event: Event, index): void {
+    event.preventDefault();
+    this.vacanciesArray.removeAt(index);
+  }
+
+  private createVacancyControl(jobId = null, total = null): FormGroup {
+    return this.formBuilder.group({
+      jobRole: [jobId, [Validators.required]],
+
+    });
+  }
+
+  protected generateUpdateProps(): UpdateJobsRequest {
+    if (this.categoriesArray.length) {
+      return {
+        categories: this.categoriesArray.value.map(category => ({
+          trainingId: parseInt(category.trainingCategory, 10),
+          vacancyType:category.vacancyType,
+
+        })),
+      };
+    }
+    if (this.vacanciesArray.length) {
+      return {
+        vacancies: this.vacanciesArray.value.map(vacancy => ({
+          jobId: parseInt(vacancy.jobRole, 10),
+
+        })),
+      };
+    }
+
+    return null;
+  }
+
+  protected updateEstablishment(props: UpdateJobsRequest): void {
+    this.subscriptions.add(
+      this.establishmentService
+        .updateJobs(this.establishment.uid, props)
+        .subscribe(data => console.log(data), error => console.log(error))
+    );
+  }
+
+
+
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private clearValidators(index: number) {
+    this.categoriesArray.controls[index].get('trainingCategory').clearValidators();
+    this.vacanciesArray.controls[index].get('jobRole').clearValidators();
+
+  }
+
+
+}
