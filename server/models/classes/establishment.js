@@ -1496,7 +1496,7 @@ class Establishment extends EntityValidator {
 
                 // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
                 // without whitespace
-                this.associateWorker(newWorker);
+                this.associateWorker(newWorker.key, newWorker);
 
                 return {};
               })
