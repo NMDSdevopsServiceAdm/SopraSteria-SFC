@@ -464,9 +464,9 @@ class Establishment {
     const myAddress3 = this._currentLine.ADDRESS3;
     const myTown = this._currentLine.POSTTOWN;
     const myPostcode = this._currentLine.POSTCODE;
+    let ignorePostcode = false;
 
     // TODO - if town is empty, match against PAF
-    // TODO - validate postcode against PAF
 
     // adddress 1 is mandatory and no more than 40 characters
     const MAX_LENGTH = 40;
@@ -571,6 +571,16 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       this._ignore = true;
+    } else if (this._status === 'UPDATE' && !postcodeExists.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: Establishment.ADDRESS_ERROR,
+        warnType: 'ADDRESS_ERROR',
+        warning: 'The POSTCODE cannot be found in our database and will be ignored.',
+        source: myPostcode,
+        name: this._currentLine.LOCALESTID
+      });
+      ignorePostcode = true;
     }
 
     if (localValidationErrors.length > 0) {
@@ -583,7 +593,9 @@ class Establishment {
     this._address2 = myAddress2;
     this._address3 = myAddress3;
     this._town = myTown;
-    this._postcode = myPostcode;
+    if (!ignorePostcode) {
+      this._postcode = myPostcode;
+    }
 
     return true;
   }
