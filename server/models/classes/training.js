@@ -817,7 +817,7 @@ class Training extends EntityValidator {
     static async getAllRequiredCounts(establishmentId, workerRecords){
       if(workerRecords.length !== 0){
         let currentDate = moment();
-        for(let i = 0; i < workerRecords.length; i++){debugger
+        for(let i = 0; i < workerRecords.length; i++){
           const allTrainingRecords = await Training.fetch(establishmentId, workerRecords[i].uid);
           workerRecords[i].trainingCount = 0;
           workerRecords[i].expiredTrainingCount = 0;
