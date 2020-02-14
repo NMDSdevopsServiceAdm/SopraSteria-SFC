@@ -100,7 +100,7 @@ router.route('/').get(async (req, res) => {
     try {
         let allTheseWorkers = await Workers.Worker.fetch(establishmentId);
         if(allTheseWorkers && allTheseWorkers.length){
-          const updateTrainingRecords = await Training.getExpiringAndExpiredTrainingCounts(establishmentId, allTheseWorkers);
+          const updateTrainingRecords = await Training.getAllRequiredCounts(establishmentId, allTheseWorkers);
           if(updateTrainingRecords){
             const updateQualsRecords = await Qualification.getQualsCounts(establishmentId, updateTrainingRecords);
             if(updateQualsRecords){
