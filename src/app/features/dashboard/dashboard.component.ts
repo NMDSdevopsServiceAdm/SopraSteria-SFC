@@ -73,13 +73,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /**
    * Function used to display training alert flag over the traing and qualifications tab
    * @param {workers} list of workers
-   * @return {number} 0 for up-to-date, 1 for expiring soon and 2 for expired.
+   * @return {number} 0 for up-to-date, 1 for expiring soon and 2 for expired and missing mandatory training.
    */
   public getTrainingAlertFlag(workers) {
     if (workers.length > 0) {
       const expariedTrainingCount = workers.filter(worker => worker.expiredTrainingCount > 0).length || 0;
       const expiringTrainingCount = workers.filter(worker => worker.expiringTrainingCount > 0).length || 0;
-      if (expariedTrainingCount > 0) {
+      const missingMandatoryTrainingCount = workers.filter(worker => worker.missingMandatoryTrainingCount > 0).length || 0;
+      if (expariedTrainingCount > 0 || missingMandatoryTrainingCount > 0) {
         return 2;
       } else if (expiringTrainingCount > 0) {
         return 1;
