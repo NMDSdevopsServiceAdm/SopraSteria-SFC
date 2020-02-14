@@ -1455,6 +1455,42 @@ class Establishment {
     return true;
   }
 
+  _crossValidateAllJobRoles (
+    csvEstablishmentSchemaErrors,
+    registeredManager
+    )
+    {
+    const template = {
+      origin: 'Establishments',
+      lineNumber: this._lineNumber,
+      errCode: Establishment.ALL_JOBS_ERROR,
+      errType: 'ALL_JOBS_ERROR',
+      source: this._currentLine.ALLJOBROLES,
+      name: this._currentLine.LOCALESTID
+    };
+    const allJobs = this._currentLine.ALLJOBROLES.split(';');
+    const vacancies = this._currentLine.VACANCIES.split(';');
+    const myRegType = parseInt(this._currentLine.REGTYPE, 10);
+
+    const regManager = 4;
+    const isCQCRegulated = myRegType === 2;
+
+    const hasRegisteredManagerVacancy =() => {
+      let regManagerVacancies = 0;
+      allJobs.map((job, index) => {
+        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) regManagerVacancies++;
+      });
+      return regManagerVacancies > 0;
+    };
+
+    if(isCQCRegulated && !hasRegisteredManagerVacancy() && registeredManager === 0) {
+      console.log('They have no RMs');
+      csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+        error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one'
+      }));
+    }
+  }
+
   // includes perm, temp, pool, agency, student, voluntary and other counts
   // includes vacancies, starters and leavers, total vacancies, total starters and total leavers
   _validateJobRoleTotals () {
@@ -2108,6 +2144,8 @@ class Establishment {
       nonEmployedWorkers: 0
     };
 
+    let registeredManagers = 0;
+
     // ignoreDBWorkers is used as a hashmap of workers that are being modified
     // as part of this bulk upload process. It allows us to prevent a worker's
     // details
@@ -2115,7 +2153,6 @@ class Establishment {
     // the establishment
     // i.e. ignore the worker record that comes back from the database result set.
     const ignoreDBWorkers = Object.create(null);
-
     myWorkers.forEach(worker => {
       if (this.key === worker.establishmentKey) {
         switch (worker.status) {
@@ -2123,6 +2160,13 @@ class Establishment {
           case 'UPDATE': {
             /* update totals */
             updateWorkerTotals(totals, worker);
+            if (worker.mainJobRoleId === 4) {
+              registeredManagers++;
+            } else {
+              worker.otherJobIds.map(otherJobId => {
+                otherJobId === 4 ? registeredManagers++ : null;
+              });
+            }
           }
           /* fall through */
 
@@ -2134,6 +2178,7 @@ class Establishment {
     });
 
     // get all the other records that may already exist in the db but aren't being updated or deleted
+    // and check how many registered managers there is
     (await fetchMyEstablishmentsWorkers(this.id, this._key))
       .forEach(worker => {
         worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
@@ -2146,8 +2191,11 @@ class Establishment {
         }
       });
 
+
+
     // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
     this._crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, totals);
+    this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }
 
   // returns true on success, false is any attribute of Establishment fails
