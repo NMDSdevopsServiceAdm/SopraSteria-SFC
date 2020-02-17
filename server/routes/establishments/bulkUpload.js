@@ -819,7 +819,7 @@ const validateEstablishmentCsv = async (
   const lineValidator = new EstablishmentCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
-  lineValidator.validate();
+  await lineValidator.validate();
   lineValidator.transform();
 
   const thisEstablishmentAsAPI = lineValidator.toAPI();
