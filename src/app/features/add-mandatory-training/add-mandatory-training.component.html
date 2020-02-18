@@ -1,32 +1,41 @@
-<app-error-summary *ngIf="(submitted && form.invalid) || serverError" [formErrorsMap]="formErrorsMap"
-  [serverError]="serverError" [form]="form">
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+>
 </app-error-summary>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">Mandatory Training</h1>
-    <p>Diffrent care providers make diffrent type of training mandatory
-      depending on their main service and the people they provide care for.
+    <p>
+      Diffrent care providers make diffrent type of training mandatory depending on their main service and the people
+      they provide care for.
     </p>
     <p>
-      Select the training you want to make mandatory for your workplace. If
-      you do this we can flag which staff need to undertake training or
-      where mandatorytraining has expired.
+      Select the training you want to make mandatory for your workplace. If you do this we can flag which staff need to
+      undertake training or where mandatory training has expired.
     </p>
   </div>
 </div>
-
-
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <ng-container formArrayName="categories">
-      <div *ngFor="let category of categoriesArray.controls; let i = index" [formGroupName]="i"
-        [class.govuk-form-group--error]="submitted && category.invalid">
-        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+      <div
+        *ngFor="let category of categoriesArray.controls; let i = index"
+        [formGroupName]="i"
+        [class.govuk-form-group--error]="submitted && category.invalid"
+      >
+        <div class="govuk-grid-row govuk-!-margin-bottom-1">
           <div class="govuk-grid-column-two-thirds">
-            <select class="govuk-select govuk-!-width-full"
+            <select
+              class="govuk-select govuk-!-width-full"
               [class.govuk-select--error]="submitted && category.get('trainingCategory').invalid"
-              [formControlName]="'trainingCategory'" id="trainingCategory-{{ i }}" name="trainingCategory">
+              [formControlName]="'trainingCategory'"
+              id="trainingCategory-{{ i }}"
+              name="trainingCategory"
+            >
               <option [ngValue]="null">Select training category</option>
               <option *ngFor="let training of selectableTrainings(i)" [value]="training.id">
                 {{ training.category }}
@@ -34,81 +43,101 @@
             </select>
           </div>
           <div class="govuk-grid-column-one-third">
-
-            <button *ngIf="categoriesArray.length > 1"
-              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-!-margin-left-3" type="button"
-              (click)="removeCategory($event, i)">
+            <button
+              *ngIf="categoriesArray.length > 1"
+              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-!-margin-left-3"
+              type="button"
+              (click)="removeCategory($event, i)"
+            >
               Delete
             </button>
           </div>
 
           <div class="govuk-grid-column-two-thirds govuk-!-margin-top-6">
             <div class="govuk-radios govuk-radios--inline">
-
+              {{ vacancyType }}
               <div class="govuk-radios__item" *ngFor="let option of vacanciesOptions; let j = index">
-                <input class="govuk-radios__input" id="vacancyType-{{i}}-{{j}}" name="vacancyType"
-                  [formControlName]="'vacancyType'" type="radio" [value]="option.value">
-                <label class="govuk-label govuk-radios__label" for="vacancyType-{{i}}-{{j}}">
+                <input
+                  class="govuk-radios__input"
+                  id="vacancyType-{{ i }}-{{ j }}"
+                  [formControlName]="'vacancyType'"
+                  type="radio"
+                  [value]="option.value"
+                  (change)="onVacancyTypeSelectionChange(i)"
+                />
+                <label class="govuk-label govuk-radios__label" for="vacancyType-{{ i }}-{{ j }}">
                   {{ option.label }}
                 </label>
               </div>
             </div>
           </div>
+        </div>
 
-
-
+        <div
+          class="govuk-grid-row govuk-radios__conditional"
+          *ngIf="category.get('vacancies').controls.length > 0"
+          formArrayName="vacancies"
+        >
+          <div [formGroupName]="j" *ngFor="let vacancy of category.get('vacancies').controls; let j = index">
+            <div class="govuk-grid-row govuk-!-margin-bottom-6">
+              <div class="govuk-grid-column-one-half">
+                <select
+                  class="govuk-select"
+                  [class.govuk-select--error]="submitted && vacancy.get('jobRole').invalid"
+                  [formControlName]="'jobRole'"
+                  id="jobRole-{{ i }}-{{ j }}"
+                >
+                  <option [ngValue]="null">Select job role</option>
+                  <option *ngFor="let job of selectableJobs(i, j)" [value]="job.id">
+                    {{ job.title }}
+                  </option>
+                </select>
+              </div>
+              <div class="govuk-grid-column-one-half">
+                <button
+                  class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+                  *ngIf="category.get('vacancies').controls.length > 1"
+                  type="button"
+                  (click)="removeVacancy($event, i, j)"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+              <button
+                *ngIf="
+                  category.get('vacancies').controls.length > 0 &&
+                  category.get('vacancies').controls.length < jobs.length
+                "
+                class="govuk-button govuk-button--secondary"
+                type="button"
+                (click)="addVacancy(i)"
+              >
+                Add another Job role
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-          <button *ngIf="!allTrainingsSelected" class="govuk-button govuk-button--secondary" type="button"
-            (click)="addCategory()">
+          <button
+            *ngIf="!allTrainingsSelected"
+            class="govuk-button govuk-button--secondary"
+            type="button"
+            (click)="addCategory()"
+          >
             Add another training category
           </button>
         </div>
-
       </div>
     </ng-container>
-
-    <ng-container formArrayName="vacancies" *ngIf='false'>
-      <div *ngFor="let vacancy of vacanciesArray.controls; let i = index" [formGroupName]="i"
-        [class.govuk-form-group--error]="submitted && vacancy.invalid">
-        <div class="govuk-grid-row govuk-!-margin-bottom-6">
-          <div class="govuk-grid-column-two-thirds">
-            <select class="govuk-select govuk-!-width-full"
-              [class.govuk-select--error]="submitted && vacancy.get('jobRole').invalid" [formControlName]="'jobRole'"
-              id="jobRole-{{ i }}" name="jobRole">
-              <option [ngValue]="null">Select job role</option>
-              <option *ngFor="let job of selectableJobs(i)" [value]="job.id">
-                {{ job.title }}
-              </option>
-            </select>
-          </div>
-          <div class="govuk-grid-column-one-third">
-
-            <button *ngIf="vacanciesArray.length > 1"
-              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-!-margin-left-3" type="button"
-              (click)="removeVacancy($event, i)">
-              Remove
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-          <button *ngIf="!allJobsSelected" class="govuk-button govuk-button--secondary" type="button"
-            (click)="addVacancy()">
-            Add another Job role
-          </button>
-        </div>
-
-      </div>
-    </ng-container>
-
-
-
   </fieldset>
-
-  <app-submit-button *ngIf="false" [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-exit-buttons [return]="!return"></app-submit-exit-buttons>
+  /form>
+  {{ form.getRawValue() | json }}
 </form>
