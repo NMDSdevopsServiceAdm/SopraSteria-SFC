@@ -21,6 +21,20 @@ router.route('/').get(async (req, res) => {
   }
 });
 
+/**
+ * Handle GET request for getting all saved mandatory training for view all mandatory training
+ */
+router.route('/all').get(async (req, res) => {
+  const establishmentId = req.establishmentId;
+  try{
+    const allMandatoryTrainingRecords = await MandatoryTraining.fetchAllMandatoryTrainings(establishmentId);
+    return res.status(200).json(allMandatoryTrainingRecords);
+  }catch(err){
+    console.error(err);
+    return res.status(503).send();
+  }
+});
+
 
 /**
  * Handle POST request for creating new mandatory training
