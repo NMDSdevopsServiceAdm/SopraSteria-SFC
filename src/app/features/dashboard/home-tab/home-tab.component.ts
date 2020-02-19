@@ -271,6 +271,13 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.linkToParentRequestedStatus = true;
     }
   }
+  //open Staff Tab
+  public selectStaffTab(event: Event) {
+    if (event) {
+      event.preventDefault();
+    }
+    this.workerService.tabChanged.next(true);
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
