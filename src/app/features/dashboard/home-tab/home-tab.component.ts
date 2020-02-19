@@ -61,6 +61,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
 
+
   constructor(
     private bulkUploadService: BulkUploadService,
     private permissionsService: PermissionsService,
@@ -270,6 +271,13 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canLinkToParent && this.workplace.linkToParentRequested) {
       this.linkToParentRequestedStatus = true;
     }
+  }
+  //open Staff Tab
+  public selectStaffTab(event: Event) {
+    if (event) {
+      event.preventDefault();
+    }
+    this.workerService.tabChanged.next(true);
   }
 
   ngOnDestroy(): void {
