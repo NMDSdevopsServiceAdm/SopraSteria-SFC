@@ -3,13 +3,14 @@ const hasProp = (obj, prop) =>
   Object.prototype.hasOwnProperty.bind(obj)(prop);
 
 const BUDI = require('../BUDI').BUDI;
+const models = require('../../index');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
 const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
 const employedContractStatusIds = [1, 2];
-const dbNotCqcRegulatedServiceCodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+const cqcRegulatedServiceCodes = [24, 25, 20, 22, 21, 23, 19, 27, 28, 26, 29, 30, 32, 31, 33, 34];
 
 const csvQuote = toCsv => {
   if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
@@ -785,9 +786,8 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if(
-      false &&
-      myRegType === 2 && dbNotCqcRegulatedServiceCodes.includes(dbServiceCode) && dbServiceCode !== dbMainServiceCode) {
+    } else if(myRegType === 2 &&
+      !cqcRegulatedServiceCodes.includes(dbServiceCode) && (dbServiceCode !== dbMainServiceCode)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.REGTYPE_ERROR,
@@ -844,52 +844,78 @@ class Establishment {
     }
   }
 
-  _validateLocationID () {
-    // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
-    const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
-    const myLocationID = this._currentLine.LOCATIONID;
+  async _validateLocationID () {
+    try {
+      // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
+      const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
+      const myLocationID = this._currentLine.LOCATIONID;
 
-    // do not use
-    const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
-
-    if (this._regType === 2) {
-      // ignore location i
-      if (!mainServiceIsHeadOffice) {
-        if (!myLocationID || myLocationID.length === 0) {
+      // do not use
+      const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
+      const locationExists = await models.establishment.findAll({
+        where: {
+          locationId: myLocationID
+        },
+        attributes: ['id', 'locationId']
+      });
+      console.log(this._id);
+      console.log(locationExists);
+      let existingEstablishment = false;
+      await locationExists.map(async (establishment) => {
+        if (establishment.id === this._id) existingEstablishment = true;
+      });
+      if (this._regType === 2) {
+        // ignore location i
+        if (!mainServiceIsHeadOffice) {
+          if (!myLocationID || myLocationID.length === 0) {
+            this._validationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.LOCATION_ID_ERROR,
+              errType: 'LOCATION_ID_ERROR',
+              error: 'LOCATIONID has not been supplied',
+              source: myLocationID,
+              name: this._currentLine.LOCALESTID
+            });
+            return false;
+          } else if (!locationIDRegex.test(myLocationID)) {
+            this._validationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.LOCATION_ID_ERROR,
+              errType: 'LOCATION_ID_ERROR',
+              error: 'LOCATIONID is incorrectly formatted',
+              source: myLocationID,
+              name: this._currentLine.LOCALESTID
+            });
+            return false;
+          }
+        }
+        if (locationExists.length > 0 && !existingEstablishment) {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
             errCode: Establishment.LOCATION_ID_ERROR,
             errType: 'LOCATION_ID_ERROR',
-            error: 'LOCATIONID has not been supplied',
-            source: myLocationID,
-            name: this._currentLine.LOCALESTID
-          });
-          return false;
-        } else if (!locationIDRegex.test(myLocationID)) {
-          this._validationErrors.push({
-            lineNumber: this._lineNumber,
-            errCode: Establishment.LOCATION_ID_ERROR,
-            errType: 'LOCATION_ID_ERROR',
-            error: 'LOCATIONID is incorrectly formatted',
+            error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
             source: myLocationID,
             name: this._currentLine.LOCALESTID
           });
           return false;
         }
-      }
 
-      this._locationID = myLocationID;
-      return true;
-    } else if (this._regType === 0 && myLocationID && myLocationID.length > 0) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: Establishment.LOCATION_ID_WARNING,
-        warnType: 'LOCATION_ID_WARNING',
-        warning: 'LOCATIONID will be ignored as not required for this REGTYPE',
-        source: myLocationID,
-        name: this._currentLine.LOCALESTID
-      });
-      return false;
+        this._locationID = myLocationID;
+        return true;
+      } else if (this._regType === 0 && myLocationID && myLocationID.length > 0) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          warnCode: Establishment.LOCATION_ID_WARNING,
+          warnType: 'LOCATION_ID_WARNING',
+          warning: 'LOCATIONID will be ignored as not required for this REGTYPE',
+          source: myLocationID,
+          name: this._currentLine.LOCALESTID
+        });
+        return false;
+      }
+    } catch (error) {
+      throw new Error(error);
     }
   }
 
@@ -1310,6 +1336,16 @@ class Establishment {
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
     const leavers = this._currentLine.LEAVERS.split(';');
+    const myRegType = parseInt(this._currentLine.REGTYPE, 10);
+
+    const regManager = 4;
+    const isCQCRegulated = myRegType === 2;
+
+    const hasRegisteredManagerVacancy = () => {
+      return allJobs.map((job, index) => {
+        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) return true;
+      });
+    };
 
     // allJobs can only be empty, if TOTALPERMTEMP is 0
     if (!this._currentLine.ALLJOBROLES || this._currentLine.ALLJOBROLES.length === 0) {
@@ -1356,8 +1392,29 @@ class Establishment {
           name: this._currentLine.LOCALESTID
         });
       }
+      if (!isCQCRegulated && hasRegisteredManagerVacancy()) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          warnCode: Establishment.ALL_JOBS_WARNING,
+          warnType: 'ALL_JOBS_WARNING',
+          warning: 'Vacancy for Registered Manager should not be included for this service and will be ignored',
+          source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID
+        });
+      }
     }
 
+    // Need to add if they currently have a registered manager
+    // if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && isCQCRegulated && !hasRegisteredManagerVacancy()) {
+    //   localValidationErrors.push({
+    //     lineNumber: this._lineNumber,
+    //     errCode: Establishment.ALL_JOBS_ERROR,
+    //     errType: 'ALL_JOBS_ERROR',
+    //     error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
+    //     source: this._currentLine.ALLJOBROLES,
+    //     name: this._currentLine.LOCALESTID
+    //   });
+    // }
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
       return false;
@@ -1466,6 +1523,13 @@ class Establishment {
     this._vacancies = vacancies.map(thisCount => parseInt(thisCount, 10));
     this._starters = starters.map(thisCount => parseInt(thisCount, 10));
     this._leavers = leavers.map(thisCount => parseInt(thisCount, 10));
+
+    // remove RM vacancy
+    if (this._allJobs && this._allJobs.length) {
+      this._allJobs.map((job, index) => {
+        if (job === regManager && this._vacancies[index] > 0) this._vacancies[index] = 0;
+      });
+    }
 
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
@@ -1960,7 +2024,7 @@ class Establishment {
   }
 
   // returns true on success, false is any attribute of Establishment fails
-  validate () {
+  async validate () {
     let status = true;
 
     status = !this._validateLocalisedId() ? false : status;
@@ -1979,7 +2043,7 @@ class Establishment {
       status = !this._validateMainService() ? false : status;
       status = !this._validateRegType() ? false : status;
       status = !this._validateProvID() ? false : status;
-      status = !this._validateLocationID() ? false : status;
+      status = await this._validateLocationID() ? false : status;
 
       status = !this._validateAllServices() ? false : status;
       status = !this._validateServiceUsers() ? false : status;

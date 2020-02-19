@@ -16,7 +16,6 @@ module.exports = function(sequelize, DataTypes) {
     LocalIdentifierValue: {
       type: DataTypes.TEXT,
       allowNull: true,
-      unique: true,
       field: '"LocalIdentifierValue"'
     },
     LocalIdentifierSavedAt : {

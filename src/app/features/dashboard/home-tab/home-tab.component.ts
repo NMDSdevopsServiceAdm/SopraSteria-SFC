@@ -61,7 +61,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
 
-
   constructor(
     private bulkUploadService: BulkUploadService,
     private permissionsService: PermissionsService,
