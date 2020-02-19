@@ -106,10 +106,10 @@ class MandatoryTraining extends EntityValidator {
         });
 
         if (trainingCategoryDetails && trainingCategoryDetails.id) {
-          // get job details if doc.selectedJobRoles === true
+          // get job details if doc.allJobRoles === false
           if(!doc.allJobRoles){
             let foundJobRoles = true;
-            if(doc.selectedJobRoles && Array.isArray(doc.jobs)){
+            if(!doc.allJobRoles && Array.isArray(doc.jobs)){
               for(let j = 0; j < doc.jobs.length; j++){
                 let job = doc.jobs[j];
                 const jobDetails = await models.job.findOne({
@@ -344,6 +344,83 @@ class MandatoryTraining extends EntityValidator {
 
       return response;
     }
+  }
+
+  /**
+   * Returns all saved mandatory training list including worker details
+   * Calculate missing mandatory training counts if not available on those worker records
+   */
+  static async fetchAllMandatoryTrainings(establishmentId){
+    // Fetch all training categories
+    const responseToReturn = [];
+    const trainingCategories = await models.workerTrainingCategories.findAll({
+      attributes: ['id', 'category']
+    });
+    if(trainingCategories && trainingCategories.length > 0){
+      for(let i = 0; i < trainingCategories.length; i++){
+        responseToReturn.push({
+          id: trainingCategories[i].id,
+          category: trainingCategories[i].category,
+          workers: []
+        });
+        //find all workers for these categories from training table
+        const allCategoryDetails = await models.workerTraining.findAll({
+          include: [
+              {
+                model: models.worker,
+                as: 'worker',
+                attributes: ['id', 'uid', 'NameOrIdValue'],
+                include: [{
+                  model: models.job,
+                  as: 'mainJob',
+                  attributes: ['id', 'title']
+                }],
+                where: {
+                  establishmentFk: establishmentId
+                }
+              }
+          ],
+          order: [
+              ['updated', 'DESC']
+          ],
+          where: {
+            categoryFk: trainingCategories[i].id
+          }
+        });
+
+        if(allCategoryDetails && allCategoryDetails.length > 0){
+          for(let j = 0 ; j < allCategoryDetails.length; j++){
+            let findAddedCategory = responseToReturn.filter(thisRecord => thisRecord.id === trainingCategories[i].id);
+            if(findAddedCategory.length > 0){
+              let includedWorkerIds = findAddedCategory[0].workers.map((worker) => worker.id);
+              if (!includedWorkerIds.includes(allCategoryDetails[j].worker.id)) {
+                const mandatoryTrainingDetails = await models.MandatoryTraining.findOne({
+                  where:{
+                    establishmentFK: establishmentId,
+                    trainingCategoryFK: findAddedCategory[0].id,
+                    jobFK: allCategoryDetails[j].worker.mainJob.id
+                  }
+                });
+                allCategoryDetails[j].worker.missingMandatoryTrainingCount = 0;
+                if(!mandatoryTrainingDetails || mandatoryTrainingDetails.length === 0){
+                  allCategoryDetails[j].worker.missingMandatoryTrainingCount++;
+                }
+                findAddedCategory[0].workers.push({
+                  id: allCategoryDetails[j].worker.id,
+                  name: allCategoryDetails[j].worker.NameOrIdValue,
+                  mainJob: {
+                    id: allCategoryDetails[j].worker.mainJob.id,
+                    title: allCategoryDetails[j].worker.mainJob.title,
+                  },
+                  missingMandatoryTrainingCount: allCategoryDetails[j].worker.missingMandatoryTrainingCount
+                });
+              }
+            }
+          }
+        }
+      }
+    }
+    return responseToReturn;
   }
 
 }
