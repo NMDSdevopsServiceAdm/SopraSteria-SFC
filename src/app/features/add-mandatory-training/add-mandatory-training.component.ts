@@ -5,6 +5,7 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment, jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { TrainingCategory } from '@core/model/training.model';
+import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -29,6 +30,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
   public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
+  public return: URLStructure;
   public vacanciesOptions = [
     {
       label: 'For all job roles',
@@ -70,6 +72,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
+    this.return = { url: ['/dashboard'], fragment: 'staff-training-and-qualifications' };
     this.getTrainings();
     this.getJobs();
     this.setupForm();
@@ -143,6 +146,15 @@ export class AddMandatoryTrainingComponent implements OnInit {
         ],
       },
       {
+        item: 'categories.vacancyType',
+        type: [
+          {
+            name: 'required',
+            message: 'required',
+          },
+        ],
+      },
+      {
         item: 'vacancies.jobRole',
         type: [
           {
@@ -155,7 +167,6 @@ export class AddMandatoryTrainingComponent implements OnInit {
   }
 
   public selectableJobs(categoryIndex, jobIndex): Job[] {
-    // return this.jobs;
     const vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[categoryIndex]).controls.vacancies;
     return this.jobs.filter(
       job =>
@@ -189,7 +200,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
   private createCategoryControl(trainingId = null, vType = 'All'): FormGroup {
     return this.formBuilder.group({
       trainingCategory: [trainingId, [Validators.required]],
-      vacancyType: [vType],
+      vacancyType: [vType, [Validators.required]],
       vacancies: this.formBuilder.array([]),
     });
   }
@@ -251,5 +262,17 @@ export class AddMandatoryTrainingComponent implements OnInit {
     } else {
       this.addVacancy(index);
     }
+  }
+
+  public onSubmit() {
+    this.submitted = true;
+    if (!this.form.valid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
+
+    //const props = this.generateUpdateProps();
+
+    //this.updateEstablishment(props);
   }
 }
