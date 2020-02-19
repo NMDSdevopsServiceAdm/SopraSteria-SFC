@@ -98,9 +98,10 @@ router.route('/').get(async (req, res) => {
     const establishmentId = req.establishmentId;
 
     try {
+        let trainingAlert;
         let allTheseWorkers = await Workers.Worker.fetch(establishmentId);
         if(allTheseWorkers && allTheseWorkers.length){
-          const updateTrainingRecords = await Training.getExpiringAndExpiredTrainingCounts(establishmentId, allTheseWorkers);
+          const updateTrainingRecords = await Training.getAllRequiredCounts(establishmentId, allTheseWorkers);
           if(updateTrainingRecords){
             const updateQualsRecords = await Qualification.getQualsCounts(establishmentId, updateTrainingRecords);
             if(updateQualsRecords){
@@ -111,9 +112,27 @@ router.route('/').get(async (req, res) => {
                 if(b.expiringTrainingCount > a.expiringTrainingCount){return 1;}
                 if(b.expiringTrainingCount < a.expiringTrainingCount){return -1;}
                 return 0;
-              })
+              });
+
+              if(updateQualsRecords.length > 0 ) {
+                const expiriedTrainingCountFlag = updateQualsRecords.filter(worker => worker.expiredTrainingCount > 0).length || 0;
+                const expiringTrainingCountFlag = updateQualsRecords.filter(worker => worker.expiringTrainingCount > 0).length || 0;
+                const missingMandatoryTrainingCountFlag = updateQualsRecords.filter(worker => worker.missingMandatoryTrainingCount > 0).length || 0;
+                if (expiriedTrainingCountFlag > 0 || missingMandatoryTrainingCountFlag > 0) {
+                    trainingAlert = 2;
+                } else if (expiringTrainingCountFlag > 0) {
+                    trainingAlert = 1;
+                } else {
+                    trainingAlert = 0;
+                }
+              } else {
+                trainingAlert = 0;
+              }
+              if(updateQualsRecords.length > 0 ) {
+                updateQualsRecords[0].trainingAlert = trainingAlert;
+              }
               return res.status(200).json({
-                workers: updateQualsRecords
+                workers: updateQualsRecords,
               });
             }
           }
