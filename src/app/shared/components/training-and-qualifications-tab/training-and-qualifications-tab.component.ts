@@ -20,7 +20,6 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
   public totalRecords;
   public totalExpiredTraining;
   public totalExpiringTraining;
-  public missingMandatoryTraining;
   public totalStaff: number;
   constructor(
     private workerService: WorkerService,
@@ -36,12 +35,10 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
           this.totalRecords = 0;
           this.totalExpiredTraining = 0;
           this.totalExpiringTraining = 0;
-          this.missingMandatoryTraining = 0;
           this.workers.forEach((worker: Worker) => {
             this.totalRecords += worker.trainingCount + worker.qualificationCount;
             this.totalExpiredTraining += worker.expiredTrainingCount;
             this.totalExpiringTraining += worker.expiringTrainingCount;
-            this.missingMandatoryTraining += worker.missingMandatoryTrainingCount;
           });
         },
         error => {

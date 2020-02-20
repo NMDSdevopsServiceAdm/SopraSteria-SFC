@@ -54,15 +54,18 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
         break;
       }
       case '2_asc': {
-        this.workers = orderBy(this.workers, ['expiredTrainingCount', 'expiringTrainingCount'], ['asc', 'asc']);
+        this.workers = orderBy(this.workers, ['expiredTrainingCount', 'expiringTrainingCount',
+        'missingMandatoryTrainingCount'], ['asc', 'asc', 'asc']);
         break;
       }
       case '2_dsc': {
-        this.workers = orderBy(this.workers, ['expiredTrainingCount', 'expiringTrainingCount'], ['desc', 'desc']);
+        this.workers = orderBy(this.workers, ['expiredTrainingCount', 'expiringTrainingCount',
+        'missingMandatoryTrainingCount'], ['desc', 'desc', 'desc']);
         break;
       }
       default: {
-        this.workers = orderBy(this.workers, ['expiredTrainingCount', 'expiringTrainingCount'], ['desc', 'desc']);
+        this.workers = orderBy(this.workers, ['expiredTrainingCount', 'expiringTrainingCount',
+        'missingMandatoryTrainingCount'], ['desc', 'desc', 'desc']);
         break;
       }
     }

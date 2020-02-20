@@ -91,7 +91,6 @@ export interface Worker {
   trainingCount: number;
   expiredTrainingCount: number;
   expiringTrainingCount: number;
-  missingMandatoryTrainingCount: number;
   qualificationCount: number;
 }
 
