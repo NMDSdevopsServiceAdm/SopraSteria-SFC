@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment, jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
+import { Establishment, jobOptionsEnum, mandatoryTrainings } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { TrainingCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
@@ -31,6 +32,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
   public return: URLStructure;
+  public existingMandatoryTrainings: mandatoryTrainings;
   public vacanciesOptions = [
     {
       label: 'For all job roles',
@@ -48,7 +50,8 @@ export class AddMandatoryTrainingComponent implements OnInit {
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private jobService: JobService
+    private jobService: JobService,
+    protected router: Router
   ) {}
 
   get categoriesArray(): FormArray {
@@ -59,44 +62,36 @@ export class AddMandatoryTrainingComponent implements OnInit {
     return this.categoriesArray.length >= this.trainings.length;
   }
 
-  /*get vacanciesArray(): FormArray {
-    return this.form.get('vacancies') as FormArray;
-  } */
-  isAllJobsSelected(index): boolean {
-    /* const vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies;
-    if (vacanciesArray) {
-      return vacanciesArray.length >= this.jobs.length;
-    }*/
-    return false;
-  }
-
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
     this.return = { url: ['/dashboard'], fragment: 'staff-training-and-qualifications' };
     this.getTrainings();
     this.getJobs();
     this.setupForm();
-    this.prefill();
-
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(establishment => {
         this.establishment = establishment;
-        this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+        this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
+          trainings => {
+            this.prefill(trainings);
+          },
+          error => {
+            if (error.error.message) {
+              this.serverError = error.error.message;
+            }
+          }
+        );
       })
     );
 
-    //for job role
-    // this.subscriptions.add(
-    // this.vacanciesArray.valueChanges.subscribe(() => {
-    // this.vacanciesArray.controls[0].get('jobRole').setValidators([Validators.required]);
-    // })
-    // );
     //training category
     this.subscriptions.add(
       this.categoriesArray.valueChanges.subscribe(() => {
         this.categoriesArray.controls[0].get('trainingCategory').setValidators([Validators.required]);
       })
     );
+
+    this.subscriptions.add();
   }
 
   private setupForm(): void {
@@ -122,16 +117,20 @@ export class AddMandatoryTrainingComponent implements OnInit {
     );
   }
 
-  private prefill(): void {
-    /*if(Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
-      this.establishment.vacancies.forEach(vacancy =>
-        this.vacanciesArray.push(this.createVacancyControl(vacancy.jobId))
-      );
+  private prefill(trainings): void {
+    if (trainings.mandatoryTrainingCount > 0) {
+      // let categoryIndex = 0;
+      trainings.mandatoryTraining.forEach((trainingCategory, categoryIndex) => {
+        const vacancyType =
+          trainings.allJobRolesCount === trainingCategory.jobs.length ? jobOptionsEnum.ALL : jobOptionsEnum.SELECTED;
+        const jobs = vacancyType === jobOptionsEnum.ALL ? [] : trainingCategory.jobs;
+        this.categoriesArray.push(this.createCategoryControl(trainingCategory.trainingCategoryId, vacancyType));
+        this.setVacancy(categoryIndex, jobs);
+        // categoryIndex++;
+      });
     } else {
-      this.vacanciesArray.push(this.createVacancyControl());
-    }*/
-    this.categoriesArray.push(this.createCategoryControl());
-    // this.vacanciesArray.push(this.createVacancyControl());
+      this.categoriesArray.push(this.createCategoryControl());
+    }
   }
 
   protected setupFormErrorsMap(): void {
@@ -155,7 +154,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
         ],
       },
       {
-        item: 'vacancies.jobRole',
+        item: 'vacancies.id',
         type: [
           {
             name: 'required',
@@ -171,8 +170,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
     return this.jobs.filter(
       job =>
         !vacanciesArray.controls.some(
-          vacancy =>
-            vacancy !== vacanciesArray.controls[jobIndex] && parseInt(vacancy.get('jobRole').value, 10) === job.id
+          vacancy => vacancy !== vacanciesArray.controls[jobIndex] && parseInt(vacancy.get('id').value, 10) === job.id
         )
     );
   }
@@ -205,6 +203,14 @@ export class AddMandatoryTrainingComponent implements OnInit {
     });
   }
 
+  public setVacancy(index, jobs: any[]) {
+    jobs.forEach(job => {
+      (<FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies).push(
+        this.createVacancyControl(job.id)
+      );
+    });
+  }
+
   public addVacancy(index): void {
     (<FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies).push(this.createVacancyControl());
   }
@@ -215,28 +221,32 @@ export class AddMandatoryTrainingComponent implements OnInit {
     vacanciesArray.removeAt(jobIndex);
   }
 
-  private createVacancyControl(jobId = null, total = null): FormGroup {
+  private createVacancyControl(jobId = null): FormGroup {
     return this.formBuilder.group({
-      jobRole: [jobId, [Validators.required]],
+      id: [jobId, [Validators.required]],
     });
   }
 
-  protected generateUpdateProps(): UpdateJobsRequest {
+  protected generateUpdateProps(): any {
     if (this.categoriesArray.length) {
       return {
         categories: this.categoriesArray.value.map(category => ({
-          trainingId: parseInt(category.trainingCategory, 10),
-          vacancyType: category.vacancyType,
+          trainingCategoryId: parseInt(category.trainingCategory, 10),
+          allJobRoles: category.vacancyType === jobOptionsEnum.ALL ? true : false,
+          selectedJobRoles: category.vacancyType === jobOptionsEnum.SELECTED ? true : false,
+          jobs: category.vacancies,
         })),
       };
     }
     return null;
   }
 
-  protected updateEstablishment(props: UpdateJobsRequest): void {
+  protected updateEstablishment(props: any): void {
     this.subscriptions.add(
-      this.establishmentService.updateJobs(this.establishment.uid, props).subscribe(
-        data => console.log(data),
+      this.establishmentService.updateMandatoryTraining(this.establishment.uid, props.categories).subscribe(
+        data => {
+          this.router.navigate(this.return.url, { fragment: this.return.fragment });
+        },
         error => console.log(error)
       )
     );
@@ -248,7 +258,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
 
   private clearValidators(index: number) {
     this.categoriesArray.controls[index].get('trainingCategory').clearValidators();
-    // this.vacanciesArray.controls[index].get('jobRole').clearValidators();
+    // this.vacanciesArray.controls[index].get('id').clearValidators();
   }
 
   public onVacancyTypeSelectionChange(index: number) {
@@ -270,9 +280,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
-
-    //const props = this.generateUpdateProps();
-
-    //this.updateEstablishment(props);
+    const props = this.generateUpdateProps();
+    this.updateEstablishment(props);
   }
 }

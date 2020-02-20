@@ -122,12 +122,12 @@ export interface Establishment {
   dataOwnershipRequested: string;
   ownershipChangeRequestId?: string;
   linkToParentRequested?: string;
-  address1?: string
-  address2?: string
-  address3?: string
-  town?: string
-  county?: string
-  locationId?: string
+  address1?: string;
+  address2?: string;
+  address3?: string;
+  town?: string;
+  county?: string;
+  locationId?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -142,7 +142,7 @@ export enum jobOptionsEnum {
   DONT_KNOW = "Don't know",
   NONE = 'None',
   ALL = 'All',
-  SELECTED ='selected',
+  SELECTED = 'selected',
 }
 
 export interface LocalIdentifiersRequest {
@@ -174,6 +174,24 @@ export interface CancelOwnerShip {
 export interface setPermission {
   permissionToSet: string;
 }
+
+export interface mandatoryJobs {
+  id: number;
+}
+
+export interface mandatoryTraining {
+  trainingCategoryId: number;
+  allJobRoles: boolean;
+  selectedJobRoles: boolean;
+  jobs: mandatoryJobs[];
+}
+
+export interface mandatoryTrainings {
+  mandatoryTrainingCount: number;
+  allJobRolesCount: number;
+  mandatoryTraining: mandatoryTraining[];
+}
+
 export enum SortStaffOptions {
   '0_asc' = 'Staff name ascending',
   '0_dsc' = 'Staff name descending',

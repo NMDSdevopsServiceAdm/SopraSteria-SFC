@@ -6,6 +6,7 @@ import {
   Establishment,
   LocalIdentifiersRequest,
   LocalIdentifiersResponse,
+  mandatoryTrainings,
   setPermission,
   UpdateJobsRequest,
 } from '@core/model/establishment.model';
@@ -271,5 +272,13 @@ export class EstablishmentService {
   //Send data for de-link to parent
   public removeParentAssociation(establishmentId, data): Observable<Establishment> {
     return this.http.put<Establishment>(`/api/establishment/${establishmentId}/linkToParent/delink`, data);
+  }
+  //get all mandatory training
+  public getAllMandatoryTrainings(establishmentId): Observable<mandatoryTrainings> {
+    return this.http.get<mandatoryTrainings>(`/api/establishment/${establishmentId}/mandatoryTraining`);
+  }
+  //update mandatory training
+  public updateMandatoryTraining(establishmentId, data: any) {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/mandatoryTraining`, data);
   }
 }

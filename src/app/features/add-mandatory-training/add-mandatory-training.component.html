@@ -83,9 +83,9 @@
               <div class="govuk-grid-column-one-half">
                 <select
                   class="govuk-select"
-                  [class.govuk-select--error]="submitted && vacancy.get('jobRole').invalid"
-                  [formControlName]="'jobRole'"
-                  id="jobRole-{{ i }}-{{ j }}"
+                  [class.govuk-select--error]="submitted && vacancy.get('id').invalid"
+                  [formControlName]="'id'"
+                  id="id-{{ i }}-{{ j }}"
                 >
                   <option [ngValue]="null">Select job role</option>
                   <option *ngFor="let job of selectableJobs(i, j)" [value]="job.id">
