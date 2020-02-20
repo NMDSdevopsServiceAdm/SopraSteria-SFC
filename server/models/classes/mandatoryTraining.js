@@ -109,7 +109,7 @@ class MandatoryTraining extends EntityValidator {
           // get job details if doc.allJobRoles === false
           if(!doc.allJobRoles){
             let foundJobRoles = true;
-            if(doc.allJobRoles && Array.isArray(doc.jobs)){
+            if(!doc.allJobRoles && Array.isArray(doc.jobs) && doc.jobs.length > 0){
               for(let j = 0; j < doc.jobs.length; j++){
                 let job = doc.jobs[j];
                 const jobDetails = await models.job.findOne({

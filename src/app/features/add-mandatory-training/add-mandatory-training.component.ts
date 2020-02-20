@@ -91,7 +91,6 @@ export class AddMandatoryTrainingComponent implements OnInit {
       })
     );
 
-    this.subscriptions.add();
   }
 
   private setupForm(): void {
