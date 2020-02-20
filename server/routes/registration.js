@@ -408,7 +408,7 @@ router.route('/')
         // if any part fails, it all fails. So wrap into a single transaction; commit on success and rollback on failure.
         await models.sequelize.transaction(async t => {
           // first - validate given main service id, for which the main service id is dependent on whether the site is CQC regulated or not
-          let serviceResults = null;
+          let serviceResults = null;debugger;
           if (Estblistmentdata.IsRegulated) {
             // if a regulated (CQC) site, then can use any of the services as long as they are a main service
             serviceResults = await models.services.findOne({
@@ -422,7 +422,9 @@ router.route('/')
             serviceResults = await models.services.findOne({
               where: {
                 name: Estblistmentdata.MainService,
-                iscqcregistered: false,
+                iscqcregistered: {
+                  [models.Sequelize.Op.or]: [false, null],
+                },
                 isMain: true
               }
             });
