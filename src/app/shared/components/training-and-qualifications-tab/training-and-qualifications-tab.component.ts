@@ -22,6 +22,7 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
   public totalExpiringTraining;
   public missingMandatoryTraining;
   public totalStaff: number;
+  public isShowAllTrainings: boolean;
   constructor(
     private workerService: WorkerService,
     private establishmentService: EstablishmentService,
@@ -68,6 +69,10 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
     const filename = filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
     const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
     saveAs(blob, filename);
+  }
+
+  public showAllTrainings() {
+    this.isShowAllTrainings = true;
   }
   ngOnDestroy() {
     this.subscriptions.unsubscribe();

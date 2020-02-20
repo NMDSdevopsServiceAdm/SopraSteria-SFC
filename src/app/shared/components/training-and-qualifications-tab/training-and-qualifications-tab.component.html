@@ -3,6 +3,16 @@
     <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
   </div>
   <div class="govuk-grid-column-one-third">
+    <a [routerLink]=""
+    role="button"
+      draggable="false"
+      (click)="showAllTrainings()">
+      <span class="govuk-!-margin-left-1">
+        View all workplace training
+      </span>
+    </a>
+  </div>
+  <div class="govuk-grid-column-one-third">
     <a
       class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
       role="button"
@@ -36,10 +46,26 @@
   ></app-training-info-panel>
 
   <app-training-and-qualifications-summary
-    *ngIf="workers"
+    *ngIf="workers && !isShowAllTrainings"
     [workplace]="workplace"
     [workers]="workers"
   ></app-training-and-qualifications-summary>
+
+  <app-tabs *ngIf="isShowAllTrainings">
+    <app-tab [title]="'Training'">
+      <!-- <app-training [workplace]="workplace" [worker]="worker"
+        (trainingChanged)="trainingAndQualificationsChangedHandler($event)"></app-training> -->
+    </app-tab>
+    <app-tab [title]="'Mandatory Training'">
+       <app-view-all-mandatory-training [worker]="worker"
+        (mandatoryTrainingChanged)="trainingAndQualificationsChangedHandler($event)"></app-view-all-mandatory-training>
+    </app-tab>
+    <app-tab [title]="'Qualifications'">
+      <!-- <app-qualifications [workplace]="workplace" [worker]="worker"
+        (qualificationsChanged)="trainingAndQualificationsChangedHandler($event)"></app-qualifications> -->
+    </app-tab>
+  </app-tabs>
+
 </ng-container>
 <ng-template #noStaffRecords>
   <app-inset-text color="warning">You need to start adding your staff records.</app-inset-text>
