@@ -191,8 +191,7 @@ class MandatoryTraining extends EntityValidator {
           let row = this.mandatorytrainingDetails[i];
           const fetchQuery = {
             where: {
-              establishmentFK: this.establishmentId,
-              trainingCategoryFK: row.trainingCategoryId
+              establishmentFK: this.establishmentId
             }
           };
           await models.MandatoryTraining.destroy(fetchQuery);
