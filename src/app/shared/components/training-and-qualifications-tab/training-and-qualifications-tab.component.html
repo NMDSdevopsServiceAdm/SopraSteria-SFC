@@ -1,6 +1,16 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
+  <h2 class="govuk-heading-m govuk-!-margin-left-1">Staff training and qualifications ({{ totalRecords || 0 }})</h2>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <a class="govuk-list govuk-list--inline" href="#">View all workplace training</a>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <a
+      class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-right-5"
+      [routerLink]="['/add-mandatory-training']"
+      >Set up mandatory training
+    </a>
   </div>
   <div class="govuk-grid-column-one-third">
     <a
@@ -34,11 +44,8 @@
     [totalExpiringTraining]="totalExpiringTraining"
   ></app-training-info-panel>
 
-  <app-training-and-qualifications-summary
-    *ngIf="workers"
-    [workplace]="workplace"
-    [workers]="workers"
-  ></app-training-and-qualifications-summary>
+  <app-training-and-qualifications-summary *ngIf="workers" [workplace]="workplace" [workers]="workers">
+  </app-training-and-qualifications-summary>
 </ng-container>
 <ng-template #noStaffRecords>
   <app-inset-text color="warning">You need to start adding your staff records.</app-inset-text>

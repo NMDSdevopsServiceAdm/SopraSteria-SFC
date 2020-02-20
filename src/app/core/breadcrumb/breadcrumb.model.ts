@@ -7,6 +7,7 @@ export enum JourneyType {
   REPORTS,
   SUBSIDIARY_REPORTS,
   NOTIFICATIONS,
+  MANDATORY_TRAINING,
 }
 
 export interface JourneyRoute {
