@@ -353,6 +353,7 @@ class MandatoryTraining extends EntityValidator {
   static async fetchAllMandatoryTrainings(establishmentId){
     // Fetch all training categories
     const responseToReturn = [];
+    let lastUpdated = null;
     const trainingCategories = await models.workerTrainingCategories.findAll({
       attributes: ['id', 'category']
     });
@@ -417,10 +418,20 @@ class MandatoryTraining extends EntityValidator {
               }
             }
           }
+          if (allCategoryDetails && allCategoryDetails.length === 1) {
+              lastUpdated = allCategoryDetails[0];
+          } else if (allCategoryDetails && allCategoryDetails.length > 1) {
+              lastUpdated = allCategoryDetails.reduce((a, b) => { return a.updated > b.updated ? a : b; });
+          }
         }
       }
     }
-    return responseToReturn;
+    const response = {
+      lastUpdated: lastUpdated ? lastUpdated.updated.toISOString() : undefined,
+      mandatoryTraining: responseToReturn
+    };
+
+    return response;
   }
 
 }
