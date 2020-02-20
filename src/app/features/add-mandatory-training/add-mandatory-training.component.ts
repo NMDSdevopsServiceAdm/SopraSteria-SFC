@@ -233,7 +233,6 @@ export class AddMandatoryTrainingComponent implements OnInit {
         categories: this.categoriesArray.value.map(category => ({
           trainingCategoryId: parseInt(category.trainingCategory, 10),
           allJobRoles: category.vacancyType === jobOptionsEnum.ALL ? true : false,
-          selectedJobRoles: category.vacancyType === jobOptionsEnum.SELECTED ? true : false,
           jobs: category.vacancies,
         })),
       };
