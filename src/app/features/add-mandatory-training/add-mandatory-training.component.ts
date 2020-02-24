@@ -68,6 +68,8 @@ export class AddMandatoryTrainingComponent implements OnInit {
     this.getTrainings();
     this.getJobs();
     this.setupForm();
+    this.setupFormErrorsMap();
+    //this.setupServerErrorsMap();
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(establishment => {
         this.establishment = establishment;
@@ -87,10 +89,16 @@ export class AddMandatoryTrainingComponent implements OnInit {
     //training category
     this.subscriptions.add(
       this.categoriesArray.valueChanges.subscribe(() => {
-        this.categoriesArray.controls[0].get('trainingCategory').setValidators([Validators.required]);
+        /*  this.categoriesArray.controls.forEach(category => {
+          // category.vacancies.controls.forEach(va).get('vacancies').setValidators([Validators.required]);
+          const vacanciesArray = <FormArray>(<FormGroup>category).controls.vacancies;
+          vacanciesArray.controls.forEach(vacancy => {
+            vacancy.get('id').setValidators([Validators.required]);
+          });
+        }); */
+        //   this.categoriesArray.controls[0].get('trainingCategory').setValidators([Validators.required]);
       })
     );
-
   }
 
   private setupForm(): void {
@@ -116,22 +124,6 @@ export class AddMandatoryTrainingComponent implements OnInit {
     );
   }
 
-  private prefill(trainings): void {
-    if (trainings.mandatoryTrainingCount > 0) {
-      // let categoryIndex = 0;
-      trainings.mandatoryTraining.forEach((trainingCategory, categoryIndex) => {
-        const vacancyType =
-          trainings.allJobRolesCount === trainingCategory.jobs.length ? jobOptionsEnum.ALL : jobOptionsEnum.SELECTED;
-        const jobs = vacancyType === jobOptionsEnum.ALL ? [] : trainingCategory.jobs;
-        this.categoriesArray.push(this.createCategoryControl(trainingCategory.trainingCategoryId, vacancyType));
-        this.setVacancy(categoryIndex, jobs);
-        // categoryIndex++;
-      });
-    } else {
-      this.categoriesArray.push(this.createCategoryControl());
-    }
-  }
-
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -139,7 +131,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: 'Training category is required',
+            message: 'Training category is required.',
           },
         ],
       },
@@ -148,16 +140,44 @@ export class AddMandatoryTrainingComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: 'required',
+            message: 'Job role type is required.',
           },
         ],
       },
       {
-        item: 'vacancies.id',
+        item: 'categories.vacancy',
         type: [
           {
             name: 'required',
-            message: 'Job Role is required',
+            message: 'Job Role is requiredM',
+          },
+        ],
+      },
+      {
+        item: 'categories.vacancies',
+        type: [
+          {
+            name: 'required',
+            message: 'Job Role is requiredA',
+          },
+        ],
+      },
+
+      {
+        item: 'id',
+        type: [
+          {
+            name: 'required',
+            message: 'Job Role is requiredA',
+          },
+        ],
+      },
+      {
+        item: 'jobId',
+        type: [
+          {
+            name: 'required',
+            message: 'Job Role is requiredJob',
           },
         ],
       },
@@ -194,24 +214,26 @@ export class AddMandatoryTrainingComponent implements OnInit {
     this.categoriesArray.removeAt(index);
   }
 
-  private createCategoryControl(trainingId = null, vType = 'All'): FormGroup {
+  private createCategoryControl(trainingId = null, vType = jobOptionsEnum.ALL): FormGroup {
     return this.formBuilder.group({
       trainingCategory: [trainingId, [Validators.required]],
       vacancyType: [vType, [Validators.required]],
-      vacancies: this.formBuilder.array([]),
+      vacancies: this.formBuilder.array([], [Validators.required]),
     });
   }
-
-  public setVacancy(index, jobs: any[]) {
-    jobs.forEach(job => {
-      (<FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies).push(
-        this.createVacancyControl(job.id)
-      );
-    });
+  public setCustomValidator(vtype) {
+    // const vacancyType = this.categoriesArray.controls[0].get('vacancyType').value;
+    // const vacancyType = this.form.get('vacancyType').value;
+    if (vtype == jobOptionsEnum.ALL) {
+      return [];
+    } else {
+      return [Validators.required];
+    }
   }
 
   public addVacancy(index): void {
-    (<FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies).push(this.createVacancyControl());
+    const vacancyArray = <FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies;
+    vacancyArray.push(this.createVacancyControl());
   }
 
   public removeVacancy(event: Event, categoryIndex, jobIndex): void {
@@ -224,6 +246,28 @@ export class AddMandatoryTrainingComponent implements OnInit {
     return this.formBuilder.group({
       id: [jobId, [Validators.required]],
     });
+  }
+
+  public setVacancy(index, jobs: any[]) {
+    jobs.forEach(job => {
+      (<FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies).push(
+        this.createVacancyControl(job.id)
+      );
+    });
+  }
+
+  private prefill(trainings): void {
+    if (trainings.mandatoryTrainingCount > 0) {
+      trainings.mandatoryTraining.forEach((trainingCategory, categoryIndex) => {
+        const vacancyType =
+          trainings.allJobRolesCount === trainingCategory.jobs.length ? jobOptionsEnum.ALL : jobOptionsEnum.SELECTED;
+        const jobs = vacancyType === jobOptionsEnum.ALL ? [] : trainingCategory.jobs;
+        this.categoriesArray.push(this.createCategoryControl(trainingCategory.trainingCategoryId, vacancyType));
+        this.setVacancy(categoryIndex, jobs);
+      });
+    } else {
+      this.categoriesArray.push(this.createCategoryControl());
+    }
   }
 
   protected generateUpdateProps(): any {
@@ -261,8 +305,9 @@ export class AddMandatoryTrainingComponent implements OnInit {
 
   public onVacancyTypeSelectionChange(index: number) {
     const vacancyType = this.categoriesArray.controls[index].get('vacancyType').value;
+    let vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies;
     if (vacancyType === 'All') {
-      let vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies;
+      // vacanciesArray.clearValidators();
       while (vacanciesArray.length > 0) {
         vacanciesArray.removeAt(0);
       }
@@ -280,5 +325,9 @@ export class AddMandatoryTrainingComponent implements OnInit {
     }
     const props = this.generateUpdateProps();
     this.updateEstablishment(props);
+  }
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 }

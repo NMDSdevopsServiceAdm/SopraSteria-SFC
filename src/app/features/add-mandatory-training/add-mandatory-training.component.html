@@ -78,17 +78,17 @@
           *ngIf="category.get('vacancies').controls.length > 0"
           formArrayName="vacancies"
         >
-          <div [formGroupName]="j" *ngFor="let vacancy of category.get('vacancies').controls; let j = index">
+          <div [formGroupName]="k" *ngFor="let vacancy of category.get('vacancies').controls; let k = index">
             <div class="govuk-grid-row govuk-!-margin-bottom-6">
               <div class="govuk-grid-column-one-half">
                 <select
                   class="govuk-select"
                   [class.govuk-select--error]="submitted && vacancy.get('id').invalid"
                   [formControlName]="'id'"
-                  id="id-{{ i }}-{{ j }}"
+                  id="id-{{ i }}-{{ k }}"
                 >
                   <option [ngValue]="null">Select job role</option>
-                  <option *ngFor="let job of selectableJobs(i, j)" [value]="job.id">
+                  <option *ngFor="let job of selectableJobs(i, k)" [value]="job.id">
                     {{ job.title }}
                   </option>
                 </select>
@@ -98,7 +98,7 @@
                   class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
                   *ngIf="category.get('vacancies').controls.length > 1"
                   type="button"
-                  (click)="removeVacancy($event, i, j)"
+                  (click)="removeVacancy($event, i, k)"
                 >
                   Delete
                 </button>
