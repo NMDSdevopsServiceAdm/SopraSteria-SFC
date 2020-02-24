@@ -269,16 +269,15 @@ class Training extends EntityValidator {
         if (document.title) {
             // validate title
             const MAX_LENGTH=120;
-            const MIN_LENGTH=3;
-            if (document.title.length < MIN_LENGTH ||
+            if (
                 document.title.length > MAX_LENGTH) {
                     this._validations.push(new ValidationMessage(
                         ValidationMessage.ERROR,
                         110,
-                        `validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`,
+                        `validation: MAX(${MAX_LENGTH}) length`,
                         ['Title']
                     ));
-                    this._log(Training.LOG_ERROR, `title failed validation: title failed validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`);
+                    this._log(Training.LOG_ERROR, `title failed validation: title failed validation: MAX(${MAX_LENGTH}) length`);
                 returnStatus = false;
             }
 
@@ -479,7 +478,7 @@ class Training extends EntityValidator {
                         updatedBy: savedBy.toLowerCase(),
                         source: bulkUploaded ? 'Bulk' : 'Online',
                         categoryFk: this._category.id,
-                        title: this._title,
+                        title: this.title,
                         accredited: this._accredited,
                         completed: this._completed,
                         expires: this._expires,
@@ -531,7 +530,7 @@ class Training extends EntityValidator {
                     // note - if the training was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         categoryFk: this._category.id,
-                        title: this._title,
+                        title: this.title,
                         accredited: this._accredited,
                         completed: this._completed,
                         expires: this._expires,

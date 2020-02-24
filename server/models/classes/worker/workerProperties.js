@@ -35,6 +35,7 @@ const completedProperty = require('./properties/completedProperty').WorkerComple
 const registeredNurseProperty = require('./properties/registeredNurseProperty').RegisteredNurseProperty;
 const nurseSpecialismProperty = require('./properties/nurseSpecialismProperty').NurseSpecialismProperty;
 const localIdentifierProperty = require('./properties/localIdentifierProperty').LocalIdentifierProperty;
+const establishmentFkProperty = require('./properties/establishmentFkProperty').EstablishmentFkProperty;
 
 class WorkerPropertyManager {
     constructor() {
@@ -73,6 +74,7 @@ class WorkerPropertyManager {
         this._thisManager.registerProperty(registeredNurseProperty);
         this._thisManager.registerProperty(nurseSpecialismProperty);
         this._thisManager.registerProperty(localIdentifierProperty);
+        this._thisManager.registerProperty(establishmentFkProperty);
     }
 
     get manager() {

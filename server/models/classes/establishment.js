@@ -45,7 +45,9 @@ const CapacitiesCache = require('../cache/singletons/capacities').CapacitiesCach
 const db = require('../../utils/datastore');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
-const nonCareServices = [16];
+// const nonCareServices = [16, 20, 35, 11, 21, 23, 18, 22, 1, 7, 2, 8, 3, 5, 4, 6, 27, 28, 26, 29, 30, 32, 31, 33, 34, 17, 15, 36, 14];
+// const careBeds = [24, 25, 12];
+// const carePlaces = [9, 10, 19];
 
 class Establishment extends EntityValidator {
   constructor(username, bulkUploadStatus = null) {
@@ -98,7 +100,7 @@ class Establishment extends EntityValidator {
     this._isNew = false;
 
     // all known workers for this establishment - an associative object (property key is the worker's key)
-    this._workerEntities = {};
+    this._workerEntities = [];
     this._readyForDeletionWorkers = null;
 
     // bulk upload status - this is never stored in database
@@ -360,11 +362,8 @@ class Establishment extends EntityValidator {
   }
 
   // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
-  associateWorker(key, worker) {
-    if (key && worker) {
-      // worker not yet associated; take as is
-      this._workerEntities[key] = worker;
-    }
+  associateWorker(worker) {
+    this._workerEntities.push(worker);
   }
 
   // returns just the set of keys of the associated workers
@@ -412,13 +411,6 @@ class Establishment extends EntityValidator {
           document.share.with = document.share.with.filter(item => item !== 'CQC');
         }
         document.locationId = null;
-      }
-
-      // If the main service is not a care provider, remove the capacities and utilisations
-      if (document.mainService) {
-        if (nonCareServices.includes(document.mainService.id)) {
-          document.capacities = [];
-        }
       }
 
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
@@ -529,7 +521,7 @@ class Establishment extends EntityValidator {
               const newWorker = new Worker(null);
 
               // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-              this.associateWorker(thisWorker.key, newWorker);
+              this.associateWorker(newWorker);
               promises.push(newWorker.load(thisWorker, true));
             }
           });
@@ -919,9 +911,12 @@ class Establishment extends EntityValidator {
           // the saving of an Establishment can be initiated within
           //  an external transaction
           const thisTransaction = externalTransaction || t;
-
           // now append the extendable properties
           const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
+          if(modifedUpdateDocument && !modifedUpdateDocument.ShareDataValue){
+            modifedUpdateDocument.shareWithCQC = false;
+            modifedUpdateDocument.shareWithLA = false;
+          }
 
           // note - if the establishment was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {
@@ -1201,7 +1196,6 @@ class Establishment extends EntityValidator {
           },
         };
       }
-
       const fetchResults = await models.establishment.findOne(fetchQuery);
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
@@ -1498,7 +1492,7 @@ class Establishment extends EntityValidator {
 
                 // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
                 // without whitespace
-                this.associateWorker(newWorker.key, newWorker);
+                this.associateWorker(newWorker);
 
                 return {};
               })
@@ -2106,6 +2100,7 @@ class Establishment extends EntityValidator {
     if (isWDF) {
       params = {
         attributes: [
+          'id',
           'uid',
           'updated',
           'parentUid',
@@ -2118,6 +2113,8 @@ class Establishment extends EntityValidator {
           'lastWdfEligibility',
           'establishmentWdfEligibility',
           'NumberOfStaffValue',
+          'ustatus',
+          'postcode',
           [models.sequelize.fn('COUNT', models.sequelize.col('"workers"."ID"')), 'workerCount'],
           [
             models.sequelize.fn(
@@ -2167,11 +2164,13 @@ class Establishment extends EntityValidator {
           'lastWdfEligibility',
           'establishmentWdfEligibility',
           'NumberOfStaffValue',
+          'ustatus'
         ],
       };
     } else {
       params = {
         attributes: [
+          'id',
           'uid',
           'updated',
           'parentUid',
@@ -2180,6 +2179,8 @@ class Establishment extends EntityValidator {
           'dataOwner',
           'dataPermissions',
           'dataOwnershipRequested',
+          'ustatus',
+          'postcode'
         ],
         include: [
           {
@@ -2205,6 +2206,7 @@ class Establishment extends EntityValidator {
     const mappedResults = await Promise.all(
       fetchResults.map(async thisSub => {
         const {
+          id,
           uid,
           updated,
           parentUid,
@@ -2214,9 +2216,12 @@ class Establishment extends EntityValidator {
           dataOwner,
           dataPermissions,
           dataOwnershipRequested,
+          ustatus,
+          postcode
         } = thisSub;
 
         return {
+          id,
           uid,
           updated,
           parentUid,
@@ -2226,6 +2231,8 @@ class Establishment extends EntityValidator {
           dataOwner,
           dataPermissions,
           dataOwnershipRequested,
+          ustatus,
+          postCode: postcode,
           wdf: isWDF
             ? await WdfCalculator.calculateData({
                 thisEstablishment: thisSub,
@@ -2243,8 +2250,8 @@ class Establishment extends EntityValidator {
     const primary = mappedResults.shift();
 
     // Add a boolean flag to indicate the establishment is a parent
-    primary.isParent = !!mappedResults.length;
 
+    primary.isParent = !!mappedResults.length;
     return {
       primary,
       subsidaries: primary.isParent
@@ -2416,6 +2423,7 @@ class Establishment extends EntityValidator {
             "Establishment"."EstablishmentID",
             "EstablishmentUID",
             "NameValue",
+            "Status",
             "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
             CASE WHEN "WorkerTotals"."TotalWorkers" IS NULL THEN 0 ELSE "WorkerTotals"."TotalWorkers" END AS "TotalWorkers"
           from cqc."Establishment"
@@ -2458,6 +2466,7 @@ class Establishment extends EntityValidator {
           missingEstablishments.push({
             uid: thisEstablishment.EstablishmentUID,
             name: thisEstablishment.NameValue,
+            status: thisEstablishment.Status,
             missing: thisEstablishment.EstablishmentLocal === null ? true : undefined,
             workers: parseInt(thisEstablishment.TotalWorkers, 10),
           });

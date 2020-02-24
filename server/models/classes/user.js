@@ -952,7 +952,7 @@ class User {
       include: [
         {
           model: models.login,
-          attributes: ['username', 'lastLogin'],
+          attributes: ['username', 'lastLogin', 'status'],
         },
       ],
       attributes: [
@@ -981,11 +981,12 @@ class User {
           updated: thisUser.updated.toJSON(),
           updatedBy: thisUser.updatedBy,
           isPrimary: thisUser.isPrimary ? true : false,
+          status: thisUser.login && thisUser.login.status ? thisUser.login.status : null
         });
       });
 
       allUsers = allUsers.map(user => {
-        return Object.assign(user, { status: user.username == null ? 'Pending' : 'Active' });
+        return Object.assign(user, { status: user.username == null ? 'Pending' : (user.status !== null)? user.status: 'Active' });
       });
 
       allUsers.sort((a, b) => {
@@ -1206,9 +1207,7 @@ class User {
   // returns false if primary establishment is not found
   async myEstablishments(isParent, isWDF, filters = null) {
     if (filters) throw new Error('Filters not implemented');
-
     const primaryEstablishmentId = this._establishmentId;
-
     return await Establishment.fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF);
   }
 }

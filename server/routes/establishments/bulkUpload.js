@@ -823,7 +823,7 @@ const validateEstablishmentCsv = async (
   await lineValidator.validate();
   if (!lineValidator._ignore) {
     lineValidator.transform();
-
+    
     const thisEstablishmentAsAPI = lineValidator.toAPI();
 
     try {
@@ -1593,6 +1593,7 @@ const restoreExistingEntities = async (
 
     // gets a list of "my establishments", which if a parent, includes all known subsidaries too, and this "parent's" access permissions to those subsidaries
     const myEstablishments = await thisUser.myEstablishments(isParent, null);
+
     keepAlive('establishments retrieved'); // keep connection alive
 
     // having got this list of establishments, now need to fully restore each establishment as entities.
@@ -1611,6 +1612,7 @@ const restoreExistingEntities = async (
     }));
 
     if (myEstablishments.subsidaries && myEstablishments.subsidaries.establishments && Array.isArray(myEstablishments.subsidaries.establishments)) {
+      myEstablishments.subsidaries.establishments = myEstablishments.subsidaries.establishments.filter(est => est.ustatus !== 'PENDING');
       myEstablishments.subsidaries.establishments.forEach(thisSubsidairy => {
         if (!onlyMine || (onlyMine && thisSubsidairy.dataOwner === 'Parent')) {
           const newSub = new Establishment(loggedInUsername, completionBulkUploadStatus);

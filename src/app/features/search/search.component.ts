@@ -1,18 +1,24 @@
+import { Overlay } from '@angular/cdk/overlay';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
+import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { RegistrationsService } from '@core/services/registrations.service';
-import { NotificationsService } from '@core/services/notifications/notifications.service';
-import { take } from 'rxjs/operators';
 import { UserService } from '@core/services/user.service';
+import {
+  AdminUnlockConfirmationDialogComponent,
+} from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
+  providers: [DialogService, AdminUnlockConfirmationDialogComponent, Overlay],
 })
 export class SearchComponent implements OnInit {
   public results = [];
@@ -43,7 +49,8 @@ export class SearchComponent implements OnInit {
     private permissionsService: PermissionsService,
     private notificationsService: NotificationsService,
     private userService: UserService,
-    private registrationsService: RegistrationsService
+    private registrationsService: RegistrationsService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit() {
@@ -76,6 +83,18 @@ export class SearchComponent implements OnInit {
       },
       error => this.onError(error)
     );
+  }
+
+  public unlockUser(username: string, index: number, e) {
+    e.preventDefault();
+    const data = {
+      username,
+      index,
+      removeUnlock: () => {
+        this.results[index].isLocked = false;
+      }
+    }
+    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
   }
 
   public searchType(data, type) {
@@ -173,13 +192,20 @@ export class SearchComponent implements OnInit {
   protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/dashboard'] });
   }
-
-  public approveUser(username: string, approved: boolean, index: number) {
-    const data = {
-      username,
+  //used to approve workplace or user registration
+  public approveRegistration(usernameOrId: string, approved: boolean, index: number, isEstablishment: boolean) {
+    let data;
+    data = {
+      username: usernameOrId,
       approve: approved,
     };
+    if (isEstablishment) {
+      data = {
+        establishmentId: usernameOrId,
+        approve: approved,
+      };
+    }
     this.registrations.splice(index, 1);
-    this.registrationsService.userApproval(data).subscribe();
+    this.registrationsService.registrationApproval(data).subscribe();
   }
 }

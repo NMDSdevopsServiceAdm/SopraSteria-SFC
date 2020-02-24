@@ -155,10 +155,11 @@
             <th class="govuk-table__header" scope="col">Security Question</th>
             <th class="govuk-table__header" scope="col">Security Answer</th>
             <th class="govuk-table__header" scope="col">Parent ID</th>
+            <th class="govuk-table__header" scope="col">Locked</th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
-          <tr class="govuk-table__row" *ngFor="let item of results">
+          <tr class="govuk-table__row" *ngFor="let item of results; index as index">
             <td class="govuk-table__cell">{{ item.username }}</td>
             <td class="govuk-table__cell">{{ item.name }}</td>
             <td class="govuk-table__cell">
@@ -174,6 +175,9 @@
               {{
                 item.establishment.parent && item.establishment.parent.nmdsId ? item.establishment.parent.nmdsId : ''
               }}
+            </td>
+            <td class="govuk-table__cell">
+              <a (click)="unlockUser(item.username, index, $event)" href="#" *ngIf="item.isLocked">Unlock</a>
             </td>
           </tr>
         </tbody>
@@ -226,18 +230,22 @@
               <td class="govuk-table__cell">
                 {{ registration.created }}
               </td>
-              <th class="govuk-table__cell">Username</th>
-              <td class="govuk-table__cell">
+              <th *ngIf="registration.username" class="govuk-table__cell">Username</th>
+              <td *ngIf="registration.username" class="govuk-table__cell">
                 {{ registration.username }}
               </td>
+              <th *ngIf="registration.establishment.parentEstablishmentId" class="govuk-table__cell">Parent Establishment ID</th>
+              <td *ngIf="registration.establishment.parentEstablishmentId" class="govuk-table__cell">
+                {{ registration.establishment.parentEstablishmentId }}
+              </td>
             </tr>
-            <tr class="govuk-table__row">
+            <tr *ngIf="registration.name"class="govuk-table__row">
               <th class="govuk-table__cell">Name</th>
               <td class="govuk-table__cell" colspan="3">
                 {{ registration.name }}
               </td>
             </tr>
-            <tr class="govuk-table__row">
+            <tr *ngIf="registration.email" class="govuk-table__row">
               <th class="govuk-table__cell">Email</th>
               <td class="govuk-table__cell">
                 <a href="mailto:{{ registration.email }}">{{ registration.email }}</a>
@@ -247,7 +255,7 @@
                 {{ registration.phone }}
               </td>
             </tr>
-            <tr class="govuk-table__row">
+            <tr *ngIf="registration.securityQuestion" class="govuk-table__row">
               <th class="govuk-table__cell">Security question</th>
               <td class="govuk-table__cell">
                 {{ registration.securityQuestion }}
@@ -300,14 +308,25 @@
             </tr>
             <tr class="govuk-table__row">
               <td class="gov-uk-table__cell" colspan="4">
-                <div class="govuk-button-group">
+                <div class="govuk-button-group" *ngIf="registration.email" >
                   <button
                     class="govuk-button govuk-button--warning govuk-util__float-right"
-                    (click)="approveUser(registration.username, false, i)"
+                    (click)="approveRegistration(registration.username, false, i,false)"
                   >
                     Reject
                   </button>
-                  <button class="govuk-button" (click)="approveUser(registration.username, true, i)">
+                  <button class="govuk-button" (click)="approveRegistration(registration.username, true, i,false)">
+                    Approve
+                  </button>
+                </div>
+                <div class="govuk-button-group" *ngIf="!registration.email" >
+                  <button
+                    class="govuk-button govuk-button--warning govuk-util__float-right"
+                    (click)="approveRegistration(registration.establishment.id, false, i,true)"
+                  >
+                    Reject
+                  </button>
+                  <button class="govuk-button" (click)="approveRegistration(registration.establishment.id, true, i,true)">
                     Approve
                   </button>
                 </div>

@@ -23,6 +23,11 @@ class PropertyPrototype {
     get modified() {
         return this._modified;
     }
+
+    get allowNull() {
+      return this._allowNull;
+  }
+
     reset() {
         this._modified = false;
     }

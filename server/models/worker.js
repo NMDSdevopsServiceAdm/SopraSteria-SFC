@@ -16,7 +16,6 @@ module.exports = function(sequelize, DataTypes) {
     LocalIdentifierValue: {
       type: DataTypes.TEXT,
       allowNull: true,
-      unique: true,
       field: '"LocalIdentifierValue"'
     },
     LocalIdentifierSavedAt : {
@@ -43,6 +42,26 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: '"EstablishmentFK"'
+    },
+    EstablishmentFkSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EstablishmentFkSavedAt"'
+    },
+    EstablishmentFkChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EstablishmentFkChangedAt"'
+    },
+    EstablishmentFkSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EstablishmentFkSavedBy"'
+    },
+    EstablishmentFkChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EstablishmentFkChangedBy"'
     },
     lastWdfEligibility: {
       type: DataTypes.DATE,

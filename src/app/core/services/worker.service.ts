@@ -44,6 +44,7 @@ export class WorkerService {
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
+  public tabChanged: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
 
