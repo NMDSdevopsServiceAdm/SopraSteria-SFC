@@ -29,7 +29,8 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   public mandatoryTrainings;
   public qualifications: Qualification[];
   public mandatoryTrainingsDetails = [];
-  public qualificationDetailsLabel = [];
+  public mandatoryAllTrainingsDetails = [];
+  public mandatoryTrainingsDetailsLabel = [];
   public establishmentId: number;
   private subscriptions: Subscription = new Subscription();
 
@@ -47,12 +48,11 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
     this.establishmentService.establishment$.subscribe(data => {
       if (data && data.id) {
         this.establishmentId = data.id;
+        this.canEditWorker = this.permissionsService.can(data.uid, 'canEditWorker');
         this.fetchAllRecords();
       }
     })
     );
-
-  //  this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
   // deleteQualification(record, event) {
@@ -80,17 +80,18 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
       // console.log(groupBy(this.mandatoryTrainings, 'workers'))
        this.mandatoryTrainings.forEach(training => {
         let mandatoryTrainingObj = {
+          id: '',
           category: '',
           status: '',
           quantity: '',
           workers: ''
           };
         let missingMandatoryTrainingCount = 0;
+        mandatoryTrainingObj.id = training.id;
         mandatoryTrainingObj.category = training.category;
         mandatoryTrainingObj.quantity = training.workers.length;
-        mandatoryTrainingObj.workers = training.workers;
-
         if (training.workers && training.workers.length > 0) {
+          mandatoryTrainingObj.workers = training.workers;
           training.workers.forEach(worker => {
             missingMandatoryTrainingCount += worker.missingMandatoryTrainingCount;
           });
@@ -99,8 +100,9 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
           } else {
             mandatoryTrainingObj.status = `${missingMandatoryTrainingCount} Missing`;
           }
+        } else {
+          mandatoryTrainingObj.status = 'Up-to-date';
         }
-        mandatoryTrainingObj.status = 'Up-to-date';
         this.mandatoryTrainingsDetails.push(mandatoryTrainingObj);
        });
        this.mandatoryTrainings = this.mandatoryTrainingsDetails;
@@ -110,14 +112,14 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
 
   /**
    * Function used to hadle toggle for traing details view and change training details lable
-   * @param {string} qualification uid of clicked row
+   * @param {number} id of clicked row
    * @param {event} refrance of event handler
    */
-  // public toggleDetails(uid: string, event) {
-  //   event.preventDefault();
-  //   this.qualificationDetails[uid] = !this.qualificationDetails[uid];
-  //   this.qualificationDetailsLabel[uid] = this.qualificationDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
-  // }
+  public toggleDetails(id: number, event) {
+    event.preventDefault();
+    this.mandatoryAllTrainingsDetails[id] = !this.mandatoryAllTrainingsDetails[id];
+    this.mandatoryTrainingsDetailsLabel[id] = this.mandatoryTrainingsDetailsLabel[id] === 'Close' ? 'Open' : 'Close';
+  }
   public getRoute() {
     this.workerService.getRoute$.next(this.router.url);
   }
