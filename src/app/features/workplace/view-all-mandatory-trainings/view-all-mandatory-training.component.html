@@ -43,18 +43,26 @@
             >
           </td>
         </tr>
-        {{mandatoryTraining.id}}
         <tr *ngIf="mandatoryAllTrainingsDetails[mandatoryTraining.id]" class="govuk-panel--gray ">
           <td colspan="5">
-            <div class="govuk-grid-row govuk-!-margin-2">
+            <div class="govuk-grid-row govuk-!-margin-2" *ngFor="let worker of mandatoryTraining.workers">
               <div class="govuk-grid-column-one-quarter">
                 <strong> Worker ID</strong>
+                <div>
+                  {{ worker.name }}
+                </div>
               </div>
               <div class="govuk-grid-column-one-quarter">
                 <strong> Job role</strong>
+                <div>
+                  {{ worker.mainJob?.title }}
+                </div>
               </div>
               <div class="govuk-grid-column-one-quarter">
                 <strong> Status</strong>
+                <div>
+                  {{ worker.missingMandatoryTrainingCount }}
+                </div>
               </div>
               <div class="govuk-grid-column-one-quarter">
               </div>
