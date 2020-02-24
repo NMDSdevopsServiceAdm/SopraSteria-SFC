@@ -92,6 +92,7 @@ class Establishment {
     this._reasonsForLeaving = null;
 
     this._id = null;
+    this._ignore = false;
 
     // console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   }
@@ -457,18 +458,26 @@ class Establishment {
     }
   }
 
-  _validateAddress () {
+  async _validateAddress () {
     const myAddress1 = this._currentLine.ADDRESS1;
     const myAddress2 = this._currentLine.ADDRESS2;
     const myAddress3 = this._currentLine.ADDRESS3;
     const myTown = this._currentLine.POSTTOWN;
     const myPostcode = this._currentLine.POSTCODE;
+    let ignorePostcode = false;
 
     // TODO - if town is empty, match against PAF
-    // TODO - validate postcode against PAF
 
     // adddress 1 is mandatory and no more than 40 characters
     const MAX_LENGTH = 40;
+    const postcodeExists = await models.pcodedata.findAll({
+      where: {
+        postcode: myPostcode
+      },
+      order: [
+        ['uprn', 'ASC']
+      ]
+    });
 
     const localValidationErrors = [];
     if (!myAddress1 || myAddress1.length === 0) {
@@ -522,7 +531,6 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
     }
-
     // TODO - registration/establishment APIs do not validate postcode (relies on the frontend - this must be fixed)
     const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
     const POSTCODE_MAX_LENGTH = 10;
@@ -553,6 +561,26 @@ class Establishment {
         source: myPostcode,
         name: this._currentLine.LOCALESTID
       });
+    } else if (this._status === 'NEW' && !postcodeExists.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: Establishment.ADDRESS_ERROR,
+        warnType: 'ADDRESS_ERROR',
+        warning: 'Workplace will be ignored. The Postcode for this workplace cannot be found in our database and must be registered manually.',
+        source: myPostcode,
+        name: this._currentLine.LOCALESTID
+      });
+      this._ignore = true;
+    } else if (this._status === 'UPDATE' && !postcodeExists.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: Establishment.ADDRESS_ERROR,
+        warnType: 'ADDRESS_ERROR',
+        warning: 'The POSTCODE cannot be found in our database and will be ignored.',
+        source: myPostcode,
+        name: this._currentLine.LOCALESTID
+      });
+      ignorePostcode = true;
     }
 
     if (localValidationErrors.length > 0) {
@@ -565,7 +593,9 @@ class Establishment {
     this._address2 = myAddress2;
     this._address3 = myAddress3;
     this._town = myTown;
-    this._postcode = myPostcode;
+    if (!ignorePostcode) {
+      this._postcode = myPostcode;
+    }
 
     return true;
   }
@@ -1425,6 +1455,42 @@ class Establishment {
     return true;
   }
 
+  _crossValidateAllJobRoles (
+    csvEstablishmentSchemaErrors,
+    registeredManager
+    )
+    {
+    const template = {
+      origin: 'Establishments',
+      lineNumber: this._lineNumber,
+      errCode: Establishment.ALL_JOBS_ERROR,
+      errType: 'ALL_JOBS_ERROR',
+      source: this._currentLine.ALLJOBROLES,
+      name: this._currentLine.LOCALESTID
+    };
+    const allJobs = this._currentLine.ALLJOBROLES.split(';');
+    const vacancies = this._currentLine.VACANCIES.split(';');
+    const myRegType = parseInt(this._currentLine.REGTYPE, 10);
+
+    const regManager = 4;
+    const isCQCRegulated = myRegType === 2;
+
+    const hasRegisteredManagerVacancy =() => {
+      let regManagerVacancies = 0;
+      allJobs.map((job, index) => {
+        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) regManagerVacancies++;
+      });
+      return regManagerVacancies > 0;
+    };
+
+    if(isCQCRegulated && !hasRegisteredManagerVacancy() && registeredManager === 0) {
+      console.log('They have no RMs');
+      csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+        error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one'
+      }));
+    }
+  }
+
   // includes perm, temp, pool, agency, student, voluntary and other counts
   // includes vacancies, starters and leavers, total vacancies, total starters and total leavers
   _validateJobRoleTotals () {
@@ -2033,7 +2099,7 @@ class Establishment {
 
     // if the status is unchecked or deleted, then don't continue validation
     if (!STOP_VALIDATING_ON.includes(this._status)) {
-      status = !this._validateAddress() ? false : status;
+      status = await this._validateAddress() ? false : status;
       status = !this._validateEstablishmentType() ? false : status;
 
       status = !this._validateShareWithCQC() ? false : status;
@@ -2078,6 +2144,8 @@ class Establishment {
       nonEmployedWorkers: 0
     };
 
+    let registeredManagers = 0;
+
     // ignoreDBWorkers is used as a hashmap of workers that are being modified
     // as part of this bulk upload process. It allows us to prevent a worker's
     // details
@@ -2085,7 +2153,6 @@ class Establishment {
     // the establishment
     // i.e. ignore the worker record that comes back from the database result set.
     const ignoreDBWorkers = Object.create(null);
-
     myWorkers.forEach(worker => {
       if (this.key === worker.establishmentKey) {
         switch (worker.status) {
@@ -2093,6 +2160,13 @@ class Establishment {
           case 'UPDATE': {
             /* update totals */
             updateWorkerTotals(totals, worker);
+            if (worker.mainJobRoleId === 4) {
+              registeredManagers++;
+            } else {
+              worker.otherJobIds.map(otherJobId => {
+                otherJobId === 4 ? registeredManagers++ : null;
+              });
+            }
           }
           /* fall through */
 
@@ -2104,6 +2178,7 @@ class Establishment {
     });
 
     // get all the other records that may already exist in the db but aren't being updated or deleted
+    // and check how many registered managers there is
     (await fetchMyEstablishmentsWorkers(this.id, this._key))
       .forEach(worker => {
         worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
@@ -2116,8 +2191,11 @@ class Establishment {
         }
       });
 
+
+
     // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
     this._crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, totals);
+    this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }
 
   // returns true on success, false is any attribute of Establishment fails
