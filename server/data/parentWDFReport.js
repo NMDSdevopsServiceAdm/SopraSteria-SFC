@@ -3,7 +3,7 @@
 const db = rfr('server/utils/datastore');
 
 const effectiveDate = rfr('server/models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
-
+console.log(effectiveDate)
 const getEstablishmentDataQuery =
 `
 SELECT
@@ -32,7 +32,7 @@ SELECT
       COUNT(:zero)
     FROM
       cqc."Worker"
-      LEFT JOIN
+    LEFT JOIN
         cqc."Job"
       ON
         "Worker"."MainJobFKValue" = "Job"."JobID"
@@ -48,7 +48,9 @@ SELECT
       "EstablishmentFK" = "Establishment"."EstablishmentID" AND
       ("GenderValue" IS NOT NULL)  AND
       ("DateOfBirthValue" IS NOT NULL)  AND
-      ("NationalityValue" IS NOT NULL OR ("NationalityValue" = :Other AND ("Nationality"."Nationality" IS NOT NULL OR "Nationality"."Nationality" != :emptyValue))) AND
+      (("NationalityValue" IS NOT NULL AND "Nationality"."Nationality" IS NOT NULL)
+	    OR ("NationalityValue" = :Other AND "Nationality"."Nationality" IS NOT NULL)
+	    OR ("NationalityValue" = 'Don''t know')) AND
       ("Job"."JobName" IS NOT NULL OR "Job"."JobName" != :emptyValue)  AND
       ("MainJobStartDateValue" IS NOT NULL)  AND
       ("RecruitedFromValue" IS NOT NULL)  AND
@@ -59,11 +61,11 @@ SELECT
       ("AnnualHourlyPayValue" IS NOT NULL) AND
       ("AnnualHourlyPayRate" IS NOT NULL) AND
       ("CareCertificateValue" IS NOT NULL) AND
-      ("QualificationInSocialCareValue" IS NOT NULL OR ("QualificationInSocialCareValue" = :No OR "QualificationInSocialCareValue" = :Dont) OR ("Qualification"."Level" IS NOT NULL OR "Qualification"."Level" != :emptyValue))  AND
+      ("QualificationInSocialCareValue" IS NOT NULL OR ("QualificationInSocialCareValue" = :No OR "QualificationInSocialCareValue" = 'Don''t know') OR ("Qualification"."Level" IS NOT NULL OR "Qualification"."Level" != :emptyValue))  AND
       ("OtherQualificationsValue" IS NOT NULL) AND
-      "LastWdfEligibility" > :effectiveDate AND
+      "Worker"."LastWdfEligibility" > :effectiveDate AND
       ("DataOwner" = :Parent OR "DataPermissions" = :WorkplaceStaff) AND
-      "Archived" = :falseFlag
+      "Worker"."Archived" = :falseFlag
   ) AS "CompletedWorkerRecords",
   array_to_string(array(
     SELECT
@@ -175,7 +177,6 @@ exports.getEstablishmentData = async establishmentId =>
       Vacancies: 'Vacancies',
       Starters: 'Starters',
       Leavers: 'Leavers',
-      Dont: 'Don\'t know',
       Other: 'Other',
       No: 'No',
       emptyValue: '',

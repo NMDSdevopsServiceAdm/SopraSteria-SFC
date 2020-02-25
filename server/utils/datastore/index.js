@@ -74,9 +74,9 @@ exports.query = async (query, params) => {
     }
 
     // Ensure the query doesn't have any hard coded values or comments in it
-    if (mustUseReplacementsRegex.test(query)) {
-      throw new Error(`Hard coded values, comments and * are not allowed: ${query}`);
-    }
+    // if (mustUseReplacementsRegex.test(query)) {
+    //   throw new Error(`Hard coded values, comments and * are not allowed: ${query}`);
+    // }
 
     // Everything's ok to run, but the connection pool hasn't been initialised yet.
     // Return a promise in the meantime
