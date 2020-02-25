@@ -271,9 +271,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
           this.router.navigate(this.return.url, { fragment: this.return.fragment });
         },
         error => {
-          if (error.error.message) {
-            this.serverError = error.error.message;
-          }
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         }
       )
     );
