@@ -1,15 +1,16 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
+  <h2 class="govuk-heading-m govuk-!-margin-left-1">Staff training and qualifications ({{ totalRecords || 0 }})</h2>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <a class="govuk-list govuk-list--inline" role="button"
+    draggable="false" [routerLink]="" (click)="showAllTrainings()">View all workplace training</a>
   </div>
   <div class="govuk-grid-column-one-third">
-    <a [routerLink]=""
-    role="button"
-      draggable="false"
-      (click)="showAllTrainings()">
-      <span class="govuk-!-margin-left-1">
-        View all workplace training
-      </span>
+    <a
+      class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-right-5"
+      [routerLink]="['/add-mandatory-training']"
+      >Set up mandatory training
     </a>
   </div>
   <div class="govuk-grid-column-one-third">

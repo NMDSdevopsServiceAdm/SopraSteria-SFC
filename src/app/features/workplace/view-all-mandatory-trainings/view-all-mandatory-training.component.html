@@ -43,7 +43,7 @@
             >
           </td>
         </tr>
-        <tr *ngIf="mandatoryAllTrainingsDetails[mandatoryTraining.id]" class="govuk-panel--gray ">
+        <tr *ngIf="mandatoryAllTrainingsDetails[mandatoryTraining.id]" class="govuk-panel--gray govuk-!-margin-2">
           <td colspan="5">
             <table class="govuk-table">
               <thead class="govuk-table__head">
@@ -59,7 +59,7 @@
                   <tr class="govuk-table__row">
                     <td class="govuk-table__cell govuk-!-font-weight-regular">
                       <a class="govuk-link--no-visited-state"
-                  href="#">{{ worker.name }}</a>
+                      [routerLink]="getWorkerRecordPath(worker)">{{ worker.name }}</a>
                     </td>
                     <td class="govuk-table__cell govuk-!-font-weight-regular">
                       {{ worker.mainJob?.title }}
@@ -73,7 +73,6 @@
                       {{ Up-to-date }}
                     </span>
                     </td>
-                    <td class="govuk-table__cell govuk-!-font-weight-regular"></td>
                   </tr>
                 </ng-container>
               </tbody>

@@ -22,7 +22,7 @@ import { stringify } from 'querystring';
 })
 export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   @Input() worker: Worker;
-  @Input() workplace: Establishment;
+  @Input() wdfView = false;
   @Output() mandatoryTrainingChanged: EventEmitter<boolean> = new EventEmitter();
   public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
@@ -32,6 +32,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   public mandatoryAllTrainingsDetails = [];
   public mandatoryTrainingsDetailsLabel = [];
   public establishmentId: number;
+  public establishmentUid: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -48,6 +49,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
     this.establishmentService.establishment$.subscribe(data => {
       if (data && data.id) {
         this.establishmentId = data.id;
+        this.establishmentUid = data.uid;
         this.canEditWorker = this.permissionsService.can(data.uid, 'canEditWorker');
         this.fetchAllRecords();
       }
@@ -55,22 +57,10 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
     );
   }
 
-  // deleteQualification(record, event) {
-  //   event.preventDefault();
-  //   const dialog = this.dialogService.open(DeleteQualificationDialogComponent, {
-  //     nameOrId: this.worker.nameOrId,
-  //     record,
-  //   });
-  //   dialog.afterClosed.pipe(take(1)).subscribe(confirm => {
-  //     if (confirm) {
-  //       this.workerService.deleteQualification(this.workplace.uid, this.worker.uid, record.uid).subscribe(() => {
-  //         this.workerService.alert = { type: 'success', message: 'Qualification has been deleted.' };
-  //         this.fetchAllRecords();
-  //         this.mandatoryTrainingChanged.emit(true);
-  //       });
-  //     }
-  //   });
-  // }
+  public getWorkerRecordPath(worker: Worker) {
+    const path = ['/workplace', this.establishmentUid, 'staff-record', worker.uid];
+    return this.wdfView ? [...path, ...['wdf-summary']] : path;
+  }
 
   fetchAllRecords() {
     this.subscriptions.add(
