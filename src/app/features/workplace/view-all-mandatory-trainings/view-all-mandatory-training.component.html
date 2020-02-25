@@ -71,8 +71,8 @@
                         <img class= "govuk-util__vertical-align-top" src="/assets/images/flag-red.svg" alt="Missing" />
                         {{ worker.missingMandatoryTrainingCount }} Missing
                       </span>
-                      <span *ngIf ="worker.missingMandatoryTrainingCount === 0">
-                        {{ Up-to-date }}
+                      <span *ngIf ="!worker.missingMandatoryTrainingCount > 0">
+                         Up-to-date
                       </span>
                       </td>
                     </tr>
