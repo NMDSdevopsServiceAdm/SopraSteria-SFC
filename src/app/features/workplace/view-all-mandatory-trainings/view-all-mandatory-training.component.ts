@@ -1,27 +1,17 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { Establishment } from '@core/model/establishment.model';
 import { Qualification } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
-import { DialogService } from '@core/services/dialog.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { WorkerService } from '@core/services/worker.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {
-  DeleteQualificationDialogComponent,
-} from '@features/workers/delete-qualification-dialog/delete-qualification-dialog.component';
 import * as moment from 'moment';
-import { take, groupBy } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-view-all-mandatory-training',
   templateUrl: './view-all-mandatory-training.component.html',
 })
 export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
-  @Input() worker: Worker;
   @Input() wdfView = false;
   @Output() mandatoryTrainingChanged: EventEmitter<boolean> = new EventEmitter();
   public canEditWorker: boolean;
@@ -36,12 +26,9 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private workerService: WorkerService,
     private permissionsService: PermissionsService,
     private establishmentService: EstablishmentService,
-    private router: Router,
     private workplaceService: WorkplaceService,
-    private dialogService: DialogService
   ) {}
 
   ngOnInit() {
@@ -62,12 +49,15 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
     return this.wdfView ? [...path, ...['wdf-summary']] : path;
   }
 
-  fetchAllRecords() {
+  /**
+   * Function will fetch all the workers mandatory training record.
+   */
+
+  public fetchAllRecords() {
     this.subscriptions.add(
     this.workplaceService.getAllMandatoryTrainings(this.establishmentId).subscribe(data => {
        this.lastUpdated = moment(data.lastUpdated);
        this.mandatoryTrainings = data.mandatoryTraining;
-      // console.log(groupBy(this.mandatoryTrainings, 'workers'))
        this.mandatoryTrainings.forEach(training => {
         let mandatoryTrainingObj = {
           id: '',
@@ -101,7 +91,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Function used to hadle toggle for traing details view and change training details lable
+   * Function used to handle toggle for worker details view and change the lable
    * @param {number} id of clicked row
    * @param {event} refrance of event handler
    */
@@ -109,9 +99,6 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.mandatoryAllTrainingsDetails[id] = !this.mandatoryAllTrainingsDetails[id];
     this.mandatoryTrainingsDetailsLabel[id] = this.mandatoryTrainingsDetailsLabel[id] === 'Close' ? 'Open' : 'Close';
-  }
-  public getRoute() {
-    this.workerService.getRoute$.next(this.router.url);
   }
 
   ngOnDestroy(): void {
