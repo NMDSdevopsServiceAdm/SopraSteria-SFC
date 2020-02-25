@@ -408,6 +408,7 @@ class MandatoryTraining extends EntityValidator {
                 }
                 findAddedCategory[0].workers.push({
                   id: allCategoryDetails[j].worker.id,
+                  uid: allCategoryDetails[j].worker.uid,
                   name: allCategoryDetails[j].worker.NameOrIdValue,
                   mainJob: {
                     id: allCategoryDetails[j].worker.mainJob.id,
