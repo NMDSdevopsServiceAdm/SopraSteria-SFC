@@ -182,7 +182,7 @@ export interface mandatoryJobs {
 export interface mandatoryTraining {
   trainingCategoryId: number;
   allJobRoles: boolean;
-  selectedJobRoles: boolean;
+  selectedJobRoles?: boolean;
   jobs: mandatoryJobs[];
 }
 
@@ -190,6 +190,9 @@ export interface mandatoryTrainings {
   mandatoryTrainingCount: number;
   allJobRolesCount: number;
   mandatoryTraining: mandatoryTraining[];
+}
+export interface mandatoryTrainingCategories {
+  categories: mandatoryTraining[];
 }
 
 export enum SortStaffOptions {

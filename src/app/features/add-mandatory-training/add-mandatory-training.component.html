@@ -5,7 +5,6 @@
   [form]="form"
 >
 </app-error-summary>
-
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">Mandatory Training</h1>
@@ -22,12 +21,16 @@
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <ng-container formArrayName="categories">
-      <div
-        *ngFor="let category of categoriesArray.controls; let i = index"
-        [formGroupName]="i"
-        [class.govuk-form-group--error]="submitted && category.invalid"
-      >
-        <div class="govuk-grid-row govuk-!-margin-bottom-1">
+      <div *ngFor="let category of categoriesArray.controls; let i = index" [formGroupName]="i">
+        <div
+          class="govuk-grid-row govuk-!-margin-bottom-1"
+          [class.govuk-form-group--error]="submitted && category.get('trainingCategory').invalid"
+        >
+          <span *ngIf="submitted" id="trainingCategory-{{ i }}-error" class="govuk-error-message govuk-!-margin-left-3">
+            <ng-container *ngIf="submitted && category.get('trainingCategory').invalid">
+              {{ getFormErrorMessage('categories.trainingCategory', 'required') }}
+            </ng-container>
+          </span>
           <div class="govuk-grid-column-two-thirds">
             <select
               class="govuk-select govuk-!-width-full"
@@ -52,7 +55,8 @@
               Delete
             </button>
           </div>
-
+        </div>
+        <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds govuk-!-margin-top-6">
             <div class="govuk-radios govuk-radios--inline">
               {{ vacancyType }}
@@ -72,14 +76,26 @@
             </div>
           </div>
         </div>
-
         <div
           class="govuk-grid-row govuk-radios__conditional"
           *ngIf="category.get('vacancies').controls.length > 0"
           formArrayName="vacancies"
         >
-          <div [formGroupName]="k" *ngFor="let vacancy of category.get('vacancies').controls; let k = index">
+          <div
+            [formGroupName]="k"
+            *ngFor="let vacancy of category.get('vacancies').controls; let k = index"
+            [class.govuk-form-group--error]="submitted && vacancy.get('id').invalid"
+          >
             <div class="govuk-grid-row govuk-!-margin-bottom-6">
+              <span
+                *ngIf="submitted && vacancy.get('id').invalid"
+                id="id-{{ i }}-{{ k }}-error"
+                class="govuk-error-message govuk-!-margin-left-3"
+              >
+                <ng-container *ngIf="vacancy.get('id').invalid">
+                  {{ getFormErrorMessage('vacancies.id', 'required') }}
+                </ng-container>
+              </span>
               <div class="govuk-grid-column-one-half">
                 <select
                   class="govuk-select"
@@ -122,7 +138,6 @@
           </div>
         </div>
       </div>
-
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
           <button
@@ -138,6 +153,4 @@
     </ng-container>
   </fieldset>
   <app-submit-exit-buttons [return]="return"></app-submit-exit-buttons>
-
-  {{ form.getRawValue() | json }}
 </form>
