@@ -362,29 +362,44 @@ class Establishment extends EntityValidator {
   }
 
   // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
-  associateWorker(worker) {
-    this._workerEntities.push(worker);
+  associateWorker(key, worker) {
+    if (key && worker) {
+      // worker not yet associated; take as is
+      this._workerEntities.push({key: key, worker: worker});
+    }
   }
 
   // returns just the set of keys of the associated workers
   get associatedWorkers() {
+    let workerKeys = [];
     if (this._workerEntities) {
-      return Object.keys(this._workerEntities);
-    } else {
-      return [];
+      this._workerEntities.forEach(worker => {
+        workerKeys.push(worker.key);
+      });
     }
+    return workerKeys;
   }
 
   get workers() {
+    let workerObjects = [];
     if (this._workerEntities) {
-      return Object.values(this._workerEntities);
-    } else {
-      return [];
+      this._workerEntities.forEach(worker => {
+        workerObjects.push(worker.worker);
+      });
     }
+    return workerObjects;
   }
 
   theWorker(key) {
-    return this._workerEntities && key ? this._workerEntities[key] : null;
+    let foundWorker = null
+    if(this._workerEntities && key){
+      for(let i = 0; i < this._workerEntities.length; i++){
+        if(key === this._workerEntities[i].key){
+          foundWorker = this._workerEntities[i].worker;
+        }
+      }
+    }
+    return foundWorker;
   }
 
   // takes the given JSON document and creates an Establishment's set of extendable properties
@@ -521,14 +536,14 @@ class Establishment extends EntityValidator {
               const newWorker = new Worker(null);
 
               // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-              this.associateWorker(newWorker);
+              this.associateWorker(thisWorker.key, newWorker);
               promises.push(newWorker.load(thisWorker, true));
             }
           });
 
           // this has updated existing Worker associations and/or added new Worker associations
           // however, how do we mark for deletion those no longer required
-          Object.values(this._workerEntities).forEach(thisWorker => {
+          this.workers.forEach(thisWorker => {
             const foundWorker = document.workers.find(givenWorker => {
               return givenWorker.key === thisWorker.key;
             });
@@ -580,7 +595,7 @@ class Establishment extends EntityValidator {
       const log = result => result == null;
 
       try {
-        const workersAsArray = Object.values(this._workerEntities).map(thisWorker => {
+        const workersAsArray = this.workers.map(thisWorker => {
           thisWorker.establishmentId = this._id;
           return thisWorker;
         });
@@ -1196,6 +1211,7 @@ class Establishment extends EntityValidator {
           },
         };
       }
+
       const fetchResults = await models.establishment.findOne(fetchQuery);
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
@@ -1492,7 +1508,7 @@ class Establishment extends EntityValidator {
 
                 // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
                 // without whitespace
-                this.associateWorker(newWorker);
+                this.associateWorker(newWorker.key, newWorker);
 
                 return {};
               })
@@ -1557,7 +1573,7 @@ class Establishment extends EntityValidator {
         // if deleting this establishment, and if requested, then delete all the associated entities (workers) too
         if (associatedEntities && this._workerEntities) {
           await Promise.all(
-            Object.values(this._workerEntities).map(thisWorker => thisWorker.archive(deletedBy, thisTransaction))
+            this.workers.map(thisWorker => thisWorker.archive(deletedBy, thisTransaction))
           );
         }
 
@@ -1735,7 +1751,7 @@ class Establishment extends EntityValidator {
           ...myDefaultJSON,
           ...myJSON,
           workers: includeAssociatedEntities
-            ? Object.values(this._workerEntities).map(thisWorker => thisWorker.toJSON(false, false, false, false, true))
+            ? this.workers.map(thisWorker => thisWorker.toJSON(false, false, false, false, true))
             : undefined,
         };
       }
