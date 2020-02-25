@@ -141,8 +141,11 @@ export enum jobOptionsEnum {
   // tslint:disable-next-line: quotemark
   DONT_KNOW = "Don't know",
   NONE = 'None',
-  ALL = 'all',
-  SELECTED = 'selected',
+}
+
+export enum mandatoryTrainingJobOption {
+  all = 'all',
+  selected = 'selected',
 }
 
 export interface LocalIdentifiersRequest {
@@ -186,7 +189,7 @@ export interface mandatoryTraining {
   jobs: mandatoryJobs[];
 }
 
-export interface mandatoryTrainings {
+export interface allMandatoryTrainingCategories {
   mandatoryTrainingCount: number;
   allJobRolesCount: number;
   mandatoryTraining: mandatoryTraining[];

@@ -1,12 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import {
+  allMandatoryTrainingCategories,
   CancelOwnerShip,
   ChangeOwner,
   Establishment,
   LocalIdentifiersRequest,
   LocalIdentifiersResponse,
-  mandatoryTrainings,
+  mandatoryTraining,
   setPermission,
   UpdateJobsRequest,
 } from '@core/model/establishment.model';
@@ -274,11 +275,11 @@ export class EstablishmentService {
     return this.http.put<Establishment>(`/api/establishment/${establishmentId}/linkToParent/delink`, data);
   }
   //get all mandatory training
-  public getAllMandatoryTrainings(establishmentId): Observable<mandatoryTrainings> {
-    return this.http.get<mandatoryTrainings>(`/api/establishment/${establishmentId}/mandatoryTraining`);
+  public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
+    return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
   }
   //update mandatory training
-  public updateMandatoryTraining(establishmentId, data: any) {
+  public updateMandatoryTraining(establishmentId, data: mandatoryTraining) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/mandatoryTraining`, data);
   }
 }

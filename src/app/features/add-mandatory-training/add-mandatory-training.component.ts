@@ -4,10 +4,10 @@ import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import {
+  allMandatoryTrainingCategories,
   Establishment,
-  jobOptionsEnum,
   mandatoryTrainingCategories,
-  mandatoryTrainings,
+  mandatoryTrainingJobOption,
 } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { TrainingCategory } from '@core/model/training.model';
@@ -37,15 +37,15 @@ export class AddMandatoryTrainingComponent implements OnInit {
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
   public return: URLStructure;
-  public existingMandatoryTrainings: mandatoryTrainings;
+  public existingMandatoryTrainings: allMandatoryTrainingCategories;
   public vacanciesOptions = [
     {
       label: 'For all job roles',
-      value: jobOptionsEnum.ALL,
+      value: mandatoryTrainingJobOption.all,
     },
     {
       label: `For selected job roles only.`,
-      value: jobOptionsEnum.SELECTED,
+      value: mandatoryTrainingJobOption.selected,
     },
   ];
   constructor(
@@ -69,8 +69,8 @@ export class AddMandatoryTrainingComponent implements OnInit {
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
     this.return = { url: ['/dashboard'], fragment: 'staff-training-and-qualifications' };
-    this.getTrainings();
-    this.getJobs();
+    this.getAllTrainingCategories();
+    this.getAlJobs();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
@@ -97,8 +97,8 @@ export class AddMandatoryTrainingComponent implements OnInit {
       categories: this.formBuilder.array([]),
     });
   }
-  //get all vailable jobs
-  private getJobs(): void {
+  //get all jobs
+  private getAlJobs(): void {
     this.subscriptions.add(
       this.jobService
         .getJobs()
@@ -106,8 +106,8 @@ export class AddMandatoryTrainingComponent implements OnInit {
         .subscribe(jobs => (this.jobs = jobs))
     );
   }
-  //get all available trainings
-  private getTrainings(): void {
+  //get all trainings
+  private getAllTrainingCategories(): void {
     this.subscriptions.add(
       this.trainingService
         .getCategories()
@@ -186,7 +186,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
   }
 
   // create training category contral to add new training
-  private createCategoryControl(trainingId = null, vType = jobOptionsEnum.ALL): FormGroup {
+  private createCategoryControl(trainingId = null, vType = mandatoryTrainingJobOption.all): FormGroup {
     return this.formBuilder.group({
       trainingCategory: [trainingId, [Validators.required]],
       vacancyType: [vType, [Validators.required]],
@@ -239,8 +239,10 @@ export class AddMandatoryTrainingComponent implements OnInit {
     if (trainings.mandatoryTrainingCount > 0) {
       trainings.mandatoryTraining.forEach((trainingCategory, categoryIndex) => {
         const vacancyType =
-          trainings.allJobRolesCount === trainingCategory.jobs.length ? jobOptionsEnum.ALL : jobOptionsEnum.SELECTED;
-        const jobs = vacancyType === jobOptionsEnum.ALL ? [] : trainingCategory.jobs;
+          trainings.allJobRolesCount === trainingCategory.jobs.length
+            ? mandatoryTrainingJobOption.all
+            : mandatoryTrainingJobOption.selected;
+        const jobs = vacancyType === mandatoryTrainingJobOption.all ? [] : trainingCategory.jobs;
         this.categoriesArray.push(this.createCategoryControl(trainingCategory.trainingCategoryId, vacancyType));
         this.setVacancy(categoryIndex, jobs);
       });
@@ -255,7 +257,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
       return {
         categories: this.categoriesArray.value.map(category => ({
           trainingCategoryId: parseInt(category.trainingCategory, 10),
-          allJobRoles: category.vacancyType === jobOptionsEnum.ALL ? true : false,
+          allJobRoles: category.vacancyType === mandatoryTrainingJobOption.all ? true : false,
           jobs: category.vacancies,
         })),
       };
@@ -281,7 +283,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
   public onVacancyTypeSelectionChange(index: number) {
     const vacancyType = this.categoriesArray.controls[index].get('vacancyType').value;
     let vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies;
-    if (vacancyType === jobOptionsEnum.ALL) {
+    if (vacancyType === mandatoryTrainingJobOption.all) {
       while (vacanciesArray.length > 0) {
         vacanciesArray.removeAt(0);
       }
