@@ -283,7 +283,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
   public onVacancyTypeSelectionChange(index: number) {
     const vacancyType = this.categoriesArray.controls[index].get('vacancyType').value;
     let vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies;
-    if (vacancyType === 'All') {
+    if (vacancyType === jobOptionsEnum.ALL) {
       while (vacanciesArray.length > 0) {
         vacanciesArray.removeAt(0);
       }

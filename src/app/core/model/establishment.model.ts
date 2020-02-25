@@ -141,7 +141,7 @@ export enum jobOptionsEnum {
   // tslint:disable-next-line: quotemark
   DONT_KNOW = "Don't know",
   NONE = 'None',
-  ALL = 'All',
+  ALL = 'all',
   SELECTED = 'selected',
 }
 
