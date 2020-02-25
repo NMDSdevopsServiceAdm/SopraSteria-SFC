@@ -1,6 +1,17 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
+  <h2 class="govuk-heading-m govuk-!-margin-left-1">Staff training and qualifications ({{ totalRecords || 0 }})</h2>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <a class="govuk-list govuk-list--inline" role="button"
+    draggable="false" [routerLink]="" (click)="showAllTrainings()">View all workplace training</a>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <a
+      class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-right-5"
+      [routerLink]="['/add-mandatory-training']"
+      >Set up mandatory training
+    </a>
   </div>
   <div class="govuk-grid-column-one-third">
     <a
@@ -36,10 +47,26 @@
   ></app-training-info-panel>
 
   <app-training-and-qualifications-summary
-    *ngIf="workers"
+    *ngIf="workers && !isShowAllTrainings"
     [workplace]="workplace"
     [workers]="workers"
   ></app-training-and-qualifications-summary>
+
+  <app-tabs *ngIf="isShowAllTrainings">
+    <app-tab [title]="'Training'">
+      <!-- <app-training [workplace]="workplace" [worker]="worker"
+        (trainingChanged)="trainingAndQualificationsChangedHandler($event)"></app-training> -->
+    </app-tab>
+    <app-tab [title]="'Mandatory Training'">
+       <app-view-all-mandatory-training
+        (mandatoryTrainingChanged)="trainingAndQualificationsChangedHandler($event)"></app-view-all-mandatory-training>
+    </app-tab>
+    <app-tab [title]="'Qualifications'">
+      <!-- <app-qualifications [workplace]="workplace" [worker]="worker"
+        (qualificationsChanged)="trainingAndQualificationsChangedHandler($event)"></app-qualifications> -->
+    </app-tab>
+  </app-tabs>
+
 </ng-container>
 <ng-template #noStaffRecords>
   <app-inset-text color="warning">You need to start adding your staff records.</app-inset-text>
