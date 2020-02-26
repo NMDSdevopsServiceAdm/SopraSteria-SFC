@@ -422,7 +422,9 @@ router.route('/')
             serviceResults = await models.services.findOne({
               where: {
                 name: Estblistmentdata.MainService,
-                iscqcregistered: false,
+                iscqcregistered: {
+                  [models.Sequelize.Op.or]: [false, null],
+                },
                 isMain: true
               }
             });
