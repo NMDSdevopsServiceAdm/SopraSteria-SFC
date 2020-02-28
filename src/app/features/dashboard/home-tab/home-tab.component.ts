@@ -245,7 +245,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public setPermissionLinks() {
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
-    this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
+    this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =
