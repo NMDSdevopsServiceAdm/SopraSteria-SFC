@@ -249,9 +249,9 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =
-      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner !== 'Workplace';
+      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner !== 'Workplace' && this.user.role!= 'Read';
     this.canViewDataPermissionsLink =
-      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner === 'Workplace';
+      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner === 'Workplace' && this.user.role!= 'Read';
     this.canViewReports =
       this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
       this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
