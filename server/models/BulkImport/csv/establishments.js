@@ -888,8 +888,6 @@ class Establishment {
         },
         attributes: ['id', 'locationId']
       });
-      console.log(this._id);
-      console.log(locationExists);
       let existingEstablishment = false;
       await locationExists.map(async (establishment) => {
         if (establishment.id === this._id) existingEstablishment = true;
@@ -1259,7 +1257,6 @@ class Establishment {
     const MAX_TOTAL = 999;
     const myTotalPermTemp = parseInt(this._currentLine.TOTALPERMTEMP, 10);
     const HEAD_OFFICE_MAIN_SERVICE = 72;
-    console.log('Total Perm Temp', this._currentLine.TOTALPERMTEMP);
 
     if (myTotalPermTemp.length === 0) {
       this._validationErrors.push({
@@ -1488,7 +1485,6 @@ class Establishment {
     };
 
     if(isCQCRegulated && !hasRegisteredManagerVacancy() && registeredManager === 0) {
-      console.log('They have no RMs');
       csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
         error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one'
       }));
