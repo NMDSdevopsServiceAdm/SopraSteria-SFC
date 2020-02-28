@@ -823,7 +823,7 @@ const validateEstablishmentCsv = async (
   await lineValidator.validate();
   if (!lineValidator._ignore) {
     lineValidator.transform();
-    
+
     const thisEstablishmentAsAPI = lineValidator.toAPI();
 
     try {
@@ -1318,6 +1318,14 @@ const validateBulkUploadFiles = async (
       csvEstablishmentSchemaErrors,
       myWorkers,
       fetchMyEstablishmentsWorkers: Establishment.fetchMyEstablishmentsWorkers
+    });
+  }));
+
+  // Run validations that require information about establishments
+  await Promise.all(myWorkers.map(async worker => {
+    await worker.crossValidate({
+      csvWorkerSchemaErrors,
+      myEstablishments
     });
   }));
 
