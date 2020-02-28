@@ -1424,7 +1424,6 @@ class Worker {
       source: this._currentLine.MAINJOBROLE
     };
 
-    console.log(cqcRegEstablishment, this.mainJobRoleId);
     if (!cqcRegEstablishment && this.mainJobRoleId === 4) {
       csvWorkerSchemaErrors.unshift(Object.assign(template, {
         error: 'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role'
@@ -2641,7 +2640,6 @@ class Worker {
 
     myEstablishments.forEach(establishment => {
       if (this.establishmentKey === establishment.key) {
-        console.log('Found establishment');
         switch (establishment.status) {
           case 'NEW':
           case 'UPDATE': {
