@@ -7,9 +7,9 @@
 </app-error-summary>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-xl">Mandatory Training</h1>
+    <h1 class="govuk-heading-xl">Mandatory training</h1>
     <p>
-      Diffrent care providers make diffrent type of training mandatory depending on their main service and the people
+      Different care providers make different type of training mandatory depending on their main service and the people
       they provide care for.
     </p>
     <p>
@@ -45,15 +45,15 @@
               </option>
             </select>
           </div>
-          <div class="govuk-grid-column-one-third">
-            <button
+          <div class="govuk-grid-column-one-third govuk-!-margin-top-2">
+            <a
               *ngIf="categoriesArray.length > 1"
-              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-!-margin-left-3"
-              type="button"
+              href="#"
+              class="govuk-list govuk-list--inline "
               (click)="removeCategory($event, i)"
             >
-              Delete
-            </button>
+              Delete</a
+            >
           </div>
         </div>
         <div class="govuk-grid-row">
@@ -109,15 +109,14 @@
                   </option>
                 </select>
               </div>
-              <div class="govuk-grid-column-one-half">
-                <button
-                  class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+              <div class="govuk-grid-column-one-half govuk-!-margin-top-2">
+                <a
                   *ngIf="category.get('vacancies').controls.length > 1"
-                  type="button"
+                  href="#"
+                  class="govuk-list govuk-list--inline "
                   (click)="removeVacancy($event, i, k)"
-                >
-                  Delete
-                </button>
+                  >Delete
+                </a>
               </div>
             </div>
           </div>
