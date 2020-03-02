@@ -44,7 +44,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
       value: mandatoryTrainingJobOption.all,
     },
     {
-      label: `For selected job roles only.`,
+      label: `For selected job roles only`,
       value: mandatoryTrainingJobOption.selected,
     },
   ];
@@ -55,7 +55,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     private jobService: JobService,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   get categoriesArray(): FormArray {
@@ -85,9 +85,9 @@ export class AddMandatoryTrainingComponent implements OnInit {
             if (error.error.message) {
               this.serverError = error.error.message;
             }
-          }
+          },
         );
-      })
+      }),
     );
   }
 
@@ -103,7 +103,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
       this.jobService
         .getJobs()
         .pipe(take(1))
-        .subscribe(jobs => (this.jobs = jobs))
+        .subscribe(jobs => (this.jobs = jobs)),
     );
   }
   //get all trainings
@@ -112,7 +112,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
       this.trainingService
         .getCategories()
         .pipe(take(1))
-        .subscribe(trainings => (this.trainings = trainings))
+        .subscribe(trainings => (this.trainings = trainings)),
     );
   }
   //setup form error message
@@ -132,7 +132,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: 'A job Role is required',
+            message: 'A job role is required.',
           },
         ],
       },
@@ -169,8 +169,8 @@ export class AddMandatoryTrainingComponent implements OnInit {
         !this.categoriesArray.controls.some(
           category =>
             category !== this.categoriesArray.controls[index] &&
-            parseInt(category.get('trainingCategory').value, 10) === training.id
-        )
+            parseInt(category.get('trainingCategory').value, 10) === training.id,
+        ),
     );
   }
 
@@ -200,8 +200,8 @@ export class AddMandatoryTrainingComponent implements OnInit {
     return this.jobs.filter(
       job =>
         !vacanciesArray.controls.some(
-          vacancy => vacancy !== vacanciesArray.controls[jobIndex] && parseInt(vacancy.get('id').value, 10) === job.id
-        )
+          vacancy => vacancy !== vacanciesArray.controls[jobIndex] && parseInt(vacancy.get('id').value, 10) === job.id,
+        ),
     );
   }
 
@@ -229,7 +229,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
   public setVacancy(index, jobs: any[]) {
     jobs.forEach(job => {
       (<FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies).push(
-        this.createVacancyControl(job.id)
+        this.createVacancyControl(job.id),
       );
     });
   }
@@ -274,8 +274,8 @@ export class AddMandatoryTrainingComponent implements OnInit {
         },
         error => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
-      )
+        },
+      ),
     );
   }
 
