@@ -1120,7 +1120,7 @@ const validateBulkUploadFiles = async (
 
       if (allWorkersByKey[keyNoWhitespace]) {
         // this worker is a duplicate
-        csvWorkerSchemaErrors.push(thisWorker.addDuplicate(allWorkersByKey[keyNoWhitespace]));
+        csvWorkerSchemaErrors.push(thisWorker.addDuplicate(thisWorker.uniqueWorker));
 
         // remove the entity
         delete myAPIWorkers[thisWorker.lineNumber];
@@ -1128,7 +1128,7 @@ const validateBulkUploadFiles = async (
       // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
       } else if (changeKeyNoWhitespace && allWorkersByKey[changeKeyNoWhitespace]) {
         // this worker is a duplicate
-        csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(allWorkersByKey[keyNoWhitespace]));
+        csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(thisWorker.changeUniqueWorker));
 
         // remove the entity
         delete myAPIWorkers[thisWorker.lineNumber];

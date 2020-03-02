@@ -2489,13 +2489,13 @@ class Worker {
   }
 
   // add a duplicate validation error to the current set
-  addDuplicate (originalLineNumber) {
+  addDuplicate (UNIQUEWORKERID) {
     return {
       origin: 'Workers',
       lineNumber: this._lineNumber,
       errCode: Worker.DUPLICATE_ERROR,
       errType: 'DUPLICATE_ERROR',
-      error: 'UNIQUEWORKERID is not unique',
+      error: `UNIQUEWORKERID ${UNIQUEWORKERID} is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID
@@ -2503,13 +2503,13 @@ class Worker {
   }
 
   // add a duplicate validation error to the current set
-  addChgDuplicate (originalLineNumber) {
+  addChgDuplicate (CHGUNIQUEWORKERID) {
     return {
       origin: 'Workers',
       lineNumber: this._lineNumber,
       errCode: Worker.DUPLICATE_ERROR,
       errType: 'DUPLICATE_ERROR',
-      error: 'CHGUNIQUEWORKERID is not unique',
+      error: `CHGUNIQUEWORKERID ${CHGUNIQUEWORKERID} is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID
