@@ -342,9 +342,9 @@ class Worker extends EntityValidator {
           document.yearArrived = { value: null, year: null };
         }
       }
-
+      const notContract = ['Agency', 'Pool/Bank']
       // Remove contracted hours If on a zero hour contract
-      if (document.zeroHoursContract === 'Yes' || document.contract === 'Agency') {
+      if (document.zeroHoursContract === 'Yes' || notContract.includes(document.contract)) {
         document.weeklyHoursContracted = { value: null, hours: null };
       }
 
