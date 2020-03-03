@@ -13,7 +13,7 @@
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">User account</span>
           <h1 class="govuk-fieldset__heading">
-            Create a username
+            Create a username and password
           </h1>
         </legend>
 
@@ -22,7 +22,7 @@
             Username
           </label>
           <span id="username-hint" class="govuk-hint">
-            You will use this to sign in. It should be unique to you
+            You will use this to sign in. It should be unique to you.
           </span>
           <span *ngIf="submitted && getUsername.errors" id="username-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
@@ -44,7 +44,7 @@
               Password
             </label>
             <span id="createPasswordInput-hint" class="govuk-hint">
-              This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
+              This must be at least 8 characters, contain one uppercase and one lowercase letter and a number.
             </span>
             <span
               *ngIf="submitted && getPassword.errors"
