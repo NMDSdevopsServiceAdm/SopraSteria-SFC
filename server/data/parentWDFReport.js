@@ -124,7 +124,6 @@ SELECT
   "StartersValue",
   "LeaversValue",
   "NumberOfStaffValue",
-
   updated,
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
   "ShareDataWithCQC",

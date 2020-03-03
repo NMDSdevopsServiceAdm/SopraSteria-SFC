@@ -168,7 +168,7 @@ const getEstablishmentReportData = async establishmentId => {
     value.EstablishmentDataFullyCompleted = 'Yes';
 
     propsNeededToComplete.forEach(prop => {
-      if (value[prop] === null || value[prop] === '') {
+      if (value[prop] === null || value[prop] === '' || value[prop] === 'Missing') {
         value.EstablishmentDataFullyCompleted = 'No';
       }
     });
