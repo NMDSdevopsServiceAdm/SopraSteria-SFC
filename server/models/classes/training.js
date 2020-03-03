@@ -812,20 +812,23 @@ class Training extends EntityValidator {
      * Function used to get all training expired and expiring soon counts for a worker id
      * @param {number} establishmentId
      * @param {object} workerRecords
-     * @return {array} Modified worker records while adding training counts for each worker object
+     * @return {array} Modified worker records while adding training counts & missing mandatory training counts for each worker object
      */
-    static async getExpiringAndExpiredTrainingCounts(establishmentId, workerRecords){
+    static async getAllRequiredCounts(establishmentId, workerRecords){
       if(workerRecords.length !== 0){
         let currentDate = moment();
         for(let i = 0; i < workerRecords.length; i++){
           const allTrainingRecords = await Training.fetch(establishmentId, workerRecords[i].uid);
+          workerRecords[i].trainingCount = 0;
+          workerRecords[i].expiredTrainingCount = 0;
+          workerRecords[i].expiringTrainingCount = 0;
+          workerRecords[i].missingMandatoryTrainingCount = 0;
           if(allTrainingRecords && allTrainingRecords.training.length > 0){
+            workerRecords[i].missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, workerRecords[i], allTrainingRecords.training);
             workerRecords[i].trainingCount = allTrainingRecords.training.length;
-            workerRecords[i].expiredTrainingCount = 0;
-            workerRecords[i].expiringTrainingCount = 0;
-            //calculate all expired and expiring soon trainings count
-            let trainings = allTrainingRecords.training.length;
-            for(let j = 0; j < trainings; j++){
+            //calculate all expired and expiring soon training count
+            let trainings = allTrainingRecords.training;
+            for(let j = 0; j < trainings.length; j++){
               if(allTrainingRecords.training[j].expires){
                 let expiringDate = moment(allTrainingRecords.training[j].expires);
                 let daysDiffrence = expiringDate.diff(currentDate, 'days');
@@ -836,14 +839,46 @@ class Training extends EntityValidator {
                 }
               }
             }
-          }else{
-            workerRecords[i].trainingCount = 0;
-            workerRecords[i].expiredTrainingCount = 0;
-            workerRecords[i].expiringTrainingCount = 0;
           }
         }
         return workerRecords;
       }
+    }
+
+    /**
+     * Function used to get all missing mandatory training counts for a worker id
+     * @param {number} establishmentId
+     * @param {object} workerRecords
+     * @param {array} trainingLists
+     * @return {array} Modified worker records while adding training counts & missing mandatory training counts for each worker object
+     */
+    static async getAllMissingMandatoryTrainingCounts(establishmentId, workerRecords, trainingLists){
+        // check for missing mandatory training
+        const fetchMandatoryTrainingResults = await models.MandatoryTraining.findAll({
+            where: {
+                establishmentFK: establishmentId,
+                jobFK: workerRecords.mainJob.jobId
+            }
+        });
+        let mandatoryTrainingLength = fetchMandatoryTrainingResults ? fetchMandatoryTrainingResults.length: 0;
+        let trainingLength = trainingLists.length;
+        if(mandatoryTrainingLength > 0){
+            let missingMandatoryTrainingCount = 0;
+            for(let i = 0; i < mandatoryTrainingLength; i++){
+              let foundMandatoryTraining = false;
+              for(let j = 0; j < trainingLength; j++){
+                if(fetchMandatoryTrainingResults[i].trainingCategoryFK === trainingLists[j].trainingCategory.id){
+                  foundMandatoryTraining = true;
+                }
+              }
+              if(!foundMandatoryTraining){
+                missingMandatoryTrainingCount++;
+              }
+            }
+            return missingMandatoryTrainingCount;
+        }else{
+            return 0;
+        }
     }
 };
 

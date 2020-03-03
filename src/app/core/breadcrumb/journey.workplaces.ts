@@ -26,7 +26,7 @@ export const myWorkplaceJourney: JourneyRoute = {
       path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
       referrer: {
         path: Path.DASHBOARD,
-        fragment: 'training-and-qualifications',
+        fragment: 'staff-training-and-qualifications',
       },
     },
     {
@@ -77,7 +77,7 @@ export const allWorkplacesJourney: JourneyRoute = {
               path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
               referrer: {
                 path: Path.WORKPLACE,
-                fragment: 'training-and-qualifications',
+                fragment: 'staff-training-and-qualifications',
               },
             },
             {
