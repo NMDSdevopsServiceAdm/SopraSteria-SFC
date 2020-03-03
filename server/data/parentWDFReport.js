@@ -3,11 +3,10 @@
 const db = rfr('server/utils/datastore');
 
 const effectiveDate = rfr('server/models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
-console.log(effectiveDate)
 const getEstablishmentDataQuery =
 `
 SELECT
-  "Establishment"."EstablishmentID",
+  est."EstablishmentID",
   "NmdsID",
   "NameValue" AS "SubsidiaryName",
   "DataOwner",
@@ -24,7 +23,7 @@ SELECT
     FROM
       cqc."Worker"
     WHERE
-      "Worker"."EstablishmentFK" = "Establishment"."EstablishmentID"
+      "Worker"."EstablishmentFK" = est."EstablishmentID"
       and "Archived" = false
   ) AS "TotalIndividualWorkerRecord",
   (
@@ -32,6 +31,10 @@ SELECT
       COUNT(:zero)
     FROM
       cqc."Worker"
+    JOIN
+       cqc."Establishment" e
+    ON
+       e."EstablishmentID" = "Worker"."EstablishmentFK"
     LEFT JOIN
         cqc."Job"
       ON
@@ -45,7 +48,7 @@ SELECT
       ON
         "Worker"."SocialCareQualificationFKValue" = "Qualification"."ID"
     WHERE
-      "EstablishmentFK" = "Establishment"."EstablishmentID" AND
+      "EstablishmentFK" = est."EstablishmentID" AND
       ("GenderValue" IS NOT NULL)  AND
       ("DateOfBirthValue" IS NOT NULL)  AND
       (("NationalityValue" IS NOT NULL AND "Nationality"."Nationality" IS NOT NULL)
@@ -81,7 +84,7 @@ SELECT
     ON
       a."EstablishmentID" = c."EstablishmentID"
     WHERE
-      c."EstablishmentID" = "Establishment"."EstablishmentID"
+      c."EstablishmentID" = est."EstablishmentID"
   ), :separator) AS "OtherServices",
   array_to_string(array(
     SELECT
@@ -93,7 +96,7 @@ SELECT
     ON
       a."ServiceUserID" = b."ID"
     WHERE
-      a."EstablishmentID" = "Establishment"."EstablishmentID"
+      a."EstablishmentID" = est."EstablishmentID"
   ), :separator) AS "ServiceUsers",
   (
     SELECT
@@ -101,7 +104,7 @@ SELECT
     FROM
       cqc."EstablishmentJobs"
     WHERE
-      "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
+      "EstablishmentJobs"."EstablishmentID" = est."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Vacancies
   ) AS "VacanciesCount",
   (
@@ -110,7 +113,7 @@ SELECT
     FROM
       cqc."EstablishmentJobs"
     WHERE
-      "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
+      "EstablishmentJobs"."EstablishmentID" = est."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Starters
   ) AS "StartersCount",
   (
@@ -119,7 +122,7 @@ SELECT
     FROM
       cqc."EstablishmentJobs"
     WHERE
-      "EstablishmentJobs"."EstablishmentID" = "Establishment"."EstablishmentID" AND
+      "EstablishmentJobs"."EstablishmentID" = est."EstablishmentID" AND
       "EstablishmentJobs"."JobType" = :Leavers
   ) AS "LeaversCount",
   "VacanciesValue",
@@ -131,16 +134,16 @@ SELECT
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
   "ShareDataWithCQC",
   "ShareDataWithLA",
-  (select count("LeaveReasonFK") from cqc."Worker" where "EstablishmentFK" = "Establishment"."EstablishmentID") as "ReasonsForLeaving",
+  (select count("LeaveReasonFK") from cqc."Worker" where "EstablishmentFK" = est."EstablishmentID") as "ReasonsForLeaving",
   "Status"
 FROM
-  cqc."Establishment"
+  cqc."Establishment" est
 LEFT JOIN
   cqc.services as MainService
 ON
-  "Establishment"."MainServiceFKValue" = MainService.id
+   est."MainServiceFKValue" = MainService.id
 WHERE
-  ("Establishment"."EstablishmentID" = :establishmentId OR "Establishment"."ParentID" = :establishmentId) AND
+  (est."EstablishmentID" = :establishmentId OR est."ParentID" = :establishmentId) AND
   "Archived" = :falseFlag
 ORDER BY
   "EstablishmentID";
