@@ -100,7 +100,7 @@ class Establishment extends EntityValidator {
     this._isNew = false;
 
     // all known workers for this establishment - an associative object (property key is the worker's key)
-    this._workerEntities = [];
+    this._workerEntities = {};
     this._readyForDeletionWorkers = null;
 
     // bulk upload status - this is never stored in database
@@ -362,8 +362,11 @@ class Establishment extends EntityValidator {
   }
 
   // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
-  associateWorker(worker) {
-    this._workerEntities.push(worker);
+  associateWorker(key, worker) {
+    if (key && worker) {
+      // worker not yet associated; take as is
+      this._workerEntities[key] = worker;
+    }
   }
 
   // returns just the set of keys of the associated workers
@@ -521,7 +524,7 @@ class Establishment extends EntityValidator {
               const newWorker = new Worker(null);
 
               // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-              this.associateWorker(newWorker);
+              this.associateWorker(thisWorker.key, newWorker);
               promises.push(newWorker.load(thisWorker, true));
             }
           });
@@ -1196,6 +1199,7 @@ class Establishment extends EntityValidator {
           },
         };
       }
+
       const fetchResults = await models.establishment.findOne(fetchQuery);
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
