@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,12 +22,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public trainingAlert: number;
 
+
   constructor(
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private userService: UserService,
-    private workerService: WorkerService
-  ) {}
+    private workerService: WorkerService,
+    private notificationsService: NotificationsService,
+  ) { }
 
   ngOnInit() {
     this.workplace = this.establishmentService.primaryWorkplace;
@@ -68,6 +71,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
       url: ['/dashboard'],
       fragment: 'user-accounts',
     });
+
+    //get latest notification after every 30 seconds
+    this.subscriptions.add(
+      interval(30000).subscribe(
+        () => {
+          this.notificationsService.getAllNotifications().subscribe(
+            notifications => {
+              this.notificationsService.notifications$.next(notifications);
+            },
+            error => {
+              console.error(error.error);
+            }
+          );
+        }
+      )
+    );
   }
 
   /**
@@ -89,6 +108,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     } else {
       return 0;
     }
+  }
+
+  get numberOfNewNotifications() {
+    const newNotifications = this.notificationsService.notifications.filter(notification => !notification.isViewed);
+    return newNotifications.length;
   }
 
   ngOnDestroy(): void {

@@ -100,7 +100,7 @@ class Establishment extends EntityValidator {
     this._isNew = false;
 
     // all known workers for this establishment - an associative object (property key is the worker's key)
-    this._workerEntities = {};
+    this._workerEntities = [];
     this._readyForDeletionWorkers = null;
 
     // bulk upload status - this is never stored in database
@@ -365,29 +365,41 @@ class Establishment extends EntityValidator {
   associateWorker(key, worker) {
     if (key && worker) {
       // worker not yet associated; take as is
-      this._workerEntities[key] = worker;
+      this._workerEntities.push({key: key, worker: worker});
     }
   }
 
   // returns just the set of keys of the associated workers
   get associatedWorkers() {
+    let workerKeys = [];
     if (this._workerEntities) {
-      return Object.keys(this._workerEntities);
-    } else {
-      return [];
+      this._workerEntities.forEach(worker => {
+        workerKeys.push(worker.key);
+      });
     }
+    return workerKeys;
   }
 
   get workers() {
+    let workerObjects = [];
     if (this._workerEntities) {
-      return Object.values(this._workerEntities);
-    } else {
-      return [];
+      this._workerEntities.forEach(worker => {
+        workerObjects.push(worker.worker);
+      });
     }
+    return workerObjects;
   }
 
   theWorker(key) {
-    return this._workerEntities && key ? this._workerEntities[key] : null;
+    let foundWorker = null
+    if(this._workerEntities && key){
+      for(let i = 0; i < this._workerEntities.length; i++){
+        if(key === this._workerEntities[i].key){
+          foundWorker = this._workerEntities[i].worker;
+        }
+      }
+    }
+    return foundWorker;
   }
 
   // takes the given JSON document and creates an Establishment's set of extendable properties
@@ -531,7 +543,7 @@ class Establishment extends EntityValidator {
 
           // this has updated existing Worker associations and/or added new Worker associations
           // however, how do we mark for deletion those no longer required
-          Object.values(this._workerEntities).forEach(thisWorker => {
+          this.workers.forEach(thisWorker => {
             const foundWorker = document.workers.find(givenWorker => {
               return givenWorker.key === thisWorker.key;
             });
@@ -583,7 +595,7 @@ class Establishment extends EntityValidator {
       const log = result => result == null;
 
       try {
-        const workersAsArray = Object.values(this._workerEntities).map(thisWorker => {
+        const workersAsArray = this.workers.map(thisWorker => {
           thisWorker.establishmentId = this._id;
           return thisWorker;
         });
@@ -1561,7 +1573,7 @@ class Establishment extends EntityValidator {
         // if deleting this establishment, and if requested, then delete all the associated entities (workers) too
         if (associatedEntities && this._workerEntities) {
           await Promise.all(
-            Object.values(this._workerEntities).map(thisWorker => thisWorker.archive(deletedBy, thisTransaction))
+            this.workers.map(thisWorker => thisWorker.archive(deletedBy, thisTransaction))
           );
         }
 
@@ -1739,7 +1751,7 @@ class Establishment extends EntityValidator {
           ...myDefaultJSON,
           ...myJSON,
           workers: includeAssociatedEntities
-            ? Object.values(this._workerEntities).map(thisWorker => thisWorker.toJSON(false, false, false, false, true))
+            ? this.workers.map(thisWorker => thisWorker.toJSON(false, false, false, false, true))
             : undefined,
         };
       }

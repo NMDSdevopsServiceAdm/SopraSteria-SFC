@@ -37,7 +37,7 @@ let ALL_PERMISSIONS = [
     code: 'canChangePermissionsForSubsidiary',
     description: 'change permissions for subsidiary views',
     role: ['Edit'],
-    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
     isAdmin: false,
   },
@@ -255,6 +255,14 @@ let ALL_PERMISSIONS = [
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace', 'None'],
+    isAdmin: false,
+  },
+  {
+    code: 'canDownloadWdfReport',
+    description: 'download wdf report',
+    role: ['Edit','Read'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
     isAdmin: false,
   }
 ];
