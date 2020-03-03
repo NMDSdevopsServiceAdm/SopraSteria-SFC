@@ -245,13 +245,13 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public setPermissionLinks() {
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
-    this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
+    this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =
-      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner !== 'Workplace';
+      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner !== 'Workplace' && this.user.role!= 'Read';
     this.canViewDataPermissionsLink =
-      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner === 'Workplace';
+      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner === 'Workplace' && this.user.role!= 'Read';
     this.canViewReports =
       this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
       this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');

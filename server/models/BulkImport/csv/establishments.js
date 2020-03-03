@@ -1371,10 +1371,12 @@ class Establishment {
     const regManager = 4;
     const isCQCRegulated = myRegType === 2;
 
-    const hasRegisteredManagerVacancy = () => {
-      return allJobs.map((job, index) => {
-        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) return true;
+    const hasRegisteredManagerVacancy =() => {
+      let regManagerVacancies = 0;
+      allJobs.map((job, index) => {
+        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) regManagerVacancies++;
       });
+      return regManagerVacancies > 0;
     };
 
     // allJobs can only be empty, if TOTALPERMTEMP is 0

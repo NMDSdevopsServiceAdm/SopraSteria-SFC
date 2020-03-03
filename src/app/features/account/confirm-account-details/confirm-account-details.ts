@@ -28,6 +28,7 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
   public userDetails: UserDetails;
   protected actionType: string;
+  public slectedCqcValue: boolean;
 
   constructor(protected errorSummaryService: ErrorSummaryService, protected formBuilder: FormBuilder) {}
 

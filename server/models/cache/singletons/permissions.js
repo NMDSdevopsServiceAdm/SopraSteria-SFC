@@ -37,7 +37,7 @@ let ALL_PERMISSIONS = [
     code: 'canChangePermissionsForSubsidiary',
     description: 'change permissions for subsidiary views',
     role: ['Edit'],
-    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
     isAdmin: false,
   },

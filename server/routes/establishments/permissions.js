@@ -26,7 +26,7 @@ router.route('/').get(async (req, res) => {
             }
             if (permission.canRemoveParentAssociation) {
               permission.canRemoveParentAssociation =
-                permission.canRemoveParentAssociation && !thisEstablishment.isParent && thisEstablishment.parentId
+                permission.canRemoveParentAssociation && !thisEstablishment.isParent && thisEstablishment.parentId && userData.role !== 'Read'
                   ? true
                   : false;
             }

@@ -41,6 +41,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC implements AfterView
 
   protected onSuccess(data: LocationSearchResponse): void {
     this.registrationService.isRegulated$.next(this.regulatedByCQC.value === 'yes');
+    this.registrationService.isCqcRegulated$.next(this.regulatedByCQC.value === 'yes' ? true : false);
     this.registrationService.registrationInProgress$.next(true);
 
     if (data.success === 1) {
