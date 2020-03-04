@@ -16,9 +16,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public workersData: Array<Worker>;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
-
   constructor(private permissionsService: PermissionsService) {}
-
   public getWorkerTrainingAndQualificationsPath(worker: Worker) {
     const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
     return this.wdfView ? [...path, ...['wdf-summary']] : path;
@@ -54,18 +52,27 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
         break;
       }
       case '2_asc': {
-        this.workers = orderBy(this.workers, ['expiredTrainingCount', 'expiringTrainingCount',
-        'missingMandatoryTrainingCount'], ['asc', 'asc', 'asc']);
+        this.workers = orderBy(
+          this.workers,
+          ['expiredTrainingCount', 'expiringTrainingCount', 'missingMandatoryTrainingCount'],
+          ['asc', 'asc', 'asc'],
+        );
         break;
       }
       case '2_dsc': {
-        this.workers = orderBy(this.workers, ['expiredTrainingCount', 'expiringTrainingCount',
-        'missingMandatoryTrainingCount'], ['desc', 'desc', 'desc']);
+        this.workers = orderBy(
+          this.workers,
+          ['expiredTrainingCount', 'expiringTrainingCount', 'missingMandatoryTrainingCount'],
+          ['desc', 'desc', 'desc'],
+        );
         break;
       }
       default: {
-        this.workers = orderBy(this.workers, ['expiredTrainingCount', 'expiringTrainingCount',
-        'missingMandatoryTrainingCount'], ['desc', 'desc', 'desc']);
+        this.workers = orderBy(
+          this.workers,
+          ['expiredTrainingCount', 'expiringTrainingCount', 'missingMandatoryTrainingCount'],
+          ['desc', 'desc', 'desc'],
+        );
         break;
       }
     }
