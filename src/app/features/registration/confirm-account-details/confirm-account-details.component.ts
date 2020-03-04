@@ -31,6 +31,11 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   protected init() {
     this.setupSubscriptions();
     this.setBackLink();
+    this.subscriptions.add(
+    this.registrationService.isCqcRegulated$.subscribe(value => {
+      this.slectedCqcValue = value;
+    })
+    );
   }
 
   protected setupSubscriptions(): void {
@@ -107,7 +112,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     payload.locationId = this.service.isCQC ? this.locationAddress.locationId : null;
     payload.mainService = this.service.name;
     payload.mainServiceOther = this.service.otherName ? this.service.otherName : null;
-    payload.isRegulated = this.service.isCQC;
+    payload.isRegulated = this.service.isCQC === null ? this.slectedCqcValue : this.service.isCQC;
     payload.user = this.userDetails;
     payload.user.username = this.loginCredentials.username;
     payload.user.password = this.loginCredentials.password;

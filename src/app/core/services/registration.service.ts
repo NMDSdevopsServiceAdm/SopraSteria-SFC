@@ -19,6 +19,7 @@ export class RegistrationService {
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
   public isRegulated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public isCqcRegulated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public manuallyEnteredWorkplace$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public returnTo$ = new BehaviorSubject<URLStructure>(null);
 
