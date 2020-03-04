@@ -52,17 +52,14 @@
   ></app-training-and-qualifications-summary>
 
   <app-tabs *ngIf="isShowAllTrainings">
-    <app-tab [title]="'Training'">
-      <!-- <app-training [workplace]="workplace" [worker]="worker"
-        (trainingChanged)="trainingAndQualificationsChangedHandler($event)"></app-training> -->
+    <app-tab *ngIf="false" [title]="'Training'">
     </app-tab>
     <app-tab [title]="'Mandatory Training'">
        <app-view-all-mandatory-training
         (mandatoryTrainingChanged)="trainingAndQualificationsChangedHandler($event)"></app-view-all-mandatory-training>
     </app-tab>
-    <app-tab [title]="'Qualifications'">
-      <!-- <app-qualifications [workplace]="workplace" [worker]="worker"
-        (qualificationsChanged)="trainingAndQualificationsChangedHandler($event)"></app-qualifications> -->
+    <app-tab *ngIf="false" [title]="'Qualifications'">
+
     </app-tab>
   </app-tabs>
 </ng-container>
