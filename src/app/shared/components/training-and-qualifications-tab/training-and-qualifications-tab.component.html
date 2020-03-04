@@ -22,7 +22,7 @@
       (click)="downloadTrainingReport($event)"
     >
       <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
-        Download Training Report
+        Download training report
       </span>
     </a>
   </div>
@@ -43,7 +43,6 @@
     [workplace]="workplace"
     [totalExpiredTraining]="totalExpiredTraining"
     [totalExpiringTraining]="totalExpiringTraining"
-    [missingMandatoryTraining] ="missingMandatoryTraining"
   ></app-training-info-panel>
 
   <app-training-and-qualifications-summary
@@ -66,7 +65,6 @@
         (qualificationsChanged)="trainingAndQualificationsChangedHandler($event)"></app-qualifications> -->
     </app-tab>
   </app-tabs>
-
 </ng-container>
 <ng-template #noStaffRecords>
   <app-inset-text color="warning">You need to start adding your staff records.</app-inset-text>

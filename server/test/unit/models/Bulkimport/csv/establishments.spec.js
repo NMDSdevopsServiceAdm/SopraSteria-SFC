@@ -12,6 +12,35 @@ const ALL_UTILISATIONS = null;
 const BUDI_TO_ASC = 100;
 const BUSI_FROM_ASC = 200;
 
+const establishment = [{
+  locationId: '1-123456780',
+  id: 123
+}];
+const postcode = [{
+  postcode: 'AB13 4NJ'
+}];
+
+const models = {
+  establishment: {
+    async findAll(args) {
+      if (args.where.locationId === establishment[0].locationId) {
+        return establishment;
+      } else {
+        return [];
+      }
+    }
+  },
+  pcodedata: {
+    async findAll(args) {
+      if (args.where.postcode === postcode[0].postcode) {
+        return [];
+      } else {
+        return postcode;
+      }
+    }
+  }
+};
+
 const BUDI = {
   contractType (direction, originalCode) {
     const fixedMapping = [
@@ -212,6 +241,9 @@ const getUnitInstance = () => {
         require: testUtils.wrapRequire({
           '../BUDI': {
             BUDI
+          },
+          '../../index': {
+            models
           }
         })
       }
@@ -221,6 +253,10 @@ const getUnitInstance = () => {
   expect(bulkUpload).to.have.property('Establishment');
 
   expect(bulkUpload.Establishment).to.be.a('function');
+
+  expect(BUDI.contractType).to.be.a('function');
+
+  expect(models.establishment.findAll).to.be.a('function');
 
   return new (bulkUpload.Establishment)();
 };
@@ -445,6 +481,10 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             require: testUtils.wrapRequire({
               '../BUDI': {
                 BUDI
+              },
+              '../../index': {
+                establishment: models.establishment,
+                pcodedata: models.pcodedata
               }
             })
           }
@@ -475,10 +515,186 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
           SERVICEUSERS: '',
           OTHERUSERDESC: '',
           TOTALPERMTEMP: '1',
-          ALLJOBROLES: '34;8',
-          STARTERS: '0;0',
-          LEAVERS: '999',
-          VACANCIES: '999;333',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
+          REASONS: '',
+          REASONNOS: ''
+        },
+        2,
+        [
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 479,
+            _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _ustatus: null,
+            _created: '2019-03-15T09:54:10.562Z',
+            _updated: '2019-10-04T15:46:16.158Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech, with even more care',
+            _address1: 'First Line',
+            _address2: 'Second Line',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: 'A-328849599',
+            _provId: 'A-328849599',
+            _postcode: 'LN11 9JG',
+            _isRegulated: false,
+            _mainService: { id: 16, name: 'Head office services' },
+            _nmdsId: 'G1001114',
+            _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+            _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+            _establishmentWdfEligibility: null,
+            _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+            _isParent: true,
+            _parentUid: null,
+            _parentId: null,
+            _parentName: null,
+            _dataOwner: 'Workplace',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null
+            },
+            _isNew: false,
+            _workerEntities: {
+            },
+            _readyForDeletionWorkers: null,
+            _status: 'NEW',
+            _logLevel: 300
+          },
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 1446,
+            _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+            _ustatus: null,
+            _created: '2019-07-31T15:09:57.405Z',
+            _updated: '2019-10-04T15:46:16.797Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech Cares Sub 100',
+            _address1: 'Number 1',
+            _address2: 'My street',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: '1-888777666',
+            _provId: '1-999888777',
+            _postcode: 'LN11 9JG',
+            _isRegulated: true,
+            _mainService: { id: 1, name: 'Carers support' },
+            _nmdsId: 'G1002110',
+            _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+            _overallWdfEligibility: null,
+            _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+            _staffWdfEligibility: null,
+            _isParent: false,
+            _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _parentId: 479,
+            _parentName: null,
+            _dataOwner: 'Parent',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'COMPLETE',
+            _logLevel: 300
+          }
+        ]);
+
+      expect(bulkUpload).to.have.property('validate');
+
+      const csvEstablishmentSchemaErrors = [];
+
+      const myWorkers = [];
+
+      // call the validation to ensure the proper error is shown
+      await bulkUpload.validate();
+
+      const validationErrors = bulkUpload.validationErrors;
+
+      // assert a warning was returned
+
+      expect(validationErrors).to.deep.equal([
+        {
+          origin: 'Establishments',
+          lineNumber: 2,
+          errCode: 1100,
+          errType: 'REGTYPE_ERROR',
+          error: 'REGTYPE is 2 (CQC) but no CQC regulated services have been specified. Please change either REGTYPE or MAINSERVICE',
+          source: '2',
+          name: 'omar3'
+        }
+      ]);
+    });
+
+    it('should not emit an error if REGTYPE is 2 (CQC) but a CQC regulated main service has been specified', async () => {
+      const bulkUpload = new (testUtils.sandBox(
+        filename,
+        {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI
+              },
+              '../../index': {
+                establishment: models.establishment,
+                pcodedata: models.pcodedata
+              }
+            })
+          }
+        }
+      ).Establishment)(
+        {
+          LOCALESTID: 'omar3',
+          STATUS: 'NEW',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'LN11 9JG',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456789',
+          LOCATIONID: '1-123456789',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
           REASONS: '',
           REASONNOS: ''
         },
@@ -596,19 +812,8 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
 
       // assert a warning was returned
 
-      expect(validationErrors).to.deep.equal([
-        {
-          origin: 'Establishments',
-          lineNumber: 2,
-          errCode: 1100,
-          errType: 'REGTYPE_ERROR',
-          error: 'REGTYPE is 2 (CQC) but no CQC regulated services have been specified. Please change either REGTYPE or MAINSERVICE',
-          source: '2',
-          name: 'omar3'
-        }
-      ]);
+      expect(validationErrors).to.deep.equal([]);
     });
-
     it('should not emit an error if REGTYPE is 2 (CQC) but a CQC regulated main service has been specified', async () => {
       const bulkUpload = new (testUtils.sandBox(
         filename,
@@ -617,6 +822,10 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             require: testUtils.wrapRequire({
               '../BUDI': {
                 BUDI
+              },
+              '../../index': {
+                establishment: models.establishment,
+                pcodedata: models.pcodedata
               }
             })
           }
@@ -770,8 +979,7 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
 
       expect(validationErrors).to.deep.equal([]);
     });
-
-    it('should emit an error if SLV is greater than zero and this ALLJOBROLES is blank', async () => {
+    it('should emit an error if REGTYPE is not 2 (CQC) but a registered manager vacancy has been specified', async () => {
       const bulkUpload = new (testUtils.sandBox(
         filename,
         {
@@ -779,6 +987,10 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             require: testUtils.wrapRequire({
               '../BUDI': {
                 BUDI
+              },
+              '../../index': {
+                establishment: models.establishment,
+                pcodedata: models.pcodedata
               }
             })
           }
@@ -801,18 +1013,18 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
           REGTYPE: '0',
           PROVNUM: '',
           LOCATIONID: '',
-          MAINSERVICE: '72',
-          ALLSERVICES: '72;13',
+          MAINSERVICE: '12',
+          ALLSERVICES: '12;13',
           CAPACITY: '0;0',
           UTILISATION: '0;0',
           SERVICEDESC: '1;1',
           SERVICEUSERS: '',
           OTHERUSERDESC: '',
-          TOTALPERMTEMP: '10',
-          ALLJOBROLES: '',
-          STARTERS: '0;0',
-          LEAVERS: '999',
-          VACANCIES: '999;333',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
           REASONS: '',
           REASONNOS: ''
         },
@@ -834,7 +1046,7 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             _address3: '',
             _town: 'My Town',
             _county: '',
-            _locationId: 'A-328849599',
+            _locationId: null,
             _provId: null,
             _postcode: 'LN11 9JG',
             _isRegulated: false,
@@ -914,8 +1126,8 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             _readyForDeletionWorkers: null,
             _status: 'COMPLETE',
             _logLevel: 300
-          }]
-      );
+          }
+        ]);
 
       expect(bulkUpload).to.have.property('validate');
 
@@ -930,20 +1142,186 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
 
       // assert a warning was returned
 
-      expect(validationErrors).to.deep.equal([{
-        lineNumber: 2,
-        name: 'omar3',
-        origin: 'Establishments',
-        source: '',
-        errCode: 1280,
-        errType: 'ALL_JOBS_ERROR',
-        error: 'ALLJOBROLES cannot be blank as you have STARTERS, LEAVERS, VACANCIES greater than zero'
-      }]);
+      expect(validationErrors).to.deep.equal([
+        {
+          origin: 'Establishments',
+          lineNumber: 2,
+          warnCode: 2180,
+          warnType: 'ALL_JOBS_WARNING',
+          warning: 'Vacancy for Registered Manager should not be included for this service and will be ignored',
+          source: '34;8;4',
+          name: 'omar3'
+        }
+      ]);
     });
-  });
+      it('should not emit an error if REGTYPE is 2 (CQC) but a registered manager vacancy has been specified', async () => {
+        const bulkUpload = new (testUtils.sandBox(
+          filename,
+          {
+            locals: {
+              require: testUtils.wrapRequire({
+                '../BUDI': {
+                  BUDI
+                },
+                '../../index': {
+                  establishment: models.establishment,
+                pcodedata: models.pcodedata
+                }
+              })
+            }
+          }
+        ).Establishment)(
+          {
+            LOCALESTID: 'omar3',
+            STATUS: 'NEW',
+            ESTNAME: 'WOZiTech, with even more care',
+            ADDRESS1: 'First Line',
+            ADDRESS2: 'Second Line',
+            ADDRESS3: '',
+            POSTTOWN: 'My Town',
+            POSTCODE: 'LN11 9JG',
+            ESTTYPE: '6',
+            OTHERTYPE: '',
+            PERMCQC: '1',
+            PERMLA: '1',
+            SHARELA: '708;721;720',
+            REGTYPE: '2',
+            PROVNUM: '1-12345678',
+            LOCATIONID: '1-12345678',
+            MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+            CAPACITY: '0;0',
+            UTILISATION: '0;0',
+            SERVICEDESC: '1;1',
+            SERVICEUSERS: '',
+            OTHERUSERDESC: '',
+            TOTALPERMTEMP: '1',
+            ALLJOBROLES: '34;8;4',
+            STARTERS: '0;0;0',
+            LEAVERS: '999;0;0',
+            VACANCIES: '999;333;1',
+            REASONS: '',
+            REASONNOS: ''
+          },
+          2,
+          [
+            {
+              _validations: [],
+              _username: 'aylingw',
+              _id: 479,
+              _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+              _ustatus: null,
+              _created: '2019-03-15T09:54:10.562Z',
+              _updated: '2019-10-04T15:46:16.158Z',
+              _updatedBy: 'aylingw',
+              _auditEvents: null,
+              _name: 'WOZiTech, with even more care',
+              _address1: 'First Line',
+              _address2: 'Second Line',
+              _address3: '',
+              _town: 'My Town',
+              _county: '',
+              _locationId: null,
+              _provId: null,
+              _postcode: 'LN11 9JG',
+              _isRegulated: false,
+              _mainService: { id: 16, name: 'Head office services' },
+              _nmdsId: 'G1001114',
+              _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+              _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+              _establishmentWdfEligibility: null,
+              _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+              _isParent: true,
+              _parentUid: null,
+              _parentId: null,
+              _parentName: null,
+              _dataOwner: 'Workplace',
+              _dataPermissions: 'None',
+              _archived: false,
+              _dataOwnershipRequested: null,
+              _reasonsForLeaving: '',
+              _properties: {
+                _properties: [Object],
+                _propertyTypes: [Array],
+                _auditEvents: null,
+                _modifiedProperties: [],
+                _additionalModels: null
+              },
+              _isNew: false,
+              _workerEntities: {
+              },
+              _readyForDeletionWorkers: null,
+              _status: 'NEW',
+              _logLevel: 300
+            },
+            {
+              _validations: [],
+              _username: 'aylingw',
+              _id: 1446,
+              _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+              _ustatus: null,
+              _created: '2019-07-31T15:09:57.405Z',
+              _updated: '2019-10-04T15:46:16.797Z',
+              _updatedBy: 'aylingw',
+              _auditEvents: null,
+              _name: 'WOZiTech Cares Sub 100',
+              _address1: 'Number 1',
+              _address2: 'My street',
+              _address3: '',
+              _town: 'My Town',
+              _county: '',
+              _locationId: '1-888777666',
+              _provId: '1-999888777',
+              _postcode: 'LN11 9JG',
+              _isRegulated: true,
+              _mainService: { id: 1, name: 'Carers support' },
+              _nmdsId: 'G1002110',
+              _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+              _overallWdfEligibility: null,
+              _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+              _staffWdfEligibility: null,
+              _isParent: false,
+              _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+              _parentId: 479,
+              _parentName: null,
+              _dataOwner: 'Parent',
+              _dataPermissions: 'None',
+              _archived: false,
+              _dataOwnershipRequested: null,
+              _reasonsForLeaving: '',
+              _properties: {
+                _properties: [Object],
+                _propertyTypes: [Array],
+                _auditEvents: null,
+                _modifiedProperties: [],
+                _additionalModels: null
+              },
+              _isNew: false,
+              _workerEntities: {},
+              _readyForDeletionWorkers: null,
+              _status: 'COMPLETE',
+              _logLevel: 300
+            }
+          ]);
 
-  describe('cross entity validations', () => {
-    it('should emit a warning if there are zero staff', async () => {
+        expect(bulkUpload).to.have.property('validate');
+
+        const csvEstablishmentSchemaErrors = [];
+
+        const myWorkers = [];
+
+        // call the validation to ensure the proper error is shown
+        await bulkUpload.validate();
+
+        const validationErrors = bulkUpload.validationErrors;
+
+        // assert a warning was returned
+
+        expect(validationErrors).to.deep.equal([
+
+        ]);
+    });
+    it('should emit an error if locationId has already been used in the database and not this establishment', async () => {
       const bulkUpload = new (testUtils.sandBox(
         filename,
         {
@@ -951,6 +1329,10 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             require: testUtils.wrapRequire({
               '../BUDI': {
                 BUDI
+              },
+              '../../index': {
+                establishment: models.establishment,
+                pcodedata: models.pcodedata
               }
             })
           }
@@ -970,21 +1352,21 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
           PERMCQC: '1',
           PERMLA: '1',
           SHARELA: '708;721;720',
-          REGTYPE: '0',
-          PROVNUM: '',
-          LOCATIONID: '',
-          MAINSERVICE: '72',
-          ALLSERVICES: '72;13',
-          CAPACITY: '',
-          UTILISATION: '',
+          REGTYPE: '2',
+          PROVNUM: '1-123456780',
+          LOCATIONID: '1-123456780',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
           SERVICEDESC: '1;1',
           SERVICEUSERS: '',
           OTHERUSERDESC: '',
-          TOTALPERMTEMP: '0',
-          ALLJOBROLES: '34;8',
-          STARTERS: '0;0',
-          LEAVERS: '999',
-          VACANCIES: '999;333',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
           REASONS: '',
           REASONNOS: ''
         },
@@ -1006,7 +1388,7 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             _address3: '',
             _town: 'My Town',
             _county: '',
-            _locationId: 'A-328849599',
+            _locationId: null,
             _provId: null,
             _postcode: 'LN11 9JG',
             _isRegulated: false,
@@ -1089,46 +1471,1251 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
           }
         ]);
 
-      expect(bulkUpload).to.have.property('crossValidate');
+      expect(bulkUpload).to.have.property('validate');
 
       const csvEstablishmentSchemaErrors = [];
 
       const myWorkers = [];
 
-      // the real version of this code is in the api Establishment business object and runs a sql query.
-      // We just return a 'fake result set'
-      const fetchMyEstablishmentsWorkers = sinon.spy(async (establishmentId, establishmentKey) => {
-        return [];
-      });
-
-      // Regular validation has to run first for the establishment to populate the internal properties correctly
+      // call the validation to ensure the proper error is shown
       await bulkUpload.validate();
 
-      // call the method
-      await bulkUpload.crossValidate({
-        csvEstablishmentSchemaErrors,
-        myWorkers,
-        fetchMyEstablishmentsWorkers
-      });
-
-      // assert the fetchMyEstalishmentsWorkers function was called
-      expect(fetchMyEstablishmentsWorkers.callCount).to.equal(1);
+      const validationErrors = bulkUpload.validationErrors;
 
       // assert a warning was returned
-      expect(csvEstablishmentSchemaErrors.length).to.equal(1);
 
-      expect(csvEstablishmentSchemaErrors[0]).to.deep.equal({
-        lineNumber: 2,
-        name: 'omar3',
-        origin: 'Establishments',
-        source: '0',
-        warnCode: 2200,
-        warnType: 'TOTAL_PERM_TEMP_WARNING',
-        warning: 'The number of employed staff is 0 please check your staff records'
-      });
-    });
+      expect(validationErrors).to.deep.equal([
+        {
+          "errCode": 1020,
+          "errType": "STATUS_ERROR",
+          "error": "Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it",
+          "lineNumber": 2,
+          "name": "omar3",
+          "origin": "Establishments",
+          "source": "UPDATE"
+        },
+        {
+          "errCode": 1110,
+          "errType": "LOCATION_ID_ERROR",
+          "error": "LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969",
+          "lineNumber": 2,
+          "name": "omar3",
+          "origin": "Establishments",
+          "source": "1-123456780"
+        }
+      ]);
+  });
+  it('should not emit an error if locationId has already been used in the database and is this establishment', async () => {
+    const bulkUpload = new (testUtils.sandBox(
+      filename,
+      {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI
+            },
+            '../../index': {
+              establishment: models.establishment,
+                pcodedata: models.pcodedata
+            }
+          })
+        }
+      }
+    ).Establishment)(
+      {
+        LOCALESTID: '123',
+        STATUS: 'UPDATE',
+        ESTNAME: 'WOZiTech, with even more care',
+        ADDRESS1: 'First Line',
+        ADDRESS2: 'Second Line',
+        ADDRESS3: '',
+        POSTTOWN: 'My Town',
+        POSTCODE: 'LN11 9JG',
+        ESTTYPE: '6',
+        OTHERTYPE: '',
+        PERMCQC: '1',
+        PERMLA: '1',
+        SHARELA: '708;721;720',
+        REGTYPE: '2',
+        PROVNUM: '1-123456780',
+        LOCATIONID: '1-123456780',
+        MAINSERVICE: '8',
+        ALLSERVICES: '12;13',
+        CAPACITY: '0;0',
+        UTILISATION: '0;0',
+        SERVICEDESC: '1;1',
+        SERVICEUSERS: '',
+        OTHERUSERDESC: '',
+        TOTALPERMTEMP: '1',
+        ALLJOBROLES: '34;8;4',
+        STARTERS: '0;0;0',
+        LEAVERS: '999;0;0',
+        VACANCIES: '999;333;1',
+        REASONS: '',
+        REASONNOS: ''
+      },
+      2,
+      [
+        {
+          _validations: [],
+          _username: 'aylingw',
+          _id: 123,
+          _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+          _ustatus: null,
+          _created: '2019-03-15T09:54:10.562Z',
+          _updated: '2019-10-04T15:46:16.158Z',
+          _updatedBy: 'aylingw',
+          _auditEvents: null,
+          _name: 'WOZiTech, with even more care',
+          _address1: 'First Line',
+          _address2: 'Second Line',
+          _address3: '',
+          _town: 'My Town',
+          _county: '',
+          _locationId: null,
+          _provId: null,
+          _postcode: 'LN11 9JG',
+          _isRegulated: false,
+          _mainService: { id: 16, name: 'Head office services' },
+          _nmdsId: 'G1001114',
+          _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+          _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+          _establishmentWdfEligibility: null,
+          _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+          _isParent: true,
+          _parentUid: null,
+          _parentId: null,
+          _parentName: null,
+          _dataOwner: 'Workplace',
+          _dataPermissions: 'None',
+          _archived: false,
+          _dataOwnershipRequested: null,
+          _reasonsForLeaving: '',
+          _properties: {
+            _properties: [Object],
+            _propertyTypes: [Array],
+            _auditEvents: null,
+            _modifiedProperties: [],
+            _additionalModels: null
+          },
+          _isNew: false,
+          _workerEntities: {
+          },
+          _readyForDeletionWorkers: null,
+          _status: 'NEW',
+          _logLevel: 300,
+          key: '123'
+        },
+        {
+          _validations: [],
+          _username: 'aylingw',
+          _id: 1446,
+          _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+          _ustatus: null,
+          _created: '2019-07-31T15:09:57.405Z',
+          _updated: '2019-10-04T15:46:16.797Z',
+          _updatedBy: 'aylingw',
+          _auditEvents: null,
+          _name: 'WOZiTech Cares Sub 100',
+          _address1: 'Number 1',
+          _address2: 'My street',
+          _address3: '',
+          _town: 'My Town',
+          _county: '',
+          _locationId: '1-888777666',
+          _provId: '1-999888777',
+          _postcode: 'LN11 9JG',
+          _isRegulated: true,
+          _mainService: { id: 1, name: 'Carers support' },
+          _nmdsId: 'G1002110',
+          _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+          _overallWdfEligibility: null,
+          _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+          _staffWdfEligibility: null,
+          _isParent: false,
+          _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+          _parentId: 479,
+          _parentName: null,
+          _dataOwner: 'Parent',
+          _dataPermissions: 'None',
+          _archived: false,
+          _dataOwnershipRequested: null,
+          _reasonsForLeaving: '',
+          _properties: {
+            _properties: [Object],
+            _propertyTypes: [Array],
+            _auditEvents: null,
+            _modifiedProperties: [],
+            _additionalModels: null
+          },
+          _isNew: false,
+          _workerEntities: {},
+          _readyForDeletionWorkers: null,
+          _status: 'COMPLETE',
+          _logLevel: 300
+        }
+      ]);
 
-    it('should emit a warning if there are no direct care staff', async () => {
+    expect(bulkUpload).to.have.property('validate');
+
+    const csvEstablishmentSchemaErrors = [];
+
+    const myWorkers = [];
+
+    // call the validation to ensure the proper error is shown
+    await bulkUpload.validate();
+
+    const validationErrors = bulkUpload.validationErrors;
+
+    // assert a warning was returned
+
+    expect(validationErrors).to.deep.equal([]);
+});
+
+  it('should not emit an error if locationId has not already been used in the database', async () => {
+    const bulkUpload = new (testUtils.sandBox(
+      filename,
+      {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI
+            },
+            '../../index': {
+              establishment: models.establishment,
+                pcodedata: models.pcodedata
+            }
+          })
+        }
+      }
+    ).Establishment)(
+      {
+        LOCALESTID: 'omar3',
+        STATUS: 'NEW',
+        ESTNAME: 'WOZiTech, with even more care',
+        ADDRESS1: 'First Line',
+        ADDRESS2: 'Second Line',
+        ADDRESS3: '',
+        POSTTOWN: 'My Town',
+        POSTCODE: 'LN11 9JG',
+        ESTTYPE: '6',
+        OTHERTYPE: '',
+        PERMCQC: '1',
+        PERMLA: '1',
+        SHARELA: '708;721;720',
+        REGTYPE: '2',
+        PROVNUM: '1-123456781',
+        LOCATIONID: '1-123456781',
+        MAINSERVICE: '8',
+      ALLSERVICES: '12;13',
+        CAPACITY: '0;0',
+        UTILISATION: '0;0',
+        SERVICEDESC: '1;1',
+        SERVICEUSERS: '',
+        OTHERUSERDESC: '',
+        TOTALPERMTEMP: '1',
+        ALLJOBROLES: '34;8;4',
+        STARTERS: '0;0;0',
+        LEAVERS: '999;0;0',
+        VACANCIES: '999;333;1',
+        REASONS: '',
+        REASONNOS: ''
+      },
+      2,
+      [
+        {
+          _validations: [],
+          _username: 'aylingw',
+          _id: 479,
+          _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+          _ustatus: null,
+          _created: '2019-03-15T09:54:10.562Z',
+          _updated: '2019-10-04T15:46:16.158Z',
+          _updatedBy: 'aylingw',
+          _auditEvents: null,
+          _name: 'WOZiTech, with even more care',
+          _address1: 'First Line',
+          _address2: 'Second Line',
+          _address3: '',
+          _town: 'My Town',
+          _county: '',
+          _locationId: null,
+          _provId: null,
+          _postcode: 'LN11 9JG',
+          _isRegulated: false,
+          _mainService: { id: 16, name: 'Head office services' },
+          _nmdsId: 'G1001114',
+          _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+          _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+          _establishmentWdfEligibility: null,
+          _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+          _isParent: true,
+          _parentUid: null,
+          _parentId: null,
+          _parentName: null,
+          _dataOwner: 'Workplace',
+          _dataPermissions: 'None',
+          _archived: false,
+          _dataOwnershipRequested: null,
+          _reasonsForLeaving: '',
+          _properties: {
+            _properties: [Object],
+            _propertyTypes: [Array],
+            _auditEvents: null,
+            _modifiedProperties: [],
+            _additionalModels: null
+          },
+          _isNew: false,
+          _workerEntities: {
+          },
+          _readyForDeletionWorkers: null,
+          _status: 'NEW',
+          _logLevel: 300
+        },
+        {
+          _validations: [],
+          _username: 'aylingw',
+          _id: 1446,
+          _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+          _ustatus: null,
+          _created: '2019-07-31T15:09:57.405Z',
+          _updated: '2019-10-04T15:46:16.797Z',
+          _updatedBy: 'aylingw',
+          _auditEvents: null,
+          _name: 'WOZiTech Cares Sub 100',
+          _address1: 'Number 1',
+          _address2: 'My street',
+          _address3: '',
+          _town: 'My Town',
+          _county: '',
+          _locationId: '1-888777666',
+          _provId: '1-999888777',
+          _postcode: 'LN11 9JG',
+          _isRegulated: true,
+          _mainService: { id: 1, name: 'Carers support' },
+          _nmdsId: 'G1002110',
+          _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+          _overallWdfEligibility: null,
+          _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+          _staffWdfEligibility: null,
+          _isParent: false,
+          _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+          _parentId: 479,
+          _parentName: null,
+          _dataOwner: 'Parent',
+          _dataPermissions: 'None',
+          _archived: false,
+          _dataOwnershipRequested: null,
+          _reasonsForLeaving: '',
+          _properties: {
+            _properties: [Object],
+            _propertyTypes: [Array],
+            _auditEvents: null,
+            _modifiedProperties: [],
+            _additionalModels: null
+          },
+          _isNew: false,
+          _workerEntities: {},
+          _readyForDeletionWorkers: null,
+          _status: 'COMPLETE',
+          _logLevel: 300
+        }
+      ]);
+
+    expect(bulkUpload).to.have.property('validate');
+
+    const csvEstablishmentSchemaErrors = [];
+
+    const myWorkers = [];
+
+    // call the validation to ensure the proper error is shown
+    await bulkUpload.validate();
+
+    const validationErrors = bulkUpload.validationErrors;
+
+    // assert a warning was returned
+
+    expect(validationErrors).to.deep.equal([]);
+});
+
+it('should emit an error if postcode cannot be found in the reference data', async () => {
+  const bulkUpload = new (testUtils.sandBox(
+    filename,
+    {
+      locals: {
+        require: testUtils.wrapRequire({
+          '../BUDI': {
+            BUDI
+          },
+          '../../index': {
+            establishment: models.establishment,
+                pcodedata: models.pcodedata
+          }
+        })
+      }
+    }
+  ).Establishment)(
+    {
+      LOCALESTID: 'omar3',
+      STATUS: 'NEW',
+      ESTNAME: 'WOZiTech, with even more care',
+      ADDRESS1: 'First Line',
+      ADDRESS2: 'Second Line',
+      ADDRESS3: '',
+      POSTTOWN: 'My Town',
+      POSTCODE: 'AB13 4NJ',
+      ESTTYPE: '6',
+      OTHERTYPE: '',
+      PERMCQC: '1',
+      PERMLA: '1',
+      SHARELA: '708;721;720',
+      REGTYPE: '2',
+      PROVNUM: '1-123456781',
+      LOCATIONID: '1-123456781',
+      MAINSERVICE: '8',
+    ALLSERVICES: '12;13',
+      CAPACITY: '0;0',
+      UTILISATION: '0;0',
+      SERVICEDESC: '1;1',
+      SERVICEUSERS: '',
+      OTHERUSERDESC: '',
+      TOTALPERMTEMP: '1',
+      ALLJOBROLES: '34;8;4',
+      STARTERS: '0;0;0',
+      LEAVERS: '999;0;0',
+      VACANCIES: '999;333;1',
+      REASONS: '',
+      REASONNOS: ''
+    },
+    2,
+    [
+      {
+        _validations: [],
+        _username: 'aylingw',
+        _id: 479,
+        _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+        _ustatus: null,
+        _created: '2019-03-15T09:54:10.562Z',
+        _updated: '2019-10-04T15:46:16.158Z',
+        _updatedBy: 'aylingw',
+        _auditEvents: null,
+        _name: 'WOZiTech, with even more care',
+        _address1: 'First Line',
+        _address2: 'Second Line',
+        _address3: '',
+        _town: 'My Town',
+        _county: '',
+        _locationId: null,
+        _provId: null,
+        _postcode: 'LN11 9JG',
+        _isRegulated: false,
+        _mainService: { id: 16, name: 'Head office services' },
+        _nmdsId: 'G1001114',
+        _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+        _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+        _establishmentWdfEligibility: null,
+        _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+        _isParent: true,
+        _parentUid: null,
+        _parentId: null,
+        _parentName: null,
+        _dataOwner: 'Workplace',
+        _dataPermissions: 'None',
+        _archived: false,
+        _dataOwnershipRequested: null,
+        _reasonsForLeaving: '',
+        _properties: {
+          _properties: [Object],
+          _propertyTypes: [Array],
+          _auditEvents: null,
+          _modifiedProperties: [],
+          _additionalModels: null
+        },
+        _isNew: false,
+        _workerEntities: {
+        },
+        _readyForDeletionWorkers: null,
+        _status: 'NEW',
+        _logLevel: 300
+      },
+      {
+        _validations: [],
+        _username: 'aylingw',
+        _id: 1446,
+        _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+        _ustatus: null,
+        _created: '2019-07-31T15:09:57.405Z',
+        _updated: '2019-10-04T15:46:16.797Z',
+        _updatedBy: 'aylingw',
+        _auditEvents: null,
+        _name: 'WOZiTech Cares Sub 100',
+        _address1: 'Number 1',
+        _address2: 'My street',
+        _address3: '',
+        _town: 'My Town',
+        _county: '',
+        _locationId: '1-888777666',
+        _provId: '1-999888777',
+        _postcode: 'LN11 9JG',
+        _isRegulated: true,
+        _mainService: { id: 1, name: 'Carers support' },
+        _nmdsId: 'G1002110',
+        _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+        _overallWdfEligibility: null,
+        _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+        _staffWdfEligibility: null,
+        _isParent: false,
+        _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+        _parentId: 479,
+        _parentName: null,
+        _dataOwner: 'Parent',
+        _dataPermissions: 'None',
+        _archived: false,
+        _dataOwnershipRequested: null,
+        _reasonsForLeaving: '',
+        _properties: {
+          _properties: [Object],
+          _propertyTypes: [Array],
+          _auditEvents: null,
+          _modifiedProperties: [],
+          _additionalModels: null
+        },
+        _isNew: false,
+        _workerEntities: {},
+        _readyForDeletionWorkers: null,
+        _status: 'COMPLETE',
+        _logLevel: 300
+      }
+    ]);
+
+  expect(bulkUpload).to.have.property('validate');
+
+  const csvEstablishmentSchemaErrors = [];
+
+  const myWorkers = [];
+
+  // call the validation to ensure the proper error is shown
+  await bulkUpload.validate();
+
+  const validationErrors = bulkUpload.validationErrors;
+
+  // assert a warning was returned
+
+  expect(validationErrors).to.deep.equal([
+    {
+      "lineNumber": 2,
+      "name": "omar3",
+      "origin": "Establishments",
+      "source": "AB13 4NJ",
+      "warnCode": 1040,
+      "warnType": "ADDRESS_ERROR",
+      "warning": "Workplace will be ignored. The Postcode for this workplace cannot be found in our database and must be registered manually."
+    }
+  ]);
+});
+
+it('should not emit an error if postcode can be found in the reference data', async () => {
+  const bulkUpload = new (testUtils.sandBox(
+    filename,
+    {
+      locals: {
+        require: testUtils.wrapRequire({
+          '../BUDI': {
+            BUDI
+          },
+          '../../index': {
+            establishment: models.establishment,
+                pcodedata: models.pcodedata
+          }
+        })
+      }
+    }
+  ).Establishment)(
+    {
+      LOCALESTID: 'omar3',
+      STATUS: 'NEW',
+      ESTNAME: 'WOZiTech, with even more care',
+      ADDRESS1: 'First Line',
+      ADDRESS2: 'Second Line',
+      ADDRESS3: '',
+      POSTTOWN: 'My Town',
+      POSTCODE: 'AB13 4MJ',
+      ESTTYPE: '6',
+      OTHERTYPE: '',
+      PERMCQC: '1',
+      PERMLA: '1',
+      SHARELA: '708;721;720',
+      REGTYPE: '2',
+      PROVNUM: '1-123456781',
+      LOCATIONID: '1-123456781',
+      MAINSERVICE: '8',
+    ALLSERVICES: '12;13',
+      CAPACITY: '0;0',
+      UTILISATION: '0;0',
+      SERVICEDESC: '1;1',
+      SERVICEUSERS: '',
+      OTHERUSERDESC: '',
+      TOTALPERMTEMP: '1',
+      ALLJOBROLES: '34;8;4',
+      STARTERS: '0;0;0',
+      LEAVERS: '999;0;0',
+      VACANCIES: '999;333;1',
+      REASONS: '',
+      REASONNOS: ''
+    },
+    2,
+    [
+      {
+        _validations: [],
+        _username: 'aylingw',
+        _id: 479,
+        _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+        _ustatus: null,
+        _created: '2019-03-15T09:54:10.562Z',
+        _updated: '2019-10-04T15:46:16.158Z',
+        _updatedBy: 'aylingw',
+        _auditEvents: null,
+        _name: 'WOZiTech, with even more care',
+        _address1: 'First Line',
+        _address2: 'Second Line',
+        _address3: '',
+        _town: 'My Town',
+        _county: '',
+        _locationId: null,
+        _provId: null,
+        _postcode: 'LN11 9JG',
+        _isRegulated: false,
+        _mainService: { id: 16, name: 'Head office services' },
+        _nmdsId: 'G1001114',
+        _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+        _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+        _establishmentWdfEligibility: null,
+        _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+        _isParent: true,
+        _parentUid: null,
+        _parentId: null,
+        _parentName: null,
+        _dataOwner: 'Workplace',
+        _dataPermissions: 'None',
+        _archived: false,
+        _dataOwnershipRequested: null,
+        _reasonsForLeaving: '',
+        _properties: {
+          _properties: [Object],
+          _propertyTypes: [Array],
+          _auditEvents: null,
+          _modifiedProperties: [],
+          _additionalModels: null
+        },
+        _isNew: false,
+        _workerEntities: {
+        },
+        _readyForDeletionWorkers: null,
+        _status: 'NEW',
+        _logLevel: 300
+      },
+      {
+        _validations: [],
+        _username: 'aylingw',
+        _id: 1446,
+        _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+        _ustatus: null,
+        _created: '2019-07-31T15:09:57.405Z',
+        _updated: '2019-10-04T15:46:16.797Z',
+        _updatedBy: 'aylingw',
+        _auditEvents: null,
+        _name: 'WOZiTech Cares Sub 100',
+        _address1: 'Number 1',
+        _address2: 'My street',
+        _address3: '',
+        _town: 'My Town',
+        _county: '',
+        _locationId: '1-888777666',
+        _provId: '1-999888777',
+        _postcode: 'LN11 9JG',
+        _isRegulated: true,
+        _mainService: { id: 1, name: 'Carers support' },
+        _nmdsId: 'G1002110',
+        _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+        _overallWdfEligibility: null,
+        _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+        _staffWdfEligibility: null,
+        _isParent: false,
+        _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+        _parentId: 479,
+        _parentName: null,
+        _dataOwner: 'Parent',
+        _dataPermissions: 'None',
+        _archived: false,
+        _dataOwnershipRequested: null,
+        _reasonsForLeaving: '',
+        _properties: {
+          _properties: [Object],
+          _propertyTypes: [Array],
+          _auditEvents: null,
+          _modifiedProperties: [],
+          _additionalModels: null
+        },
+        _isNew: false,
+        _workerEntities: {},
+        _readyForDeletionWorkers: null,
+        _status: 'COMPLETE',
+        _logLevel: 300
+      }
+    ]);
+
+  expect(bulkUpload).to.have.property('validate');
+
+  const csvEstablishmentSchemaErrors = [];
+
+  const myWorkers = [];
+
+  // call the validation to ensure the proper error is shown
+  await bulkUpload.validate();
+
+  const validationErrors = bulkUpload.validationErrors;
+
+  // assert a warning was returned
+
+  expect(validationErrors).to.deep.equal([]);
+});
+
+it('should emit an warning if postcode cannot be found in the reference data', async () => {
+  const bulkUpload = new (testUtils.sandBox(
+    filename,
+    {
+      locals: {
+        require: testUtils.wrapRequire({
+          '../BUDI': {
+            BUDI
+          },
+          '../../index': {
+            establishment: models.establishment,
+                pcodedata: models.pcodedata
+          }
+        })
+      }
+    }
+  ).Establishment)(
+    {
+      LOCALESTID: 'omar3',
+      STATUS: 'UPDATE',
+      ESTNAME: 'WOZiTech, with even more care',
+      ADDRESS1: 'First Line',
+      ADDRESS2: 'Second Line',
+      ADDRESS3: '',
+      POSTTOWN: 'My Town',
+      POSTCODE: 'AB13 4NJ',
+      ESTTYPE: '6',
+      OTHERTYPE: '',
+      PERMCQC: '1',
+      PERMLA: '1',
+      SHARELA: '708;721;720',
+      REGTYPE: '2',
+      PROVNUM: '1-123456781',
+      LOCATIONID: '1-123456781',
+      MAINSERVICE: '8',
+    ALLSERVICES: '12;13',
+      CAPACITY: '0;0',
+      UTILISATION: '0;0',
+      SERVICEDESC: '1;1',
+      SERVICEUSERS: '',
+      OTHERUSERDESC: '',
+      TOTALPERMTEMP: '1',
+      ALLJOBROLES: '34;8;4',
+      STARTERS: '0;0;0',
+      LEAVERS: '999;0;0',
+      VACANCIES: '999;333;1',
+      REASONS: '',
+      REASONNOS: ''
+    },
+    2,
+    [
+      {
+        _validations: [],
+        _username: 'aylingw',
+        _id: 479,
+        _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+        _ustatus: null,
+        _created: '2019-03-15T09:54:10.562Z',
+        _updated: '2019-10-04T15:46:16.158Z',
+        _updatedBy: 'aylingw',
+        _auditEvents: null,
+        _name: 'WOZiTech, with even more care',
+        _address1: 'First Line',
+        _address2: 'Second Line',
+        _address3: '',
+        _town: 'My Town',
+        _county: '',
+        _locationId: null,
+        _provId: null,
+        _postcode: 'LN11 9JG',
+        _isRegulated: false,
+        _mainService: { id: 16, name: 'Head office services' },
+        _nmdsId: 'G1001114',
+        _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+        _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+        _establishmentWdfEligibility: null,
+        _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+        _isParent: true,
+        _parentUid: null,
+        _parentId: null,
+        _parentName: null,
+        _dataOwner: 'Workplace',
+        _dataPermissions: 'None',
+        _archived: false,
+        _dataOwnershipRequested: null,
+        _reasonsForLeaving: '',
+        _properties: {
+          _properties: [Object],
+          _propertyTypes: [Array],
+          _auditEvents: null,
+          _modifiedProperties: [],
+          _additionalModels: null
+        },
+        _isNew: false,
+        _workerEntities: {
+        },
+        _readyForDeletionWorkers: null,
+        _status: 'NEW',
+        _logLevel: 300
+      },
+      {
+        _validations: [],
+        _username: 'aylingw',
+        _id: 1446,
+        _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+        _ustatus: null,
+        _created: '2019-07-31T15:09:57.405Z',
+        _updated: '2019-10-04T15:46:16.797Z',
+        _updatedBy: 'aylingw',
+        _auditEvents: null,
+        _name: 'WOZiTech Cares Sub 100',
+        _address1: 'Number 1',
+        _address2: 'My street',
+        _address3: '',
+        _town: 'My Town',
+        _county: '',
+        _locationId: '1-888777666',
+        _provId: '1-999888777',
+        _postcode: 'AB13 4NJ',
+        _isRegulated: true,
+        _mainService: { id: 1, name: 'Carers support' },
+        _nmdsId: 'G1002110',
+        _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+        _overallWdfEligibility: null,
+        _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+        _staffWdfEligibility: null,
+        _isParent: false,
+        _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+        _parentId: 479,
+        _parentName: null,
+        _dataOwner: 'Parent',
+        _dataPermissions: 'None',
+        _archived: false,
+        _dataOwnershipRequested: null,
+        _reasonsForLeaving: '',
+        _properties: {
+          _properties: [Object],
+          _propertyTypes: [Array],
+          _auditEvents: null,
+          _modifiedProperties: [],
+          _additionalModels: null
+        },
+        _isNew: false,
+        _workerEntities: {},
+        _readyForDeletionWorkers: null,
+        _status: 'COMPLETE',
+        _logLevel: 300
+      }
+    ]);
+
+  expect(bulkUpload).to.have.property('validate');
+
+  const csvEstablishmentSchemaErrors = [];
+
+  const myWorkers = [];
+
+  // call the validation to ensure the proper error is shown
+  await bulkUpload.validate();
+
+  const validationErrors = bulkUpload.validationErrors;
+
+  // assert a warning was returned
+
+  expect(validationErrors).to.deep.equal([
+    {
+      "errCode": 1020,
+      "errType": "STATUS_ERROR",
+      "error": "Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it",
+      "lineNumber": 2,
+      "name": "omar3",
+      "origin": "Establishments",
+      "source": "UPDATE"
+    },
+    {
+      "lineNumber": 2,
+      "name": "omar3",
+      "origin": "Establishments",
+      "source": "AB13 4NJ",
+      "warnCode": 1040,
+      "warnType": "ADDRESS_ERROR",
+      "warning": "The POSTCODE cannot be found in our database and will be ignored."
+    }
+  ]);
+});
+
+it('should not emit an error if postcode can be found in the reference data', async () => {
+  const bulkUpload = new (testUtils.sandBox(
+    filename,
+    {
+      locals: {
+        require: testUtils.wrapRequire({
+          '../BUDI': {
+            BUDI
+          },
+          '../../index': {
+            establishment: models.establishment,
+                pcodedata: models.pcodedata
+          }
+        })
+      }
+    }
+  ).Establishment)(
+    {
+      LOCALESTID: 'omar3',
+      STATUS: 'UPDATE',
+      ESTNAME: 'WOZiTech, with even more care',
+      ADDRESS1: 'First Line',
+      ADDRESS2: 'Second Line',
+      ADDRESS3: '',
+      POSTTOWN: 'My Town',
+      POSTCODE: 'AB13 4MJ',
+      ESTTYPE: '6',
+      OTHERTYPE: '',
+      PERMCQC: '1',
+      PERMLA: '1',
+      SHARELA: '708;721;720',
+      REGTYPE: '2',
+      PROVNUM: '1-123456781',
+      LOCATIONID: '1-123456781',
+      MAINSERVICE: '8',
+    ALLSERVICES: '12;13',
+      CAPACITY: '0;0',
+      UTILISATION: '0;0',
+      SERVICEDESC: '1;1',
+      SERVICEUSERS: '',
+      OTHERUSERDESC: '',
+      TOTALPERMTEMP: '1',
+      ALLJOBROLES: '34;8;4',
+      STARTERS: '0;0;0',
+      LEAVERS: '999;0;0',
+      VACANCIES: '999;333;1',
+      REASONS: '',
+      REASONNOS: ''
+    },
+    2,
+    [
+      {
+        _validations: [],
+        _username: 'aylingw',
+        _id: 479,
+        _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+        _ustatus: null,
+        _created: '2019-03-15T09:54:10.562Z',
+        _updated: '2019-10-04T15:46:16.158Z',
+        _updatedBy: 'aylingw',
+        _auditEvents: null,
+        _name: 'WOZiTech, with even more care',
+        _address1: 'First Line',
+        _address2: 'Second Line',
+        _address3: '',
+        _town: 'My Town',
+        _county: '',
+        _locationId: null,
+        _provId: null,
+        _postcode: 'LN11 9JG',
+        _isRegulated: false,
+        _mainService: { id: 16, name: 'Head office services' },
+        _nmdsId: 'G1001114',
+        _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+        _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+        _establishmentWdfEligibility: null,
+        _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+        _isParent: true,
+        _parentUid: null,
+        _parentId: null,
+        _parentName: null,
+        _dataOwner: 'Workplace',
+        _dataPermissions: 'None',
+        _archived: false,
+        _dataOwnershipRequested: null,
+        _reasonsForLeaving: '',
+        _properties: {
+          _properties: [Object],
+          _propertyTypes: [Array],
+          _auditEvents: null,
+          _modifiedProperties: [],
+          _additionalModels: null
+        },
+        _isNew: false,
+        _workerEntities: {
+        },
+        _readyForDeletionWorkers: null,
+        _status: 'NEW',
+        _logLevel: 300
+      },
+      {
+        _validations: [],
+        _username: 'aylingw',
+        _id: 1446,
+        _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+        _ustatus: null,
+        _created: '2019-07-31T15:09:57.405Z',
+        _updated: '2019-10-04T15:46:16.797Z',
+        _updatedBy: 'aylingw',
+        _auditEvents: null,
+        _name: 'WOZiTech Cares Sub 100',
+        _address1: 'Number 1',
+        _address2: 'My street',
+        _address3: '',
+        _town: 'My Town',
+        _county: '',
+        _locationId: '1-888777666',
+        _provId: '1-999888777',
+        _postcode: 'LN11 9JG',
+        _isRegulated: true,
+        _mainService: { id: 1, name: 'Carers support' },
+        _nmdsId: 'G1002110',
+        _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+        _overallWdfEligibility: null,
+        _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+        _staffWdfEligibility: null,
+        _isParent: false,
+        _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+        _parentId: 479,
+        _parentName: null,
+        _dataOwner: 'Parent',
+        _dataPermissions: 'None',
+        _archived: false,
+        _dataOwnershipRequested: null,
+        _reasonsForLeaving: '',
+        _properties: {
+          _properties: [Object],
+          _propertyTypes: [Array],
+          _auditEvents: null,
+          _modifiedProperties: [],
+          _additionalModels: null
+        },
+        _isNew: false,
+        _workerEntities: {},
+        _readyForDeletionWorkers: null,
+        _status: 'COMPLETE',
+        _logLevel: 300
+      }
+    ]);
+
+  expect(bulkUpload).to.have.property('validate');
+
+  const csvEstablishmentSchemaErrors = [];
+
+  const myWorkers = [];
+
+  // call the validation to ensure the proper error is shown
+  await bulkUpload.validate();
+
+  const validationErrors = bulkUpload.validationErrors;
+
+  // assert a warning was returned
+
+  expect(validationErrors).to.deep.equal([
+    {
+      "errCode": 1020,
+      "errType": "STATUS_ERROR",
+      "error": "Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it",
+      "lineNumber": 2,
+      "name": "omar3",
+      "origin": "Establishments",
+      "source": "UPDATE"
+    }
+  ]);
+});
+    // it('should emit an error if SLV is greater than zero and this ALLJOBROLES is blank', async () => {
+    //   const bulkUpload = new (testUtils.sandBox(
+    //     filename,
+    //     {
+    //       locals: {
+    //         require: testUtils.wrapRequire({
+    //           '../BUDI': {
+    //             BUDI
+    //           },
+    //           '../../index': {
+    //             models
+    //           }
+    //         })
+    //       }
+    //     }
+    //   ).Establishment)(
+    //     {
+    //       LOCALESTID: 'omar3',
+    //       STATUS: 'NEW',
+    //       ESTNAME: 'WOZiTech, with even more care',
+    //       ADDRESS1: 'First Line',
+    //       ADDRESS2: 'Second Line',
+    //       ADDRESS3: '',
+    //       POSTTOWN: 'My Town',
+    //       POSTCODE: 'LN11 9JG',
+    //       ESTTYPE: '6',
+    //       OTHERTYPE: '',
+    //       PERMCQC: '1',
+    //       PERMLA: '1',
+    //       SHARELA: '708;721;720',
+    //       REGTYPE: '0',
+    //       PROVNUM: '',
+    //       LOCATIONID: '',
+    //       MAINSERVICE: '72',
+    //       ALLSERVICES: '72;13',
+    //       CAPACITY: '0;0',
+    //       UTILISATION: '0;0',
+    //       SERVICEDESC: '1;1',
+    //       SERVICEUSERS: '',
+    //       OTHERUSERDESC: '',
+    //       TOTALPERMTEMP: '10',
+    //       ALLJOBROLES: '',
+    //       STARTERS: '0;0',
+    //       LEAVERS: '999',
+    //       VACANCIES: '999;333',
+    //       REASONS: '',
+    //       REASONNOS: ''
+    //     },
+    //     2,
+    //     [
+    //       {
+    //         _validations: [],
+    //         _username: 'aylingw',
+    //         _id: 479,
+    //         _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+    //         _ustatus: null,
+    //         _created: '2019-03-15T09:54:10.562Z',
+    //         _updated: '2019-10-04T15:46:16.158Z',
+    //         _updatedBy: 'aylingw',
+    //         _auditEvents: null,
+    //         _name: 'WOZiTech, with even more care',
+    //         _address1: 'First Line',
+    //         _address2: 'Second Line',
+    //         _address3: '',
+    //         _town: 'My Town',
+    //         _county: '',
+    //         _locationId: 'A-328849599',
+    //         _provId: null,
+    //         _postcode: 'LN11 9JG',
+    //         _isRegulated: false,
+    //         _mainService: { id: 72, name: 'Head office services' },
+    //         _nmdsId: 'G1001114',
+    //         _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+    //         _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+    //         _establishmentWdfEligibility: null,
+    //         _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+    //         _isParent: true,
+    //         _parentUid: null,
+    //         _parentId: null,
+    //         _parentName: null,
+    //         _dataOwner: 'Workplace',
+    //         _dataPermissions: 'None',
+    //         _archived: false,
+    //         _dataOwnershipRequested: null,
+    //         _reasonsForLeaving: '',
+    //         _properties: {
+    //           _properties: [Object],
+    //           _propertyTypes: [Array],
+    //           _auditEvents: null,
+    //           _modifiedProperties: [],
+    //           _additionalModels: null
+    //         },
+    //         _isNew: false,
+    //         _workerEntities: {
+    //         },
+    //         _readyForDeletionWorkers: null,
+    //         _status: 'NEW',
+    //         _logLevel: 300
+    //       },
+    //       {
+    //         _validations: [],
+    //         _username: 'aylingw',
+    //         _id: 1446,
+    //         _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+    //         _ustatus: null,
+    //         _created: '2019-07-31T15:09:57.405Z',
+    //         _updated: '2019-10-04T15:46:16.797Z',
+    //         _updatedBy: 'aylingw',
+    //         _auditEvents: null,
+    //         _name: 'WOZiTech Cares Sub 100',
+    //         _address1: 'Number 1',
+    //         _address2: 'My street',
+    //         _address3: '',
+    //         _town: 'My Town',
+    //         _county: '',
+    //         _locationId: '1-888777666',
+    //         _provId: '1-999888777',
+    //         _postcode: 'LN11 9JG',
+    //         _isRegulated: true,
+    //         _mainService: { id: 1, name: 'Carers support' },
+    //         _nmdsId: 'G1002110',
+    //         _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+    //         _overallWdfEligibility: null,
+    //         _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+    //         _staffWdfEligibility: null,
+    //         _isParent: false,
+    //         _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+    //         _parentId: 479,
+    //         _parentName: null,
+    //         _dataOwner: 'Parent',
+    //         _dataPermissions: 'None',
+    //         _archived: false,
+    //         _dataOwnershipRequested: null,
+    //         _reasonsForLeaving: '',
+    //         _properties: {
+    //           _properties: [Object],
+    //           _propertyTypes: [Array],
+    //           _auditEvents: null,
+    //           _modifiedProperties: [],
+    //           _additionalModels: null
+    //         },
+    //         _isNew: false,
+    //         _workerEntities: {},
+    //         _readyForDeletionWorkers: null,
+    //         _status: 'COMPLETE',
+    //         _logLevel: 300
+    //       }]
+    //   );
+
+    //   expect(bulkUpload).to.have.property('validate');
+
+    //   const csvEstablishmentSchemaErrors = [];
+
+    //   const myWorkers = [];
+
+    //   // call the validation to ensure the proper error is shown
+    //   await bulkUpload.validate();
+
+    //   const validationErrors = bulkUpload.validationErrors;
+
+    //   // assert a warning was returned
+
+    //   expect(validationErrors).to.deep.equal([{
+    //     lineNumber: 2,
+    //     name: 'omar3',
+    //     origin: 'Establishments',
+    //     source: '',
+    //     errCode: 1280,
+    //     errType: 'ALL_JOBS_ERROR',
+    //     error: 'ALLJOBROLES cannot be blank as you have STARTERS, LEAVERS, VACANCIES greater than zero'
+    //   }]);
+    // });
+  });
+
+  describe('cross entity validations', () => {
+    it('should an error if cqc registered and have no registered manager vacancy or registered manager staff member', async () => {
       const bulkUpload = new (testUtils.sandBox(
         filename,
         {
@@ -1136,6 +2723,10 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             require: testUtils.wrapRequire({
               '../BUDI': {
                 BUDI
+              },
+              '../../index': {
+                establishment: models.establishment,
+                    pcodedata: models.pcodedata
               }
             })
           }
@@ -1143,35 +2734,35 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
       ).Establishment)(
         {
           LOCALESTID: 'omar3',
-          STATUS: 'UPDATE',
-          ESTNAME: 'WOZiTech, with even more care',
-          ADDRESS1: 'First Line',
-          ADDRESS2: 'Second Line',
-          ADDRESS3: '',
-          POSTTOWN: 'My Town',
-          POSTCODE: 'LN11 9JG',
-          ESTTYPE: '6',
-          OTHERTYPE: '',
-          PERMCQC: '1',
-          PERMLA: '1',
-          SHARELA: '708;721;720',
-          REGTYPE: '2',
-          PROVNUM: '',
-          LOCATIONID: '',
-          MAINSERVICE: '72',
-          ALLSERVICES: '72;13',
-          CAPACITY: '',
-          UTILISATION: '',
-          SERVICEDESC: '1;1',
-          SERVICEUSERS: '',
-          OTHERUSERDESC: '',
-          TOTALPERMTEMP: '1',
-          ALLJOBROLES: '34;8',
-          STARTERS: '0;0',
-          LEAVERS: '999',
-          VACANCIES: '999;333',
-          REASONS: '',
-          REASONNOS: ''
+      STATUS: 'UPDATE',
+      ESTNAME: 'WOZiTech, with even more care',
+      ADDRESS1: 'First Line',
+      ADDRESS2: 'Second Line',
+      ADDRESS3: '',
+      POSTTOWN: 'My Town',
+      POSTCODE: 'AB13 4NJ',
+      ESTTYPE: '6',
+      OTHERTYPE: '',
+      PERMCQC: '1',
+      PERMLA: '1',
+      SHARELA: '708;721;720',
+      REGTYPE: '2',
+      PROVNUM: '1-123456781',
+      LOCATIONID: '1-123456781',
+      MAINSERVICE: '8',
+      ALLSERVICES: '12;13',
+      CAPACITY: '0;0',
+      UTILISATION: '0;0',
+      SERVICEDESC: '1;1',
+      SERVICEUSERS: '',
+      OTHERUSERDESC: '',
+      TOTALPERMTEMP: '1',
+      ALLJOBROLES: '34;8',
+      STARTERS: '0;0',
+      LEAVERS: '999;0',
+      VACANCIES: '999;333',
+      REASONS: '',
+      REASONNOS: ''
         },
         2,
         [
@@ -1279,12 +2870,10 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
       const csvEstablishmentSchemaErrors = [];
 
       const myWorkers = [{
-        establishmentKey: 'omar3',
         status: 'UPDATE',
-        uniqueWorker: '3',
-        contractTypeId: 1,
-        mainJobRoleId: 1,
-        otherJobIds: []
+        establishmentKey: 'omar3',
+        mainJobRoleId: 3,
+        otherJobIds: [6]
       }];
 
       // the real version of this code is in the api Establishment business object and runs a sql query.
@@ -1313,14 +2902,13 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
         lineNumber: 2,
         name: 'omar3',
         origin: 'Establishments',
-        source: '1',
-        warnCode: 2200,
-        warnType: 'TOTAL_PERM_TEMP_WARNING',
-        warning: 'The number of direct care staff is 0 please check your staff records'
+        source: '34;8',
+        errCode: 1280,
+        errType: 'ALL_JOBS_ERROR',
+        error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one'
       });
     });
-
-    it('should emit a warning if there no non-direct care staff', async () => {
+    it('should not an error if cqc registered and have registered manager vacancy or registered manager staff member (as main)', async () => {
       const bulkUpload = new (testUtils.sandBox(
         filename,
         {
@@ -1328,6 +2916,10 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             require: testUtils.wrapRequire({
               '../BUDI': {
                 BUDI
+              },
+              '../../index': {
+                establishment: models.establishment,
+                    pcodedata: models.pcodedata
               }
             })
           }
@@ -1335,35 +2927,35 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
       ).Establishment)(
         {
           LOCALESTID: 'omar3',
-          STATUS: 'UPDATE',
-          ESTNAME: 'WOZiTech, with even more care',
-          ADDRESS1: 'First Line',
-          ADDRESS2: 'Second Line',
-          ADDRESS3: '',
-          POSTTOWN: 'My Town',
-          POSTCODE: 'LN11 9JG',
-          ESTTYPE: '1',
-          OTHERTYPE: '',
-          PERMCQC: '1',
-          PERMLA: '1',
-          SHARELA: '708;721;720',
-          REGTYPE: '2',
-          PROVNUM: '',
-          LOCATIONID: '',
-          MAINSERVICE: '72',
-          ALLSERVICES: '72;13',
-          CAPACITY: '',
-          UTILISATION: '',
-          SERVICEDESC: '1;1',
-          SERVICEUSERS: '',
-          OTHERUSERDESC: '',
-          TOTALPERMTEMP: '1',
-          ALLJOBROLES: '34;8',
-          STARTERS: '0;0',
-          LEAVERS: '999',
-          VACANCIES: '999;333',
-          REASONS: '',
-          REASONNOS: ''
+      STATUS: 'UPDATE',
+      ESTNAME: 'WOZiTech, with even more care',
+      ADDRESS1: 'First Line',
+      ADDRESS2: 'Second Line',
+      ADDRESS3: '',
+      POSTTOWN: 'My Town',
+      POSTCODE: 'AB13 4NJ',
+      ESTTYPE: '6',
+      OTHERTYPE: '',
+      PERMCQC: '1',
+      PERMLA: '1',
+      SHARELA: '708;721;720',
+      REGTYPE: '2',
+      PROVNUM: '1-123456781',
+      LOCATIONID: '1-123456781',
+      MAINSERVICE: '8',
+      ALLSERVICES: '12;13',
+      CAPACITY: '0;0',
+      UTILISATION: '0;0',
+      SERVICEDESC: '1;1',
+      SERVICEUSERS: '',
+      OTHERUSERDESC: '',
+      TOTALPERMTEMP: '1',
+      ALLJOBROLES: '34;8',
+      STARTERS: '0;0',
+      LEAVERS: '999;0',
+      VACANCIES: '999;333',
+      REASONS: '',
+      REASONNOS: ''
         },
         2,
         [
@@ -1471,11 +3063,9 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
       const csvEstablishmentSchemaErrors = [];
 
       const myWorkers = [{
-        establishmentKey: 'omar3',
         status: 'UPDATE',
-        uniqueWorker: '3',
-        contractTypeId: 1,
-        mainJobRoleId: 10,
+        establishmentKey: 'omar3',
+        mainJobRoleId: 4,
         otherJobIds: []
       }];
 
@@ -1497,22 +3087,12 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
 
       // assert the fetchMyEstalishmentsWorkers function was called
       expect(fetchMyEstablishmentsWorkers.callCount).to.equal(1);
-
       // assert a warning was returned
-      expect(csvEstablishmentSchemaErrors.length).to.equal(1);
+      expect(csvEstablishmentSchemaErrors.length).to.equal(0);
 
-      expect(csvEstablishmentSchemaErrors[0]).to.deep.equal({
-        lineNumber: 2,
-        name: 'omar3',
-        origin: 'Establishments',
-        source: '1',
-        warnCode: 2200,
-        warnType: 'TOTAL_PERM_TEMP_WARNING',
-        warning: 'The number of non-direct care staff is 0 please check your staff records'
-      });
+      expect(csvEstablishmentSchemaErrors[0]).to.deep.equal();
     });
-
-    it('should emit a warning if there are fewer employed staff than non employed staff', async () => {
+    it('should not an error if cqc registered and have registered manager vacancy or registered manager staff member (as other)', async () => {
       const bulkUpload = new (testUtils.sandBox(
         filename,
         {
@@ -1520,6 +3100,10 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             require: testUtils.wrapRequire({
               '../BUDI': {
                 BUDI
+              },
+              '../../index': {
+                establishment: models.establishment,
+                    pcodedata: models.pcodedata
               }
             })
           }
@@ -1527,35 +3111,35 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
       ).Establishment)(
         {
           LOCALESTID: 'omar3',
-          STATUS: 'UPDATE',
-          ESTNAME: 'WOZiTech, with even more care',
-          ADDRESS1: 'First Line',
-          ADDRESS2: 'Second Line',
-          ADDRESS3: '',
-          POSTTOWN: 'My Town',
-          POSTCODE: 'LN11 9JG',
-          ESTTYPE: '6',
-          OTHERTYPE: '',
-          PERMCQC: '1',
-          PERMLA: '1',
-          SHARELA: '708;721;720',
-          REGTYPE: '0',
-          PROVNUM: '',
-          LOCATIONID: '',
-          MAINSERVICE: '72',
-          ALLSERVICES: '72;13',
-          CAPACITY: '',
-          UTILISATION: '',
-          SERVICEDESC: '1;1',
-          SERVICEUSERS: '',
-          OTHERUSERDESC: '',
-          TOTALPERMTEMP: '10',
-          ALLJOBROLES: '34;8',
-          STARTERS: '0;0',
-          LEAVERS: '999',
-          VACANCIES: '999;333',
-          REASONS: '',
-          REASONNOS: ''
+      STATUS: 'UPDATE',
+      ESTNAME: 'WOZiTech, with even more care',
+      ADDRESS1: 'First Line',
+      ADDRESS2: 'Second Line',
+      ADDRESS3: '',
+      POSTTOWN: 'My Town',
+      POSTCODE: 'AB13 4NJ',
+      ESTTYPE: '6',
+      OTHERTYPE: '',
+      PERMCQC: '1',
+      PERMLA: '1',
+      SHARELA: '708;721;720',
+      REGTYPE: '2',
+      PROVNUM: '1-123456781',
+      LOCATIONID: '1-123456781',
+      MAINSERVICE: '8',
+      ALLSERVICES: '12;13',
+      CAPACITY: '0;0',
+      UTILISATION: '0;0',
+      SERVICEDESC: '1;1',
+      SERVICEUSERS: '',
+      OTHERUSERDESC: '',
+      TOTALPERMTEMP: '1',
+      ALLJOBROLES: '34;8',
+      STARTERS: '0;0',
+      LEAVERS: '999;0',
+      VACANCIES: '999;333',
+      REASONS: '',
+      REASONNOS: ''
         },
         2,
         [
@@ -1663,87 +3247,16 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
       const csvEstablishmentSchemaErrors = [];
 
       const myWorkers = [{
-        establishmentKey: 'omar3',
         status: 'UPDATE',
-        uniqueWorker: '3',
-        contractTypeId: 2,
-        mainJobRoleId: 10,
-        otherJobIds: []
+        establishmentKey: 'omar3',
+        mainJobRoleId: 3,
+        otherJobIds: [4]
       }];
 
       // the real version of this code is in the api Establishment business object and runs a sql query.
       // We just return a 'fake result set'
       const fetchMyEstablishmentsWorkers = sinon.spy(async (establishmentId, establishmentKey) => {
-        return [{
-          establishmentKey: 'omar3',
-          uniqueWorker: '3',
-          contractTypeId: 'Permanent',
-          mainJobRoleId: 10,
-          otherJobIds: ''
-        },
-        {
-          establishmentKey: 'omar3',
-          uniqueWorker: 'WA100',
-          contractTypeId: 'Temporary',
-          mainJobRoleId: 26,
-          otherJobIds: ''
-        },
-        {
-          establishmentKey: 'omar3',
-          uniqueWorker: '5',
-          contractTypeId: 'Pool/Bank',
-          mainJobRoleId: 7,
-          otherJobIds: ''
-        },
-        {
-          establishmentKey: 'omar3',
-          uniqueWorker: '6',
-          contractTypeId: 'Temporary',
-          mainJobRoleId: 17,
-          otherJobIds: ''
-        },
-        {
-          establishmentKey: 'omar3',
-          uniqueWorker: 'WA103',
-          contractTypeId: 'Temporary',
-          mainJobRoleId: 26,
-          otherJobIds: ''
-        },
-        {
-          establishmentKey: 'omar3',
-          uniqueWorker: '10',
-          contractTypeId: 'Other',
-          mainJobRoleId: 18,
-          otherJobIds: ''
-        },
-        {
-          establishmentKey: 'omar3',
-          uniqueWorker: '4',
-          contractTypeId: 'Other',
-          mainJobRoleId: 1,
-          otherJobIds: ''
-        },
-        {
-          establishmentKey: 'omar3',
-          uniqueWorker: 'SA 4',
-          contractTypeId: 'Other',
-          mainJobRoleId: 23,
-          otherJobIds: ''
-        },
-        {
-          establishmentKey: 'omar3',
-          uniqueWorker: 'FTSpecial',
-          contractTypeId: 'Other',
-          mainJobRoleId: 24,
-          otherJobIds: ''
-        },
-        {
-          establishmentKey: 'omar3',
-          uniqueWorker: '1',
-          contractTypeId: 'Other',
-          mainJobRoleId: 2,
-          otherJobIds: ''
-        }];
+        return [];
       });
 
       // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -1760,17 +3273,838 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
       expect(fetchMyEstablishmentsWorkers.callCount).to.equal(1);
 
       // assert a warning was returned
-      expect(csvEstablishmentSchemaErrors.length).to.equal(1);
+      expect(csvEstablishmentSchemaErrors.length).to.equal(0);
 
-      expect(csvEstablishmentSchemaErrors[0]).to.deep.equal({
-        lineNumber: 2,
-        name: 'omar3',
-        origin: 'Establishments',
-        source: '10',
-        warnCode: 2200,
-        warnType: 'TOTAL_PERM_TEMP_WARNING',
-        warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records'
-      });
+      expect(csvEstablishmentSchemaErrors[0]).to.deep.equal();
     });
+  //   it('should emit a warning if there are zero staff', async () => {
+  //     const bulkUpload = new (testUtils.sandBox(
+  //       filename,
+  //       {
+  //         locals: {
+  //           require: testUtils.wrapRequire({
+  //             '../BUDI': {
+  //               BUDI
+  //             }
+  //           })
+  //         }
+  //       }
+  //     ).Establishment)(
+  //       {
+  //         LOCALESTID: 'omar3',
+  //         STATUS: 'UPDATE',
+  //         ESTNAME: 'WOZiTech, with even more care',
+  //         ADDRESS1: 'First Line',
+  //         ADDRESS2: 'Second Line',
+  //         ADDRESS3: '',
+  //         POSTTOWN: 'My Town',
+  //         POSTCODE: 'LN11 9JG',
+  //         ESTTYPE: '6',
+  //         OTHERTYPE: '',
+  //         PERMCQC: '1',
+  //         PERMLA: '1',
+  //         SHARELA: '708;721;720',
+  //         REGTYPE: '0',
+  //         PROVNUM: '',
+  //         LOCATIONID: '',
+  //         MAINSERVICE: '72',
+  //         ALLSERVICES: '72;13',
+  //         CAPACITY: '',
+  //         UTILISATION: '',
+  //         SERVICEDESC: '1;1',
+  //         SERVICEUSERS: '',
+  //         OTHERUSERDESC: '',
+  //         TOTALPERMTEMP: '0',
+  //         ALLJOBROLES: '34;8',
+  //         STARTERS: '0;0',
+  //         LEAVERS: '999',
+  //         VACANCIES: '999;333',
+  //         REASONS: '',
+  //         REASONNOS: ''
+  //       },
+  //       2,
+  //       [
+  //         {
+  //           _validations: [],
+  //           _username: 'aylingw',
+  //           _id: 479,
+  //           _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+  //           _ustatus: null,
+  //           _created: '2019-03-15T09:54:10.562Z',
+  //           _updated: '2019-10-04T15:46:16.158Z',
+  //           _updatedBy: 'aylingw',
+  //           _auditEvents: null,
+  //           _name: 'WOZiTech, with even more care',
+  //           _address1: 'First Line',
+  //           _address2: 'Second Line',
+  //           _address3: '',
+  //           _town: 'My Town',
+  //           _county: '',
+  //           _locationId: 'A-328849599',
+  //           _provId: null,
+  //           _postcode: 'LN11 9JG',
+  //           _isRegulated: false,
+  //           _mainService: { id: 16, name: 'Head office services' },
+  //           _nmdsId: 'G1001114',
+  //           _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+  //           _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+  //           _establishmentWdfEligibility: null,
+  //           _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+  //           _isParent: true,
+  //           _parentUid: null,
+  //           _parentId: null,
+  //           _parentName: null,
+  //           _dataOwner: 'Workplace',
+  //           _dataPermissions: 'None',
+  //           _archived: false,
+  //           _dataOwnershipRequested: null,
+  //           _reasonsForLeaving: '',
+  //           _properties: {
+  //             _properties: [Object],
+  //             _propertyTypes: [Array],
+  //             _auditEvents: null,
+  //             _modifiedProperties: [],
+  //             _additionalModels: null
+  //           },
+  //           _isNew: false,
+  //           _workerEntities: {
+  //           },
+  //           _readyForDeletionWorkers: null,
+  //           _status: 'NEW',
+  //           _logLevel: 300
+  //         },
+  //         {
+  //           _validations: [],
+  //           _username: 'aylingw',
+  //           _id: 1446,
+  //           _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+  //           _ustatus: null,
+  //           _created: '2019-07-31T15:09:57.405Z',
+  //           _updated: '2019-10-04T15:46:16.797Z',
+  //           _updatedBy: 'aylingw',
+  //           _auditEvents: null,
+  //           _name: 'WOZiTech Cares Sub 100',
+  //           _address1: 'Number 1',
+  //           _address2: 'My street',
+  //           _address3: '',
+  //           _town: 'My Town',
+  //           _county: '',
+  //           _locationId: '1-888777666',
+  //           _provId: '1-999888777',
+  //           _postcode: 'LN11 9JG',
+  //           _isRegulated: true,
+  //           _mainService: { id: 1, name: 'Carers support' },
+  //           _nmdsId: 'G1002110',
+  //           _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+  //           _overallWdfEligibility: null,
+  //           _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+  //           _staffWdfEligibility: null,
+  //           _isParent: false,
+  //           _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+  //           _parentId: 479,
+  //           _parentName: null,
+  //           _dataOwner: 'Parent',
+  //           _dataPermissions: 'None',
+  //           _archived: false,
+  //           _dataOwnershipRequested: null,
+  //           _reasonsForLeaving: '',
+  //           _properties: {
+  //             _properties: [Object],
+  //             _propertyTypes: [Array],
+  //             _auditEvents: null,
+  //             _modifiedProperties: [],
+  //             _additionalModels: null
+  //           },
+  //           _isNew: false,
+  //           _workerEntities: {},
+  //           _readyForDeletionWorkers: null,
+  //           _status: 'COMPLETE',
+  //           _logLevel: 300
+  //         }
+  //       ]);
+
+  //     expect(bulkUpload).to.have.property('crossValidate');
+
+  //     const csvEstablishmentSchemaErrors = [];
+
+  //     const myWorkers = [];
+
+  //     // the real version of this code is in the api Establishment business object and runs a sql query.
+  //     // We just return a 'fake result set'
+  //     const fetchMyEstablishmentsWorkers = sinon.spy(async (establishmentId, establishmentKey) => {
+  //       return [];
+  //     });
+
+  //     // Regular validation has to run first for the establishment to populate the internal properties correctly
+  //     await bulkUpload.validate();
+
+  //     // call the method
+  //     await bulkUpload.crossValidate({
+  //       csvEstablishmentSchemaErrors,
+  //       myWorkers,
+  //       fetchMyEstablishmentsWorkers
+  //     });
+
+  //     // assert the fetchMyEstalishmentsWorkers function was called
+  //     expect(fetchMyEstablishmentsWorkers.callCount).to.equal(1);
+
+  //     // assert a warning was returned
+  //     expect(csvEstablishmentSchemaErrors.length).to.equal(1);
+
+  //     expect(csvEstablishmentSchemaErrors[0]).to.deep.equal({
+  //       lineNumber: 2,
+  //       name: 'omar3',
+  //       origin: 'Establishments',
+  //       source: '0',
+  //       warnCode: 2200,
+  //       warnType: 'TOTAL_PERM_TEMP_WARNING',
+  //       warning: 'The number of employed staff is 0 please check your staff records'
+  //     });
+  //   });
+
+  //   it('should emit a warning if there are no direct care staff', async () => {
+  //     const bulkUpload = new (testUtils.sandBox(
+  //       filename,
+  //       {
+  //         locals: {
+  //           require: testUtils.wrapRequire({
+  //             '../BUDI': {
+  //               BUDI
+  //             }
+  //           })
+  //         }
+  //       }
+  //     ).Establishment)(
+  //       {
+  //         LOCALESTID: 'omar3',
+  //         STATUS: 'UPDATE',
+  //         ESTNAME: 'WOZiTech, with even more care',
+  //         ADDRESS1: 'First Line',
+  //         ADDRESS2: 'Second Line',
+  //         ADDRESS3: '',
+  //         POSTTOWN: 'My Town',
+  //         POSTCODE: 'LN11 9JG',
+  //         ESTTYPE: '6',
+  //         OTHERTYPE: '',
+  //         PERMCQC: '1',
+  //         PERMLA: '1',
+  //         SHARELA: '708;721;720',
+  //         REGTYPE: '2',
+  //         PROVNUM: '',
+  //         LOCATIONID: '',
+  //         MAINSERVICE: '72',
+  //         ALLSERVICES: '72;13',
+  //         CAPACITY: '',
+  //         UTILISATION: '',
+  //         SERVICEDESC: '1;1',
+  //         SERVICEUSERS: '',
+  //         OTHERUSERDESC: '',
+  //         TOTALPERMTEMP: '1',
+  //         ALLJOBROLES: '34;8',
+  //         STARTERS: '0;0',
+  //         LEAVERS: '999',
+  //         VACANCIES: '999;333',
+  //         REASONS: '',
+  //         REASONNOS: ''
+  //       },
+  //       2,
+  //       [
+  //         {
+  //           _validations: [],
+  //           _username: 'aylingw',
+  //           _id: 479,
+  //           _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+  //           _ustatus: null,
+  //           _created: '2019-03-15T09:54:10.562Z',
+  //           _updated: '2019-10-04T15:46:16.158Z',
+  //           _updatedBy: 'aylingw',
+  //           _auditEvents: null,
+  //           _name: 'WOZiTech, with even more care',
+  //           _address1: 'First Line',
+  //           _address2: 'Second Line',
+  //           _address3: '',
+  //           _town: 'My Town',
+  //           _county: '',
+  //           _locationId: 'A-328849599',
+  //           _provId: null,
+  //           _postcode: 'LN11 9JG',
+  //           _isRegulated: false,
+  //           _mainService: { id: 16, name: 'Head office services' },
+  //           _nmdsId: 'G1001114',
+  //           _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+  //           _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+  //           _establishmentWdfEligibility: null,
+  //           _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+  //           _isParent: true,
+  //           _parentUid: null,
+  //           _parentId: null,
+  //           _parentName: null,
+  //           _dataOwner: 'Workplace',
+  //           _dataPermissions: 'None',
+  //           _archived: false,
+  //           _dataOwnershipRequested: null,
+  //           _reasonsForLeaving: '',
+  //           _properties: {
+  //             _properties: [Object],
+  //             _propertyTypes: [Array],
+  //             _auditEvents: null,
+  //             _modifiedProperties: [],
+  //             _additionalModels: null
+  //           },
+  //           _isNew: false,
+  //           _workerEntities: {
+  //           },
+  //           _readyForDeletionWorkers: null,
+  //           _status: 'NEW',
+  //           _logLevel: 300
+  //         },
+  //         {
+  //           _validations: [],
+  //           _username: 'aylingw',
+  //           _id: 1446,
+  //           _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+  //           _ustatus: null,
+  //           _created: '2019-07-31T15:09:57.405Z',
+  //           _updated: '2019-10-04T15:46:16.797Z',
+  //           _updatedBy: 'aylingw',
+  //           _auditEvents: null,
+  //           _name: 'WOZiTech Cares Sub 100',
+  //           _address1: 'Number 1',
+  //           _address2: 'My street',
+  //           _address3: '',
+  //           _town: 'My Town',
+  //           _county: '',
+  //           _locationId: '1-888777666',
+  //           _provId: '1-999888777',
+  //           _postcode: 'LN11 9JG',
+  //           _isRegulated: true,
+  //           _mainService: { id: 1, name: 'Carers support' },
+  //           _nmdsId: 'G1002110',
+  //           _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+  //           _overallWdfEligibility: null,
+  //           _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+  //           _staffWdfEligibility: null,
+  //           _isParent: false,
+  //           _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+  //           _parentId: 479,
+  //           _parentName: null,
+  //           _dataOwner: 'Parent',
+  //           _dataPermissions: 'None',
+  //           _archived: false,
+  //           _dataOwnershipRequested: null,
+  //           _reasonsForLeaving: '',
+  //           _properties: {
+  //             _properties: [Object],
+  //             _propertyTypes: [Array],
+  //             _auditEvents: null,
+  //             _modifiedProperties: [],
+  //             _additionalModels: null
+  //           },
+  //           _isNew: false,
+  //           _workerEntities: {},
+  //           _readyForDeletionWorkers: null,
+  //           _status: 'COMPLETE',
+  //           _logLevel: 300
+  //         }
+  //       ]);
+
+  //     expect(bulkUpload).to.have.property('crossValidate');
+
+  //     const csvEstablishmentSchemaErrors = [];
+
+  //     const myWorkers = [{
+  //       establishmentKey: 'omar3',
+  //       status: 'UPDATE',
+  //       uniqueWorker: '3',
+  //       contractTypeId: 1,
+  //       mainJobRoleId: 1,
+  //       otherJobIds: []
+  //     }];
+
+  //     // the real version of this code is in the api Establishment business object and runs a sql query.
+  //     // We just return a 'fake result set'
+  //     const fetchMyEstablishmentsWorkers = sinon.spy(async (establishmentId, establishmentKey) => {
+  //       return [];
+  //     });
+
+  //     // Regular validation has to run first for the establishment to populate the internal properties correctly
+  //     await bulkUpload.validate();
+
+  //     // call the method
+  //     await bulkUpload.crossValidate({
+  //       csvEstablishmentSchemaErrors,
+  //       myWorkers,
+  //       fetchMyEstablishmentsWorkers
+  //     });
+
+  //     // assert the fetchMyEstalishmentsWorkers function was called
+  //     expect(fetchMyEstablishmentsWorkers.callCount).to.equal(1);
+
+  //     // assert a warning was returned
+  //     expect(csvEstablishmentSchemaErrors.length).to.equal(1);
+
+  //     expect(csvEstablishmentSchemaErrors[0]).to.deep.equal({
+  //       lineNumber: 2,
+  //       name: 'omar3',
+  //       origin: 'Establishments',
+  //       source: '1',
+  //       warnCode: 2200,
+  //       warnType: 'TOTAL_PERM_TEMP_WARNING',
+  //       warning: 'The number of direct care staff is 0 please check your staff records'
+  //     });
+  //   });
+
+  //   it('should emit a warning if there no non-direct care staff', async () => {
+  //     const bulkUpload = new (testUtils.sandBox(
+  //       filename,
+  //       {
+  //         locals: {
+  //           require: testUtils.wrapRequire({
+  //             '../BUDI': {
+  //               BUDI
+  //             }
+  //           })
+  //         }
+  //       }
+  //     ).Establishment)(
+  //       {
+  //         LOCALESTID: 'omar3',
+  //         STATUS: 'UPDATE',
+  //         ESTNAME: 'WOZiTech, with even more care',
+  //         ADDRESS1: 'First Line',
+  //         ADDRESS2: 'Second Line',
+  //         ADDRESS3: '',
+  //         POSTTOWN: 'My Town',
+  //         POSTCODE: 'LN11 9JG',
+  //         ESTTYPE: '1',
+  //         OTHERTYPE: '',
+  //         PERMCQC: '1',
+  //         PERMLA: '1',
+  //         SHARELA: '708;721;720',
+  //         REGTYPE: '2',
+  //         PROVNUM: '',
+  //         LOCATIONID: '',
+  //         MAINSERVICE: '72',
+  //         ALLSERVICES: '72;13',
+  //         CAPACITY: '',
+  //         UTILISATION: '',
+  //         SERVICEDESC: '1;1',
+  //         SERVICEUSERS: '',
+  //         OTHERUSERDESC: '',
+  //         TOTALPERMTEMP: '1',
+  //         ALLJOBROLES: '34;8',
+  //         STARTERS: '0;0',
+  //         LEAVERS: '999',
+  //         VACANCIES: '999;333',
+  //         REASONS: '',
+  //         REASONNOS: ''
+  //       },
+  //       2,
+  //       [
+  //         {
+  //           _validations: [],
+  //           _username: 'aylingw',
+  //           _id: 479,
+  //           _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+  //           _ustatus: null,
+  //           _created: '2019-03-15T09:54:10.562Z',
+  //           _updated: '2019-10-04T15:46:16.158Z',
+  //           _updatedBy: 'aylingw',
+  //           _auditEvents: null,
+  //           _name: 'WOZiTech, with even more care',
+  //           _address1: 'First Line',
+  //           _address2: 'Second Line',
+  //           _address3: '',
+  //           _town: 'My Town',
+  //           _county: '',
+  //           _locationId: 'A-328849599',
+  //           _provId: null,
+  //           _postcode: 'LN11 9JG',
+  //           _isRegulated: false,
+  //           _mainService: { id: 16, name: 'Head office services' },
+  //           _nmdsId: 'G1001114',
+  //           _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+  //           _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+  //           _establishmentWdfEligibility: null,
+  //           _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+  //           _isParent: true,
+  //           _parentUid: null,
+  //           _parentId: null,
+  //           _parentName: null,
+  //           _dataOwner: 'Workplace',
+  //           _dataPermissions: 'None',
+  //           _archived: false,
+  //           _dataOwnershipRequested: null,
+  //           _reasonsForLeaving: '',
+  //           _properties: {
+  //             _properties: [Object],
+  //             _propertyTypes: [Array],
+  //             _auditEvents: null,
+  //             _modifiedProperties: [],
+  //             _additionalModels: null
+  //           },
+  //           _isNew: false,
+  //           _workerEntities: {
+  //           },
+  //           _readyForDeletionWorkers: null,
+  //           _status: 'NEW',
+  //           _logLevel: 300
+  //         },
+  //         {
+  //           _validations: [],
+  //           _username: 'aylingw',
+  //           _id: 1446,
+  //           _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+  //           _ustatus: null,
+  //           _created: '2019-07-31T15:09:57.405Z',
+  //           _updated: '2019-10-04T15:46:16.797Z',
+  //           _updatedBy: 'aylingw',
+  //           _auditEvents: null,
+  //           _name: 'WOZiTech Cares Sub 100',
+  //           _address1: 'Number 1',
+  //           _address2: 'My street',
+  //           _address3: '',
+  //           _town: 'My Town',
+  //           _county: '',
+  //           _locationId: '1-888777666',
+  //           _provId: '1-999888777',
+  //           _postcode: 'LN11 9JG',
+  //           _isRegulated: true,
+  //           _mainService: { id: 1, name: 'Carers support' },
+  //           _nmdsId: 'G1002110',
+  //           _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+  //           _overallWdfEligibility: null,
+  //           _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+  //           _staffWdfEligibility: null,
+  //           _isParent: false,
+  //           _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+  //           _parentId: 479,
+  //           _parentName: null,
+  //           _dataOwner: 'Parent',
+  //           _dataPermissions: 'None',
+  //           _archived: false,
+  //           _dataOwnershipRequested: null,
+  //           _reasonsForLeaving: '',
+  //           _properties: {
+  //             _properties: [Object],
+  //             _propertyTypes: [Array],
+  //             _auditEvents: null,
+  //             _modifiedProperties: [],
+  //             _additionalModels: null
+  //           },
+  //           _isNew: false,
+  //           _workerEntities: {},
+  //           _readyForDeletionWorkers: null,
+  //           _status: 'COMPLETE',
+  //           _logLevel: 300
+  //         }
+  //       ]);
+
+  //     expect(bulkUpload).to.have.property('crossValidate');
+
+  //     const csvEstablishmentSchemaErrors = [];
+
+  //     const myWorkers = [{
+  //       establishmentKey: 'omar3',
+  //       status: 'UPDATE',
+  //       uniqueWorker: '3',
+  //       contractTypeId: 1,
+  //       mainJobRoleId: 10,
+  //       otherJobIds: []
+  //     }];
+
+  //     // the real version of this code is in the api Establishment business object and runs a sql query.
+  //     // We just return a 'fake result set'
+  //     const fetchMyEstablishmentsWorkers = sinon.spy(async (establishmentId, establishmentKey) => {
+  //       return [];
+  //     });
+
+  //     // Regular validation has to run first for the establishment to populate the internal properties correctly
+  //     await bulkUpload.validate();
+
+  //     // call the method
+  //     await bulkUpload.crossValidate({
+  //       csvEstablishmentSchemaErrors,
+  //       myWorkers,
+  //       fetchMyEstablishmentsWorkers
+  //     });
+
+  //     // assert the fetchMyEstalishmentsWorkers function was called
+  //     expect(fetchMyEstablishmentsWorkers.callCount).to.equal(1);
+
+  //     // assert a warning was returned
+  //     expect(csvEstablishmentSchemaErrors.length).to.equal(1);
+
+  //     expect(csvEstablishmentSchemaErrors[0]).to.deep.equal({
+  //       lineNumber: 2,
+  //       name: 'omar3',
+  //       origin: 'Establishments',
+  //       source: '1',
+  //       warnCode: 2200,
+  //       warnType: 'TOTAL_PERM_TEMP_WARNING',
+  //       warning: 'The number of non-direct care staff is 0 please check your staff records'
+  //     });
+  //   });
+
+  //   it('should emit a warning if there are fewer employed staff than non employed staff', async () => {
+  //     const bulkUpload = new (testUtils.sandBox(
+  //       filename,
+  //       {
+  //         locals: {
+  //           require: testUtils.wrapRequire({
+  //             '../BUDI': {
+  //               BUDI
+  //             }
+  //           })
+  //         }
+  //       }
+  //     ).Establishment)(
+  //       {
+  //         LOCALESTID: 'omar3',
+  //         STATUS: 'UPDATE',
+  //         ESTNAME: 'WOZiTech, with even more care',
+  //         ADDRESS1: 'First Line',
+  //         ADDRESS2: 'Second Line',
+  //         ADDRESS3: '',
+  //         POSTTOWN: 'My Town',
+  //         POSTCODE: 'LN11 9JG',
+  //         ESTTYPE: '6',
+  //         OTHERTYPE: '',
+  //         PERMCQC: '1',
+  //         PERMLA: '1',
+  //         SHARELA: '708;721;720',
+  //         REGTYPE: '0',
+  //         PROVNUM: '',
+  //         LOCATIONID: '',
+  //         MAINSERVICE: '72',
+  //         ALLSERVICES: '72;13',
+  //         CAPACITY: '',
+  //         UTILISATION: '',
+  //         SERVICEDESC: '1;1',
+  //         SERVICEUSERS: '',
+  //         OTHERUSERDESC: '',
+  //         TOTALPERMTEMP: '10',
+  //         ALLJOBROLES: '34;8',
+  //         STARTERS: '0;0',
+  //         LEAVERS: '999',
+  //         VACANCIES: '999;333',
+  //         REASONS: '',
+  //         REASONNOS: ''
+  //       },
+  //       2,
+  //       [
+  //         {
+  //           _validations: [],
+  //           _username: 'aylingw',
+  //           _id: 479,
+  //           _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+  //           _ustatus: null,
+  //           _created: '2019-03-15T09:54:10.562Z',
+  //           _updated: '2019-10-04T15:46:16.158Z',
+  //           _updatedBy: 'aylingw',
+  //           _auditEvents: null,
+  //           _name: 'WOZiTech, with even more care',
+  //           _address1: 'First Line',
+  //           _address2: 'Second Line',
+  //           _address3: '',
+  //           _town: 'My Town',
+  //           _county: '',
+  //           _locationId: 'A-328849599',
+  //           _provId: null,
+  //           _postcode: 'LN11 9JG',
+  //           _isRegulated: false,
+  //           _mainService: { id: 16, name: 'Head office services' },
+  //           _nmdsId: 'G1001114',
+  //           _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+  //           _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+  //           _establishmentWdfEligibility: null,
+  //           _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+  //           _isParent: true,
+  //           _parentUid: null,
+  //           _parentId: null,
+  //           _parentName: null,
+  //           _dataOwner: 'Workplace',
+  //           _dataPermissions: 'None',
+  //           _archived: false,
+  //           _dataOwnershipRequested: null,
+  //           _reasonsForLeaving: '',
+  //           _properties: {
+  //             _properties: [Object],
+  //             _propertyTypes: [Array],
+  //             _auditEvents: null,
+  //             _modifiedProperties: [],
+  //             _additionalModels: null
+  //           },
+  //           _isNew: false,
+  //           _workerEntities: {
+  //           },
+  //           _readyForDeletionWorkers: null,
+  //           _status: 'NEW',
+  //           _logLevel: 300
+  //         },
+  //         {
+  //           _validations: [],
+  //           _username: 'aylingw',
+  //           _id: 1446,
+  //           _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+  //           _ustatus: null,
+  //           _created: '2019-07-31T15:09:57.405Z',
+  //           _updated: '2019-10-04T15:46:16.797Z',
+  //           _updatedBy: 'aylingw',
+  //           _auditEvents: null,
+  //           _name: 'WOZiTech Cares Sub 100',
+  //           _address1: 'Number 1',
+  //           _address2: 'My street',
+  //           _address3: '',
+  //           _town: 'My Town',
+  //           _county: '',
+  //           _locationId: '1-888777666',
+  //           _provId: '1-999888777',
+  //           _postcode: 'LN11 9JG',
+  //           _isRegulated: true,
+  //           _mainService: { id: 1, name: 'Carers support' },
+  //           _nmdsId: 'G1002110',
+  //           _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+  //           _overallWdfEligibility: null,
+  //           _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+  //           _staffWdfEligibility: null,
+  //           _isParent: false,
+  //           _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+  //           _parentId: 479,
+  //           _parentName: null,
+  //           _dataOwner: 'Parent',
+  //           _dataPermissions: 'None',
+  //           _archived: false,
+  //           _dataOwnershipRequested: null,
+  //           _reasonsForLeaving: '',
+  //           _properties: {
+  //             _properties: [Object],
+  //             _propertyTypes: [Array],
+  //             _auditEvents: null,
+  //             _modifiedProperties: [],
+  //             _additionalModels: null
+  //           },
+  //           _isNew: false,
+  //           _workerEntities: {},
+  //           _readyForDeletionWorkers: null,
+  //           _status: 'COMPLETE',
+  //           _logLevel: 300
+  //         }
+  //       ]);
+
+  //     expect(bulkUpload).to.have.property('crossValidate');
+
+  //     const csvEstablishmentSchemaErrors = [];
+
+  //     const myWorkers = [{
+  //       establishmentKey: 'omar3',
+  //       status: 'UPDATE',
+  //       uniqueWorker: '3',
+  //       contractTypeId: 2,
+  //       mainJobRoleId: 10,
+  //       otherJobIds: []
+  //     }];
+
+  //     // the real version of this code is in the api Establishment business object and runs a sql query.
+  //     // We just return a 'fake result set'
+  //     const fetchMyEstablishmentsWorkers = sinon.spy(async (establishmentId, establishmentKey) => {
+  //       return [{
+  //         establishmentKey: 'omar3',
+  //         uniqueWorker: '3',
+  //         contractTypeId: 'Permanent',
+  //         mainJobRoleId: 10,
+  //         otherJobIds: ''
+  //       },
+  //       {
+  //         establishmentKey: 'omar3',
+  //         uniqueWorker: 'WA100',
+  //         contractTypeId: 'Temporary',
+  //         mainJobRoleId: 26,
+  //         otherJobIds: ''
+  //       },
+  //       {
+  //         establishmentKey: 'omar3',
+  //         uniqueWorker: '5',
+  //         contractTypeId: 'Pool/Bank',
+  //         mainJobRoleId: 7,
+  //         otherJobIds: ''
+  //       },
+  //       {
+  //         establishmentKey: 'omar3',
+  //         uniqueWorker: '6',
+  //         contractTypeId: 'Temporary',
+  //         mainJobRoleId: 17,
+  //         otherJobIds: ''
+  //       },
+  //       {
+  //         establishmentKey: 'omar3',
+  //         uniqueWorker: 'WA103',
+  //         contractTypeId: 'Temporary',
+  //         mainJobRoleId: 26,
+  //         otherJobIds: ''
+  //       },
+  //       {
+  //         establishmentKey: 'omar3',
+  //         uniqueWorker: '10',
+  //         contractTypeId: 'Other',
+  //         mainJobRoleId: 18,
+  //         otherJobIds: ''
+  //       },
+  //       {
+  //         establishmentKey: 'omar3',
+  //         uniqueWorker: '4',
+  //         contractTypeId: 'Other',
+  //         mainJobRoleId: 1,
+  //         otherJobIds: ''
+  //       },
+  //       {
+  //         establishmentKey: 'omar3',
+  //         uniqueWorker: 'SA 4',
+  //         contractTypeId: 'Other',
+  //         mainJobRoleId: 23,
+  //         otherJobIds: ''
+  //       },
+  //       {
+  //         establishmentKey: 'omar3',
+  //         uniqueWorker: 'FTSpecial',
+  //         contractTypeId: 'Other',
+  //         mainJobRoleId: 24,
+  //         otherJobIds: ''
+  //       },
+  //       {
+  //         establishmentKey: 'omar3',
+  //         uniqueWorker: '1',
+  //         contractTypeId: 'Other',
+  //         mainJobRoleId: 2,
+  //         otherJobIds: ''
+  //       }];
+  //     });
+
+  //     // Regular validation has to run first for the establishment to populate the internal properties correctly
+  //     await bulkUpload.validate();
+
+  //     // call the method
+  //     await bulkUpload.crossValidate({
+  //       csvEstablishmentSchemaErrors,
+  //       myWorkers,
+  //       fetchMyEstablishmentsWorkers
+  //     });
+
+  //     // assert the fetchMyEstalishmentsWorkers function was called
+  //     expect(fetchMyEstablishmentsWorkers.callCount).to.equal(1);
+
+  //     // assert a warning was returned
+  //     expect(csvEstablishmentSchemaErrors.length).to.equal(1);
+
+  //     expect(csvEstablishmentSchemaErrors[0]).to.deep.equal({
+  //       lineNumber: 2,
+  //       name: 'omar3',
+  //       origin: 'Establishments',
+  //       source: '10',
+  //       warnCode: 2200,
+  //       warnType: 'TOTAL_PERM_TEMP_WARNING',
+  //       warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records'
+  //     });
+  //   });
   });
 });

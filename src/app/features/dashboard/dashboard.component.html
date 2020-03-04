@@ -25,7 +25,31 @@
     <p class="govuk-!-font-size-16 govuk-!-margin-top-2">
       <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support@skillsforcare.org.uk</a>
     </p>
+    <p class="govuk__flex govuk__align-items-center govuk-!-font-size-16">
+      <img alt="" src="/assets/images/envelope.svg" class="govuk-!-margin-right-1">
+      <ng-container *ngIf="numberOfNewNotifications > 0; else noNotifications">
+        You have
+        <a [routerLink]="['/notifications']">
+          <span class="notification-alert__count">{{ numberOfNewNotifications }}</span>new
+          {{
+                numberOfNewNotifications
+                  | i18nPlural
+                    : {
+                        '=1': 'notification',
+                        other: 'notifications'
+                      }
+              }}
+        </a>
+      </ng-container>
+      <ng-template #noNotifications>
+        <a [routerLink]="['/notifications']">Notifications</a>
+      </ng-template>
+    </p>
   </div>
+</div>
+<div class="govuk-grid-row">
+
+
 </div>
 
 <div class="govuk-grid-row">
@@ -42,11 +66,12 @@
       <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
         <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
       </app-tab>
+
       <app-tab
         *ngIf="workplace && canViewListOfWorkers"
         [alert]="trainingAlert === 1"
         [redAlert]="trainingAlert === 2"
-        [title]="'Training and qualifications'"
+        [title]="'Staff training and qualifications'"
       >
         <app-training-and-qualifications-tab [workplace]="workplace"></app-training-and-qualifications-tab>
       </app-tab>

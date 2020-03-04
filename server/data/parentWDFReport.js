@@ -32,10 +32,36 @@ SELECT
       COUNT(:zero)
     FROM
       cqc."Worker"
+      LEFT JOIN
+        cqc."Job"
+      ON
+        "Worker"."MainJobFKValue" = "Job"."JobID"
+    LEFT JOIN
+        cqc."Nationality"
+      ON
+        cqc."Worker"."NationalityOtherFK" = "Nationality"."ID"
+	  LEFT JOIN
+        cqc."Qualification"
+      ON
+        "Worker"."SocialCareQualificationFKValue" = "Qualification"."ID"
     WHERE
       "EstablishmentFK" = "Establishment"."EstablishmentID" AND
-      "LastWdfEligibility" IS NOT NULL AND
+      ("GenderValue" IS NOT NULL)  AND
+      ("DateOfBirthValue" IS NOT NULL)  AND
+      (("NationalityValue" = :British OR "NationalityValue" = :Dont) OR ("NationalityValue" = :Other AND "Nationality"."Nationality" IS NOT NULL)) AND
+      ("Job"."JobName" IS NOT NULL OR "Job"."JobName" != :emptyValue)  AND
+      ("MainJobStartDateValue" IS NOT NULL)  AND
+      ("RecruitedFromValue" IS NOT NULL)  AND
+      ("ContractValue" IS NOT NULL)  AND
+      ("WeeklyHoursContractedValue" IS NOT NULL OR "WeeklyHoursAverageValue" IS NOT NULL) AND
+      ("ZeroHoursContractValue" IS NOT NULL) AND
+      ("DaysSickValue" IS NOT NULL) AND
+      (("AnnualHourlyPayValue" IS NOT NULL OR ("AnnualHourlyPayRate" IS NOT NULL OR "AnnualHourlyPayValue" = :Dont))) AND
+      ("CareCertificateValue" IS NOT NULL) AND
+      ("QualificationInSocialCareValue" IS NOT NULL OR ("QualificationInSocialCareValue" = :No OR "QualificationInSocialCareValue" = :Dont) OR ("Qualification"."Level" IS NOT NULL OR "Qualification"."Level" != :emptyValue))  AND
+      ("OtherQualificationsValue" IS NOT NULL) AND
       "LastWdfEligibility" > :effectiveDate AND
+      ("DataOwner" = :Parent OR "DataPermissions" = :WorkplaceStaff) AND
       "Archived" = :falseFlag
   ) AS "CompletedWorkerRecords",
   array_to_string(array(
@@ -97,7 +123,6 @@ SELECT
   "StartersValue",
   "LeaversValue",
   "NumberOfStaffValue",
-
   updated,
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
   "ShareDataWithCQC",
@@ -148,6 +173,13 @@ exports.getEstablishmentData = async establishmentId =>
       Vacancies: 'Vacancies',
       Starters: 'Starters',
       Leavers: 'Leavers',
+      Dont: 'Don\'t know',
+      Other: 'Other',
+      No: 'No',
+      emptyValue: '',
+      WorkplaceStaff: 'Workplace and Staff',
+      Parent: 'Parent',
+      British: 'British'
     },
     type: db.QueryTypes.SELECT
   });

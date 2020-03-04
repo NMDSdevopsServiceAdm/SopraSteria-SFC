@@ -23,7 +23,8 @@ const unlockAccount = async (req, res) => {
           try {
             const updateduser = await login.update({
                 isActive: true,
-                invalidAttempt: 9
+                invalidAttempt: 9,
+                status: null
             });
             if (updateduser) {
               res.status(200);

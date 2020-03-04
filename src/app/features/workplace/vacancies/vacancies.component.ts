@@ -204,9 +204,10 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
   protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
-      this.establishmentService
-        .updateJobs(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateJobs(this.establishment.uid, props).subscribe(
+        data => this._onSuccess(data),
+        error => this.onError(error)
+      )
     );
   }
 

@@ -109,7 +109,8 @@ class MandatoryTraining extends EntityValidator {
           // get job details if doc.allJobRoles === false
           if(!doc.allJobRoles){
             let foundJobRoles = true;
-            if(!doc.allJobRoles && Array.isArray(doc.jobs)){
+            if(!doc.allJobRoles && Array.isArray(doc.jobs) && doc.jobs.length > 0){
+
               for(let j = 0; j < doc.jobs.length; j++){
                 let job = doc.jobs[j];
                 const jobDetails = await models.job.findOne({
@@ -191,8 +192,7 @@ class MandatoryTraining extends EntityValidator {
           let row = this.mandatorytrainingDetails[i];
           const fetchQuery = {
             where: {
-              establishmentFK: this.establishmentId,
-              trainingCategoryFK: row.trainingCategoryId
+              establishmentFK: this.establishmentId
             }
           };
           await models.MandatoryTraining.destroy(fetchQuery);

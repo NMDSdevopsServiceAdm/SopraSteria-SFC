@@ -105,15 +105,6 @@ router.route('/').get(async (req, res) => {
           if(updateTrainingRecords){
             const updateQualsRecords = await Qualification.getQualsCounts(establishmentId, updateTrainingRecords);
             if(updateQualsRecords){
-              //Sort workers record first by expired count then by expiring training count
-              updateQualsRecords.sort((a, b) => {
-                if(b.expiredTrainingCount > a.expiredTrainingCount){return 1;}
-                if(b.expiredTrainingCount < a.expiredTrainingCount){return -1;}
-                if(b.expiringTrainingCount > a.expiringTrainingCount){return 1;}
-                if(b.expiringTrainingCount < a.expiringTrainingCount){return -1;}
-                return 0;
-              });
-
               if(updateQualsRecords.length > 0 ) {
                 const expiriedTrainingCountFlag = updateQualsRecords.filter(worker => worker.expiredTrainingCount > 0).length || 0;
                 const expiringTrainingCountFlag = updateQualsRecords.filter(worker => worker.expiringTrainingCount > 0).length || 0;
