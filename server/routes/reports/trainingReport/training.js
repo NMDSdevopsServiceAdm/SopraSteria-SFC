@@ -159,7 +159,7 @@ const getTrainingReportData = async establishmentId => {
   trainingCounts.upToDateTrainingCount = 0;
   if (expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0) {
     for(let i = 0; i < trainingData.length; i++){
-      trainingData[i].Title = (trainingData[i].Title === null)? '': decodeURIComponent(trainingData[i].Title);
+      trainingData[i].Title = (trainingData[i].Title === null)? '': unescape(trainingData[i].Title);
       trainingData[i].Completed = trainingData[i].Completed === null? '': trainingData[i].Completed;
       trainingData[i].Accredited = trainingData[i].Accredited === null? '': trainingData[i].Accredited;
       let jobNameResult = await getJobName(trainingData[i].MainJobFKValue);

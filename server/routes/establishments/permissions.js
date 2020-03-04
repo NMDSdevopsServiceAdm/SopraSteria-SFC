@@ -1,15 +1,17 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
 const Establishment = require('../../models/classes/establishment');
-
+const User = require('../../models/classes/user');
 const PermissionCache = require('../../models/cache/singletons/permissions').PermissionCache;
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
-
+  const thisUser = new User.User(establishmentId);
   try {
         if (await thisEstablishment.restore(establishmentId)) {
+          if(await thisUser.restore(null,thisEstablishment.username, null)) {
+            let userData = thisUser.toJSON();
           const permissions = await PermissionCache.myPermissions(req).map(item => {
             if (item.code === 'canChangeDataOwner' && thisEstablishment.dataOwnershipRequested !== null) {
               return { [item.code]: false };
@@ -24,7 +26,13 @@ router.route('/').get(async (req, res) => {
             }
             if (permission.canRemoveParentAssociation) {
               permission.canRemoveParentAssociation =
-                permission.canRemoveParentAssociation && !thisEstablishment.isParent && thisEstablishment.parentId
+                permission.canRemoveParentAssociation && !thisEstablishment.isParent && thisEstablishment.parentId && userData.role !== 'Read'
+                  ? true
+                  : false;
+            }
+            if (permission.canDownloadWdfReport) {
+              permission.canDownloadWdfReport =
+                (permission.canDownloadWdfReport && thisEstablishment.isParent && userData.role === 'Edit')
                   ? true
                   : false;
             }
@@ -34,6 +42,7 @@ router.route('/').get(async (req, res) => {
             uid: thisEstablishment.uid,
             permissions: Object.assign({}, ...permissions),
           });
+        }
         } else {
           return res.status(404).send('Not Found');
         }

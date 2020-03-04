@@ -192,7 +192,7 @@
   <button *ngIf="!displayAddMore" class="govuk-button govuk-button--secondary" type="button" (click)="addStaffRecord()">
     Add another staff record
   </button>
-  <div class="govuk-row">
+  <div class="govuk-row" *ngIf="!displayAddMore">
     <button class="govuk-button" type="submit">Continue</button>
   </div>
 </form>
