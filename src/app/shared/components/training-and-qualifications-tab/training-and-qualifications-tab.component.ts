@@ -20,6 +20,7 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
   public totalRecords;
   public totalExpiredTraining;
   public totalExpiringTraining;
+  public missingMandatoryTraining;
   public totalStaff: number;
   public isShowAllTrainings: boolean;
   constructor(
@@ -36,10 +37,12 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
           this.totalRecords = 0;
           this.totalExpiredTraining = 0;
           this.totalExpiringTraining = 0;
+          this.missingMandatoryTraining = 0;
           this.workers.forEach((worker: Worker) => {
             this.totalRecords += worker.trainingCount + worker.qualificationCount;
             this.totalExpiredTraining += worker.expiredTrainingCount;
             this.totalExpiringTraining += worker.expiringTrainingCount;
+            this.missingMandatoryTraining += worker.missingMandatoryTrainingCount;
           });
         },
         error => {
@@ -70,6 +73,15 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
 
   public showAllTrainings() {
     this.isShowAllTrainings = true;
+    this.missingMandatoryTraining = 0;
+    this.totalExpiredTraining = 0;
+    this.totalExpiringTraining = 0;
+  }
+
+  public mandatoryTrainingChangedHandler($event) {
+    this.missingMandatoryTraining = $event;
+    this.totalExpiredTraining = 0;
+    this.totalExpiringTraining = 0;
   }
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
