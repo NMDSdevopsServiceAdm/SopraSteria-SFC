@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 })
 export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   @Input() wdfView = false;
-  @Output() mandatoryTrainingChanged: EventEmitter<boolean> = new EventEmitter();
+  @Output() mandatoryTrainingChanged: EventEmitter<number> = new EventEmitter();
   public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
   public mandatoryTrainings;
@@ -23,6 +23,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   public mandatoryTrainingsDetailsLabel = [];
   public establishmentId: number;
   public establishmentUid: string;
+  public totalMissingMandatoryTrainingCount: number = 0;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -64,7 +65,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
           category: '',
           status: '',
           quantity: '',
-          workers: ''
+          workers: '',
           };
         let missingMandatoryTrainingCount = 0;
         mandatoryTrainingObj.id = training.id;
@@ -79,13 +80,15 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
             mandatoryTrainingObj.status = 'Up-to-date';
           } else {
             mandatoryTrainingObj.status = `${missingMandatoryTrainingCount} Missing`;
+            this.totalMissingMandatoryTrainingCount += missingMandatoryTrainingCount;
           }
         } else {
           mandatoryTrainingObj.status = 'Up-to-date';
         }
         this.mandatoryTrainingsDetails.push(mandatoryTrainingObj);
        });
-       this.mandatoryTrainings = this.mandatoryTrainingsDetails;
+       this.mandatoryTrainings = this.mandatoryTrainingsDetails.filter(item => item.workers.length > 0);
+       this.mandatoryTrainingChanged.next(this.totalMissingMandatoryTrainingCount);
     })
     );
   }

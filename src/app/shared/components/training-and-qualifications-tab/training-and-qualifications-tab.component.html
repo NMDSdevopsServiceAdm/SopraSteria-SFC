@@ -43,6 +43,7 @@
     [workplace]="workplace"
     [totalExpiredTraining]="totalExpiredTraining"
     [totalExpiringTraining]="totalExpiringTraining"
+    [missingMandatoryTraining] ="missingMandatoryTraining"
   ></app-training-info-panel>
 
   <app-training-and-qualifications-summary
@@ -56,7 +57,7 @@
     </app-tab>
     <app-tab [title]="'Mandatory Training'">
        <app-view-all-mandatory-training
-        (mandatoryTrainingChanged)="trainingAndQualificationsChangedHandler($event)"></app-view-all-mandatory-training>
+        (mandatoryTrainingChanged)="mandatoryTrainingChangedHandler($event)"></app-view-all-mandatory-training>
     </app-tab>
     <app-tab *ngIf="false" [title]="'Qualifications'">
 
