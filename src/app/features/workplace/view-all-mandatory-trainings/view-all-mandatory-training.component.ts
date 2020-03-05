@@ -85,7 +85,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
         }
         this.mandatoryTrainingsDetails.push(mandatoryTrainingObj);
        });
-       this.mandatoryTrainings = this.mandatoryTrainingsDetails;
+       this.mandatoryTrainings = this.mandatoryTrainingsDetails.filter(item => item.workers.length > 0);
     })
     );
   }
