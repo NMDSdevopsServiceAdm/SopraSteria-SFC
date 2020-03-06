@@ -4,7 +4,9 @@ import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import * as moment from 'moment';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -23,25 +25,29 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   public mandatoryTrainingsDetailsLabel = [];
   public establishmentId: number;
   public establishmentUid: string;
+  public workplceName: string;
   public totalMissingMandatoryTrainingCount: number = 0;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private permissionsService: PermissionsService,
     private establishmentService: EstablishmentService,
+    private breadcrumbService: BreadcrumbService,
     private workplaceService: WorkplaceService,
   ) {}
 
   ngOnInit() {
+    this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
     this.subscriptions.add(
-    this.establishmentService.establishment$.subscribe(data => {
-      if (data && data.id) {
-        this.establishmentId = data.id;
-        this.establishmentUid = data.uid;
-        this.canEditWorker = this.permissionsService.can(data.uid, 'canEditWorker');
-        this.fetchAllRecords();
-      }
-    })
+      this.establishmentService.establishment$.subscribe(data => {
+        if (data && data.id) {
+          this.establishmentId = data.id;
+          this.establishmentUid = data.uid;
+          this.workplceName = data.name;
+          this.canEditWorker = this.permissionsService.can(data.uid, 'canEditWorker');
+          this.fetchAllRecords();
+        }
+      }),
     );
   }
 
@@ -56,40 +62,40 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
 
   public fetchAllRecords() {
     this.subscriptions.add(
-    this.workplaceService.getAllMandatoryTrainings(this.establishmentId).subscribe(data => {
-       this.lastUpdated = moment(data.lastUpdated);
-       this.mandatoryTrainings = data.mandatoryTraining;
-       this.mandatoryTrainings.forEach(training => {
-        let mandatoryTrainingObj = {
-          id: '',
-          category: '',
-          status: '',
-          quantity: '',
-          workers: '',
+      this.workplaceService.getAllMandatoryTrainings(this.establishmentId).subscribe(data => {
+        this.lastUpdated = moment(data.lastUpdated);
+        this.mandatoryTrainings = data.mandatoryTraining;
+        this.mandatoryTrainings.forEach(training => {
+          let mandatoryTrainingObj = {
+            id: '',
+            category: '',
+            status: '',
+            quantity: '',
+            workers: '',
           };
-        let missingMandatoryTrainingCount = 0;
-        mandatoryTrainingObj.id = training.id;
-        mandatoryTrainingObj.category = training.category;
-        mandatoryTrainingObj.quantity = training.workers.length;
-        if (training.workers && training.workers.length > 0) {
-          mandatoryTrainingObj.workers = training.workers;
-          training.workers.forEach(worker => {
-            missingMandatoryTrainingCount += worker.missingMandatoryTrainingCount;
-          });
-          if (missingMandatoryTrainingCount === 0) {
-            mandatoryTrainingObj.status = 'Up-to-date';
+          let missingMandatoryTrainingCount = 0;
+          mandatoryTrainingObj.id = training.id;
+          mandatoryTrainingObj.category = training.category;
+          mandatoryTrainingObj.quantity = training.workers.length;
+          if (training.workers && training.workers.length > 0) {
+            mandatoryTrainingObj.workers = training.workers;
+            training.workers.forEach(worker => {
+              missingMandatoryTrainingCount += worker.missingMandatoryTrainingCount;
+            });
+            if (missingMandatoryTrainingCount === 0) {
+              mandatoryTrainingObj.status = 'Up-to-date';
+            } else {
+              mandatoryTrainingObj.status = `${missingMandatoryTrainingCount} Missing`;
+              this.totalMissingMandatoryTrainingCount += missingMandatoryTrainingCount;
+            }
           } else {
-            mandatoryTrainingObj.status = `${missingMandatoryTrainingCount} Missing`;
-            this.totalMissingMandatoryTrainingCount += missingMandatoryTrainingCount;
+            mandatoryTrainingObj.status = 'Up-to-date';
           }
-        } else {
-          mandatoryTrainingObj.status = 'Up-to-date';
-        }
-        this.mandatoryTrainingsDetails.push(mandatoryTrainingObj);
-       });
-       this.mandatoryTrainings = this.mandatoryTrainingsDetails.filter(item => item.workers.length > 0);
-       this.mandatoryTrainingChanged.next(this.totalMissingMandatoryTrainingCount);
-    })
+          this.mandatoryTrainingsDetails.push(mandatoryTrainingObj);
+        });
+        this.mandatoryTrainings = this.mandatoryTrainingsDetails.filter(item => item.workers.length > 0);
+        this.mandatoryTrainingChanged.next(this.totalMissingMandatoryTrainingCount);
+      }),
     );
   }
 
