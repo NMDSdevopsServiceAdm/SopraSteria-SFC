@@ -360,26 +360,29 @@ class MandatoryTraining extends EntityValidator {
         let tempWorkers = [];
         let jobs = mandatoryTraining[i].jobs;
         for(let j = 0; j < jobs.length; j++){
-          const thisWorker = await models.worker.findOne({
+          const thisWorker = await models.worker.findAll({
             attributes: ['id', 'uid', 'NameOrIdValue'],
             where:{
               establishmentFk: establishmentId,
               MainJobFkValue: jobs[j].id
             }
           });
-          if(thisWorker){
-            tempWorkers.push({
-              id: thisWorker.id,
-              uid: thisWorker.uid,
-              NameOrIdValue: thisWorker.NameOrIdValue,
-              mainJob:{jobId: jobs[j].id, title: jobs[j].title}
+          if(thisWorker && thisWorker.length > 0){
+            thisWorker.forEach(async worker => {
+              tempWorkers.push({
+                id: worker.id,
+                uid: worker.uid,
+                NameOrIdValue: worker.NameOrIdValue,
+                mainJob:{jobId: jobs[j].id, title: jobs[j].title}
+              });
             });
-            mandatoryTraining[i].workers = await Training.getAllRequiredCounts(establishmentId, tempWorkers);
-          }else{
-            mandatoryTraining[i].workers = [];
           }
         }
         delete mandatoryTraining[i].jobs;
+        mandatoryTraining[i].workers = [];
+        if(tempWorkers.length > 0){
+          mandatoryTraining[i].workers = await Training.getAllRequiredCounts(establishmentId, tempWorkers);
+        }
       }
     }
     delete mandatoryTrainingDetails.mandatoryTrainingCount;
