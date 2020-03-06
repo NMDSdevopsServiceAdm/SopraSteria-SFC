@@ -9,7 +9,7 @@ export class TainingInfoPanelComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() totalExpiredTraining = 0;
   @Input() totalExpiringTraining = 0;
-  @Input() missingMandatoryTraining = 0;
+  @Input() totalMissingMandatoryTraining = 0;
 
   constructor() {}
 

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Qualification } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -15,7 +15,6 @@ import { Subscription } from 'rxjs';
 })
 export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   @Input() wdfView = false;
-  @Output() mandatoryTrainingChanged: EventEmitter<number> = new EventEmitter();
   public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
   public mandatoryTrainings;
@@ -27,6 +26,9 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   public establishmentUid: string;
   public workplceName: string;
   public totalMissingMandatoryTrainingCount: number = 0;
+  public totalExpiredTraining = 0;
+  public totalExpiringTraining = 0;
+  public totalMissingMandatoryTraining = 0;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -67,34 +69,35 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
         this.mandatoryTrainings = data.mandatoryTraining;
         this.mandatoryTrainings.forEach(training => {
           let mandatoryTrainingObj = {
-            id: '',
+            trainingCategoryId: '',
             category: '',
             status: '',
             quantity: '',
             workers: '',
+            catMissingMandatoryTrainingCount: 0,
+            catExpiredTrainingCount: 0,
+            catExpiringTrainingCount: 0,
+            catTrainingCount: 0,
           };
-          let missingMandatoryTrainingCount = 0;
-          mandatoryTrainingObj.id = training.id;
+
+          mandatoryTrainingObj.trainingCategoryId = training.trainingCategoryId;
           mandatoryTrainingObj.category = training.category;
           mandatoryTrainingObj.quantity = training.workers.length;
           if (training.workers && training.workers.length > 0) {
             mandatoryTrainingObj.workers = training.workers;
             training.workers.forEach(worker => {
-              missingMandatoryTrainingCount += worker.missingMandatoryTrainingCount;
+              mandatoryTrainingObj.catMissingMandatoryTrainingCount += worker.missingMandatoryTrainingCount;
+              mandatoryTrainingObj.catExpiredTrainingCount += worker.expiredTrainingCount;
+              mandatoryTrainingObj.catExpiringTrainingCount += worker.expiringTrainingCount;
+              mandatoryTrainingObj.catTrainingCount += worker.trainingCount;
             });
-            if (missingMandatoryTrainingCount === 0) {
-              mandatoryTrainingObj.status = 'Up-to-date';
-            } else {
-              mandatoryTrainingObj.status = `${missingMandatoryTrainingCount} Missing`;
-              this.totalMissingMandatoryTrainingCount += missingMandatoryTrainingCount;
-            }
-          } else {
-            mandatoryTrainingObj.status = 'Up-to-date';
           }
+          this.totalExpiredTraining += mandatoryTrainingObj.catExpiredTrainingCount;
+          this.totalExpiringTraining += mandatoryTrainingObj.catExpiringTrainingCount;
+          this.totalMissingMandatoryTraining += mandatoryTrainingObj.catMissingMandatoryTrainingCount;
           this.mandatoryTrainingsDetails.push(mandatoryTrainingObj);
         });
-        this.mandatoryTrainings = this.mandatoryTrainingsDetails.filter(item => item.workers.length > 0);
-        this.mandatoryTrainingChanged.next(this.totalMissingMandatoryTrainingCount);
+        this.mandatoryTrainings = this.mandatoryTrainingsDetails;
       }),
     );
   }
