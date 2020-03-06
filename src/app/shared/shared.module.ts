@@ -18,17 +18,11 @@ import { EligibilityIconComponent } from './components/eligibility-icon/eligibil
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
 import { OverlayModule } from '@angular/cdk/overlay';
-import {
-  LinkToParentCancelDialogComponent,
-} from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
-import {
-  LinkToParentRemoveDialogComponent,
-} from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import { LinkToParentCancelDialogComponent } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import { LinkToParentRemoveDialogComponent } from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { MessagesComponent } from './components/messages/messages.component';
-import {
-  OwnershipChangeMessageDialogComponent,
-} from './components/ownership-change-message/ownership-change-message-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
@@ -37,9 +31,7 @@ import { SetDataPermissionDialogComponent } from './components/set-data-permissi
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
 import { PersonalDetailsComponent } from './components/staff-record-summary/personal-details/personal-details.component';
-import {
-  QualificationsAndTrainingComponent,
-} from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
+import { QualificationsAndTrainingComponent } from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
 import { StaffRecordsTabComponent } from './components/staff-records-tab/staff-records-tab.component';
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
@@ -50,12 +42,8 @@ import { SummaryListComponent } from './components/summary-list/summary-list.com
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
-import {
-  TrainingAndQualificationsSummaryComponent,
-} from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
-import {
-  TrainingAndQualificationsTabComponent,
-} from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
+import { TrainingAndQualificationsSummaryComponent } from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
+import { TrainingAndQualificationsTabComponent } from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
 import { TainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
@@ -73,6 +61,7 @@ import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 import { ViewAllMandatoryTrainingComponent } from '@features/workplace/view-all-mandatory-trainings/view-all-mandatory-training.component';
+import { TrainingLinkPanelComponent } from './components/trianing-link-panel/trianing-link-panel.component.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -115,6 +104,7 @@ import { ViewAllMandatoryTrainingComponent } from '@features/workplace/view-all-
     SummaryRecordValueComponent,
     TabComponent,
     TabsComponent,
+    TrainingLinkPanelComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
     WdfConfirmationPanelComponent,
@@ -182,6 +172,7 @@ import { ViewAllMandatoryTrainingComponent } from '@features/workplace/view-all-
     WorkplaceSummaryComponent,
     WorkplaceTabComponent,
     OrderOtherPipe,
+    TrainingLinkPanelComponent,
     LongDatePipe,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,

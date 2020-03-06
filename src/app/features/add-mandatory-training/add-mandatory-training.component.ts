@@ -19,6 +19,7 @@ import { JobService } from '@core/services/job.service';
 import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
+import { BackService } from '@core/services/back.service';
 
 @Component({
   selector: 'app-add-mandatory-training',
@@ -49,7 +50,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
     },
   ];
   constructor(
-    private breadcrumbService: BreadcrumbService,
+    protected backService: BackService,
     private trainingService: TrainingService,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
@@ -67,8 +68,15 @@ export class AddMandatoryTrainingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
-    this.return = { url: ['/dashboard'], fragment: 'staff-training-and-qualifications' };
+    this.establishmentService.isMandatoryTrainingView.subscribe(value => {
+      if (value === true) {
+        this.return = { url: ['/workplace/view-all-mandatory-training'] };
+      } else {
+        this.return = { url: ['/dashboard'], fragment: 'staff-training-and-qualifications' };
+      }
+    });
+
+    this.setBackLink();
     this.getAllTrainingCategories();
     this.getAlJobs();
     this.setupForm();
@@ -89,6 +97,10 @@ export class AddMandatoryTrainingComponent implements OnInit {
         );
       }),
     );
+  }
+
+  private setBackLink(): void {
+    this.backService.setBackLink(this.return);
   }
 
   //Setup form for mandatory category

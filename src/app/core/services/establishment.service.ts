@@ -74,7 +74,7 @@ export class EstablishmentService {
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
-
+  public isMandatoryTrainingView = new BehaviorSubject<boolean>(false);
   constructor(private http: HttpClient) {}
 
   private _establishmentId: string = null;
@@ -98,7 +98,7 @@ export class EstablishmentService {
     return this.getEstablishment(this.establishmentId.toString()).pipe(
       tap(establishment => {
         this.setState(establishment);
-      })
+      }),
     );
   }
 
@@ -224,7 +224,7 @@ export class EstablishmentService {
   public updateLocalIdentifiers(request: LocalIdentifiersRequest): Observable<LocalIdentifiersResponse> {
     return this.http.put<LocalIdentifiersResponse>(
       `/api/establishment/${this.establishmentId}/localIdentifier`,
-      request
+      request,
     );
   }
 
@@ -250,7 +250,7 @@ export class EstablishmentService {
   public cancelOwnership(establishmentId, ownershipChangeId, data: CancelOwnerShip): Observable<Establishment> {
     return this.http.post<Establishment>(
       `/api/establishment/${establishmentId}/ownershipChange/${ownershipChangeId}`,
-      data
+      data,
     );
   }
 

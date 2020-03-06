@@ -1,18 +1,27 @@
 <ng-container *ngIf="mandatoryTrainings?.length">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <h2 class="govuk-heading-m">Mandatory training ({{ mandatoryTrainings.length }})</h2>
+      <h1 class="govuk-heading-l">
+        <span class="govuk-caption-xl govuk-!-margin-bottom-3"> {{ workplceName }}</span>
+        Mandatory training ({{ mandatoryTrainings.length }})
+      </h1>
     </div>
-    <div class="govuk-grid-column-one-half">
+    <div class="govuk-grid-column-one-half govuk-!-margin-top-9">
       <p class="govuk-util__float-right">Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
     </div>
   </div>
-
+  <app-trianing-link-panel></app-trianing-link-panel>
+  <app-training-info-panel
+    [workplace]="workplace"
+    [totalExpiredTraining]="totalExpiredTraining"
+    [totalExpiringTraining]="totalExpiringTraining"
+    [totalMissingMandatoryTraining]="totalMissingMandatoryTraining"
+  ></app-training-info-panel>
   <table class="govuk-table">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th class="govuk-table__header govuk-!-width-two-half" scope="col">Training category</th>
-        <th class="govuk-table__header" scope="col">Status</th>
+        <th class="govuk-table__header govuk-!-width-two-thirds" scope="col">Training category</th>
+        <th class="govuk-table__header govuk-table-custom-width" scope="col">Status</th>
         <th class="govuk-table__header" scope="col">Quantity</th>
         <th class="govuk-table__header" scope="col"></th>
       </tr>
@@ -25,8 +34,35 @@
           </td>
 
           <td class="govuk-table__cell">
-            <img *ngIf ="mandatoryTraining.status !== 'Up-to-date'" class= "govuk-util__vertical-align-top"src="/assets/images/flag-red.svg" alt="Missing" />
-            {{ mandatoryTraining.status }}
+            <div *ngIf="mandatoryTraining.catExpiredTrainingCount > 0" class="govuk-!-margin-bottom-1">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt="expired"
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              {{ mandatoryTraining.catExpiredTrainingCount }}
+              Expired
+            </div>
+            <div *ngIf="mandatoryTraining.catExpiringTrainingCount > 0" class="govuk-!-margin-bottom-1">
+              <img
+                src="/assets/images/flag-orange.svg"
+                alt="expiring"
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              {{ mandatoryTraining.catExpiringTrainingCount }} Expiring soon
+            </div>
+            <div *ngIf="mandatoryTraining.catMissingMandatoryTrainingCount > 0">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt="missing mandatory training"
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              {{ mandatoryTraining.catMissingMandatoryTrainingCount }}
+              Missing
+            </div>
+            <div *ngIf="mandatoryTraining.catTrainingCount === 0">
+              Up-to-date
+            </div>
           </td>
           <td class="govuk-table__cell">
             {{ mandatoryTraining.quantity }}
@@ -36,48 +72,74 @@
               *ngIf="canEditWorker && mandatoryTraining.workers.length > 0"
               class="govuk-link--no-visited-state"
               href="#"
-              (click)="toggleDetails(mandatoryTraining.id, $event)"
+              (click)="toggleDetails(mandatoryTraining.trainingCategoryId, $event)"
               >{{
-                mandatoryTrainingsDetailsLabel[mandatoryTraining.id] ? mandatoryTrainingsDetailsLabel[mandatoryTraining.id] : 'Open'
+                mandatoryTrainingsDetailsLabel[mandatoryTraining.trainingCategoryId]
+                  ? mandatoryTrainingsDetailsLabel[mandatoryTraining.trainingCategoryId]
+                  : 'Open'
               }}</a
             >
           </td>
         </tr>
-        <tr *ngIf="mandatoryAllTrainingsDetails[mandatoryTraining.id]" class="govuk-panel--gray govuk-!-margin-2">
+        <tr
+          *ngIf="mandatoryAllTrainingsDetails[mandatoryTraining.trainingCategoryId]"
+          class="govuk-panel--gray govuk-!-margin-2"
+        >
           <td colspan="5">
             <div class="govuk-!-margin-2">
-            <table class="govuk-table">
-              <thead class="govuk-table__head">
-                <tr class="govuk-table__row">
-                  <th class="govuk-table__header govuk-table-header-custom-1" scope="col">Worker ID</th>
-                  <th class="govuk-table__header govuk-table-header-custom-2" scope="col">Job role</th>
-                  <th class="govuk-table__header govuk-table-header-custom-1" scope="col">Status</th>
-                  <th class="govuk-table__header" scope="col"></th>
-                </tr>
-              </thead>
-              <tbody class="govuk-table__body">
-                <ng-container *ngFor="let worker of mandatoryTraining.workers">
-
+              <table class="govuk-table">
+                <thead class="govuk-table__head">
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__header govuk-!-width-one-third" scope="col">Worker ID</th>
+                    <th class="govuk-table__header govuk-!-width-one-third" scope="col">Job role</th>
+                    <th class="govuk-table__header govuk-!-width-one-third" scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                  <ng-container *ngFor="let worker of mandatoryTraining.workers">
                     <tr class="govuk-table__row">
                       <td class="govuk-table__cell govuk-!-font-weight-regular">
-                        <a class="govuk-link--no-visited-state"
-                        [routerLink]="getWorkerRecordPath(worker)">{{ worker.name }}</a>
+                        <a class="govuk-link--no-visited-state" [routerLink]="getWorkerRecordPath(worker)">{{
+                          worker.NameOrIdValue
+                        }}</a>
                       </td>
                       <td class="govuk-table__cell govuk-!-font-weight-regular">
                         {{ worker.mainJob?.title }}
                       </td>
                       <td class="govuk-table__cell govuk-!-font-weight-regular">
-                        <span *ngIf ="worker.missingMandatoryTrainingCount > 0">
-                        <img class= "govuk-util__vertical-align-top" src="/assets/images/flag-red.svg" alt="Missing" />
-                        {{ worker.missingMandatoryTrainingCount }} Missing
-                      </span>
-                      <span *ngIf ="!worker.missingMandatoryTrainingCount > 0">
-                         Up-to-date
-                      </span>
+                        <div *ngIf="worker.expiredTrainingCount > 0" class="govuk-!-margin-bottom-1">
+                          <img
+                            src="/assets/images/flag-red.svg"
+                            alt="expired"
+                            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                          />
+                          {{ worker.expiredTrainingCount }}
+                          Expired
+                        </div>
+                        <div *ngIf="worker.expiringTrainingCount > 0" class="govuk-!-margin-bottom-1">
+                          <img
+                            src="/assets/images/flag-orange.svg"
+                            alt="expiring"
+                            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                          />
+                          {{ worker.expiringTrainingCount }} Expiring soon
+                        </div>
+                        <div *ngIf="worker.missingMandatoryTrainingCount > 0">
+                          <img
+                            src="/assets/images/flag-red.svg"
+                            alt="missing mandatory training"
+                            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                          />
+                          {{ worker.missingMandatoryTrainingCount }}
+                          Missing
+                        </div>
+                        <div *ngIf="worker.trainingCount === 0">
+                          Up-to-date
+                        </div>
                       </td>
                     </tr>
-                </ng-container>
-              </tbody>
+                  </ng-container>
+                </tbody>
               </table>
             </div>
           </td>

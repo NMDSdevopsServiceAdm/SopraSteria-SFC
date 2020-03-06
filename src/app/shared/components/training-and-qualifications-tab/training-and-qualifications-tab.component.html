@@ -1,32 +1,7 @@
 <div class="govuk-grid-row">
   <h2 class="govuk-heading-m govuk-!-margin-left-1">Staff training and qualifications ({{ totalRecords || 0 }})</h2>
 </div>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-third">
-    <a class="govuk-list govuk-list--inline" role="button"
-    draggable="false" [routerLink]="" (click)="showAllTrainings()">View all workplace training</a>
-  </div>
-  <div class="govuk-grid-column-one-third">
-    <a
-      class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-right-5"
-      [routerLink]="['/add-mandatory-training']"
-      >Set up mandatory training
-    </a>
-  </div>
-  <div class="govuk-grid-column-one-third">
-    <a
-      class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
-      role="button"
-      draggable="false"
-      href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
-      (click)="downloadTrainingReport($event)"
-    >
-      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
-        Download training report
-      </span>
-    </a>
-  </div>
-</div>
+<app-trianing-link-panel></app-trianing-link-panel>
 <ng-container *ngIf="workers; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0">
     <div class="govuk-grid-column-two-thirds">
@@ -43,26 +18,14 @@
     [workplace]="workplace"
     [totalExpiredTraining]="totalExpiredTraining"
     [totalExpiringTraining]="totalExpiringTraining"
-    [missingMandatoryTraining] ="missingMandatoryTraining"
+    [totalMissingMandatoryTraining]="missingMandatoryTraining"
   ></app-training-info-panel>
 
   <app-training-and-qualifications-summary
-    *ngIf="workers && !isShowAllTrainings"
+    *ngIf="workers"
     [workplace]="workplace"
     [workers]="workers"
   ></app-training-and-qualifications-summary>
-
-  <app-tabs *ngIf="isShowAllTrainings">
-    <app-tab *ngIf="false" [title]="'Training'">
-    </app-tab>
-    <app-tab [title]="'Mandatory Training'">
-       <app-view-all-mandatory-training
-        (mandatoryTrainingChanged)="mandatoryTrainingChangedHandler($event)"></app-view-all-mandatory-training>
-    </app-tab>
-    <app-tab *ngIf="false" [title]="'Qualifications'">
-
-    </app-tab>
-  </app-tabs>
 </ng-container>
 <ng-template #noStaffRecords>
   <app-inset-text color="warning">You need to start adding your staff records.</app-inset-text>
