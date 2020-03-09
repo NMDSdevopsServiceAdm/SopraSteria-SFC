@@ -37,7 +37,7 @@
   </div>
   <div class="govuk-grid-row  govuk-!-margin-left-0">
     <p>Add more local authorities to share your data with.</p>
-    <h2 class="govuk-heading-m">Local Authorities</h2>
+    <h2 class="govuk-heading-m">Local authorities</h2>
     <ng-container formArrayName="localAuthorities">
       <div
         class="govuk-form-group"
@@ -51,13 +51,13 @@
             id="localAuthorities-{{ i }}"
             name="custodianCode"
           >
-            <option [ngValue]="null">Select Local Authority</option>
+            <option [ngValue]="null">Select Local authority</option>
             <option *ngFor="let authority of selectableAuthorities(i)" [value]="authority.custodianCode">
               {{ authority.name }}
             </option>
           </select>
         </div>
-        <div class="govuk-grid-column-one-thirds">
+        <div class="govuk-grid-column-one-thirds govuk-!-padding-top-1">
           <a href="#" class="govuk-list govuk-list--inline" (click)="deleteLocalAuthority($event, i)">Remove</a>
         </div>
       </div>
