@@ -7,7 +7,7 @@
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop">
+    <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
           <h1 class="govuk-fieldset__heading">Sharing data with local authorities</h1>
@@ -32,42 +32,39 @@
             </span>
           </div>
         </div>
-        <p>Add more local authorities to share your data with.</p>
-        <h2 class="govuk-heading-m">Local Authorities</h2>
-        <ng-container formArrayName="localAuthorities">
-          <div
-            class="govuk-form-group"
-            *ngFor="let localAuthorities of localAuthoritiesArray.controls; let i = index"
-            [formGroupName]="i"
-          >
-            <select
-              class="govuk-select"
-              [formControlName]="'custodianCode'"
-              id="localAuthorities-{{ i }}"
-              name="custodianCode"
-            >
-              <option [ngValue]="null">Select Local Authority</option>
-              <option *ngFor="let authority of selectableAuthorities(i)" [value]="authority.custodianCode">
-                {{ authority.name }}
-              </option>
-            </select>
-            <button
-              class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
-              type="button"
-              (click)="deleteLocalAuthority($event, i)"
-            >
-              Remove
-              <span class="govuk-visually-hidden">
-                local authority {{ localAuthorities.get('custodianCode').value }}</span
-              >
-            </button>
-          </div>
-        </ng-container>
-        <button class="govuk-button govuk-button--secondary" type="button" (click)="addLocalAuthority()">
-          Add another local authority
-        </button>
       </fieldset>
     </div>
+  </div>
+  <div class="govuk-grid-row  govuk-!-margin-left-0">
+    <p>Add more local authorities to share your data with.</p>
+    <h2 class="govuk-heading-m">Local Authorities</h2>
+    <ng-container formArrayName="localAuthorities">
+      <div
+        class="govuk-form-group"
+        *ngFor="let localAuthorities of localAuthoritiesArray.controls; let i = index"
+        [formGroupName]="i"
+      >
+        <div class="govuk-grid-column-two-thirds">
+          <select
+            class="govuk-select govuk-!-width-full"
+            [formControlName]="'custodianCode'"
+            id="localAuthorities-{{ i }}"
+            name="custodianCode"
+          >
+            <option [ngValue]="null">Select Local Authority</option>
+            <option *ngFor="let authority of selectableAuthorities(i)" [value]="authority.custodianCode">
+              {{ authority.name }}
+            </option>
+          </select>
+        </div>
+        <div class="govuk-grid-column-one-thirds">
+          <a href="#" class="govuk-list govuk-list--inline" (click)="deleteLocalAuthority($event, i)">Remove</a>
+        </div>
+      </div>
+    </ng-container>
+    <button class="govuk-button govuk-button--secondary" type="button" (click)="addLocalAuthority()">
+      Add another local authority
+    </button>
   </div>
 
   <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
