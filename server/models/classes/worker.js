@@ -306,17 +306,26 @@ class Worker extends EntityValidator {
         this._status = document.status;
       }
 
-
       // Consequential updates when one value means another should be empty or null
 
       // If their job isn't a registered nurse, remove their specialism and category
-      if (document.mainJob) {
-        if (document.mainJob.jobId !== 23) {
+      if (document.mainJob || document.otherJobs) {
+        let otherRegNurse = false;
+        let otherSocialWorker = false;
+        const mainJob = document.mainJob ? document.mainJob : this.mainJob;
+        const otherJobs = document.otherJobs ? document.otherJobs : this.otherJobs;
+        if (otherJobs && otherJobs.jobs) {
+          otherJobs.jobs.map(otherJob => {
+            if (otherJob.jobId === 23) otherRegNurse = true;
+            if (otherJob.jobId === 27) otherSocialWorker = true;
+          });
+        }
+        if (mainJob && mainJob.jobId !== 23 && !otherRegNurse) {
           document.registeredNurse = null;
           document.nurseSpecialism = { id: null, specialism: null };
         }
         // If their job isn't a social worker - remove the approved mental health worker
-        if (document.mainJob.jobId !== 27) {
+        if (mainJob && mainJob.jobId !== 27 && !otherSocialWorker) {
           document.approvedMentalHealthWorker = null;
         }
       }
@@ -333,9 +342,9 @@ class Worker extends EntityValidator {
           document.yearArrived = { value: null, year: null };
         }
       }
-
+      const notContract = ['Agency', 'Pool/Bank']
       // Remove contracted hours If on a zero hour contract
-      if (document.zeroHoursContract === 'Yes' || document.contract === 'Agency') {
+      if (document.zeroHoursContract === 'Yes' || notContract.includes(document.contract)) {
         document.weeklyHoursContracted = { value: null, hours: null };
       }
 
