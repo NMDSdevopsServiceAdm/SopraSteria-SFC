@@ -526,6 +526,7 @@ class Worker extends EntityValidator {
       // create new Worker
       try {
         const creationDate = new Date();
+        const updatedTimestamp = new Date();
         const creationDocument = {
           establishmentFk: this._establishmentId,
           uid: this.uid,
@@ -550,6 +551,32 @@ class Worker extends EntityValidator {
           //   why we cannot create a Worker record with more properties
           const modifedCreationDocument = this._properties.save(savedBy.toLowerCase(), creationDocument);
 
+          // always recalculate WDF - if not bulk upload (this._status)
+          if (this._status === null) {
+            await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_ADD, false);
+          }
+
+          // every time the worker is saved, need to calculate
+          //  it's current WDF Eligibility, and if it is eligible, update
+          //  the last WDF Eligibility status
+          const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
+
+          const effectiveDateTime = WdfCalculator.effectiveTime;
+
+          let wdfAudit = null;
+          console.log('Current WDF Eligibility: ', JSON.stringify(currentWdfEligibiity));
+          console.log('Last WDF Eligibility: ', this._lastWdfEligibility);
+          console.log('WorkerID: ', this._id);
+          console.log('Effective Time: ', new Date(effectiveDateTime).toISOString());
+          if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
+            console.log('Worker is WDF Eligible. Updating lastEligibilityDate and adding to Audit table.');
+            modifedCreationDocument.lastWdfEligibility = updatedTimestamp;
+            wdfAudit = {
+              username: savedBy.toLowerCase(),
+              type: 'wdfEligible'
+            };
+          }
+
           // now save the document
           const creation = await models.worker.create(modifedCreationDocument, { transaction: thisTransaction });
 
@@ -560,6 +587,10 @@ class Worker extends EntityValidator {
           this._updated = sanitisedResults.updated;
           this._updatedBy = savedBy.toLowerCase();
           this._isNew = false;
+
+          if (associatedEntities) {
+            await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
+          }
 
           // having the worker id we can now create the audit record; inserting the workerFk
           const allAuditEvents = [{
@@ -572,16 +603,11 @@ class Worker extends EntityValidator {
               workerFk: this._id
             };
           }));
+          if (wdfAudit) {
+            wdfAudit.workerFk = this._id;
+            allAuditEvents.push(wdfAudit);
+          }
           await models.workerAudit.bulkCreate(allAuditEvents, { transaction: thisTransaction });
-
-          if (associatedEntities) {
-            await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
-          }
-
-          // always recalculate WDF - if not bulk upload (this._status)
-          if (this._status === null) {
-            await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_ADD, false);
-          }
 
           // this is an async method - don't wait for it to return
           AWSKinesis.workerPump(AWSKinesis.CREATED, this.toJSON());
