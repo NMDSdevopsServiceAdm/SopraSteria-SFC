@@ -888,8 +888,6 @@ class Establishment {
         },
         attributes: ['id', 'locationId']
       });
-      console.log(this._id);
-      console.log(locationExists);
       let existingEstablishment = false;
       await locationExists.map(async (establishment) => {
         if (establishment.id === this._id) existingEstablishment = true;
@@ -1069,6 +1067,7 @@ class Establishment {
 
     const localValidationErrors = [];
     if (this._currentLine.SERVICEUSERS && this._currentLine.SERVICEUSERS.length > 0) {
+      // which is not valid
       const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService, 10))) : true;
       if (!isValid) {
         localValidationErrors.push({
@@ -1259,22 +1258,22 @@ class Establishment {
     const myTotalPermTemp = parseInt(this._currentLine.TOTALPERMTEMP, 10);
     const HEAD_OFFICE_MAIN_SERVICE = 72;
 
-    if (Number.isNaN(myTotalPermTemp)) {
+    if (myTotalPermTemp.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
-        error: 'Total Permanent and Temporary (TOTALPERMTEMP) must be an whole number',
+        error: 'TOTALPERMTEMP is missing',
         source: this._currentLine.PERMCQC,
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if (myTotalPermTemp < 0 || myTotalPermTemp > MAX_TOTAL) {
+    } else if (myTotalPermTemp < 0 || myTotalPermTemp > MAX_TOTAL || Number.isNaN(myTotalPermTemp)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
-        error: `Total Permanent and Temporary (TOTALPERMTEMP) must be 0 or more, but less than ${MAX_TOTAL}`,
+        error: `TOTALPERMTEMP must be a number from 0 to ${MAX_TOTAL} if this is correct call support on 0113 241 0969`,
         source: myTotalPermTemp,
         name: this._currentLine.LOCALESTID
       });
@@ -1486,7 +1485,6 @@ class Establishment {
     };
 
     if(isCQCRegulated && !hasRegisteredManagerVacancy() && registeredManager === 0) {
-      console.log('They have no RMs');
       csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
         error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one'
       }));
@@ -1764,9 +1762,9 @@ class Establishment {
         } else {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
-            errCode: Establishment.SERVICE_USERS_ERROR,
-            errType: 'SERVICE_USERS_ERROR',
-            error: `Service Users (SERVICEUSERS): ${thisService} is unknown`,
+            warnCode: Establishment.SERVICE_USERS_ERROR,
+            warnType: 'SERVICE_USERS_ERROR',
+            warning: `Entry for code ${thisService} in SERVICEUSERS will be ignored as this is invalid`,
             source: this._currentLine.SERVICEUSERS,
             name: this._currentLine.LOCALESTID
           });
