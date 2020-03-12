@@ -37,7 +37,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private jobService: JobService
+    private jobService: JobService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -71,7 +71,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
         this.leavers.reset([], { emitEvent: false });
 
         this.form.get('leaversKnown').setValue(value, { emitEvent: false });
-      })
+      }),
     );
 
     this.subscriptions.add(
@@ -82,7 +82,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
           .setValidators([Validators.required, Validators.min(this.minTotal), Validators.max(this.maxTotal)]);
 
         this.form.get('leaversKnown').setValue(null, { emitEvent: false });
-      })
+      }),
     );
   }
 
@@ -102,14 +102,14 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
       this.jobService
         .getJobs()
         .pipe(take(1))
-        .subscribe(jobs => (this.jobs = jobs))
+        .subscribe(jobs => (this.jobs = jobs)),
     );
   }
 
   private prefill(): void {
     if (Array.isArray(this.establishment.leavers) && this.establishment.leavers.length) {
       this.establishment.leavers.forEach(leaver =>
-        this.leavers.push(this.createLeaverControl(leaver.jobId, leaver.total))
+        this.leavers.push(this.createLeaverControl(leaver.jobId, leaver.total)),
       );
     } else {
       this.leavers.push(this.createLeaverControl());
@@ -130,7 +130,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Job Role is required',
+            message: 'Job role is required.',
           },
         ],
       },
@@ -139,15 +139,15 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Total is required',
+            message: 'Enter number of leavers.',
           },
           {
             name: 'min',
-            message: `Total must be ${this.minTotal} or above`,
+            message: `Leavers must be ${this.minTotal} or above.`,
           },
           {
             name: 'max',
-            message: `Total must be ${this.maxTotal} or lower`,
+            message: `Leavers must be ${this.maxTotal} or lower.`,
           },
         ],
       },
@@ -158,8 +158,8 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
     return this.jobs.filter(
       job =>
         !this.leavers.controls.some(
-          leaver => leaver !== this.leavers.controls[index] && parseInt(leaver.get('jobRole').value, 10) === job.id
-        )
+          leaver => leaver !== this.leavers.controls[index] && parseInt(leaver.get('jobRole').value, 10) === job.id,
+        ),
     );
   }
 
@@ -200,9 +200,10 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
 
   protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
-      this.establishmentService
-        .updateJobs(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateJobs(this.establishment.uid, props).subscribe(
+        data => this._onSuccess(data),
+        error => this.onError(error),
+      ),
     );
   }
 
