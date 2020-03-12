@@ -713,11 +713,13 @@ class Training extends EntityValidator {
     };
 
     // returns a set of Workers' Training Records based on given filter criteria (all if no filters defined) - restricted to the given Worker
-    static async fetch(establishmentId, workerId, filters=null) {
+    static async fetch(establishmentId, workerId, categoryId = null, filters=null) {
         if (filters) throw new Error("Filters not implemented");
 
         const allTrainingRecords = [];
-        const fetchResults = await models.workerTraining.findAll({
+        let fetchResults;
+        if(categoryId === null){
+          fetchResults = await models.workerTraining.findAll({
             include: [
                 {
                     model: models.worker,
@@ -737,7 +739,33 @@ class Training extends EntityValidator {
                 //['completed', 'DESC'],
                 ['updated', 'DESC']
             ]
+         });
+        }else{
+          fetchResults = await models.workerTraining.findAll({
+            include: [
+                {
+                    model: models.worker,
+                    as: 'worker',
+                    attributes: ['id', 'uid'],
+                    where: {
+                        uid: workerId
+                    }
+                },
+                {
+                    model: models.workerTrainingCategories,
+                    as: 'category',
+                    attributes: ['id', 'category']
+                }
+            ],
+            order: [
+                //['completed', 'DESC'],
+                ['updated', 'DESC']
+            ],
+            where:{
+              categoryFk: categoryId
+            }
         });
+        }
 
         if (fetchResults) {
             fetchResults.forEach(thisRecord => {
@@ -814,18 +842,19 @@ class Training extends EntityValidator {
      * @param {object} workerRecords
      * @return {array} Modified worker records while adding training counts & missing mandatory training counts for each worker object
      */
-    static async getAllRequiredCounts(establishmentId, workerRecords){
+    static async getAllRequiredCounts(establishmentId, workerRecords, categoryId = null){
       if(workerRecords.length !== 0){
         let currentDate = moment();
         for(let i = 0; i < workerRecords.length; i++){
-          const allTrainingRecords = await Training.fetch(establishmentId, workerRecords[i].uid);
+          const allTrainingRecords = await Training.fetch(establishmentId, workerRecords[i].uid, categoryId);
           workerRecords[i].trainingCount = 0;
           workerRecords[i].expiredTrainingCount = 0;
           workerRecords[i].expiringTrainingCount = 0;
           workerRecords[i].missingMandatoryTrainingCount = 0;
           if(allTrainingRecords && allTrainingRecords.training.length > 0){
-            workerRecords[i].missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, workerRecords[i], allTrainingRecords.training);
-            workerRecords[i].trainingCount = allTrainingRecords.training.length;
+            if(categoryId === null){
+              workerRecords[i].missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, workerRecords[i], allTrainingRecords.training);
+            }
             //calculate all expired and expiring soon training count
             let trainings = allTrainingRecords.training;
             for(let j = 0; j < trainings.length; j++){
@@ -839,7 +868,12 @@ class Training extends EntityValidator {
                 }
               }
             }
+          }else{
+            if(categoryId !== null){
+              workerRecords[i].missingMandatoryTrainingCount++;
+            }
           }
+          workerRecords[i].trainingCount = workerRecords[i].expiredTrainingCount + workerRecords[i].expiringTrainingCount + workerRecords[i].missingMandatoryTrainingCount;
         }
         return workerRecords;
       }
