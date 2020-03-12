@@ -8,16 +8,18 @@
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-      <h1 class="govuk-fieldset__heading">Add current staff vacancies</h1>
-    </legend>
-
-    <p class="govuk-hint">This should only be for permanent or temporary staff.</p>
-
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Add current staff vacancies</h1>
+          <p class="govuk-hint">This should only be for permanent or temporary staff.</p>
+        </legend>
+      </div>
+    </div>
     <ng-container formArrayName="vacancies">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
-          <label for="jobRole-0" class="govuk-label">Job Role</label>
+          <label for="jobRole-0" class="govuk-label">Job role</label>
         </div>
         <div class="govuk-grid-column-one-third">
           <label for="total-0" class="govuk-label">Number of vacancies</label>
@@ -30,6 +32,11 @@
       >
         <div class="govuk-grid-row govuk-!-margin-bottom-6">
           <div class="govuk-grid-column-two-thirds">
+            <span *ngIf="submitted" id="vacancy-{{ i }}-error" class="govuk-error-message">
+              <ng-container *ngIf="submitted && vacancy.get('jobRole').invalid">
+                {{ getFormErrorMessage('vacancies.jobRole', 'required') }}
+              </ng-container>
+            </span>
             <select
               class="govuk-select govuk-!-width-full"
               [class.govuk-select--error]="submitted && vacancy.get('jobRole').invalid"
@@ -43,7 +50,21 @@
               </option>
             </select>
           </div>
+
           <div class="govuk-grid-column-one-third">
+            <span *ngIf="submitted" id="vacancy-total-{{ i }}-error" class="govuk-error-message">
+              <ng-container *ngIf="submitted && vacancy.get('total').invalid">
+                <span *ngIf="vacancy.get('total').errors.required">
+                  {{ getFormErrorMessage('vacancies.total', 'required') }}</span
+                >
+                <span *ngIf="vacancy.get('total').errors.min">
+                  {{ getFormErrorMessage('vacancies.total', 'min') }}</span
+                >
+                <span *ngIf="vacancy.get('total').errors.max">
+                  {{ getFormErrorMessage('vacancies.total', 'max') }}
+                </span>
+              </ng-container>
+            </span>
             <input
               class="govuk-input govuk-!-width-one-half"
               [class.govuk-input--error]="submitted && vacancy.get('total').invalid"
@@ -52,14 +73,13 @@
               name="total"
               type="number"
             />
-            <button
+            <a
               *ngIf="vacanciesArray.length > 1"
-              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-!-margin-left-3"
-              type="button"
+              href="#"
+              class="govuk-list govuk-list--inline govuk-!-margin-left-3"
               (click)="removeVacancy($event, i)"
+              >Remove</a
             >
-              Remove
-            </button>
           </div>
         </div>
       </div>
