@@ -48,7 +48,7 @@ SELECT
       "EstablishmentFK" = "Establishment"."EstablishmentID" AND
       ("GenderValue" IS NOT NULL)  AND
       ("DateOfBirthValue" IS NOT NULL)  AND
-      ("NationalityValue" IS NOT NULL OR ("NationalityValue" = :Other AND ("Nationality"."Nationality" IS NOT NULL OR "Nationality"."Nationality" != :emptyValue))) AND
+      (("NationalityValue" = :British OR "NationalityValue" = :Dont) OR ("NationalityValue" = :Other AND "Nationality"."Nationality" IS NOT NULL)) AND
       ("Job"."JobName" IS NOT NULL OR "Job"."JobName" != :emptyValue)  AND
       ("MainJobStartDateValue" IS NOT NULL)  AND
       ("RecruitedFromValue" IS NOT NULL)  AND
@@ -56,8 +56,7 @@ SELECT
       ("WeeklyHoursContractedValue" IS NOT NULL OR "WeeklyHoursAverageValue" IS NOT NULL) AND
       ("ZeroHoursContractValue" IS NOT NULL) AND
       ("DaysSickValue" IS NOT NULL) AND
-      ("AnnualHourlyPayValue" IS NOT NULL) AND
-      ("AnnualHourlyPayRate" IS NOT NULL) AND
+      (("AnnualHourlyPayValue" IS NOT NULL OR ("AnnualHourlyPayRate" IS NOT NULL OR "AnnualHourlyPayValue" = :Dont))) AND
       ("CareCertificateValue" IS NOT NULL) AND
       ("QualificationInSocialCareValue" IS NOT NULL OR ("QualificationInSocialCareValue" = :No OR "QualificationInSocialCareValue" = :Dont) OR ("Qualification"."Level" IS NOT NULL OR "Qualification"."Level" != :emptyValue))  AND
       ("OtherQualificationsValue" IS NOT NULL) AND
@@ -124,7 +123,6 @@ SELECT
   "StartersValue",
   "LeaversValue",
   "NumberOfStaffValue",
-
   updated,
   CASE WHEN updated > :effectiveDate THEN to_char(updated, :timeFormat) ELSE NULL END AS "LastUpdatedDate",
   "ShareDataWithCQC",
@@ -180,7 +178,8 @@ exports.getEstablishmentData = async establishmentId =>
       No: 'No',
       emptyValue: '',
       WorkplaceStaff: 'Workplace and Staff',
-      Parent: 'Parent'
+      Parent: 'Parent',
+      British: 'British'
     },
     type: db.QueryTypes.SELECT
   });

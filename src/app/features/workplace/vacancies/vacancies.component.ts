@@ -208,6 +208,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         data => this._onSuccess(data),
         error => this.onError(error),
       ),
+
     );
   }
 

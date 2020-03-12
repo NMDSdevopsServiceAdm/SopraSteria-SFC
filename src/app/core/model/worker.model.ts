@@ -3,6 +3,7 @@ import { JobRole } from './job.model';
 import { WDFValue } from './wdf.model';
 
 export interface Worker {
+  trainingAlert?: number;
   uid?: string;
   ustatus?: string;
   nameOrId: string;
@@ -90,6 +91,7 @@ export interface Worker {
   trainingCount: number;
   expiredTrainingCount: number;
   expiringTrainingCount: number;
+  missingMandatoryTrainingCount: number;
   qualificationCount: number;
 }
 
