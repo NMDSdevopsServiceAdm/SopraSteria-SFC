@@ -8,12 +8,14 @@
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-      <h1 class="govuk-fieldset__heading">Staff who have left in the last 12 months</h1>
-    </legend>
-
-    <p class="govuk-hint">This should only be for permanent or temporary staff.</p>
-
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Staff who have left in the last 12 months</h1>
+          <p class="govuk-hint">This should only be for permanent or temporary staff.</p>
+        </legend>
+      </div>
+    </div>
     <ng-container formArrayName="leavers">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
@@ -30,6 +32,11 @@
       >
         <div class="govuk-grid-row govuk-!-margin-bottom-6">
           <div class="govuk-grid-column-two-thirds">
+            <span *ngIf="submitted" id="leaver-{{ i }}-error" class="govuk-error-message">
+              <ng-container *ngIf="submitted && leaver.get('jobRole').invalid">
+                {{ getFormErrorMessage('leavers.jobRole', 'required') }}
+              </ng-container>
+            </span>
             <select
               class="govuk-select govuk-!-width-full"
               [class.govuk-select--error]="submitted && leaver.get('jobRole').invalid"
@@ -44,6 +51,17 @@
             </select>
           </div>
           <div class="govuk-grid-column-one-third">
+            <span *ngIf="submitted" id="record-total-{{ i }}-error" class="govuk-error-message">
+              <ng-container *ngIf="submitted && leaver.get('total').invalid">
+                <span *ngIf="leaver.get('total').errors.required">
+                  {{ getFormErrorMessage('leavers.total', 'required') }}</span
+                >
+                <span *ngIf="leaver.get('total').errors.min"> {{ getFormErrorMessage('leavers.total', 'min') }}</span>
+                <span *ngIf="leaver.get('total').errors.max">
+                  {{ getFormErrorMessage('leavers.total', 'max') }}
+                </span>
+              </ng-container>
+            </span>
             <input
               class="govuk-input govuk-!-width-one-half"
               [class.govuk-input--error]="submitted && leaver.get('total').invalid"
@@ -52,14 +70,13 @@
               name="total"
               type="number"
             />
-            <button
+            <a
               *ngIf="leavers.length > 1"
-              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-!-margin-left-3"
-              type="button"
+              href="#"
+              class="govuk-list govuk-list--inline govuk-!-margin-left-3"
               (click)="removeLeaver($event, i)"
+              >Remove</a
             >
-              Remove
-            </button>
           </div>
         </div>
       </div>

@@ -38,7 +38,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private jobService: JobService
+    private jobService: JobService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -72,7 +72,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         this.vacanciesArray.reset([], { emitEvent: false });
 
         this.form.get('vacanciesKnown').setValue(value, { emitEvent: false });
-      })
+      }),
     );
 
     this.subscriptions.add(
@@ -83,7 +83,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
           .setValidators([Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]);
 
         this.form.get('vacanciesKnown').setValue(null, { emitEvent: false });
-      })
+      }),
     );
   }
 
@@ -105,14 +105,14 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       this.jobService
         .getJobs()
         .pipe(take(1))
-        .subscribe(jobs => (this.jobs = jobs))
+        .subscribe(jobs => (this.jobs = jobs)),
     );
   }
 
   private prefill(): void {
     if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
       this.establishment.vacancies.forEach(vacancy =>
-        this.vacanciesArray.push(this.createVacancyControl(vacancy.jobId, vacancy.total))
+        this.vacanciesArray.push(this.createVacancyControl(vacancy.jobId, vacancy.total)),
       );
     } else {
       this.vacanciesArray.push(this.createVacancyControl());
@@ -133,7 +133,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Job Role is required',
+            message: 'Job role is required.',
           },
         ],
       },
@@ -142,15 +142,15 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Total is required',
+            message: 'Enter number of vacancies.',
           },
           {
             name: 'min',
-            message: `Total must be ${this.minVacancies} or above`,
+            message: `Vacancies must be ${this.minVacancies} or above`,
           },
           {
             name: 'max',
-            message: `Total must be ${this.maxVacancies} or lower`,
+            message: `Vacancies must be ${this.maxVacancies} or lower`,
           },
         ],
       },
@@ -162,8 +162,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       job =>
         !this.vacanciesArray.controls.some(
           vacancy =>
-            vacancy !== this.vacanciesArray.controls[index] && parseInt(vacancy.get('jobRole').value, 10) === job.id
-        )
+            vacancy !== this.vacanciesArray.controls[index] && parseInt(vacancy.get('jobRole').value, 10) === job.id,
+        ),
     );
   }
 
@@ -206,8 +206,9 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.updateJobs(this.establishment.uid, props).subscribe(
         data => this._onSuccess(data),
-        error => this.onError(error)
-      )
+        error => this.onError(error),
+      ),
+
     );
   }
 

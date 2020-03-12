@@ -21,15 +21,15 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
   public form: FormGroup;
   public formControlsMap: any[] = [
     {
-      label: 'Your full name',
+      label: 'Full name',
       name: 'fullname',
     },
     {
-      label: 'Your job title',
+      label: 'Job title',
       name: 'jobTitle',
     },
     {
-      label: 'Your email address',
+      label: 'Email address',
       name: 'email',
     },
     {
@@ -44,7 +44,7 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   ngOnInit() {
