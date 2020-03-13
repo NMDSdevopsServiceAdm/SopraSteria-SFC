@@ -364,6 +364,7 @@
              attributes: ['id', 'uid', 'NameOrIdValue'],
              where:{
                establishmentFk: establishmentId,
+               archived: false,
                MainJobFkValue: jobs[j].id
              }
            });
