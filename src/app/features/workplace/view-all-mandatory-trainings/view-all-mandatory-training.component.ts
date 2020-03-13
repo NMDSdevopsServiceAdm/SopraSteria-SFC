@@ -78,6 +78,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
             catExpiredTrainingCount: 0,
             catExpiringTrainingCount: 0,
             catTrainingCount: 0,
+            upToDateTrainingCount: 0,
           };
 
           mandatoryTrainingObj.trainingCategoryId = training.trainingCategoryId;
@@ -90,6 +91,13 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
               mandatoryTrainingObj.catExpiredTrainingCount += worker.expiredTrainingCount;
               mandatoryTrainingObj.catExpiringTrainingCount += worker.expiringTrainingCount;
               mandatoryTrainingObj.catTrainingCount += worker.trainingCount;
+              if (
+                worker.missingMandatoryTrainingCount === 0 &&
+                worker.expiredTrainingCount === 0 &&
+                worker.expiringTrainingCount === 0
+              ) {
+                mandatoryTrainingObj.upToDateTrainingCount++;
+              }
             });
           }
           this.totalExpiredTraining += mandatoryTrainingObj.catExpiredTrainingCount;
