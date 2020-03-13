@@ -60,8 +60,11 @@
               {{ mandatoryTraining.catMissingMandatoryTrainingCount }}
               Missing
             </div>
-            <div *ngIf="mandatoryTraining.catTrainingCount === 0">
-              Up-to-date
+            <div
+              *ngIf="mandatoryTraining.upToDateTrainingCount > 0"
+              class="govuk-!-padding-left-1 govuk-!-margin-left-6"
+            >
+              {{ mandatoryTraining.upToDateTrainingCount }} Up-to-date
             </div>
           </td>
           <td class="govuk-table__cell">
