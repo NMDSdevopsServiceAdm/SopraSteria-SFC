@@ -852,9 +852,6 @@ class Training extends EntityValidator {
           workerRecords[i].expiringTrainingCount = 0;
           workerRecords[i].missingMandatoryTrainingCount = 0;
           if(allTrainingRecords && allTrainingRecords.training.length > 0){
-            if(categoryId === null){
-              workerRecords[i].missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, workerRecords[i], allTrainingRecords.training);
-            }
             //calculate all expired and expiring soon training count
             let trainings = allTrainingRecords.training;
             for(let j = 0; j < trainings.length; j++){
@@ -872,6 +869,9 @@ class Training extends EntityValidator {
             if(categoryId !== null){
               workerRecords[i].missingMandatoryTrainingCount++;
             }
+          }
+          if(categoryId === null){
+            workerRecords[i].missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, workerRecords[i], allTrainingRecords.training);
           }
           workerRecords[i].trainingCount = workerRecords[i].expiredTrainingCount + workerRecords[i].expiringTrainingCount + workerRecords[i].missingMandatoryTrainingCount;
         }
@@ -897,6 +897,9 @@ class Training extends EntityValidator {
         let mandatoryTrainingLength = fetchMandatoryTrainingResults ? fetchMandatoryTrainingResults.length: 0;
         let trainingLength = trainingLists.length;
         if(mandatoryTrainingLength > 0){
+            if(trainingLength === 0){
+                return mandatoryTrainingLength;
+            }
             let missingMandatoryTrainingCount = 0;
             for(let i = 0; i < mandatoryTrainingLength; i++){
               let foundMandatoryTraining = false;
