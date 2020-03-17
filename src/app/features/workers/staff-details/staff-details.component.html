@@ -29,7 +29,7 @@
         </div>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('mainJob').invalid">
           <label class="govuk-label" for="mainJob">
-            What is their main job role
+            Main job role
           </label>
           <span *ngIf="submitted && form.get('mainJob').errors" id="mainJob-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
@@ -43,7 +43,7 @@
             name="mainJob"
             (change)="selectedJobRole($event.target.value)"
           >
-            <option [ngValue]="null">Select Main Job Role</option>
+            <option [ngValue]="null">Select main job role</option>
             <option *ngFor="let job of jobsAvailable" [value]="job.id">
               {{ job.title }}
             </option>

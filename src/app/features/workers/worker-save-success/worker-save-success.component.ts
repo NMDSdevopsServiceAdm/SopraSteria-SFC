@@ -16,7 +16,7 @@ export class WorkerSaveSuccessComponent implements OnDestroy {
 
     this.return =
       workplaceUid === primaryWorkplaceUid
-        ? { url: ['/dashboard'], label: 'dashboard' }
+        ? { url: ['/dashboard'], label: 'home' }
         : { url: ['/workplace', workplaceUid], label: 'workplace' };
   }
 
