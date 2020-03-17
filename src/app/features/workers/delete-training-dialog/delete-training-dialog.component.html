@@ -3,18 +3,10 @@
 <dl class="govuk-summary-list govuk-summary-list--no-border">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
-      Staff Record
+      Staff record
     </dt>
     <dd class="govuk-summary-list__value">
       {{ data.nameOrId }}
-    </dd>
-  </div>
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Training name
-    </dt>
-    <dd class="govuk-summary-list__value">
-      {{ data.trainingRecord.title }}
     </dd>
   </div>
   <div class="govuk-summary-list__row">
@@ -23,6 +15,14 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{ data.trainingRecord.trainingCategory.category }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Training name
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.trainingRecord.title }}
     </dd>
   </div>
 </dl>
