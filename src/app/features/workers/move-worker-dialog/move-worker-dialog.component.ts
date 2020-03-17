@@ -17,7 +17,6 @@ import { Subscription } from 'rxjs';
   templateUrl: './move-worker-dialog.component.html',
 })
 export class MoveWorkerDialogComponent extends DialogComponent implements OnInit, OnDestroy {
-
   public form: FormGroup;
   public submitted = false;
   private formErrorsMap: Array<ErrorDetails>;
@@ -27,8 +26,6 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   public serverErrorsMap: Array<ErrorDefinition>;
   public availableWorkPlaces;
   public workplaceNameOrPostCode: string;
-
-
 
   constructor(
     @Inject(DIALOG_DATA) public data: { worker: Worker; workplace: Establishment; primaryWorkplaceUid: string },
@@ -46,14 +43,11 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     this.setupForm();
   }
 
-
-
   ngOnInit() {
     this.getMyAllWorkPlaces();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
-
 
   //function is use to get all available workplaces
   private getMyAllWorkPlaces() {
@@ -68,15 +62,15 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
             allEstablishments = subsidaryEstablishments.concat([primary]);
           }
           const currentWorkplaceUid = this.data.workplace.uid;
-          this.availableWorkPlaces = allEstablishments.filter(wp =>
-            wp.uid !== currentWorkplaceUid)
+          this.availableWorkPlaces = allEstablishments
+            .filter(wp => wp.uid !== currentWorkplaceUid)
             .map(wp => {
               wp.nameAndPostCode = wp.name + ', ' + wp.postCode;
               return wp;
-            }
-
-            );
-          this.availableWorkPlaces = this.availableWorkPlaces.filter(item => item.dataOwner === 'Parent' && item.ustatus !== 'PENDING');
+            });
+          this.availableWorkPlaces = this.availableWorkPlaces.filter(
+            item => item.dataOwner === 'Parent' && item.ustatus !== 'PENDING',
+          );
           if (currentWorkplaceUid !== this.data.primaryWorkplaceUid) {
             this.availableWorkPlaces.push(primary);
           }
@@ -86,22 +80,23 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
           if (error.error.message) {
             this.serverError = error.error.message;
           }
-        }
-      )
+        },
+      ),
     );
   }
 
   /**
-     * Pass in formGroup or formControl name
-     * Then return error message
-     * @param error item
-     */
+   * Pass in formGroup or formControl name
+   * Then return error message
+   * @param error item
+   */
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public close() {
+  public close(event: Event) {
+    event.preventDefault();
     this.dialog.close();
   }
 
@@ -118,7 +113,10 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     this.subscriptions.add(
       this.workerService
         .updateWorker(this.data.workplace.uid, this.data.worker.uid, { establishmentId: newEstablishmentId })
-        .subscribe(() => this.onSuccess(this.form.value.workplaceNameOrPostCode), error => this.onError(error))
+        .subscribe(
+          () => this.onSuccess(this.form.value.workplaceNameOrPostCode),
+          error => this.onError(error),
+        ),
     );
   }
   /**
@@ -136,9 +134,9 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     this.router.navigate(url, { fragment: 'staff-records' });
     this.alertService.addAlert({
       type: 'success',
-      message: `${this.data.worker.nameOrId} has been moved to ${newEstablishmentName}.`
+      message: `${this.data.worker.nameOrId} has been moved to ${newEstablishmentName}.`,
     });
-    this.close();
+    this.close(event);
   }
 
   private onError(error): void {
@@ -148,7 +146,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   //Set the form fields and validator
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      workplaceNameOrPostCode: [null, [Validators.required, this.workplaceNameOrPostCodeValidator]]
+      workplaceNameOrPostCode: [null, [Validators.required, this.workplaceNameOrPostCodeValidator]],
     });
   }
 
@@ -164,7 +162,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
           },
           {
             name: 'validNameOrPostCode',
-            message: 'Enter correct workplace name or post code',
+            message: 'Enter correct workplace name or post code.',
           },
         ],
       },
@@ -189,7 +187,6 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     ];
   }
 
-
   /**
    * Function is used to validate input workplace name or Post code is  valid or not.
    * if valid then return null otherwise return object {validNameOrPostCode:true}
@@ -202,11 +199,10 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
       if (workplaceNameOrPostCode.value !== null) {
         const workplaceNameOrPostCodeLowerCase = workplaceNameOrPostCode.value.toLowerCase();
         return this.availableWorkPlaces.some(
-          wp => wp.nameAndPostCode.toLowerCase() === workplaceNameOrPostCodeLowerCase
+          wp => wp.nameAndPostCode.toLowerCase() === workplaceNameOrPostCodeLowerCase,
         )
           ? null
           : { validNameOrPostCode: true };
-
       }
     }
 
@@ -227,7 +223,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
           wp =>
             wp.name.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
             wp.postCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
-            wp.nameAndPostCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase)
+            wp.nameAndPostCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase),
         )
         .filter(wp => wp.nameAndPostCode.toLowerCase() !== workplaceNameOrPostCodeLowerCase)
         .map(wp => wp.nameAndPostCode);
@@ -245,7 +241,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   public getWorkplaceEstablishmentIdOrName(nameAndPostCode: string, nameOrId: string) {
     if (nameAndPostCode) {
       const filterArray = this.availableWorkPlaces.filter(
-        wp => wp.nameAndPostCode.toLowerCase() === nameAndPostCode.toLowerCase()
+        wp => wp.nameAndPostCode.toLowerCase() === nameAndPostCode.toLowerCase(),
       );
       if (nameOrId === 'id') {
         return filterArray[0].id;
@@ -254,9 +250,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     }
   }
 
-
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 }
-

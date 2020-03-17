@@ -79,7 +79,7 @@
             "
           >
             <label class="govuk-label" for="mainJobRole-{{ i }}">
-              What is their main job role?
+              Main job role?
             </label>
             <span
               *ngIf="staffRecord.get('mainJobRole').invalid && staffRecord.get('mainJobRole').touched"
@@ -96,7 +96,7 @@
               [formControlName]="'mainJobRole'"
               id="mainJobRole-{{ i }}"
             >
-              <option [ngValue]="null">Select Main Job Role</option>
+              <option [ngValue]="null">Select main job role</option>
               <option *ngFor="let job of jobs" [value]="job.id">
                 {{ job.title }}
               </option>
