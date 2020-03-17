@@ -1,12 +1,12 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Qualification } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import * as moment from 'moment';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -54,7 +54,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   }
 
   public getWorkerRecordPath(worker: Worker) {
-    const path = ['/workplace', this.establishmentUid, 'staff-record', worker.uid];
+    const path = ['/workplace', this.establishmentUid, 'training-and-qualifications-record', worker.uid, 'training'];
     return this.wdfView ? [...path, ...['wdf-summary']] : path;
   }
 
