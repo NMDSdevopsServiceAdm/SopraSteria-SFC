@@ -10,12 +10,13 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 export class UserAccountDeleteDialogComponent extends DialogComponent {
   constructor(
     @Inject(DIALOG_DATA) public data: { user: UserDetails },
-    public dialog: Dialog<UserAccountDeleteDialogComponent>
+    public dialog: Dialog<UserAccountDeleteDialogComponent>,
   ) {
     super(data, dialog);
   }
 
-  public close(deleteConfirmed: boolean) {
+  public close(event: Event, deleteConfirmed: boolean) {
+    event.preventDefault();
     this.dialog.close(deleteConfirmed);
   }
 }
