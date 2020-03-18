@@ -27,7 +27,13 @@
   </div>
 </dl>
 
-<button type="submit" class="govuk-button" (click)="close(true)">Delete training record</button>
-<button type="button" class="govuk-button govuk-button--link govuk-util__float-right" (click)="close(false)">
+<button type="submit" class="govuk-button" (click)="close($event, true)">Delete training record</button>
+<!--<button type="button" class="govuk-button govuk-button--link govuk-util__float-right" (click)="close(false)">
   Cancel
-</button>
+</button>-->
+<a
+  href="#"
+  class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+  (click)="close($event, false)"
+  >Cancel</a
+>
