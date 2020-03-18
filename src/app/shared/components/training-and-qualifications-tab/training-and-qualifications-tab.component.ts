@@ -33,7 +33,8 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
           this.totalExpiringTraining = 0;
           this.missingMandatoryTraining = 0;
           this.workers.forEach((worker: Worker) => {
-            this.totalRecords += worker.trainingCount + worker.qualificationCount;
+            let totalTrainingRecord = worker.trainingCount - worker.missingMandatoryTrainingCount;
+            this.totalRecords += totalTrainingRecord + worker.qualificationCount;
             this.totalExpiredTraining += worker.expiredTrainingCount;
             this.totalExpiringTraining += worker.expiringTrainingCount;
             this.missingMandatoryTraining += worker.missingMandatoryTrainingCount;
