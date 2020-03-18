@@ -4,7 +4,7 @@
         <t>Training Expiring soon</t>
     </si>
     <si>
-        <t>Training records summary</t>
+        <t>All training records</t>
     </si>
     <si>
         <t>Mandatory</t>
@@ -16,7 +16,7 @@
         <t>Total</t>
     </si>
     <si>
-        <t>Expired training records</t>
+        <t>Expired</t>
     </si>
     <si>
         <t>Expiring soon</t>

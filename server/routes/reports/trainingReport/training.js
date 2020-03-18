@@ -163,6 +163,8 @@ const getTrainingReportData = async establishmentId => {
   trainingCounts.upToDateTrainingCount = 0;
   trainingCounts.expiredMandatoryTrainingCount = 0;
   trainingCounts.expiredNonMandatoryTrainingCount = 0;
+  trainingCounts.expiringMandatoryTrainingCount = 0;
+  trainingCounts.expiringNonMandatoryTrainingCount = 0;
   trainingCounts.upToDateMandatoryTrainingCount = 0;
   trainingCounts.upToDateNonMandatoryTrainingCount = 0;
   if (expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0) {
@@ -265,7 +267,7 @@ const styleLookup = {
   BLACK: {
     OVRREGULAR: {
       A: 2,
-      B: 6,
+      B: 2,
       C: 2,
       D: 2,
       E: 2,
@@ -280,7 +282,7 @@ const styleLookup = {
     },
     OVRLAST: {
       A: 2,
-      B: 16,
+      B: 2,
       C: 2,
       D: 2,
       E: 2,
@@ -319,9 +321,9 @@ const styleLookup = {
   RED: {
     OVRREGULAR: {
       A: 2,
-      B: 6,
-      C: 7,
-      D: 67,
+      B: 2,
+      C: 2,
+      D: 2,
       E: 9,
       F: 67,
       G: 9,
@@ -333,9 +335,9 @@ const styleLookup = {
     },
     OVRLAST: {
       A: 2,
-      B: 16,
-      C: 17,
-      D: 67,
+      B: 2,
+      C: 2,
+      D: 2,
       E: 19,
       F: 67,
       G: 19,
@@ -429,69 +431,49 @@ const updateOverviewSheet = (
     sharedStringsCount
   );
   // put total expired mandatory training count
-  putString(overviewSheet.querySelector("c[r='D6']"), trainingCounts.expiredMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='B3']"), trainingCounts.expiredMandatoryTrainingCount);
   // put total expired non mandatory training count
-  putString(overviewSheet.querySelector("c[r='E6']"), trainingCounts.expiredNonMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='C3']"), trainingCounts.expiredNonMandatoryTrainingCount);
   // put total expired training count
-  putString(overviewSheet.querySelector("c[r='F6']"), trainingCounts.expiredTrainingCount);
+  putString(overviewSheet.querySelector("c[r='D3']"), trainingCounts.expiredTrainingCount);
   // put total up-to-date mandatory training count
-  putString(overviewSheet.querySelector("c[r='D5']"), trainingCounts.upToDateMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='B2']"), trainingCounts.upToDateMandatoryTrainingCount);
   // put total up-to-date non mandatory training count
-  putString(overviewSheet.querySelector("c[r='E5']"), trainingCounts.upToDateNonMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='C2']"), trainingCounts.upToDateNonMandatoryTrainingCount);
   // put total up-to-date training count
-  putString(overviewSheet.querySelector("c[r='F5']"), trainingCounts.upToDateTrainingCount);
-
-  putString(
-    overviewSheet.querySelector("c[r='I5']"),
-    `You have ${trainingCounts.expiredTrainingCount} expired training records`
-  );
-  overviewSheet.querySelector("c[r='I5']").setAttribute('s', 32);
+  putString(overviewSheet.querySelector("c[r='D2']"), trainingCounts.upToDateTrainingCount);
 
   // put total expiring soon mandatory training count
-  putString(overviewSheet.querySelector("c[r='D7']"), trainingCounts.expiringMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='B4']"), trainingCounts.expiringMandatoryTrainingCount);
   // put total expiring soon non mandatory training count
-  putString(overviewSheet.querySelector("c[r='E7']"), trainingCounts.expiringNonMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='C4']"), trainingCounts.expiringNonMandatoryTrainingCount);
   // put total expiring soon training count
-  putString(overviewSheet.querySelector("c[r='F7']"), trainingCounts.expiringTrainingCount);
-  putString(
-    overviewSheet.querySelector("c[r='I7']"),
-    `You have ${trainingCounts.expiringTrainingCount} records expiring soon`
-  );
-  overviewSheet.querySelector("c[r='I7']").setAttribute('s', 33);
+  putString(overviewSheet.querySelector("c[r='D4']"), trainingCounts.expiringTrainingCount);
 
   // put total expiring soon/expired mandatory training count
   putString(
-    overviewSheet.querySelector("c[r='D8']"),
+    overviewSheet.querySelector("c[r='B5']"),
     `${trainingCounts.expiredMandatoryTrainingCount + trainingCounts.expiringMandatoryTrainingCount + trainingCounts.upToDateMandatoryTrainingCount}`
   );
 
   // put total expiring soon/expired non mandatory training count
   putString(
-    overviewSheet.querySelector("c[r='E8']"),
+    overviewSheet.querySelector("c[r='C5']"),
     `${trainingCounts.expiredNonMandatoryTrainingCount + trainingCounts.expiringNonMandatoryTrainingCount + trainingCounts.upToDateNonMandatoryTrainingCount}`
   );
 
   // put total expiring soon/expired training count
   putString(
-    overviewSheet.querySelector("c[r='F8']"),
+    overviewSheet.querySelector("c[r='D5']"),
     `${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount + trainingCounts.upToDateTrainingCount}`
   );
 
-  putString(
-    overviewSheet.querySelector("c[r='I9']"),
-    `You have ${expiredOrExpiringWorkerRecords.length} staff members with expired or`
-  );
-  overviewSheet.querySelector("c[r='I9']").setAttribute('s', 34);
-
-  putString(overviewSheet.querySelector("c[r='I10']"), `expiring training records`);
-  overviewSheet.querySelector("c[r='I10']").setAttribute('s', 35);
-
   //put all expiring traing details
-  let currentRowBottom = overviewSheet.querySelector("row[r='18']");
-  let rowIndexBottom = 18;
+  let currentRowBottom = overviewSheet.querySelector("row[r='13']");
+  let rowIndexBottom = 13;
   let updateRowIndex = rowIndexBottom + expiredWorkerTrainings.length - 1;
-  for (; rowIndexBottom >= 14; rowIndexBottom--, updateRowIndex--) {
-    if (rowIndexBottom === 18) {
+  for (; rowIndexBottom >= 10; rowIndexBottom--, updateRowIndex--) {
+    if (rowIndexBottom === 13) {
       // fix the dimensions tag value
       const dimension = overviewSheet.querySelector('dimension');
       dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + updateRowIndex);
@@ -512,7 +494,7 @@ const updateOverviewSheet = (
     }
   }
 
-  let bottomRowIndex = 18 + expiredWorkerTrainings.length - 1;
+  let bottomRowIndex = 13 + expiredWorkerTrainings.length - 1;
   const templateRowExpiring = overviewSheet.querySelector(`row[r='${bottomRowIndex}']`);
   let currentRowExpiring = templateRowExpiring;
   let rowIndexExpiring = bottomRowIndex + 1;
@@ -543,7 +525,7 @@ const updateOverviewSheet = (
     const rowType = row === expiringWorkerTrainings.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 8; column++) {
+    for (let column = 0; column < 4; column++) {
       const columnText = String.fromCharCode(column + 65);
 
       const cellToChange =
@@ -551,7 +533,7 @@ const updateOverviewSheet = (
           ? nextSibling
           : currentRowExpiring.querySelector(`c[r='${columnText}${row + bottomRowIndex}']`);
       switch (columnText) {
-        case 'C':
+        case 'A':
           {
             basicValidationUpdate(
               putString,
@@ -562,17 +544,17 @@ const updateOverviewSheet = (
             );
           }
           break;
-        case 'D':
+        case 'B':
           {
             basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].MandatoryCount, columnText, rowType);
           }
           break;
-        case 'E':
+        case 'C':
           {
             basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
           }
           break;
-        case 'F':
+        case 'D':
           {
             basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].Count, columnText, rowType);
           }
@@ -587,9 +569,10 @@ const updateOverviewSheet = (
 
   //put all expired training details
   // clone the row the apropriate number of times
-  const templateRow = overviewSheet.querySelector("row[r='13']");
+  debugger
+  const templateRow = overviewSheet.querySelector("row[r='9']");
   let currentRow = templateRow;
-  let rowIndex = 14;
+  let rowIndex = 10;
   if (expiredWorkerTrainings.length > 0) {
     for (let i = 0; i < expiredWorkerTrainings.length - 1; i++) {
       const tempRow = templateRow.cloneNode(true);
@@ -619,9 +602,9 @@ const updateOverviewSheet = (
       const cellToChange =
         typeof nextSibling.querySelector === 'function'
           ? nextSibling
-          : currentRow.querySelector(`c[r='${columnText}${row + 13}']`);
+          : currentRow.querySelector(`c[r='${columnText}${row + 9}']`);
       switch (columnText) {
-        case 'C':
+        case 'A':
           {
             basicValidationUpdate(
               putString,
@@ -632,17 +615,17 @@ const updateOverviewSheet = (
             );
           }
           break;
-        case 'D':
+        case 'B':
           {
             basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].MandatoryCount, columnText, rowType);
           }
           break;
-        case 'E':
+        case 'C':
           {
             basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
           }
           break;
-        case 'F':
+        case 'D':
           {
             basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].Count, columnText, rowType);
           }

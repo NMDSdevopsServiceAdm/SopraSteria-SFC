@@ -8,7 +8,7 @@
         <font>
             <b />
             <sz val="12" />
-            <color indexed="0" />
+            <color indexed="1" />
             <name val="Arial" />
             <charset val="1" />
         </font>
@@ -75,7 +75,7 @@
         </fill>
         <fill>
             <patternFill patternType="solid">
-                <fgColor indexed="11" />
+                <fgColor indexed="0" />
                 <bgColor indexed="0" />
             </patternFill>
         </fill>
