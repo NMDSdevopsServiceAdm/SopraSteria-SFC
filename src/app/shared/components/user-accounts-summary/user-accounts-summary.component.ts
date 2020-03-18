@@ -31,13 +31,13 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
             this.users = orderBy(
               users,
               ['status', 'isPrimary', 'role', (user: UserDetails) => user.fullname.toLowerCase()],
-              ['desc', 'desc', 'asc', 'asc']
+              ['desc', 'desc', 'asc', 'asc'],
             );
             this.canAddUser =
               this.permissionsService.can(this.workplace.uid, 'canAddUser') && this.userSlotsAvailable(users);
           });
         }
-      })
+      }),
     );
   }
 
@@ -46,7 +46,7 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
   }
 
   public getUserType(user: UserDetails) {
-    return user.isPrimary ? 'Primary' : user.role;
+    return user.isPrimary ? 'Primary' : user.role === 'Read' ? 'Read only' : user.role;
   }
 
   public isPending(user: UserDetails) {

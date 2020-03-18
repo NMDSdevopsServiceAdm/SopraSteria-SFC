@@ -83,11 +83,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter your full name.',
+            message: 'Please enter full name.',
           },
           {
             name: 'maxlength',
-            message: 'Your fullname must be no longer than 120 characters.',
+            message: 'Full name must be no longer than 120 characters.',
           },
         ],
       },
@@ -96,11 +96,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter your job title.',
+            message: 'Please enter job title.',
           },
           {
             name: 'maxlength',
-            message: 'Your job title must be no longer than 120 characters.',
+            message: 'Job title must be no longer than 120 characters.',
           },
         ],
       },
@@ -109,11 +109,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter your email address.',
+            message: 'Please enter email address.',
           },
           {
             name: 'maxlength',
-            message: 'Your email address must be no longer than 120 characters.',
+            message: 'Email address must be no longer than 120 characters.',
           },
           {
             name: 'pattern',
@@ -126,7 +126,7 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter your contact phone number.',
+            message: 'Please enter contact phone number.',
           },
           {
             name: 'pattern',
