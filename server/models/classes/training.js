@@ -891,7 +891,7 @@ class Training extends EntityValidator {
         const fetchMandatoryTrainingResults = await models.MandatoryTraining.findAll({
             where: {
                 establishmentFK: establishmentId,
-                jobFK: workerRecords.mainJob.jobId
+                jobFK: (workerRecords.mainJob.jobId)? workerRecords.mainJob.jobId: workerRecords.mainJob.id
             }
         });
         let mandatoryTrainingLength = fetchMandatoryTrainingResults ? fetchMandatoryTrainingResults.length: 0;

@@ -18,7 +18,7 @@ const s3 = new AWS.S3({
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
-const { Establishment } = require('../../../models/classes/establishment');
+const Training = require('../../../models/classes/Training').Training;
 const { getTrainingData, getJobName, getMndatoryTrainingDetails } = rfr('server/data/trainingReport');
 const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('server/data/trainingReportLock');
 
@@ -51,6 +51,7 @@ const trainingCounts = {
 
 let expiredWorkerTrainings = [];
 let expiringWorkerTrainings = [];
+let missingMandatoryTrainingRecords = [];
 let expiredOrExpiringWorkerRecords = [];
 
 // XML DOM manipulation helper functions
@@ -130,7 +131,7 @@ const createExpireExpiringData = async (trainingData, reportData) => {
   if (trainingData.length && trainingData.length > 0) {
     trainingData.forEach(async value => {
       if (reportData.length === 0) {
-        reportData.push({ ID: value.ID, NameOrIdValue: value.NameOrIdValue, MandatoryCount: 0, NonMandatoryCount: 0, Count: 0 });
+        reportData.push({ ID: value.ID, NameOrIdValue: value.NameOrIdValue, MandatoryCount: 0, NonMandatoryCount: 0, Count: 0});
       } else {
         let foundTrn = false;
         reportData.forEach(async (worker, key) => {
@@ -139,7 +140,7 @@ const createExpireExpiringData = async (trainingData, reportData) => {
           }
         });
         if (!foundTrn) {
-          reportData.push({ ID: value.ID, NameOrIdValue: value.NameOrIdValue, MandatoryCount: 0, NonMandatoryCount: 0, Count: 0 });
+          reportData.push({ ID: value.ID, NameOrIdValue: value.NameOrIdValue, MandatoryCount: 0, NonMandatoryCount: 0, Count: 0});
         }
       }
     });
@@ -155,14 +156,40 @@ const createExpireExpiringData = async (trainingData, reportData) => {
 const getTrainingReportData = async establishmentId => {
   expiredWorkerTrainings = [];
   expiringWorkerTrainings = [];
+  missingMandatoryTrainingRecords = [];
   const trainingData = await getTrainingData(establishmentId);
   await createExpireExpiringData(trainingData, expiredWorkerTrainings);
   await createExpireExpiringData(trainingData, expiringWorkerTrainings);
+  const allWorkers = await models.worker.findAll({
+    attributes: ['id', 'uid', 'NameOrIdValue'],
+    where:{
+      establishmentFk: establishmentId,
+      archived: false
+    },
+    include: [
+      {
+        model: models.job,
+        as: 'mainJob',
+        attributes: ['id', 'title']
+      }
+    ]
+  });
+  if(allWorkers && allWorkers.length > 0){
+    for(let i = 0; i < allWorkers.length; i++){
+      const allTrainingRecords = await Training.fetch(establishmentId, allWorkers[i].uid, null);
+      if(allTrainingRecords){
+        allWorkers[i].missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, allWorkers[i], allTrainingRecords.training);
+      }
+    }
+  }
+  missingMandatoryTrainingRecords = allWorkers;
   trainingCounts.expiredTrainingCount = 0;
   trainingCounts.expiringTrainingCount = 0;
   trainingCounts.upToDateTrainingCount = 0;
   trainingCounts.expiredMandatoryTrainingCount = 0;
   trainingCounts.expiredNonMandatoryTrainingCount = 0;
+  trainingCounts.expiringMandatoryTrainingCount = 0;
+  trainingCounts.expiringNonMandatoryTrainingCount = 0;
   trainingCounts.upToDateMandatoryTrainingCount = 0;
   trainingCounts.upToDateNonMandatoryTrainingCount = 0;
   if (expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0) {
@@ -265,7 +292,7 @@ const styleLookup = {
   BLACK: {
     OVRREGULAR: {
       A: 2,
-      B: 6,
+      B: 2,
       C: 2,
       D: 2,
       E: 2,
@@ -280,7 +307,7 @@ const styleLookup = {
     },
     OVRLAST: {
       A: 2,
-      B: 16,
+      B: 2,
       C: 2,
       D: 2,
       E: 2,
@@ -299,10 +326,10 @@ const styleLookup = {
       C: 8,
       D: 8,
       E: 55,
-      F: 6,
+      //F: 7,
+      F: 8,
       G: 8,
-      H: 8,
-      I: 6,
+      H: 6,
     },
     TRNLAST: {
       A: 9,
@@ -310,18 +337,18 @@ const styleLookup = {
       C: 9,
       D: 9,
       E: 56,
-      F: 7,
+      //F: 13,
+      F: 9,
       G: 9,
-      H: 9,
-      I: 7,
+      H: 7,
     },
   },
   RED: {
     OVRREGULAR: {
       A: 2,
-      B: 6,
-      C: 7,
-      D: 67,
+      B: 2,
+      C: 2,
+      D: 2,
       E: 9,
       F: 67,
       G: 9,
@@ -333,9 +360,9 @@ const styleLookup = {
     },
     OVRLAST: {
       A: 2,
-      B: 16,
-      C: 17,
-      D: 67,
+      B: 2,
+      C: 2,
+      D: 2,
       E: 19,
       F: 67,
       G: 19,
@@ -351,10 +378,10 @@ const styleLookup = {
       C: 10,
       D: 10,
       E: 10,
-      F: 6,
+      //F: 12,
+      F: 10,
       G: 10,
-      H: 10,
-      I: 12,
+      H: 12,
     },
     TRNLAST: {
       A: 11,
@@ -362,10 +389,10 @@ const styleLookup = {
       C: 11,
       D: 11,
       E: 11,
-      F: 7,
+      //F: 13,
+      F: 11,
       G: 11,
-      H: 11,
-      I: 13,
+      H: 13,
     },
   },
 };
@@ -429,73 +456,170 @@ const updateOverviewSheet = (
     sharedStringsCount
   );
   // put total expired mandatory training count
-  putString(overviewSheet.querySelector("c[r='D6']"), trainingCounts.expiredMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='B3']"), trainingCounts.expiredMandatoryTrainingCount);
   // put total expired non mandatory training count
-  putString(overviewSheet.querySelector("c[r='E6']"), trainingCounts.expiredNonMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='C3']"), trainingCounts.expiredNonMandatoryTrainingCount);
   // put total expired training count
-  putString(overviewSheet.querySelector("c[r='F6']"), trainingCounts.expiredTrainingCount);
+  putString(overviewSheet.querySelector("c[r='D3']"), trainingCounts.expiredTrainingCount);
   // put total up-to-date mandatory training count
-  putString(overviewSheet.querySelector("c[r='D5']"), trainingCounts.upToDateMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='B2']"), trainingCounts.upToDateMandatoryTrainingCount);
   // put total up-to-date non mandatory training count
-  putString(overviewSheet.querySelector("c[r='E5']"), trainingCounts.upToDateNonMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='C2']"), trainingCounts.upToDateNonMandatoryTrainingCount);
   // put total up-to-date training count
-  putString(overviewSheet.querySelector("c[r='F5']"), trainingCounts.upToDateTrainingCount);
-
-  putString(
-    overviewSheet.querySelector("c[r='I5']"),
-    `You have ${trainingCounts.expiredTrainingCount} expired training records`
-  );
-  overviewSheet.querySelector("c[r='I5']").setAttribute('s', 32);
+  putString(overviewSheet.querySelector("c[r='D2']"), trainingCounts.upToDateTrainingCount);
 
   // put total expiring soon mandatory training count
-  putString(overviewSheet.querySelector("c[r='D7']"), trainingCounts.expiringMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='B4']"), trainingCounts.expiringMandatoryTrainingCount);
   // put total expiring soon non mandatory training count
-  putString(overviewSheet.querySelector("c[r='E7']"), trainingCounts.expiringNonMandatoryTrainingCount);
+  putString(overviewSheet.querySelector("c[r='C4']"), trainingCounts.expiringNonMandatoryTrainingCount);
   // put total expiring soon training count
-  putString(overviewSheet.querySelector("c[r='F7']"), trainingCounts.expiringTrainingCount);
-  putString(
-    overviewSheet.querySelector("c[r='I7']"),
-    `You have ${trainingCounts.expiringTrainingCount} records expiring soon`
-  );
-  overviewSheet.querySelector("c[r='I7']").setAttribute('s', 33);
+  putString(overviewSheet.querySelector("c[r='D4']"), trainingCounts.expiringTrainingCount);
 
   // put total expiring soon/expired mandatory training count
   putString(
-    overviewSheet.querySelector("c[r='D8']"),
+    overviewSheet.querySelector("c[r='B5']"),
     `${trainingCounts.expiredMandatoryTrainingCount + trainingCounts.expiringMandatoryTrainingCount + trainingCounts.upToDateMandatoryTrainingCount}`
   );
 
   // put total expiring soon/expired non mandatory training count
   putString(
-    overviewSheet.querySelector("c[r='E8']"),
+    overviewSheet.querySelector("c[r='C5']"),
     `${trainingCounts.expiredNonMandatoryTrainingCount + trainingCounts.expiringNonMandatoryTrainingCount + trainingCounts.upToDateNonMandatoryTrainingCount}`
   );
 
   // put total expiring soon/expired training count
   putString(
-    overviewSheet.querySelector("c[r='F8']"),
+    overviewSheet.querySelector("c[r='D5']"),
     `${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount + trainingCounts.upToDateTrainingCount}`
   );
 
-  putString(
-    overviewSheet.querySelector("c[r='I9']"),
-    `You have ${expiredOrExpiringWorkerRecords.length} staff members with expired or`
-  );
-  overviewSheet.querySelector("c[r='I9']").setAttribute('s', 34);
+  //insert total sum records in all three tables data
+  let expiringMandatoryCounts = 0;
+  let expiringNonMandatoryCounts = 0;
+  let expiringTotalCounts = 0;
+  for(let i = 0; i < expiringWorkerTrainings.length; i++){
+    expiringMandatoryCounts = expiringMandatoryCounts + expiringWorkerTrainings[i].MandatoryCount;
+    expiringNonMandatoryCounts = expiringNonMandatoryCounts + expiringWorkerTrainings[i].NonMandatoryCount;
+    expiringTotalCounts = expiringTotalCounts + expiringWorkerTrainings[i].Count;
+  }
+  expiringWorkerTrainings.push({ ID: -1, NameOrIdValue: 'Total', MandatoryCount: expiringMandatoryCounts, NonMandatoryCount: expiringNonMandatoryCounts, Count: expiringTotalCounts});
 
-  putString(overviewSheet.querySelector("c[r='I10']"), `expiring training records`);
-  overviewSheet.querySelector("c[r='I10']").setAttribute('s', 35);
+  let expiredMandatoryCounts = 0;
+  let expiredNonMandatoryCounts = 0;
+  let expiredTotalCounts = 0;
+  for(let i = 0; i < expiredWorkerTrainings.length; i++){
+    expiredMandatoryCounts = expiredMandatoryCounts + expiredWorkerTrainings[i].MandatoryCount;
+    expiredNonMandatoryCounts = expiredNonMandatoryCounts + expiredWorkerTrainings[i].NonMandatoryCount;
+    expiredTotalCounts = expiredTotalCounts + expiredWorkerTrainings[i].Count;
+  }
+  expiredWorkerTrainings.push({ ID: -1, NameOrIdValue: 'Total', MandatoryCount: expiredMandatoryCounts, NonMandatoryCount: expiredNonMandatoryCounts, Count: expiredTotalCounts});
+
+  let totalMissingMandatoryTrainingCount = 0;
+  for(let i = 0; i < missingMandatoryTrainingRecords.length; i++){
+    missingMandatoryTrainingRecords[i].count = 'Non applicable';
+    totalMissingMandatoryTrainingCount = totalMissingMandatoryTrainingCount + missingMandatoryTrainingRecords[i].missingMandatoryTrainingCount;
+  }
+  missingMandatoryTrainingRecords.push({ ID: -1, NameOrIdValue: 'Total', missingMandatoryTrainingCount: totalMissingMandatoryTrainingCount, count: 0});
+
+  //put all missing mandatory traing details
+  let currentRowMandatory = overviewSheet.querySelector("row[r='17']");
+  let rowIndexMandatory = 17;
+  let updateMandatoryRowIndex = rowIndexMandatory + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
+  for (; rowIndexMandatory >= 14; rowIndexMandatory--, updateMandatoryRowIndex--) {
+
+    currentRowMandatory.querySelectorAll('c').forEach(elem => {
+      elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + updateMandatoryRowIndex);
+    });
+
+    currentRowMandatory.setAttribute('r', updateMandatoryRowIndex);
+
+    while (currentRowMandatory.previousSibling !== null) {
+      currentRowMandatory = currentRowMandatory.previousSibling;
+
+      if (currentRowMandatory.nodeName === 'row') {
+        break;
+      }
+    }
+  }
+
+  let bottomMandatoryRowIndex = 17 + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
+  const templateRowMissing = overviewSheet.querySelector(`row[r='${bottomMandatoryRowIndex}']`);
+  let currentRowMissing = templateRowMissing;
+  let rowIndexMissing = bottomMandatoryRowIndex + 1;
+  if (missingMandatoryTrainingRecords.length > 0) {
+    for (let i = 0; i < missingMandatoryTrainingRecords.length - 1; i++) {
+      const tempRowBottomMissing = templateRowMissing.cloneNode(true);
+      tempRowBottomMissing.setAttribute('r', rowIndexMissing);
+
+      tempRowBottomMissing.querySelectorAll('c').forEach(elem => {
+        elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndexMissing);
+      });
+
+      templateRowMissing.parentNode.insertBefore(tempRowBottomMissing, currentRowMissing.nextSibling);
+      currentRowMissing = tempRowBottomMissing;
+      rowIndexMissing++;
+    }
+
+    currentRowMissing = templateRowMissing;
+  }
+
+  // fix the dimensions tag value
+  const dimension = overviewSheet.querySelector('dimension');
+  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndexMissing);
+
+  // update the cell values
+  for (let row = 0; row < missingMandatoryTrainingRecords.length; row++) {
+    debuglog('updating training sheet', row);
+    const rowType = row === missingMandatoryTrainingRecords.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
+    let nextSibling = {};
+
+    for (let column = 0; column < 4; column++) {
+      const columnText = String.fromCharCode(column + 65);
+
+      const cellToChange =
+        typeof nextSibling.querySelector === 'function'
+          ? nextSibling
+          : currentRowMissing.querySelector(`c[r='${columnText}${row + bottomMandatoryRowIndex}']`);
+      switch (columnText) {
+        case 'A':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              missingMandatoryTrainingRecords[row].NameOrIdValue,
+              columnText,
+              rowType
+            );
+          }
+          break;
+        case 'B':
+          {
+            basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].missingMandatoryTrainingCount, columnText, rowType);
+          }
+          break;
+        case 'C':
+          {
+            basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].count, columnText, rowType);
+          }
+          break;
+        case 'D':
+          {
+            basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].missingMandatoryTrainingCount, columnText, rowType);
+          }
+          break;
+      }
+
+      nextSibling = cellToChange ? cellToChange.nextSibling : {};
+    }
+
+    currentRowMissing = currentRowMissing.nextSibling;
+  }
 
   //put all expiring traing details
-  let currentRowBottom = overviewSheet.querySelector("row[r='18']");
-  let rowIndexBottom = 18;
+  let currentRowBottom = overviewSheet.querySelector("row[r='13']");
+  let rowIndexBottom = 13;
   let updateRowIndex = rowIndexBottom + expiredWorkerTrainings.length - 1;
-  for (; rowIndexBottom >= 14; rowIndexBottom--, updateRowIndex--) {
-    if (rowIndexBottom === 18) {
-      // fix the dimensions tag value
-      const dimension = overviewSheet.querySelector('dimension');
-      dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + updateRowIndex);
-    }
+  for (; rowIndexBottom >= 10; rowIndexBottom--, updateRowIndex--) {
 
     currentRowBottom.querySelectorAll('c').forEach(elem => {
       elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + updateRowIndex);
@@ -512,7 +636,7 @@ const updateOverviewSheet = (
     }
   }
 
-  let bottomRowIndex = 18 + expiredWorkerTrainings.length - 1;
+  let bottomRowIndex = 13 + expiredWorkerTrainings.length - 1;
   const templateRowExpiring = overviewSheet.querySelector(`row[r='${bottomRowIndex}']`);
   let currentRowExpiring = templateRowExpiring;
   let rowIndexExpiring = bottomRowIndex + 1;
@@ -533,17 +657,13 @@ const updateOverviewSheet = (
     currentRowExpiring = templateRowExpiring;
   }
 
-  // fix the dimensions tag value
-  const dimension = overviewSheet.querySelector('dimension');
-  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndexExpiring);
-
   // update the cell values
   for (let row = 0; row < expiringWorkerTrainings.length; row++) {
     debuglog('updating training sheet', row);
     const rowType = row === expiringWorkerTrainings.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
     let nextSibling = {};
 
-    for (let column = 0; column < 8; column++) {
+    for (let column = 0; column < 4; column++) {
       const columnText = String.fromCharCode(column + 65);
 
       const cellToChange =
@@ -551,7 +671,7 @@ const updateOverviewSheet = (
           ? nextSibling
           : currentRowExpiring.querySelector(`c[r='${columnText}${row + bottomRowIndex}']`);
       switch (columnText) {
-        case 'C':
+        case 'A':
           {
             basicValidationUpdate(
               putString,
@@ -562,17 +682,17 @@ const updateOverviewSheet = (
             );
           }
           break;
-        case 'D':
+        case 'B':
           {
             basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].MandatoryCount, columnText, rowType);
           }
           break;
-        case 'E':
+        case 'C':
           {
             basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
           }
           break;
-        case 'F':
+        case 'D':
           {
             basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].Count, columnText, rowType);
           }
@@ -587,9 +707,9 @@ const updateOverviewSheet = (
 
   //put all expired training details
   // clone the row the apropriate number of times
-  const templateRow = overviewSheet.querySelector("row[r='13']");
+  const templateRow = overviewSheet.querySelector("row[r='9']");
   let currentRow = templateRow;
-  let rowIndex = 14;
+  let rowIndex = 10;
   if (expiredWorkerTrainings.length > 0) {
     for (let i = 0; i < expiredWorkerTrainings.length - 1; i++) {
       const tempRow = templateRow.cloneNode(true);
@@ -619,9 +739,9 @@ const updateOverviewSheet = (
       const cellToChange =
         typeof nextSibling.querySelector === 'function'
           ? nextSibling
-          : currentRow.querySelector(`c[r='${columnText}${row + 13}']`);
+          : currentRow.querySelector(`c[r='${columnText}${row + 9}']`);
       switch (columnText) {
-        case 'C':
+        case 'A':
           {
             basicValidationUpdate(
               putString,
@@ -632,17 +752,17 @@ const updateOverviewSheet = (
             );
           }
           break;
-        case 'D':
+        case 'B':
           {
             basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].MandatoryCount, columnText, rowType);
           }
           break;
-        case 'E':
+        case 'C':
           {
             basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
           }
           break;
-        case 'F':
+        case 'D':
           {
             basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].Count, columnText, rowType);
           }
@@ -775,29 +895,23 @@ const updateTrainingsSheet = (
           }
           break;
 
-        case 'F':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].MandatoryTraining, columnText, rowType);
-          }
-          break;
+          case 'F':
+            {
+              basicValidationUpdate(putString, cellToChange, trainingArray[row].ExpiredOn, columnText, rowType);
+            }
+            break;
 
-        case 'G':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].ExpiredOn, columnText, rowType);
-          }
-          break;
+          case 'G':
+            {
+              basicValidationUpdate(putString, cellToChange, trainingArray[row].Completed, columnText, rowType);
+            }
+            break;
 
-        case 'H':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].Completed, columnText, rowType);
-          }
-          break;
-
-        case 'I':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].Accredited, columnText, rowType);
-          }
-          break;
+          case 'H':
+            {
+              basicValidationUpdate(putString, cellToChange, trainingArray[row].Accredited, columnText, rowType);
+            }
+            break
       }
 
       nextSibling = cellToChange ? cellToChange.nextSibling : {};
