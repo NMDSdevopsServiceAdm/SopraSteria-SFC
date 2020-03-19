@@ -69,3 +69,11 @@
     }
   }
 }
+.govuk-summary-list--wide-key {
+  .govuk-summary-list__key {
+    width: 40%;
+  }
+  .govuk-summary-list__value {
+    width: 60%;
+  }
+}

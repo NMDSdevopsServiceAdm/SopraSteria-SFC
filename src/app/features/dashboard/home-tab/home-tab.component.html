@@ -24,7 +24,6 @@
         </h2>
 
         <p>
-
           Create staff records for your workplace by providing current work information, personal details, employment
           and qualifications and training information.
         </p>
@@ -76,7 +75,7 @@
           </ng-template>
         </li>
         <li *ngIf="canViewDataPermissionsLink">
-          <a (click)="setDataPermissions($event)" href="#">Data permissions</a>
+          <a (click)="setDataPermissions($event)" href="#">Set data permissions</a>
         </li>
         <li *ngIf="canLinkToParent">
           <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">

@@ -30,7 +30,7 @@ export class SetDataPermissionDialogComponent extends DialogComponent implements
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
-    public dialog: Dialog<SetDataPermissionDialogComponent>
+    public dialog: Dialog<SetDataPermissionDialogComponent>,
   ) {
     super(data, dialog);
   }
@@ -80,7 +80,8 @@ export class SetDataPermissionDialogComponent extends DialogComponent implements
     this.submitted = true;
   }
 
-  close(confirm: boolean) {
+  close(event: Event, confirm: boolean) {
+    event.preventDefault();
     this.dialog.close(confirm);
   }
 
@@ -94,13 +95,13 @@ export class SetDataPermissionDialogComponent extends DialogComponent implements
         data => {
           if (data) {
             this.workplace.dataPermissions = data.dataPermissions;
-            this.close(true);
+            this.close(event, true);
           }
         },
         error => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
-      )
+        },
+      ),
     );
   }
 
