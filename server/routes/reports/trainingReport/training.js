@@ -18,7 +18,7 @@ const s3 = new AWS.S3({
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
-const Training = require('../../../models/classes/Training').Training;
+const Training = require('../../../models/classes/training').Training;
 const { getTrainingData, getJobName, getMndatoryTrainingDetails } = rfr('server/data/trainingReport');
 const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('server/data/trainingReportLock');
 
