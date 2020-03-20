@@ -295,6 +295,10 @@ const getWorkersReportData = async establishmentId => {
       }
     }
 
+    if(value.ContractValue === 'Agency' || value.ContractValue === 'Pool/Bank'){
+      value.DaysSickValue = 'N/A';
+    }
+
     updateProps.forEach(prop => {
       if (value[prop] === null) {
         value[prop] = 'Missing';
