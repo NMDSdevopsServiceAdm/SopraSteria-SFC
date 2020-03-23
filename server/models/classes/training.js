@@ -851,6 +851,7 @@ class Training extends EntityValidator {
           workerRecords[i].expiredTrainingCount = 0;
           workerRecords[i].expiringTrainingCount = 0;
           workerRecords[i].missingMandatoryTrainingCount = 0;
+          let uptoDateCount = 0;
           if(allTrainingRecords && allTrainingRecords.training.length > 0){
             //calculate all expired and expiring soon training count
             let trainings = allTrainingRecords.training;
@@ -862,7 +863,11 @@ class Training extends EntityValidator {
                   workerRecords[i].expiredTrainingCount++;
                 }else if(daysDiffrence >= 0 && daysDiffrence <= 90){
                   workerRecords[i].expiringTrainingCount++;
+                }else{
+                  uptoDateCount++;
                 }
+              }else{
+                uptoDateCount++;
               }
             }
           }else{
@@ -873,7 +878,11 @@ class Training extends EntityValidator {
           if(categoryId === null){
             workerRecords[i].missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, workerRecords[i], allTrainingRecords.training);
           }
-          workerRecords[i].trainingCount = workerRecords[i].expiredTrainingCount + workerRecords[i].expiringTrainingCount + workerRecords[i].missingMandatoryTrainingCount;
+          if(workerRecords[i].expiredTrainingCount === 0 && workerRecords[i].expiringTrainingCount === 0 && workerRecords[i].missingMandatoryTrainingCount === 0){
+            workerRecords[i].trainingCount = uptoDateCount
+          }else{
+            workerRecords[i].trainingCount = workerRecords[i].expiredTrainingCount + workerRecords[i].expiringTrainingCount + workerRecords[i].missingMandatoryTrainingCount;
+          }
         }
         return workerRecords;
       }

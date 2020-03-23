@@ -27,7 +27,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
     @Inject(DIALOG_DATA) public data,
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: FormBuilder,
-    public dialog: Dialog<RejectRequestDialogComponent>
+    public dialog: Dialog<RejectRequestDialogComponent>,
   ) {
     super(data, dialog);
   }
@@ -51,7 +51,8 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
     });
   }
 
-  close(returnToClose: any) {
+  close(event: Event, returnToClose: any) {
+    event.preventDefault();
     this.dialog.close(returnToClose);
   }
 
@@ -108,7 +109,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
 
   public rejectNotificationRequest() {
     if (this.form.valid) {
-      this.close({ rejectionReason: this.form.value.reason });
+      this.close(event, { rejectionReason: this.form.value.reason });
     }
   }
 
