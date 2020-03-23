@@ -16,7 +16,7 @@ export class OwnershipChangeMessageDialogComponent extends DialogComponent imple
   constructor(
     @Inject(DIALOG_DATA) public data,
     private establishmentService: EstablishmentService,
-    public dialog: Dialog<OwnershipChangeMessageDialogComponent>
+    public dialog: Dialog<OwnershipChangeMessageDialogComponent>,
   ) {
     super(data, dialog);
   }
@@ -25,13 +25,14 @@ export class OwnershipChangeMessageDialogComponent extends DialogComponent imple
     this.workplace = this.data;
   }
 
-  close(returnToClose: any) {
+  close(event: Event, returnToClose: any) {
+    event.preventDefault();
     this.dialog.close(returnToClose);
   }
 
   public ownershipChangeMessage($event: Event) {
     $event.preventDefault();
-    this.close({ closeFrom: 'ownership-change' });
+    this.close(event, { closeFrom: 'ownership-change' });
   }
 
   public ngOnDestroy(): void {
