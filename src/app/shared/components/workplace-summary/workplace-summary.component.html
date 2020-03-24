@@ -261,10 +261,10 @@
         <ng-template #vacancies>
           <ng-container *ngIf="isArray(workplace.vacancies)">
             <ul class="govuk-list govuk-!-margin-bottom-0">
-              <li *ngFor="let vacancy of workplace.vacancies">M {{ vacancy.total }} {{ vacancy.title }}</li>
+              <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
             </ul>
           </ng-container>
-          <ng-container *ngIf="!isArray(workplace.vacancies)"> A {{ workplace.vacancies }} </ng-container>
+          <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
         </ng-template>
       </app-summary-record-value>
     </dd>
