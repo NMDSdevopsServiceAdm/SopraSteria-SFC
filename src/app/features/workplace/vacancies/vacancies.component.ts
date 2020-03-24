@@ -208,12 +208,11 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         data => this._onSuccess(data),
         error => this.onError(error),
       ),
-
     );
   }
 
   protected onSuccess(): void {
-    if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies)) {
+    if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies) && !this.return) {
       this.router.navigate(['/workplace', this.establishment.uid, 'confirm-vacancies']);
       this.submitAction.action = null;
     } else {
