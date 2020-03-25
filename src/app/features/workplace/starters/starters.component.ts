@@ -223,7 +223,7 @@ export class StartersComponent extends Question {
   }
 
   protected onSuccess(): void {
-    if (this.establishment.starters && Array.isArray(this.establishment.starters)) {
+    if (this.establishment.starters && Array.isArray(this.establishment.starters) && !this.return) {
       this.router.navigate(['/workplace', this.establishment.uid, 'confirm-starters']);
       this.submitAction.action = null;
     } else {

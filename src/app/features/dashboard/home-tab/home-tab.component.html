@@ -17,11 +17,11 @@
     </ng-container>
     <div *ngIf="workplace">
       <div *ngIf="canAddWorker">
-        <h2>
+        <span class="govuk-!-font-size-24">
           <a href="#" (click)="selectStaffTab($event)">
             Add a staff record
           </a>
-        </h2>
+        </span>
 
         <p>
           Create staff records for your workplace by providing current work information, personal details, employment
@@ -29,22 +29,22 @@
         </p>
       </div>
       <div *ngIf="canViewReports">
-        <h2>
+        <span class="govuk-!-font-size-24">
           <a [routerLink]="['/reports']">
             View reports
           </a>
-        </h2>
+        </span>
         <p>
           View your Workforce Development Fund report to check whether you’re eligible to claim funding towards training
           and qualifications.
         </p>
       </div>
       <div *ngIf="canBulkUpload">
-        <h2>
+        <span class="govuk-!-font-size-24">
           <a [routerLink]="['/bulk-upload']" (click)="setReturn()">
             Bulk upload
           </a>
-        </h2>
+        </span>
         <p>
           Bulk upload is used to edit large quantities of staff, workplace and training information.
         </p>

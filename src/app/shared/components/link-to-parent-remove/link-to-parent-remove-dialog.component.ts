@@ -28,7 +28,7 @@ export class LinkToParentRemoveDialogComponent extends DialogComponent implement
     private alertService: AlertService,
     private permissionsService: PermissionsService,
     private ref: ChangeDetectorRef,
-    public dialog: Dialog<LinkToParentRemoveDialogComponent>
+    public dialog: Dialog<LinkToParentRemoveDialogComponent>,
   ) {
     super(data, dialog);
   }
@@ -56,7 +56,8 @@ export class LinkToParentRemoveDialogComponent extends DialogComponent implement
     ];
   }
 
-  close(returnToClose: any) {
+  close(event: Event, returnToClose: any) {
+    event.preventDefault();
     this.dialog.close(returnToClose);
   }
   //sned request to backend for delink to parent
@@ -67,12 +68,12 @@ export class LinkToParentRemoveDialogComponent extends DialogComponent implement
         .removeParentAssociation(this.workplace.uid, { parentWorkplaceUId: this.workplace.parentUid })
         .subscribe(
           data => {
-            this.close({ closeFrom: 'remove-link' });
+            this.close(event, { closeFrom: 'remove-link' });
           },
           error => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          }
-        )
+          },
+        ),
     );
   }
 
