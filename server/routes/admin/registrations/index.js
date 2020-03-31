@@ -1,8 +1,11 @@
 // default route for admin/registrations
 const express = require('express');
-const router = express.Router();
+const moment = require('moment-timezone');
+
 const models = require('../../../models');
-const moment = require('moment');
+const config = require('../../../config/config');
+
+const router = express.Router();
 
 router.route('/').get(async (req, res) => {
   try {
@@ -117,7 +120,7 @@ router.route('/').get(async (req, res) => {
       });
 
       for(let i = 0; i < arrToReturn.length; i++){
-        arrToReturn[i].created = moment(arrToReturn[i].created).format('D/M/YYYY h:mma');
+        arrToReturn[i].created = moment.utc(arrToReturn[i].created).tz(config.get('timezone')).format('D/M/YYYY h:mma');
         //get parent establishment details
         if(!arrToReturn[i].email){
           let fetchQuery = {
@@ -134,12 +137,12 @@ router.route('/').get(async (req, res) => {
       res.status(200).send(arrToReturn);
     }else if(loginReturnArr && !workplaceReturnArr){
       loginReturnArr.map(registration => {
-        registration.created = moment(registration.created).format('D/M/YYYY h:mma');
+        registration.created = moment.utc(registration.created).tz(config.get('timezone')).format('D/M/YYYY h:mma');
       });
       res.status(200).send(loginReturnArr);
     }else if(!loginReturnArr && workplaceReturnArr){
       workplaceReturnArr.map(registration => {
-        registration.created = moment(registration.created).format('D/M/YYYY h:mma');
+        registration.created = moment.utc(registration.created).tz(config.get('timezone')).format('D/M/YYYY h:mma');
       });
       res.status(200).send(workplaceReturnArr);
     }else{
