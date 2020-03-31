@@ -438,7 +438,12 @@ const config = convict({
       format: String,
       default: 'SensitiveSessions'
     }
-}
+  },
+  timezone: {
+    doc: 'What timezone is the service running in?',
+    format: String,
+    default: 'Europe/London'
+  }
 });
 
 // Load environment dependent configuration
