@@ -163,7 +163,7 @@ class PropertyManager {
         allProperties.forEach(thisPropertyType => {
             const thisProperty = this._properties[thisPropertyType];
 
-            if (thisProperty.modified || buChanged) {
+            if (thisProperty.modified || (buChanged && thisProperty.property !== null)) {
                 const { properties:saveProperties, audit: propertyAudit, additionalModels} = thisProperty.save(username);
 
                 // cache the set of properties that have been modified
