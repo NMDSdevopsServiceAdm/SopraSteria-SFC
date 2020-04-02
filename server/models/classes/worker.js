@@ -651,8 +651,9 @@ class Worker extends EntityValidator {
           //  an external transaction
           const thisTransaction = externalTransaction || t;
 
+          const buChanged = this._status === 'NOCHANGE';
           // now append the extendable properties
-          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
+          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {},buChanged);
 
           // note - if the worker was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {

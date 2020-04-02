@@ -2667,7 +2667,7 @@ class Worker {
     status = !this._validateDisplayId() ? false : status;
     status = !this._validateStatus() ? false : status;
 
-    // only continue to process validation, if the status is not UNCHECKED or DELETED
+    // only continue to process validation, if the status is not UNCHECKED, DELETED OR UNCHANGED
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateContractType() ? false : status;
       status = !this._validateNINumber() ? false : status;
