@@ -910,12 +910,13 @@ const updateEstablishmentsSheet = (
         case 'K': {
           putString(
             cellToChange,
-            establishmentArray[row].LastUpdatedDate
+            establishmentArray[row].updated
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
 
         case 'L': {
+          console.log(establishmentArray[row]);
           putString(
             cellToChange,
             establishmentArray[row].NumberOfStaffValue
