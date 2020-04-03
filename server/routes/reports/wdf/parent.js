@@ -916,7 +916,6 @@ const updateEstablishmentsSheet = (
         } break;
 
         case 'L': {
-          console.log(establishmentArray[row]);
           putString(
             cellToChange,
             establishmentArray[row].NumberOfStaffValue
