@@ -910,7 +910,7 @@ const updateEstablishmentsSheet = (
         case 'K': {
           putString(
             cellToChange,
-            establishmentArray[row].LastUpdatedDate
+            establishmentArray[row].updated
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
