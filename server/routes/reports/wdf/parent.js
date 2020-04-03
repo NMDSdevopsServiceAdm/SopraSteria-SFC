@@ -65,7 +65,12 @@ const putStringTemplate = (
   value
 ) => {
   let vTag = element.children('v').first();
-  const hasVTag = vTag !== null;
+  let hasVTag = true;
+  if (element.children('v').length === 0) {
+    hasVTag = false;
+  }
+
+  console.log(hasVTag);
   const textValue = String(value);
   const isNumber = isNumberRegex.test(textValue);
 
@@ -164,8 +169,6 @@ const getEstablishmentReportData = async establishmentId => {
       value.SubsidiarySharingPermissions = 'None';
     }
 
-    value.EstablishmentDataFullyCompleted = 'Yes';
-
     value.CurrentWdfEligibilityStatus = value.CurrentWdfEligibilityStatus === null ? 'Not Eligible' : 'Eligible';
 
     if (value.DateEligibilityAchieved === null) {
@@ -230,6 +233,8 @@ const getEstablishmentReportData = async establishmentId => {
       (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
         ? '0.0%'
         : `${parseFloat(+value.CompletedWorkerRecords / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
+
+    value.EstablishmentDataFullyCompleted = 'Yes';
 
     propsNeededToComplete.forEach(prop => {
       if (value[prop] === null || value[prop] === '' || value[prop] === 'Missing') {
@@ -678,6 +683,7 @@ const updateOverviewSheet = (
         } break;
 
         case 'E': {
+          console.log(reportData.establishments[row].DateEligibilityAchieved);
           putString(
             cellToChange,
             reportData.establishments[row].DateEligibilityAchieved
