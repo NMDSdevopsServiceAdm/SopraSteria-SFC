@@ -70,7 +70,6 @@ const putStringTemplate = (
     hasVTag = false;
   }
 
-  console.log(hasVTag);
   const textValue = String(value);
   const isNumber = isNumberRegex.test(textValue);
 
@@ -683,7 +682,6 @@ const updateOverviewSheet = (
         } break;
 
         case 'E': {
-          console.log(reportData.establishments[row].DateEligibilityAchieved);
           putString(
             cellToChange,
             reportData.establishments[row].DateEligibilityAchieved
