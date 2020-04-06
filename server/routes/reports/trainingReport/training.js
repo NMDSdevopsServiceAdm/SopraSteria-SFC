@@ -650,14 +650,11 @@ const updateOverviewSheet = (
       const tempRowBottom = templateRowExpiring.clone(true);
       tempRowBottom.attr('r', rowIndexExpiring);
 
-      tempRowBottomAll('c').forEach(elem => {
-        elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndexExpiring);
-      });
       tempRowBottom.children('c').each((index, element) => {
-        overviewSheet(element).attr('r', String(overviewSheet(element).attr('r')).replace(/\d+$/, '') + rowIndex);
+        overviewSheet(element).attr('r', String(overviewSheet(element).attr('r')).replace(/\d+$/, '') + rowIndexExpiring);
       });
 
-      currentRowExpiring.after(templateRowExpiring);
+      currentRowExpiring.after(tempRowBottom);
       currentRowExpiring = tempRowBottom;
       rowIndexExpiring++;
     }
@@ -702,11 +699,9 @@ const updateOverviewSheet = (
           }
           break;
       }
-
-      nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
 
-    currentRowExpiring = currentRowExpiring.nextSibling;
+    currentRowExpiring = currentRowExpiring.next();
   }
 
   //put all expired training details
