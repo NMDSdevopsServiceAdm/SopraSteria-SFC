@@ -284,6 +284,7 @@ const getTrainingReportData = async establishmentId => {
     }
     expiredWorkerTrainings = expiredWorkerTrainings.filter(item => item.Count !==0);
     expiringWorkerTrainings = expiringWorkerTrainings.filter(item => item.Count !==0);
+    missingMandatoryTrainingRecords = missingMandatoryTrainingRecords.filter(item => item.missingMandatoryTrainingCount !==0);
     let expiredOrExpiringWorkerIds = new Set(expiredWorkerTrainings.map(d => d.ID));
     expiredOrExpiringWorkerRecords = [...expiredWorkerTrainings, ...expiringWorkerTrainings.filter(d => !expiredOrExpiringWorkerIds.has(d.ID))];
   }else{
@@ -527,7 +528,6 @@ const updateOverviewSheet = (
     totalMissingMandatoryTrainingCount = totalMissingMandatoryTrainingCount + missingMandatoryTrainingRecords[i].missingMandatoryTrainingCount;
   }
   missingMandatoryTrainingRecords.push({ ID: -1, NameOrIdValue: 'Total', missingMandatoryTrainingCount: totalMissingMandatoryTrainingCount, count: 0});
-
   //put all missing mandatory traing details
   let currentRowMandatory = overviewSheet("row[r='17']");
   let rowIndexMandatory = 17;
@@ -585,7 +585,7 @@ const updateOverviewSheet = (
 
     for (let column = 0; column < 4; column++) {
       const columnText = String.fromCharCode(column + 65);
-      const cellToChange = currentRowMissing.children(`c[r='${columnText}${bottomMandatoryRowIndex}']`);
+      const cellToChange = currentRowMissing.children(`c[r='${columnText}${bottomMandatoryRowIndex + row}']`);
       switch (columnText) {
         case 'A':
           {
