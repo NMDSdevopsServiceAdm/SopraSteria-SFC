@@ -132,7 +132,7 @@ const updateProps = 'JobName,Category,Title,Expires'.split(',');
  * Helper Function used to create expired/expiring traing data
  *
  * @param {Object} trainingData
- * @return {Object} All workers with traiing
+ * @return {Object} All workers with training
  */
 const createExpireExpiringData = async (trainingData) => {
   return trainingData.filter(
