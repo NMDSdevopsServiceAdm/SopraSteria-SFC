@@ -499,7 +499,6 @@ const updateOverviewSheet = (
     expiringTotalCounts = expiringTotalCounts + expiringWorkerTrainings[i].Count;
   }
   expiringWorkerTrainings.push({ ID: -1, NameOrIdValue: 'Total', MandatoryCount: expiringMandatoryCounts, NonMandatoryCount: expiringNonMandatoryCounts, Count: expiringTotalCounts});
-  console.log(expiringWorkerTrainings);
   let expiredMandatoryCounts = 0;
   let expiredNonMandatoryCounts = 0;
   let expiredTotalCounts = 0;
