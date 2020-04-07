@@ -13,6 +13,8 @@ const config = require('../../../../server/config/config');
 const models = require('../../../../server/models');
 const uuid = require('uuid');
 const AWS = require('aws-sdk');
+const cheerio = require('cheerio');
+
 const s3 = new AWS.S3({
   region: String(config.get('bulkupload.region')),
 });
@@ -54,13 +56,12 @@ let expiringWorkerTrainings = [];
 let missingMandatoryTrainingRecords = [];
 let expiredOrExpiringWorkerRecords = [];
 
-// XML DOM manipulation helper functions
-const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
-
-const parseXML = fileContent => new DOMParser().parseFromString(fileContent.toString('utf8'), 'application/xml');
-
-const serializeXML = dom =>
-  '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' + new XMLSerializer().serializeToString(dom);
+const parseXML = fileContent =>
+  cheerio.load(fileContent, {
+    xml: {
+      normalizeWhitespace: true,
+    }
+  });
 
 /**
  * Helper function to set a spreadsheet cell's value
@@ -73,31 +74,37 @@ const serializeXML = dom =>
  * @param {String} value
  */
 const putStringTemplate = (sheetDoc, stringsDoc, sst, sharedStringsUniqueCount, sharedStringsCount, element, value) => {
-  let vTag = element.querySelector('v');
-  const hasVTag = vTag !== null;
+  let vTag = element.children('v').first();
+  let hasVTag = true;
+  if (element.children('v').length === 0) {
+    hasVTag = false;
+  }
+
   const textValue = String(value);
   const isNumber = isNumberRegex.test(textValue);
 
   if (!hasVTag) {
-    vTag = sheetDoc.createElementNS(schema, 'v');
+    vTag = sheetDoc('<v></v>');
+    vTag.text(sharedStringsUniqueCount[0]);
 
-    element.appendChild(vTag);
+    element.append(vTag);
+  } else {
+    vTag.text(sharedStringsUniqueCount[0]);
   }
 
   if (isNumber) {
-    element.removeAttribute('t');
-    vTag.textContent = textValue;
+    element.attr('t', '');
+    vTag.text(textValue);
   } else {
-    element.setAttribute('t', 's');
+    element.attr('t', 's');
 
-    const si = stringsDoc.createElementNS(schema, 'si');
-    const t = stringsDoc.createElementNS(schema, 't');
+    const si = stringsDoc('<si></si>');
+    const t = stringsDoc('<t></t>');
+    t.text(textValue);
 
-    sst.appendChild(si);
-    si.appendChild(t);
+    sst.append(si);
+    si.append(t);
 
-    t.textContent = textValue;
-    vTag.textContent = sharedStringsUniqueCount[0];
     sharedStringsCount[0] += 1;
     sharedStringsUniqueCount[0] += 1;
   }
@@ -125,26 +132,23 @@ const updateProps = 'JobName,Category,Title,Expires'.split(',');
  * Helper Function used to create expired/expiring traing data
  *
  * @param {Object} trainingData
- * @param {Object} All customized expired/expiring training report data
+ * @return {Object} All workers with training
  */
-const createExpireExpiringData = async (trainingData, reportData) => {
-  if (trainingData.length && trainingData.length > 0) {
-    trainingData.forEach(async value => {
-      if (reportData.length === 0) {
-        reportData.push({ ID: value.ID, NameOrIdValue: value.NameOrIdValue, MandatoryCount: 0, NonMandatoryCount: 0, Count: 0});
-      } else {
-        let foundTrn = false;
-        reportData.forEach(async (worker, key) => {
-          if (worker.ID === value.ID) {
-            foundTrn = true;
-          }
-        });
-        if (!foundTrn) {
-          reportData.push({ ID: value.ID, NameOrIdValue: value.NameOrIdValue, MandatoryCount: 0, NonMandatoryCount: 0, Count: 0});
-        }
+const createExpireExpiringData = async (trainingData) => {
+  return trainingData.filter(
+    (trainingWorker, index, self) =>
+      self.findIndex(t => trainingWorker.ID === t.ID) === index
+    ).map(training => {
+      return {
+        ID: training.ID,
+        NameOrIdValue: training.NameOrIdValue,
+        MandatoryCount: 0,
+        NonMandatoryCount: 0,
+        Count: 0
       }
-    });
-  }
+    }
+  );
+
 };
 
 /**
@@ -154,12 +158,10 @@ const createExpireExpiringData = async (trainingData, reportData) => {
  * @return {Object} All customized training report data
  */
 const getTrainingReportData = async establishmentId => {
-  expiredWorkerTrainings = [];
-  expiringWorkerTrainings = [];
   missingMandatoryTrainingRecords = [];
   const trainingData = await getTrainingData(establishmentId);
-  await createExpireExpiringData(trainingData, expiredWorkerTrainings);
-  await createExpireExpiringData(trainingData, expiringWorkerTrainings);
+  expiredWorkerTrainings = await createExpireExpiringData(trainingData);
+  expiringWorkerTrainings = await createExpireExpiringData(trainingData);
   const allWorkers = await models.worker.findAll({
     attributes: ['id', 'uid', 'NameOrIdValue'],
     where:{
@@ -275,8 +277,10 @@ const getTrainingReportData = async establishmentId => {
         }
       });
     }
+
     expiredWorkerTrainings = expiredWorkerTrainings.filter(item => item.Count !==0);
     expiringWorkerTrainings = expiringWorkerTrainings.filter(item => item.Count !==0);
+    missingMandatoryTrainingRecords = missingMandatoryTrainingRecords.filter(item => item.missingMandatoryTrainingCount !==0);
     let expiredOrExpiringWorkerIds = new Set(expiredWorkerTrainings.map(d => d.ID));
     expiredOrExpiringWorkerRecords = [...expiredWorkerTrainings, ...expiringWorkerTrainings.filter(d => !expiredOrExpiringWorkerIds.has(d.ID))];
   }else{
@@ -405,7 +409,7 @@ const styleLookup = {
  * @param {Boolean} isRed
  */
 const setStyle = (cellToChange, columnText, rowType, isRed) => {
-  cellToChange.setAttribute('s', styleLookup[isRed ? 'RED' : 'BLACK'][rowType][columnText]);
+  cellToChange.attr('s', styleLookup[isRed ? 'RED' : 'BLACK'][rowType][columnText]);
 };
 /**
  * Helper function used to set column's font style according to column value
@@ -456,40 +460,40 @@ const updateOverviewSheet = (
     sharedStringsCount
   );
   // put total expired mandatory training count
-  putString(overviewSheet.querySelector("c[r='B3']"), trainingCounts.expiredMandatoryTrainingCount);
+  putString(overviewSheet("c[r='B3']"), trainingCounts.expiredMandatoryTrainingCount);
   // put total expired non mandatory training count
-  putString(overviewSheet.querySelector("c[r='C3']"), trainingCounts.expiredNonMandatoryTrainingCount);
+  putString(overviewSheet("c[r='C3']"), trainingCounts.expiredNonMandatoryTrainingCount);
   // put total expired training count
-  putString(overviewSheet.querySelector("c[r='D3']"), trainingCounts.expiredTrainingCount);
+  putString(overviewSheet("c[r='D3']"), trainingCounts.expiredTrainingCount);
   // put total up-to-date mandatory training count
-  putString(overviewSheet.querySelector("c[r='B2']"), trainingCounts.upToDateMandatoryTrainingCount);
+  putString(overviewSheet("c[r='B2']"), trainingCounts.upToDateMandatoryTrainingCount);
   // put total up-to-date non mandatory training count
-  putString(overviewSheet.querySelector("c[r='C2']"), trainingCounts.upToDateNonMandatoryTrainingCount);
+  putString(overviewSheet("c[r='C2']"), trainingCounts.upToDateNonMandatoryTrainingCount);
   // put total up-to-date training count
-  putString(overviewSheet.querySelector("c[r='D2']"), trainingCounts.upToDateTrainingCount);
+  putString(overviewSheet("c[r='D2']"), trainingCounts.upToDateTrainingCount);
 
   // put total expiring soon mandatory training count
-  putString(overviewSheet.querySelector("c[r='B4']"), trainingCounts.expiringMandatoryTrainingCount);
+  putString(overviewSheet("c[r='B4']"), trainingCounts.expiringMandatoryTrainingCount);
   // put total expiring soon non mandatory training count
-  putString(overviewSheet.querySelector("c[r='C4']"), trainingCounts.expiringNonMandatoryTrainingCount);
+  putString(overviewSheet("c[r='C4']"), trainingCounts.expiringNonMandatoryTrainingCount);
   // put total expiring soon training count
-  putString(overviewSheet.querySelector("c[r='D4']"), trainingCounts.expiringTrainingCount);
+  putString(overviewSheet("c[r='D4']"), trainingCounts.expiringTrainingCount);
 
   // put total expiring soon/expired mandatory training count
   putString(
-    overviewSheet.querySelector("c[r='B5']"),
+    overviewSheet("c[r='B5']"),
     `${trainingCounts.expiredMandatoryTrainingCount + trainingCounts.expiringMandatoryTrainingCount + trainingCounts.upToDateMandatoryTrainingCount}`
   );
 
   // put total expiring soon/expired non mandatory training count
   putString(
-    overviewSheet.querySelector("c[r='C5']"),
+    overviewSheet("c[r='C5']"),
     `${trainingCounts.expiredNonMandatoryTrainingCount + trainingCounts.expiringNonMandatoryTrainingCount + trainingCounts.upToDateNonMandatoryTrainingCount}`
   );
 
   // put total expiring soon/expired training count
   putString(
-    overviewSheet.querySelector("c[r='D5']"),
+    overviewSheet("c[r='D5']"),
     `${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount + trainingCounts.upToDateTrainingCount}`
   );
 
@@ -503,7 +507,6 @@ const updateOverviewSheet = (
     expiringTotalCounts = expiringTotalCounts + expiringWorkerTrainings[i].Count;
   }
   expiringWorkerTrainings.push({ ID: -1, NameOrIdValue: 'Total', MandatoryCount: expiringMandatoryCounts, NonMandatoryCount: expiringNonMandatoryCounts, Count: expiringTotalCounts});
-
   let expiredMandatoryCounts = 0;
   let expiredNonMandatoryCounts = 0;
   let expiredTotalCounts = 0;
@@ -520,42 +523,44 @@ const updateOverviewSheet = (
     totalMissingMandatoryTrainingCount = totalMissingMandatoryTrainingCount + missingMandatoryTrainingRecords[i].missingMandatoryTrainingCount;
   }
   missingMandatoryTrainingRecords.push({ ID: -1, NameOrIdValue: 'Total', missingMandatoryTrainingCount: totalMissingMandatoryTrainingCount, count: 0});
-
   //put all missing mandatory traing details
-  let currentRowMandatory = overviewSheet.querySelector("row[r='17']");
+  let currentRowMandatory = overviewSheet("row[r='17']");
   let rowIndexMandatory = 17;
   let updateMandatoryRowIndex = rowIndexMandatory + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
   for (; rowIndexMandatory >= 14; rowIndexMandatory--, updateMandatoryRowIndex--) {
 
-    currentRowMandatory.querySelectorAll('c').forEach(elem => {
-      elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + updateMandatoryRowIndex);
-    });
+    if (currentRowMandatory.children('c').length) {
+      currentRowMandatory.children('c').each((index, element) => {
+        overviewSheet(element).attr('r', String(overviewSheet(element).attr('r')).replace(/\d+$/, '') + updateMandatoryRowIndex);
+      });
+    }
 
-    currentRowMandatory.setAttribute('r', updateMandatoryRowIndex);
+    currentRowMandatory.attr('r', updateMandatoryRowIndex);
 
-    while (currentRowMandatory.previousSibling !== null) {
-      currentRowMandatory = currentRowMandatory.previousSibling;
-
-      if (currentRowMandatory.nodeName === 'row') {
+    if (currentRowMandatory.prev().length !== 0) {
+      currentRowMandatory = currentRowMandatory.prev();
+      if(currentRowMandatory.name === 'row') {
         break;
       }
     }
   }
 
   let bottomMandatoryRowIndex = 17 + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
-  const templateRowMissing = overviewSheet.querySelector(`row[r='${bottomMandatoryRowIndex}']`);
+  const templateRowMissing = overviewSheet(`row[r='${bottomMandatoryRowIndex}']`);
   let currentRowMissing = templateRowMissing;
   let rowIndexMissing = bottomMandatoryRowIndex + 1;
   if (missingMandatoryTrainingRecords.length > 0) {
     for (let i = 0; i < missingMandatoryTrainingRecords.length - 1; i++) {
-      const tempRowBottomMissing = templateRowMissing.cloneNode(true);
-      tempRowBottomMissing.setAttribute('r', rowIndexMissing);
+      const tempRowBottomMissing = templateRowMissing.clone(true);
 
-      tempRowBottomMissing.querySelectorAll('c').forEach(elem => {
-        elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndexMissing);
+      tempRowBottomMissing.attr('r', rowIndexMissing);
+
+      tempRowBottomMissing.children('c').each((index, element) => {
+        overviewSheet(element).attr('r', String(overviewSheet(element).attr('r')).replace(/\d+$/, '') + rowIndexMissing);
       });
 
-      templateRowMissing.parentNode.insertBefore(tempRowBottomMissing, currentRowMissing.nextSibling);
+      currentRowMissing.after(tempRowBottomMissing);
+
       currentRowMissing = tempRowBottomMissing;
       rowIndexMissing++;
     }
@@ -564,8 +569,8 @@ const updateOverviewSheet = (
   }
 
   // fix the dimensions tag value
-  const dimension = overviewSheet.querySelector('dimension');
-  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndexMissing);
+  const dimension = overviewSheet('dimension');
+  dimension.attr('ref', String(dimension.attr('ref')).replace(/\d+$/, '') + rowIndexMissing);
 
   // update the cell values
   for (let row = 0; row < missingMandatoryTrainingRecords.length; row++) {
@@ -575,11 +580,7 @@ const updateOverviewSheet = (
 
     for (let column = 0; column < 4; column++) {
       const columnText = String.fromCharCode(column + 65);
-
-      const cellToChange =
-        typeof nextSibling.querySelector === 'function'
-          ? nextSibling
-          : currentRowMissing.querySelector(`c[r='${columnText}${row + bottomMandatoryRowIndex}']`);
+      const cellToChange = currentRowMissing.children(`c[r='${columnText}${bottomMandatoryRowIndex + row}']`);
       switch (columnText) {
         case 'A':
           {
@@ -608,48 +609,47 @@ const updateOverviewSheet = (
           }
           break;
       }
-
-      nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
 
-    currentRowMissing = currentRowMissing.nextSibling;
+    currentRowMissing = currentRowMissing.next();
   }
 
   //put all expiring traing details
-  let currentRowBottom = overviewSheet.querySelector("row[r='13']");
+  let currentRowBottom = overviewSheet("row[r='13']");
   let rowIndexBottom = 13;
   let updateRowIndex = rowIndexBottom + expiredWorkerTrainings.length - 1;
   for (; rowIndexBottom >= 10; rowIndexBottom--, updateRowIndex--) {
 
-    currentRowBottom.querySelectorAll('c').forEach(elem => {
-      elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + updateRowIndex);
-    });
+    if (currentRowBottom.children('c').length) {
+      currentRowBottom.children('c').each((index, element) => {
+        overviewSheet(element).attr('r', String(overviewSheet(element).attr('r')).replace(/\d+$/, '') + updateRowIndex);
+      });
+    }
 
-    currentRowBottom.setAttribute('r', updateRowIndex);
+    currentRowBottom.attr('r', updateRowIndex);
 
-    while (currentRowBottom.previousSibling !== null) {
-      currentRowBottom = currentRowBottom.previousSibling;
-
-      if (currentRowBottom.nodeName === 'row') {
+    if (currentRowBottom.prev().length !== 0) {
+      currentRowBottom = currentRowBottom.prev();
+      if(currentRowBottom.name === 'row') {
         break;
       }
     }
   }
 
   let bottomRowIndex = 13 + expiredWorkerTrainings.length - 1;
-  const templateRowExpiring = overviewSheet.querySelector(`row[r='${bottomRowIndex}']`);
+  const templateRowExpiring = overviewSheet(`row[r='${bottomRowIndex}']`);
   let currentRowExpiring = templateRowExpiring;
   let rowIndexExpiring = bottomRowIndex + 1;
   if (expiringWorkerTrainings.length > 0) {
     for (let i = 0; i < expiringWorkerTrainings.length - 1; i++) {
-      const tempRowBottom = templateRowExpiring.cloneNode(true);
-      tempRowBottom.setAttribute('r', rowIndexExpiring);
+      const tempRowBottom = templateRowExpiring.clone(true);
+      tempRowBottom.attr('r', rowIndexExpiring);
 
-      tempRowBottom.querySelectorAll('c').forEach(elem => {
-        elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndexExpiring);
+      tempRowBottom.children('c').each((index, element) => {
+        overviewSheet(element).attr('r', String(overviewSheet(element).attr('r')).replace(/\d+$/, '') + rowIndexExpiring);
       });
 
-      templateRowExpiring.parentNode.insertBefore(tempRowBottom, currentRowExpiring.nextSibling);
+      currentRowExpiring.after(tempRowBottom);
       currentRowExpiring = tempRowBottom;
       rowIndexExpiring++;
     }
@@ -665,11 +665,7 @@ const updateOverviewSheet = (
 
     for (let column = 0; column < 4; column++) {
       const columnText = String.fromCharCode(column + 65);
-
-      const cellToChange =
-        typeof nextSibling.querySelector === 'function'
-          ? nextSibling
-          : currentRowExpiring.querySelector(`c[r='${columnText}${row + bottomRowIndex}']`);
+      const cellToChange = currentRowExpiring.children(`c[r='${columnText}${row + bottomRowIndex}']`);
       switch (columnText) {
         case 'A':
           {
@@ -698,28 +694,26 @@ const updateOverviewSheet = (
           }
           break;
       }
-
-      nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
 
-    currentRowExpiring = currentRowExpiring.nextSibling;
+    currentRowExpiring = currentRowExpiring.next();
   }
 
   //put all expired training details
   // clone the row the apropriate number of times
-  const templateRow = overviewSheet.querySelector("row[r='9']");
+  const templateRow = overviewSheet("row[r='9']");
   let currentRow = templateRow;
   let rowIndex = 10;
   if (expiredWorkerTrainings.length > 0) {
     for (let i = 0; i < expiredWorkerTrainings.length - 1; i++) {
-      const tempRow = templateRow.cloneNode(true);
-      tempRow.setAttribute('r', rowIndex);
+      const tempRow = templateRow.clone(true);
+      tempRow.attr('r', rowIndex);
 
-      tempRow.querySelectorAll('c').forEach(elem => {
-        elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndex);
+      tempRow.children('c').each((index, element) => {
+        overviewSheet(element).attr('r', String(overviewSheet(element).attr('r')).replace(/\d+$/, '') + rowIndex);
       });
 
-      templateRow.parentNode.insertBefore(tempRow, currentRow.nextSibling);
+      currentRow.after(tempRow);
       currentRow = tempRow;
       rowIndex++;
     }
@@ -735,11 +729,7 @@ const updateOverviewSheet = (
 
     for (let column = 0; column < 10; column++) {
       const columnText = String.fromCharCode(column + 65);
-
-      const cellToChange =
-        typeof nextSibling.querySelector === 'function'
-          ? nextSibling
-          : currentRow.querySelector(`c[r='${columnText}${row + 9}']`);
+      const cellToChange = currentRow.children(`c[r='${columnText}${row + 9}']`);
       switch (columnText) {
         case 'A':
           {
@@ -768,11 +758,8 @@ const updateOverviewSheet = (
           }
           break;
       }
-
-      nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
-
-    currentRow = currentRow.nextSibling;
+    currentRow = currentRow.next();
   }
 
   debuglog('overview updated');
@@ -809,21 +796,22 @@ const updateTrainingsSheet = (
   );
 
   // clone the row the apropriate number of times
-  const templateRow = trainingsSheet.querySelector("row[r='2']");
+  const templateRow = trainingsSheet("row[r='2']");
   let currentRow = templateRow;
   let rowIndex = 3;
   let trainingArray = reportData.trainings;
   if (trainingArray.length > 1) {
     for (let i = 0; i < trainingArray.length - 1; i++) {
-      const tempRow = templateRow.cloneNode(true);
+      const tempRow = templateRow.clone(true);
 
-      tempRow.setAttribute('r', rowIndex);
+      tempRow.attr('r', rowIndex);
 
-      tempRow.querySelectorAll('c').forEach(elem => {
-        elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndex);
+      tempRow.children('c').each((index, element) => {
+        trainingsSheet(element).attr('r', String(trainingsSheet(element).attr('r')).replace(/\d+$/, '') + rowIndex);
       });
 
-      templateRow.parentNode.insertBefore(tempRow, currentRow.nextSibling);
+      currentRow.after(tempRow);
+
       currentRow = tempRow;
       rowIndex++;
     }
@@ -832,11 +820,11 @@ const updateTrainingsSheet = (
   }
 
   // fix the last row in the table
-  trainingsSheet.querySelector('sheetData row:last-child').setAttribute('r', rowIndex);
+  trainingsSheet('sheetData row:last-child').attr('r', rowIndex);
 
   // fix the dimensions tag value
-  const dimension = trainingsSheet.querySelector('dimension');
-  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndex);
+  const dimension = trainingsSheet('dimension');
+  dimension.attr('ref', String(dimension.attr('ref')).replace(/\d+$/, '') + rowIndex);
 
   // update the cell values
   for (let row = 0; row < trainingArray.length; row++) {
@@ -849,10 +837,7 @@ const updateTrainingsSheet = (
       const columnText = String.fromCharCode(column + 65);
       const isRed = false;
 
-      const cellToChange =
-        typeof nextSibling.querySelector === 'function'
-          ? nextSibling
-          : currentRow.querySelector(`c[r='${columnText}${row + 2}']`);
+      const cellToChange = currentRow.children(`c[r='${columnText}${row + 2}']`);
       switch (columnText) {
         case 'A':
           {
@@ -880,7 +865,7 @@ const updateTrainingsSheet = (
 
         case 'E':
           {
-            putString(trainingsSheet.querySelector(`c[r='${columnText}${row + 2}']`), trainingArray[row].Status);
+            putString(trainingsSheet(`c[r='${columnText}${row + 2}']`), trainingArray[row].Status);
             let styleCol;
             if (trainingArray[row].Status === 'Up-to-date') {
               styleCol = 19;
@@ -891,7 +876,7 @@ const updateTrainingsSheet = (
             } else {
               styleCol = 20;
             }
-            trainingsSheet.querySelector(`c[r='${columnText}${row + 2}']`).setAttribute('s', styleCol);
+            trainingsSheet(`c[r='${columnText}${row + 2}']`).attr('s', styleCol);
           }
           break;
 
@@ -913,11 +898,8 @@ const updateTrainingsSheet = (
             }
             break
       }
-
-      nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
-
-    currentRow = currentRow.nextSibling;
+    currentRow = currentRow.next();
   }
 
   debuglog('trainings updated');
@@ -995,49 +977,36 @@ const getReport = async (date, thisEstablishment) => {
       debuglog('all files read');
 
       if (sharedStrings) {
-        const sst = sharedStrings.querySelector('sst');
+        const sst = sharedStrings('sst');
 
-        const sharedStringsUniqueCount = [parseInt(sst.getAttribute('uniqueCount'), 10)];
-        const sharedStringsCount = [parseInt(sst.getAttribute('count'), 10)];
+        const sharedStringsUniqueCount = [parseInt(sst.attr('uniqueCount'), 10)];
+        const sharedStringsCount = [parseInt(sst.attr('count'), 10)];
 
         // update the overview sheet with the report data and add it to the zip
-        outputZip.file(
-          overviewSheetName,
-          serializeXML(
-            updateOverviewSheet(
-              overviewSheet,
-              sharedStrings,
-              sst,
-              sharedStringsUniqueCount, // pass unique count by reference rather than by value
-              sharedStringsCount
-            )
-          )
-        );
-
-        //outputZip.file(establishmentsSheetName, serializeXML(establishmentsSheet));
-        //outputZip.file(trainingsSheetName, serializeXML(updateTrainingsSheet));
+        outputZip.file(overviewSheetName, updateOverviewSheet(
+          overviewSheet,
+          sharedStrings,
+          sst,
+          sharedStringsUniqueCount, // pass unique count by reference rather than by value
+          sharedStringsCount
+        ).xml());
 
         // update the trainings sheet with the report data and add it to the zip
-        outputZip.file(
-          trainingsSheetName,
-          serializeXML(
-            updateTrainingsSheet(
-              trainingsSheet,
-              reportData,
-              sharedStrings,
-              sst,
-              sharedStringsUniqueCount, // pass unique count by reference rather than by value
-              sharedStringsCount
-            )
-          )
-        );
+        outputZip.file(trainingsSheetName, updateTrainingsSheet(
+          trainingsSheet,
+          reportData,
+          sharedStrings,
+          sst,
+          sharedStringsUniqueCount, // pass unique count by reference rather than by value
+          sharedStringsCount
+        ).xml());
 
         // update the shared strings counts we've been keeping track of
-        sst.setAttribute('uniqueCount', sharedStringsUniqueCount[0]);
-        sst.setAttribute('count', sharedStringsCount[0]);
+        sst.attr('uniqueCount', sharedStringsUniqueCount[0]);
+        sst.attr('count', sharedStringsCount[0]);
 
         // add the updated shared strings to the zip
-        outputZip.file(sharedStringsName, serializeXML(sharedStrings));
+        outputZip.file(sharedStringsName, sharedStrings.xml());
       }
 
       debuglog('training report: creating zip file');

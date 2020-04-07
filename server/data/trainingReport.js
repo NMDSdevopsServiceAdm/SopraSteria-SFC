@@ -5,7 +5,7 @@ const db = rfr('server/utils/datastore');
 const getTrainingDataQuery =
 `
 SELECT
-  a."NameOrIdValue", a."ID",  c."Category", c."ID", b."Title", to_char(b."Completed", :timeFormat) as "Completed",
+  a."NameOrIdValue", a."ID", c."Category", c."ID" AS "CategoryID", b."Title", to_char(b."Completed", :timeFormat) as "Completed",
   to_char(b."Expires", :timeFormat) as "ExpiredOn", b."Accredited", b."Expires", a."MainJobFKValue"
 FROM
   cqc."Worker" a
