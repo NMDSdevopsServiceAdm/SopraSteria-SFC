@@ -134,24 +134,13 @@ const updateProps = 'JobName,Category,Title,Expires'.split(',');
  * @param {Object} trainingData
  * @param {Object} All customized expired/expiring training report data
  */
-const createExpireExpiringData = async (trainingData, reportData) => {
-  if (trainingData.length && trainingData.length > 0) {
-    trainingData.forEach(async value => {
-      if (reportData.length === 0) {
-        reportData.push({ ID: value.ID, NameOrIdValue: value.NameOrIdValue, MandatoryCount: 0, NonMandatoryCount: 0, Count: 0});
-      } else {
-        let foundTrn = false;
-        reportData.forEach(async (worker, key) => {
-          if (worker.ID === value.ID) {
-            foundTrn = true;
-          }
-        });
-        if (!foundTrn) {
-          reportData.push({ ID: value.ID, NameOrIdValue: value.NameOrIdValue, MandatoryCount: 0, NonMandatoryCount: 0, Count: 0});
-        }
-      }
-    });
-  }
+const createExpireExpiringData = async (trainingData) => {
+  return trainingData.filter((trainingWorker, index, self) => self.findIndex(t => trainingWorker.ID === t.ID) === index).map(
+    training => {
+      return {ID: training.ID, NameOrIdValue: training.NameOrIdValue, MandatoryCount: 0, NonMandatoryCount: 0, Count: 0}
+    }
+  );
+
 };
 
 /**
@@ -161,12 +150,10 @@ const createExpireExpiringData = async (trainingData, reportData) => {
  * @return {Object} All customized training report data
  */
 const getTrainingReportData = async establishmentId => {
-  expiredWorkerTrainings = [];
-  expiringWorkerTrainings = [];
   missingMandatoryTrainingRecords = [];
   const trainingData = await getTrainingData(establishmentId);
-  await createExpireExpiringData(trainingData, expiredWorkerTrainings);
-  await createExpireExpiringData(trainingData, expiringWorkerTrainings);
+  expiredWorkerTrainings = await createExpireExpiringData(trainingData);
+  expiringWorkerTrainings = await createExpireExpiringData(trainingData);
   const allWorkers = await models.worker.findAll({
     attributes: ['id', 'uid', 'NameOrIdValue'],
     where:{
@@ -282,6 +269,7 @@ const getTrainingReportData = async establishmentId => {
         }
       });
     }
+
     expiredWorkerTrainings = expiredWorkerTrainings.filter(item => item.Count !==0);
     expiringWorkerTrainings = expiringWorkerTrainings.filter(item => item.Count !==0);
     missingMandatoryTrainingRecords = missingMandatoryTrainingRecords.filter(item => item.missingMandatoryTrainingCount !==0);
@@ -511,7 +499,7 @@ const updateOverviewSheet = (
     expiringTotalCounts = expiringTotalCounts + expiringWorkerTrainings[i].Count;
   }
   expiringWorkerTrainings.push({ ID: -1, NameOrIdValue: 'Total', MandatoryCount: expiringMandatoryCounts, NonMandatoryCount: expiringNonMandatoryCounts, Count: expiringTotalCounts});
-
+  console.log(expiringWorkerTrainings);
   let expiredMandatoryCounts = 0;
   let expiredNonMandatoryCounts = 0;
   let expiredTotalCounts = 0;
