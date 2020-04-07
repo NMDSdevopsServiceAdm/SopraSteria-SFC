@@ -136,9 +136,7 @@
                           {{ worker.missingMandatoryTrainingCount }}
                           Missing
                         </div>
-                        <div *ngIf="worker.trainingCount === 0">
-                          Up-to-date
-                        </div>
+                        <div *ngIf="worker.expiredTrainingCount === 0 && worker.expiringTrainingCount === 0 && worker.missingMandatoryTrainingCount === 0">Up-to-date</div>
                       </td>
                     </tr>
                   </ng-container>
