@@ -17,6 +17,7 @@ import {
   WdfWorkplaceConfirmationDialogComponent,
 } from '@features/workplace/wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { isObject, pick, pickBy, sortBy } from 'lodash';
+import * as moment from 'moment';
 import { combineLatest, Subscription } from 'rxjs';
 import { flatMap, take, tap } from 'rxjs/operators';
 
@@ -141,7 +142,22 @@ export class WdfComponent implements OnInit, OnDestroy {
       });
   }
 
-  get displayConfirmationPanel() {
-    return this.workplace && this.workplace.wdf.currentEligibility && !this.workplace.wdf.isEligible && this.canEditEstablishment;
+  get displayConfirmationPanel(): boolean {
+    if (!this.workplace) {
+      return false;
+    }
+
+    if (!this.canEditEstablishment) {
+      return false;
+    }
+
+    const effectiveFrom = moment(this.workplace.wdf.effectiveFrom);
+    const lastEligibility = moment(this.workplace.wdf.lastEligibility);
+
+    if (lastEligibility.isAfter(effectiveFrom)) {
+      return false;
+    }
+
+    return true;
   }
 }
