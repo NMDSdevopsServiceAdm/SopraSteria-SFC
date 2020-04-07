@@ -132,12 +132,20 @@ const updateProps = 'JobName,Category,Title,Expires'.split(',');
  * Helper Function used to create expired/expiring traing data
  *
  * @param {Object} trainingData
- * @param {Object} All customized expired/expiring training report data
+ * @return {Object} All workers with traiing
  */
 const createExpireExpiringData = async (trainingData) => {
-  return trainingData.filter((trainingWorker, index, self) => self.findIndex(t => trainingWorker.ID === t.ID) === index).map(
-    training => {
-      return {ID: training.ID, NameOrIdValue: training.NameOrIdValue, MandatoryCount: 0, NonMandatoryCount: 0, Count: 0}
+  return trainingData.filter(
+    (trainingWorker, index, self) =>
+      self.findIndex(t => trainingWorker.ID === t.ID) === index
+    ).map(training => {
+      return {
+        ID: training.ID,
+        NameOrIdValue: training.NameOrIdValue,
+        MandatoryCount: 0,
+        NonMandatoryCount: 0,
+        Count: 0
+      }
     }
   );
 
@@ -982,9 +990,6 @@ const getReport = async (date, thisEstablishment) => {
           sharedStringsUniqueCount, // pass unique count by reference rather than by value
           sharedStringsCount
         ).xml());
-
-        //outputZip.file(establishmentsSheetName, serializeXML(establishmentsSheet));
-        //outputZip.file(trainingsSheetName, serializeXML(updateTrainingsSheet));
 
         // update the trainings sheet with the report data and add it to the zip
         outputZip.file(trainingsSheetName, updateTrainingsSheet(
