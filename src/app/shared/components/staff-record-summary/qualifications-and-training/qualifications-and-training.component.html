@@ -1,4 +1,4 @@
-<dl class="govuk-summary-list govuk-summary-list">
+<dl class="govuk-summary-list govuk-summary-list--no-top-border">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       Started or completed Care Certificate
@@ -30,7 +30,7 @@
     </dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.qualificationInSocialCare">
-        {{ worker.qualificationInSocialCare | closedEndedAnswer }}
+        {{ worker.qualificationInSocialCare || '-' | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -76,7 +76,7 @@
     </dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.otherQualification">
-        {{ worker.otherQualification | closedEndedAnswer }}
+        {{ worker.otherQualification || '-' | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -121,7 +121,7 @@
       Completing apprenticeship training
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.apprenticeshipTraining | closedEndedAnswer }}
+      {{ worker.apprenticeshipTraining || '-' | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a *ngIf="canEditWorker" [routerLink]="getRoutePath('apprenticeship-training')" (click)="setReturn()">

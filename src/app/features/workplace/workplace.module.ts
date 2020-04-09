@@ -43,9 +43,6 @@ import {
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
-import {
-  WdfWorkplaceConfirmationDialogComponent,
-} from './wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
@@ -79,7 +76,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ViewMyWorkplacesComponent,
     ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
-    WdfWorkplaceConfirmationDialogComponent,
     SelectMainServiceComponent,
     UserAccountEditDetailsComponent,
     RegulatedByCqcComponent,
@@ -92,7 +88,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     DeleteWorkplaceDialogComponent,
     UserAccountChangePrimaryDialogComponent,
     UserAccountDeleteDialogComponent,
-    WdfWorkplaceConfirmationDialogComponent,
   ],
 })
 export class WorkplaceModule {}

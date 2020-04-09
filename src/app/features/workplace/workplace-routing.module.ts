@@ -43,6 +43,7 @@ import {
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { ViewAllMandatoryTrainingComponent } from './view-all-mandatory-trainings/view-all-mandatory-training.component';
 
 const routes: Routes = [
   {
@@ -50,6 +51,10 @@ const routes: Routes = [
     component: ViewMyWorkplacesComponent,
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
+  },
+  {
+    path: 'view-all-mandatory-training',
+    component: ViewAllMandatoryTrainingComponent,
   },
   {
     path: 'start-screen',

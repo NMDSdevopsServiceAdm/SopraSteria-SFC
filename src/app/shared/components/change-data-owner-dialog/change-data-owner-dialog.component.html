@@ -49,7 +49,10 @@
   </p>
 
   <button type="submit" (click)="changeOwnership()" class="govuk-button">Save and return</button>
-  <button type="button" (click)="close(null)" class="govuk-button govuk-button--link govuk-util__float-right">
-    Exit
-  </button>
+  <a
+    href="#"
+    class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+    (click)="close($event, null)"
+    >Cancel</a
+  >
 </form>
