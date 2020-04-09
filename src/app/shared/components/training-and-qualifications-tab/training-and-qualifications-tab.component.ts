@@ -1,9 +1,9 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
   selector: 'app-training-and-qualifications-tab',
@@ -33,7 +33,7 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
           this.totalExpiringTraining = 0;
           this.missingMandatoryTraining = 0;
           this.workers.forEach((worker: Worker) => {
-            let totalTrainingRecord = worker.trainingCount - worker.missingMandatoryTrainingCount;
+            let totalTrainingRecord = worker.trainingCount;
             this.totalRecords += totalTrainingRecord + worker.qualificationCount;
             this.totalExpiredTraining += worker.expiredTrainingCount;
             this.totalExpiringTraining += worker.expiringTrainingCount;
