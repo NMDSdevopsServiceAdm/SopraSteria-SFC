@@ -30,7 +30,7 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
     private formBuilder: FormBuilder,
     private alertService: AlertService,
     private errorSummaryService: ErrorSummaryService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
   ) {
     super(data, dialog);
 
@@ -44,7 +44,7 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
     this.subscriptions.add(
       this.workerService.getLeaveReasons().subscribe(reasons => {
         this.reasons = reasons;
-      })
+      }),
     );
 
     this.setupFormErrors();
@@ -58,7 +58,8 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public close() {
+  public close(event: Event) {
+    event.preventDefault();
     this.dialog.close();
   }
 
@@ -84,9 +85,10 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
       : null;
 
     this.subscriptions.add(
-      this.workerService
-        .deleteWorker(this.data.workplace.uid, this.data.worker.uid, deleteReason)
-        .subscribe(() => this.onSuccess(), error => this.onError(error))
+      this.workerService.deleteWorker(this.data.workplace.uid, this.data.worker.uid, deleteReason).subscribe(
+        () => this.onSuccess(),
+        error => this.onError(error),
+      ),
     );
   }
 
@@ -97,7 +99,7 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
         : ['/workplace', this.data.workplace.uid];
     this.router.navigate(url, { fragment: 'staff-records' });
     this.alertService.addAlert({ type: 'success', message: `${this.data.worker.nameOrId} has been deleted` });
-    this.close();
+    this.close(event);
   }
 
   private onError(error): void {

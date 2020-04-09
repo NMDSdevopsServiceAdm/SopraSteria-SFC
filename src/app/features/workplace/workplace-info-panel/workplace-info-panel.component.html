@@ -19,7 +19,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
         <p class="govuk-!-margin-bottom-1">
-          <strong>Data Owner</strong>
+          <strong>Data owner</strong>
         </p>
         <p class="govuk-!-margin-bottom-0">
           {{ workplace.dataOwner }}
@@ -39,7 +39,7 @@
             <ng-template #dataPermissions>
               <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
                 <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                  <a (click)="setDataPermissions($event)" href="#">Data permissions</a>
+                  <a (click)="setDataPermissions($event)" href="#">Set data permissions</a>
                 </ng-container>
                 <ng-template #notParent>
                   <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>

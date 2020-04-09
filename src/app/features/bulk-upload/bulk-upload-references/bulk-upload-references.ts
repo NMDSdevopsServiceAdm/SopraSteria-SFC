@@ -38,7 +38,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy, AfterViewInit {
     protected bulkUploadService: BulkUploadService,
     protected router: Router,
     protected formBuilder: FormBuilder,
-    protected errorSummaryService: ErrorSummaryService
+    protected errorSummaryService: ErrorSummaryService,
   ) {
     this.setPrimaryEstablishmentName();
   }
@@ -66,7 +66,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy, AfterViewInit {
     this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
         `reference-${reference.uid}`,
-        new FormControl(reference.localIdentifier, [Validators.required, Validators.maxLength(this.maxLength)])
+        new FormControl(reference.localIdentifier, [Validators.required, Validators.maxLength(this.maxLength)]),
       );
 
       this.formErrorsMap.push({
@@ -106,7 +106,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy, AfterViewInit {
             }
           }
         });
-      })
+      }),
     );
   }
 
@@ -163,7 +163,8 @@ export class BulkUploadReferences implements OnInit, OnDestroy, AfterViewInit {
 
   protected save(saveAndContinue: boolean): void {}
 
-  public onSubmit(saveAndContinue: boolean): void {
+  public onSubmit(event: Event, saveAndContinue: boolean): void {
+    event.preventDefault();
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 

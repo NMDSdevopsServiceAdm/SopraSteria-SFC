@@ -1,0 +1,125 @@
+<app-error-summary *ngIf="(submitted && form.invalid) || serverError" [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError" [form]="form">
+</app-error-summary>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Manage mandatory training</h1>
+    <p>
+      Different care providers make different types of training mandatory depending on their main service and the people
+      they provide care for.
+    </p>
+    <p>
+      Select the training you want to make mandatory for your workplace. If you do this we can flag which staff need to
+      undertake training or where mandatory training has expired.
+    </p>
+  </div>
+</div>
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <fieldset class="govuk-fieldset">
+    <ng-container formArrayName="categories">
+      <div *ngFor="let category of categoriesArray.controls; let i = index" [formGroupName]="i">
+        <div class="govuk-grid-row govuk-!-margin-bottom-1"
+          [class.govuk-form-group--error]="submitted && category.get('trainingCategory').invalid">
+          <div class="govuk-form-group">
+            <div class="govuk-grid-column-two-thirds">
+              <label class="govuk-label govuk-!-margin-top-4" for="trainingCategory-{{ i }}">
+                Mandatory training
+              </label>
+              <span *ngIf="submitted" id="trainingCategory-{{ i }}-error" class="govuk-error-message">
+                <ng-container *ngIf="submitted && category.get('trainingCategory').invalid">
+                  {{ getFormErrorMessage('categories.trainingCategory', 'required') }}
+                </ng-container>
+              </span>
+              <select class="govuk-select govuk-!-width-full"
+                [class.govuk-select--error]="submitted && category.get('trainingCategory').invalid"
+                [formControlName]="'trainingCategory'" id="trainingCategory-{{ i }}" name="trainingCategory">
+                <option [ngValue]="null">Select training category</option>
+                <option *ngFor="let training of selectableTrainings(i)" [value]="training.id">
+                  {{ training.category }}
+                </option>
+              </select>
+            </div>
+            <div class="govuk-grid-column-one-third govuk-!-margin-top-8">
+              <a *ngIf="categoriesArray.length > 1" href="#" class="govuk-list govuk-list--inline "
+                (click)="removeCategory($event, i)">
+                Remove</a>
+            </div>
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds govuk-!-margin-top-2">
+            <div class="govuk-form-group">
+              <legend class="govuk-fieldset__legend">
+                <span class="govuk-label">
+                  Which job roles need this training?
+                </span>
+              </legend>
+              <div class="govuk-radios govuk-radios--inline">
+                {{ vacancyType }}
+                <div class="govuk-radios__item" *ngFor="let option of vacanciesOptions; let j = index">
+                  <input class="govuk-radios__input" id="vacancyType-{{ i }}-{{ j }}" [formControlName]="'vacancyType'"
+                    type="radio" [value]="option.value" (change)="onVacancyTypeSelectionChange(i)" />
+                  <label class="govuk-label govuk-radios__label" for="vacancyType-{{ i }}-{{ j }}">
+                    {{ option.label }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="govuk-grid-row govuk-radios__conditional" *ngIf="category.get('vacancies').controls.length > 0"
+          formArrayName="vacancies">
+          <div [formGroupName]="k" *ngFor="let vacancy of category.get('vacancies').controls; let k = index"
+            [class.govuk-form-group--error]="submitted && vacancy.get('id').invalid">
+            <div class="govuk-grid-row govuk-!-margin-bottom-6">
+              <div class="govuk-grid-column-one-half">
+                <div class="govuk-form-group">
+                  <label class="govuk-label" for="id-{{ i }}-{{ k }}">
+                    Job role
+                  </label>
+                  <span *ngIf="submitted && vacancy.get('id').invalid" id="id-{{ i }}-{{ k }}-error"
+                    class="govuk-error-message">
+                    <ng-container *ngIf="vacancy.get('id').invalid">
+                      {{ getFormErrorMessage('vacancies.id', 'required') }}
+                    </ng-container>
+                  </span>
+                  <select class="govuk-select" [class.govuk-select--error]="submitted && vacancy.get('id').invalid"
+                    [formControlName]="'id'" id="id-{{ i }}-{{ k }}">
+                    <option [ngValue]="null">Select job role</option>
+                    <option *ngFor="let job of selectableJobs(i, k)" [value]="job.id">
+                      {{ job.title }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-half govuk-!-margin-top-6">
+                <a *ngIf="category.get('vacancies').controls.length > 1" href="#" class="govuk-list govuk-list--inline "
+                  (click)="removeVacancy($event, i, k)">Remove
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+              <button *ngIf="
+                  category.get('vacancies').controls.length > 0 &&
+                  category.get('vacancies').controls.length < jobs.length
+                " class="govuk-button govuk-button--secondary" type="button" (click)="addVacancy(i)">
+                Add another Job role
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+          <button *ngIf="!allTrainingsSelected" class="govuk-button govuk-button--secondary" type="button"
+            (click)="addCategory()">
+            Add more mandatory training
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </fieldset>
+  <app-submit-exit-buttons [return]="return"></app-submit-exit-buttons>
+</form>

@@ -226,7 +226,7 @@
     </dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.zeroHoursContract">
-        {{ worker.zeroHoursContract | closedEndedAnswer }}
+        {{ worker.zeroHoursContract || '-' | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">

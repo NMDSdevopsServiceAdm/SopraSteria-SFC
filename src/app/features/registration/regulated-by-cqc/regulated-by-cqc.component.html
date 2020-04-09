@@ -17,8 +17,11 @@
         </legend>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
-          <span *ngIf="submitted && regulatedByCQC.errors" id="regulatedByCQC-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('regulatedByCQC') }}
+          <span *ngIf="submitted" id="regulated-error" class="govuk-error-message">
+            <span *ngIf="regulatedByCQC.errors" id="regulatedByCQC-error">{{
+              getFirstErrorMessage('regulatedByCQC')
+            }}</span>
+            <span *ngIf="group.errors" id="group-error"> {{ getFirstErrorMessage('group') }}</span>
           </span>
           <div class="govuk-radios govuk-radios--conditional">
             <!-- regulated -->

@@ -90,8 +90,8 @@
         </ng-container>
         <ng-template #staffRecordsNextSteps>
           <p class="govuk-!-margin-top-4">
-            {{ referenceType }} records need to be added for this workplace before you can create
-            {{ referenceType.toLowerCase() }} references.
+            {{ referenceType }} records need to be added for this workplace before you can create {{
+            referenceType.toLowerCase() }} references.
           </p>
           <h3 class="govuk-heading-m">What you can do next?</h3>
           <ul class="govuk-list govuk-list--bullet">
@@ -131,18 +131,17 @@
           <button
             type="button"
             class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
-            (click)="onSubmit(true)"
+            (click)="onSubmit($event, true)"
           >
             {{ !!returnTo ? 'Save and return' : 'Save and continue' }}
           </button>
           <span class="govuk-visually-hidden">or</span>
-          <button
-            type="button"
-            class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
-            (click)="onSubmit(false)"
+          <a
+            href="#"
+            class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+            (click)="onSubmit($event,false)"
+            >Save and exit</a
           >
-            Save and exit
-          </button>
         </div>
       </div>
     </div>

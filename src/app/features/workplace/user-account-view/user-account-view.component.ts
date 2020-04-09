@@ -43,7 +43,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
   ) {
     this.user = this.route.snapshot.data.user;
     this.establishment = this.route.parent.snapshot.data.establishment;
@@ -57,20 +57,17 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService
         .getAllUsersForEstablishment(this.establishment.uid)
-        .pipe(
-          take(1),
-          withLatestFrom(this.userService.loggedInUser$)
-        )
+        .pipe(take(1), withLatestFrom(this.userService.loggedInUser$))
         .subscribe(([users, loggedInUser]) => {
           this.loggedInUser = loggedInUser;
           this.setPermissions(users, loggedInUser);
-        })
+        }),
     );
 
     this.subscriptions.add(
       this.userService.returnUrl$.pipe(take(1)).subscribe(returnUrl => {
         this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid] };
-      })
+      }),
     );
   }
 
@@ -78,7 +75,8 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public resendActivationLink() {
+  public resendActivationLink(evet: Event) {
+    event.preventDefault();
     this.subscriptions.add(
       this.userService.resendActivationLink(this.user.uid).subscribe(
         () => {
@@ -93,12 +91,13 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
             type: 'warning',
             message: 'There was an error resending account set up link.',
           });
-        }
-      )
+        },
+      ),
     );
   }
 
-  public onDeleteUser() {
+  public onDeleteUser(event: Event) {
+    event.preventDefault();
     const dialog = this.dialogService.open(UserAccountDeleteDialogComponent, { user: this.user });
     dialog.afterClosed.subscribe(deleteConfirmed => {
       if (deleteConfirmed) {
@@ -115,7 +114,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
             ...this.loggedInUser,
             ...{ isPrimary: true },
           })
-          .subscribe(data => (this.userService.loggedInUser = data))
+          .subscribe(data => (this.userService.loggedInUser = data)),
       );
     }
 
@@ -130,8 +129,8 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
             type: 'warning',
             message: 'There was an error deleting the user.',
           });
-        }
-      )
+        },
+      ),
     );
   }
 

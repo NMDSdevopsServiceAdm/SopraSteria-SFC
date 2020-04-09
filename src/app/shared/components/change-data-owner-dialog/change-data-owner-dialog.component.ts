@@ -36,7 +36,7 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
-    public dialog: Dialog<ChangeDataOwnerDialogComponent>
+    public dialog: Dialog<ChangeDataOwnerDialogComponent>,
   ) {
     super(data, dialog);
   }
@@ -89,7 +89,8 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
     });
   }
 
-  close(confirm: boolean) {
+  close(event: Event, confirm: boolean) {
+    event.preventDefault();
     this.dialog.close(confirm);
   }
 
@@ -134,7 +135,7 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
         this.establishmentService.changeOwnership(this.workplace.uid, requestedPermission).subscribe(
           data => {
             if (data) {
-              this.close(true);
+              this.close(event, true);
             }
           },
           error => {
@@ -142,8 +143,8 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
             if (error.error.message) {
               this.serverError = error.error.message;
             }
-          }
-        )
+          },
+        ),
       );
     }
   }

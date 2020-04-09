@@ -65,7 +65,11 @@ const putStringTemplate = (
   value
 ) => {
   let vTag = element.children('v').first();
-  const hasVTag = vTag !== null;
+  let hasVTag = true;
+  if (element.children('v').length === 0) {
+    hasVTag = false;
+  }
+
   const textValue = String(value);
   const isNumber = isNumberRegex.test(textValue);
 
@@ -106,8 +110,7 @@ const getReportData = async (date, thisEstablishment) => {
   };
 };
 
-const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,ServiceUsers,' +
-'NumberOfStaffValue').split(',');
+const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,Utilisations,ServiceUsers,NumberOfStaffValue,Vacancies,Starters,Leavers').split(',');
 
 const getEstablishmentReportData = async establishmentId => {
   const establishmentReturnData = await getEstablishmentData(establishmentId);
@@ -165,14 +168,6 @@ const getEstablishmentReportData = async establishmentId => {
       value.SubsidiarySharingPermissions = 'None';
     }
 
-    value.EstablishmentDataFullyCompleted = 'Yes';
-
-    propsNeededToComplete.forEach(prop => {
-      if (value[prop] === null || value[prop] === '' || value[prop] === 'Missing') {
-        value.EstablishmentDataFullyCompleted = 'No';
-      }
-    });
-
     value.CurrentWdfEligibilityStatus = value.CurrentWdfEligibilityStatus === null ? 'Not Eligible' : 'Eligible';
 
     if (value.DateEligibilityAchieved === null) {
@@ -189,8 +184,9 @@ const getEstablishmentReportData = async establishmentId => {
     } else {
       value.PercentageOfWorkerRecords = '0.0%';
     }
-
-    if(value.VacanciesValue === 'None' || value.VacanciesValue === null){
+    if (value.VacanciesValue === null) {
+      value.Vacancies = 'Missing';
+    }else if(value.VacanciesValue === 'None'){
       value.Vacancies = 0;
     }else if(value.VacanciesValue === "Don't know"){
       value.Vacancies =  "Don't know";
@@ -198,15 +194,18 @@ const getEstablishmentReportData = async establishmentId => {
       value.Vacancies = (value.VacanciesCount === null)? 'Missing':  value.VacanciesCount;
     }
 
-    if(value.StartersValue === 'None' || value.StartersValue === null){
+    if (value.StartersValue === null) {
+      value.Starters = 'Missing';
+    }else if(value.StartersValue === 'None'){
       value.Starters = 0;
     }else if(value.StartersValue === "Don't know"){
       value.Starters =  "Don't know";
     }else if(value.StartersValue === "With Jobs"){
       value.Starters = (value.StartersCount === null)? 'Missing':  value.StartersCount;
     }
-
-    if(value.LeaversValue === 'None' || value.LeaversValue === null){
+    if (value.LeaversValue === null) {
+      value.Leavers = 'Missing';
+    }else if(value.LeaversValue === 'None'){
       value.Leavers = 0;
     }else if(value.LeaversValue === "Don't know"){
       value.Leavers =  "Don't know";
@@ -233,6 +232,14 @@ const getEstablishmentReportData = async establishmentId => {
       (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
         ? '0.0%'
         : `${parseFloat(+value.CompletedWorkerRecords / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
+
+    value.EstablishmentDataFullyCompleted = 'Yes';
+
+    propsNeededToComplete.forEach(prop => {
+      if (value[prop] === null || value[prop] === '' || value[prop] === 'Missing') {
+        value.EstablishmentDataFullyCompleted = 'No';
+      }
+    });
   }
 
   return establishmentData;
@@ -293,6 +300,10 @@ const getWorkersReportData = async establishmentId => {
       }else if(value.WeeklyHoursAverageValue === null){
         value.HoursValue = 'Missing';
       }
+    }
+
+    if(value.ContractValue === 'Agency' || value.ContractValue === 'Pool/Bank'){
+      value.DaysSickValue = 'N/A';
     }
 
     updateProps.forEach(prop => {
@@ -899,7 +910,7 @@ const updateEstablishmentsSheet = (
         case 'K': {
           putString(
             cellToChange,
-            establishmentArray[row].LastUpdatedDate
+            establishmentArray[row].updated
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
