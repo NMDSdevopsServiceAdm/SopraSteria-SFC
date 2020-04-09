@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import {
   allMandatoryTrainingCategories,
@@ -12,14 +11,13 @@ import {
 import { Job } from '@core/model/job.model';
 import { TrainingCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
-import { BackService } from '@core/services/back.service';
 
 @Component({
   selector: 'app-add-mandatory-training',
@@ -41,11 +39,11 @@ export class AddMandatoryTrainingComponent implements OnInit {
   public existingMandatoryTrainings: allMandatoryTrainingCategories;
   public vacanciesOptions = [
     {
-      label: 'For all job roles',
+      label: 'All job roles',
       value: mandatoryTrainingJobOption.all,
     },
     {
-      label: `For selected job roles only`,
+      label: `Selected job roles only`,
       value: mandatoryTrainingJobOption.selected,
     },
   ];
@@ -57,7 +55,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
     protected establishmentService: EstablishmentService,
     private jobService: JobService,
     protected router: Router,
-  ) {}
+  ) { }
 
   get categoriesArray(): FormArray {
     return this.form.get('categories') as FormArray;
@@ -135,7 +133,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: 'A training category is required.',
+            message: 'Select the mandatory training',
           },
         ],
       },
@@ -144,7 +142,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: 'A job role is required.',
+            message: 'Select the job role',
           },
         ],
       },
