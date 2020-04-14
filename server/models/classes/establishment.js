@@ -6,6 +6,8 @@
  *
  * Also includes representation as JSON, in one or more presentations.
  */
+const moment = require('moment');
+
 const uuid = require('uuid');
 
 // Shorthand for hasOwnProperty that also works with bare objects
@@ -1853,11 +1855,30 @@ class Establishment extends EntityValidator {
     return allExistAndValid;
   }
 
+  async canConfirm (effectiveFrom, lastEligibility, wdfPropertyValues) {
+    const hasEligibleProperties = wdfPropertyValues.every(thisWdfProperty => (thisWdfProperty.isEligible !== 'No'));
+
+    if (!hasEligibleProperties) {
+      return false;
+    }
+
+    effectiveFrom = moment(effectiveFrom);
+    lastEligibility = moment(lastEligibility);
+
+    if (lastEligibility.isAfter(effectiveFrom)) {
+      return false;
+    }
+
+    return true;
+  }
+
   // returns true if this establishment is WDF eligible as referenced from the
   //  given effective date; otherwise returns false
   async isWdfEligible(effectiveFrom) {
     const wdfByProperty = await this.wdf(effectiveFrom);
     const wdfPropertyValues = Object.values(wdfByProperty);
+    const lastEligibility = this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null;
+    const canConfirm = await this.canConfirm(effectiveFrom, lastEligibility, wdfPropertyValues);
 
     // This establishment is eligible only if the overall eligible date is later than the effective date
     // The WDF by property will show the current eligibility of each property
@@ -1871,9 +1892,10 @@ class Establishment extends EntityValidator {
           (thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
           thisWdfProperty.isEligible === 'Not relevant'
       ),
-
+      // Can the Establishment confirm their up-to-date information?
+      canConfirm: canConfirm,
       // The date just the establishment fields were last wdf valid
-      lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
+      lastEligibility: lastEligibility,
       ...wdfByProperty,
     };
   }
