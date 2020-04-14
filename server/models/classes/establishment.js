@@ -916,7 +916,7 @@ class Establishment extends EntityValidator {
           const thisTransaction = externalTransaction || t;
           const buChanged = this._status === 'NOCHANGE';
           // now append the extendable properties
-          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {},buChanged);
+          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
           if(modifedUpdateDocument && !modifedUpdateDocument.ShareDataValue){
             modifedUpdateDocument.shareWithCQC = false;
             modifedUpdateDocument.shareWithLA = false;
