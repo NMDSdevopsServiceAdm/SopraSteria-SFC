@@ -4,7 +4,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
 import { URLStructure } from '@core/model/url.model';
-import { Eligibility, WDFValue } from '@core/model/wdf.model';
+import { Eligibility } from '@core/model/wdf.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
