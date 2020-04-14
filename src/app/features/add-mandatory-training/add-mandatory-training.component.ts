@@ -70,7 +70,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
       if (value === true) {
         this.return = { url: ['/workplace/view-all-mandatory-training'] };
       } else {
-        this.return = { url: ['/dashboard'], fragment: 'staff-training-and-qualifications' };
+        this.return = { url: ['/dashboard'], fragment: 'training-and-qualifications' };
       }
     });
 

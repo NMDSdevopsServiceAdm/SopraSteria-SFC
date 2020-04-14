@@ -459,43 +459,6 @@ const updateOverviewSheet = (
     sharedStringsUniqueCount,
     sharedStringsCount
   );
-  // put total expired mandatory training count
-  putString(overviewSheet("c[r='B3']"), trainingCounts.expiredMandatoryTrainingCount);
-  // put total expired non mandatory training count
-  putString(overviewSheet("c[r='C3']"), trainingCounts.expiredNonMandatoryTrainingCount);
-  // put total expired training count
-  putString(overviewSheet("c[r='D3']"), trainingCounts.expiredTrainingCount);
-  // put total up-to-date mandatory training count
-  putString(overviewSheet("c[r='B2']"), trainingCounts.upToDateMandatoryTrainingCount);
-  // put total up-to-date non mandatory training count
-  putString(overviewSheet("c[r='C2']"), trainingCounts.upToDateNonMandatoryTrainingCount);
-  // put total up-to-date training count
-  putString(overviewSheet("c[r='D2']"), trainingCounts.upToDateTrainingCount);
-
-  // put total expiring soon mandatory training count
-  putString(overviewSheet("c[r='B4']"), trainingCounts.expiringMandatoryTrainingCount);
-  // put total expiring soon non mandatory training count
-  putString(overviewSheet("c[r='C4']"), trainingCounts.expiringNonMandatoryTrainingCount);
-  // put total expiring soon training count
-  putString(overviewSheet("c[r='D4']"), trainingCounts.expiringTrainingCount);
-
-  // put total expiring soon/expired mandatory training count
-  putString(
-    overviewSheet("c[r='B5']"),
-    `${trainingCounts.expiredMandatoryTrainingCount + trainingCounts.expiringMandatoryTrainingCount + trainingCounts.upToDateMandatoryTrainingCount}`
-  );
-
-  // put total expiring soon/expired non mandatory training count
-  putString(
-    overviewSheet("c[r='C5']"),
-    `${trainingCounts.expiredNonMandatoryTrainingCount + trainingCounts.expiringNonMandatoryTrainingCount + trainingCounts.upToDateNonMandatoryTrainingCount}`
-  );
-
-  // put total expiring soon/expired training count
-  putString(
-    overviewSheet("c[r='D5']"),
-    `${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount + trainingCounts.upToDateTrainingCount}`
-  );
 
   //insert total sum records in all three tables data
   let expiringMandatoryCounts = 0;
@@ -523,11 +486,56 @@ const updateOverviewSheet = (
     totalMissingMandatoryTrainingCount = totalMissingMandatoryTrainingCount + missingMandatoryTrainingRecords[i].missingMandatoryTrainingCount;
   }
   missingMandatoryTrainingRecords.push({ ID: -1, NameOrIdValue: 'Total', missingMandatoryTrainingCount: totalMissingMandatoryTrainingCount, count: 0});
+  // put total expired mandatory training count
+  putString(overviewSheet("c[r='B3']"), trainingCounts.expiredMandatoryTrainingCount);
+  // put total expired non mandatory training count
+  putString(overviewSheet("c[r='C3']"), trainingCounts.expiredNonMandatoryTrainingCount);
+  // put total expired training count
+  putString(overviewSheet("c[r='D3']"), trainingCounts.expiredTrainingCount);
+  // put total up-to-date mandatory training count
+  putString(overviewSheet("c[r='B2']"), trainingCounts.upToDateMandatoryTrainingCount);
+  // put total up-to-date non mandatory training count
+  putString(overviewSheet("c[r='C2']"), trainingCounts.upToDateNonMandatoryTrainingCount);
+  // put total up-to-date training count
+  putString(overviewSheet("c[r='D2']"), trainingCounts.upToDateTrainingCount);
+
+  // put total expiring soon mandatory training count
+  putString(overviewSheet("c[r='B4']"), trainingCounts.expiringMandatoryTrainingCount);
+  // put total expiring soon non mandatory training count
+  putString(overviewSheet("c[r='C4']"), trainingCounts.expiringNonMandatoryTrainingCount);
+  // put total expiring soon training count
+  putString(overviewSheet("c[r='D4']"), trainingCounts.expiringTrainingCount);
+
+  // put total missing mandatory training count
+  putString(overviewSheet("c[r='B5']"), totalMissingMandatoryTrainingCount);
+  // put total missing non mandatory training count
+  putString(overviewSheet("c[r='C5']"), 'Non applicable');
+  // put total missing training count
+  putString(overviewSheet("c[r='D5']"), totalMissingMandatoryTrainingCount);
+
+  // put total expiring soon/expired mandatory training count
+  putString(
+    overviewSheet("c[r='B6']"),
+    `${trainingCounts.expiredMandatoryTrainingCount + trainingCounts.expiringMandatoryTrainingCount + trainingCounts.upToDateMandatoryTrainingCount + totalMissingMandatoryTrainingCount}`
+  );
+
+  // put total expiring soon/expired non mandatory training count
+  putString(
+    overviewSheet("c[r='C6']"),
+    `${trainingCounts.expiredNonMandatoryTrainingCount + trainingCounts.expiringNonMandatoryTrainingCount + trainingCounts.upToDateNonMandatoryTrainingCount}`
+  );
+
+  // put total expiring soon/expired training count
+  putString(
+    overviewSheet("c[r='D6']"),
+    `${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount + trainingCounts.upToDateTrainingCount + totalMissingMandatoryTrainingCount}`
+  );
+
   //put all missing mandatory traing details
-  let currentRowMandatory = overviewSheet("row[r='17']");
-  let rowIndexMandatory = 17;
+  let currentRowMandatory = overviewSheet("row[r='18']");
+  let rowIndexMandatory = 18;
   let updateMandatoryRowIndex = rowIndexMandatory + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
-  for (; rowIndexMandatory >= 14; rowIndexMandatory--, updateMandatoryRowIndex--) {
+  for (; rowIndexMandatory >= 15; rowIndexMandatory--, updateMandatoryRowIndex--) {
 
     if (currentRowMandatory.children('c').length) {
       currentRowMandatory.children('c').each((index, element) => {
@@ -545,7 +553,7 @@ const updateOverviewSheet = (
     }
   }
 
-  let bottomMandatoryRowIndex = 17 + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
+  let bottomMandatoryRowIndex = 18 + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
   const templateRowMissing = overviewSheet(`row[r='${bottomMandatoryRowIndex}']`);
   let currentRowMissing = templateRowMissing;
   let rowIndexMissing = bottomMandatoryRowIndex + 1;
@@ -615,10 +623,10 @@ const updateOverviewSheet = (
   }
 
   //put all expiring traing details
-  let currentRowBottom = overviewSheet("row[r='13']");
-  let rowIndexBottom = 13;
+  let currentRowBottom = overviewSheet("row[r='14']");
+  let rowIndexBottom = 14;
   let updateRowIndex = rowIndexBottom + expiredWorkerTrainings.length - 1;
-  for (; rowIndexBottom >= 10; rowIndexBottom--, updateRowIndex--) {
+  for (; rowIndexBottom >= 11; rowIndexBottom--, updateRowIndex--) {
 
     if (currentRowBottom.children('c').length) {
       currentRowBottom.children('c').each((index, element) => {
@@ -636,7 +644,7 @@ const updateOverviewSheet = (
     }
   }
 
-  let bottomRowIndex = 13 + expiredWorkerTrainings.length - 1;
+  let bottomRowIndex = 14 + expiredWorkerTrainings.length - 1;
   const templateRowExpiring = overviewSheet(`row[r='${bottomRowIndex}']`);
   let currentRowExpiring = templateRowExpiring;
   let rowIndexExpiring = bottomRowIndex + 1;
@@ -701,9 +709,9 @@ const updateOverviewSheet = (
 
   //put all expired training details
   // clone the row the apropriate number of times
-  const templateRow = overviewSheet("row[r='9']");
+  const templateRow = overviewSheet("row[r='10']");
   let currentRow = templateRow;
-  let rowIndex = 10;
+  let rowIndex = 11;
   if (expiredWorkerTrainings.length > 0) {
     for (let i = 0; i < expiredWorkerTrainings.length - 1; i++) {
       const tempRow = templateRow.clone(true);
@@ -729,7 +737,7 @@ const updateOverviewSheet = (
 
     for (let column = 0; column < 10; column++) {
       const columnText = String.fromCharCode(column + 65);
-      const cellToChange = currentRow.children(`c[r='${columnText}${row + 9}']`);
+      const cellToChange = currentRow.children(`c[r='${columnText}${row + 10}']`);
       switch (columnText) {
         case 'A':
           {
