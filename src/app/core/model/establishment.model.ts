@@ -66,9 +66,10 @@ export interface Category {
 export interface WDF {
   effectiveFrom: Date;
   overalWdfEligible: boolean;
-  lastEligibility: Date;
-  isEligible: boolean;
-  currentEligibility: boolean;
+  lastEligibility: Date;  // date establishment was last eligible
+  isEligible: boolean; //  are both the establishment & workers eligible?
+  currentEligibility: boolean; //  is the establishment currently eligible?
+  canConfirm: boolean; // can the establishment confirm their details are up-to-date?
   employerType: WDFValue;
   mainService: WDFValue;
   capacities: WDFValue;
