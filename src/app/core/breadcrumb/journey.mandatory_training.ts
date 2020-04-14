@@ -13,7 +13,7 @@ export const mandatoryTrainingJourney: JourneyRoute = {
       path: Path.MANDATORY_TRAINING,
       referrer: {
         path: Path.DASHBOARD,
-        fragment: 'staff-training-and-qualifications',
+        fragment: 'training-and-qualifications',
       },
     },
   ],
