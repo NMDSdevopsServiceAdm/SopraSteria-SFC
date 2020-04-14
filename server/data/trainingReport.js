@@ -49,7 +49,7 @@ exports.getMndatoryTrainingDetails = async (trainingData, establishmentId) =>
     replacements: {
       establishmentId,
       jobId: trainingData.MainJobFKValue,
-      categoryId: trainingData.ID,
+      categoryId: trainingData.CategoryID,
       zero: 0
     },
     type: db.QueryTypes.SELECT
