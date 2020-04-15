@@ -214,7 +214,7 @@ const getTrainingReportData = async establishmentId => {
       if (trainingData[i].Expires && trainingData[i].Expires !== null) {
         let expiringDate = moment(trainingData[i].Expires);
         let currentDate = moment();
-        if (currentDate > expiringDate) {
+        if (currentDate.isAfter(expiringDate, 'day')) {
           if(trainingData[i].MandatoryTraining === 'Yes'){
             trainingCounts.expiredMandatoryTrainingCount++;
           }else{
