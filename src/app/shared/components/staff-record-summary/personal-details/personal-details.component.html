@@ -72,7 +72,7 @@
 
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.gender">
-        {{ worker.gender | closedEndedAnswer }}
+        {{ worker.gender || '-' | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -94,7 +94,7 @@
       Disability
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.disability | closedEndedAnswer }}
+      {{ worker.disability || '-' | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('disability')" (click)="setReturn()">

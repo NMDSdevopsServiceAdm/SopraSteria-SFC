@@ -141,7 +141,19 @@ export class WdfComponent implements OnInit, OnDestroy {
       });
   }
 
-  get displayConfirmationPanel() {
-    return this.workplace && this.workplace.wdf.currentEligibility && !this.workplace.wdf.isEligible && this.canEditEstablishment;
+  get displayConfirmationPanel(): boolean {
+    if (!this.workplace) {
+      return false;
+    }
+
+    if (!this.canEditEstablishment) {
+      return false;
+    }
+
+    if (!this.workplace.wdf.canConfirm) {
+      return false;
+    }
+
+    return true;
   }
 }

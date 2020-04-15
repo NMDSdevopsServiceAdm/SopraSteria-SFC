@@ -1,33 +1,30 @@
 <div class="govuk-button-group">
   <ng-container *ngIf="!return; else summary">
     <button type="submit" class="govuk-button" (click)="onClick($event, 'continue', true)">Save and continue</button>
-    <button
-      type="button"
-      class="govuk-button govuk-button--link govuk-!-margin-left-8"
+    <a
+      href="#"
+      class="govuk-list govuk-list--inline govuk-!-margin-left-8 govuk-!-margin-top-2"
       (click)="onClick($event, 'summary', false)"
+      >View record summary</a
     >
-      View record summary
-    </button>
     <span class="govuk-visually-hidden">or</span>
-    <button
-      type="button"
-      class="govuk-button govuk-button--link govuk-util__float-right"
+    <a
+      href="#"
+      class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
       (click)="onClick($event, 'exit', false)"
+      >Exit</a
     >
-      Exit
-    </button>
   </ng-container>
   <ng-template #summary>
     <button type="submit" class="govuk-button" (click)="onClick($event, 'return', true)">
       Save and return
     </button>
     <span class="govuk-visually-hidden">or</span>
-    <button
-      type="button"
-      class="govuk-button govuk-button--link govuk-util__float-right"
+    <a
+      href="#"
+      class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
       (click)="onClick($event, 'return', false)"
+      >Exit</a
     >
-      Exit
-    </button>
   </ng-template>
 </div>

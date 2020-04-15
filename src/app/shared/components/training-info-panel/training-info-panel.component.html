@@ -13,4 +13,11 @@
       {{ totalExpiringTraining }}
     </dd>
   </ng-container>
+  <ng-container *ngIf="totalMissingMandatoryTraining > 0">
+    <dt>Missing</dt>
+    <dd>
+      <img src="/assets/images/flag-red.svg" alt="Missing" />
+      {{ totalMissingMandatoryTraining }}
+    </dd>
+  </ng-container>
 </dl>

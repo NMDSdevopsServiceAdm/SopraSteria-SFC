@@ -55,7 +55,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.workerService.getAllWorkers(this.workplace.uid).subscribe(
           workers => {
             this.workerService.setWorkers(workers);
-            this.trainingAlert = this.getTrainingAlertFlag(workers);
+            if (workers.length > 0) {
+              this.trainingAlert = workers[0].trainingAlert;
+            }
           },
           error => {
             console.error(error.error);
@@ -89,28 +91,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     );
   }
 
-  /**
-   * Function used to display training alert flag over the traing and qualifications tab
-   * @param {workers} list of workers
-   * @return {number} 0 for up-to-date, 1 for expiring soon and 2 for expired.
-   */
-  public getTrainingAlertFlag(workers) {
-    if (workers.length > 0) {
-      const expariedTrainingCount = workers.filter(worker => worker.expiredTrainingCount > 0).length || 0;
-      const expiringTrainingCount = workers.filter(worker => worker.expiringTrainingCount > 0).length || 0;
-      if (expariedTrainingCount > 0) {
-        return 2;
-      } else if (expiringTrainingCount > 0) {
-        return 1;
-      } else {
-        return 0;
-      }
-    } else {
-      return 0;
-    }
-  }
 
-  get numberOfNewNotifications() {
+ get numberOfNewNotifications() {
     const newNotifications = this.notificationsService.notifications.filter(notification => !notification.isViewed);
     return newNotifications.length;
   }
