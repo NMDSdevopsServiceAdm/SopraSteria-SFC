@@ -1,6 +1,6 @@
 import 'core-js';
 
-import { Component, ElementRef, enableProdMode, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
@@ -8,8 +8,6 @@ import { IdleService } from '@core/services/idle.service';
 import { NestedRoutesService } from '@core/services/nested-routes.service';
 import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { filter, take, takeWhile } from 'rxjs/operators';
-
-enableProdMode();
 
 @Component({
   selector: 'app-root',
