@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
 const Sequelize = require('sequelize');
-const { ne } = Sequelize.Op;
 
 router.route('/').post(async (req, res) => {
   // parse input - escaped to prevent SQL injection
@@ -89,7 +88,7 @@ router.route('/').post(async (req, res) => {
     const checkEstablishmentIsUnique = await models.establishment.findOne({
       where: {
         id: {
-          [ne]: req.body.establishmentId
+          [Sequelize.Op.ne]: req.body.establishmentId
         },
         nmdsId: nmdsId,
       },
