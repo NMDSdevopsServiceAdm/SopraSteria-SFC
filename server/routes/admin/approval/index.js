@@ -2,10 +2,11 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
+const Sequelize = require('sequelize');
+const { ne } = Sequelize.Op;
 
 router.route('/').post(async (req, res) => {
   // parse input - escaped to prevent SQL injection
-
   // Sanatize username
   if(req.body.username){
     const username = escape(req.body.username.toLowerCase());
@@ -84,16 +85,35 @@ router.route('/').post(async (req, res) => {
       console.log(error);
     }
   }else{
+    const nmdsId = req.body.nmdsId;
+    const checkEstablishmentIsUnique = await models.establishment.findOne({
+      where: {
+        id: {
+          [ne]: req.body.establishmentId
+        },
+        nmdsId: nmdsId,
+      },
+      attributes: ['id']
+    });
+
+    if (checkEstablishmentIsUnique !== null) {
+      return res.status(400).json({
+				nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
+      });
+    }
+
     const establishment = await models.establishment.findOne({
       where: {
           id: req.body.establishmentId
       },
       attributes: ['id']
     });
+
     if (req.body.approve && req.body.establishmentId) {
       // Establishment:: Update their ustatus to null
       try {
         const updatedestablishment = await establishment.update({
+          nmdsId: nmdsId,
           ustatus: null
         });
         if (updatedestablishment) {
