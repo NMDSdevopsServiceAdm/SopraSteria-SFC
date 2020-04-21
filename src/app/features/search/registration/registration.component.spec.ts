@@ -9,7 +9,7 @@ import { spy } from 'sinon';
 
 import { RegistrationComponent } from './registration.component';
 
-fdescribe('RegistrationComponent', () => {
+describe('RegistrationComponent', () => {
   async function getRegistrationComponent() {
     const registration = {
       establishment: {
