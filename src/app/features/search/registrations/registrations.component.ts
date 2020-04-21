@@ -15,6 +15,7 @@ export class RegistrationsComponent implements OnInit {
   ngOnInit() {
     this.getRegistrations();
   }
+
   public getRegistrations() {
     this.registrationsService.getRegistrations().subscribe(
       data => {
@@ -23,8 +24,10 @@ export class RegistrationsComponent implements OnInit {
       error => this.onError(error)
     );
   }
+
   public handleRegistration(index: number) {
     this.registrations.splice(index, 1);
   }
+
   private onError(error) {}
 }
