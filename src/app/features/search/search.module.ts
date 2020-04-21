@@ -6,8 +6,11 @@ import { DialogService } from '@core/services/dialog.service';
 import {
   AdminUnlockConfirmationDialogComponent,
 } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
+import { FirstErrorPipe } from '@shared/pipes/first-error.pipe';
 import { SharedModule } from '@shared/shared.module';
 
+import { RegistrationComponent } from './registration/registration.component';
+import { RegistrationsComponent } from './registrations/registrations.component';
 import { SearchRoutingModule } from './search-routing.module';
 import { SearchComponent } from './search.component';
 
@@ -16,7 +19,10 @@ import { SearchComponent } from './search.component';
   providers: [DialogService],
   declarations: [
     SearchComponent,
-    AdminUnlockConfirmationDialogComponent
+    AdminUnlockConfirmationDialogComponent,
+    FirstErrorPipe,
+    RegistrationComponent,
+    RegistrationsComponent,
   ],
   entryComponents: [AdminUnlockConfirmationDialogComponent]
 })
