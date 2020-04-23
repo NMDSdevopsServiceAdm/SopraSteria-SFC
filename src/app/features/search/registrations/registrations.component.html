@@ -1,0 +1,6 @@
+<h1 class="govuk-heading-xl">
+  Registrations
+</h1>
+<div *ngFor="let registration of registrations; let i = index">
+  <app-registration [index]="i" [registration]="registration" (handleRegistration)="handleRegistration($event)"></app-registration>
+</div>
