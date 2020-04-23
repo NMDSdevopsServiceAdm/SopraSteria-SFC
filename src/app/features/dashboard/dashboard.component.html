@@ -7,12 +7,25 @@
       }}</span>
       {{ workplace?.name }}
     </h1>
+
+    <div *ngIf="isAdmin">
+      <button
+        class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
+        (click)="onDeleteWorkplace($event)"
+      >
+        <img src="/assets/images/bin.svg" alt="" />
+        <span class="govuk-!-margin-left-1">
+        Delete <span class="govuk-visually-hidden">{{ workplace.name }}</span> Workplace
+      </span>
+      </button>
+    </div>
     <p class="govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-0">
-      Workplace ID: {{ workplace?.nmdsId }}
+      Workplace ID: {{ workplace?.nmdsId }} 
     </p>
     <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16 govuk-!-margin-top-2">
       Last signed in on {{ lastLoggedIn | date: 'd MMMM y' }}
     </p>
+
   </div>
 
   <div class="govuk-grid-column-one-third contact-col" [class.contact-col--parent]="workplace?.isParent">

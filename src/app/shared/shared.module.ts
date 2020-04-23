@@ -62,6 +62,9 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 import { ViewAllMandatoryTrainingComponent } from '@features/workplace/view-all-mandatory-trainings/view-all-mandatory-training.component';
 import { TrainingLinkPanelComponent } from './components/trianing-link-panel/trianing-link-panel.component.component';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -125,6 +128,7 @@ import { TrainingLinkPanelComponent } from './components/trianing-link-panel/tri
     LinkToParentRemoveDialogComponent,
     OwnershipChangeMessageDialogComponent,
     ViewAllMandatoryTrainingComponent,
+    DeleteWorkplaceDialogComponent
   ],
   exports: [
     AlertComponent,
@@ -184,9 +188,11 @@ import { TrainingLinkPanelComponent } from './components/trianing-link-panel/tri
     LinkToParentRemoveDialogComponent,
     OwnershipChangeMessageDialogComponent,
     ViewAllMandatoryTrainingComponent,
+    DeleteWorkplaceDialogComponent
   ],
   providers: [DialogService],
   entryComponents: [
+    DeleteWorkplaceDialogComponent,
     ChangeDataOwnerDialogComponent,
     CancelDataOwnerDialogComponent,
     RejectRequestDialogComponent,
@@ -194,7 +200,7 @@ import { TrainingLinkPanelComponent } from './components/trianing-link-panel/tri
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
     LinkToParentRemoveDialogComponent,
-    OwnershipChangeMessageDialogComponent,
+    OwnershipChangeMessageDialogComponent
   ],
 })
 export class SharedModule {}

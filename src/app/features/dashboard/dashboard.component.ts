@@ -6,6 +6,10 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { interval, Subscription } from 'rxjs';
+import { DialogService } from '@core/services/dialog.service';
+import { Router } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,14 +25,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public totalStaffRecords: number;
   public workplace: Establishment;
   public trainingAlert: number;
+  public isAdmin: any;
 
 
   constructor(
+    private alertService: AlertService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private userService: UserService,
     private workerService: WorkerService,
     private notificationsService: NotificationsService,
+    private dialogService: DialogService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -65,7 +73,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         )
       );
     }
-
+    this.isAdmin = this.userService.loggedInUser.role === 'Admin';
     const lastLoggedIn = this.userService.loggedInUser.lastLoggedIn;
     this.lastLoggedIn = lastLoggedIn ? lastLoggedIn : null;
 
@@ -86,6 +94,47 @@ export class DashboardComponent implements OnInit, OnDestroy {
               console.error(error.error);
             }
           );
+        }
+      )
+    );
+  }
+
+  public onDeleteWorkplace(event: Event): void {
+    event.preventDefault();
+    const isAdmin = this.userService.loggedInUser.role === 'Admin';
+
+    if (!isAdmin) {
+      return;
+    }
+
+    this.dialogService
+      .open(DeleteWorkplaceDialogComponent, { workplaceName: this.workplace.name })
+      .afterClosed.subscribe(deleteConfirmed => {
+      if (deleteConfirmed) {
+        this.deleteWorkplace();
+      }
+    });
+  }
+
+  private deleteWorkplace(): void {
+    if (this.userService.loggedInUser.role !== 'Admin') {
+      return;
+    }
+    this.subscriptions.add(
+      this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
+        () => {
+          this.router.navigate(['/search-establishments']).then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: `${this.workplace.name} has been permanently deleted.`,
+            });
+          });
+        },
+        () => {
+          this.alertService.addAlert({
+            type: 'warning',
+            message: 'There was an error deleting the workplace.',
+          });
         }
       )
     );
