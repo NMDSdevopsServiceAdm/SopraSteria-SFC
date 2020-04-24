@@ -10,6 +10,8 @@ import { DialogService } from '@core/services/dialog.service';
 import { Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { take } from 'rxjs/operators';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,6 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private alertService: AlertService,
+    private authService: AuthService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private userService: UserService,
@@ -120,17 +123,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.userService.loggedInUser.role !== 'Admin') {
       return;
     }
+
     this.subscriptions.add(
       this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
         () => {
-          this.router.navigate(['/search-establishments']).then(() => {
-            this.alertService.addAlert({
-              type: 'success',
-              message: `${this.workplace.name} has been permanently deleted.`,
-            });
-          });
+          this.permissionsService.clearPermissions();
+          this.authService.restorePreviousToken();
+
+          this.establishmentService
+            .getEstablishment(this.authService.getPreviousToken().EstablishmentUID)
+            .pipe(take(1))
+            .subscribe(
+              workplace => {
+                this.establishmentService.setState(workplace);
+                this.establishmentService.setPrimaryWorkplace(workplace);
+                this.establishmentService.establishmentId = workplace.uid;
+                this.router.navigate(['/search-establishments']).then(() => {
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `${this.workplace.name} has been permanently deleted.`,
+                  });
+                });
+              });
         },
-        () => {
+        e => {
+          console.error(e)
           this.alertService.addAlert({
             type: 'warning',
             message: 'There was an error deleting the workplace.',
