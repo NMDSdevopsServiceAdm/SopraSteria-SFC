@@ -72,7 +72,7 @@ const config = convict({
       usingFiles: {
         doc: 'If true, retrieves client certificate, client key and root certificate from file; if false, using data values',
         format: 'Boolean',
-        default: true
+        default: false
       },
       files: {
         certificate: {
@@ -92,6 +92,23 @@ const config = convict({
           format: String,
           default: 'TBC',
           env: 'DB_APP_USER_CERT'
+        }
+      },
+      data: {
+        certificate: {
+          doc: 'The client certificate',
+          format: String,
+          default: 'TBC',
+        },
+        key: {
+          doc: 'The client key',
+          format: String,
+          default: 'TBC',
+        },
+        ca: {
+          doc: 'The server certificate (authority - ca)',
+          format: String,
+          default: 'TBC',
         }
       }
     }
@@ -146,6 +163,7 @@ config.validate(
 
 // now, if defined, load secrets from AWS Secret Manager
 if (config.get('aws.secrets.use')) {
+  console.log('Using AWS Secrets');
   AWSSecrets.initialiseSecrets(
     config.get('aws.region'),
     config.get('aws.secrets.wallet')
@@ -156,9 +174,9 @@ if (config.get('aws.secrets.use')) {
     config.set('db.database', AWSSecrets.dbName());
     config.set('db.password', AWSSecrets.dbPass());
     config.set('db.username', AWSSecrets.dbUser());
-    // config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
-    // config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
-    // config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
+    config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
+    config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
+    config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);
   });

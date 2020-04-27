@@ -6,15 +6,20 @@ const initialiseSecrets = async (region, wallet) => {
   const secrets = new AWS.SecretsManager({
     region
   });
-
+console.log('Initialising AWS Secret');
   try {
+    console.log(wallet);
     if (!wallet) throw new Error('wallet must be defined');
     const mySecretsValue = await secrets.getSecretValue({SecretId: wallet}).promise().then((mySecretsValue) => {
+      console.log('Got secrets from AWS');
       return mySecretsValue;
     }).catch(error => {
       console.error(error);
       throw error;
     });
+
+    console.log('Checking Secret');
+    console.log(mySecretsValue);
     if (typeof mySecretsValue.SecretString !== 'undefined') {
       console.log('Got Secrets');
       const mySecrets = JSON.parse(mySecretsValue.SecretString);
@@ -23,9 +28,11 @@ const initialiseSecrets = async (region, wallet) => {
         throw new Error(`Unexpected parsing of secrets wallet: ${wallet}`);
       }
 
+      console.log(mySecrets);
+
       myLocalSecrets = {
-        DB_USER: mySecrets.DB_USER,
-        DB_PASS: mySecrets.DB_PASS,
+        DB_USER: mySecrets.CQC_DB_USER,
+        DB_PASS: mySecrets.CQC_DB_PASS,
         DB_NAME: mySecrets.DB_NAME,
         DB_HOST: mySecrets.DB_HOST,
         DB_ROOT_CRT: mySecrets.DB_ROOT_CRT,
@@ -82,7 +89,7 @@ const dbPass = () => {
 const dbUser = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_USER) {
-      throw new Error('Unknown CQC_DB_USER secret');
+      throw new Error('Unknown DB_USER secret');
     } else {
       return myLocalSecrets.DB_USER;
     }

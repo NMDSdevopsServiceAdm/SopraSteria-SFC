@@ -14,12 +14,14 @@ async function updateComplete (locations, error) {
   let failed = false;
   console.log('Update Complete');
   console.log('Checking to see failure status');
+  let errorMessage = '';
   locations.changes.forEach(location => {
     if (location.status !== '') {
       completionCount++;
     }
     if (location.status !== 'success') {
       failed = true;
+      errorMessage = 'failed: check logs in S3';
     }
   });
   console.log('Checked ' + completionCount);
@@ -28,7 +30,7 @@ async function updateComplete (locations, error) {
       console.log('One or more updates failed');
       await models.cqclog.create({
         success: false,
-        message: error
+        message: errorMessage
       });
       return false;
     } else {
@@ -75,6 +77,14 @@ async function updateS3 (location, status) {
   }).promise();
 }
 
+async function deleteLocation (location) {
+  await models.location.destroy({
+    where: {
+      locationid: location.locationId
+    }
+  });
+}
+
 module.exports.handler = async (event, context) => {
   const location = JSON.parse(event.Records[0].body);
   try {
@@ -94,11 +104,7 @@ module.exports.handler = async (event, context) => {
         mainservice: (individualLocation.data.gacServiceTypes.length>0) ? individualLocation.data.gacServiceTypes[0].name : null
       });
     } else {
-      await models.location.destroy({
-        where: {
-          locationid: location.locationId
-        }
-      });
+      await deleteLocation(location);
     }
     await updateS3(location, 'success');
 
@@ -107,7 +113,13 @@ module.exports.handler = async (event, context) => {
       body: 'Call Successful'
     };
   } catch (error) {
-    await updateS3(location, `failed: ${error.message}`);
+    console.log(error);
+    if (error.response.data.message && error.response.data.message.indexOf("No Locations found" > -1)) {
+      await deleteLocation(location);
+      await updateS3(location, 'success');
+    } else {
+      await updateS3(location, `failed: ${error.message}`);
+    }
     return error.message;
   }
 };

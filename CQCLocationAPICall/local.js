@@ -1,3 +1,3 @@
-const handler = require('./deletearchived').handler;
+const handler = require('./changes').handler;
 
 handler();

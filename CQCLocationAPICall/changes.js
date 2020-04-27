@@ -59,19 +59,18 @@ async function sendMessages(locationIds, startdate, enddate) {
     region: appConfig.get('aws.region').toString()
   });
   console.log('Adding messages to SQS');
-  await Promise.all(locationIds.map(async locationId => {
+  await Promise.all(locationIds.map(async (locationId, index) => {
     const location = {
       ...locationId,
       "startDate": startdate,
       "endDate": enddate
     };
     try {
-      console.log('Pushing new item onto ' + QueueUrl);
       const sqsReq = await sqs.sendMessage({
         MessageBody: JSON.stringify(location),
         QueueUrl
       }).promise();
-      console.log(sqsReq);
+      if (index % 1000 === 0) console.log(`Added ${index} to the SQS Queue`);
     } catch(error) {
       console.error(error);
     }
@@ -106,16 +105,7 @@ async function changes () {
 
 module.exports.handler =  async (event, context) => {
   try {
-    if (models.status.ready) {
-      console.log('Sequelize is ready');
       return await changes();
-    } else {
-      console.log('Waiting for sequelize to be ready');
-      models.status.on(models.status.READY_EVENT, async () => {
-        console.log('Got ready event');
-        return await changes();
-      });
-    }
   } catch (error) {
     return  error.message;
   }

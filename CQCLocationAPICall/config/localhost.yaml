@@ -1,7 +1,9 @@
 aws:
   region: eu-west-1
+  bucketname: cqcs3lambda
+  sqsqueue: https://sqs.eu-west-1.amazonaws.com/364648107127/LamdaCQC
   secrets:
-    use: true
+    use: false
 log:
   sequelize: true
 db:

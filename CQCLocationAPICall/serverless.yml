@@ -30,7 +30,7 @@ provider:
       Resource:
         Fn::Join:
           - ""
-          - - ${self:custom.wallet.${self:provider.stage}}
+          - - arn:aws:secretsmanager:*:*:*
   region: eu-west-1
   environment:
     CQC_SQS_QUEUE: ${self:custom.sqsQueueUrl.${self:provider.stage}}
@@ -50,6 +50,7 @@ functions:
     handler: changes.handler
     name: cqc-changes-${self:provider.stage}
     timeout: 900
+    memorySize: 1536
     events:
       - schedule: rate(24 hours)
   update:
@@ -60,7 +61,7 @@ functions:
     events:
       - sqs:
         arn: ${self:custom.sqsQueueArn.${self:provider.stage}}
-        batchSize: 1
+        batchSize: 1289975
 
 # plugins:
 #   - serverless-offline
@@ -75,7 +76,7 @@ custom:
     preprod: https://sqs.eu-west-1.amazonaws.com/364648107127/CQC_SQS_Preprod
     prod: https://sqs.eu-west-1.amazonaws.com/364648107127/CQC_SQS_Prod
   wallet:
-    dev: arn:aws:secretsmanager:eu-west-1:364648107127:secret:CQC_update-4KjgcG
+    dev: arn:aws:secretsmanager:eu-west-1:364648107127:secret:dev/api-JSfSOr
     preprod: arn:aws:secretsmanager:eu-west-1:364648107127:secret:preprod/api-8ARd5F
     prod: arn:aws:secretsmanager:eu-west-1:364648107127:secret:prod/api-KUX494
   bucket:
