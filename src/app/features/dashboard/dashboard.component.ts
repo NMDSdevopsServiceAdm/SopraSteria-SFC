@@ -20,6 +20,7 @@ import { AuthService } from '@core/services/auth.service';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
+  public canDeleteEstablishment: boolean;
   public canViewEstablishment: boolean;
   public canViewListOfUsers: boolean;
   public canViewListOfWorkers: boolean;
@@ -27,7 +28,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public totalStaffRecords: number;
   public workplace: Establishment;
   public trainingAlert: number;
-  public isAdmin: any;
 
 
   constructor(
@@ -48,6 +48,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canViewListOfUsers = this.permissionsService.can(workplaceUid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
+    this.canDeleteEstablishment = this.permissionsService.can(workplaceUid, 'canDeleteEstablishment');
 
     if (this.workplace) {
       this.subscriptions.add(
@@ -76,7 +77,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         )
       );
     }
-    this.isAdmin = this.userService.loggedInUser.role === 'Admin';
     const lastLoggedIn = this.userService.loggedInUser.lastLoggedIn;
     this.lastLoggedIn = lastLoggedIn ? lastLoggedIn : null;
 
@@ -104,9 +104,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public onDeleteWorkplace(event: Event): void {
     event.preventDefault();
-    const isAdmin = this.userService.loggedInUser.role === 'Admin';
 
-    if (!isAdmin) {
+    if (!this.canDeleteEstablishment) {
       return;
     }
 
@@ -120,7 +119,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private deleteWorkplace(): void {
-    if (this.userService.loggedInUser.role !== 'Admin') {
+    if (!this.canDeleteEstablishment) {
       return;
     }
 
