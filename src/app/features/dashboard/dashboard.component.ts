@@ -6,6 +6,12 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { interval, Subscription } from 'rxjs';
+import { DialogService } from '@core/services/dialog.service';
+import { Router } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { take } from 'rxjs/operators';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,6 +20,7 @@ import { interval, Subscription } from 'rxjs';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
+  public canDeleteEstablishment: boolean;
   public canViewEstablishment: boolean;
   public canViewListOfUsers: boolean;
   public canViewListOfWorkers: boolean;
@@ -24,11 +31,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
 
   constructor(
+    private alertService: AlertService,
+    private authService: AuthService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private userService: UserService,
     private workerService: WorkerService,
     private notificationsService: NotificationsService,
+    private dialogService: DialogService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -37,6 +48,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canViewListOfUsers = this.permissionsService.can(workplaceUid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
+    this.canDeleteEstablishment = this.permissionsService.can(workplaceUid, 'canDeleteEstablishment');
 
     if (this.workplace) {
       this.subscriptions.add(
@@ -65,7 +77,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         )
       );
     }
-
     const lastLoggedIn = this.userService.loggedInUser.lastLoggedIn;
     this.lastLoggedIn = lastLoggedIn ? lastLoggedIn : null;
 
@@ -86,6 +97,60 @@ export class DashboardComponent implements OnInit, OnDestroy {
               console.error(error.error);
             }
           );
+        }
+      )
+    );
+  }
+
+  public onDeleteWorkplace(event: Event): void {
+    event.preventDefault();
+
+    if (!this.canDeleteEstablishment) {
+      return;
+    }
+
+    this.dialogService
+      .open(DeleteWorkplaceDialogComponent, { workplaceName: this.workplace.name })
+      .afterClosed.subscribe(deleteConfirmed => {
+      if (deleteConfirmed) {
+        this.deleteWorkplace();
+      }
+    });
+  }
+
+  private deleteWorkplace(): void {
+    if (!this.canDeleteEstablishment) {
+      return;
+    }
+
+    this.subscriptions.add(
+      this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
+        () => {
+          this.permissionsService.clearPermissions();
+          this.authService.restorePreviousToken();
+
+          this.establishmentService
+            .getEstablishment(this.authService.getPreviousToken().EstablishmentUID)
+            .pipe(take(1))
+            .subscribe(
+              workplace => {
+                this.establishmentService.setState(workplace);
+                this.establishmentService.setPrimaryWorkplace(workplace);
+                this.establishmentService.establishmentId = workplace.uid;
+                this.router.navigate(['/search-establishments']).then(() => {
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `${this.workplace.name} has been permanently deleted.`,
+                  });
+                });
+              });
+        },
+        e => {
+          console.error(e)
+          this.alertService.addAlert({
+            type: 'warning',
+            message: 'There was an error deleting the workplace.',
+          });
         }
       )
     );

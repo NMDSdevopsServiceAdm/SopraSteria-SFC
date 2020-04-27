@@ -152,6 +152,7 @@ export class SearchComponent implements OnInit {
 
   private onSwapSuccess(data) {
     if (data.body && data.body.establishment && data.body.establishment.uid) {
+      this.authService.setPreviousToken();
       this.authService.token = data.headers.get('authorization');
       const workplaceUid = data.body.establishment.uid;
       this.establishmentService
