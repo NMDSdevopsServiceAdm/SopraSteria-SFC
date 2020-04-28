@@ -8,7 +8,7 @@
       {{ workplace?.name }}
     </h1>
 
-    <div *ngIf="workplace && canDeleteEstablishment">
+    <div *ngIf="workplace && canDeleteEstablishment && this.subsidiaryCount < 1">
       <button
         class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
         (click)="onDeleteWorkplace($event)"
@@ -20,7 +20,7 @@
       </button>
     </div>
     <p class="govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-0">
-      Workplace ID: {{ workplace?.nmdsId }} 
+      Workplace ID: {{ workplace?.nmdsId }}
     </p>
     <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16 govuk-!-margin-top-2">
       Last signed in on {{ lastLoggedIn | date: 'd MMMM y' }}

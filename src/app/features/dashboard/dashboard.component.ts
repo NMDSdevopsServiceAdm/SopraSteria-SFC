@@ -29,6 +29,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public trainingAlert: number;
 
+  private subsidiaryCount: number;
+
 
   constructor(
     private alertService: AlertService,
@@ -76,6 +78,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
           }
         )
       );
+
+      this.subscriptions.add(
+        this.userService.getEstablishments().subscribe(res => {
+          this.subsidiaryCount = res.subsidaries ? res.subsidaries.count : 0;
+        })
+      )
     }
     const lastLoggedIn = this.userService.loggedInUser.lastLoggedIn;
     this.lastLoggedIn = lastLoggedIn ? lastLoggedIn : null;
