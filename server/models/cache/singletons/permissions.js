@@ -310,8 +310,9 @@ class PermissionCache {
       }
     }
 
-    if(estabType !== 'Subsidiary')
+    if(estabType !== 'Subsidiary') {
       permissions = permissions.filter(perm => perm.code !== 'canDeleteEstablishment');
+    }
 
     const theirPermissions = permissions.map(thisPerm => {
             return {
