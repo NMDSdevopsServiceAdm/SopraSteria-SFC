@@ -8,7 +8,7 @@
       {{ workplace?.name }}
     </h1>
 
-    <div *ngIf="canDeleteEstablishment">
+    <div *ngIf="workplace && canDeleteEstablishment">
       <button
         class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
         (click)="onDeleteWorkplace($event)"
