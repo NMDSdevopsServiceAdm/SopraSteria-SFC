@@ -137,21 +137,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.permissionsService.clearPermissions();
           this.authService.restorePreviousToken();
 
-          this.establishmentService
-            .getEstablishment(this.authService.getPreviousToken().EstablishmentUID)
-            .pipe(take(1))
-            .subscribe(
-              workplace => {
-                this.establishmentService.setState(workplace);
-                this.establishmentService.setPrimaryWorkplace(workplace);
-                this.establishmentService.establishmentId = workplace.uid;
-                this.router.navigate(['/search-establishments']).then(() => {
-                  this.alertService.addAlert({
-                    type: 'success',
-                    message: `${this.workplace.name} has been permanently deleted.`,
+          if(this.authService.getPreviousToken().EstablishmentUID) {
+            this.establishmentService
+              .getEstablishment(this.authService.getPreviousToken().EstablishmentUID)
+              .pipe(take(1))
+              .subscribe(
+                workplace => {
+                  this.establishmentService.setState(workplace);
+                  this.establishmentService.setPrimaryWorkplace(workplace);
+                  this.establishmentService.establishmentId = workplace.uid;
+                  this.router.navigate(['/search-establishments']).then(() => {
+                    this.alertService.addAlert({
+                      type: 'success',
+                      message: `${this.workplace.name} has been permanently deleted.`,
+                    });
                   });
                 });
+          } else {
+            this.router.navigate(['/search-establishments']).then(() => {
+              this.alertService.addAlert({
+                type: 'success',
+                message: `${this.workplace.name} has been permanently deleted.`,
               });
+            });
+          }
         },
         e => {
           console.error(e)
