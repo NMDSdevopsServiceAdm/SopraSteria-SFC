@@ -112,11 +112,18 @@
         </div>
       </div>
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-          <button *ngIf="!allTrainingsSelected" class="govuk-button govuk-button--secondary" type="button"
-            (click)="addCategory()">
-            Add more mandatory training
-          </button>
+        <div class="govuk-grid-column-two-thirds">
+          <div class="govuk-grid-column-one-half">
+            <button *ngIf="!allTrainingsSelected" class="govuk-button govuk-button--secondary" type="button"
+              (click)="addCategory()">
+              Add more mandatory training
+            </button>
+          </div>
+          <div class="govuk-grid-column-one-half" style="height: 100%; display: block;">
+            <a href="#"
+               (click)="removeAllCategories($event)">
+              Remove all selections</a>
+          </div>
         </div>
       </div>
     </ng-container>
