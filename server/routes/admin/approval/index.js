@@ -5,6 +5,10 @@ const models = require('../../../models');
 const Sequelize = require('sequelize');
 
 router.route('/').post(async (req, res) => {
+  await adminApproval(req, res);
+});
+
+const adminApproval = async (req, res) => {
   // parse input - escaped to prevent SQL injection
   // Sanatize username
   if(req.body.username){
@@ -137,6 +141,6 @@ router.route('/').post(async (req, res) => {
       }
     }
   }
-});
+}
 
 module.exports = router;
