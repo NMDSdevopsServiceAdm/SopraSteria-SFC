@@ -9,12 +9,15 @@ import { spy } from 'sinon';
 
 import { RegistrationComponent } from './registration.component';
 
+const testNmdsId = 'W1234567';
+const testEstablishmentId = 12345;
+
 describe('RegistrationComponent', () => {
   async function getRegistrationComponent() {
     const registration = {
       establishment: {
-        id: 12345,
-        nmdsId: 'W1234567',
+        id: testEstablishmentId,
+        nmdsId: testNmdsId
       },
     };
 
@@ -38,7 +41,7 @@ describe('RegistrationComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should approve the registration of an Establishment', async () => {
+  it('should be able to approve the registration of an establishment', async () => {
     const { click, getByText, fixture } = await getRegistrationComponent();
 
     const { componentInstance: component } = fixture;
@@ -48,13 +51,13 @@ describe('RegistrationComponent', () => {
     click(getByText('Approve'));
 
     expect(registrationApproval).toHaveBeenCalledWith({
-      establishmentId: 12345,
-      nmdsId: 'W1234567',
+      establishmentId: testEstablishmentId,
+      nmdsId: testNmdsId,
       approve: true,
     });
   });
 
-  it('should reject the registration of an Establishment', async () => {
+  it('should be able to reject the registration of an establishment', async () => {
     const { click, getByText, fixture } = await getRegistrationComponent();
 
     const { componentInstance: component } = fixture;
@@ -64,8 +67,8 @@ describe('RegistrationComponent', () => {
     click(getByText('Reject'));
 
     expect(registrationApproval).toHaveBeenCalledWith({
-      establishmentId: 12345,
-      nmdsId: 'W1234567',
+      establishmentId: testEstablishmentId,
+      nmdsId: testNmdsId,
       approve: false,
     });
   });
@@ -80,12 +83,13 @@ describe('RegistrationComponent', () => {
     const nmdsIdInput = container.querySelector('input[name=nmdsid]') as HTMLElement;
     nmdsIdInput.nodeValue = '';
 
-    type(nmdsIdInput, 'G1234567');
+    const newNmdsId = 'G1234567';
+    type(nmdsIdInput, newNmdsId);
     click(getByText('Approve'));
 
     expect(registrationApproval).toHaveBeenCalledWith({
-      establishmentId: 12345,
-      nmdsId: 'G1234567',
+      establishmentId: testEstablishmentId,
+      nmdsId: newNmdsId,
       approve: true,
     });
   });
@@ -186,10 +190,10 @@ describe('RegistrationComponent', () => {
       const nmdsIdInput = container.querySelector('input[name=nmdsid]') as HTMLElement;
       nmdsIdInput.nodeValue = '';
 
-      type(nmdsIdInput, 'W1234567');
+      type(nmdsIdInput, testNmdsId);
       click(getByText('Approve'));
 
-      expect(getByText('This workplace ID (W1234567) belongs to another workplace. Enter a different workplace ID.'));
+      expect(getByText(`This workplace ID (${ testNmdsId }) belongs to another workplace. Enter a different workplace ID.`));
     });
   });
 });
