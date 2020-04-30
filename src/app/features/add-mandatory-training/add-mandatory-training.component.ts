@@ -157,15 +157,15 @@ export class AddMandatoryTrainingComponent implements OnInit {
     this.serverErrorsMap = [
       {
         name: 503,
-        message: 'An error has occurred. Please try again later.',
+        message: 'We could not send request to mandatory traning. You can try again or contact us.',
       },
       {
         name: 400,
-        message: 'An error has occurred. Please try again later.',
+        message: 'Unable to send request to mandatory traning.',
       },
       {
         name: 404,
-        message: 'An error has occurred. Please try again later.',
+        message: 'Send request to mandatory traning service not found. You can try again or contact us.',
       },
     ];
   }
