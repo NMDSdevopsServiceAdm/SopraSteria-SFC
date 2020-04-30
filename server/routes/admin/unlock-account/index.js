@@ -6,7 +6,7 @@ const models = require('../../../models');
 const unlockAccount = async (req, res) => {
     // parse input - escaped to prevent SQL injection
 
-  // Sanatize username
+  // Sanitize username
   if(req.body.username){
     const username = escape(req.body.username.toLowerCase());
 
