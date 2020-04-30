@@ -281,16 +281,13 @@ export class AddMandatoryTrainingComponent implements OnInit {
 
   //Generate training object arrording to server requirement
   protected generateUpdateProps(): any {
-    if (this.categoriesArray.length || true) {
-      return {
-        categories: this.categoriesArray.value.map(category => ({
-          trainingCategoryId: parseInt(category.trainingCategory, 10),
-          allJobRoles: category.vacancyType === mandatoryTrainingJobOption.all ? true : false,
-          jobs: category.vacancies,
-        })),
-      };
-    }
-    return null;
+    return {
+      categories: this.categoriesArray.value.map(category => ({
+        trainingCategoryId: parseInt(category.trainingCategory, 10),
+        allJobRoles: category.vacancyType === mandatoryTrainingJobOption.all ? true : false,
+        jobs: category.vacancies,
+      })),
+    };
   }
 
   //Send updateed training object to server
