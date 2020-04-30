@@ -1,7 +1,7 @@
 <ng-container *ngIf="trainingRecords.length">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <h2 class="govuk-heading-m">Training ({{ trainingRecords.length }})</h2>
+      <h2 class="govuk-heading-m">Training ({{ trainingCount }})</h2>
       <p>Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
     </div>
   </div>
@@ -23,9 +23,17 @@
           </td>
           <td class="govuk-table__cell">{{ trainingRecord.title }}</td>
           <td class="govuk-table__cell">
-            <span [class.govuk-util__bold]="trainingRecord.trainingStatus === 2"
-              >{{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd M y') : '-' }}
+            <span [class.govuk-util__bold]="trainingRecord.trainingStatus === 2">
+              {{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd M y') : '-' }}
             </span>
+            <div *ngIf="trainingRecord.trainingStatus === 3" class="govuk-!-margin-bottom-1">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt="Missing"
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Missing
+            </div>
             <div *ngIf="trainingRecord.trainingStatus === 2" class="govuk-!-margin-bottom-1">
               <img
                 src="/assets/images/flag-red.svg"
@@ -45,7 +53,7 @@
           </td>
           <td class="govuk-table__cell govuk-!-font-weight-regular">
             <a
-              *ngIf="canEditWorker"
+              *ngIf="canEditWorker && !trainingRecord.missing "
               class="govuk-link--no-visited-state"
               href="#"
               (click)="toggleDetails(trainingRecord.uid, $event)"

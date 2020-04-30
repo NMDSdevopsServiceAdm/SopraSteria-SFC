@@ -86,7 +86,7 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
                 console.error(error.error);
               }
             );
-        },
+          },
         error => {
           console.error(error.error);
         }
@@ -98,13 +98,13 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
    * @param {traingRecords} list of trainging record
    * @return {number} 0 for up-to-date, 1 for expiring soon and 2 for expired.
    */
-  public getTrainingFlag(traingRecords) {
+  public getTrainingFlag(trainingRecords) {
     let expired = false;
     let expiring = false;
-
+     let missing = false;
     const currentDate = moment();
-    //check traingin status
-    traingRecords.forEach(training => {
+    //check training status
+    trainingRecords.forEach(training => {
       if (training.expires) {
         const expiringDate = moment(training.expires);
         const daysDiffrence = expiringDate.diff(currentDate, 'days');
@@ -113,12 +113,16 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
         } else if (daysDiffrence >= 0 && daysDiffrence <= 90) {
           expiring = true;
         }
+      }else if( training.missing){
+        missing = true;
       }
     });
     // return for flag value
-    if (expired) {
-      return 2;
+    if (missing) {
+      return 3;
     } else if (expiring) {
+      return 1;
+  } else if (expiring) {
       return 1;
     } else {
       return 0;

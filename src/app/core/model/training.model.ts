@@ -40,6 +40,7 @@ export interface TrainingRecord {
   updated: string;
   updatedBy: string;
   trainingStatus?: number;
+  missing?: boolean;
 }
 
 export interface TrainingLockStatus {
