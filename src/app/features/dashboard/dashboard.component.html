@@ -8,7 +8,7 @@
       {{ workplace?.name }}
     </h1>
 
-    <div *ngIf="workplace && canDeleteEstablishment && this.subsidiaryCount < 1">
+    <div *ngIf="workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING'">
       <button
         class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
         (click)="onDeleteWorkplace($event)"
