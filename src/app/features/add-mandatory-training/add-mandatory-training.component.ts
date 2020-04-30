@@ -18,6 +18,8 @@ import { JobService } from '@core/services/job.service';
 import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
+import { DialogService } from '@core/services/dialog.service';
+import { RemoveAllSelectionsDialogComponent } from '@features/add-mandatory-training/remove-all-selections-dialog.component';
 
 @Component({
   selector: 'app-add-mandatory-training',
@@ -49,12 +51,13 @@ export class AddMandatoryTrainingComponent implements OnInit {
   ];
   constructor(
     protected backService: BackService,
+    private dialogService: DialogService,
     private trainingService: TrainingService,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     private jobService: JobService,
-    protected router: Router,
+    protected router: Router
   ) { }
 
   get categoriesArray(): FormArray {
@@ -195,6 +198,21 @@ export class AddMandatoryTrainingComponent implements OnInit {
     this.categoriesArray.removeAt(index);
   }
 
+  public removeAllCategories(event: Event): void {
+    event.preventDefault();
+
+    this.dialogService
+      .open(RemoveAllSelectionsDialogComponent, { })
+      .afterClosed.subscribe(deleteConfirmed => {
+        if(deleteConfirmed) {
+          this.categoriesArray.clear();
+          const props = this.generateUpdateProps();
+          this.updateMandatoryTraining(props, false);
+          this.categoriesArray.push(this.createCategoryControl());
+        }
+    });
+  }
+
   // create training category contral to add new training
   private createCategoryControl(trainingId = null, vType = mandatoryTrainingJobOption.all): FormGroup {
     return this.formBuilder.group({
@@ -263,24 +281,23 @@ export class AddMandatoryTrainingComponent implements OnInit {
 
   //Generate training object arrording to server requirement
   protected generateUpdateProps(): any {
-    if (this.categoriesArray.length) {
-      return {
-        categories: this.categoriesArray.value.map(category => ({
-          trainingCategoryId: parseInt(category.trainingCategory, 10),
-          allJobRoles: category.vacancyType === mandatoryTrainingJobOption.all ? true : false,
-          jobs: category.vacancies,
-        })),
-      };
-    }
-    return null;
+    return {
+      categories: this.categoriesArray.value.map(category => ({
+        trainingCategoryId: parseInt(category.trainingCategory, 10),
+        allJobRoles: category.vacancyType === mandatoryTrainingJobOption.all ? true : false,
+        jobs: category.vacancies,
+      })),
+    };
   }
 
   //Send updateed training object to server
-  protected updateMandatoryTraining(props: mandatoryTrainingCategories): void {
+  protected updateMandatoryTraining(props: mandatoryTrainingCategories, goBack: boolean = true): void {
     this.subscriptions.add(
       this.establishmentService.updateMandatoryTraining(this.establishment.uid, props.categories).subscribe(
         data => {
-          this.router.navigate(this.return.url, { fragment: this.return.fragment });
+          if(goBack) {
+            this.router.navigate(this.return.url, { fragment: this.return.fragment });
+          }
         },
         error => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
