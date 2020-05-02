@@ -50,34 +50,38 @@ describe('Admin/Approval', () => {
     //it('should return a confirmation message and status 200 when a new user is removed because the user is rejected', async () => {
 
     // UNIT TESTS
-    //it('should not approve a new user that doesn't have an associated login', async () => {
-    //it('should not approve a new user that doesn't have an associated user', async () => {
-    //it('should not approve a new user that doesn't have an associated workplace', async () => {
+    // approving new user
     //it('should mark the login as active when approving a new user', async () => {
     //it('should remove the pending status from the login when approving a new user', async () => {
     //it('should remove the pending status from the workplace when approving a new user', async () => {
+    //it('should not approve a new user that doesn't have an associated login', async () => {
+    //it('should not approve a new user that doesn't have an associated user', async () => {
+    //it('should not approve a new user that doesn't have an associated workplace', async () => {
     //it('should NOT mark the login as active when approving a new user with duplicate workplace Id', async () => {
     //it('should NOT remove the pending status from the login when approving a new user with duplicate workplace Id', async () => {
     //it('should NOT remove the pending status from the workplace when approving a new user with duplicate workplace Id', async () => {
     //it('!!! Write front end tests for the previous 3 scenarios !!!', async () => {
     //it('should return a confirmation message and status 200 when the user is approved', async () => {
-    //it('should delete the login, user and workplace when rejecting a new user', async () => {
-    //it('should return a confirmation message and status 200 when the user is removed because the user is rejected', async () => {
     //it('should return status 400 if there is no login with matching username', async () => {
     //it('should return status 503 if it is not possible to update a user when approving a new user', async () => {
     //it('should return status 503 if it is not possible to update a workplace when approving a new user', async () => {
+    //it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
+    // rejecting new user
+    //it('should delete the login, user and workplace when rejecting a new user', async () => {
+    //it('should return a confirmation message and status 200 when the user is removed because the user is rejected', async () => {
     //it('should return status 503 if it is not possible to delete a user when rejecting a new user', async () => {
     //it('should return status 503 if it is not possible to delete a workplace when rejecting a new user', async () => {
-    //it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
-    //it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new workplace', async () => {
-    //it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
-    //it('!!! Currently it will delete the login if it can't find as associated establishment. I'm not sure this would ever actually happen but doesn't seem right? Further investigation could be a big time sink for no good reason though. !!!', async () => {
+    // approving new workplace
     //it('should remove the pending status from the workplace when approving a new workplace', async () => {
     //it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
+    //it('!!! Currently it will delete the login if it can't find as associated establishment. I'm not sure this would ever actually happen but doesn't seem right? Further investigation could be a big time sink for no good reason though. !!!', async () => {
+    //it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
     //it('should return a confirmation message and status 200 when the workplace is approved', async () => {
+    //it('should return status 503 if it is not possible to update a workplace when approving a new workplace', async () => {
+    //it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new workplace', async () => {
+    // rejecting new workplace
     //it('should delete the workplace when rejecting a new workplace', async () => {
     //it('should return a confirmation message and status 200 when the workplace is removed because the workplace is rejected', async () => {
-    //it('should return status 503 if it is not possible to update a workplace when approving a new workplace', async () => {
     //it('should return status 503 if it is not possible to delete a workplace when rejecting a new workplace', async () => {
 
 
