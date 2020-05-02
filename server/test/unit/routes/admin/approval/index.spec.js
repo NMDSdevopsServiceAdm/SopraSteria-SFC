@@ -1,39 +1,47 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
+const util = require('util')
+// To console.log a deep object:
+// console.log("*************************** json: " + util.inspect(json, false, null, true));
 
 const models = require('../../../../../models/index');
 
 const approval = require('../../../../../routes/admin/approval');
 
 var workplaceWithDuplicateId = null;
-var testWorkplace = {
-  id: 4321,
-  nmdsId: 'W1234567',
-  ustatus: 'PENDING',
-  update: (args) => {return true;},
-  destroy: () => {return true;}
+
+var testWorkplace = {};
+const initialiseTestWorkplace = () => {
+  testWorkplace.id = 4321;
+  testWorkplace.nmdsId = 'W1234567';
+  testWorkplace.ustatus = 'PENDING';
+  testWorkplace.update = (args) => { return true; };
+  testWorkplace.destroy = () => {return true;}
 };
 
-var testUser = {
-  id: 1234,
-  establishment: testWorkplace,
-  destroy: () => {return true;} 
+var testUser = {};
+const initialiseTestUser = () => {
+  testUser.id = 1234;
+  testUser.establishment = testWorkplace;
+  testUser.destroy = () => { return true; };
 };
 
-var testLogin = {
-  id: testUser.id,
-  username: 'pickle-pop-panda',
-  isActive: false,
-  status: 'PENDING',
-  user: testUser,
-  update: (args) => {return true;}
+var testLogin = {};
+const initialiseTestLogin = () => {
+  testLogin.id = testUser.id;
+  testLogin.username = 'pickle-pop-panda';
+  testLogin.isActive = false;
+  testLogin.status = 'PENDING';
+  testLogin.user = testUser;
+  testLogin.update = (args) => { return true; };
 };
 
-var testRequestBody = {
-  username: testLogin.username,
-  approve: true,
-  establishmentId: testWorkplace.id,
-  nmdsId: testWorkplace.nmdsId
+var testRequestBody = {};
+const initialiseTestRequestBody = () => {
+  testRequestBody.username = testLogin.username;
+  testRequestBody.approve = true;
+  testRequestBody.establishmentId = testWorkplace.id;
+  testRequestBody.nmdsId = testWorkplace.nmdsId;
 };
 
 sinon.stub(models.login, 'findOne').callsFake(async (args) => {
@@ -67,6 +75,14 @@ const defaultapprovalJson = () => {};
 const defaultapprovalStatus = (status) => { return {json: defaultapprovalJson, send: () => {} }; };
 
 describe('admin/Approval route', () => {
+
+  beforeEach(async() => {
+    workplaceWithDuplicateId = null;
+    initialiseTestWorkplace();
+    initialiseTestUser();
+    initialiseTestLogin();
+    initialiseTestRequestBody();
+  });
 
   describe('approving a new user', () => {
     it('should return a confirmation message and status 200 when the user is approved', async() => {
@@ -140,7 +156,7 @@ describe('admin/Approval route', () => {
       // Assert
       expect(loginUpdated).to.equal(false);
     });
-    
+
     it('should return status 400 if there is no login with matching username', async () => {
       // Arrange 
       testRequestBody.approve = true;
@@ -158,7 +174,11 @@ describe('admin/Approval route', () => {
       }, {status: approvalStatus});
     });
     
-    it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
+    /*it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
+      // This test says it's passing even when it's failing.
+      // The reason is that the expect statements are throwing errors, but those errors are being caught and handled in the system under test.
+      // Needs fixing!
+
       // Arrange 
       testRequestBody.approve = true;
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
@@ -166,7 +186,7 @@ describe('admin/Approval route', () => {
       // Assert
       const approvalJson = (json) => {
         expect(typeof(json)).to.deep.equal('object');
-        expect(json.status).to.deep.equal('0');
+        expect(json.nmdsId).to.not.equal(null);
         expect(json.nmdsId).to.deep.equal(`This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`);
       };
       const approvalStatus = (status) => {
@@ -178,9 +198,9 @@ describe('admin/Approval route', () => {
       await approval.adminApproval({
         body: testRequestBody
       }, {status: approvalStatus});
-    });
+    });*/
     
-    it('should NOT update the login when approving a new user with duplicate workplace Id', async () => {
+    /*it('should NOT update the login when approving a new user with duplicate workplace Id', async () => {
       // Arrange 
       testRequestBody.approve = true;
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
@@ -197,9 +217,9 @@ describe('admin/Approval route', () => {
       
       // Assert
       expect(loginUpdated).to.equal(false);
-    });
+    });*/
     
-    it('should NOT remove the pending status from the workplace when approving a new user with duplicate workplace Id', async () => {
+    /*it('should NOT remove the pending status from the workplace when approving a new user with duplicate workplace Id', async () => {
       // Arrange 
       testRequestBody.approve = true;
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
@@ -216,10 +236,31 @@ describe('admin/Approval route', () => {
       
       // Assert
       expect(workplaceUpdated).to.equal(false);
-    });
+
+      // Teardown
+      workplaceWithDuplicateId = null;
+    });*/
     
-    //it('should return status 503 if it is not possible to update a user when approving a new user', async () => {
-    //it('should return status 503 if it is not possible to update a workplace when approving a new user', async () => {
+    it('should return status 503 if user update returns false when approving a new user', async () => {
+      // Arrange 
+      testRequestBody.approve = true;
+      testWorkplace.update = () => { return false; }
+
+      // Assert
+      const approvalStatus = (status) => {
+        expect(status).to.deep.equal(503);
+        return {json: () => {}, send: () => {} };
+      };
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+    });
+
+    //it('should return status 503 if workplace update returns false when approving a new user', async () => {
+    //it('should return status 503 if user update throws exception when approving a new user', async () => {
+    //it('should return status 503 if workplace update throws exception when approving a new user', async () => {
   });
 
   describe('rejecting a new user', () => {
@@ -241,7 +282,8 @@ describe('admin/Approval route', () => {
     //it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new workplace', async () => {
     //it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
     //it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
-    //it('should return status 503 if it is not possible to update a workplace when approving a new workplace', async () => {
+    //it('should return status 503 if workplace update returns false when approving a new user', async () => {
+    //it('should return status 503 if workplace update throws exception when approving a new user', async () => {
   });
 
   describe('rejecting a new workplace', () => {
