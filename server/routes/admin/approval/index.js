@@ -141,6 +141,7 @@ const adminApproval = async (req, res) => {
       }
     }
   }
-}
+};
 
 module.exports = router;
+module.exports.adminApproval = adminApproval;
