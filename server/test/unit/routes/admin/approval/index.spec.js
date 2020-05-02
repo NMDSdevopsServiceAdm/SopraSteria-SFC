@@ -87,6 +87,8 @@ describe('admin/Approval route', () => {
     initialiseTestUser();
     initialiseTestLogin();
     initialiseTestRequestBody();
+    returnedJson = null;
+    returnedStatus = null;
   });
 
   describe('approving a new user', () => {
@@ -94,30 +96,24 @@ describe('admin/Approval route', () => {
       // Arrange
       testRequestBody.approve = true;
 
-      // Assert
-      const approvalJson = (json) => {
-        expect(typeof(json)).to.deep.equal('object');
-        expect(json.status).to.deep.equal('0');
-        expect(json.message).to.deep.equal('User has been set as active');
-      };
-      const approvalStatus = (status) => {
-        expect(status).to.deep.equal(200);
-        return {json: approvalJson, send: () => {} };
-      };
-
       // Act
       await approval.adminApproval({
         body: testRequestBody
       }, {status: approvalStatus});
+
+      // Assert
+      expect(typeof(returnedJson)).to.deep.equal('object');
+      expect(returnedJson.status).to.deep.equal('0');
+      expect(returnedJson.message).to.deep.equal('User has been set as active');
+      expect(returnedStatus).to.deep.equal(200);
     });
     
     it('should mark the login as active when approving a new user', async () => {
       // Arrange 
       testRequestBody.approve = true;
-
-      // Assert
-      testLogin.update =  (args) => {
-        expect(args.isActive).to.deep.equal(true);
+      var loginIsActive = false;
+      testLogin.update = (args) => {
+        loginIsActive = args.isActive;
         return true;
       }
 
@@ -125,15 +121,17 @@ describe('admin/Approval route', () => {
       await approval.adminApproval({
         body: testRequestBody
       }, {status: approvalStatus});
+
+      // Assert
+      expect(loginIsActive).to.deep.equal(true);
     });
     
     it('should remove the pending status from the login when approving a new user', async () => {
       // Arrange 
       testRequestBody.approve = true;
-
-      // Assert
+      var loginStatus = 'PENDING';
       testLogin.update =  (args) => {
-        expect(args.status).to.deep.equal(null);
+        loginStatus = args.status;
         return true;
       }
 
@@ -141,6 +139,9 @@ describe('admin/Approval route', () => {
       await approval.adminApproval({
         body: testRequestBody
       }, {status: approvalStatus});
+
+      // Assert
+      expect(loginStatus).to.deep.equal(null);
     });
     
     it('should not approve a new user that does not have a login with matching username', async () => {
@@ -167,16 +168,13 @@ describe('admin/Approval route', () => {
       testRequestBody.approve = true;
       testRequestBody.username = 'no matching login available';
 
-      // Assert
-      const approvalStatus = (status) => {
-        expect(status).to.deep.equal(400);
-        return {json: () => {}, send: () => {} };
-      };
-
       // Act
       await approval.adminApproval({
         body: testRequestBody
       }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(400);
     });
     
     it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
@@ -232,9 +230,6 @@ describe('admin/Approval route', () => {
       
       // Assert
       expect(workplaceUpdated).to.equal(false);
-
-      // Teardown
-      workplaceWithDuplicateId = null;
     });
     
     it('should return status 503 if user update returns false when approving a new user', async () => {
@@ -242,16 +237,13 @@ describe('admin/Approval route', () => {
       testRequestBody.approve = true;
       testWorkplace.update = () => { return false; }
 
-      // Assert
-      const approvalStatus = (status) => {
-        expect(status).to.deep.equal(503);
-        return {json: () => {}, send: () => {} };
-      };
-
       // Act
       await approval.adminApproval({
         body: testRequestBody
       }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(503);
     });
 
     //it('should return status 503 if workplace update returns false when approving a new user', async () => {
