@@ -232,7 +232,21 @@ describe('admin/Approval route', () => {
       expect(workplaceUpdated).to.equal(false);
     });
     
-    it('should return status 503 if user update returns false when approving a new user', async () => {
+    it('should return status 503 if login update returns false when approving a new user', async () => {
+      // Arrange 
+      testRequestBody.approve = true;
+      testLogin.update = () => { return false; }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(503);
+    });
+    
+    it('should return status 503 if workplace update returns false when approving a new user', async () => {
       // Arrange 
       testRequestBody.approve = true;
       testWorkplace.update = () => { return false; }
@@ -245,10 +259,34 @@ describe('admin/Approval route', () => {
       // Assert
       expect(returnedStatus).to.deep.equal(503);
     });
+    
+    it('should return status 503 if login update throws exception when approving a new user', async () => {
+      // Arrange 
+      testRequestBody.approve = true;
+      testLogin.update = () => { throw "Error"; }
 
-    //it('should return status 503 if workplace update returns false when approving a new user', async () => {
-    //it('should return status 503 if user update throws exception when approving a new user', async () => {
-    //it('should return status 503 if workplace update throws exception when approving a new user', async () => {
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(503);
+    });
+    
+    it('should return status 503 if workplace update throws exception when approving a new user', async () => {
+      // Arrange 
+      testRequestBody.approve = true;
+      testWorkplace.update = () => { throw "Error"; }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(503);
+    });
   });
 
   describe('rejecting a new user', () => {
