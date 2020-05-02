@@ -11,38 +11,42 @@ router.route('/').post(async (req, res) => {
 const adminApproval = async (req, res) => {
   // parse input - escaped to prevent SQL injection
   // Sanitize username
-  if(req.body.username){
+  if (req.body.username) {
     const username = escape(req.body.username.toLowerCase());
 
     try {
       // Find the user matching the username
       const login = await models.login.findOne({
         where: {
-            username: {
-              [models.Sequelize.Op.iLike] : username
-            }
+          username: {
+            [models.Sequelize.Op.iLike]: username
+          }
         },
         attributes: ['id', 'username'],
-        include: [{
-          model: models.user,
-          attributes: ['id'],
-          include: [{
-            model: models.establishment,
-            attributes: ['id']
-          }]
-        }]
+        include: [
+          {
+            model: models.user,
+            attributes: ['id'],
+            include: [
+              {
+                model: models.establishment,
+                attributes: ['id']
+              }
+            ]
+          }
+        ]
       });
       // Make sure we have the matching user
       if ((login && login.id) && (username === login.username)) {
         const establishment = await models.establishment.findOne({
           where: {
-              id: login.user.establishment.id
+            id: login.user.establishment.id
           },
           attributes: ['id']
         });
         const user = await models.user.findOne({
           where: {
-              id: login.user.id
+            id: login.user.id
           },
           attributes: ['id']
         });
@@ -52,31 +56,31 @@ const adminApproval = async (req, res) => {
           // Update their active status to true
           try {
             const updateduser = await login.update({
-                isActive: true,
-                status: null
+              isActive: true,
+              status: null
             });
             const updatedestablishment = await establishment.update({
               ustatus: null
             });
             if (updateduser && updatedestablishment) {
-              return res.status(200).json({status: '0', message: 'User has been set as active'})
+              return res.status(200).json({ status: '0', message: 'User has been set as active' })
             } else {
               return res.status(503).send();
             }
-          } catch(error) {
+          } catch (error) {
             console.error(error);
             return res.status(503).send();
           }
         } else {
           // TODO: Email saying they've been rejected
           // Remove the user
-          try{
+          try {
             const deleteduser = await user.destroy();
             const deletedestablishment = await establishment.destroy();
             if (deleteduser && deletedestablishment) {
-              return res.status(200).json({status: '0', message: 'User has been removed'});
+              return res.status(200).json({ status: '0', message: 'User has been removed' });
             }
-          } catch(error) {
+          } catch (error) {
             console.error(error);
             return res.status(503).send();
           }
@@ -87,7 +91,7 @@ const adminApproval = async (req, res) => {
     } catch (error) {
       console.log(error);
     }
-  }else{
+  } else {
     const nmdsId = req.body.nmdsId;
     const checkEstablishmentIsUnique = await models.establishment.findOne({
       where: {
@@ -101,13 +105,13 @@ const adminApproval = async (req, res) => {
 
     if (checkEstablishmentIsUnique !== null) {
       return res.status(400).json({
-				nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
+        nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
       });
     }
 
     const establishment = await models.establishment.findOne({
       where: {
-          id: req.body.establishmentId
+        id: req.body.establishmentId
       },
       attributes: ['id']
     });
@@ -120,22 +124,22 @@ const adminApproval = async (req, res) => {
           ustatus: null
         });
         if (updatedestablishment) {
-          return res.status(200).json({status: '0', message: 'Workplace has been set as active'})
+          return res.status(200).json({ status: '0', message: 'Workplace has been set as active' })
         } else {
           return res.status(503).send();
         }
-      } catch(error) {
+      } catch (error) {
         console.error(error);
         return res.status(503).send();
       }
     } else {
       // Remove the establishment
-      try{
+      try {
         const deletedestablishment = await establishment.destroy();
         if (deletedestablishment) {
-          return res.status(200).json({status: '0', message: 'Workplace has been removed'});
+          return res.status(200).json({ status: '0', message: 'Workplace has been removed' });
         }
-      } catch(error) {
+      } catch (error) {
         console.error(error);
         return res.status(503).send();
       }
