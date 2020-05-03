@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const util = require('util');
+const Sequelize = require('sequelize');
 // To console.log a deep object:
 // console.log("*************************** json: " + util.inspect(json, false, null, true));
 
@@ -409,8 +410,22 @@ describe('admin/Approval route', () => {
   });
 
   describe('approving a new workplace', () => {
-    //it('should return a confirmation message and status 200 when the workplace is approved', async () => {
-    //workplaceApprovalConfirmation
+    it('should return a confirmation message and status 200 when the workplace is approved', async () => {
+      // Arrange
+      testRequestBody.username = null;
+      testRequestBody.approve = true;
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
+      expect(returnedJson.message).to.deep.equal(approval.workplaceApprovalConfirmation);
+      expect(returnedStatus).to.deep.equal(200);
+    });
+
     //it('should remove the pending status from the workplace when approving a new workplace', async () => {
     //it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new workplace', async () => {
     //it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
