@@ -66,34 +66,9 @@ const _approveOrRejectNewWorkplace = async (req, res) => {
   const workplace = await _findWorkplace(req.body.establishmentId);
 
   if (req.body.approve && req.body.establishmentId) {
-    // workplace:: Update their ustatus to null
-    try {
-      const updatedworkplace = await workplace.update({
-        nmdsId: nmdsId,
-        ustatus: null
-      });
-      if (updatedworkplace) {
-        return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation })
-      } else {
-        return res.status(503).send();
-      }
-    } catch (error) {
-      console.error(error);
-      return res.status(503).send();
-    }
+    await _approveNewWorkplace(workplace, nmdsId, res);
   } else {
-    // Remove the workplace
-    try {
-      const deletedworkplace = await workplace.destroy();
-      if (deletedworkplace) {
-        return res.status(200).json({ status: '0', message: workplaceRejectionConfirmation });
-      } else {
-        return res.status(503).send();
-      }
-    } catch (error) {
-      console.error(error);
-      return res.status(503).send();
-    }
+    await _rejectNewWorkplace(workplace, res);
   }
 };
 
@@ -190,6 +165,37 @@ const _rejectNewUser = async (user, workplace, res) => {
       } else {
         return res.status(503).send();
       }
+    } else {
+      return res.status(503).send();
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(503).send();
+  }
+};
+
+const _approveNewWorkplace = async (workplace, nmdsId, res) => {
+  try {
+    const updatedworkplace = await workplace.update({
+      nmdsId: nmdsId,
+      ustatus: null
+    });
+    if (updatedworkplace) {
+      return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation })
+    } else {
+      return res.status(503).send();
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(503).send();
+  }
+};
+
+const _rejectNewWorkplace = async (workplace, res) => {
+  try {
+    const deletedworkplace = await workplace.destroy();
+    if (deletedworkplace) {
+      return res.status(200).json({ status: '0', message: workplaceRejectionConfirmation });
     } else {
       return res.status(503).send();
     }
