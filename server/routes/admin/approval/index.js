@@ -3,6 +3,12 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
 const Sequelize = require('sequelize');
+const util = require('util');
+
+const userApprovalConfirmation = 'User has been set as active';
+const userRejectionConfirmation = 'User has been removed';
+const workplaceApprovalConfirmation = 'Workplace has been set as active';
+const workplaceRejectionConfirmation = 'Workplace has been removed';
 
 router.route('/').post(async (req, res) => {
   await adminApproval(req, res);
@@ -55,14 +61,15 @@ const adminApproval = async (req, res) => {
           // TODO: Email saying they've been accepted
           // Update their active status to true
           try {
-            const updateduser = await login.update({
+            const updatedLogin = await login.update({
               isActive: true,
               status: null
             });
             const updatedestablishment = await establishment.update({
               ustatus: null
             });
-            if (updateduser && updatedestablishment) {
+            if (updatedLogin && updatedestablishment) {
+              // TODO: use const string!
               return res.status(200).json({ status: '0', message: 'User has been set as active' })
             } else {
               return res.status(503).send();
@@ -75,9 +82,11 @@ const adminApproval = async (req, res) => {
           // TODO: Email saying they've been rejected
           // Remove the user
           try {
+            // TODO: Refactor to explicitly check user and establishment?
             const deleteduser = await user.destroy();
             const deletedestablishment = await establishment.destroy();
             if (deleteduser && deletedestablishment) {
+              // TODO: use const string!
               return res.status(200).json({ status: '0', message: 'User has been removed' });
             }
           } catch (error) {
@@ -124,6 +133,7 @@ const adminApproval = async (req, res) => {
           ustatus: null
         });
         if (updatedestablishment) {
+          // TODO: use const string!
           return res.status(200).json({ status: '0', message: 'Workplace has been set as active' })
         } else {
           return res.status(503).send();
@@ -137,6 +147,7 @@ const adminApproval = async (req, res) => {
       try {
         const deletedestablishment = await establishment.destroy();
         if (deletedestablishment) {
+          // TODO: use const string!
           return res.status(200).json({ status: '0', message: 'Workplace has been removed' });
         }
       } catch (error) {
@@ -149,3 +160,8 @@ const adminApproval = async (req, res) => {
 
 module.exports = router;
 module.exports.adminApproval = adminApproval;
+
+module.exports.userApprovalConfirmation = userApprovalConfirmation;
+module.exports.userRejectionConfirmation = userRejectionConfirmation;
+module.exports.workplaceApprovalConfirmation = workplaceApprovalConfirmation;
+module.exports.workplaceRejectionConfirmation = workplaceRejectionConfirmation;

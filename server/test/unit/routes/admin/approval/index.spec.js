@@ -105,7 +105,7 @@ describe('admin/Approval route', () => {
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal('User has been set as active');
+      expect(returnedJson.message).to.deep.equal(approval.userApprovalConfirmation);
       expect(returnedStatus).to.deep.equal(200);
     });
     
@@ -276,7 +276,21 @@ describe('admin/Approval route', () => {
   });
 
   describe('rejecting a new user', () => {
-    //it('should return a confirmation message and status 200 when the user is removed because the user is rejected', async () => {
+    it('should return a confirmation message and status 200 when the user is removed because the user is rejected', async () => {
+      // Arrange
+      testRequestBody.approve = false;
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
+      expect(returnedJson.message).to.deep.equal(approval.userRejectionConfirmation);
+      expect(returnedStatus).to.deep.equal(200);
+    });
+
     //it('should delete the user and workplace when rejecting a new user', async () => {
     //it('!! Why doesn't it delete the login?', async () => {
     //it('!!! Currently it will delete the login if it can't find as associated establishment. I'm not sure this would ever actually happen but doesn't seem right? Further investigation could be a big time sink for no good reason though. !!!', async () => {
@@ -307,6 +321,7 @@ describe('admin/Approval route', () => {
 
   describe('approving a new workplace', () => {
     //it('should return a confirmation message and status 200 when the workplace is approved', async () => {
+    //workplaceApprovalConfirmation
     //it('should remove the pending status from the workplace when approving a new workplace', async () => {
     //it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new workplace', async () => {
     //it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
@@ -317,6 +332,7 @@ describe('admin/Approval route', () => {
 
   describe('rejecting a new workplace', () => {
     //it('should return a confirmation message and status 200 when the workplace is removed because the workplace is rejected', async () => {
+    //workplaceRejectionConfirmation
     //it('should delete the workplace when rejecting a new workplace', async () => {
     //it('should return status 503 if it is not possible to delete a workplace when rejecting a new workplace', async () => {
   });
