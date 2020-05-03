@@ -43,24 +43,7 @@ const _approveOrRejectNewUser = async (req, res) => {
       if (req.body.approve && workplace) {
         await _approveNewUser(login, workplace, req.body.nmdsId, res);
       } else {
-        // TODO: Email saying they've been rejected
-        // Remove the user
-        try {
-          if (user && workplace) {
-            const deleteduser = await user.destroy();
-            const deletedworkplace = await workplace.destroy();
-            if (deleteduser && deletedworkplace) {
-              return res.status(200).json({ status: '0', message: userRejectionConfirmation });
-            } else {
-              return res.status(503).send();
-            }
-          } else {
-            return res.status(503).send();
-          }
-        } catch (error) {
-          console.error(error);
-          return res.status(503).send();
-        }
+        await _rejectNewUser(user, workplace, res);
       }
     } else {
       return res.status(400).send();
@@ -79,13 +62,8 @@ const _approveOrRejectNewWorkplace = async (req, res) => {
       nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
     });
   }
-
-  const workplace = await models.establishment.findOne({
-    where: {
-      id: req.body.establishmentId
-    },
-    attributes: ['id']
-  });
+  
+  const workplace = await _findWorkplace(req.body.establishmentId);
 
   if (req.body.approve && req.body.establishmentId) {
     // workplace:: Update their ustatus to null
@@ -201,6 +179,24 @@ const _approveNewUser = async (login, workplace, nmdsId, res) => {
 };
 
 const _rejectNewUser = async (user, workplace, res) => {
+  // TODO: Email saying they've been rejected
+  // Remove the user
+  try {
+    if (user && workplace) {
+      const deleteduser = await user.destroy();
+      const deletedworkplace = await workplace.destroy();
+      if (deleteduser && deletedworkplace) {
+        return res.status(200).json({ status: '0', message: userRejectionConfirmation });
+      } else {
+        return res.status(503).send();
+      }
+    } else {
+      return res.status(503).send();
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(503).send();
+  }
 };
 
 module.exports = router;

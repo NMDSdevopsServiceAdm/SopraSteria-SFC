@@ -9,6 +9,7 @@ const models = require('../../../../../models/index');
 
 const approval = require('../../../../../routes/admin/approval');
 
+
 var workplaceWithDuplicateId = null;
 
 var testWorkplace = {};
@@ -291,7 +292,7 @@ describe('admin/Approval route', () => {
       expect(returnedStatus).to.deep.equal(503);
     });
 
-    /*it('!!! Write front end tests for the scenarios about duplicate workplace id when approving new user!!!', async () => {
+    /*it('!!! Write front end tests for the scenarios about duplicate workplace id when approving new user!!! Also pass nmdsid for new user!', async () => {
       expect(true).to.equal(false, 'Write front end tests for the scenarios about duplicate workplace id when approving new user!!!');
     });*/
   });
