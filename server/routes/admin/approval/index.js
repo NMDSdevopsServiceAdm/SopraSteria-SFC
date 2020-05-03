@@ -55,7 +55,7 @@ const _approveNewUser = async (req, res) => {
           });
           if (updatedLogin && updatedworkplace) {
             // TODO: use const string!
-            return res.status(200).json({ status: '0', message: 'User has been set as active' })
+            return res.status(200).json({ status: '0', message: userApprovalConfirmation })
           } else {
             return res.status(503).send();
           }
@@ -72,7 +72,7 @@ const _approveNewUser = async (req, res) => {
             const deletedworkplace = await workplace.destroy();
             if (deleteduser && deletedworkplace) {
               // TODO: use const string!
-              return res.status(200).json({ status: '0', message: 'User has been removed' });
+              return res.status(200).json({ status: '0', message: userRejectionConfirmation });
             } else {
               return res.status(503).send();
             }
@@ -118,7 +118,7 @@ const _approveNewWorkplace = async (req, res) => {
       });
       if (updatedworkplace) {
         // TODO: use const string!
-        return res.status(200).json({ status: '0', message: 'Workplace has been set as active' })
+        return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation })
       } else {
         return res.status(503).send();
       }
@@ -132,7 +132,7 @@ const _approveNewWorkplace = async (req, res) => {
       const deletedworkplace = await workplace.destroy();
       if (deletedworkplace) {
         // TODO: use const string!
-        return res.status(200).json({ status: '0', message: 'Workplace has been removed' });
+        return res.status(200).json({ status: '0', message: workplaceRejectionConfirmation });
       } else {
         return res.status(503).send();
       }
