@@ -23,6 +23,13 @@ const adminApproval = async (req, res) => {
 };
 
 const _approveNewUser = async (req, res) => {
+  var establishmentIsUnique = await _establishmentIsUnique(req);
+  if (!establishmentIsUnique) {
+    return res.status(400).json({
+      nmdsId: `This workplace ID (${req.body.nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
+    });
+  }
+
   // parse input - escaped to prevent SQL injection
   // Sanitize username
   const username = escape(req.body.username.toLowerCase());

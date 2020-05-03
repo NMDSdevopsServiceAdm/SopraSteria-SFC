@@ -162,7 +162,7 @@ describe('admin/Approval route', () => {
       expect(returnedStatus).to.deep.equal(400);
     });
     
-    /*it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
+    it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
       // Arrange 
       testRequestBody.approve = true;
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
@@ -214,7 +214,7 @@ describe('admin/Approval route', () => {
       
       // Assert
       expect(workplaceUpdated).to.equal(false, "workplace should not have been updated");
-    });*/
+    });
     
     it('should return status 503 if login update returns false when approving a new user', async () => {
       // Arrange 
