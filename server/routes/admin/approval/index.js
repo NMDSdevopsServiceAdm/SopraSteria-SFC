@@ -23,16 +23,14 @@ const adminApproval = async (req, res) => {
 };
 
 const _approveNewUser = async (req, res) => {
-  var establishmentIsUnique = await _establishmentIsUnique(req);
+  var establishmentIsUnique = await _establishmentIsUnique(req.body.establishmentId, req.body.nmdsId);
   if (!establishmentIsUnique) {
     return res.status(400).json({
       nmdsId: `This workplace ID (${req.body.nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
     });
   }
 
-  // parse input - escaped to prevent SQL injection
-  // Sanitize username
-  const username = escape(req.body.username.toLowerCase());
+  const username = _parseEscapedInputAndSanitizeUsername(req.body.username);
 
   try {
     // Find the user matching the username
@@ -126,7 +124,7 @@ const _approveNewUser = async (req, res) => {
 const _approveNewWorkplace = async (req, res) => {
   const nmdsId = req.body.nmdsId;
 
-  var establishmentIsUnique = await _establishmentIsUnique(req);
+  var establishmentIsUnique = await _establishmentIsUnique(req.body.establishmentId, req.body.nmdsId);
   if (!establishmentIsUnique) {
     return res.status(400).json({
       nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
@@ -174,17 +172,21 @@ const _approveNewWorkplace = async (req, res) => {
   }
 };
 
-const _establishmentIsUnique = async (req) => {
+const _establishmentIsUnique = async (establishmentId, nmdsId) => {
   const establishmentWithDuplicateId = await models.establishment.findOne({
     where: {
       id: {
-        [Sequelize.Op.ne]: req.body.establishmentId
+        [Sequelize.Op.ne]: establishmentId
       },
-      nmdsId: req.body.nmdsId,
+      nmdsId: nmdsId,
     },
     attributes: ['id']
   });
   return (establishmentWithDuplicateId === null);
+};
+
+const _parseEscapedInputAndSanitizeUsername = (username) => {
+  return escape(username.toLowerCase());
 };
 
 module.exports = router;
