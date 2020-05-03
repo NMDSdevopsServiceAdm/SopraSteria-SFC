@@ -37,18 +37,9 @@ const _approveNewUser = async (req, res) => {
 
     // Make sure we have the matching user
     if ((login && login.id) && (username === login.username)) {
-      const workplace = await models.establishment.findOne({
-        where: {
-          id: login.user.establishment.id
-        },
-        attributes: ['id']
-      });
-      const user = await models.user.findOne({
-        where: {
-          id: login.user.id
-        },
-        attributes: ['id']
-      });
+      const workplace = await _findWorkplace(login.user.establishment.id);
+      const user = await _findUser(login.user.id);
+
       // If approving user
       if (req.body.approve && workplace) {
         // TODO: Email saying they've been accepted
@@ -189,6 +180,24 @@ const _findLoginMatchingUsername = async (username) => {
         ]
       }
     ]
+  });
+};
+
+const _findWorkplace = async (establishmentId) => {
+  return await models.establishment.findOne({
+    where: {
+      id: establishmentId
+    },
+    attributes: ['id']
+  });
+};
+
+const _findUser = async (loginId) => {
+  return await models.user.findOne({
+    where: {
+      id: loginId
+    },
+    attributes: ['id']
   });
 };
 
