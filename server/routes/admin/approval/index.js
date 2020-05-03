@@ -44,6 +44,7 @@ const adminApproval = async (req, res) => {
       });
       // Make sure we have the matching user
       if ((login && login.id) && (username === login.username)) {
+        // TODO: Rename establishment to workplace.
         const establishment = await models.establishment.findOne({
           where: {
             id: login.user.establishment.id
@@ -88,6 +89,8 @@ const adminApproval = async (req, res) => {
               if (deleteduser && deletedestablishment) {
                 // TODO: use const string!
                 return res.status(200).json({ status: '0', message: 'User has been removed' });
+              } else {
+                return res.status(503).send();
               }
             } else {
               return res.status(503).send();

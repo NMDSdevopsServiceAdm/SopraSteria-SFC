@@ -379,8 +379,33 @@ describe('admin/Approval route', () => {
       expect(userDestroyed).to.equal(false, "user should not have been destroyed");
     });
 
-    //it('should return status 503 if it is not possible to delete a user when rejecting a new user', async () => {
-    //it('should return status 503 if it is not possible to delete a workplace when rejecting a new user', async () => {
+    it('should return status 503 if it is not possible to delete a user when rejecting a new user', async () => {
+      // Arrange 
+      testRequestBody.approve = false;
+      testUser.destroy = () => { return false; }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(503);
+    });
+
+    it('should return status 503 if it is not possible to delete a workplace when rejecting a new user', async () => {
+      // Arrange 
+      testRequestBody.approve = false;
+      testWorkplace.destroy = () => { return false; }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(503);
+    });
   });
 
   describe('approving a new workplace', () => {
