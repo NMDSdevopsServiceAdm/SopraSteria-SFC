@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const util = require('util')
+const util = require('util');
 // To console.log a deep object:
 // console.log("*************************** json: " + util.inspect(json, false, null, true));
 
@@ -20,10 +20,12 @@ const initialiseTestWorkplace = () => {
 };
 
 var testUser = {};
+var foundUser = {};
 const initialiseTestUser = () => {
   testUser.id = 1234;
   testUser.establishment = testWorkplace;
   testUser.destroy = () => { return true; };
+  foundUser = testUser;
 };
 
 var testLogin = {};
@@ -54,7 +56,7 @@ sinon.stub(models.login, 'findOne').callsFake(async (args) => {
 
 sinon.stub(models.user, 'findOne').callsFake(async (args) => {
   if (args.where.id === testUser.id) {
-    return testUser;
+    return foundUser;
   } else {
     return null;
   }
@@ -102,7 +104,6 @@ describe('admin/Approval route', () => {
       }, {status: approvalStatus});
 
       // Assert
-      expect(typeof(returnedJson)).to.deep.equal('object', 'returned Json should be an object');
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
       expect(returnedJson.message).to.deep.equal('User has been set as active');
       expect(returnedStatus).to.deep.equal(200);
@@ -142,25 +143,6 @@ describe('admin/Approval route', () => {
 
       // Assert
       expect(loginStatus).to.deep.equal(null, "login should have status set to null (instead of 'PENDING')");
-    });
-    
-    it('should not approve a new user that does not have a login with matching username', async () => {
-      // Arrange 
-      testRequestBody.approve = true;
-      testRequestBody.username = 'no matching login available';
-      var loginUpdated = false;
-      testLogin.update =  (args) => {
-        loginUpdated = true;
-        return true;
-      }
-
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-      
-      // Assert
-      expect(loginUpdated).to.equal(false, "login should not have been updated");
     });
 
     it('should return status 400 if there is no login with matching username', async () => {
@@ -299,7 +281,25 @@ describe('admin/Approval route', () => {
     //it('!! Why doesn't it delete the login?', async () => {
     //it('!!! Currently it will delete the login if it can't find as associated establishment. I'm not sure this would ever actually happen but doesn't seem right? Further investigation could be a big time sink for no good reason though. !!!', async () => {
     //it('!!! There's also no action taken if it can't find an associated user record? !!!', async () => {
-    //it('should not reject a new user that does not have an associated user', async () => {
+    
+    it('should not reject a new login that does not have an associated user', async () => {
+      // Arrange 
+      testRequestBody.approve = false;
+      foundUser = null;
+      var workplaceDestroyed = false;
+      testWorkplace.destroy =  (args) => {
+        workplaceDestroyed = true;
+        return true;
+      }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+      
+      // Assert
+      expect(workplaceDestroyed).to.equal(false, "workplace should not have been destroyed");
+    });
     //it('should not reject a new user that does not have an associated workplace', async () => {
     //it('should return status 503 if it is not possible to delete a user when rejecting a new user', async () => {
     //it('should return status 503 if it is not possible to delete a workplace when rejecting a new user', async () => {
