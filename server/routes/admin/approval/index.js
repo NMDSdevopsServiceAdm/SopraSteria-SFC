@@ -16,13 +16,13 @@ router.route('/').post(async (req, res) => {
 
 const adminApproval = async (req, res) => {
   if (req.body.username) {
-    await _approveNewUser(req, res);
+    await _approveOrRejectNewUser(req, res);
   } else {
-    await _approveNewWorkplace(req, res);
+    await _approveOrRejectNewWorkplace(req, res);
   }
 };
 
-const _approveNewUser = async (req, res) => {
+const _approveOrRejectNewUser = async (req, res) => {
   var workplaceIsUnique = await _workplaceIsUnique(req.body.establishmentId, req.body.nmdsId);
   if (!workplaceIsUnique) {
     return res.status(400).json({
@@ -40,29 +40,8 @@ const _approveNewUser = async (req, res) => {
       const workplace = await _findWorkplace(login.user.establishment.id);
       const user = await _findUser(login.user.id);
 
-      // If approving user
       if (req.body.approve && workplace) {
-        // TODO: Email saying they've been accepted
-        // Update their active status to true
-        try {
-          const updatedLogin = await login.update({
-            isActive: true,
-            status: null
-          });
-          const updatedworkplace = await workplace.update({
-            nmdsId: req.body.nmdsId,
-            ustatus: null
-          });
-          if (updatedLogin && updatedworkplace) {
-            // TODO: use const string!
-            return res.status(200).json({ status: '0', message: userApprovalConfirmation })
-          } else {
-            return res.status(503).send();
-          }
-        } catch (error) {
-          console.error(error);
-          return res.status(503).send();
-        }
+        await _approveNewUser(login, workplace, req.body.nmdsId, res);
       } else {
         // TODO: Email saying they've been rejected
         // Remove the user
@@ -71,7 +50,6 @@ const _approveNewUser = async (req, res) => {
             const deleteduser = await user.destroy();
             const deletedworkplace = await workplace.destroy();
             if (deleteduser && deletedworkplace) {
-              // TODO: use const string!
               return res.status(200).json({ status: '0', message: userRejectionConfirmation });
             } else {
               return res.status(503).send();
@@ -92,7 +70,7 @@ const _approveNewUser = async (req, res) => {
   }
 };
 
-const _approveNewWorkplace = async (req, res) => {
+const _approveOrRejectNewWorkplace = async (req, res) => {
   const nmdsId = req.body.nmdsId;
 
   var workplaceIsUnique = await _workplaceIsUnique(req.body.establishmentId, req.body.nmdsId);
@@ -117,7 +95,6 @@ const _approveNewWorkplace = async (req, res) => {
         ustatus: null
       });
       if (updatedworkplace) {
-        // TODO: use const string!
         return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation })
       } else {
         return res.status(503).send();
@@ -131,7 +108,6 @@ const _approveNewWorkplace = async (req, res) => {
     try {
       const deletedworkplace = await workplace.destroy();
       if (deletedworkplace) {
-        // TODO: use const string!
         return res.status(200).json({ status: '0', message: workplaceRejectionConfirmation });
       } else {
         return res.status(503).send();
@@ -199,6 +175,32 @@ const _findUser = async (loginId) => {
     },
     attributes: ['id']
   });
+};
+
+const _approveNewUser = async (login, workplace, nmdsId, res) => {
+  // TODO: Email saying they've been accepted
+  // Update their active status to true
+  try {
+    const updatedLogin = await login.update({
+      isActive: true,
+      status: null
+    });
+    const updatedworkplace = await workplace.update({
+      nmdsId: nmdsId,
+      ustatus: null
+    });
+    if (updatedLogin && updatedworkplace) {
+      return res.status(200).json({ status: '0', message: userApprovalConfirmation })
+    } else {
+      return res.status(503).send();
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(503).send();
+  }
+};
+
+const _rejectNewUser = async (user, workplace, res) => {
 };
 
 module.exports = router;
