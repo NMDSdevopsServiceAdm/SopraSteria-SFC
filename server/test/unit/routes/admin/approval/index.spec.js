@@ -291,10 +291,6 @@ describe('admin/Approval route', () => {
       // Assert
       expect(returnedStatus).to.deep.equal(503);
     });
-
-    /*it('!!! Write front end tests for the scenarios about duplicate workplace id when approving new user!!! Also pass nmdsid for new user!', async () => {
-      expect(true).to.equal(false, 'Write front end tests for the scenarios about duplicate workplace id when approving new user!!!');
-    });*/
   });
 
   describe('rejecting a new user', () => {
@@ -348,18 +344,6 @@ describe('admin/Approval route', () => {
       // Assert
       expect(workplaceDestroyed).to.deep.equal(true, "workplace should have been destroyed");
     });
-
-    /*it('!! Why doesn't it delete the login?', async () => {
-      expect(true).to.equal(false, 'Why doesn't it delete the login?');
-    });*/
-
-    /*it('!!! Currently it will delete the login if it can't find as associated establishment. I'm not sure this would ever actually happen but doesn't seem right? Further investigation could be a big time sink for no good reason though. !!!', async () => {
-      expect(true).to.equal(false, '!!! Currently it will delete the login if it can't find as associated establishment. I'm not sure this would ever actually happen but doesn't seem right? Further investigation could be a big time sink for no good reason though. !!!');
-    });*/
-
-    /*it('!!! There's also no action taken if it can't find an associated user record? !!!', async () => {
-      expect(true).to.equal(false, '!!! There's also no action taken if it can't find an associated user record? !!!');
-    });*/
 
     it('should not reject a new login that does not have an associated user', async () => {
       // Arrange 
