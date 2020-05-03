@@ -42,6 +42,7 @@ describe('unlock-account route', () => {
         }
       }, {status: updateStatus, json: updateJson, send: updateJson});
     });
+
     it('should not return with an unlocked account status if invalid username', async() => {
       const updateStatus = (status) => {
         expect(status).to.deep.equal(400);
@@ -55,6 +56,7 @@ describe('unlock-account route', () => {
         }
       }, {status: updateStatus, json: updateJson, send: updateJson});
     });
+
     it('should not return with an unlocked account status if no username', async() => {
       const updateStatus = (status) => {
         expect(status).to.deep.equal(400);
