@@ -117,17 +117,9 @@ const _approveNewUser = async (req, res) => {
 
 const _approveNewWorkplace = async (req, res) => {
   const nmdsId = req.body.nmdsId;
-  const checkEstablishmentIsUnique = await models.establishment.findOne({
-    where: {
-      id: {
-        [Sequelize.Op.ne]: req.body.establishmentId
-      },
-      nmdsId: nmdsId,
-    },
-    attributes: ['id']
-  });
 
-  if (checkEstablishmentIsUnique !== null) {
+  var establishmentIsUnique = await _establishmentIsUnique(req);
+  if (!establishmentIsUnique) {
     return res.status(400).json({
       nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
     });
@@ -172,6 +164,19 @@ const _approveNewWorkplace = async (req, res) => {
       return res.status(503).send();
     }
   }
+};
+
+const _establishmentIsUnique = async (req) => {
+  const establishmentWithDuplicateId = await models.establishment.findOne({
+    where: {
+      id: {
+        [Sequelize.Op.ne]: req.body.establishmentId
+      },
+      nmdsId: req.body.nmdsId,
+    },
+    attributes: ['id']
+  });
+  return (establishmentWithDuplicateId === null);
 };
 
 module.exports = router;
