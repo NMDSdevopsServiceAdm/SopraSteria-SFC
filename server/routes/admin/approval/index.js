@@ -155,6 +155,8 @@ const adminApproval = async (req, res) => {
         if (deletedestablishment) {
           // TODO: use const string!
           return res.status(200).json({ status: '0', message: 'Workplace has been removed' });
+        } else {
+          return res.status(503).send();
         }
       } catch (error) {
         console.error(error);
