@@ -82,12 +82,15 @@ const adminApproval = async (req, res) => {
           // TODO: Email saying they've been rejected
           // Remove the user
           try {
-            // TODO: Refactor to explicitly check user and establishment?
-            const deleteduser = await user.destroy();
-            const deletedestablishment = await establishment.destroy();
-            if (deleteduser && deletedestablishment) {
-              // TODO: use const string!
-              return res.status(200).json({ status: '0', message: 'User has been removed' });
+            if (user && establishment) {
+              const deleteduser = await user.destroy();
+              const deletedestablishment = await establishment.destroy();
+              if (deleteduser && deletedestablishment) {
+                // TODO: use const string!
+                return res.status(200).json({ status: '0', message: 'User has been removed' });
+              }
+            } else {
+              return res.status(503).send();
             }
           } catch (error) {
             console.error(error);
