@@ -58,6 +58,7 @@ describe('Admin/Approval', () => {
           .set({ Authorization: adminLogin.headers.authorization })
           .send({
             username: nonCQCSite.user.username.toLowerCase(),
+            nmdsId: 'W1234567',
             approve: approve,
           })
 
@@ -79,6 +80,7 @@ describe('Admin/Approval', () => {
           .set({ Authorization: adminLogin.headers.authorization })
           .send({
             username: nonCQCSite.user.username.toLowerCase(),
+            nmdsId: 'W1234567',
             approve: approve,
           })
 
