@@ -81,6 +81,7 @@ const _approveNewUser = async (req, res) => {
             status: null
           });
           const updatedestablishment = await establishment.update({
+            nmdsId: req.body.nmdsId,
             ustatus: null
           });
           if (updatedLogin && updatedestablishment) {

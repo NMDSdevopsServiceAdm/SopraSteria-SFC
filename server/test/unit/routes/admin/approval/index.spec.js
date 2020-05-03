@@ -161,6 +161,25 @@ describe('admin/Approval route', () => {
       // Assert
       expect(returnedStatus).to.deep.equal(400);
     });
+
+    it('should update the workplace Id when approving a new user', async () => {
+      // Arrange 
+      testRequestBody.approve = true;
+      testRequestBody.nmdsId = testWorkplace.nmdsId.concat('X');
+      var workplaceId = testWorkplace.nmdsId;
+      testWorkplace.update =  (args) => {
+        workplaceId = args.nmdsId;
+        return true;
+      }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(workplaceId).to.deep.equal(testRequestBody.nmdsId);
+    });
     
     it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
       // Arrange 
