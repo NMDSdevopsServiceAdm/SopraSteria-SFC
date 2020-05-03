@@ -33,27 +33,8 @@ const _approveNewUser = async (req, res) => {
   const username = _parseEscapedInputAndSanitizeUsername(req.body.username);
 
   try {
-    // Find the user matching the username
-    const login = await models.login.findOne({
-      where: {
-        username: {
-          [models.Sequelize.Op.iLike]: username
-        }
-      },
-      attributes: ['id', 'username'],
-      include: [
-        {
-          model: models.user,
-          attributes: ['id'],
-          include: [
-            {
-              model: models.establishment,
-              attributes: ['id']
-            }
-          ]
-        }
-      ]
-    });
+    const login = await _findLoginMatchingUsername(username);
+
     // Make sure we have the matching user
     if ((login && login.id) && (username === login.username)) {
       // TODO: Rename establishment to workplace.
@@ -187,6 +168,29 @@ const _establishmentIsUnique = async (establishmentId, nmdsId) => {
 
 const _parseEscapedInputAndSanitizeUsername = (username) => {
   return escape(username.toLowerCase());
+};
+
+const _findLoginMatchingUsername = async (username) => {
+  return await models.login.findOne({
+    where: {
+      username: {
+        [models.Sequelize.Op.iLike]: username
+      }
+    },
+    attributes: ['id', 'username'],
+    include: [
+      {
+        model: models.user,
+        attributes: ['id'],
+        include: [
+          {
+            model: models.establishment,
+            attributes: ['id']
+          }
+        ]
+      }
+    ]
+  });
 };
 
 module.exports = router;
