@@ -173,7 +173,6 @@ describe('admin/Approval route', () => {
       }, {status: approvalStatus});
 
       // Assert
-      expect(typeof(returnedJson)).to.deep.equal('object', 'returned json should be an object');
       expect(returnedJson.nmdsId).to.not.equal(undefined, 'returned json should have an nmdsId value');
       expect(returnedJson.nmdsId).to.deep.equal(`This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`);
       expect(returnedStatus).to.deep.equal(400);
@@ -426,18 +425,162 @@ describe('admin/Approval route', () => {
       expect(returnedStatus).to.deep.equal(200);
     });
 
-    //it('should remove the pending status from the workplace when approving a new workplace', async () => {
-    //it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new workplace', async () => {
-    //it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
-    //it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
-    //it('should return status 503 if workplace update returns false when approving a new user', async () => {
-    //it('should return status 503 if workplace update throws exception when approving a new user', async () => {
+    it('should remove the pending status from the workplace when approving a new workplace', async () => {
+      // Arrange 
+      testRequestBody.username = null;
+      testRequestBody.approve = true;
+      var workplaceStatus = 'PENDING';
+      testWorkplace.update =  (args) => {
+        workplaceStatus = args.ustatus;
+        return true;
+      }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(workplaceStatus).to.deep.equal(null, "workplace should have status set to null (instead of 'PENDING')");
+    });
+
+    it('should update the workplace Id when approving a new workplace', async () => {
+      // Arrange 
+      testRequestBody.username = null;
+      testRequestBody.approve = true;
+      testRequestBody.nmdsId = testWorkplace.nmdsId.concat('X');
+      var workplaceId = testWorkplace.nmdsId;
+      testWorkplace.update =  (args) => {
+        workplaceId = args.nmdsId;
+        return true;
+      }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(workplaceId).to.deep.equal(testRequestBody.nmdsId);
+    });
+
+    it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new workplace', async () => {
+      // Arrange 
+      testRequestBody.username = null;
+      testRequestBody.approve = true;
+      workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedJson.nmdsId).to.not.equal(undefined, 'returned json should have an nmdsId value');
+      expect(returnedJson.nmdsId).to.deep.equal(`This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`);
+      expect(returnedStatus).to.deep.equal(400);
+    });
+
+    it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
+      // Arrange 
+      testRequestBody.username = null;
+      testRequestBody.approve = true;
+      workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
+      var workplaceUpdated = false;
+      testWorkplace.update =  (args) => {
+        workplaceUpdated = true;
+        return true;
+      }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+      
+      // Assert
+      expect(workplaceUpdated).to.equal(false, "workplace should not have been updated");
+    });
+
+    it('should return status 503 if workplace update returns false when approving a new workplace', async () => {
+      // Arrange 
+      testRequestBody.username = null;
+      testRequestBody.approve = true;
+      testWorkplace.update = () => { return false; }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(503);
+    });
+
+    it('should return status 503 if workplace update throws exception when approving a new workplace', async () => {
+      // Arrange 
+      testRequestBody.username = null;
+      testRequestBody.approve = true;
+      testWorkplace.update = () => { throw "Error"; }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(503);
+    });
   });
 
   describe('rejecting a new workplace', () => {
-    //it('should return a confirmation message and status 200 when the workplace is removed because the workplace is rejected', async () => {
-    //workplaceRejectionConfirmation
-    //it('should delete the workplace when rejecting a new workplace', async () => {
-    //it('should return status 503 if it is not possible to delete a workplace when rejecting a new workplace', async () => {
+    it('should return a confirmation message and status 200 when the workplace is removed because the workplace is rejected', async () => {
+      // Arrange
+      testRequestBody.username = null;
+      testRequestBody.approve = false;
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
+      expect(returnedJson.message).to.deep.equal(approval.workplaceRejectionConfirmation);
+      expect(returnedStatus).to.deep.equal(200);
+    });
+
+    it('should delete the workplace when rejecting a new workplace', async () => {
+      // Arrange 
+      testRequestBody.username = null;
+      testRequestBody.approve = false;
+      var workplaceDestroyed = false;
+      testWorkplace.destroy =  (args) => {
+        workplaceDestroyed = true;
+        return true;
+      }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(workplaceDestroyed).to.deep.equal(true, "workplace should have been destroyed");
+    });
+
+    it('should return status 503 if it is not possible to delete a workplace when rejecting a new workplace', async () => {
+      // Arrange 
+      testRequestBody.username = null;
+      testRequestBody.approve = false;
+      testWorkplace.destroy = () => { return false; }
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(503);
+    });
   });
 });
