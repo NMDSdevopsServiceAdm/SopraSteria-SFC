@@ -102,8 +102,8 @@ describe('admin/Approval route', () => {
       }, {status: approvalStatus});
 
       // Assert
-      expect(typeof(returnedJson)).to.deep.equal('object');
-      expect(returnedJson.status).to.deep.equal('0');
+      expect(typeof(returnedJson)).to.deep.equal('object', 'returned Json should be an object');
+      expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
       expect(returnedJson.message).to.deep.equal('User has been set as active');
       expect(returnedStatus).to.deep.equal(200);
     });
@@ -123,7 +123,7 @@ describe('admin/Approval route', () => {
       }, {status: approvalStatus});
 
       // Assert
-      expect(loginIsActive).to.deep.equal(true);
+      expect(loginIsActive).to.deep.equal(true, 'login should have isActive set to true');
     });
     
     it('should remove the pending status from the login when approving a new user', async () => {
@@ -141,7 +141,7 @@ describe('admin/Approval route', () => {
       }, {status: approvalStatus});
 
       // Assert
-      expect(loginStatus).to.deep.equal(null);
+      expect(loginStatus).to.deep.equal(null, "login should have status set to null (instead of 'PENDING')");
     });
     
     it('should not approve a new user that does not have a login with matching username', async () => {
@@ -160,7 +160,7 @@ describe('admin/Approval route', () => {
       }, {status: approvalStatus});
       
       // Assert
-      expect(loginUpdated).to.equal(false);
+      expect(loginUpdated).to.equal(false, "login should not have been updated");
     });
 
     it('should return status 400 if there is no login with matching username', async () => {
@@ -188,8 +188,8 @@ describe('admin/Approval route', () => {
       }, {status: approvalStatus});
 
       // Assert
-      expect(typeof(returnedJson)).to.deep.equal('object');
-      expect(returnedJson.nmdsId).to.not.equal(undefined);
+      expect(typeof(returnedJson)).to.deep.equal('object', 'returned json should be an object');
+      expect(returnedJson.nmdsId).to.not.equal(undefined, 'returned json should have an nmdsId value');
       expect(returnedJson.nmdsId).to.deep.equal(`This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`);
       expect(returnedStatus).to.deep.equal(400);
     });
@@ -210,7 +210,7 @@ describe('admin/Approval route', () => {
       }, {status: approvalStatus});
       
       // Assert
-      expect(loginUpdated).to.equal(false);
+      expect(loginUpdated).to.equal(false, "login should not have been updated");
     });
     
     it('should NOT remove the pending status from the workplace when approving a new user with duplicate workplace Id', async () => {
@@ -229,7 +229,7 @@ describe('admin/Approval route', () => {
       }, {status: approvalStatus});
       
       // Assert
-      expect(workplaceUpdated).to.equal(false);
+      expect(workplaceUpdated).to.equal(false, "workplace should not have been updated");
     });
     
     it('should return status 503 if login update returns false when approving a new user', async () => {
@@ -287,10 +287,13 @@ describe('admin/Approval route', () => {
       // Assert
       expect(returnedStatus).to.deep.equal(503);
     });
+
+    it('!!! Write front end tests for the scenarios about duplicate workplace id when approving new user!!!', async () => {
+      expect(true).to.equal(false, 'Write front end tests for the scenarios about duplicate workplace id when approving new user!!!');
+    });
   });
 
   describe('rejecting a new user', () => {
-    //it('!!! Write front end tests for the scenarios about duplicate workplace id when approving new user!!!', async () => {
     //it('should return a confirmation message and status 200 when the user is removed because the user is rejected', async () => {
     //it('should delete the user and workplace when rejecting a new user', async () => {
     //it('!! Why doesn't it delete the login?', async () => {
