@@ -23,8 +23,8 @@ const adminApproval = async (req, res) => {
 };
 
 const _approveNewUser = async (req, res) => {
-  var establishmentIsUnique = await _establishmentIsUnique(req.body.establishmentId, req.body.nmdsId);
-  if (!establishmentIsUnique) {
+  var workplaceIsUnique = await _workplaceIsUnique(req.body.establishmentId, req.body.nmdsId);
+  if (!workplaceIsUnique) {
     return res.status(400).json({
       nmdsId: `This workplace ID (${req.body.nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
     });
@@ -37,8 +37,7 @@ const _approveNewUser = async (req, res) => {
 
     // Make sure we have the matching user
     if ((login && login.id) && (username === login.username)) {
-      // TODO: Rename establishment to workplace.
-      const establishment = await models.establishment.findOne({
+      const workplace = await models.establishment.findOne({
         where: {
           id: login.user.establishment.id
         },
@@ -51,7 +50,7 @@ const _approveNewUser = async (req, res) => {
         attributes: ['id']
       });
       // If approving user
-      if (req.body.approve && establishment) {
+      if (req.body.approve && workplace) {
         // TODO: Email saying they've been accepted
         // Update their active status to true
         try {
@@ -59,11 +58,11 @@ const _approveNewUser = async (req, res) => {
             isActive: true,
             status: null
           });
-          const updatedestablishment = await establishment.update({
+          const updatedworkplace = await workplace.update({
             nmdsId: req.body.nmdsId,
             ustatus: null
           });
-          if (updatedLogin && updatedestablishment) {
+          if (updatedLogin && updatedworkplace) {
             // TODO: use const string!
             return res.status(200).json({ status: '0', message: 'User has been set as active' })
           } else {
@@ -77,10 +76,10 @@ const _approveNewUser = async (req, res) => {
         // TODO: Email saying they've been rejected
         // Remove the user
         try {
-          if (user && establishment) {
+          if (user && workplace) {
             const deleteduser = await user.destroy();
-            const deletedestablishment = await establishment.destroy();
-            if (deleteduser && deletedestablishment) {
+            const deletedworkplace = await workplace.destroy();
+            if (deleteduser && deletedworkplace) {
               // TODO: use const string!
               return res.status(200).json({ status: '0', message: 'User has been removed' });
             } else {
@@ -105,14 +104,14 @@ const _approveNewUser = async (req, res) => {
 const _approveNewWorkplace = async (req, res) => {
   const nmdsId = req.body.nmdsId;
 
-  var establishmentIsUnique = await _establishmentIsUnique(req.body.establishmentId, req.body.nmdsId);
-  if (!establishmentIsUnique) {
+  var workplaceIsUnique = await _workplaceIsUnique(req.body.establishmentId, req.body.nmdsId);
+  if (!workplaceIsUnique) {
     return res.status(400).json({
       nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
     });
   }
 
-  const establishment = await models.establishment.findOne({
+  const workplace = await models.establishment.findOne({
     where: {
       id: req.body.establishmentId
     },
@@ -120,13 +119,13 @@ const _approveNewWorkplace = async (req, res) => {
   });
 
   if (req.body.approve && req.body.establishmentId) {
-    // Establishment:: Update their ustatus to null
+    // workplace:: Update their ustatus to null
     try {
-      const updatedestablishment = await establishment.update({
+      const updatedworkplace = await workplace.update({
         nmdsId: nmdsId,
         ustatus: null
       });
-      if (updatedestablishment) {
+      if (updatedworkplace) {
         // TODO: use const string!
         return res.status(200).json({ status: '0', message: 'Workplace has been set as active' })
       } else {
@@ -137,10 +136,10 @@ const _approveNewWorkplace = async (req, res) => {
       return res.status(503).send();
     }
   } else {
-    // Remove the establishment
+    // Remove the workplace
     try {
-      const deletedestablishment = await establishment.destroy();
-      if (deletedestablishment) {
+      const deletedworkplace = await workplace.destroy();
+      if (deletedworkplace) {
         // TODO: use const string!
         return res.status(200).json({ status: '0', message: 'Workplace has been removed' });
       } else {
@@ -153,8 +152,8 @@ const _approveNewWorkplace = async (req, res) => {
   }
 };
 
-const _establishmentIsUnique = async (establishmentId, nmdsId) => {
-  const establishmentWithDuplicateId = await models.establishment.findOne({
+const _workplaceIsUnique = async (establishmentId, nmdsId) => {
+  const workplaceWithDuplicateId = await models.establishment.findOne({
     where: {
       id: {
         [Sequelize.Op.ne]: establishmentId
@@ -163,7 +162,7 @@ const _establishmentIsUnique = async (establishmentId, nmdsId) => {
     },
     attributes: ['id']
   });
-  return (establishmentWithDuplicateId === null);
+  return (workplaceWithDuplicateId === null);
 };
 
 const _parseEscapedInputAndSanitizeUsername = (username) => {
