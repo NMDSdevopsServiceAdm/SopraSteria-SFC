@@ -13,7 +13,7 @@ var workplaceWithDuplicateId = null;
 
 var testWorkplace = {};
 var foundWorkplace = {};
-const initialiseTestWorkplace = () => {
+const _initialiseTestWorkplace = () => {
   testWorkplace.id = 4321;
   testWorkplace.nmdsId = 'W1234567';
   testWorkplace.ustatus = 'PENDING';
@@ -24,7 +24,7 @@ const initialiseTestWorkplace = () => {
 
 var testUser = {};
 var foundUser = {};
-const initialiseTestUser = () => {
+const _initialiseTestUser = () => {
   testUser.id = 1234;
   testUser.establishment = testWorkplace;
   testUser.destroy = () => { return true; };
@@ -32,7 +32,7 @@ const initialiseTestUser = () => {
 };
 
 var testLogin = {};
-const initialiseTestLogin = () => {
+const _initialiseTestLogin = () => {
   testLogin.id = testUser.id;
   testLogin.username = 'pickle-pop-panda';
   testLogin.isActive = false;
@@ -42,7 +42,7 @@ const initialiseTestLogin = () => {
 };
 
 var testRequestBody = {};
-const initialiseTestRequestBody = () => {
+const _initialiseTestRequestBody = () => {
   testRequestBody.username = testLogin.username;
   testRequestBody.approve = true;
   testRequestBody.establishmentId = testWorkplace.id;
@@ -88,10 +88,10 @@ describe('admin/Approval route', () => {
 
   beforeEach(async() => {
     workplaceWithDuplicateId = null;
-    initialiseTestWorkplace();
-    initialiseTestUser();
-    initialiseTestLogin();
-    initialiseTestRequestBody();
+    _initialiseTestWorkplace();
+    _initialiseTestUser();
+    _initialiseTestLogin();
+    _initialiseTestRequestBody();
     returnedJson = null;
     returnedStatus = null;
   });
