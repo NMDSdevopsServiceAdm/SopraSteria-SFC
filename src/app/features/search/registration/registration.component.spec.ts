@@ -12,10 +12,10 @@ import { RegistrationComponent } from './registration.component';
 const testUsername = 'mr-twiggy';
 const testEmail = 'mr.twiggy@cats.com';
 const testNmdsId = 'W1234567';
-const testEstablishmentId = 12345;
+const testWorkplaceId = 12345;
 const newUserAccount = 'New-User-Account';
 const registrationTypeIrrelevant = 'Registration-Type-Irrelevant';
-const establishmentAddedByParent = 'Establishment-Added-By-Parent';
+const workplaceAddedByParent = 'Workplace-Added-By-Parent';
 
 describe('RegistrationComponent', () => {
   async function getRegistrationComponent(registrationType) {
@@ -23,7 +23,7 @@ describe('RegistrationComponent', () => {
       email: null,
       username: null,
       establishment: {
-        id: testEstablishmentId,
+        id: testWorkplaceId,
         nmdsId: testNmdsId
       },
     };
@@ -53,8 +53,8 @@ describe('RegistrationComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should be able to approve the registration of an establishment created by a parent', async () => {
-    const { click, getByText, fixture } = await getRegistrationComponent(establishmentAddedByParent);
+  it('should be able to approve the registration of a workplace created by a parent', async () => {
+    const { click, getByText, fixture } = await getRegistrationComponent(workplaceAddedByParent);
 
     const { componentInstance: component } = fixture;
 
@@ -63,14 +63,14 @@ describe('RegistrationComponent', () => {
     click(getByText('Approve'));
 
     expect(registrationApproval).toHaveBeenCalledWith({
-      establishmentId: testEstablishmentId,
+      establishmentId: testWorkplaceId,
       nmdsId: testNmdsId,
       approve: true,
     });
   });
 
-  it('should be able to reject the registration of an establishment created by a parent', async () => {
-    const { click, getByText, fixture } = await getRegistrationComponent(establishmentAddedByParent);
+  it('should be able to reject the registration of a workplace created by a parent', async () => {
+    const { click, getByText, fixture } = await getRegistrationComponent(workplaceAddedByParent);
 
     const { componentInstance: component } = fixture;
 
@@ -79,13 +79,13 @@ describe('RegistrationComponent', () => {
     click(getByText('Reject'));
 
     expect(registrationApproval).toHaveBeenCalledWith({
-      establishmentId: testEstablishmentId,
+      establishmentId: testWorkplaceId,
       nmdsId: testNmdsId,
       approve: false,
     });
   });
 
-  it('should be able to approve the registration of an establishment created via a new user account', async () => {
+  it('should be able to approve the registration of a workplace created via a new user account', async () => {
     const { click, getByText, fixture } = await getRegistrationComponent(newUserAccount);
 
     const { componentInstance: component } = fixture;
@@ -101,7 +101,7 @@ describe('RegistrationComponent', () => {
     });
   });
 
-  it('should be able to reject the registration of an establishment created via a new user account', async () => {
+  it('should be able to reject the registration of a workplace created via a new user account', async () => {
     const { click, getByText, fixture } = await getRegistrationComponent(newUserAccount);
 
     const { componentInstance: component } = fixture;
@@ -117,7 +117,7 @@ describe('RegistrationComponent', () => {
     });
   });
 
-  it('should change the nmdsID for the registration of an Establishment', async () => {
+  it('should change the nmdsID for the registration of a Workplace', async () => {
     const { click, getByText, fixture, container, type } = await getRegistrationComponent(registrationTypeIrrelevant);
 
     const { componentInstance: component } = fixture;
@@ -132,7 +132,7 @@ describe('RegistrationComponent', () => {
     click(getByText('Approve'));
 
     expect(registrationApproval).toHaveBeenCalledWith({
-      establishmentId: testEstablishmentId,
+      establishmentId: testWorkplaceId,
       nmdsId: newNmdsId,
       approve: true,
     });
