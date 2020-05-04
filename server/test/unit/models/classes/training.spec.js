@@ -50,7 +50,6 @@ let workerTrainingRecords = {
 describe('/server/models/class/training.js', () => {
   afterEach(function () {
     sandbox.restore();
-    console.log("restored fetch");
   });
 
   before(() => {
