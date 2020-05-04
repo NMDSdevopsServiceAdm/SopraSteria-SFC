@@ -9,8 +9,10 @@ const models = require('../../../../../models/index');
 
 const approval = require('../../../../../routes/admin/approval');
 
+const boobyTrappedEstablishmentId = 'this will not be populated for new users';
 
 var workplaceWithDuplicateId = null;
+var establishmentIdUsedToCheckForDuplicate = false;
 
 var testWorkplace = {};
 var foundWorkplace = {};
@@ -69,6 +71,9 @@ sinon.stub(models.user, 'findOne').callsFake(async (args) => {
 sinon.stub(models.establishment, 'findOne').callsFake(async (args) => {
   if (args.where.id === testWorkplace.id) {
     return foundWorkplace;
+  } else if (args.where.id[Sequelize.Op.ne] === boobyTrappedEstablishmentId) {
+    establishmentIdUsedToCheckForDuplicate = true;
+    return null;
   } else if ((args.where.id[Sequelize.Op.ne] === testWorkplace.id)
             && (args.where.nmdsId === testWorkplace.nmdsId)) {
     return workplaceWithDuplicateId;
@@ -89,6 +94,7 @@ describe('admin/Approval route', () => {
 
   beforeEach(async() => {
     workplaceWithDuplicateId = null;
+    establishmentIdUsedToCheckForDuplicate = false;
     _initialiseTestWorkplace();
     _initialiseTestUser();
     _initialiseTestLogin();
@@ -100,6 +106,7 @@ describe('admin/Approval route', () => {
   describe('approving a new user', () => {
     it('should return a confirmation message and status 200 when the user is approved', async() => {
       // Arrange
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
 
       // Act
@@ -115,6 +122,7 @@ describe('admin/Approval route', () => {
     
     it('should mark the login as active when approving a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       var loginIsActive = false;
       testLogin.update = (args) => {
@@ -133,6 +141,7 @@ describe('admin/Approval route', () => {
     
     it('should remove the pending status from the login when approving a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       var loginStatus = 'PENDING';
       testLogin.update =  (args) => {
@@ -151,6 +160,7 @@ describe('admin/Approval route', () => {
 
     it('should return status 400 if there is no login with matching username', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       testRequestBody.username = 'no matching login available';
 
@@ -165,6 +175,7 @@ describe('admin/Approval route', () => {
 
     it('should update the workplace Id when approving a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       testRequestBody.nmdsId = testWorkplace.nmdsId.concat('X');
       var workplaceId = testWorkplace.nmdsId;
@@ -182,8 +193,23 @@ describe('admin/Approval route', () => {
       expect(workplaceId).to.deep.equal(testRequestBody.nmdsId);
     });
     
+    it('should not use establishmentid to check for duplicate workplace id when approving new user', async () => {
+      // Arrange 
+      testRequestBody.establishmentId = boobyTrappedEstablishmentId;
+      testRequestBody.approve = true;
+
+      // Act
+      await approval.adminApproval({
+        body: testRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(establishmentIdUsedToCheckForDuplicate).to.deep.equal(false, 'should not use establishment id to check for duplicate');
+    });
+    
     it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
 
@@ -200,6 +226,7 @@ describe('admin/Approval route', () => {
     
     it('should NOT update the login when approving a new user with duplicate workplace Id', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
       var loginUpdated = false;
@@ -219,6 +246,7 @@ describe('admin/Approval route', () => {
     
     it('should NOT remove the pending status from the workplace when approving a new user with duplicate workplace Id', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
       var workplaceUpdated = false;
@@ -238,6 +266,7 @@ describe('admin/Approval route', () => {
     
     it('should return status 503 if login update returns false when approving a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       testLogin.update = () => { return false; }
 
@@ -252,6 +281,7 @@ describe('admin/Approval route', () => {
     
     it('should return status 503 if workplace update returns false when approving a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       testWorkplace.update = () => { return false; }
 
@@ -266,6 +296,7 @@ describe('admin/Approval route', () => {
     
     it('should return status 503 if login update throws exception when approving a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       testLogin.update = () => { throw "Error"; }
 
@@ -280,6 +311,7 @@ describe('admin/Approval route', () => {
     
     it('should return status 503 if workplace update throws exception when approving a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
       testWorkplace.update = () => { throw "Error"; }
 
@@ -296,6 +328,7 @@ describe('admin/Approval route', () => {
   describe('rejecting a new user', () => {
     it('should return a confirmation message and status 200 when the user is removed because the user is rejected', async () => {
       // Arrange
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = false;
 
       // Act
@@ -311,6 +344,7 @@ describe('admin/Approval route', () => {
 
     it('should delete the user when rejecting a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = false;
       var userDestroyed = false;
       testUser.destroy =  (args) => {
@@ -329,6 +363,7 @@ describe('admin/Approval route', () => {
 
     it('should delete the workplace when rejecting a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = false;
       var workplaceDestroyed = false;
       testWorkplace.destroy =  (args) => {
@@ -347,6 +382,7 @@ describe('admin/Approval route', () => {
 
     it('should not reject a new login that does not have an associated user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = false;
       foundUser = null;
       var workplaceDestroyed = false;
@@ -366,6 +402,7 @@ describe('admin/Approval route', () => {
 
     it('should not reject a new user that does not have an associated workplace', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = false;
       foundWorkplace = null;
       var userDestroyed = false;
@@ -385,6 +422,7 @@ describe('admin/Approval route', () => {
 
     it('should return status 503 if it is not possible to delete a user when rejecting a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = false;
       testUser.destroy = () => { return false; }
 
@@ -399,6 +437,7 @@ describe('admin/Approval route', () => {
 
     it('should return status 503 if it is not possible to delete a workplace when rejecting a new user', async () => {
       // Arrange 
+      testRequestBody.establishmentId = null;
       testRequestBody.approve = false;
       testWorkplace.destroy = () => { return false; }
 

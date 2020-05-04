@@ -33,7 +33,7 @@ const _approveOrRejectNewUser = async (req, res) => {
       const workplace = await _findWorkplace(login.user.establishment.id);
       const user = await _findUser(login.user.id);
       
-      var workplaceIsUnique = await _workplaceIsUnique(req.body.establishmentId, req.body.nmdsId);
+      var workplaceIsUnique = await _workplaceIsUnique(login.user.establishment.id, req.body.nmdsId);
       if (!workplaceIsUnique) {
         return res.status(400).json({
           nmdsId: `This workplace ID (${req.body.nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
