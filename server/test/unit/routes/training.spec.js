@@ -61,7 +61,7 @@ let mandatoryTrainingRecords = [
   }
 ];
 
-describe.only('training route', () => {
+describe('training route', () => {
   describe('addMissingMandatoryTrainingToAllTraining', () => {
     afterEach(function () {
       sandbox.restore();
