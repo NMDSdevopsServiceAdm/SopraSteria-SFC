@@ -51,33 +51,30 @@ before_deploy:
     - if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; mv index_staging.html index.html; fi
 deploy:
   - provider: cloudfoundry
-    edge: false
+    api: https://api.cloud.service.gov.uk
     username: nmdsdevopsserviceadm@hotmail.com
     password:
-      secure: HnhW8/+g/JRVYzM/PASBdXre2hL8zHYL88i7LGN9gmeWrQE/8qTNgp6H2eyufYbTmVYL5r3X9QjcSujxQLKRK1RVGJ7JI1jpLG2RJL+q5MpVLWoSDXwHtv/4xAHtyK/FKooR6mIoJVuXFMAyJVOMf26dYmm8vrYo6IcLAcMUJd58ZJ5pxVVZXR65o8WARj/C+C1pkWK/HwWzi4CQOOcHiKeuwou/kaSb6T45NKWElshJ0CcvK210qKj7+vow8N5oBHFlmUVkptFhu7KSgVw2s3Mi9WTnl3ZpkXkXaSJJbRochaDKZoho9SOIEQBzH2KIuhEUTnRCfJeBH2Rxt0L1q48OOhIvq87Hzy6JpIJG15xTNP/bZz0+16UNTWhQkHCNZNi8OGBCsvQKYmI2aWux/tYOleH+7xaIOsR3Wl2vHOqAj8KPGpkxVUlYEICGDe/GVZC/LT5gitALcJwlTGi8aE8z5dEdSSn7dhRV3Vk8eitelghqww7BXsZT6Rlv/5F8NSsi80eg6LQuIHXPUQEv2+nuadRBojAjpbnulXGxwbH+DmeUhk36LGT3K5M3sqSbuuEt8uCSe1faKdoyJEgcmWlcEHNuZrw3lG0tlG+AK92GhyaB75aXJb5HiuOlUkdZp9gI0Y0k6PneQ6+JymhMqqSVh8ct86+rEa4qOtES02I=
-    api: https://api.cloud.service.gov.uk
+      secure: eGGD78ZD4beOJopOojrcuRlFrIdMHd+Ar7cTAEX6mIaixgssaNOsCsRFhCy9QM1U9xpJ9EfbZOLJn6dESEb+x0gJOx5Izz9eghGjyb0SKdPO0wqhs8CI8bKu2LzE4uwSY2MYf78aL1nw6vPW1bE8U0Pn2B2TQ5RXCtxe4AhCdILUKb379/YfBTggbdCSCf8ZcWEzrlCPp2raOF+ddl7Ixc0hnFEcB+yxbt+FQutWvUFsLbjnIO6de8sdotgimsepLxjuxFg6RAQdu/mWwA4w72sdfLwINUqP6bD9zol4Qm20FvUu8giNo05W4X7Ro+TvaW3QUFykO5Eu4bY8ZRQzzVCcYQYX2uZiH4qv6Uddnj1zKcbb507++2hMJz0/CTFhum/LqHMe/cGJTLyg5Meh5gSSHL3ylw5XWv1I4/uJYhg/Xdo6QT5sKh2e3c+yIZfUVF0NXXVkcAK3RA8Lo8TQmiXw2lj9ql6L6mz3OyroSvxLEV9OnWI7pokdxHCDNa5R3ARMtyTZarWV191U8yNj9oz2KpSHQ1V0OaNiG9QDZL9xZcjgOSXtnFzd01fv7FoHAipP8kV5K9B+ByTcXI888Nw1QomRHvIIwn3cfCn96A2qeI9ms0v7nin347PSwiT8RiVkZ6pMYkAveYToKavuyOiPichCXXIEIlVMC7ogY/A=
     organization: dhsc-skills-for-care-nmds-sc-2
     space: sandbox
     manifest: manifest.dev.yml
     on:
         branch: develop
   - provider: cloudfoundry
-    edge: false
+    api: https://api.cloud.service.gov.uk
     username: nmdsdevopsserviceadm@hotmail.com
     password:
-      secure: HnhW8/+g/JRVYzM/PASBdXre2hL8zHYL88i7LGN9gmeWrQE/8qTNgp6H2eyufYbTmVYL5r3X9QjcSujxQLKRK1RVGJ7JI1jpLG2RJL+q5MpVLWoSDXwHtv/4xAHtyK/FKooR6mIoJVuXFMAyJVOMf26dYmm8vrYo6IcLAcMUJd58ZJ5pxVVZXR65o8WARj/C+C1pkWK/HwWzi4CQOOcHiKeuwou/kaSb6T45NKWElshJ0CcvK210qKj7+vow8N5oBHFlmUVkptFhu7KSgVw2s3Mi9WTnl3ZpkXkXaSJJbRochaDKZoho9SOIEQBzH2KIuhEUTnRCfJeBH2Rxt0L1q48OOhIvq87Hzy6JpIJG15xTNP/bZz0+16UNTWhQkHCNZNi8OGBCsvQKYmI2aWux/tYOleH+7xaIOsR3Wl2vHOqAj8KPGpkxVUlYEICGDe/GVZC/LT5gitALcJwlTGi8aE8z5dEdSSn7dhRV3Vk8eitelghqww7BXsZT6Rlv/5F8NSsi80eg6LQuIHXPUQEv2+nuadRBojAjpbnulXGxwbH+DmeUhk36LGT3K5M3sqSbuuEt8uCSe1faKdoyJEgcmWlcEHNuZrw3lG0tlG+AK92GhyaB75aXJb5HiuOlUkdZp9gI0Y0k6PneQ6+JymhMqqSVh8ct86+rEa4qOtES02I=
-    api: https://api.cloud.service.gov.uk
+      secure: eGGD78ZD4beOJopOojrcuRlFrIdMHd+Ar7cTAEX6mIaixgssaNOsCsRFhCy9QM1U9xpJ9EfbZOLJn6dESEb+x0gJOx5Izz9eghGjyb0SKdPO0wqhs8CI8bKu2LzE4uwSY2MYf78aL1nw6vPW1bE8U0Pn2B2TQ5RXCtxe4AhCdILUKb379/YfBTggbdCSCf8ZcWEzrlCPp2raOF+ddl7Ixc0hnFEcB+yxbt+FQutWvUFsLbjnIO6de8sdotgimsepLxjuxFg6RAQdu/mWwA4w72sdfLwINUqP6bD9zol4Qm20FvUu8giNo05W4X7Ro+TvaW3QUFykO5Eu4bY8ZRQzzVCcYQYX2uZiH4qv6Uddnj1zKcbb507++2hMJz0/CTFhum/LqHMe/cGJTLyg5Meh5gSSHL3ylw5XWv1I4/uJYhg/Xdo6QT5sKh2e3c+yIZfUVF0NXXVkcAK3RA8Lo8TQmiXw2lj9ql6L6mz3OyroSvxLEV9OnWI7pokdxHCDNa5R3ARMtyTZarWV191U8yNj9oz2KpSHQ1V0OaNiG9QDZL9xZcjgOSXtnFzd01fv7FoHAipP8kV5K9B+ByTcXI888Nw1QomRHvIIwn3cfCn96A2qeI9ms0v7nin347PSwiT8RiVkZ6pMYkAveYToKavuyOiPichCXXIEIlVMC7ogY/A=
     organization: dhsc-skills-for-care-nmds-sc-2
     space: sandbox
     manifest: manifest.test.yml
     on:
         branch: test
   - provider: cloudfoundry
-    edge: false
+    api: https://api.cloud.service.gov.uk
     username: nmdsdevopsserviceadm@hotmail.com
     password:
-      secure: HnhW8/+g/JRVYzM/PASBdXre2hL8zHYL88i7LGN9gmeWrQE/8qTNgp6H2eyufYbTmVYL5r3X9QjcSujxQLKRK1RVGJ7JI1jpLG2RJL+q5MpVLWoSDXwHtv/4xAHtyK/FKooR6mIoJVuXFMAyJVOMf26dYmm8vrYo6IcLAcMUJd58ZJ5pxVVZXR65o8WARj/C+C1pkWK/HwWzi4CQOOcHiKeuwou/kaSb6T45NKWElshJ0CcvK210qKj7+vow8N5oBHFlmUVkptFhu7KSgVw2s3Mi9WTnl3ZpkXkXaSJJbRochaDKZoho9SOIEQBzH2KIuhEUTnRCfJeBH2Rxt0L1q48OOhIvq87Hzy6JpIJG15xTNP/bZz0+16UNTWhQkHCNZNi8OGBCsvQKYmI2aWux/tYOleH+7xaIOsR3Wl2vHOqAj8KPGpkxVUlYEICGDe/GVZC/LT5gitALcJwlTGi8aE8z5dEdSSn7dhRV3Vk8eitelghqww7BXsZT6Rlv/5F8NSsi80eg6LQuIHXPUQEv2+nuadRBojAjpbnulXGxwbH+DmeUhk36LGT3K5M3sqSbuuEt8uCSe1faKdoyJEgcmWlcEHNuZrw3lG0tlG+AK92GhyaB75aXJb5HiuOlUkdZp9gI0Y0k6PneQ6+JymhMqqSVh8ct86+rEa4qOtES02I=
-    api: https://api.cloud.service.gov.uk
+      secure: eGGD78ZD4beOJopOojrcuRlFrIdMHd+Ar7cTAEX6mIaixgssaNOsCsRFhCy9QM1U9xpJ9EfbZOLJn6dESEb+x0gJOx5Izz9eghGjyb0SKdPO0wqhs8CI8bKu2LzE4uwSY2MYf78aL1nw6vPW1bE8U0Pn2B2TQ5RXCtxe4AhCdILUKb379/YfBTggbdCSCf8ZcWEzrlCPp2raOF+ddl7Ixc0hnFEcB+yxbt+FQutWvUFsLbjnIO6de8sdotgimsepLxjuxFg6RAQdu/mWwA4w72sdfLwINUqP6bD9zol4Qm20FvUu8giNo05W4X7Ro+TvaW3QUFykO5Eu4bY8ZRQzzVCcYQYX2uZiH4qv6Uddnj1zKcbb507++2hMJz0/CTFhum/LqHMe/cGJTLyg5Meh5gSSHL3ylw5XWv1I4/uJYhg/Xdo6QT5sKh2e3c+yIZfUVF0NXXVkcAK3RA8Lo8TQmiXw2lj9ql6L6mz3OyroSvxLEV9OnWI7pokdxHCDNa5R3ARMtyTZarWV191U8yNj9oz2KpSHQ1V0OaNiG9QDZL9xZcjgOSXtnFzd01fv7FoHAipP8kV5K9B+ByTcXI888Nw1QomRHvIIwn3cfCn96A2qeI9ms0v7nin347PSwiT8RiVkZ6pMYkAveYToKavuyOiPichCXXIEIlVMC7ogY/A=
     organization: dhsc-skills-for-care-nmds-sc-2
     space: sandbox
     manifest: manifest.featureGDS.yml
@@ -85,3 +82,4 @@ deploy:
         branch: develop_accessibility_demo
 notifications:
     slack: skills-for-care:Co9S4WS4ZitevGOyBrEb6yEL
+
