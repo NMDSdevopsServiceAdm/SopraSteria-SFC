@@ -1,7 +1,7 @@
 aws:
     region: eu-west-1
     secrets:
-        use: true
+        use: false
         wallet: dev/api
     kinesis:
       enabled: true
@@ -13,15 +13,24 @@ aws:
       registrations: arn:aws:sns:eu-west-1:364648107127:registrations-dev
       feedback: 	arn:aws:sns:eu-west-1:364648107127:feedback-dev
 
+log:
+    sequelize: true
+
 db:
     pool:
         min: 15
         max: 15
     ssl: true
-    username: sfcapp
+    username: aaron_russell
+    host: '35.178.185.248'
+    password: 'xs32MtxJXuhndCkBtxOy3Yp9FDqtHnW5tlhjsdcHSYGzVkMaOmFDiaJdBG8LC9pO2QaKnG'
     client_ssl:
         status: true
-        usingFiles: false
+        usingFiles: true
+        files:
+          certificate: /mnt/c/Users/arussell/Documents/Repos/SFC-Certs/pg_dev_client.crt
+          key: /mnt/c/Users/arussell/Documents/Repos/SFC-Certs/pg_dev_client.key
+          ca: /mnt/c/Users/arussell/Documents/Repos/SFC-Certs/pg_dev_root.crt
 
 slack:
     level : 3     # enables Slack notifications
