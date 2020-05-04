@@ -1,9 +1,10 @@
 'use strict';
 const expect = require('chai').expect;
-const sinon = require('sinon');
+const sandbox = require('sinon').createSandbox();
 const moment = require('moment');
 //include Training class
 const Training = require('../../../../models/classes/training').Training;
+
 
 let establishmentId = 123;
 let workerRecords = [{
@@ -47,10 +48,18 @@ let workerTrainingRecords = {
 }
 
 describe('/server/models/class/training.js', () => {
-  describe('getExpiringAndExpiredTrainingCounts', () => {
-    sinon.stub(Training, 'fetch').callsFake(() => {
+  afterEach(function () {
+    sandbox.restore();
+    console.log("restored fetch");
+  });
+
+  before(() => {
+    sandbox.stub(Training, 'fetch').callsFake(() => {
       return workerTrainingRecords;
-    })
+    });
+  });
+
+  describe('getExpiringAndExpiredTrainingCounts', () => {
     it('should return updated worker records : Training.getExpiringAndExpiredTrainingCounts', async () => {
       const updateTrainingRecords = await Training.getExpiringAndExpiredTrainingCounts(establishmentId, workerRecords);
       if(updateTrainingRecords){
@@ -77,4 +86,5 @@ describe('/server/models/class/training.js', () => {
       }
     });
   });
+
 });

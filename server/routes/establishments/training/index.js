@@ -14,52 +14,9 @@ const MandatoryTraining = require('../../../models/classes/mandatoryTraining').M
 // Inherits the security middleware declared in the Worker route for training.
 // Inheirts the "workerUid" parameter declared in the Worker route for training.
 router.route('/').get(async (req, res) => {
-  // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
-  const establishmentId = req.establishmentId;
-  const workerUid = req.params.workerId;
-  let missingMandatoryTraining = [];
-  try {
-    let allTrainingRecords = await Training.fetch(establishmentId, workerUid);
-    const mandatoryTrainingforWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
-    if (allTrainingRecords.count === 0) {
-      missingMandatoryTraining = mandatoryTrainingforWorker;
-    } else {
-      mandatoryTrainingforWorker.forEach(mandatoryTraining => {
-        mantrainingDone = false;
-        allTrainingRecords.training.forEach(training => {
-          if (mandatoryTraining.trainingCategoryFK === training.trainingCategory.id) {
-            mantrainingDone = true;
-          }
-        });
-        if (mantrainingDone === false) {
-          missingMandatoryTraining.push(mandatoryTraining);
-        }
-      });
-    }
-    missingMandatoryTraining.forEach(thisRecord => {
-      allTrainingRecords.training.unshift({
-        uid: thisRecord.id,
-        trainingCategory: {
-          id: thisRecord.workerTrainingCategories.id,
-          category: thisRecord.workerTrainingCategories.category
-        },
-        title: undefined,
-        missing: true,
-        accredited: undefined,
-        completed: undefined,
-        expires: undefined,
-        notes: undefined,
-        created: thisRecord.created.toISOString(),
-        updated: thisRecord.updated.toISOString(),
-        updatedBy: thisRecord.updatedBy
-      });
-    });
-    return res.status(200).json(allTrainingRecords);
-  } catch (err) {
-    console.error('Training::root - failed', err);
-    return res.status(503).send(`Failed to get Training Records for Worker having uid: ${workerUid}`);
-  }
+  await getTrainingListWithMissingMandatoryTraining(req, res);
 });
+
 
 // gets requested training record using the training uid
 router.route('/:trainingUid').get(async (req, res) => {
@@ -186,4 +143,54 @@ router.route('/:trainingUid').delete(async (req, res) => {
   }
 });
 
+const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
+  // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
+  const establishmentId = req.establishmentId;
+  const workerUid = req.params.workerId;
+  let missingMandatoryTraining = [];
+  try {
+    let allTrainingRecords = await Training.fetch(establishmentId, workerUid);
+    const mandatoryTrainingforWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
+    if (allTrainingRecords.count === 0) {
+      missingMandatoryTraining = mandatoryTrainingforWorker;
+    } else {
+      mandatoryTrainingforWorker.forEach(mandatoryTraining => {
+        mantrainingDone = false;
+        allTrainingRecords.training.forEach(training => {
+          if (mandatoryTraining.trainingCategoryFK === training.trainingCategory.id) {
+            mantrainingDone = true;
+          }
+        });
+        if (mantrainingDone === false) {
+          missingMandatoryTraining.push(mandatoryTraining);
+        }
+      });
+    }
+    missingMandatoryTraining.forEach(thisRecord => {
+      allTrainingRecords.training.unshift({
+        uid: thisRecord.id,
+        trainingCategory: {
+          id: thisRecord.workerTrainingCategories.id,
+          category: thisRecord.workerTrainingCategories.category
+        },
+        title: undefined,
+        missing: true,
+        accredited: undefined,
+        completed: undefined,
+        expires: undefined,
+        notes: undefined,
+        created: thisRecord.created.toISOString(),
+        updated: thisRecord.updated.toISOString(),
+        updatedBy: thisRecord.updatedBy
+      });
+    });
+    res.status(200);
+    return res.json(allTrainingRecords);
+  } catch (err) {
+    console.error('Training::root - failed', err);
+    res.status(503);
+    return res.send(`Failed to get Training Records for Worker having uid: ${workerUid}`);
+  }
+};
 module.exports = router;
+module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
