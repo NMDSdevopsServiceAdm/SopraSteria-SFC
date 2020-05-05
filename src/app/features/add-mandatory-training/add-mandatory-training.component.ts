@@ -20,6 +20,7 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
 import { DialogService } from '@core/services/dialog.service';
 import { RemoveAllSelectionsDialogComponent } from '@features/add-mandatory-training/remove-all-selections-dialog.component';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-add-mandatory-training',
@@ -50,6 +51,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
     },
   ];
   constructor(
+    private alertService: AlertService,
     protected backService: BackService,
     private dialogService: DialogService,
     private trainingService: TrainingService,
@@ -88,6 +90,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
         this.establishment = establishment;
         this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
           trainings => {
+            this.existingMandatoryTrainings = trainings;
             this.prefill(trainings);
           },
           error => {
@@ -207,8 +210,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
         if(deleteConfirmed) {
           this.categoriesArray.clear();
           const props = this.generateUpdateProps();
-          this.updateMandatoryTraining(props, false);
-          this.categoriesArray.push(this.createCategoryControl());
+          this.updateMandatoryTraining(props, true);
         }
     });
   }
@@ -290,14 +292,19 @@ export class AddMandatoryTrainingComponent implements OnInit {
     };
   }
 
-  //Send updateed training object to server
-  protected updateMandatoryTraining(props: mandatoryTrainingCategories, goBack: boolean = true): void {
+  //Send updated training object to server
+  protected updateMandatoryTraining(props: mandatoryTrainingCategories, remove: boolean = false): void {
     this.subscriptions.add(
       this.establishmentService.updateMandatoryTraining(this.establishment.uid, props.categories).subscribe(
         data => {
-          if(goBack) {
-            this.router.navigate(this.return.url, { fragment: this.return.fragment });
-          }
+          this.router.navigate(this.return.url, { fragment: this.return.fragment }).then(() => {
+            if (remove) {
+              this.alertService.addAlert({
+                type: 'success',
+                message: "You've deleted all of the mandatory training for your workplace."
+              });
+            }
+          });
         },
         error => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
