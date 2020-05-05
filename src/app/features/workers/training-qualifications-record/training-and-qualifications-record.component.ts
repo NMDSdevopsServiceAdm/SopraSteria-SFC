@@ -101,7 +101,7 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
   public getTrainingFlag(trainingRecords) {
     let expired = false;
     let expiring = false;
-     let missing = false;
+    let missing = false;
     const currentDate = moment();
     //check training status
     trainingRecords.forEach(training => {
@@ -113,16 +113,16 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
         } else if (daysDiffrence >= 0 && daysDiffrence <= 90) {
           expiring = true;
         }
-      }else if( training.missing){
+      } else if ( training.missing) {
         missing = true;
       }
     });
     // return for flag value
     if (missing) {
       return 3;
+    } else if (expired) {
+      return 2;
     } else if (expiring) {
-      return 1;
-  } else if (expiring) {
       return 1;
     } else {
       return 0;

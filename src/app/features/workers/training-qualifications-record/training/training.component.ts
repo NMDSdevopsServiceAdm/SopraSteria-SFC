@@ -13,7 +13,7 @@ import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-training',
-  templateUrl: './training.component.html'
+  templateUrl: './training.component.html',
 })
 export class TrainingComponent implements OnInit {
   @Input() worker: Worker;
@@ -36,7 +36,6 @@ export class TrainingComponent implements OnInit {
 
   ngOnInit() {
     this.fetchAllRecords();
-
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
@@ -98,7 +97,7 @@ export class TrainingComponent implements OnInit {
   /**
    * Function used to get training status by comparing expiring date
    * @param {date} exptire date
-   * @return {number} 0 for up-to-date, 1 for expiring soon , 2 for expired,3 for missing.
+   * @return {number} 0 for up-to-date, 1 for expiring soon ,2 for expired, 3 for missing.
    */
   public getTrainingStatus(expires, missing) {
     let status = 0;
