@@ -39,7 +39,7 @@ before_script:
 script:
   - npm run build
   # - npm run test
-  # - npm run lint
+  - npm run lint
 
  # - xvfb-run npm run e2e
 before_deploy:
