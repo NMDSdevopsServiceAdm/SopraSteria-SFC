@@ -103,7 +103,7 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     let expiring = false;
     let missing = false;
     const currentDate = moment();
-    //check training status
+    // check training status
     trainingRecords.forEach(training => {
       if (training.expires) {
         const expiringDate = moment(training.expires);

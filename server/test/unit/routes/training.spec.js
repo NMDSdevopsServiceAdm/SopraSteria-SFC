@@ -74,7 +74,7 @@ const mandatoryTrainingRecords = [
 ];
 
 describe('training route', () => {
-  describe.only('addMissingMandatoryTrainingToAllTraining', () => {
+  describe('addMissingMandatoryTrainingToAllTraining', () => {
     describe('normal stubs', () => {
       afterEach(function() {
         sandbox.restore();
