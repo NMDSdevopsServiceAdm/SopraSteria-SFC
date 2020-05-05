@@ -144,7 +144,6 @@ router.route('/:trainingUid').delete(async (req, res) => {
 });
 
 const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
-  // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
   let missingMandatoryTraining = [];
