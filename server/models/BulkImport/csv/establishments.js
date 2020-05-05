@@ -564,9 +564,9 @@ class Establishment {
     } else if (this._status === 'NEW' && !postcodeExists.length) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        warnCode: Establishment.ADDRESS_ERROR,
-        warnType: 'ADDRESS_ERROR',
-        warning: 'Workplace will be ignored. The Postcode for this workplace cannot be found in our database and must be registered manually.',
+        errCode: Establishment.ADDRESS_ERROR,
+        errType: 'ADDRESS_ERROR',
+        error: 'The Postcode for this workplace cannot be found in our database and must be registered manually.',
         source: myPostcode,
         name: this._currentLine.LOCALESTID
       });
