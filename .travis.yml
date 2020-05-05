@@ -38,7 +38,7 @@ before_script:
     - echo $B_NAME
 script:
   - npm run build
-  # - npm run test
+  - npm run test
   # - npm run lint
 
  # - xvfb-run npm run e2e
