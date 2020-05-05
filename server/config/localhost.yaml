@@ -39,8 +39,3 @@ bulkupload:
         storeIntermediaries: true
     completion:
         timeout: 600
-
-test:
-  admin:
-    username: 'greenj'
-    password: 'Password00'
