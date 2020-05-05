@@ -3,6 +3,10 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
 
+router.route('/').post(async (req, res) => {
+  await unlockAccount(req, res);
+});
+
 const unlockAccount = async (req, res) => {
     // parse input - escaped to prevent SQL injection
 
@@ -50,10 +54,6 @@ const unlockAccount = async (req, res) => {
     return res.send();
   }
 };
-
-router.route('/').post(async (req, res) => {
-  await unlockAccount(req, res);
-});
 
 module.exports = router;
 module.exports.unlockAccount = unlockAccount;
