@@ -2007,9 +2007,9 @@ it('should emit an error if postcode cannot be found in the reference data', asy
       "name": "omar3",
       "origin": "Establishments",
       "source": "AB13 4NJ",
-      "warnCode": 1040,
-      "warnType": "ADDRESS_ERROR",
-      "warning": "Workplace will be ignored. The Postcode for this workplace cannot be found in our database and must be registered manually."
+      "errCode": 1040,
+      "errType": "ADDRESS_ERROR",
+      "error": "The Postcode for this workplace cannot be found in our database and must be registered manually."
     }
   ]);
 });
