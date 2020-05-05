@@ -280,13 +280,15 @@
     * This gets all the MandatoryTraining for a specific Worker
     */
    static async fetchMandatoryTrainingForWorker(workerUid){
-     const allMissingMandatoryTraining = [];
      const fetchWorker = await models.worker.findOne({
       attributes:["establishmentFk","MainJobFkValue"],
        where:{
          WorkerUID: workerUid
        }
      });
+     if (!fetchWorker){
+       throw new Error("Worker "+ workerUid +" doesnt exist");
+     }
      const fetchMandatoryTrainingResults = await models.MandatoryTraining.findAll({
        include: [
          {
@@ -299,7 +301,6 @@
          jobFK: (fetchWorker.MainJobFkValue)
        }
      });
-
       return fetchMandatoryTrainingResults;
    }
 

@@ -153,7 +153,7 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
     const mandatoryTrainingforWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
     if (allTrainingRecords.count === 0) {
       missingMandatoryTraining = mandatoryTrainingforWorker;
-    } else {
+    }else if (mandatoryTrainingforWorker.length > 0){
       mandatoryTrainingforWorker.forEach(mandatoryTraining => {
         mantrainingDone = false;
         allTrainingRecords.training.forEach(training => {
