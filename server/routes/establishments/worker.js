@@ -20,6 +20,8 @@ const Qualification = require('../../models/classes/qualification').Qualificatio
 // child routes
 const TrainingRoutes = require('./training');
 const QualificationRoutes = require('./qualification');
+const MandatoryTrainingRoutes = require('./mandatoryTraining');
+
 
 // this middleware validates a worker against known establishment ID
 const validateWorker = async (req, res, next) => {
@@ -90,6 +92,8 @@ router.route('/total').get(async (req, res) => {
 
 router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
+router.use('/:workerId/mandatoryTraining', [validateWorker, MandatoryTrainingRoutes]);
+
 router.use('/:workerId', validateWorker);
 router.use('/', validateWorker);
 

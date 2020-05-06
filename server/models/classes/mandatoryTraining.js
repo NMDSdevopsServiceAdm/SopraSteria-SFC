@@ -274,6 +274,34 @@
    }
 
    /**
+    * This gets all the MandatoryTraining for a specific Worker
+    */
+   static async fetchMandatoryTrainingForWorker(workerUid){
+     const fetchWorker = await models.worker.findOne({
+      attributes:["establishmentFk","MainJobFkValue"],
+       where:{
+         WorkerUID: workerUid
+       }
+     });
+     if (!fetchWorker){
+       throw new Error("Worker "+ workerUid +" doesnt exist");
+     }
+     const fetchMandatoryTrainingResults = await models.MandatoryTraining.findAll({
+       include: [
+         {
+           model: models.workerTrainingCategories,
+           as: 'workerTrainingCategories',
+           attributes: ['id', 'category']
+         }],
+       where: {
+         establishmentFK: fetchWorker.establishmentFk,
+         jobFK: (fetchWorker.MainJobFkValue)
+       }
+     });
+      return fetchMandatoryTrainingResults;
+   }
+
+   /**
     * Returns all saved mandatory training list including training category name, job name and establishment id
     */
    static async fetch(establishmentId){
