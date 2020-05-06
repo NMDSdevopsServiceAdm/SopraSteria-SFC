@@ -11,16 +11,16 @@ import {
 import { Job } from '@core/model/job.model';
 import { TrainingCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
+import { DialogService } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { TrainingService } from '@core/services/training.service';
+import { RemoveAllSelectionsDialogComponent } from '@features/add-mandatory-training/remove-all-selections-dialog.component';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
-import { DialogService } from '@core/services/dialog.service';
-import { RemoveAllSelectionsDialogComponent } from '@features/add-mandatory-training/remove-all-selections-dialog.component';
-import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-add-mandatory-training',
@@ -160,15 +160,15 @@ export class AddMandatoryTrainingComponent implements OnInit {
     this.serverErrorsMap = [
       {
         name: 503,
-        message: 'We could not send request to mandatory traning. You can try again or contact us.',
+        message: 'There has been a problem saving your mandatory training. Please try again.',
       },
       {
         name: 400,
-        message: 'Unable to send request to mandatory traning.',
+        message: 'There has been a problem saving your mandatory training. Please try again.',
       },
       {
         name: 404,
-        message: 'Send request to mandatory traning service not found. You can try again or contact us.',
+        message: 'There has been a problem saving your mandatory training. Please try again.',
       },
     ];
   }
