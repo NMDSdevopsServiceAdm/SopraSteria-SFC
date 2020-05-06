@@ -1294,6 +1294,18 @@ class Establishment {
     }
   }
 
+  getDuplicateLocationError() {
+    return {
+      origin: 'Establishments',
+      lineNumber: this._lineNumber,
+      errCode: Establishment.DUPLICATE_ERROR,
+      errType: 'DUPLICATE_ERROR',
+      error: 'LOCATIONID is not unique',
+      source: this._currentLine.LOCATIONID,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+
   _crossValidateTotalPermTemp (
     csvEstablishmentSchemaErrors,
     {

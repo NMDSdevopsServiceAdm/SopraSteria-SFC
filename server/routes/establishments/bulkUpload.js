@@ -1086,6 +1086,24 @@ const validateBulkUploadFiles = async (
         allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
       }
     });
+
+    const locations = [];
+    myEstablishments
+      .filter((thisEstablishment) => !thisEstablishment._currentLine.LOCATIONID)
+      .forEach((thisEstablishment) => {
+        const key = thisEstablishment._currentLine.LOCATIONID;
+
+        const location = locations[key];
+        if (location) {
+          csvEstablishmentSchemaErrors.push(
+            thisEstablishment.getDuplicateLocationError()
+          );
+
+          return;
+        }
+
+        locations[key] = thisEstablishment.lineNumber;
+      });
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no establishment records');
   }
