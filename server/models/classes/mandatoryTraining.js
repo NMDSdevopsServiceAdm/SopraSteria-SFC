@@ -189,15 +189,12 @@
        try{
 
          //find already existing mandatory details, if found delete them
-         for(let i = 0; i < this.mandatorytrainingDetails.length; i++){
-           let row = this.mandatorytrainingDetails[i];
-           const fetchQuery = {
-             where: {
-               establishmentFK: this.establishmentId
-             }
-           };
-           await models.MandatoryTraining.destroy(fetchQuery);
-         }
+         const fetchQuery = {
+           where: {
+             establishmentFK: this.establishmentId
+           }
+         };
+         await models.MandatoryTraining.destroy(fetchQuery);
 
          // save new mandatory training details
          for(let i = 0; i < this.mandatorytrainingDetails.length; i++){

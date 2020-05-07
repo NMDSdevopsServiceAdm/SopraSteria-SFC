@@ -85,6 +85,7 @@ export interface Establishment {
   createdByUserUID?: string;
   id: number;
   uid: string;
+  ustatus?: string;
   ownerChangeRequestUID?: any;
   name: string;
   address: string;
