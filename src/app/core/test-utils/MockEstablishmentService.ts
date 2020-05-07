@@ -2,6 +2,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Establishment } from '@core/model/establishment.model';
 
 export class MockEstablishmentService extends EstablishmentService {
+  public get establishmentId(): string {
+    return '';
+  }
+
   get primaryWorkplace(): Establishment {
     return {
       address: '',
@@ -23,7 +27,10 @@ export class MockEstablishmentService extends EstablishmentService {
       postcode: '',
       primaryAuthority: undefined,
       serviceUsers: [],
-      share: undefined,
+      share: {
+        enabled: false,
+        with: []
+      },
       starters: undefined,
       totalLeavers: 0,
       totalStarters: 0,

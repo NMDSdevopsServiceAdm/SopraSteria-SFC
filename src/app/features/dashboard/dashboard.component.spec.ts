@@ -1,11 +1,11 @@
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
-import { render, within, prettyDOM } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { SharedModule } from '@shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
 import { WindowRef } from '@core/services/window.ref';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
@@ -15,16 +15,13 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { HttpClient } from '@angular/common/http';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { PermissionType } from '@core/model/permissions.model';
-import { getTestBed, TestBed } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { getTestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { AuthService } from '@core/services/auth.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 
 describe('DashboardComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
-    const permissions: PermissionType[] = isAdmin ? ['canDeleteAllEstablishments'] : [];
-
     const component =  await render(DashboardComponent, {
       imports: [
         SharedModule,
@@ -37,16 +34,17 @@ describe('DashboardComponent', () => {
       ],
       providers: [
         {
-          provide: WindowRef
+          provide: WindowRef,
+          useClass: WindowRef
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(permissions),
+          useFactory: MockPermissionsService.factory(),
           deps: [HttpClient, Router, UserService]
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries),
+          useFactory: MockUserService.factory(subsidiaries, isAdmin),
           deps: [HttpClient]
         },
         {
@@ -66,10 +64,12 @@ describe('DashboardComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.get(EstablishmentService) as EstablishmentService;
+    const router = injector.get(Router) as Router;
 
     return {
       component,
-      establishmentService
+      establishmentService,
+      router
     };
   }
 
@@ -113,7 +113,23 @@ describe('DashboardComponent', () => {
       const { component, establishmentService } = await setup(true);
 
       const spy = spyOn(establishmentService, 'deleteWorkplace');
-      spy.and.callThrough();
+
+      const deleteWorkplace = component.getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete workplace');
+      confirm.click();
+
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should redirect the user after deleting a workplace', async () => {
+      const { component, establishmentService, router } = await setup(true);
+
+      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+      const spy = spyOn(router, 'navigate');
+      spy.and.returnValue(Promise.resolve({}));
 
       const deleteWorkplace = component.getByText('Delete Workplace');
       deleteWorkplace.click();
