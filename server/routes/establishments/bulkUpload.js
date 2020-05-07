@@ -1087,23 +1087,7 @@ const validateBulkUploadFiles = async (
       }
     });
 
-    const locations = [];
-    myEstablishments
-      .filter((thisEstablishment) => !thisEstablishment._currentLine.LOCATIONID)
-      .forEach((thisEstablishment) => {
-        const key = thisEstablishment._currentLine.LOCATIONID;
-
-        const location = locations[key];
-        if (location) {
-          csvEstablishmentSchemaErrors.push(
-            thisEstablishment.getDuplicateLocationError()
-          );
-
-          return;
-        }
-
-        locations[key] = thisEstablishment.lineNumber;
-      });
+    await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors);
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no establishment records');
   }
@@ -2434,6 +2418,30 @@ const downloadGet = async (req, res) => {
   }
 };
 
+const checkDuplicateLocations = async (
+  myEstablishments,
+  csvEstablishmentSchemaErrors,
+) => {
+  const locations = [];
+
+  myEstablishments
+    .filter((thisEstablishment) => thisEstablishment._currentLine.LOCATIONID)
+    .forEach((thisEstablishment) => {
+      const locationId = thisEstablishment._currentLine.LOCATIONID;
+      const exists = locations[locationId] !== undefined;
+
+      if (exists) {
+        csvEstablishmentSchemaErrors.push(
+          thisEstablishment.getDuplicateLocationError(),
+        );
+
+        return;
+      }
+
+      locations[locationId] = thisEstablishment.lineNumber;
+    });
+};
+
 const router = require('express').Router();
 
 router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
@@ -2454,4 +2462,5 @@ router.route('/unlock').get(releaseLock);
 router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;
+module.exports.checkDuplicateLocations = checkDuplicateLocations;
 module.exports.validateEstablishmentCsv = validateEstablishmentCsv;
