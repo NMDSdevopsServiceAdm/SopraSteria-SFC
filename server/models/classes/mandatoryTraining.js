@@ -189,15 +189,12 @@
        try{
 
          //find already existing mandatory details, if found delete them
-         for(let i = 0; i < this.mandatorytrainingDetails.length; i++){
-           let row = this.mandatorytrainingDetails[i];
-           const fetchQuery = {
-             where: {
-               establishmentFK: this.establishmentId
-             }
-           };
-           await models.MandatoryTraining.destroy(fetchQuery);
-         }
+         const fetchQuery = {
+           where: {
+             establishmentFK: this.establishmentId
+           }
+         };
+         await models.MandatoryTraining.destroy(fetchQuery);
 
          // save new mandatory training details
          for(let i = 0; i < this.mandatorytrainingDetails.length; i++){
@@ -274,6 +271,34 @@
          throw new Error('Failed to update Mandatory Training record');
        }
      }
+   }
+
+   /**
+    * This gets all the MandatoryTraining for a specific Worker
+    */
+   static async fetchMandatoryTrainingForWorker(workerUid){
+     const fetchWorker = await models.worker.findOne({
+      attributes:["establishmentFk","MainJobFkValue"],
+       where:{
+         WorkerUID: workerUid
+       }
+     });
+     if (!fetchWorker){
+       throw new Error("Worker "+ workerUid +" doesnt exist");
+     }
+     const fetchMandatoryTrainingResults = await models.MandatoryTraining.findAll({
+       include: [
+         {
+           model: models.workerTrainingCategories,
+           as: 'workerTrainingCategories',
+           attributes: ['id', 'category']
+         }],
+       where: {
+         establishmentFK: fetchWorker.establishmentFk,
+         jobFK: (fetchWorker.MainJobFkValue)
+       }
+     });
+      return fetchMandatoryTrainingResults;
    }
 
    /**

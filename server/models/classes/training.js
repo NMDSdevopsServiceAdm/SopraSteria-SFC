@@ -783,7 +783,7 @@ class Training extends EntityValidator {
                     created:  thisRecord.created.toISOString(),
                     updated: thisRecord.updated.toISOString(),
                     updatedBy: thisRecord.updatedBy,
-                })
+                });
             });
         }
 

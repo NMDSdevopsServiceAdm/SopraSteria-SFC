@@ -4,14 +4,21 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">Manage mandatory training</h1>
-    <p>
-      Different care providers make different types of training mandatory depending on their main service and the people
-      they provide care for.
-    </p>
-    <p>
-      Select the training you want to make mandatory for your workplace. If you do this we can flag which staff need to
-      undertake training or where mandatory training has expired.
-    </p>
+    <details class="govuk-details" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">
+          Help with mandatory training
+        </span>
+      </summary>
+      <div class="govuk-details__text">
+        Choose the training you want to make mandatory for your staff, dependent on your main service and the needs of those you provide care for. It will help you identify who needs training and let you know when training expires.
+      </div>
+    </details>
+    <a href="#"
+       *ngIf="existingMandatoryTrainings.mandatoryTrainingCount > 0"
+       (click)="removeAllCategories($event)"
+       class="govuk-list govuk-list--inline">
+      Remove all training selections</a>
   </div>
 </div>
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
@@ -105,7 +112,7 @@
                   category.get('vacancies').controls.length > 0 &&
                   category.get('vacancies').controls.length < jobs.length
                 " class="govuk-button govuk-button--secondary" type="button" (click)="addVacancy(i)">
-                Add another Job role
+                Add another job role
               </button>
             </div>
           </div>
