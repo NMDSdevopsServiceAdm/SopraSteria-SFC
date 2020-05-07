@@ -25,7 +25,7 @@
           </td>
           <td class="govuk-table__cell">{{ trainingRecord.title }}</td>
           <td class="govuk-table__cell">
-            <div *ngIf="trainingRecord.trainingStatus === 3" class="govuk-!-margin-bottom-1">
+            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
               <img
                 src="/assets/images/flag-red.svg"
                 alt="Missing"
@@ -33,7 +33,7 @@
               />
               Missing
             </div>
-            <div *ngIf="trainingRecord.trainingStatus === 2" class="govuk-!-margin-bottom-1">
+            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRED" class="govuk-!-margin-bottom-1">
               <img
                 src="/assets/images/flag-red.svg"
                 alt="expired"
@@ -41,7 +41,7 @@
               />
               Expired
             </div>
-            <div *ngIf="trainingRecord.trainingStatus === 1">
+            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRING">
               <img
                 src="/assets/images/flag-orange.svg"
                 alt="expiring"

@@ -10,6 +10,7 @@ import { DeleteTrainingDialogComponent } from '@features/workers/delete-training
 import { orderBy } from 'lodash';
 import * as moment from 'moment';
 import { take } from 'rxjs/operators';
+import { TrainingStatusService } from '@core/services/trainingStatus.service';
 
 @Component({
   selector: 'app-training',
@@ -30,7 +31,8 @@ export class TrainingComponent implements OnInit {
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
     private router: Router,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private trainingStatusService: TrainingStatusService,
   ) {
   }
 
@@ -69,7 +71,7 @@ export class TrainingComponent implements OnInit {
           this.trainingRecords = training.training;
           this.trainingCount = training.count;
           this.trainingRecords.map(trainingRecord => {
-            trainingRecord.trainingStatus = this.getTrainingStatus(trainingRecord.expires, trainingRecord.missing);
+            trainingRecord.trainingStatus =  this.trainingStatusService.getTrainingStatus(trainingRecord.expires, trainingRecord.missing);
           });
           this.trainingRecords.sort((record1, record2) => {
             if (record1.trainingStatus > record2.trainingStatus) {
@@ -94,34 +96,11 @@ export class TrainingComponent implements OnInit {
 
   }
 
-  /**
-   * Function used to get training status by comparing expiring date
-   * @param {date} exptire date
-   * @return {number} 0 for up-to-date, 1 for expiring soon ,2 for expired, 3 for missing.
-   */
-  public getTrainingStatus(expires, missing) {
-    let status = 0;
-    if (expires) {
-      const expiringDate = moment(expires);
-      const currentDate = moment();
-      const daysDiffrence = expiringDate.diff(currentDate, 'days');
-      if (daysDiffrence < 0) {
-        status = 2;
-      } else if (daysDiffrence >= 0 && daysDiffrence <= 90) {
-        status = 1;
-      } else {
-        status = 0;
-      }
-    } else if (missing) {
-      status = 3;
-    }
-    return status;
-  }
 
   /**
    * Function used to hadle toggle for traing details view and change training details lable
    * @param {string} training uid of clicked row
-   * @param {event} refrance of event handler
+   * @param {event} reference of event handler
    */
   public toggleDetails(uid: string, event) {
     event.preventDefault();
