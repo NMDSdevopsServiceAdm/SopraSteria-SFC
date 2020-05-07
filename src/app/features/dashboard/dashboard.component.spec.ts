@@ -23,6 +23,8 @@ import { MockAuthService } from '@core/test-utils/MockAuthService';
 
 describe('DashboardComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
+    const permissions: PermissionType[] = isAdmin ? ['canDeleteAllEstablishments'] : [];
+
     const component =  await render(DashboardComponent, {
       imports: [
         SharedModule,
@@ -39,7 +41,7 @@ describe('DashboardComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory(permissions),
           deps: [HttpClient, Router, UserService]
         },
         {

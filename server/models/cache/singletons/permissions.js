@@ -58,6 +58,14 @@ let ALL_PERMISSIONS = [
     isAdmin: false,
   },
   {
+    code: 'canDeleteAllEstablishments',
+    description: 'delete an establishment',
+    role: [],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: true,
+  },
+  {
     code: 'canDeleteUser',
     description: 'delete an user',
     role: ['Edit'],

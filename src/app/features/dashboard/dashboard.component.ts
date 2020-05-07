@@ -49,7 +49,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canViewListOfUsers = this.permissionsService.can(workplaceUid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
-    this.canDeleteEstablishment = this.permissionsService.can(workplaceUid, 'canDeleteEstablishment');
+    this.canDeleteEstablishment = this.permissionsService.can(workplaceUid, 'canDeleteAllEstablishments');
 
     if (this.workplace) {
       this.subscriptions.add(
