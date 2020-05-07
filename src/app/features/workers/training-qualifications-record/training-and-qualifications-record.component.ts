@@ -8,9 +8,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { TrainingStatusService } from '@core/services/trainingStatus.service';
 
 @Component({
   selector: 'app-training-and-qualifications-record',
@@ -25,7 +25,6 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
   public trainingAlert: number;
   public qualificationsCount: number;
   public trainingCount: number;
-
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -34,7 +33,8 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private trainingStatusService: TrainingStatusService,
   ) {}
 
   ngOnInit() {
@@ -55,7 +55,7 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
   }
 
-  //This method is used to set training & qualifications list and their counts and alret flag
+  // This method is used to set training & qualifications list and their counts and alert flag
   public setTrainingAndQualifications() {
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe(
@@ -64,7 +64,7 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
           this.qualificationsCount = 0;
           this.trainingCount = 0;
           this.trainingAndQualsCount = 0;
-          //get qualification count
+          // get qualification count
           this.workerService.getQualifications(this.workplace.uid, this.worker.uid).subscribe(
             qual => {
               this.qualificationsCount = qual.qualifications.length;
@@ -73,14 +73,14 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
               console.error(error.error);
             }
           );
-          //get trainging count and flag
+          // get training count and flag
           this.workerService
             .getTrainingRecords(this.workplace.uid, this.worker.uid)
             .pipe(take(1))
             .subscribe(
               training => {
                 this.trainingCount = training.count;
-                this.trainingAlert = this.getTrainingFlag(training.training);
+                this.trainingAlert = this.trainingStatusService.getAggregatedStatus(training.training);
               },
               error => {
                 console.error(error.error);
@@ -93,42 +93,8 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
       )
     );
   }
-  /**
-   * Function used to set training alert flag over the traing and qualifications tab
-   * @param {traingRecords} list of trainging record
-   * @return {number} 0 for up-to-date, 1 for expiring soon and 2 for expired.
-   */
-  public getTrainingFlag(trainingRecords) {
-    let expired = false;
-    let expiring = false;
-    let missing = false;
-    const currentDate = moment();
-    // check training status
-    trainingRecords.forEach(training => {
-      if (training.expires) {
-        const expiringDate = moment(training.expires);
-        const daysDiffrence = expiringDate.diff(currentDate, 'days');
-        if (daysDiffrence < 0) {
-          expired = true;
-        } else if (daysDiffrence >= 0 && daysDiffrence <= 90) {
-          expiring = true;
-        }
-      } else if ( training.missing) {
-        missing = true;
-      }
-    });
-    // return for flag value
-    if (missing) {
-      return 3;
-    } else if (expired) {
-      return 2;
-    } else if (expiring) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-  //event handler from traingin and qualification component.
+
+  //event handler from training and qualification component.
   public trainingAndQualificationsChangedHandler(refresh) {
     if (refresh) {
       this.setTrainingAndQualifications();

@@ -19,8 +19,7 @@
     </div>
   </div>
   <app-tabs>
-    <!-- 1 = expiring soon, 2 = expired and 3 = missing mandatory -->
-    <app-tab [alert]="trainingAlert === 1" [redAlert]="trainingAlert === 2 || trainingAlert == 3" [title]="'Training'">
+    <app-tab [alert]="trainingAlert === trainingStatusService.EXPIRING" [redAlert]="trainingAlert === trainingStatusService.EXPIRED || trainingAlert == trainingStatusService.MISSING" [title]="'Training'">
       <app-training [workplace]="workplace" [worker]="worker"
         (trainingChanged)="trainingAndQualificationsChangedHandler($event)"></app-training>
     </app-tab>
