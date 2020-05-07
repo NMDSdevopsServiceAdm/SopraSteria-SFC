@@ -2,16 +2,55 @@
 
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const models = require('../../../../models');
 const rfr = require('rfr');
 
-const bulkUpload =require('../../../../routes/establishments/bulkUpload');
-const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments');
-const {Establishment} = require('../../../../models/classes/establishment');
-
-
+const bulkUpload = rfr('server/routes/establishments/bulkUpload');
+const EstablishmentCsvValidator = rfr('server/models/BulkImport/csv/establishments');
+const { Establishment } = rfr('server/models/classes/establishment');
+const buildEstablishmentCSV = rfr('server/test/factories/establishment/csv');
 
 describe('/server/routes/establishment/bulkUpload.js', () => {
+  describe('checkDuplicateLocations', () => {
+    it('can check for duplicate location IDs', async () => {
+      const csvEstablishmentSchemaErrors = [];
+      const myEstablishments = [
+        buildEstablishmentCSV({
+          overrides: {
+            LOCALESTID: 'Workplace 1',
+            LOCATIONID: '1-12345678',
+          },
+        }),
+        buildEstablishmentCSV({
+          overrides: {
+            LOCALESTID: 'Workplace 2',
+            LOCATIONID: '1-12345678',
+          },
+        }),
+      ].map((currentLine, currentLineNumber) => {
+        return new EstablishmentCsvValidator.Establishment(
+          currentLine,
+          currentLineNumber,
+        );
+      });
+
+      await bulkUpload.checkDuplicateLocations(
+        myEstablishments,
+        csvEstablishmentSchemaErrors,
+      );
+
+      expect(csvEstablishmentSchemaErrors.length).equals(1);
+      expect(csvEstablishmentSchemaErrors[0]).to.eql({
+        origin: 'Establishments',
+        lineNumber: 1,
+        errCode: 998,
+        errType: 'DUPLICATE_ERROR',
+        error: 'LOCATIONID is not unique',
+        source: '1-12345678',
+        name: 'Workplace 2',
+      });
+    });
+  });
+
   describe('validateEstablishmentCsv()', () => {
     it('should validate each line of the establishments CSV', async () => {
       const workplace = { Address1: 'First Line',
@@ -63,7 +102,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return 'omar3';
       });
 
-      const bu = await bulkUpload.validateEstablishmentCsv({
+      await bulkUpload.validateEstablishmentCsv({
         LOCALESTID: 'omar3',
         STATUS: 'NEW',
         ESTNAME: 'WOZiTech, with even more care',
@@ -197,7 +236,6 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           _logLevel: 300
         }
       ]);
-      console.log(bu);
     });
   });
 });
