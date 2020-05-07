@@ -18,7 +18,7 @@
        *ngIf="existingMandatoryTrainings.mandatoryTrainingCount > 0"
        (click)="removeAllCategories($event)"
        class="govuk-list govuk-list--inline">
-      Delete all mandatory training</a>
+      Remove all training selections</a>
   </div>
 </div>
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">

@@ -301,7 +301,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
             if (remove) {
               this.alertService.addAlert({
                 type: 'success',
-                message: "You've deleted all of the mandatory training for your workplace."
+                message: "You've removed all the selections for mandatory training in your workplace."
               });
             }
           });
