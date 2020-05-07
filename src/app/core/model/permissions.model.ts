@@ -18,6 +18,7 @@ export type PermissionType =
   | 'canBulkUpload'
   | 'canChangePermissionsForSubsidiary'
   | 'canDeleteEstablishment'
+  | 'canDeleteAllEstablishments'
   | 'canDeleteUser'
   | 'canDeleteWorker'
   | 'canEditEstablishment'
