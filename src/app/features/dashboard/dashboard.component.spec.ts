@@ -17,11 +17,12 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { PermissionType } from '@core/model/permissions.model';
 import { getTestBed, TestBed } from '@angular/core/testing';
+import { Observable, of } from 'rxjs';
+import { AuthService } from '@core/services/auth.service';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
 
 describe('DashboardComponent', () => {
-  async function setup(isAdmin: boolean = true) {
-    const permissions: PermissionType[] = isAdmin ? ['canDeleteEstablishment'] : [];
-
+  async function setup(isAdmin = true, subsidiaries = 0) {
     const component =  await render(DashboardComponent, {
       imports: [
         SharedModule,
@@ -38,12 +39,13 @@ describe('DashboardComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(permissions),
+          useFactory: MockPermissionsService.factory(),
           deps: [HttpClient, Router, UserService]
         },
         {
           provide: UserService,
-          useClass: MockUserService
+          useFactory: MockUserService.factory(subsidiaries),
+          deps: [HttpClient]
         },
         {
           provide: NotificationsService,
@@ -52,6 +54,10 @@ describe('DashboardComponent', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService
+        },
+        {
+          provide: AuthService,
+          useClass: MockAuthService
         }
       ]
     });
@@ -62,7 +68,7 @@ describe('DashboardComponent', () => {
     return {
       component,
       establishmentService
-    }
+    };
   }
 
   it('should render a DashboardComponent', async () => {
@@ -70,11 +76,17 @@ describe('DashboardComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe("Archive Workplace", () => {
+  describe('Archive Workplace', () => {
     it('should display a Delete Workplace link if user is an admin', async () => {
       const { component } = await setup(true);
 
       component.getByText('Delete Workplace');
+    });
+
+    it('should not display a Delete Workplace link if the workplace has subsidiaries', async () => {
+      const { component } = await setup(true, 1);
+
+      expect(component.queryByText('Delete Workplace')).toBeNull();
     });
 
     it('should not display a Delete Workplace link if user not an admin', async () => {
@@ -89,22 +101,24 @@ describe('DashboardComponent', () => {
       const deleteWorkplace = component.getByText('Delete Workplace');
       deleteWorkplace.click();
 
-      await within(document.body).findByRole('dialog');
+      const dialog = await within(document.body).findByRole('dialog');
+
+      const cancel = within(dialog).getByText('Cancel');
+      cancel.click();
     });
 
     it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
       const { component, establishmentService } = await setup(true);
 
+      const spy = spyOn(establishmentService, 'deleteWorkplace');
+      spy.and.callThrough();
+
       const deleteWorkplace = component.getByText('Delete Workplace');
       deleteWorkplace.click();
 
       const dialog = await within(document.body).findByRole('dialog');
-      console.log(prettyDOM(dialog))
-      const confirm = within(dialog).getByText('Delete workplace')
-      console.log(prettyDOM(confirm))
+      const confirm = within(dialog).getByText('Delete workplace');
       confirm.click();
-
-      const spy = spyOn(establishmentService, 'deleteWorkplace');
 
       expect(spy).toHaveBeenCalled();
     });

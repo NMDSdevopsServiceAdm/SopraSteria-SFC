@@ -28,8 +28,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public totalStaffRecords: number;
   public workplace: Establishment;
   public trainingAlert: number;
-
-  private subsidiaryCount: number;
+  public subsidiaryCount: number;
 
 
   constructor(

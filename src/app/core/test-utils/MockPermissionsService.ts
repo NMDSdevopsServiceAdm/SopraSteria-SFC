@@ -1,5 +1,5 @@
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { PermissionType } from '@core/model/permissions.model';
+import { PermissionsList, PermissionType } from '@core/model/permissions.model';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserService } from '@core/services/user.service';
@@ -7,7 +7,7 @@ import { UserService } from '@core/services/user.service';
 export class MockPermissionsService extends PermissionsService {
   private _permissions: PermissionType[] = [];
 
-  public static factory(permissions: PermissionType[]) {
+  public static factory(permissions: PermissionType[] = []) {
     return (http: HttpClient, router: Router, userService: UserService) => {
       const service = new MockPermissionsService(http, router, userService);
       service._permissions = permissions;
@@ -15,7 +15,9 @@ export class MockPermissionsService extends PermissionsService {
     };
   }
 
-  public can(workplaceUid: string, permissionType: PermissionType): boolean {
-    return this._permissions.includes(permissionType);
+  permissions(workplaceUid: string): PermissionsList {
+    const perms = {};
+    this._permissions.forEach((p) => perms[p] = true);
+    return perms;
   }
 }
