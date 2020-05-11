@@ -22,15 +22,17 @@
   ></app-training-info-panel>
 
   <app-training-and-qualifications-categories
-    *ngIf="trainingCategories"
+    *ngIf="trainingCategories && viewTrainingByCategory"
     [workplace]="workplace"
     [trainingCategories]="trainingCategories"
+    (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
   ></app-training-and-qualifications-categories>
 
   <app-training-and-qualifications-summary
-    *ngIf="workers"
+    *ngIf="workers && viewTrainingByCategory === false"
     [workplace]="workplace"
     [workers]="workers"
+    (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
   ></app-training-and-qualifications-summary>
 </ng-container>
 <ng-template #noStaffRecords>

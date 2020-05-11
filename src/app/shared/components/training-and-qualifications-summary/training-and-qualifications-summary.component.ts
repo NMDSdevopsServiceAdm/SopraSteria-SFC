@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Establishment, SortTrainingAndQualsOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -12,6 +12,9 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
   @Input() wdfView = false;
+
+  @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
+
   public canViewWorker: boolean;
   public workersData: Array<Worker>;
   public sortTrainingAndQualsOptions;

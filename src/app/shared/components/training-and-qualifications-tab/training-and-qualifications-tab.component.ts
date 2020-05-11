@@ -23,6 +23,9 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
   public missingMandatoryTraining;
   public totalStaff: number;
   public isShowAllTrainings: boolean;
+
+  public viewTrainingByCategory = false;
+
   constructor(
     private workerService: WorkerService,
     private trainingCategoryService: TrainingCategoryService,
@@ -64,6 +67,10 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
         },
       ),
     );
+  }
+
+  public handleViewTrainingByCategory(visible: boolean) {
+    this.viewTrainingByCategory = visible;
   }
 
   public showAllTrainings() {

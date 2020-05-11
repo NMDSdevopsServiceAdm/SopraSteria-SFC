@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
@@ -11,6 +11,8 @@ import { orderBy } from 'lodash';
 export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() trainingCategories: Array<any>;
+
+  @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
   public workerDetails = [];
   public workerDetailsLabel = [];
