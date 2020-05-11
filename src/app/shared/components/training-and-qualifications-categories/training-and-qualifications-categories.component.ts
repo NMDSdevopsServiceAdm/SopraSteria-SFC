@@ -24,6 +24,14 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
 
   ngOnInit() {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+
+    this.trainingCategories = orderBy(this.trainingCategories, [
+        tc => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRED),
+        tc => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRING),
+        tc => this.trainingStatusCount(tc.training, this.trainingStatusService.MISSING),
+      ],
+      ['desc', 'desc', 'desc'],
+    );
   }
 
   public orderByTrainingStatus(training: Array<any>) {
