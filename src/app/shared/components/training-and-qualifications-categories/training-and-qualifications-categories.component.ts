@@ -42,7 +42,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     event.preventDefault();
 
     this.workerDetails[id] = !this.workerDetails[id];
-    this.workerDetailsLabel[id] = this.workerDetailsLabel[id] === 'Close' ? 'Open' : 'Close';
+    this.workerDetailsLabel[id] = this.workerDetailsLabel[id] === 'Less' ? 'More' : 'Less';
   }
 
   public totalTrainingRecords(training) {
