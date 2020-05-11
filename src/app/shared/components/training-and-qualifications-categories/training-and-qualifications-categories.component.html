@@ -74,7 +74,6 @@
                   <th class="govuk-table__header govuk-!-width-one-third" scope="col">Worker ID</th>
                   <th class="govuk-table__header govuk-!-width-one-third" scope="col">Job role</th>
                   <th class="govuk-table__header govuk-!-width-one-third" scope="col">Status</th>
-                  <th class="govuk-table__header govuk-!-width-one-third" scope="col"></th>
                 </tr>
               </thead>
               <tbody class="govuk-table__body">
@@ -132,21 +131,6 @@
                       <div *ngIf="trainingStatus(training) === trainingStatusService.ACTIVE">
                         Up-to-date
                       </div>
-                    </td>
-                    <td class="govuk-table__cell govuk-!-font-weight-regular">
-                      <a
-                        *ngIf="canEditWorker && training.uid"
-                        [routerLink]="[
-                          '/workplace',
-                          this.workplace.uid,
-                          'training-and-qualifications-record',
-                          training.worker.uid,
-                          'training',
-                          training.uid
-                        ]"
-                      >
-                        Update
-                      </a>
                     </td>
                   </tr>
                 </ng-container>
