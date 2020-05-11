@@ -17,6 +17,7 @@ export class AuthService {
   private _isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   private jwt = new JwtHelperService();
   private previousUser: string;
+  private previousToken: string = null;
   private redirect: string;
 
   constructor(
@@ -102,6 +103,20 @@ export class AuthService {
     this.userService.resetAgreedUpdatedTermsStatus = null;
     this.establishmentService.resetState();
     this.permissionsService.clearPermissions();
+  }
+
+  public setPreviousToken(): void {
+    if(this.previousToken === null)
+      this.previousToken = this.token
+  }
+
+  public restorePreviousToken(): void {
+    if(this.previousToken !== null)
+      this.token = this.previousToken
+  }
+
+  public getPreviousToken(): any {
+    return this.jwt.decodeToken(this.previousToken)
   }
 
   private setPreviousUser(): void {

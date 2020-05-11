@@ -58,6 +58,14 @@ let ALL_PERMISSIONS = [
     isAdmin: false,
   },
   {
+    code: 'canDeleteAllEstablishments',
+    description: 'delete an establishment',
+    role: [],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: true,
+  },
+  {
     code: 'canDeleteUser',
     description: 'delete an user',
     role: ['Edit'],
@@ -282,7 +290,7 @@ class PermissionCache {
     if (requestData.role === 'Admin') {
       // console.log("0")
       permissions = this.filterForAdminRole();
-    } else if (estabType == "Standalone") {
+    } else if (estabType === "Standalone") {
       // console.log("1")
       permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     } else if (!isLoggedInAsParent && estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) === 'Workplace') {
@@ -308,6 +316,10 @@ class PermissionCache {
       } else{
         permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
       }
+    }
+
+    if(estabType !== 'Subsidiary') {
+      permissions = permissions.filter(perm => perm.code !== 'canDeleteEstablishment');
     }
 
     const theirPermissions = permissions.map(thisPerm => {

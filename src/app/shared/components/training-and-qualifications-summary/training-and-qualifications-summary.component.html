@@ -48,15 +48,7 @@
           {{ worker.expiredTrainingCount }}
           Expired
         </div>
-        <div *ngIf="worker.expiringTrainingCount > 0"  class="govuk-!-margin-bottom-1">
-          <img
-            src="/assets/images/flag-orange.svg"
-            alt="expiring"
-            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-          />
-          {{ worker.expiringTrainingCount }} Expiring soon
-        </div>
-        <div *ngIf="worker.missingMandatoryTrainingCount > 0">
+        <div *ngIf="worker.missingMandatoryTrainingCount > 0" class="govuk-!-margin-bottom-1">
           <img
             src="/assets/images/flag-red.svg"
             alt="missing mandatory training"
@@ -64,6 +56,14 @@
           />
           {{ worker.missingMandatoryTrainingCount }}
           Missing
+        </div>
+        <div *ngIf="worker.expiringTrainingCount > 0"  class="govuk-!-margin-bottom-1">
+          <img
+            src="/assets/images/flag-orange.svg"
+            alt="expiring"
+            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+          />
+          {{ worker.expiringTrainingCount }} Expiring soon
         </div>
         <div *ngIf="worker.expiredTrainingCount === 0 && worker.expiringTrainingCount === 0 && worker.missingMandatoryTrainingCount === 0">Up-to-date</div>
       </td>

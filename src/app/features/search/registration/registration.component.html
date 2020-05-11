@@ -1,0 +1,142 @@
+<h2 class="govuk-heading-l">Registration from {{ registration.establishment.name }}</h2>
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="registrationForm" id="form-registration">
+  <table class="govuk-table">
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">Created</th>
+        <td class="govuk-table__cell">
+          {{ registration.created }}
+        </td>
+        <th *ngIf="registration.username" class="govuk-table__cell">Username</th>
+        <td *ngIf="registration.username" class="govuk-table__cell">
+          {{ registration.username }}
+        </td>
+        <th *ngIf="registration.establishment.parentEstablishmentId" class="govuk-table__cell">Parent Establishment ID</th>
+        <td *ngIf="registration.establishment.parentEstablishmentId" class="govuk-table__cell">
+          {{ registration.establishment.parentEstablishmentId }}
+        </td>
+      </tr>
+      <tr *ngIf="registration.name"class="govuk-table__row">
+        <th class="govuk-table__cell">Name</th>
+        <td class="govuk-table__cell" colspan="3">
+          {{ registration.name }}
+        </td>
+      </tr>
+      <tr *ngIf="registration.email" class="govuk-table__row">
+        <th class="govuk-table__cell">Email</th>
+        <td class="govuk-table__cell">
+          <a href="mailto:{{ registration.email }}">{{ registration.email }}</a>
+        </td>
+        <th class="govuk-table__cell">Phone number</th>
+        <td class="govuk-table__cell">
+          {{ registration.phone }}
+        </td>
+      </tr>
+      <tr *ngIf="registration.securityQuestion" class="govuk-table__row">
+        <th class="govuk-table__cell">Security question</th>
+        <td class="govuk-table__cell">
+          {{ registration.securityQuestion }}
+        </td>
+        <th class="govuk-table__cell">Security question answer</th>
+        <td class="govuk-table__cell">
+          {{ registration.securityQuestionAnswer }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">Regulated</th>
+        <td class="govuk-table__cell">
+          {{ registration.establishment.isRegulated }}
+        </td>
+        <th class="govuk-table__cell">Provider ID</th>
+        <td class="govuk-table__cell">
+          {{ registration.establishment.provId }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">Workplace ID</th>
+        <td class="govuk-table__cell">
+          <input
+            class="govuk-input govuk-input--width-10"
+            id="nmdsid"
+            name="nmdsid"
+            [formControlName]="'nmdsId'"
+            pattern="^[A-Z].*"
+            type="text"
+          />
+
+          <span *ngIf="nmdsid.invalid && (nmdsid.dirty || nmdsid.touched)" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            <span *ngIf="nmdsid.errors | getFirstError:nmdsid.errors?.required">
+              Enter a workplace ID.
+            </span>
+            <span *ngIf="nmdsid.errors | getFirstError:nmdsid.errors?.minlength">
+              Workplace ID must be between 1 and 8 characters.
+            </span>
+            <span *ngIf="nmdsid.errors | getFirstError:nmdsid.errors?.maxlength">
+              Workplace ID must be between 1 and 8 characters.
+            </span>
+            <span *ngIf="nmdsid.errors | getFirstError:nmdsid.errors?.pattern">
+              Workplace ID must start with an uppercase letter.
+            </span>
+            <span *ngIf="nmdsid.errors | getFirstError:nmdsid.errors?.serverError">
+              {{ nmdsid.errors?.serverError }}
+            </span>
+          </span>
+        </td>
+        <th class="govuk-table__cell">Location ID</th>
+        <td class="govuk-table__cell">
+          {{ registration.establishment.locationId }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">Address</th>
+        <td class="govuk-table__cell" colspan="3">
+          {{ registration.establishment.name }}<br />
+          {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
+          {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
+          {{ registration.establishment.address3 }}<br />
+          {{ registration.establishment.town }}<br />
+          {{ registration.establishment.postcode }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">County</th>
+        <td class="govuk-table__cell">
+          {{ registration.establishment.county }}
+        </td>
+        <th class="govuk-table__cell">Main Service</th>
+        <td class="govuk-table__cell">
+          {{ registration.establishment.mainService }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="gov-uk-table__cell" colspan="4">
+          <div class="govuk-button-group" *ngIf="registration.email">
+            <button
+              type="submit"
+              class="govuk-button govuk-button--warning govuk-util__float-right"
+              (click)="approveRegistration(registration.username, false)"
+            >
+              Reject
+            </button>
+            <button class="govuk-button" type="submit" name="approve" (click)="approveRegistration(registration.username, true)">
+              Approve
+            </button>
+          </div>
+          <div class="govuk-button-group" *ngIf="!registration.email">
+            <button
+              type="submit"
+              class="govuk-button govuk-button--warning govuk-util__float-right"
+              (click)="approveRegistration(registration.establishment.id, false)"
+            >
+              Reject
+            </button>
+            <button class="govuk-button" type="submit" (click)="approveRegistration(registration.establishment.id, true)">
+              Approve
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</form>

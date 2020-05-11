@@ -3,10 +3,14 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
 
+router.route('/').post(async (req, res) => {
+  await unlockAccount(req, res);
+});
+
 const unlockAccount = async (req, res) => {
     // parse input - escaped to prevent SQL injection
 
-  // Sanatize username
+  // Sanitize username
   if(req.body.username){
     const username = escape(req.body.username.toLowerCase());
 
@@ -50,10 +54,6 @@ const unlockAccount = async (req, res) => {
     return res.send();
   }
 };
-
-router.route('/').post(async (req, res) => {
-  await unlockAccount(req, res);
-});
 
 module.exports = router;
 module.exports.unlockAccount = unlockAccount;

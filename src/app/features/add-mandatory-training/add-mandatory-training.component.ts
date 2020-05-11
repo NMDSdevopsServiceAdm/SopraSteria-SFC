@@ -11,11 +11,14 @@ import {
 import { Job } from '@core/model/job.model';
 import { TrainingCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
+import { DialogService } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { TrainingService } from '@core/services/training.service';
+import { RemoveAllSelectionsDialogComponent } from '@features/add-mandatory-training/remove-all-selections-dialog.component';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
 
@@ -48,13 +51,15 @@ export class AddMandatoryTrainingComponent implements OnInit {
     },
   ];
   constructor(
+    private alertService: AlertService,
     protected backService: BackService,
+    private dialogService: DialogService,
     private trainingService: TrainingService,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     private jobService: JobService,
-    protected router: Router,
+    protected router: Router
   ) { }
 
   get categoriesArray(): FormArray {
@@ -85,6 +90,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
         this.establishment = establishment;
         this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
           trainings => {
+            this.existingMandatoryTrainings = trainings;
             this.prefill(trainings);
           },
           error => {
@@ -154,15 +160,15 @@ export class AddMandatoryTrainingComponent implements OnInit {
     this.serverErrorsMap = [
       {
         name: 503,
-        message: 'We could not send request to mandatory traning. You can try again or contact us.',
+        message: 'There has been a problem saving your mandatory training. Please try again.',
       },
       {
         name: 400,
-        message: 'Unable to send request to mandatory traning.',
+        message: 'There has been a problem saving your mandatory training. Please try again.',
       },
       {
         name: 404,
-        message: 'Send request to mandatory traning service not found. You can try again or contact us.',
+        message: 'There has been a problem saving your mandatory training. Please try again.',
       },
     ];
   }
@@ -193,6 +199,20 @@ export class AddMandatoryTrainingComponent implements OnInit {
   public removeCategory(event: Event, index): void {
     event.preventDefault();
     this.categoriesArray.removeAt(index);
+  }
+
+  public removeAllCategories(event: Event): void {
+    event.preventDefault();
+
+    this.dialogService
+      .open(RemoveAllSelectionsDialogComponent, { })
+      .afterClosed.subscribe(deleteConfirmed => {
+        if(deleteConfirmed) {
+          this.categoriesArray.clear();
+          const props = this.generateUpdateProps();
+          this.updateMandatoryTraining(props, true);
+        }
+    });
   }
 
   // create training category contral to add new training
@@ -263,24 +283,28 @@ export class AddMandatoryTrainingComponent implements OnInit {
 
   //Generate training object arrording to server requirement
   protected generateUpdateProps(): any {
-    if (this.categoriesArray.length) {
-      return {
-        categories: this.categoriesArray.value.map(category => ({
-          trainingCategoryId: parseInt(category.trainingCategory, 10),
-          allJobRoles: category.vacancyType === mandatoryTrainingJobOption.all ? true : false,
-          jobs: category.vacancies,
-        })),
-      };
-    }
-    return null;
+    return {
+      categories: this.categoriesArray.value.map(category => ({
+        trainingCategoryId: parseInt(category.trainingCategory, 10),
+        allJobRoles: category.vacancyType === mandatoryTrainingJobOption.all ? true : false,
+        jobs: category.vacancies,
+      })),
+    };
   }
 
-  //Send updateed training object to server
-  protected updateMandatoryTraining(props: mandatoryTrainingCategories): void {
+  //Send updated training object to server
+  protected updateMandatoryTraining(props: mandatoryTrainingCategories, remove: boolean = false): void {
     this.subscriptions.add(
       this.establishmentService.updateMandatoryTraining(this.establishment.uid, props.categories).subscribe(
         data => {
-          this.router.navigate(this.return.url, { fragment: this.return.fragment });
+          this.router.navigate(this.return.url, { fragment: this.return.fragment }).then(() => {
+            if (remove) {
+              this.alertService.addAlert({
+                type: 'success',
+                message: "You've removed all the selections for mandatory training in your workplace."
+              });
+            }
+          });
         },
         error => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
