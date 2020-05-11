@@ -21,6 +21,12 @@
     [totalMissingMandatoryTraining]="missingMandatoryTraining"
   ></app-training-info-panel>
 
+  <app-training-and-qualifications-categories
+    *ngIf="trainingCategories"
+    [workplace]="workplace"
+    [trainingCategories]="trainingCategories"
+  ></app-training-and-qualifications-categories>
+
   <app-training-and-qualifications-summary
     *ngIf="workers"
     [workplace]="workplace"
