@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { orderBy } from 'lodash';
 
@@ -10,30 +11,31 @@ import { orderBy } from 'lodash';
 })
 export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   @Input() workplace: Establishment;
-  @Input() trainingCategories: Array<any>;
 
   @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
+  public trainingCategories: Array<any>;
   public workerDetails = [];
   public workerDetailsLabel = [];
-
   public canEditWorker = false;
 
   constructor(
     private permissionsService: PermissionsService,
+    private trainingCategoryService: TrainingCategoryService,
     private trainingStatusService: TrainingStatusService,
   ) {}
 
   ngOnInit() {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
 
-    this.trainingCategories = orderBy(this.trainingCategories, [
-        tc => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRED),
-        tc => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRING),
-        tc => this.trainingStatusCount(tc.training, this.trainingStatusService.MISSING),
-      ],
-      ['desc', 'desc', 'desc'],
-    );
+    this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id).subscribe((trainingCategories) => {
+      this.trainingCategories = orderBy(trainingCategories, [
+          (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRED),
+          (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRING),
+          (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.MISSING),
+        ], ['desc', 'desc', 'desc']
+      );
+    });
   }
 
   public orderByTrainingStatus(training: Array<any>) {

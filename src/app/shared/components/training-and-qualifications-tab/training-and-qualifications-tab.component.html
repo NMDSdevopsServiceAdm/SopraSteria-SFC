@@ -22,9 +22,8 @@
   ></app-training-info-panel>
 
   <app-training-and-qualifications-categories
-    *ngIf="trainingCategories && viewTrainingByCategory"
+    *ngIf="viewTrainingByCategory"
     [workplace]="workplace"
-    [trainingCategories]="trainingCategories"
     (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
   ></app-training-and-qualifications-categories>
 

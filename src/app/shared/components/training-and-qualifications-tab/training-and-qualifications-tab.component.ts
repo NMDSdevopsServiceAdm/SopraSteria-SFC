@@ -2,7 +2,6 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { TrainingCategoryService } from '@core/services/training-category.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
@@ -28,7 +27,7 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
 
   constructor(
     private workerService: WorkerService,
-    private trainingCategoryService: TrainingCategoryService,
+
     protected establishmentService: EstablishmentService,
   ) {}
 
@@ -36,13 +35,6 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
     this.establishmentService.isMandatoryTrainingView.next(false);
 
     this.getAllWorkers();
-    this.getAllTrainingCategories();
-  }
-
-  getAllTrainingCategories() {
-    this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id).subscribe((trainingCategories) => {
-      this.trainingCategories = trainingCategories;
-    });
   }
 
   getAllWorkers() {
