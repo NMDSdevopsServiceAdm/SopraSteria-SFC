@@ -18,10 +18,6 @@ router.route('/').get(async function (req, res) {
   }
 });
 
-router.route('/:establishmentId/with-training').get(async function (req, res) {
-  return await getTrainingByCategory(req, res);
-});
-
 const getTrainingByCategory = async (req, res) => {
   try {
     let establishment = await models.establishment.findByPk(req.params.establishmentId, {
@@ -92,7 +88,7 @@ const getTrainingByCategory = async (req, res) => {
 
         training = training.concat(workerTraining);
 
-        if (trainingCategory.MandatoryTraining.length) {
+        if (trainingCategory.MandatoryTraining !== undefined && trainingCategory.MandatoryTraining.length > 0) {
           let missingTraining = [];
 
           missingTraining = trainingCategory.MandatoryTraining.filter(mandatoryTraining => {
@@ -133,7 +129,7 @@ const getTrainingByCategory = async (req, res) => {
       return trainingCategory.training.length > 0;
     });
 
-    res.send({
+    res.json({
       trainingCategories: results,
     });
   } catch (err) {
@@ -141,6 +137,8 @@ const getTrainingByCategory = async (req, res) => {
     return res.status(503).send();
   }
 }
+
+router.route('/:establishmentId/with-training').get(getTrainingByCategory);
 
 function trainingCategoriesJSON(givenCategories) {
   let categories = [];
