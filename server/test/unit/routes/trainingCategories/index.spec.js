@@ -5,7 +5,7 @@ const models = require('../../../../models/index');
 const { workerBuilder, categoryBuilder, trainingBuilder, mandatoryTrainingBuilder } = require('../../../factories/models');
 const workerTrainingCategoriesRoute = require('../../../../routes/workerTrainingCategories');
 
-describe.only('test training categories', () => {
+describe('test training categories endpoint functions', () => {
   describe('getTrainingByCategory', () => {
     afterEach(() => {
       sinon.restore();
@@ -29,7 +29,7 @@ describe.only('test training categories', () => {
 
       sinon.stub(models.establishment, 'findByPk').callsFake(() => {
         return {
-          id: 123,
+          id: establishmentId,
           workers: [worker],
         };
       });
@@ -102,7 +102,7 @@ describe.only('test training categories', () => {
 
       sinon.stub(models.establishment, 'findByPk').callsFake(() => {
         return {
-          id: 123,
+          id: establishmentId,
           workers: [worker],
         };
       });
