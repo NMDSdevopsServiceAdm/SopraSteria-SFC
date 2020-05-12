@@ -1,5 +1,11 @@
 const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot');
 
+const establishmentBuilder = build('Establishment', {
+  fields: {
+    id: sequence(),
+  }
+});
+
 const categoryBuilder = build('Category', {
   fields: {
     id: sequence(),
@@ -27,6 +33,21 @@ const trainingBuilder = build('Training', {
   }
 });
 
+const mandatoryTrainingBuilder = build('MandatoryTraining', {
+  fields: {
+    id: sequence(),
+    establishmentFk: perBuild(() => {
+      return establishmentBuilder().id;
+    }),
+    trainingCategoryFK: perBuild(() => {
+      return trainingBuilder().id;
+    }),
+    jobFK: perBuild(() => {
+      return jobBuilder().id;
+    }),
+  }
+});
+
 const workerBuilder = build('Worker', {
   fields: {
     id: sequence(),
@@ -47,3 +68,4 @@ module.exports.workerBuilder = workerBuilder;
 module.exports.jobBuilder = jobBuilder;
 module.exports.categoryBuilder = categoryBuilder;
 module.exports.trainingBuilder = trainingBuilder;
+module.exports.mandatoryTrainingBuilder = mandatoryTrainingBuilder;
