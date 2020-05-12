@@ -180,7 +180,7 @@ app.use('/api/jobs', [refCacheMiddleware.refcache, jobs]);
 app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveReasons]);
 app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
-app.use('/api/trainingCategories', [refCacheMiddleware.refcache, workingTrainingCategories]);
+app.use('/api/trainingCategories', [cacheMiddleware.nocache, workingTrainingCategories]);
 app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
 app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
 
