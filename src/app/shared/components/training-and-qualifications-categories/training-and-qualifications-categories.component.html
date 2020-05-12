@@ -1,5 +1,7 @@
 <div class="govuk-!-margin-bottom-6">
-  <a href="javascript://" (click)="this.viewTrainingByCategory.emit(false);" class="govuk-!-margin-right-6">View by staff name</a>
+  <a href="javascript://" (click)="this.viewTrainingByCategory.emit(false)" class="govuk-!-margin-right-6"
+    >View by staff name</a
+  >
   <span>View by training category</span>
 </div>
 
@@ -22,7 +24,10 @@
           {{ totalTrainingRecords(trainingCategory.training) }}
         </td>
         <td class="govuk-table__cell">
-          <div *ngIf="trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) > 0" class="govuk-!-margin-bottom-1">
+          <div
+            *ngIf="trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) > 0"
+            class="govuk-!-margin-bottom-1"
+          >
             <img
               src="/assets/images/flag-red.svg"
               alt="expired"
@@ -31,7 +36,10 @@
             {{ trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) }}
             Expired
           </div>
-          <div *ngIf="trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) > 0" class="govuk-!-margin-bottom-1">
+          <div
+            *ngIf="trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) > 0"
+            class="govuk-!-margin-bottom-1"
+          >
             <img
               src="/assets/images/flag-red.svg"
               alt="missing mandatory training"
@@ -40,7 +48,10 @@
             {{ trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) }}
             Missing
           </div>
-          <div *ngIf="trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) > 0" class="govuk-!-margin-bottom-1">
+          <div
+            *ngIf="trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) > 0"
+            class="govuk-!-margin-bottom-1"
+          >
             <img
               src="/assets/images/flag-orange.svg"
               alt="expiring"
@@ -52,9 +63,11 @@
             *ngIf="
               totalTrainingRecords(trainingCategory.training) > 0 &&
               trainingStatusCount(trainingCategory.training, trainingStatusService.ACTIVE) ==
-              totalTrainingRecords(trainingCategory.training)
+                totalTrainingRecords(trainingCategory.training)
             "
-          >Up-to-date</div>
+          >
+            Up-to-date
+          </div>
         </td>
         <td class="govuk-table__cell govuk-!-font-weight-regular">
           <a
@@ -79,7 +92,7 @@
                 </tr>
               </thead>
               <tbody class="govuk-table__body">
-                <ng-container *ngFor="let training of orderByTrainingStatus(trainingCategory.training)">
+                <ng-container *ngFor="let training of orderByTrainingStatusAndName(trainingCategory.training)">
                   <tr class="govuk-table__row">
                     <td class="govuk-table__cell govuk-!-font-weight-regular">
                       <a

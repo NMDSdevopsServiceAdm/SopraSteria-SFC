@@ -41,8 +41,15 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     });
   }
 
-  public orderByTrainingStatus(training: Array<any>) {
-    return orderBy(training, (record) => this.trainingStatus(record), ['desc']);
+  public orderByTrainingStatusAndName(training: Array<any>) {
+    return orderBy(
+      training,
+      [
+        (trainingRecord) => this.trainingStatus(trainingRecord),
+        (trainingRecord) => trainingRecord.worker.NameOrIdValue,
+      ],
+      ['desc', 'asc'],
+    );
   }
 
   public toggleDetails(id, event) {
