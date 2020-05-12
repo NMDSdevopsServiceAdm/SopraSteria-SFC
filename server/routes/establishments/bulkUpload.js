@@ -1115,22 +1115,28 @@ const validateBulkUploadFiles = async (
 
     // having parsed all workers, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
+    const allKeys = [];
+    myWorkers.map(worker => {
+      const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+      allKeys.push(id);
+    });
+
     myWorkers.forEach(thisWorker => {
       // uniquness for a worker is across both the establishment and the worker
       const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
       const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
 
-      if (allWorkersByKey[keyNoWhitespace]) {
+      // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
+      if (changeKeyNoWhitespace && (allWorkersByKey[changeKeyNoWhitespace] || allKeys.includes(changeKeyNoWhitespace))) {
         // this worker is a duplicate
-        csvWorkerSchemaErrors.push(thisWorker.addDuplicate(thisWorker.uniqueWorker));
+        csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(thisWorker.changeUniqueWorker));
 
         // remove the entity
         delete myAPIWorkers[thisWorker.lineNumber];
 
-      // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
-      } else if (changeKeyNoWhitespace && allWorkersByKey[changeKeyNoWhitespace]) {
+      } else if (allWorkersByKey[keyNoWhitespace]) {
         // this worker is a duplicate
-        csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(thisWorker.changeUniqueWorker));
+        csvWorkerSchemaErrors.push(thisWorker.addDuplicate(thisWorker.uniqueWorker));
 
         // remove the entity
         delete myAPIWorkers[thisWorker.lineNumber];
