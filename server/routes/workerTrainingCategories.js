@@ -19,6 +19,10 @@ router.route('/').get(async function (req, res) {
 });
 
 router.route('/:establishmentId/with-training').get(async function (req, res) {
+  return await getTrainingByCategory(req, res);
+});
+
+const getTrainingByCategory = async (req, res) => {
   try {
     let establishment = await models.establishment.findByPk(req.params.establishmentId, {
       attributes: ['id'],
@@ -57,6 +61,10 @@ router.route('/:establishmentId/with-training').get(async function (req, res) {
         },
       ],
     });
+
+    if (!establishment) {
+      return res.sendStatus(404);
+    }
 
     let results = trainingCategories.map((trainingCategory) => {
       let training = []
@@ -132,7 +140,7 @@ router.route('/:establishmentId/with-training').get(async function (req, res) {
     console.error(err);
     return res.status(503).send();
   }
-});
+}
 
 function trainingCategoriesJSON(givenCategories) {
   let categories = [];
@@ -150,3 +158,4 @@ function trainingCategoriesJSON(givenCategories) {
 }
 
 module.exports = router;
+module.exports.getTrainingByCategory = getTrainingByCategory;
