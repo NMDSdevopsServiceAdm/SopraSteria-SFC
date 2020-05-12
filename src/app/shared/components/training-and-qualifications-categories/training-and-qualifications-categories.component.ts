@@ -3,7 +3,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
-import { orderBy } from 'lodash';
+import orderBy from 'lodash/orderBy';
 
 @Component({
   selector: 'app-training-and-qualifications-categories',
@@ -29,17 +29,20 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
 
     this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id).subscribe((trainingCategories) => {
-      this.trainingCategories = orderBy(trainingCategories, [
+      this.trainingCategories = orderBy(
+        trainingCategories,
+        [
           (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRED),
           (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRING),
           (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.MISSING),
-        ], ['desc', 'desc', 'desc']
+        ],
+        ['desc', 'desc', 'desc'],
       );
     });
   }
 
   public orderByTrainingStatus(training: Array<any>) {
-    return orderBy(training, record => this.trainingStatus(record), ['desc']);
+    return orderBy(training, (record) => this.trainingStatus(record), ['desc']);
   }
 
   public toggleDetails(id, event) {
@@ -61,7 +64,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
 
   public trainingStatusCount(training, status) {
     return training.filter((trainingRecord) => {
-        return this.trainingStatus(trainingRecord) === status;
+      return this.trainingStatus(trainingRecord) === status;
     }).length;
   }
 }
