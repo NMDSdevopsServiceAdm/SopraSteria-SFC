@@ -1113,83 +1113,70 @@ const validateBulkUploadFiles = async (
 
     keepAlive('workers validated'); // keep connection alive
 
-    // having parsed all workers, check for duplicates
-    // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
-    const allKeys = [];
-    myWorkers.map(worker => {
-      const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
-      allKeys.push(id);
-    });
+  // having parsed all workers, check for duplicates
+  // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
+  const allKeys = [];
+  myWorkers.map(worker => {
+    const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+    allKeys.push(id);
+  });
 
-    myWorkers.forEach(thisWorker => {
-      // uniquness for a worker is across both the establishment and the worker
-      const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
-      const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
+  myWorkers.forEach(thisWorker => {
+    // uniquness for a worker is across both the establishment and the worker
+    const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+    const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
 
-      // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
-      if (changeKeyNoWhitespace && (allWorkersByKey[changeKeyNoWhitespace] || allKeys.includes(changeKeyNoWhitespace))) {
-        // this worker is a duplicate
-        csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(thisWorker.changeUniqueWorker));
+    if(checkDuplicateWorkerID(thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors)) {
 
-        // remove the entity
-        delete myAPIWorkers[thisWorker.lineNumber];
+      // does not yet exist - check this worker can be associated with a known establishment
+      const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
 
-      } else if (allWorkersByKey[keyNoWhitespace]) {
-        // this worker is a duplicate
-        csvWorkerSchemaErrors.push(thisWorker.addDuplicate(thisWorker.uniqueWorker));
+      const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
+        if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
+          if (thatWorker.weeklyContractedHours) {
+            return sum + thatWorker.weeklyContractedHours;
+          }
+          if (thatWorker.weeklyAverageHours) {
+            return sum + thatWorker.weeklyAverageHours;
+          }
+        }
+        return sum;
+      }, 0);
+
+      if (myWorkersTotalHours > 65) {
+        csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
+      }
+
+      if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
+        // not found the associated establishment
+        csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
 
         // remove the entity
         delete myAPIWorkers[thisWorker.lineNumber];
       } else {
-        // does not yet exist - check this worker can be associated with a known establishment
-        const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
+        // this worker is unique and can be associated to establishment
+        allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
 
-        const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
-          if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
-            if (thatWorker.weeklyContractedHours) {
-              return sum + thatWorker.weeklyContractedHours;
-            }
-            if (thatWorker.weeklyAverageHours) {
-              return sum + thatWorker.weeklyAverageHours;
-            }
-          }
-          return sum;
-        }, 0);
-
-        if (myWorkersTotalHours > 65) {
-          csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
+        // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+        if (changeKeyNoWhitespace) {
+          allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
         }
 
-        if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
-          // not found the associated establishment
-          csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
+        // associate this worker to the known establishment
+        const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace] ? myAPIEstablishments[establishmentKeyNoWhitespace] : null;
 
-          // remove the entity
-          delete myAPIWorkers[thisWorker.lineNumber];
+        // key workers, to be used in training
+        const workerKeyNoWhitespace = (thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID).replace(/\s/g, '');
+        workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
+
+        if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
+          knownEstablishment.associateWorker(myAPIWorkers[thisWorker.lineNumber].key, myAPIWorkers[thisWorker.lineNumber]);
         } else {
-          // this worker is unique and can be associated to establishment
-          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
-
-          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
-          if (changeKeyNoWhitespace) {
-            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
-          }
-
-          // associate this worker to the known establishment
-          const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace] ? myAPIEstablishments[establishmentKeyNoWhitespace] : null;
-
-          // key workers, to be used in training
-          const workerKeyNoWhitespace = (thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID).replace(/\s/g, '');
-          workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
-
-          if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
-            knownEstablishment.associateWorker(myAPIWorkers[thisWorker.lineNumber].key, myAPIWorkers[thisWorker.lineNumber]);
-          } else {
-            // this should never happen
-            console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
-          }
+          // this should never happen
+          console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
         }
       }
+    }
     });
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no workers records');
@@ -2448,6 +2435,28 @@ const checkDuplicateLocations = async (
     });
 };
 
+const checkDuplicateWorkerID = (thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors ) => {
+  // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
+  console.log(thisWorker);
+  if (changeKeyNoWhitespace && (allWorkersByKey[changeKeyNoWhitespace] || allKeys.includes(changeKeyNoWhitespace))) {
+    // this worker is a duplicate
+    csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(thisWorker.changeUniqueWorker));
+
+    // remove the entity
+    delete myAPIWorkers[thisWorker.lineNumber];
+    return false;
+  } else if (allWorkersByKey[keyNoWhitespace]) {
+    // this worker is a duplicate
+    csvWorkerSchemaErrors.push(thisWorker.addDuplicate(thisWorker.uniqueWorker));
+
+    // remove the entity
+    delete myAPIWorkers[thisWorker.lineNumber];
+    return false;
+  } else {
+    return true;
+  };
+};
+
 const router = require('express').Router();
 
 router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
@@ -2469,4 +2478,5 @@ router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;
 module.exports.checkDuplicateLocations = checkDuplicateLocations;
+module.exports.checkDuplicateWorkerID = checkDuplicateWorkerID;
 module.exports.validateEstablishmentCsv = validateEstablishmentCsv;

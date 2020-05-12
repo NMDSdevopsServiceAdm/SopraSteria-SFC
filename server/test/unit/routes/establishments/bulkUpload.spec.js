@@ -6,8 +6,10 @@ const rfr = require('rfr');
 
 const bulkUpload = rfr('server/routes/establishments/bulkUpload');
 const EstablishmentCsvValidator = rfr('server/models/BulkImport/csv/establishments');
+const WorkerCsvValidator = rfr('server/models/BulkImport/csv/workers');
 const { Establishment } = rfr('server/models/classes/establishment');
 const buildEstablishmentCSV = rfr('server/test/factories/establishment/csv');
+const buildWorkerCSV = rfr('server/test/factories/worker/csv');
 
 describe('/server/routes/establishment/bulkUpload.js', () => {
   describe('checkDuplicateLocations', () => {
@@ -48,6 +50,53 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         source: '1-12345678',
         name: 'Workplace 2',
       });
+    });
+  });
+  it('can check for duplicate Uniqiue IDs', async () => {
+    const csvEstablishmentSchemaErrors = [];
+    const myWorkers = [
+      buildWorkerCSV({
+        overrides: {
+          UNIQUEWORKERID: 'Worker 1'
+        },
+      }),
+      buildEstablishmentCSV({
+        overrides: {
+          CHGUNIQUEWRKID: 'Worker 1'
+        },
+      }),
+    ].map((currentLine, currentLineNumber) => {
+      return new WorkerCsvValidator.Worker(
+        currentLine,
+        currentLineNumber,
+      );
+    });
+
+    const allKeys = [];
+    myWorkers.map(worker => {
+      const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+      allKeys.push(id);
+    });
+
+    myWorkers.forEach(thisWorker => {
+      // uniquness for a worker is across both the establishment and the worker
+      const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+      const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
+
+      bulkUpload.checkDuplicateWorkerID(
+        myWorkers[1], allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors
+      );
+    });
+
+    expect(csvEstablishmentSchemaErrors.length).equals(1);
+    expect(csvEstablishmsentSchemaErrors[0]).to.eql({
+      origin: 'Establishments',
+      lineNumber: 1,
+      errCode: 998,
+      errType: 'DUPLICATE_ERROR',
+      error: 'LOCATIONID is not unique',
+      source: '1-12345678',
+      name: 'Workplace 2',
     });
   });
 
