@@ -88,6 +88,9 @@
         <li *ngIf="canRemoveParentAssociation">
           <a (click)="removeLinkToParent($event)" href="#">Remove link to my parent organisation</a>
         </li>
+        <li *ngIf="canAddWorker">
+          <a [routerLink]="['/add-mandatory-training']">Manage mandatory training</a>
+        </li>
       </ul>
     </ng-container>
     <ul *ngIf="[adminRole].includes(user.role)" class="govuk-list">
