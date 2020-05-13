@@ -76,19 +76,19 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           },
         }),
       ].map((currentLine, currentLineNumber) => {
-        return new WorkerCsvValidator.Worker(
+        const worker = new WorkerCsvValidator.Worker(
           currentLine,
           currentLineNumber,
           []
         );
+
+        worker.validate();
+        
+        return worker;
       });
 
-      const allKeys = [];
-      myWorkers.map(worker => {
-        worker.validate();
-        const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
-        allKeys.push(id);
-      });
+      const allKeys = myWorkers.map(worker => (worker.local + worker.uniqueWorker).replace(/\s/g, ''));
+
 
       myWorkers.forEach(thisWorker => {
         // uniquness for a worker is across both the establishment and the worker
