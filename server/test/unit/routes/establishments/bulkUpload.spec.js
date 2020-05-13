@@ -54,6 +54,16 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
   });
   it('can check for duplicate Uniqiue IDs', async () => {
     const csvEstablishmentSchemaErrors = [];
+    const establishments = [
+      buildEstablishmentCSV()
+    ].map((currentLine, currentLineNumber) => {
+      return new EstablishmentCsvValidator.Establishment(
+        currentLine,
+        currentLineNumber,
+        []
+      );
+    });
+    await establishments[0].validate();
     const myWorkers = [
       buildWorkerCSV({
         overrides: {
@@ -69,11 +79,13 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       return new WorkerCsvValidator.Worker(
         currentLine,
         currentLineNumber,
+        establishments
       );
     });
 
     const allKeys = [];
     myWorkers.map(worker => {
+      worker.validate();
       const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
       allKeys.push(id);
     });
