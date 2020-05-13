@@ -20,7 +20,9 @@ router.route('/').get(async function (req, res) {
 
 const getTrainingByCategory = async (req, res) => {
   try {
-    let establishment = await models.establishment.findByPk(req.params.establishmentId, {
+    const establishmentId = req.params.establishmentId;
+
+    let establishment = await models.establishment.findByPk(establishmentId, {
       attributes: ['id'],
       include: {
         model: models.worker,
@@ -45,18 +47,7 @@ const getTrainingByCategory = async (req, res) => {
       },
     });
 
-    let trainingCategories = await models.workerTrainingCategories.findAll({
-      include: [
-        {
-          model: models.MandatoryTraining,
-          as: 'MandatoryTraining',
-          where: {
-            EstablishmentFK: req.params.establishmentId,
-          },
-          required: false,
-        },
-      ],
-    });
+    let trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
 
     if (!establishment) {
       return res.sendStatus(404);

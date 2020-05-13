@@ -1,7 +1,5 @@
 /* jshint indent: 2 */
 
-const models = require('../models/index');
-
 module.exports = function(sequelize, DataTypes) {
   const Categories =  sequelize.define('workerTrainingCategories', {
     id: {
@@ -27,6 +25,21 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
+
+  Categories.findAllWithMandatoryTraining = function (establishmentId) {
+    return this.findAll({
+      include: [
+        {
+          model: sequelize.models.MandatoryTraining,
+          as: 'MandatoryTraining',
+          where: {
+            EstablishmentFK: establishmentId,
+          },
+          required: false,
+        },
+      ],
+    });
+  };
 
   Categories.associate = (models) => {
     Categories.hasMany(models.MandatoryTraining, {
