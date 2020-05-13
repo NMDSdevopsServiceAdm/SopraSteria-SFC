@@ -33,8 +33,8 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
         trainingCategories,
         [
           (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRED),
-          (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRING),
           (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.MISSING),
+          (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRING),
           (tc) => tc.category,
         ],
         ['desc', 'desc', 'desc', 'asc'],
@@ -77,12 +77,14 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   }
 
   public trainingIsComplete(training) {
-    let count = 0;
-
-    count += this.trainingStatusCount(training, this.trainingStatusService.EXPIRED);
-    count += this.trainingStatusCount(training, this.trainingStatusService.EXPIRING);
-    count += this.trainingStatusCount(training, this.trainingStatusService.MISSING);
-
-    return count === 0;
+    return (
+      [
+        this.trainingStatusCount(training, this.trainingStatusService.EXPIRED),
+        this.trainingStatusCount(training, this.trainingStatusService.EXPIRING),
+        this.trainingStatusCount(training, this.trainingStatusService.MISSING),
+      ].reduce((total, num) => {
+        return total + num;
+      }) === 0
+    );
   }
 }
