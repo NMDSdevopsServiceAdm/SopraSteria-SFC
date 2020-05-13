@@ -59,13 +59,7 @@
             />
             {{ trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) }} Expiring soon
           </div>
-          <div
-            *ngIf="
-              totalTrainingRecords(trainingCategory.training) > 0 &&
-              trainingStatusCount(trainingCategory.training, trainingStatusService.ACTIVE) ==
-                totalTrainingRecords(trainingCategory.training)
-            "
-          >
+          <div *ngIf="trainingIsComplete(trainingCategory.training)">
             Up-to-date
           </div>
         </td>

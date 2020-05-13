@@ -35,8 +35,9 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
           (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRED),
           (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRING),
           (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.MISSING),
+          (tc) => tc.category,
         ],
-        ['desc', 'desc', 'desc'],
+        ['desc', 'desc', 'desc', 'asc'],
       );
     });
   }
@@ -73,5 +74,15 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     return training.filter((trainingRecord) => {
       return this.trainingStatus(trainingRecord) === status;
     }).length;
+  }
+
+  public trainingIsComplete(training) {
+    let count = 0;
+
+    count += this.trainingStatusCount(training, this.trainingStatusService.EXPIRED);
+    count += this.trainingStatusCount(training, this.trainingStatusService.EXPIRING);
+    count += this.trainingStatusCount(training, this.trainingStatusService.MISSING);
+
+    return count === 0;
   }
 }
