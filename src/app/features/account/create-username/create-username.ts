@@ -16,7 +16,7 @@ import { finalize } from 'rxjs/operators';
 export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
   protected formErrorsMap: Array<ErrorDetails>;
-  protected return: URLStructure;
+  public return: URLStructure;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected userNameMaxLength = 120;

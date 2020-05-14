@@ -5,7 +5,7 @@ import { BackService } from '@core/services/back.service';
 import { Subscription } from 'rxjs';
 
 export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
-  protected flow: string;
+  public flow: string;
   protected subscriptions: Subscription = new Subscription();
   public locationAddress: LocationAddress;
   public workplace: Service;

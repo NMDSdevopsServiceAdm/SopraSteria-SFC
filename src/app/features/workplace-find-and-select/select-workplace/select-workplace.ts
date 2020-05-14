@@ -10,13 +10,13 @@ import { Subscription } from 'rxjs';
 
 export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  protected flow: string;
-  protected locationAddresses: Array<LocationAddress>;
+  public flow: string;
+  public locationAddresses: Array<LocationAddress>;
   protected subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
-  protected isCQCLocationUpdate: boolean;
+  public isCQCLocationUpdate: boolean;
 
   constructor(
     protected backService: BackService,

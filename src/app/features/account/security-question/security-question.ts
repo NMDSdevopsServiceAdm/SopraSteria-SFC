@@ -13,7 +13,7 @@ export class SecurityQuestion implements OnInit, OnDestroy, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
   private securityDetailsMaxLength = 255;
   protected back: URLStructure;
-  protected return: URLStructure;
+  public return: URLStructure;
   protected subscriptions: Subscription = new Subscription();
   public callToActionLabel: string;
   public form: FormGroup;

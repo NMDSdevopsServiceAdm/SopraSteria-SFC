@@ -1,10 +1,10 @@
+import { HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { ReportService } from '@core/services/report.service';
 import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
-import { HttpResponse } from '@angular/common/http';
-import { ReportService } from '@core/services/report.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-trianing-link-panel',
@@ -16,6 +16,8 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
   public url: string;
   public fromStaffRecord: boolean;
 
+  public currentDate: Date;
+
   constructor(
     private reportService: ReportService,
     private establishmentService: EstablishmentService,
@@ -24,6 +26,8 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.url = this.router.url;
+    this.currentDate = new Date();
+
     if (this.url.includes('view-all-mandatory-training')) {
       this.fromStaffRecord = true;
       this.establishmentService.isMandatoryTrainingView.next(true);

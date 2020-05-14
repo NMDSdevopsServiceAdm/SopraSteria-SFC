@@ -14,7 +14,7 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   protected postcodeMaxLength = 8;
   protected subscriptions: Subscription = new Subscription();
   protected workplaceNameMaxLength = 120;
-  protected isWorkPlaceUpdate: boolean;
+  public isWorkPlaceUpdate: boolean;
   public form: FormGroup;
 
   public formControlsMap: any[] = [

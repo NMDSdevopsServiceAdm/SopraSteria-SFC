@@ -14,8 +14,8 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
   protected back: URLStructure;
   protected formErrorsMap: Array<ErrorDetails>;
-  protected serverError: string;
-  protected serverErrorsMap: Array<ErrorDefinition>;
+  public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   public callToActionLabel = 'Continue';
   public form: FormGroup;

@@ -1,10 +1,4 @@
-<app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
@@ -45,7 +39,7 @@
           </ng-container>
         </span>
         <textarea
-          class="govuk-textarea govuk-textarea govuk-!-margin-top-4  govuk-!-margin-bottom-2"
+          class="govuk-textarea govuk-textarea govuk-!-margin-top-4 govuk-!-margin-bottom-2"
           id="reason"
           [class.govuk-textarea--error]="submitted && form.get('reason').errors"
           name="reason"

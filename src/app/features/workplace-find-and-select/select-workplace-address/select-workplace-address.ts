@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 
 export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  protected flow: string;
+  public flow: string;
   protected selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
   public enteredPostcode: string;
