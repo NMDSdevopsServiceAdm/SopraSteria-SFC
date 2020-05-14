@@ -13,6 +13,8 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   @Input() workers: Array<Worker>;
   @Input() wdfView = false;
 
+  @Input() showViewByToggle = false;
+
   @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
   public canViewWorker: boolean;
