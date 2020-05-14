@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import orderBy from 'lodash/orderBy';
 
@@ -12,41 +11,46 @@ import orderBy from 'lodash/orderBy';
 export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   @Input() workplace: Establishment;
 
+  @Input() trainingCategories: Array<any>;
+
+  @Input() showViewByToggle = false;
+
   @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
-  public trainingCategories: Array<any>;
   public workerDetails = [];
   public workerDetailsLabel = [];
   public canEditWorker = false;
 
   constructor(
     private permissionsService: PermissionsService,
-    private trainingCategoryService: TrainingCategoryService,
-    private trainingStatusService: TrainingStatusService,
+
+    protected trainingStatusService: TrainingStatusService,
   ) {}
 
   ngOnInit() {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
 
-    this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id).subscribe((trainingCategories) => {
-      this.trainingCategories = orderBy(
-        trainingCategories,
-        [
-          (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRED),
-          (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.MISSING),
-          (tc) => this.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRING),
-          (tc) => tc.category,
-        ],
-        ['desc', 'desc', 'desc', 'asc'],
-      );
-    });
+    this.orderTrainingCategories();
+  }
+
+  public orderTrainingCategories() {
+    this.trainingCategories = orderBy(
+      this.trainingCategories,
+      [
+        (tc) => this.trainingStatusService.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRED),
+        (tc) => this.trainingStatusService.trainingStatusCount(tc.training, this.trainingStatusService.MISSING),
+        (tc) => this.trainingStatusService.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRING),
+        (tc) => tc.category,
+      ],
+      ['desc', 'desc', 'desc', 'asc'],
+    );
   }
 
   public orderByTrainingStatusAndName(training: Array<any>) {
     return orderBy(
       training,
       [
-        (trainingRecord) => this.trainingStatus(trainingRecord),
+        (trainingRecord) => this.trainingStatusService.trainingStatusForRecord(trainingRecord),
         (trainingRecord) => trainingRecord.worker.NameOrIdValue,
       ],
       ['desc', 'asc'],
@@ -62,26 +66,16 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
 
   public totalTrainingRecords(training) {
     return training.filter((trainingRecord) => {
-      return this.trainingStatus(trainingRecord) !== this.trainingStatusService.MISSING;
-    }).length;
-  }
-
-  public trainingStatus(trainingRecord) {
-    return this.trainingStatusService.getTrainingStatus(trainingRecord.expires, trainingRecord.missing);
-  }
-
-  public trainingStatusCount(training, status) {
-    return training.filter((trainingRecord) => {
-      return this.trainingStatus(trainingRecord) === status;
+      return this.trainingStatusService.trainingStatusForRecord(trainingRecord) !== this.trainingStatusService.MISSING;
     }).length;
   }
 
   public trainingIsComplete(training) {
     return (
       [
-        this.trainingStatusCount(training, this.trainingStatusService.EXPIRED),
-        this.trainingStatusCount(training, this.trainingStatusService.EXPIRING),
-        this.trainingStatusCount(training, this.trainingStatusService.MISSING),
+        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.EXPIRED),
+        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.EXPIRING),
+        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.MISSING),
       ].reduce((total, num) => {
         return total + num;
       }) === 0

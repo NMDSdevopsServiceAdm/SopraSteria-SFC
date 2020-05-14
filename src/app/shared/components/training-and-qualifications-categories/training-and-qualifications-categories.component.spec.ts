@@ -2,10 +2,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TrainingCategoryService } from '@core/services/training-category.service';
 import { render, RenderResult, within } from '@testing-library/angular';
 import * as moment from 'moment';
-import { of } from 'rxjs';
 
 import { TrainingAndQualificationsCategoriesComponent } from './training-and-qualifications-categories.component';
 
@@ -113,6 +111,8 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       can: sinon.stub().returns(true),
     });
 
+    const workplace = establishmentBuilder() as Establishment;
+
     const trainingCategories = [
       trainingCategoryBuilder({
         overrides: {
@@ -154,20 +154,14 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       }),
     ];
 
-    const mockTrainingCategoryService = {
-      getCategoriesWithTraining() {
-        return of(trainingCategories);
-      },
-    };
-
     const { fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: TrainingCategoryService, useValue: mockTrainingCategoryService },
       ],
       componentProperties: {
-        workplace: establishmentBuilder() as Establishment,
+        workplace,
+        trainingCategories,
       },
     });
 
