@@ -1,8 +1,10 @@
 <ng-container *ngIf="trainingRecords.length">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <h2 class="govuk-heading-m">Training({{ trainingRecords.length }})</h2>
-      <p>Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
+      <h2 class="govuk-heading-m">Training ({{ trainingCount }})</h2>
+    </div>
+    <div class="govuk-grid-column-one-half govuk-util__float-right govuk-util__align-right">
+      <p>Updated {{ lastUpdated | date: 'd MMMM y' }}</p>
     </div>
   </div>
 
@@ -11,7 +13,7 @@
       <tr class="govuk-table__row">
         <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Training category</th>
         <th class="govuk-table__header govuk-!-width-one-half" scope="col">Training name</th>
-        <th class="govuk-table__header" scope="col">Expiry Date</th>
+        <th class="govuk-table__header" scope="col">Status</th>
         <th class="govuk-table__header" scope="col"></th>
       </tr>
     </thead>
@@ -23,10 +25,15 @@
           </td>
           <td class="govuk-table__cell">{{ trainingRecord.title }}</td>
           <td class="govuk-table__cell">
-            <span [class.govuk-util__bold]="trainingRecord.trainingStatus === 2"
-              >{{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd M y') : '-' }}
-            </span>
-            <div *ngIf="trainingRecord.trainingStatus === 2" class="govuk-!-margin-bottom-1">
+            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt="Missing"
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Missing
+            </div>
+            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRED" class="govuk-!-margin-bottom-1">
               <img
                 src="/assets/images/flag-red.svg"
                 alt="expired"
@@ -34,7 +41,7 @@
               />
               Expired
             </div>
-            <div *ngIf="trainingRecord.trainingStatus === 1">
+            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRING">
               <img
                 src="/assets/images/flag-orange.svg"
                 alt="expiring"
@@ -45,7 +52,7 @@
           </td>
           <td class="govuk-table__cell govuk-!-font-weight-regular">
             <a
-              *ngIf="canEditWorker"
+              *ngIf="canEditWorker && !trainingRecord.missing "
               class="govuk-link--no-visited-state"
               href="#"
               (click)="toggleDetails(trainingRecord.uid, $event)"
@@ -57,9 +64,15 @@
           <td colspan="4">
             <div class="govuk-grid-row govuk-!-margin-2">
               <div class="govuk-grid-column-one-quarter">
+                <strong>Expiry date</strong>
+                <div>
+                  {{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd MMM y') : '-' }}
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
                 <strong>Date completed</strong>
                 <div>
-                  {{ trainingRecord.completed ? (trainingRecord.completed | date: 'dd M y') : '-' }}
+                  {{ trainingRecord.completed ? (trainingRecord.completed | date: 'dd MMM y') : '-' }}
                 </div>
               </div>
               <div class="govuk-grid-column-one-half govuk-!-padding-left-0">

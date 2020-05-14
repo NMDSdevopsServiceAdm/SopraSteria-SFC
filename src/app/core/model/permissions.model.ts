@@ -18,6 +18,7 @@ export type PermissionType =
   | 'canBulkUpload'
   | 'canChangePermissionsForSubsidiary'
   | 'canDeleteEstablishment'
+  | 'canDeleteAllEstablishments'
   | 'canDeleteUser'
   | 'canDeleteWorker'
   | 'canEditEstablishment'
@@ -37,4 +38,5 @@ export type PermissionType =
   | 'canViewWdfReport'
   | 'canViewWorker'
   | 'canLinkToParent'
-  | 'canRemoveParentAssociation';
+  | 'canRemoveParentAssociation'
+  | 'canDownloadWdfReport';

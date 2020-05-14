@@ -12,6 +12,10 @@
   text-align: center;
 }
 
+.govuk-util__align-justify {
+  text-align: justify;
+}
+
 .govuk-util__light-bg {
   background: $mercury;
 }
@@ -82,4 +86,7 @@
 
 .govuk-line-height__normal {
   line-height: normal;
+}
+.govuk-max-width {
+  max-width: calc(100vh - 274px);
 }

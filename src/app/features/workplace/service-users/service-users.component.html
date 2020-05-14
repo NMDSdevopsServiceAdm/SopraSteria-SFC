@@ -11,7 +11,7 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">Who are your service users?</h1>
+          <h1 class="govuk-fieldset__heading">Who uses your service?</h1>
         </legend>
         <p>Select all that apply.</p>
         <div class="govuk-form-group" *ngFor="let group of serviceUserGroups">
@@ -61,7 +61,7 @@
                       {{ getFormErrorMessage('serviceUsers-' + service.id + '-otherService', 'maxlength') }}
                     </span>
                     <input
-                      class="govuk-input govuk-!-width-one-third"
+                      class="govuk-input govuk-!-width-one-half"
                       [class.govuk-input--error]="
                         submitted && form.get('serviceUsers-' + service.id + '-otherService').invalid
                       "

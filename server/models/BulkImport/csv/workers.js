@@ -1414,6 +1414,23 @@ class Worker {
     }
   }
 
+  async _crossValidateMainJobRole(csvWorkerSchemaErrors, cqcRegEstablishment) {
+    const template = {
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+      lineNumber: this._lineNumber,
+      errCode: Worker.MAIN_JOB_ROLE_ERROR,
+      errType: 'MAIN_JOB_ROLE_ERROR',
+      source: this._currentLine.MAINJOBROLE
+    };
+
+    if (!cqcRegEstablishment && this.mainJobRoleId === 4) {
+      csvWorkerSchemaErrors.unshift(Object.assign(template, {
+        error: 'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role'
+      }));
+    }
+  }
+
   _validateMainJobDesc () {
     const myMainJobDesc = this._currentLine.MAINJRDESC;
     const MAX_LENGTH = 120;
@@ -2489,13 +2506,13 @@ class Worker {
   }
 
   // add a duplicate validation error to the current set
-  addDuplicate (originalLineNumber) {
+  addDuplicate (UNIQUEWORKERID) {
     return {
       origin: 'Workers',
       lineNumber: this._lineNumber,
       errCode: Worker.DUPLICATE_ERROR,
       errType: 'DUPLICATE_ERROR',
-      error: 'UNIQUEWORKERID is not unique',
+      error: `UNIQUEWORKERID ${UNIQUEWORKERID} is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID
@@ -2503,13 +2520,13 @@ class Worker {
   }
 
   // add a duplicate validation error to the current set
-  addChgDuplicate (originalLineNumber) {
+  addChgDuplicate (CHGUNIQUEWORKERID) {
     return {
       origin: 'Workers',
       lineNumber: this._lineNumber,
       errCode: Worker.DUPLICATE_ERROR,
       errType: 'DUPLICATE_ERROR',
-      error: 'CHGUNIQUEWORKERID is not unique',
+      error: `CHGUNIQUEWORKERID ${CHGUNIQUEWORKERID} is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID
@@ -2611,6 +2628,35 @@ class Worker {
     return true;
   }
 
+  async crossValidate ({
+    csvWorkerSchemaErrors,
+    myEstablishments
+  }) {
+    // if worker isn't being added or updated then exit early
+    if (!(['NEW', 'UPDATE'].includes(this._status))) {
+      return;
+    }
+    let cqcRegEstablishment = false;
+
+    myEstablishments.forEach(establishment => {
+      if (this.establishmentKey === establishment.key) {
+        switch (establishment.status) {
+          case 'NEW':
+          case 'UPDATE': {
+            cqcRegEstablishment = establishment.regType === 2;
+          }
+          /* fall through */
+
+          case 'DELETE':
+            break;
+        }
+      }
+    });
+
+    // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
+    this._crossValidateMainJobRole(csvWorkerSchemaErrors, cqcRegEstablishment);
+  }
+
   // returns true on success, false is any attribute of Worker fails
   validate () {
     let status = true;
@@ -2621,7 +2667,7 @@ class Worker {
     status = !this._validateDisplayId() ? false : status;
     status = !this._validateStatus() ? false : status;
 
-    // only continue to process validation, if the status is not UNCHECKED or DELETED
+    // only continue to process validation, if the status is not UNCHECKED, DELETED OR UNCHANGED
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateContractType() ? false : status;
       status = !this._validateNINumber() ? false : status;

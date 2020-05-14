@@ -16,4 +16,8 @@ export class RegistrationsService {
   public registrationApproval(data: object) {
     return this.http.post<any>('/api/admin/approval/', data);
   }
+
+  public unlockAccount(data: object) {
+    return this.http.post<any>('/api/admin/unlock-account/', data);
+  }
 }

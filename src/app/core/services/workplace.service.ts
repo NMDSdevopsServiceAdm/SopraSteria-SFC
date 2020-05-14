@@ -34,6 +34,10 @@ export class WorkplaceService {
     return this.http.get<Array<ServiceGroup>>(`/api/services/byCategory?cqc=${isRegulated}`);
   }
 
+  public getAllMandatoryTrainings(establishmentId: number): Observable<any> {
+    return this.http.get(`/api/establishment/${establishmentId}/mandatoryTraining/all`);
+  }
+
   public addWorkplace(establishmentuid: string, request: AddWorkplaceRequest): Observable<AddWorkplaceResponse> {
     return this.http.post<AddWorkplaceResponse>(`/api/establishment/${establishmentuid}`, request);
   }

@@ -36,7 +36,7 @@ export class StartersComponent extends Question {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private jobService: JobService
+    private jobService: JobService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -74,7 +74,7 @@ export class StartersComponent extends Question {
         this.starterRecords.reset([], { emitEvent: false });
 
         this.form.get('noRecordsReason').setValue(value, { emitEvent: false });
-      })
+      }),
     );
 
     this.subscriptions.add(
@@ -85,7 +85,7 @@ export class StartersComponent extends Question {
           .setValidators([Validators.required, Validators.min(this.minStarters), Validators.max(this.maxStarters)]);
 
         this.form.get('noRecordsReason').setValue(null, { emitEvent: false });
-      })
+      }),
     );
   }
 
@@ -105,14 +105,14 @@ export class StartersComponent extends Question {
       this.jobService
         .getJobs()
         .pipe(take(1))
-        .subscribe(jobs => (this.jobs = jobs))
+        .subscribe(jobs => (this.jobs = jobs)),
     );
   }
 
   private prefill(): void {
     if (Array.isArray(this.establishment.starters) && this.establishment.starters.length) {
       this.establishment.starters.forEach(starter =>
-        this.starterRecords.push(this.createRecordItem(starter.jobId, starter.total))
+        this.starterRecords.push(this.createRecordItem(starter.jobId, starter.total)),
       );
     } else {
       this.starterRecords.push(this.createRecordItem());
@@ -133,7 +133,7 @@ export class StartersComponent extends Question {
         type: [
           {
             name: 'required',
-            message: 'Job Role is required',
+            message: 'Job role is required.',
           },
         ],
       },
@@ -142,15 +142,15 @@ export class StartersComponent extends Question {
         type: [
           {
             name: 'required',
-            message: 'Total is required',
+            message: 'Enter number of new starters.',
           },
           {
             name: 'min',
-            message: `Total must be ${this.minStarters} or above`,
+            message: `New starters must be ${this.minStarters} or above.`,
           },
           {
             name: 'max',
-            message: `Total must be ${this.maxStarters} or lower`,
+            message: `New starters must be ${this.maxStarters} or lower.`,
           },
         ],
       },
@@ -162,8 +162,8 @@ export class StartersComponent extends Question {
       job =>
         !this.starterRecords.controls.some(
           starter =>
-            starter !== this.starterRecords.controls[index] && parseInt(starter.get('jobId').value, 10) === job.id
-        )
+            starter !== this.starterRecords.controls[index] && parseInt(starter.get('jobId').value, 10) === job.id,
+        ),
     );
   }
 
@@ -215,14 +215,15 @@ export class StartersComponent extends Question {
 
   protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
-      this.establishmentService
-        .updateJobs(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateJobs(this.establishment.uid, props).subscribe(
+        data => this._onSuccess(data),
+        error => this.onError(error),
+      ),
     );
   }
 
   protected onSuccess(): void {
-    if (this.establishment.starters && Array.isArray(this.establishment.starters)) {
+    if (this.establishment.starters && Array.isArray(this.establishment.starters) && !this.return) {
       this.router.navigate(['/workplace', this.establishment.uid, 'confirm-starters']);
       this.submitAction.action = null;
     } else {

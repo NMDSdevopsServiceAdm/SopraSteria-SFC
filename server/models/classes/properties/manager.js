@@ -151,7 +151,7 @@ class PropertyManager {
     // runs through all known properties, adding them to the given
     //  document to save (using sequelize), only if they have been modified.
     // Returns modified save document.
-    save (username, document) {
+    save (username, document,buChanged = false) {
         // resets all audit events; to build a new set from current properties
         this._auditEvents = [];
         this._modifiedProperties = [];
@@ -163,7 +163,7 @@ class PropertyManager {
         allProperties.forEach(thisPropertyType => {
             const thisProperty = this._properties[thisPropertyType];
 
-            if (thisProperty.modified) {
+            if (thisProperty.modified || (buChanged && thisProperty.property !== null)) {
                 const { properties:saveProperties, audit: propertyAudit, additionalModels} = thisProperty.save(username);
 
                 // cache the set of properties that have been modified

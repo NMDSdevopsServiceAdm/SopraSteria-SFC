@@ -19,7 +19,6 @@ import {
   DataSharingWithLocalAuthoritiesComponent,
 } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
-import { DeleteWorkplaceDialogComponent } from './delete-workplace-dialog/delete-workplace-dialog.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
 import { LeaversComponent } from './leavers/leavers.component';
@@ -43,9 +42,6 @@ import {
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
-import {
-  WdfWorkplaceConfirmationDialogComponent,
-} from './wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
@@ -60,7 +56,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     CreateUserAccountComponent,
     DataSharingComponent,
     DataSharingWithLocalAuthoritiesComponent,
-    DeleteWorkplaceDialogComponent,
     EditWorkplaceComponent,
     LeaversComponent,
     OtherServicesComponent,
@@ -79,7 +74,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ViewMyWorkplacesComponent,
     ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
-    WdfWorkplaceConfirmationDialogComponent,
     SelectMainServiceComponent,
     UserAccountEditDetailsComponent,
     RegulatedByCqcComponent,
@@ -89,10 +83,8 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [
-    DeleteWorkplaceDialogComponent,
     UserAccountChangePrimaryDialogComponent,
     UserAccountDeleteDialogComponent,
-    WdfWorkplaceConfirmationDialogComponent,
   ],
 })
 export class WorkplaceModule {}

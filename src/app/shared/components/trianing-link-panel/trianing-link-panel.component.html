@@ -1,0 +1,43 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <ng-container *ngIf="!fromStaffRecord; else noStaffRecords">
+      <a
+        class="govuk-list govuk-list--inline"
+        role="button"
+        draggable="false"
+        [routerLink]="['/workplace/view-all-mandatory-training']"
+        >View mandatory training</a
+      >
+    </ng-container>
+    <ng-template #noStaffRecords>
+      <a
+        class="govuk-list govuk-list--inline"
+        role="button"
+        draggable="false"
+        [routerLink]="['/dashboard']"
+        [fragment]="'training-and-qualifications'"
+        >View training and qualifications</a
+      >
+    </ng-template>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <a
+      class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-right-5"
+      [routerLink]="['/add-mandatory-training']"
+      >Manage mandatory training
+    </a>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <a
+      class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+      role="button"
+      draggable="false"
+      href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
+      (click)="downloadTrainingReport($event)"
+    >
+      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+        Download training report
+      </span>
+    </a>
+  </div>
+</div>

@@ -11,7 +11,8 @@ export class DeleteTrainingDialogComponent extends DialogComponent {
     super(data, dialog);
   }
 
-  close(confirm: boolean) {
+  close(event: Event, confirm: boolean) {
+    event.preventDefault();
     this.dialog.close(confirm);
   }
 }

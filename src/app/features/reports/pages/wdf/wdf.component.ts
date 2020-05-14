@@ -32,6 +32,7 @@ export class WdfComponent implements OnInit, OnDestroy {
   public returnUrl: URLStructure;
   public exitUrl: URLStructure;
   public canViewWorker: boolean;
+  public canEditEstablishment: boolean;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -58,6 +59,7 @@ export class WdfComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(breadcrumbConfig);
 
     this.canViewWorker = this.permissionsService.can(workplaceUid, 'canViewWorker');
+    this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
     this.returnUrl = { url: ['/reports', 'workplace', workplaceUid, 'wdf'] };
     this.exitUrl = { url: ['/reports'] };
     this.workerService.setReturnTo(null);
@@ -139,7 +141,19 @@ export class WdfComponent implements OnInit, OnDestroy {
       });
   }
 
-  get displayConfirmationPanel() {
-    return this.workplace && this.workplace.wdf.currentEligibility && !this.workplace.wdf.isEligible;
+  get displayConfirmationPanel(): boolean {
+    if (!this.workplace) {
+      return false;
+    }
+
+    if (!this.canEditEstablishment) {
+      return false;
+    }
+
+    if (!this.workplace.wdf.canConfirm) {
+      return false;
+    }
+
+    return true;
   }
 }

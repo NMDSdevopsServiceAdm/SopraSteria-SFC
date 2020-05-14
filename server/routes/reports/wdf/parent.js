@@ -9,7 +9,9 @@ const walk = require('walk');
 const JsZip = require('jszip');
 const config = require('../../../../server/config/config');
 const uuid = require('uuid');
-const AWS = require('aws-sdk')
+const AWS = require('aws-sdk');
+const cheerio = require('cheerio');
+
 const s3 = new AWS.S3({
   region: String(config.get('bulkupload.region'))
 });
@@ -27,7 +29,7 @@ const workersSheetName = path.join('xl', 'worksheets', 'sheet3.xml');
 const sharedStringsName = path.join('xl', 'sharedStrings.xml');
 const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
-//const debuglog = console.log.bind(console);
+// const debuglog = console.log.bind(console);
 const debuglog = () => {};
 
 const buStates = [
@@ -47,11 +49,11 @@ const buStates = [
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
 
 const parseXML = fileContent =>
-  (new DOMParser()).parseFromString(fileContent.toString('utf8'), 'application/xml');
-
-const serializeXML = dom =>
-  '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
-  (new XMLSerializer()).serializeToString(dom);
+  cheerio.load(fileContent, {
+    xml: {
+      normalizeWhitespace: true,
+    }
+  });
 
 // helper function to set a spreadsheet cell's value
 const putStringTemplate = (
@@ -62,31 +64,36 @@ const putStringTemplate = (
   element,
   value
 ) => {
-  let vTag = element.querySelector('v');
-  const hasVTag = vTag !== null;
+  let vTag = element.children('v').first();
+  let hasVTag = true;
+  if (element.children('v').length === 0) {
+    hasVTag = false;
+  }
+
   const textValue = String(value);
   const isNumber = isNumberRegex.test(textValue);
 
   if (!hasVTag) {
-    vTag = sheetDoc.createElementNS(schema, 'v');
+    vTag = sheetDoc('<v></v>');
+    vTag.text(sharedStringsUniqueCount[0]);
 
-    element.appendChild(vTag);
+    element.append(vTag);
+  } else {
+    vTag.text(sharedStringsUniqueCount[0]);
   }
 
   if (isNumber) {
-    element.removeAttribute('t');
-    vTag.textContent = textValue;
+    element.attr('t', '');
+    vTag.text(textValue);
   } else {
-    element.setAttribute('t', 's');
+    element.attr('t', 's');
 
-    const si = stringsDoc.createElementNS(schema, 'si');
-    const t = stringsDoc.createElementNS(schema, 't');
+    const si = stringsDoc('<si></si>');
+    const t = stringsDoc('<t></t>');
+    t.text(textValue);
 
-    sst.appendChild(si);
-    si.appendChild(t);
-
-    t.textContent = textValue;
-    vTag.textContent = sharedStringsUniqueCount[0];
+    sst.append(si);
+    si.append(t);
 
     sharedStringsUniqueCount[0] += 1;
   }
@@ -103,8 +110,7 @@ const getReportData = async (date, thisEstablishment) => {
   };
 };
 
-const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,ServiceUsers,' +
-'NumberOfStaffValue').split(',');
+const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,Utilisations,ServiceUsers,NumberOfStaffValue,Vacancies,Starters,Leavers').split(',');
 
 const getEstablishmentReportData = async establishmentId => {
   const establishmentReturnData = await getEstablishmentData(establishmentId);
@@ -162,14 +168,6 @@ const getEstablishmentReportData = async establishmentId => {
       value.SubsidiarySharingPermissions = 'None';
     }
 
-    value.EstablishmentDataFullyCompleted = 'Yes';
-
-    propsNeededToComplete.forEach(prop => {
-      if (value[prop] === null) {
-        value.EstablishmentDataFullyCompleted = 'No';
-      }
-    });
-
     value.CurrentWdfEligibilityStatus = value.CurrentWdfEligibilityStatus === null ? 'Not Eligible' : 'Eligible';
 
     if (value.DateEligibilityAchieved === null) {
@@ -186,8 +184,9 @@ const getEstablishmentReportData = async establishmentId => {
     } else {
       value.PercentageOfWorkerRecords = '0.0%';
     }
-
-    if(value.VacanciesValue === 'None' || value.VacanciesValue === null){
+    if (value.VacanciesValue === null) {
+      value.Vacancies = 'Missing';
+    }else if(value.VacanciesValue === 'None'){
       value.Vacancies = 0;
     }else if(value.VacanciesValue === "Don't know"){
       value.Vacancies =  "Don't know";
@@ -195,15 +194,18 @@ const getEstablishmentReportData = async establishmentId => {
       value.Vacancies = (value.VacanciesCount === null)? 'Missing':  value.VacanciesCount;
     }
 
-    if(value.StartersValue === 'None' || value.StartersValue === null){
+    if (value.StartersValue === null) {
+      value.Starters = 'Missing';
+    }else if(value.StartersValue === 'None'){
       value.Starters = 0;
     }else if(value.StartersValue === "Don't know"){
       value.Starters =  "Don't know";
     }else if(value.StartersValue === "With Jobs"){
       value.Starters = (value.StartersCount === null)? 'Missing':  value.StartersCount;
     }
-
-    if(value.LeaversValue === 'None' || value.LeaversValue === null){
+    if (value.LeaversValue === null) {
+      value.Leavers = 'Missing';
+    }else if(value.LeaversValue === 'None'){
       value.Leavers = 0;
     }else if(value.LeaversValue === "Don't know"){
       value.Leavers =  "Don't know";
@@ -230,6 +232,14 @@ const getEstablishmentReportData = async establishmentId => {
       (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
         ? '0.0%'
         : `${parseFloat(+value.CompletedWorkerRecords / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
+
+    value.EstablishmentDataFullyCompleted = 'Yes';
+
+    propsNeededToComplete.forEach(prop => {
+      if (value[prop] === null || value[prop] === '' || value[prop] === 'Missing') {
+        value.EstablishmentDataFullyCompleted = 'No';
+      }
+    });
   }
 
   return establishmentData;
@@ -290,6 +300,10 @@ const getWorkersReportData = async establishmentId => {
       }else if(value.WeeklyHoursAverageValue === null){
         value.HoursValue = 'Missing';
       }
+    }
+
+    if(value.ContractValue === 'Agency' || value.ContractValue === 'Pool/Bank'){
+      value.DaysSickValue = 'N/A';
     }
 
     updateProps.forEach(prop => {
@@ -522,7 +536,7 @@ const styleLookup = {
 };
 
 const setStyle = (cellToChange, columnText, rowType, isRed) => {
-  cellToChange.setAttribute('s', styleLookup[isRed ? 'RED' : 'BLACK'][rowType][columnText]);
+  cellToChange.attr('s', styleLookup[isRed ? 'RED' : 'BLACK'][rowType][columnText]);
 };
 
 const basicValidationUpdate = (putString, cellToChange, value, columnText, rowType, percentColumn = false) => {
@@ -561,48 +575,44 @@ const updateOverviewSheet = (
 
   // set headers
   putString(
-    overviewSheet.querySelector("c[r='B6']"),
+    overviewSheet("c[r='B6']"),
     `Parent name : ${reportData.parentName}`
   );
 
   putString(
-    overviewSheet.querySelector("c[r='B7']"),
+    overviewSheet("c[r='B7']"),
     `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`
   );
 
-  const templateRow = overviewSheet.querySelector("row[r='11']");
+  const templateRow = overviewSheet("row[r='11']");
 
-  // move the footer rows down appropriately
-  //no rows = -1
-  //one row = 0
-  //two rows = 1
-  let currentRow = overviewSheet.querySelector("row[r='16']");
+  let currentRow = overviewSheet("row[r='16']");
   let rowIndex = 16;
   let updateRowIndex = 16 + reportData.establishments.length - 1;
-
+  // Move the information at the bottom to the correct place
   for(; rowIndex > 11; rowIndex--, updateRowIndex--) {
     if(rowIndex === 16) {
       // fix the dimensions tag value
-      const dimension = overviewSheet.querySelector('dimension');
-      dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + updateRowIndex);
+      const dimension = overviewSheet('dimension');
+      dimension.attr('ref', String(dimension.attr('ref')).replace(/\d+$/, '') + updateRowIndex);
+    }
+    if (currentRow.children('c').length) {
+      currentRow.children('c').each((index, element) => {
+        overviewSheet(element).attr('r', String(overviewSheet(element).attr('r')).replace(/\d+$/, '') + updateRowIndex);
+      });
     }
 
-    currentRow.querySelectorAll('c').forEach(elem => {
-      elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + updateRowIndex);
-    });
+    currentRow.attr('r', updateRowIndex);
 
-    currentRow.setAttribute('r', updateRowIndex);
-
-    const mergeCell = overviewSheet.querySelector(`mergeCell[ref='B${rowIndex}:L${rowIndex}']`);
+    const mergeCell = overviewSheet(`mergeCell[ref='B${rowIndex}:L${rowIndex}']`);
 
     if(mergeCell !== null) {
-      mergeCell.setAttribute('ref', `B${updateRowIndex}:L${updateRowIndex}`);
+      mergeCell.attr('ref', `B${updateRowIndex}:L${updateRowIndex}`);
     }
 
-    while(currentRow.previousSibling !== null) {
-      currentRow = currentRow.previousSibling;
-
-      if(currentRow.nodeName === 'row') {
+    if (currentRow.prev().length !== 0) {
+      currentRow = currentRow.prev();
+      if(currentRow.name === 'row') {
         break;
       }
     }
@@ -616,15 +626,15 @@ const updateOverviewSheet = (
 
   if (reportData.establishments.length > 1) {
     for (let i = 0; i < (reportData.establishments.length - 1); i++) {
-      const tempRow = templateRow.cloneNode(true);
+      const tempRow = templateRow.clone(true);
 
-      tempRow.setAttribute('r', rowIndex);
+      tempRow.attr('r', rowIndex);
 
-      tempRow.querySelectorAll('c').forEach(elem => {
-        elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndex);
+      tempRow.children('c').each((index, element) => {
+        overviewSheet(element).attr('r', String(overviewSheet(element).attr('r')).replace(/\d+$/, '') + rowIndex);
       });
 
-      templateRow.parentNode.insertBefore(tempRow, currentRow.nextSibling);
+      currentRow.after(tempRow);
 
       currentRow = tempRow;
       rowIndex++;
@@ -638,13 +648,12 @@ const updateOverviewSheet = (
     debuglog('updating overview', row);
 
     const rowType = row === reportData.establishments.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
-    let nextSibling = {};
+    // let nextSibling = {};
 
     for (let column = 0; column < 10; column++) {
       const columnText = String.fromCharCode(column + 66);
       const isRed = false;
-
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 11}']`);
+      const cellToChange = currentRow.children(`c[r='${columnText}${row + 11}']`);
       switch (columnText) {
         case 'B': {
           putString(
@@ -735,10 +744,9 @@ const updateOverviewSheet = (
       // TODO: duplicate the hyperlinked fields
       // //////////////////////////////////////
 
-      nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
 
-    currentRow = currentRow.nextSibling;
+    currentRow = currentRow.next();
   }
 
   debuglog('overview updated');
@@ -760,17 +768,17 @@ const updateEstablishmentsSheet = (
 
   // set headers
   putString(
-    establishmentsSheet.querySelector("c[r='B6']"),
+    establishmentsSheet("c[r='B6']"),
     `Parent name : ${reportData.parentName}`
   );
 
   putString(
-    establishmentsSheet.querySelector("c[r='B7']"),
+    establishmentsSheet("c[r='B7']"),
     `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`
   );
 
   // clone the row the apropriate number of times
-  const templateRow = establishmentsSheet.querySelector("row[r='11']");
+  const templateRow = establishmentsSheet("row[r='11']");
   let currentRow = templateRow;
   let rowIndex = 12;
   let establishmentReportData = [...reportData.establishments];
@@ -784,15 +792,15 @@ const updateEstablishmentsSheet = (
       });
   if (establishmentArray.length > 1) {
     for (let i = 0; i < establishmentArray.length - 1; i++) {
-      const tempRow = templateRow.cloneNode(true);
+      const tempRow = templateRow.clone(true);
 
-      tempRow.setAttribute('r', rowIndex);
+      tempRow.attr('r', rowIndex);
 
-      tempRow.querySelectorAll('c').forEach(elem => {
-        elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndex);
+      tempRow.children('c').each((index, element) => {
+        establishmentsSheet(element).attr('r', String(establishmentsSheet(element).attr('r')).replace(/\d+$/, '') + rowIndex);
       });
 
-      templateRow.parentNode.insertBefore(tempRow, currentRow.nextSibling);
+      currentRow.after(tempRow);
 
       currentRow = tempRow;
       rowIndex++;
@@ -802,24 +810,23 @@ const updateEstablishmentsSheet = (
   }
 
   // fix the last row in the table
-  establishmentsSheet.querySelector('sheetData row:last-child').setAttribute('r', rowIndex);
+  establishmentsSheet('sheetData row:last-child').attr('r', rowIndex);
 
   // fix the dimensions tag value
-  const dimension = establishmentsSheet.querySelector('dimension');
-  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndex);
+  const dimension = establishmentsSheet('dimension');
+  dimension.attr('ref', String(dimension.attr('ref')).replace(/\d+$/, '') + rowIndex);
 
   // update the cell values
   for (let row = 0; row < establishmentArray.length; row++) {
     debuglog('updating establishment', row);
 
     const rowType = row === establishmentArray.length - 1 ? 'ESTLAST' : 'ESTREGULAR';
-    let nextSibling = {};
 
     for (let column = 0; column < 17; column++) {
       const columnText = String.fromCharCode(column + 65);
       const isRed = false;
 
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 11}']`);
+      const cellToChange = currentRow.children(`c[r='${columnText}${row + 11}']`);
 
       switch (columnText) {
         case 'B': {
@@ -903,7 +910,7 @@ const updateEstablishmentsSheet = (
         case 'K': {
           putString(
             cellToChange,
-            establishmentArray[row].LastUpdatedDate
+            establishmentArray[row].updated
           );
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
@@ -965,11 +972,8 @@ const updateEstablishmentsSheet = (
           );
         } break;
       }
-
-      nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
-
-    currentRow = currentRow.nextSibling;
+    currentRow = currentRow.next();
   }
 
   debuglog('establishments updated');
@@ -990,31 +994,31 @@ const updateWorkersSheet = (
 
   // set headers
   putString(
-    workersSheet.querySelector("c[r='B6']"),
+    workersSheet("c[r='B6']"),
     `Parent name : ${reportData.parentName}`
   );
 
   putString(
-    workersSheet.querySelector("c[r='B7']"),
+    workersSheet("c[r='B7']"),
     `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`
   );
 
   // clone the row the apropriate number of times
-  const templateRow = workersSheet.querySelector("row[r='10']");
+  const templateRow = workersSheet("row[r='10']");
   let currentRow = templateRow;
   let rowIndex = 11;
 
   if (reportData.workers.length > 1) {
     for (let i = 0; i < reportData.workers.length - 1; i++) {
-      const tempRow = templateRow.cloneNode(true);
+      const tempRow = templateRow.clone(true);
 
-      tempRow.setAttribute('r', rowIndex);
+      tempRow.attr('r', rowIndex);
 
-      tempRow.querySelectorAll('c').forEach(elem => {
-        elem.setAttribute('r', String(elem.getAttribute('r')).replace(/\d+$/, '') + rowIndex);
+      tempRow.children('c').each((index, element) => {
+        workersSheet(element).attr('r', String(workersSheet(element).attr('r')).replace(/\d+$/, '') + rowIndex);
       });
 
-      templateRow.parentNode.insertBefore(tempRow, currentRow.nextSibling);
+      currentRow.after(tempRow);
 
       currentRow = tempRow;
       rowIndex++;
@@ -1024,21 +1028,19 @@ const updateWorkersSheet = (
   }
 
   // fix the dimensions tag value
-  const dimension = workersSheet.querySelector('dimension');
-  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + (rowIndex - 1));
+  const dimension = workersSheet('dimension');
+  dimension.attr('ref', String(dimension.attr('ref')).replace(/\d+$/, '') + (rowIndex - 1));
 
   // update the cell values
   for (let row = 0; row < reportData.workers.length; row++) {
     debuglog('updating worker', row);
 
     const rowType = row === reportData.workers.length - 1 ? 'WKRLAST' : 'WKRREGULAR';
-    let nextSibling = {};
 
     for (let column = 0; column < 19; column++) {
       const columnText = String.fromCharCode(column + 65);
       let isRed = false;
-
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 10}']`);
+      const cellToChange = currentRow.children(`c[r='${columnText}${row + 10}']`);
 
       switch (columnText) {
         case 'B': {
@@ -1227,11 +1229,9 @@ const updateWorkersSheet = (
           setStyle(cellToChange, columnText, rowType, isRed);
         } break;
       }
-
-      nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
 
-    currentRow = currentRow.nextSibling;
+    currentRow = currentRow.next();
   }
 
   debuglog('workers updated');
@@ -1292,50 +1292,50 @@ const getReport = async (date, thisEstablishment) => {
       });
     });
 
-    walker.on('end', () => {
+    walker.on('end', async () => {
       debuglog('all files read');
 
       if (sharedStrings) {
-        const sst = sharedStrings.querySelector('sst');
+        const sst = sharedStrings('sst');
 
-        const sharedStringsUniqueCount = [parseInt(sst.getAttribute('uniqueCount'), 10)];
+        const sharedStringsUniqueCount = [parseInt(sst.attr('uniqueCount'), 10)];
 
         // update the overview sheet with the report data and add it to the zip
-        outputZip.file(overviewSheetName, serializeXML(updateOverviewSheet(
+        outputZip.file(overviewSheetName, updateOverviewSheet(
           overviewSheet,
           reportData,
           sharedStrings,
           sst,
           sharedStringsUniqueCount // pass unique count by reference rather than by value
-        )));
+        ).xml());
 
         //outputZip.file(establishmentsSheetName, serializeXML(establishmentsSheet));
         //outputZip.file(workersSheetName, serializeXML(workersSheet));
 
         // update the establishments sheet with the report data and add it to the zip
-        outputZip.file(establishmentsSheetName, serializeXML(updateEstablishmentsSheet(
+        outputZip.file(establishmentsSheetName, updateEstablishmentsSheet(
           establishmentsSheet,
           reportData,
           sharedStrings,
           sst,
           sharedStringsUniqueCount, // pass unique count by reference rather than by value
           thisEstablishment
-        )));
+        ).xml());
 
         // update the workplaces sheet with the report data and add it to the zip
-        outputZip.file(workersSheetName, serializeXML(updateWorkersSheet(
+        outputZip.file(workersSheetName, updateWorkersSheet(
           workersSheet,
           reportData,
           sharedStrings,
           sst,
           sharedStringsUniqueCount // pass unique count by reference rather than by value
-        )));
+        ).xml())
 
         // update the shared strings counts we've been keeping track of
-        sst.setAttribute('uniqueCount', sharedStringsUniqueCount[0]);
+        sst.attr('uniqueCount', sharedStringsUniqueCount[0]);
 
         // add the updated shared strings to the zip
-        outputZip.file(sharedStringsName, serializeXML(sharedStrings));
+        outputZip.file(sharedStringsName, sharedStrings.xml());
       }
 
       debuglog('wdf parent report: creating zip file');

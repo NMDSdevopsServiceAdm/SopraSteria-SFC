@@ -33,7 +33,7 @@ exports.newNonCqcSite = (postcode, nonCqcServices) => {
         "townCity": postcode.townAndCity,
         "county": postcode.county,
         "postalCode": postcode.postcode,
-        "mainService": servicesUtils.lookupRandomService(nonCqcServices).name,
+        "mainService": servicesUtils.lookupRandomService(nonCqcServices).name, // eg "Carers Support"
         "isRegulated": false,
         "user": {
             "fullname": faker.name.findName(),

@@ -14,7 +14,7 @@ enum Path {
 export const myWorkplaceJourney: JourneyRoute = {
   children: [
     {
-      title: 'Staff record summary',
+      title: 'Staff record',
       path: Path.STAFF_RECORD,
       referrer: {
         path: Path.DASHBOARD,
@@ -22,7 +22,7 @@ export const myWorkplaceJourney: JourneyRoute = {
       },
     },
     {
-      title: 'Training and qualifications summary',
+      title: 'Training and qualifications',
       path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
       referrer: {
         path: Path.DASHBOARD,
@@ -65,7 +65,7 @@ export const allWorkplacesJourney: JourneyRoute = {
           path: Path.WORKPLACE,
           children: [
             {
-              title: 'Staff record summary',
+              title: 'Staff record',
               path: Path.STAFF_RECORD,
               referrer: {
                 path: Path.WORKPLACE,
@@ -73,7 +73,7 @@ export const allWorkplacesJourney: JourneyRoute = {
               },
             },
             {
-              title: 'Training and qualifications summary',
+              title: 'Training and qualifications',
               path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
               referrer: {
                 path: Path.WORKPLACE,

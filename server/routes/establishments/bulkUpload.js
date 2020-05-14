@@ -3,6 +3,7 @@
 const moment = require('moment');
 const csv = require('csvtojson');
 const uuid = require('uuid');
+const rfr = require('rfr');
 
 const config = rfr('server/config/config');
 const dbModels = rfr('server/models');
@@ -819,53 +820,58 @@ const validateEstablishmentCsv = async (
   const lineValidator = new EstablishmentCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
-  lineValidator.validate();
-  lineValidator.transform();
+  await lineValidator.validate();
+  if (!lineValidator._ignore) {
+    lineValidator.transform();
 
-  const thisEstablishmentAsAPI = lineValidator.toAPI();
+    const thisEstablishmentAsAPI = lineValidator.toAPI();
 
-  try {
-    const thisApiEstablishment = new Establishment();
-    thisApiEstablishment.initialise(
-      thisEstablishmentAsAPI.Address1,
-      thisEstablishmentAsAPI.Address2,
-      thisEstablishmentAsAPI.Address3,
-      thisEstablishmentAsAPI.Town,
-      null,
-      thisEstablishmentAsAPI.LocationId,
-      thisEstablishmentAsAPI.ProvId,
-      thisEstablishmentAsAPI.Postcode,
-      thisEstablishmentAsAPI.IsCQCRegulated
-    );
+    try {
+        const thisApiEstablishment = new Establishment();
+        thisApiEstablishment.initialise(
+          thisEstablishmentAsAPI.Address1,
+          thisEstablishmentAsAPI.Address2,
+          thisEstablishmentAsAPI.Address3,
+          thisEstablishmentAsAPI.Town,
+          null,
+          thisEstablishmentAsAPI.LocationId,
+          thisEstablishmentAsAPI.ProvId,
+          thisEstablishmentAsAPI.Postcode,
+          thisEstablishmentAsAPI.IsCQCRegulated
+        );
 
-    await thisApiEstablishment.load(thisEstablishmentAsAPI);
+        await thisApiEstablishment.load(thisEstablishmentAsAPI);
 
-    keepAlive('establishment loaded', currentLineNumber);
+        keepAlive('establishment loaded', currentLineNumber);
 
-    if (thisApiEstablishment.validate()) {
-      // No validation errors in the entity itself, so add it ready for completion
-      myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
-    } else {
-      const errors = thisApiEstablishment.errors;
+        if (thisApiEstablishment.validate()) {
+          // No validation errors in the entity itself, so add it ready for completion
+          myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
+        } else {
+          const errors = thisApiEstablishment.errors;
 
-      if (errors.length === 0) {
-        myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
-      } else {
-        // TODO: Remove this when capacities and services are fixed; temporarily adding establishments
-        // even though they're in error (because service/capacity validations put all in error)
-        myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
-      }
+          if (errors.length === 0) {
+            myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
+          } else {
+            // TODO: Remove this when capacities and services are fixed; temporarily adding establishments
+            // even though they're in error (because service/capacity validations put all in error)
+            myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
+          }
+        }
+    } catch (err) {
+      console.error('WA - localised validate establishment error until validation card', err);
     }
-  } catch (err) {
-    console.error('WA - localised validate establishment error until validation card', err);
+  } else {
+    console.log('Ignoring', lineValidator._name);
   }
-
   // collate all bulk upload validation errors/warnings
   if (lineValidator.validationErrors.length > 0) {
     lineValidator.validationErrors.forEach(thisError => csvEstablishmentSchemaErrors.push(thisError));
   }
+  if (!lineValidator._ignore) {
+    myEstablishments.push(lineValidator);
+  }
 
-  myEstablishments.push(lineValidator);
 };
 
 const loadWorkerQualifications = async (
@@ -1080,6 +1086,8 @@ const validateBulkUploadFiles = async (
         allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
       }
     });
+
+    await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors);
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no establishment records');
   }
@@ -1114,7 +1122,7 @@ const validateBulkUploadFiles = async (
 
       if (allWorkersByKey[keyNoWhitespace]) {
         // this worker is a duplicate
-        csvWorkerSchemaErrors.push(thisWorker.addDuplicate(allWorkersByKey[keyNoWhitespace]));
+        csvWorkerSchemaErrors.push(thisWorker.addDuplicate(thisWorker.uniqueWorker));
 
         // remove the entity
         delete myAPIWorkers[thisWorker.lineNumber];
@@ -1122,7 +1130,7 @@ const validateBulkUploadFiles = async (
       // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
       } else if (changeKeyNoWhitespace && allWorkersByKey[changeKeyNoWhitespace]) {
         // this worker is a duplicate
-        csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(allWorkersByKey[keyNoWhitespace]));
+        csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(thisWorker.changeUniqueWorker));
 
         // remove the entity
         delete myAPIWorkers[thisWorker.lineNumber];
@@ -1312,6 +1320,14 @@ const validateBulkUploadFiles = async (
       csvEstablishmentSchemaErrors,
       myWorkers,
       fetchMyEstablishmentsWorkers: Establishment.fetchMyEstablishmentsWorkers
+    });
+  }));
+
+  // Run validations that require information about establishments
+  await Promise.all(myWorkers.map(async worker => {
+    await worker.crossValidate({
+      csvWorkerSchemaErrors,
+      myEstablishments
     });
   }));
 
@@ -2402,6 +2418,30 @@ const downloadGet = async (req, res) => {
   }
 };
 
+const checkDuplicateLocations = async (
+  myEstablishments,
+  csvEstablishmentSchemaErrors,
+) => {
+  const locations = [];
+
+  myEstablishments
+    .filter((thisEstablishment) => thisEstablishment._currentLine.LOCATIONID)
+    .forEach((thisEstablishment) => {
+      const locationId = thisEstablishment._currentLine.LOCATIONID;
+      const exists = locations[locationId] !== undefined;
+
+      if (exists) {
+        csvEstablishmentSchemaErrors.push(
+          thisEstablishment.getDuplicateLocationError(),
+        );
+
+        return;
+      }
+
+      locations[locationId] = thisEstablishment.lineNumber;
+    });
+};
+
 const router = require('express').Router();
 
 router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
@@ -2422,3 +2462,5 @@ router.route('/unlock').get(releaseLock);
 router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;
+module.exports.checkDuplicateLocations = checkDuplicateLocations;
+module.exports.validateEstablishmentCsv = validateEstablishmentCsv;

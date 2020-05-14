@@ -1,8 +1,10 @@
 <ng-container *ngIf="qualifications?.length">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <h2 class="govuk-heading-m">Qualifications({{ qualifications.length }})</h2>
-      <p>Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
+      <h2 class="govuk-heading-m">Qualifications ({{ qualifications.length }})</h2>
+    </div>
+    <div class="govuk-grid-column-one-half govuk-util__float-right govuk-util__align-right">
+      <p>Updated {{ lastUpdated | date: 'd MMMM y' }}</p>
     </div>
   </div>
 

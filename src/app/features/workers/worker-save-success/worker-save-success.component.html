@@ -5,7 +5,7 @@
       been saved
     </app-panel>
     <h2 class="govuk-heading-m">What you can do next?</h2>
-    <p>You can add more staff records, or return to your homepage</p>
+    <p>You can add more staff records, or go to home.</p>
     <div class="govuk-button-group">
       <a class="govuk-button" role="button" draggable="false" [routerLink]="['../../create-staff-record']">
         Add another staff record
@@ -15,9 +15,9 @@
         role="button"
         draggable="false"
         [routerLink]="return.url"
-        [fragment]="'staff-records'"
+        [fragment]="'home'"
       >
-        Return to {{ return.label }}
+        Go to {{ return.label }}
       </a>
     </div>
   </div>

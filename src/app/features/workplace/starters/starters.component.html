@@ -8,16 +8,18 @@
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-      <h1 class="govuk-fieldset__heading">Add new starters in the last 12 months</h1>
-    </legend>
-
-    <p class="govuk-hint">This should only be for permanent or temporary staff.</p>
-
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Add new starters in the last 12 months</h1>
+          <p class="govuk-hint">This should only be for permanent or temporary staff.</p>
+        </legend>
+      </div>
+    </div>
     <ng-container formArrayName="starterRecords">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
-          <label for="jobId-0" class="govuk-label">Job Role</label>
+          <label for="jobId-0" class="govuk-label">Job role</label>
         </div>
         <div class="govuk-grid-column-one-third">
           <label for="total-0" class="govuk-label">Number of new starters</label>
@@ -30,6 +32,11 @@
       >
         <div class="govuk-grid-row govuk-!-margin-bottom-6">
           <div class="govuk-grid-column-two-thirds">
+            <span *ngIf="submitted" id="record-{{ i }}-error" class="govuk-error-message">
+              <ng-container *ngIf="submitted && record.get('jobId').invalid">
+                {{ getFormErrorMessage('starterRecords.jobId', 'required') }}
+              </ng-container>
+            </span>
             <select
               class="govuk-select govuk-!-width-full"
               [class.govuk-select--error]="submitted && record.get('jobId').invalid"
@@ -44,6 +51,19 @@
             </select>
           </div>
           <div class="govuk-grid-column-one-third">
+            <span *ngIf="submitted" id="record-total-{{ i }}-error" class="govuk-error-message">
+              <ng-container *ngIf="submitted && record.get('total').invalid">
+                <span *ngIf="record.get('total').errors.required">
+                  {{ getFormErrorMessage('starterRecords.total', 'required') }}</span
+                >
+                <span *ngIf="record.get('total').errors.min">
+                  {{ getFormErrorMessage('starterRecords.total', 'min') }}</span
+                >
+                <span *ngIf="record.get('total').errors.max">
+                  {{ getFormErrorMessage('starterRecords.total', 'max') }}
+                </span>
+              </ng-container>
+            </span>
             <input
               class="govuk-input govuk-!-width-one-half"
               [class.govuk-input--error]="submitted && record.get('total').invalid"
@@ -52,14 +72,13 @@
               name="total"
               type="number"
             />
-            <button
+            <a
               *ngIf="starterRecords.length > 1"
-              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-!-margin-left-3"
-              type="button"
+              href="#"
+              class="govuk-list govuk-list--inline govuk-!-margin-left-3"
               (click)="removeRecord($event, i)"
+              >Remove</a
             >
-              Remove
-            </button>
           </div>
         </div>
       </div>

@@ -1,21 +1,7 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
-  </div>
-  <div class="govuk-grid-column-one-third">
-    <a
-      class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
-      role="button"
-      draggable="false"
-      href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
-      (click)="downloadTrainingReport($event)"
-    >
-      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
-        Download Training Report
-      </span>
-    </a>
-  </div>
+  <h2 class="govuk-heading-m govuk-!-margin-left-1">Training and qualifications ({{ totalRecords || 0 }})</h2>
 </div>
+<app-trianing-link-panel></app-trianing-link-panel>
 <ng-container *ngIf="workers; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0">
     <div class="govuk-grid-column-two-thirds">
@@ -32,6 +18,7 @@
     [workplace]="workplace"
     [totalExpiredTraining]="totalExpiredTraining"
     [totalExpiringTraining]="totalExpiringTraining"
+    [totalMissingMandatoryTraining]="missingMandatoryTraining"
   ></app-training-info-panel>
 
   <app-training-and-qualifications-summary
