@@ -4,6 +4,8 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import orderBy from 'lodash/orderBy';
+import { Router } from '@angular/router';
+import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-training-and-qualifications-categories',
@@ -23,6 +25,8 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     private permissionsService: PermissionsService,
     private trainingCategoryService: TrainingCategoryService,
     private trainingStatusService: TrainingStatusService,
+    private workerService: WorkerService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -84,5 +88,20 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     count += this.trainingStatusCount(training, this.trainingStatusService.MISSING);
 
     return count === 0;
+  }
+
+  public updateTrainingRecord(event, training) {
+    event.preventDefault();
+    console.log(this.router.url);
+    this.workerService.getRoute$.next('/dashboard#training-and-qualifications');
+
+    this.router.navigate([
+      '/workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      training.worker.uid,
+      'training',
+      training.uid
+    ])
   }
 }

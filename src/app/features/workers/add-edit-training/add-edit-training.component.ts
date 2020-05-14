@@ -52,9 +52,17 @@ export class AddEditTrainingComponent implements OnInit {
         this.previousUrl = route;
       }
     });
-    this.backService.setBackLink({
-      url: [this.previousUrl],
-    });
+    const urlSplit = this.previousUrl.split('#')
+    if(urlSplit.length > 1) {
+      this.backService.setBackLink({
+        url: [urlSplit[0]],
+        fragment: urlSplit[1]
+      });
+    } else {
+      this.backService.setBackLink({
+        url: [urlSplit[0]],
+      });
+    }
 
     this.form = this.formBuilder.group({
       title: [
@@ -272,7 +280,7 @@ export class AddEditTrainingComponent implements OnInit {
 
   private onSuccess() {
     this.router
-      .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
+      .navigateByUrl(this.previousUrl)
       .then(() => {
         if (this.trainingRecordId) {
           this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
