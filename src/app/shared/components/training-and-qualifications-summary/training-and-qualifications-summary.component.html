@@ -2,7 +2,7 @@
   <div class="govuk__flex govuk__justify-content-space-between">
     <div *ngIf="showViewByToggle">
       <span class="govuk-!-margin-right-6">View by staff name</span>
-      <a href="javascript://" (click)="this.viewTrainingByCategory.emit(true);" class="govuk-!-margin-right-6">View by training category</a>
+      <a href="#" (click)="this.viewTrainingByCategory.emit(true); false" class="govuk-!-margin-right-6">View by training category</a>
     </div>
     <div>
       <label class="govuk-label" for="sort">
