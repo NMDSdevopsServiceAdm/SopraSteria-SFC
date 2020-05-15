@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "node --max-old-space-size=4096 server.js",
+    "start": "npm run build && node --max-old-space-size=4096 server.js",
     "dev": "npm-run-all -p -l build:watch api:proxy",
     "build": "ng build  --extract-css",
     "build:clean": "rimraf dist",
