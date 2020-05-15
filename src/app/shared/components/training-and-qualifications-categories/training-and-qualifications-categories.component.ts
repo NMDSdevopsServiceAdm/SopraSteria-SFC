@@ -20,6 +20,8 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   public workerDetails = [];
   public workerDetailsLabel = [];
   public canEditWorker = false;
+  public sortByDefault: string;
+  public filterValue: string;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -29,8 +31,12 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
 
   ngOnInit() {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-
+    this.sortByDefault = 'all';
+    this.filterValue = 'all';
     this.orderTrainingCategories();
+  }
+  public toggleFilter(filterValue) {
+    this.filterValue = filterValue;
   }
 
   public orderTrainingCategories() {

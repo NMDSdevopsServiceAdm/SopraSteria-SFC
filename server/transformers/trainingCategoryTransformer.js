@@ -65,6 +65,7 @@ module.exports = function (establishment, trainingCategories) {
       seq: trainingCategory.seq,
       category: trainingCategory.category,
       training: training,
+      isMandatory: trainingCategory.MandatoryTraining.length > 0
     };
   }).filter(trainingCategory => {
     return trainingCategory.training.length > 0;

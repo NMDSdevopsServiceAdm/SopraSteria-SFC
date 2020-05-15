@@ -50,6 +50,7 @@ function trainingCategoriesJSON(givenCategories) {
       id: thisCategory.id,
       seq: thisCategory.seq,
       category: thisCategory.category,
+      isMandatory: !!thisCategory.mandatoryTraining
     });
   });
 
