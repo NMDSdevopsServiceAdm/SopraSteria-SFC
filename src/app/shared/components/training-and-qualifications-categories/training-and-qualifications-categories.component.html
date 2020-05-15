@@ -1,0 +1,154 @@
+<div class="govuk-!-margin-bottom-6" *ngIf="showViewByToggle">
+  <a href="#" (click)="this.viewTrainingByCategory.emit(false); false" class="govuk-!-margin-right-6"
+    >View by staff name</a
+  >
+  <span>View by training category</span>
+</div>
+
+<table class="govuk-table" data-testid="training-category-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Category</th>
+      <th class="govuk-table__header" scope="col">Records</th>
+      <th class="govuk-table__header" scope="col">Status</th>
+      <th class="govuk-table__header" scope="col"></th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <ng-container *ngFor="let trainingCategory of trainingCategories">
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          {{ trainingCategory.category }}
+        </td>
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          {{ totalTrainingRecords(trainingCategory.training) }}
+        </td>
+        <td class="govuk-table__cell">
+          <div
+            *ngIf="trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) > 0"
+            class="govuk-!-margin-bottom-1"
+          >
+            <img
+              src="/assets/images/flag-red.svg"
+              alt="expired"
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            />
+            {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) }}
+            Expired
+          </div>
+          <div
+            *ngIf="trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) > 0"
+            class="govuk-!-margin-bottom-1"
+          >
+            <img
+              src="/assets/images/flag-red.svg"
+              alt="missing mandatory training"
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            />
+            {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) }}
+            Missing
+          </div>
+          <div
+            *ngIf="trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) > 0"
+            class="govuk-!-margin-bottom-1"
+          >
+            <img
+              src="/assets/images/flag-orange.svg"
+              alt="expiring"
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            />
+            {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) }} Expiring soon
+          </div>
+          <div *ngIf="trainingIsComplete(trainingCategory.training)">
+            Up-to-date
+          </div>
+        </td>
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          <a
+            *ngIf="trainingCategory.training.length"
+            class="govuk-link--no-visited-state"
+            href="#"
+            (click)="toggleDetails(trainingCategory.id, $event)"
+            data-testid="more-link"
+          >
+            {{ workerDetailsLabel[trainingCategory.id] ? workerDetailsLabel[trainingCategory.id] : 'More' }}
+          </a>
+        </td>
+      </tr>
+      <tr *ngIf="workerDetails[trainingCategory.id]" class="govuk-panel--gray govuk-!-margin-2">
+        <td colspan="4">
+          <div class="govuk-!-margin-2">
+            <table class="govuk-table">
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th class="govuk-table__header govuk-!-width-one-third" scope="col">Worker ID</th>
+                  <th class="govuk-table__header govuk-!-width-one-third" scope="col">Job role</th>
+                  <th class="govuk-table__header govuk-!-width-one-third" scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <ng-container *ngFor="let training of orderByTrainingStatusAndName(trainingCategory.training)">
+                  <tr class="govuk-table__row">
+                    <td class="govuk-table__cell govuk-!-font-weight-regular">
+                      <a
+                        *ngIf="canEditWorker"
+                        [routerLink]="[
+                          '/workplace',
+                          this.workplace.uid,
+                          'training-and-qualifications-record',
+                          training.worker.uid,
+                          'training'
+                        ]"
+                      >
+                        {{ training.worker.NameOrIdValue }}</a
+                      >
+                    </td>
+                    <td class="govuk-table__cell govuk-!-font-weight-regular">
+                      {{ training.worker.mainJob?.title }}
+                    </td>
+                    <td class="govuk-table__cell">
+                      <div
+                        *ngIf="trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.EXPIRED"
+                        class="govuk-!-margin-bottom-1"
+                      >
+                        <img
+                          src="/assets/images/flag-red.svg"
+                          alt="expired"
+                          class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                        />
+                        Expired
+                      </div>
+                      <div
+                        *ngIf="trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.MISSING"
+                        class="govuk-!-margin-bottom-1"
+                      >
+                        <img
+                          src="/assets/images/flag-red.svg"
+                          alt="Missing"
+                          class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                        />
+                        Missing
+                      </div>
+                      <div *ngIf="trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.EXPIRING">
+                        <img
+                          src="/assets/images/flag-orange.svg"
+                          alt="expiring"
+                          class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                        />
+                        Expiring soon
+                      </div>
+
+                      <div *ngIf="trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.ACTIVE">
+                        Up-to-date
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
