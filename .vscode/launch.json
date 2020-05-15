@@ -8,7 +8,7 @@
             "type": "node",
             "request": "attach",
             "name": "localhost",
-            "port": 3000
+            "port": 9229
         },
         {
             "type": "node",
