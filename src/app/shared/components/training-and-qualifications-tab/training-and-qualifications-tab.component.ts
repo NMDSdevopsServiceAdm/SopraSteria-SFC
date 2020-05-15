@@ -43,9 +43,11 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
   }
 
   getAllTrainingByCategory() {
-    this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id).subscribe((trainingCategories) => {
-      this.trainingCategories = trainingCategories;
-    });
+    this.subscriptions.add(
+      this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id).subscribe((trainingCategories) => {
+        this.trainingCategories = trainingCategories;
+      }),
+    );
   }
 
   getAllWorkers() {

@@ -1,7 +1,8 @@
-<div class="govuk-form-group govuk-!-margin-bottom-6">
+
+<div class="govuk-form-group govuk-!-margin-bottom-6"  *ngIf="showViewByToggle">
   <div class="govuk__flex govuk__justify-content-space-between">
     <div *ngIf="showViewByToggle">
-      <a href="javascript://" (click)="this.viewTrainingByCategory.emit(false)" class="govuk-!-margin-right-6"
+      <a href="#" (click)="this.viewTrainingByCategory.emit(false);false" class="govuk-!-margin-right-6"
       >View by staff name</a
       >
       <span>View by training category</span>
