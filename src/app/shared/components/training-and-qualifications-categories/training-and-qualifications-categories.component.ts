@@ -25,7 +25,6 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
 
   constructor(
     private permissionsService: PermissionsService,
-    private trainingCategoryService: TrainingCategoryService,
     private trainingStatusService: TrainingStatusService,
     private workerService: WorkerService,
     private router: Router
@@ -86,10 +85,12 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     );
   }
 
+  public trainingStatus = (training) => this.trainingStatusService.trainingStatusForRecord(training)
+
   public updateTrainingRecord(event, training) {
     event.preventDefault();
     console.log(this.router.url);
-    this.workerService.getRoute$.next('/dashboard#training-and-qualifications');
+    this.workerService.getRoute$.next('/dashboard?view=categories#training-and-qualifications');
 
     this.router.navigate([
       '/workplace',

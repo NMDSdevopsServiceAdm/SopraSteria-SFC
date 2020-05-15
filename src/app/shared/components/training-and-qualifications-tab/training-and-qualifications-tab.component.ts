@@ -3,9 +3,9 @@ import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
-import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-training-and-qualifications-tab',
@@ -29,15 +29,22 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
 
   constructor(
     private workerService: WorkerService,
+    private route: ActivatedRoute,
 
     protected establishmentService: EstablishmentService,
-    protected trainingCategoryService: TrainingCategoryService,
-    protected trainingStatusService: TrainingStatusService
+    protected trainingCategoryService: TrainingCategoryService
   ) {}
 
   ngOnInit() {
     this.establishmentService.isMandatoryTrainingView.next(false);
 
+    this.route.queryParams
+      .subscribe(params => {
+        console.log(params);
+        if(params.view === "categories") {
+          this.viewTrainingByCategory = true
+        }
+      })
     this.getAllWorkers();
     this.getAllTrainingByCategory();
   }
@@ -88,6 +95,7 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
     this.totalExpiredTraining = 0;
     this.totalExpiringTraining = 0;
   }
+  
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }

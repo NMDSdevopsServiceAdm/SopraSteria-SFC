@@ -52,17 +52,12 @@ export class AddEditTrainingComponent implements OnInit {
         this.previousUrl = route;
       }
     });
-    const urlSplit = this.previousUrl.split('#')
-    if(urlSplit.length > 1) {
-      this.backService.setBackLink({
-        url: [urlSplit[0]],
-        fragment: urlSplit[1]
-      });
-    } else {
-      this.backService.setBackLink({
-        url: [urlSplit[0]],
-      });
-    }
+    const parsed = this.router.parseUrl(this.previousUrl);
+    this.backService.setBackLink({
+      url: [parsed.root.children.primary.toString()],
+      fragment: parsed.fragment,
+      queryParams: parsed.queryParams
+    });
 
     this.form = this.formBuilder.group({
       title: [
