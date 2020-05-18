@@ -10,11 +10,7 @@ import orderBy from 'lodash/orderBy';
 })
 export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   @Input() workplace: Establishment;
-
   @Input() trainingCategories: Array<any>;
-
-  @Input() showViewByToggle = false;
-
   @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
   public workerDetails = [];

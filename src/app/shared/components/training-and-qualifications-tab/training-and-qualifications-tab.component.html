@@ -25,7 +25,6 @@
     *ngIf="viewTrainingByCategory && trainingCategories.length > 0"
     [workplace]="workplace"
     [trainingCategories]="trainingCategories"
-    [showViewByToggle]="trainingCategories.length > 0"
     (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
   ></app-training-and-qualifications-categories>
 
