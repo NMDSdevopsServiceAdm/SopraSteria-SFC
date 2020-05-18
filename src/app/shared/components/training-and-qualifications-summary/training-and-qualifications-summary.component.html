@@ -5,7 +5,7 @@
       <a href="#" (click)="this.viewTrainingByCategory.emit(true); false" class="govuk-!-margin-right-6">View by training category</a>
     </div>
     <div>
-      <label class="govuk-label" for="sort">
+      <label class="govuk-label" for="sortBy">
         Sort by
       </label>
       <select
@@ -13,7 +13,7 @@
         id="sortBy"
         name="sortBy"
         [value]="sortByDefault"
-        (change)="sortByColumn($event.target.value)"
+        (change)="orderWorkers($event.target.value)"
       >
         <option
           *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
