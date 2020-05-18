@@ -106,6 +106,40 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(container.getAllByText(trainingCategory.training[0].worker.NameOrIdValue));
   });
 
+  it('should show an Update link for expired and expiring soon workers when clicking the More link', async () => {
+    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
+      can: sinon.stub().returns(true),
+    });
+
+    const trainingCategory = trainingCategoryBuilder({
+      overrides: {
+        training: [
+          trainingBuilder({
+            overrides: {
+              expires: moment().subtract(1, 'month').toISOString(),
+            },
+          }),
+        ],
+      },
+    });
+
+    const { click, getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        {provide: PermissionsService, useValue: mockPermissionsService}
+      ],
+      componentProperties: {
+        workplace: establishmentBuilder() as Establishment,
+        trainingCategories: [trainingCategory],
+      },
+    });
+
+    const container = within(getByTestId('training-category-table'));
+
+    click(container.getAllByTestId('more-link')[0]);
+    expect(container.getAllByText('Update'));
+  });
+
   it('should list the Categories by Status', async () => {
     const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
       can: sinon.stub().returns(true),
