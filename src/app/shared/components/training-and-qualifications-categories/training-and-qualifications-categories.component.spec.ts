@@ -140,6 +140,41 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(container.getAllByText('Update'));
   });
 
+  it('should not display an Update link if you do not have permissions to edit workers', async () => {
+    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
+      can: sinon.stub().returns(false),
+    });
+
+    const trainingCategory = trainingCategoryBuilder({
+      overrides: {
+        training: [
+          trainingBuilder({
+            overrides: {
+              expires: moment().subtract(1, 'month').toISOString(),
+            },
+          }),
+        ],
+      },
+    });
+
+    const { click, getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        {provide: PermissionsService, useValue: mockPermissionsService}
+      ],
+      componentProperties: {
+        workplace: establishmentBuilder() as Establishment,
+        trainingCategories: [trainingCategory],
+      },
+    });
+
+    const container = within(getByTestId('training-category-table'));
+
+    click(container.getAllByTestId('more-link')[0]);
+    expect(container.queryAllByText('Update').length).toBe(0);
+  });
+
+
   it('should list the Categories by Status', async () => {
     const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
       can: sinon.stub().returns(true),

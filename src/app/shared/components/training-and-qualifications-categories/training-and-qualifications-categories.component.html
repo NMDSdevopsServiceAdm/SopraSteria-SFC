@@ -167,8 +167,9 @@
                       </div>
                     </td>
                     <td class="govuk-table__cell">
-                      <div *ngIf="trainingStatus(training) == trainingStatusService.EXPIRED
-                        || trainingStatus(training) == trainingStatusService.EXPIRING">
+                      <div *ngIf="(trainingStatus(training) == trainingStatusService.EXPIRED
+                        || trainingStatus(training) == trainingStatusService.EXPIRING)
+                        && canEditWorker">
                         <a (click)="updateTrainingRecord($event, training)" href="#">Update</a>
                       </div>
                     </td>

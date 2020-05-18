@@ -95,7 +95,6 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
 
   public updateTrainingRecord(event, training) {
     event.preventDefault();
-    console.log(this.router.url);
     this.workerService.getRoute$.next('/dashboard?view=categories#training-and-qualifications');
 
     this.router.navigate([

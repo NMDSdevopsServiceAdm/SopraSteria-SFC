@@ -41,7 +41,6 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
 
     this.route.queryParams
       .subscribe(params => {
-        console.log(params);
         if(params.view === "categories") {
           this.viewTrainingByCategory = true
         }
@@ -100,7 +99,7 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
     this.totalExpiredTraining = 0;
     this.totalExpiringTraining = 0;
   }
-  
+
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
