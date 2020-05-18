@@ -5,6 +5,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -51,7 +52,9 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
 
   getAllTrainingByCategory() {
     this.subscriptions.add(
-      this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id).subscribe((trainingCategories) => {
+      this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id)
+        .pipe(take(1))
+        .subscribe((trainingCategories) => {
         this.trainingCategories = trainingCategories;
       }),
     );
