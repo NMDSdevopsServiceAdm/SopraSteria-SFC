@@ -4,10 +4,15 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const rfr = require('rfr');
 
+const dbmodels = rfr('server/models');
+sinon.stub(dbmodels.status, 'ready').value(false);
+
 const bulkUpload = rfr('server/routes/establishments/bulkUpload');
 const EstablishmentCsvValidator = rfr('server/models/BulkImport/csv/establishments');
+const WorkerCsvValidator = rfr('server/models/BulkImport/csv/workers');
 const { Establishment } = rfr('server/models/classes/establishment');
 const buildEstablishmentCSV = rfr('server/test/factories/establishment/csv');
+const buildWorkerCSV = rfr('server/test/factories/worker/csv');
 
 describe('/server/routes/establishment/bulkUpload.js', () => {
   describe('checkDuplicateLocations', () => {
@@ -49,6 +54,188 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         name: 'Workplace 2',
       });
     });
+  });
+
+  describe('checkDuplicateWorkerID()', () => {
+    it('errors when CHGUNIQUEWRKID is not unique', async () => {
+      const csvWorkerSchemaErrors = [];
+      const allWorkersByKey = {};
+      const myAPIWorkers = [];
+      const myWorkers = [
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 1'
+          },
+        }),
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 2',
+            CHGUNIQUEWRKID: 'Worker 1'
+          },
+        }),
+      ].map((currentLine, currentLineNumber) => {
+        const worker = new WorkerCsvValidator.Worker(
+          currentLine,
+          currentLineNumber,
+          []
+        );
+
+        worker.validate();
+        
+        return worker;
+      });
+
+      const allKeys = myWorkers.map(worker => (worker.local + worker.uniqueWorker).replace(/\s/g, ''));
+
+
+      myWorkers.forEach(thisWorker => {
+        // uniquness for a worker is across both the establishment and the worker
+        const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+        const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
+
+        if (bulkUpload.checkDuplicateWorkerID(
+          myWorkers[1], allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors
+        )) {
+          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+
+          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+          if (changeKeyNoWhitespace) {
+            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+          }
+        }
+      });
+
+      expect(csvWorkerSchemaErrors.length).equals(1);
+      expect(csvWorkerSchemaErrors[0]).to.eql({
+        origin: 'Workers',
+        lineNumber: 1,
+        errCode: 998,
+        errType: 'DUPLICATE_ERROR',
+        error: 'CHGUNIQUEWORKERID Worker 1 is not unique',
+        name: 'foo',
+        source: 'Worker 2',
+        worker: 'Worker 2'
+      });
+    });
+
+    it('errors when UNIQUEWORKERID is not unique', async () => {
+      const csvWorkerSchemaErrors = [];
+      const allWorkersByKey = {};
+      const myAPIWorkers = [];
+      const myWorkers = [
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 1'
+          },
+        }),
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 1'
+          },
+        }),
+      ].map((currentLine, currentLineNumber) => {
+        return new WorkerCsvValidator.Worker(
+          currentLine,
+          currentLineNumber,
+          []
+        );
+      });
+
+      const allKeys = [];
+      myWorkers.map(worker => {
+        worker.validate();
+        const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+        allKeys.push(id);
+      });
+
+      myWorkers.forEach(thisWorker => {
+        // uniquness for a worker is across both the establishment and the worker
+        const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+        const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
+
+        if (bulkUpload.checkDuplicateWorkerID(
+          thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors
+        )) {
+          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+
+          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+          if (changeKeyNoWhitespace) {
+            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+          }
+        }
+      });
+      ;
+
+      expect(csvWorkerSchemaErrors.length).equals(1);
+      expect(csvWorkerSchemaErrors[0]).to.eql({
+        origin: 'Workers',
+        lineNumber: 1,
+        errCode: 998,
+        errType: 'DUPLICATE_ERROR',
+        error: 'UNIQUEWORKERID Worker 1 is not unique',
+        name: 'foo',
+        source: 'Worker 1',
+        worker: 'Worker 1'
+      });
+    });
+
+    it('passes when CHGUNIQUEWRKID is unique', async () => {
+      const csvWorkerSchemaErrors = [];
+      const allWorkersByKey = {};
+      const myAPIWorkers = [];
+      const myWorkers = [
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 1'
+          },
+        }),
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 2',
+            CHGUNIQUEWRKID: 'Worker 3'
+          },
+        }),
+      ].map((currentLine, currentLineNumber) => {
+        return new WorkerCsvValidator.Worker(
+          currentLine,
+          currentLineNumber,
+          []
+        );
+      });
+
+      const allKeys = [];
+      myWorkers.map(worker => {
+        worker.validate();
+        const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+        allKeys.push(id);
+      });
+
+      myWorkers.forEach(thisWorker => {
+        // uniquness for a worker is across both the establishment and the worker
+        const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+        const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
+
+        if (bulkUpload.checkDuplicateWorkerID(
+          myWorkers[1], allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors
+        )) {
+          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+
+          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+          if (changeKeyNoWhitespace) {
+            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+          }
+        }
+      });
+
+      expect(csvWorkerSchemaErrors.length).equals(0);
+    });
+
   });
 
   describe('validateEstablishmentCsv()', () => {
