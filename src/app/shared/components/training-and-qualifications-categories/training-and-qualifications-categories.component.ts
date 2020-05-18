@@ -3,6 +3,8 @@ import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import orderBy from 'lodash/orderBy';
+import { Router } from '@angular/router';
+import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-training-and-qualifications-categories',
@@ -10,11 +12,7 @@ import orderBy from 'lodash/orderBy';
 })
 export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   @Input() workplace: Establishment;
-
   @Input() trainingCategories: Array<any>;
-
-  @Input() showViewByToggle = false;
-
   @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
   public workerDetails = [];
@@ -25,8 +23,9 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
 
   constructor(
     private permissionsService: PermissionsService,
-
-    protected trainingStatusService: TrainingStatusService,
+    private trainingStatusService: TrainingStatusService,
+    private workerService: WorkerService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -86,5 +85,21 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
         return total + num;
       }) === 0
     );
+  }
+
+  public trainingStatus = (training) => this.trainingStatusService.trainingStatusForRecord(training)
+
+  public updateTrainingRecord(event, training) {
+    event.preventDefault();
+    this.workerService.getRoute$.next('/dashboard?view=categories#training-and-qualifications');
+
+    this.router.navigate([
+      '/workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      training.worker.uid,
+      'training',
+      training.uid
+    ])
   }
 }
