@@ -208,10 +208,8 @@ export enum SortStaffOptions {
 }
 
 export enum SortTrainingAndQualsOptions {
-  '0_asc' = 'Staff name ascending',
-  '0_dsc' = 'Staff name descending',
-  '1_asc' = 'Records ascending',
-  '1_dsc' = 'Records descending',
-  '2_asc' = 'Status ascending',
-  '2_dsc' = 'Status descending',
+  'expired' = 'Expired',
+  'expires_soon' = 'Expires soon',
+  'missing' = 'Missing',
 }
+

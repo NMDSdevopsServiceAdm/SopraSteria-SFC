@@ -3,6 +3,8 @@ import { Establishment, SortTrainingAndQualsOptions } from '@core/model/establis
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import orderBy from 'lodash/orderBy';
+import { TrainingStatusService } from '@core/services/trainingStatus.service';
+import { int } from 'aws-sdk/clients/datapipeline';
 
 @Component({
   selector: 'app-training-and-qualifications-summary',
@@ -21,7 +23,10 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public workersData: Array<Worker>;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
-  constructor(private permissionsService: PermissionsService) {}
+  constructor(
+    private permissionsService: PermissionsService,
+    protected trainingStatusService: TrainingStatusService
+  ) {}
   public getWorkerTrainingAndQualificationsPath(worker: Worker) {
     const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
     return this.wdfView ? [...path, ...['wdf-summary']] : path;
@@ -29,16 +34,41 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   ngOnInit() {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptions;
-    this.sortByDefault = '2_dsc'; //status column
-    //sorting by default on Status column (expiredTrainingCount)
-    this.sortByColumn(this.sortByDefault);
+    this.sortByDefault = 'expired';
+    this.sortByStatus(this.sortByDefault);
+  }
+
+  public orderTrainingCategories(status) {
+    let sortBy: number;
+    switch (status) {
+      case 'missing': {
+        sortBy = this.trainingStatusService.MISSING;
+        break;
+      }
+      case 'expired': {
+        sortBy = this.trainingStatusService.EXPIRED;
+        break;
+      }
+      case 'expiring_soon': {
+        sortBy = this.trainingStatusService.EXPIRING
+        break;
+      }
+    }
+    this.workers = orderBy(
+      this.trainingCategories,
+      [
+        (tc) => this.trainingStatusService.trainingStatusCount(tc.training, this.trainingStatusService.EXPIRED),
+        (tc) => tc.category,
+      ],
+      ['desc', 'desc', 'desc', 'asc'],
+    );
   }
   /**
    * Function used to sort traingin list based on selected column
    * @param {string} selected column key
    * @return {void}
    */
-  public sortByColumn(selectedColumn: any) {
+  public sortByStatus(selectedColumn: any) {
     switch (selectedColumn) {
       case '0_asc': {
         this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);
