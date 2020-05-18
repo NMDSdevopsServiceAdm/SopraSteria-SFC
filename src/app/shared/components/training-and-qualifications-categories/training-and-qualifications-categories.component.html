@@ -1,12 +1,12 @@
 <div class="govuk-form-group govuk-!-margin-bottom-6" *ngIf="showViewByToggle">
-  <div class="govuk-grid-row">
-    <div *ngIf="showViewByToggle" class="govuk-grid-column-one-half">
+  <div class="govuk-grid-row govuk__flex govuk__align-items-center">
+    <div *ngIf="showViewByToggle" class="  govuk-grid-column-one-half">
       <a href="#" (click)="this.viewTrainingByCategory.emit(false);false" class="govuk-!-margin-right-6"
       >View by staff name</a
       >
       <span>View by training category</span>
     </div>
-    <div class="govuk-grid-column-one-half govuk-util__float-right  ">
+    <div class="govuk-grid-column-one-half   ">
       <div class="govuk__flex govuk__justify-content-end">
         <div class="govuk-!-margin-right-5">
           <label class="govuk-label" for="filterBy">
