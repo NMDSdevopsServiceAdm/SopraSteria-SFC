@@ -6,6 +6,7 @@ import { TrainingCategoryService } from '@core/services/training-category.servic
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-training-and-qualifications-tab',
@@ -44,7 +45,9 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
 
   getAllTrainingByCategory() {
     this.subscriptions.add(
-      this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id).subscribe((trainingCategories) => {
+      this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id)
+        .pipe(take(1))
+        .subscribe((trainingCategories) => {
         this.trainingCategories = trainingCategories;
       }),
     );
