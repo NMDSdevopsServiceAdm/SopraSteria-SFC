@@ -12,11 +12,7 @@ import { WorkerService } from '@core/services/worker.service';
 })
 export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   @Input() workplace: Establishment;
-
   @Input() trainingCategories: Array<any>;
-
-  @Input() showViewByToggle = false;
-
   @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
   public workerDetails = [];
