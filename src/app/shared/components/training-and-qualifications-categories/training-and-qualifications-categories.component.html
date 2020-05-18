@@ -102,11 +102,12 @@
           <div class="govuk-!-margin-2">
             <table class="govuk-table">
               <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th class="govuk-table__header govuk-!-width-one-third" scope="col">Worker ID</th>
-                <th class="govuk-table__header govuk-!-width-one-third" scope="col">Job role</th>
-                <th class="govuk-table__header govuk-!-width-one-third" scope="col">Status</th>
-              </tr>
+                <tr class="govuk-table__row">
+                  <th class="govuk-table__header govuk-!-width-one-third" scope="col">Worker ID</th>
+                  <th class="govuk-table__header govuk-!-width-one-third" scope="col">Job role</th>
+                  <th class="govuk-table__header govuk-!-width-one-third" scope="col">Status</th>
+                  <th class="govuk-table__header govuk-!-width-one-third" scope="col"></th>
+                </tr>
               </thead>
               <tbody class="govuk-table__body">
               <ng-container *ngFor="let training of orderByTrainingStatusAndName(trainingCategory.training)">
@@ -161,13 +162,19 @@
                       Expiring soon
                     </div>
 
-                    <div
-                      *ngIf="trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.ACTIVE">
-                      Up-to-date
-                    </div>
-                  </td>
-                </tr>
-              </ng-container>
+                      <div *ngIf="trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.ACTIVE">
+                        Up-to-date
+                      </div>
+                    </td>
+                    <td class="govuk-table__cell">
+                      <div *ngIf="(trainingStatus(training) == trainingStatusService.EXPIRED
+                        || trainingStatus(training) == trainingStatusService.EXPIRING)
+                        && canEditWorker">
+                        <a (click)="updateTrainingRecord($event, training)" href="#">Update</a>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
               </tbody>
             </table>
           </div>
