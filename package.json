@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "npm run build && node --max-old-space-size=4096 server.js",
+    "start": "node --max-old-space-size=4096 server.js",
     "dev": "npm-run-all -p -l build:watch api:proxy",
     "build": "ng build  --extract-css",
     "build:clean": "rimraf dist",
@@ -114,6 +114,7 @@
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "mocha": "^6.2.2",
+    "node-mocks-http": "^1.8.1",
     "nodemon": "^1.18.9",
     "npm": "^6.11.1",
     "npm-run-all": "^4.1.5",

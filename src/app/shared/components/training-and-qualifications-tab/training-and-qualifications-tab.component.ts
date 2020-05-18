@@ -2,8 +2,11 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
+import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-training-and-qualifications-tab',
@@ -14,16 +17,43 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
 
   private subscriptions: Subscription = new Subscription();
   public workers: Worker[];
+
+  public trainingCategories: [];
   public totalRecords;
   public totalExpiredTraining;
   public totalExpiringTraining;
   public missingMandatoryTraining;
   public totalStaff: number;
   public isShowAllTrainings: boolean;
-  constructor(private workerService: WorkerService, protected establishmentService: EstablishmentService) {}
+
+  public viewTrainingByCategory = false;
+
+  constructor(
+    private workerService: WorkerService,
+
+    protected establishmentService: EstablishmentService,
+    protected trainingCategoryService: TrainingCategoryService,
+    protected trainingStatusService: TrainingStatusService
+  ) {}
 
   ngOnInit() {
     this.establishmentService.isMandatoryTrainingView.next(false);
+
+    this.getAllWorkers();
+    this.getAllTrainingByCategory();
+  }
+
+  getAllTrainingByCategory() {
+    this.subscriptions.add(
+      this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id)
+        .pipe(take(1))
+        .subscribe((trainingCategories) => {
+        this.trainingCategories = trainingCategories;
+      }),
+    );
+  }
+
+  getAllWorkers() {
     this.subscriptions.add(
       this.workerService.getAllWorkers(this.workplace.uid).subscribe(
         workers => {
@@ -45,6 +75,10 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
         },
       ),
     );
+  }
+
+  public handleViewTrainingByCategory(visible: boolean) {
+    this.viewTrainingByCategory = visible;
   }
 
   public showAllTrainings() {

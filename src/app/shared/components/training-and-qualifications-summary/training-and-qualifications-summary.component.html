@@ -1,21 +1,29 @@
-<div class="govuk-form-group">
-  <label class="govuk-label" for="sort">
-    Sort by
-  </label>
-  <select
-    class="govuk-select"
-    id="sortBy"
-    name="sortBy"
-    [value]="sortByDefault"
-    (change)="sortByColumn($event.target.value)"
-  >
-    <option
-      *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
-      value="{{ sortTrainingAndQualsOption.key }}"
-    >
-      {{ sortTrainingAndQualsOption.value }}
-    </option>
-  </select>
+<div class="govuk-form-group govuk-!-margin-bottom-6">
+  <div class="govuk__flex govuk__justify-content-space-between">
+    <div *ngIf="showViewByToggle">
+      <span class="govuk-!-margin-right-6">View by staff name</span>
+      <a href="#" (click)="this.viewTrainingByCategory.emit(true); false" class="govuk-!-margin-right-6">View by training category</a>
+    </div>
+    <div>
+      <label class="govuk-label" for="sort">
+        Sort by
+      </label>
+      <select
+        class="govuk-select"
+        id="sortBy"
+        name="sortBy"
+        [value]="sortByDefault"
+        (change)="sortByColumn($event.target.value)"
+      >
+        <option
+          *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
+          value="{{ sortTrainingAndQualsOption.key }}"
+        >
+          {{ sortTrainingAndQualsOption.value }}
+        </option>
+      </select>
+    </div>
+  </div>
 </div>
 <table class="govuk-table">
   <thead class="govuk-table__head">
