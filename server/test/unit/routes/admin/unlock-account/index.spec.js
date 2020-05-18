@@ -17,15 +17,21 @@ const user = {
   }
 };
 
-sinon.stub(models.login, 'findOne').callsFake(async (args) => {
-  if (args.where.username=== user.username) {
-    return user;
-  } else {
-    return null;
-  }
-});
-
 describe('unlock-account route', () => {
+  before(() => {
+    sinon.stub(models.login, 'findOne').callsFake(async (args) => {
+      if (args.where.username=== user.username) {
+        return user;
+      } else {
+        return null;
+      }
+    });
+  });
+
+  after(() => {
+    sinon.restore();
+  });
+
   describe('unlockAccount()', () => {
     it('should return with an unlocked account status', async() => {
       const updateStatus = (status) => {

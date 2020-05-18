@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Establishment, SortTrainingAndQualsOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { orderBy } from 'lodash';
+import orderBy from 'lodash/orderBy';
 
 @Component({
   selector: 'app-training-and-qualifications-summary',
@@ -12,6 +12,11 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
   @Input() wdfView = false;
+
+  @Input() showViewByToggle = false;
+
+  @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
+
   public canViewWorker: boolean;
   public workersData: Array<Worker>;
   public sortTrainingAndQualsOptions;
@@ -36,19 +41,19 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public sortByColumn(selectedColumn: any) {
     switch (selectedColumn) {
       case '0_asc': {
-        this.workers = orderBy(this.workers, [worker => worker.nameOrId.toLowerCase()], ['asc']);
+        this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);
         break;
       }
       case '0_dsc': {
-        this.workers = orderBy(this.workers, [worker => worker.nameOrId.toLowerCase()], ['desc']);
+        this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['desc']);
         break;
       }
       case '1_asc': {
-        this.workers = orderBy(this.workers, [worker => worker.trainingCount + worker.qualificationCount], ['asc']);
+        this.workers = orderBy(this.workers, [(worker) => worker.trainingCount + worker.qualificationCount], ['asc']);
         break;
       }
       case '1_dsc': {
-        this.workers = orderBy(this.workers, [worker => worker.trainingCount + worker.qualificationCount], ['desc']);
+        this.workers = orderBy(this.workers, [(worker) => worker.trainingCount + worker.qualificationCount], ['desc']);
         break;
       }
       case '2_asc': {

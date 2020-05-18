@@ -49,7 +49,7 @@ describe('Admin/Approval', () => {
   describe('/admin/approval', () => {
     it('should return a confirmation message and status 200 when a new user is approved', async () => {
       // Arrange
-      const approve = true; 
+      const approve = true;
       if (adminLogin.headers.authorization) {
         const approval = await apiEndpoint
 
@@ -68,10 +68,10 @@ describe('Admin/Approval', () => {
         expect(approval.body.message).to.equal('User has been set as active');
       }
     });
-    
+
     it('should return a confirmation message and status 200 when a new user is removed because the user is rejected', async () => {
       // Arrange
-      const approve = false; 
+      const approve = false;
       if (adminLogin.headers.authorization) {
         const approval = await apiEndpoint
 

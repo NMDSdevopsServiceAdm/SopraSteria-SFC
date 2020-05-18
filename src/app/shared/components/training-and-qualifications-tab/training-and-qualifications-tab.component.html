@@ -21,10 +21,19 @@
     [totalMissingMandatoryTraining]="missingMandatoryTraining"
   ></app-training-info-panel>
 
+  <app-training-and-qualifications-categories
+    *ngIf="viewTrainingByCategory && trainingCategories.length > 0"
+    [workplace]="workplace"
+    [trainingCategories]="trainingCategories"
+    (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
+  ></app-training-and-qualifications-categories>
+
   <app-training-and-qualifications-summary
-    *ngIf="workers"
+    *ngIf="workers && viewTrainingByCategory === false"
     [workplace]="workplace"
     [workers]="workers"
+    [showViewByToggle]="trainingCategories.length > 0"
+    (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
   ></app-training-and-qualifications-summary>
 </ng-container>
 <ng-template #noStaffRecords>
