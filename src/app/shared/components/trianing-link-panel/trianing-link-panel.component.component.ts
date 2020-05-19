@@ -47,14 +47,9 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
               workers => {
                 workers.forEach((worker: Worker) => {
                   if (worker.trainingCount > 0) {
-                    this.subscriptions.add(
-                      this.workerService.getTrainingRecords(data.uid, worker.uid)
-                        .pipe(take(1))
-                        .subscribe((record) => {
-                          if (this.lastUpdated === undefined || this.lastUpdated < record.lastUpdated) {
-                            this.lastUpdated = record.lastUpdated;
-                          }
-                        }));
+                    if (this.lastUpdated === undefined || this.lastUpdated < worker.trainingLastUpdated) {
+                      this.lastUpdated = worker.trainingLastUpdated;
+                    }
                   }
                 });
               }
