@@ -43,14 +43,7 @@ describe('TrainingLinkPanelComponent', () => {
       ]
     });
 
-    const injector = getTestBed();
-    const establishmentService = injector.get(EstablishmentService) as EstablishmentService;
-    const router = injector.get(Router) as Router;
-
-    return {
-      component,
-      establishmentService
-    };
+    return component;
   }
 
   it('should render a TrainingLinkPanelComponent', async () => {
@@ -59,7 +52,7 @@ describe('TrainingLinkPanelComponent', () => {
   });
 
   it('should show the latest date of any training record (1/1/20)', async () => {
-    const { component } = await setup();
+    const component = await setup();
 
     component.getByText('Updated 1 January 2020');
   });
