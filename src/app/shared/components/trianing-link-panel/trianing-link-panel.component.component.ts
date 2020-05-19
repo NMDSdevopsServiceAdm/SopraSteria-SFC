@@ -5,6 +5,10 @@ import { HttpResponse } from '@angular/common/http';
 import { ReportService } from '@core/services/report.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Router } from '@angular/router';
+import { Worker } from '@core/model/worker.model';
+import { WorkerService } from '@core/services/worker.service';
+import { take } from 'rxjs/operators';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-trianing-link-panel',
@@ -16,9 +20,14 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
   public url: string;
   public fromStaffRecord: boolean;
 
+  public lastUpdated : string;
+
+  public now = moment.now();
+
   constructor(
     private reportService: ReportService,
     private establishmentService: EstablishmentService,
+    private workerService: WorkerService,
     private router: Router,
   ) {}
 
@@ -28,10 +37,29 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
       this.fromStaffRecord = true;
       this.establishmentService.isMandatoryTrainingView.next(true);
     }
+
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(data => {
         if (data && data.id) {
           this.establishmentUid = data.uid;
+          this.subscriptions.add(
+            this.workerService.getAllWorkers(data.uid).subscribe(
+              workers => {
+                workers.forEach((worker: Worker) => {
+                  if (worker.trainingCount > 0) {
+                    this.subscriptions.add(
+                      this.workerService.getTrainingRecords(data.uid, worker.uid)
+                        .pipe(take(1))
+                        .subscribe((record) => {
+                          if (this.lastUpdated === undefined || this.lastUpdated < record.lastUpdated) {
+                            this.lastUpdated = record.lastUpdated;
+                          }
+                        }));
+                  }
+                });
+              }
+            ),
+          )
         }
       }),
     );
