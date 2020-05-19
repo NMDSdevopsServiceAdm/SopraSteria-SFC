@@ -26,6 +26,8 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   constructor(
     private permissionsService: PermissionsService,
     protected trainingStatusService: TrainingStatusService,
+    private workerService: WorkerService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -107,6 +109,6 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
       training.worker.uid,
       'training',
       training.uid
-    ])
+    ]);
   }
 }
