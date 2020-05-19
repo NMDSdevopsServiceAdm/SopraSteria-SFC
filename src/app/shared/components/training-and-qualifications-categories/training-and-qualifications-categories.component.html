@@ -37,7 +37,7 @@
   <tbody class="govuk-table__body">
   <ng-container *ngFor="let trainingCategory of trainingCategories">
     <ng-container *ngIf="filterValue === 'mandatory' ? trainingCategory.isMandatory : true;">
-      <tr class="govuk-table__row">
+      <tr class="govuk-table__row govuk-util__vertical-align-top">
         <td class="govuk-table__cell govuk-!-font-weight-regular">
           {{ trainingCategory.category }}
         </td>
@@ -111,7 +111,7 @@
               </thead>
               <tbody class="govuk-table__body">
               <ng-container *ngFor="let training of orderByTrainingStatusAndName(trainingCategory.training)">
-                <tr class="govuk-table__row">
+                <tr class="govuk-table__row govuk-util__vertical-align-top">
                   <td class="govuk-table__cell govuk-!-font-weight-regular">
                     <a
                       *ngIf="canEditWorker"
