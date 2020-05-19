@@ -6,6 +6,7 @@ import { render, RenderResult, within } from '@testing-library/angular';
 import * as moment from 'moment';
 
 import { TrainingAndQualificationsCategoriesComponent } from './training-and-qualifications-categories.component';
+import { By } from '@angular/platform-browser';
 
 const sinon = require('sinon');
 const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot');
@@ -175,7 +176,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
   });
 
 
-  it('should list the Categories by Status', async () => {
+  it('should list by Expired as default', async () => {
     const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
       can: sinon.stub().returns(true),
     });
@@ -183,8 +184,9 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     const workplace = establishmentBuilder() as Establishment;
 
     const trainingCategories = [
-      trainingCategoryBuilder({
+      trainingCategoryBuilder({ // expired
         overrides: {
+          category: 'B Category Name',
           training: [
             trainingBuilder({
               overrides: {
@@ -194,8 +196,9 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           ],
         },
       }),
-      trainingCategoryBuilder({
+      trainingCategoryBuilder({ // expiring
         overrides: {
+          category: 'A Category Name',
           training: [
             trainingBuilder({
               overrides: {
@@ -205,8 +208,9 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           ],
         },
       }),
-      trainingCategoryBuilder({
+      trainingCategoryBuilder({  // up to date
         overrides: {
+          category: 'C Category Name',
           training: [
             trainingBuilder({
               overrides: {
@@ -216,8 +220,9 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           ],
         },
       }),
-      trainingCategoryBuilder({
+      trainingCategoryBuilder({  // Missing
         overrides: {
+          category: 'D Category Name',
           training: [missingTrainingBuilder()],
         },
       }),
@@ -240,8 +245,94 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     expect(rows.length).toBe(4);
     expect(rows[0].innerHTML).toContain('1 Expired');
-    expect(rows[1].innerHTML).toContain('1 Missing');
-    expect(rows[2].innerHTML).toContain('1 Expiring soon');
-    expect(rows[3].innerHTML).toContain('Up-to-date');
+    expect(rows[1].innerHTML).toContain('A Category Name');
+    expect(rows[2].innerHTML).toContain('C Category Name');
+    expect(rows[3].innerHTML).toContain('D Category Name');
+  });
+  it('should change list depending on sort', async () => {
+    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
+      can: sinon.stub().returns(true),
+    });
+
+    const workplace = establishmentBuilder() as Establishment;
+
+    const trainingCategories = [
+      trainingCategoryBuilder({ // expired
+        overrides: {
+          category: 'B Category Name',
+          training: [
+            trainingBuilder({
+              overrides: {
+                expires: moment().subtract(1, 'month').toISOString(),
+              },
+            }),
+          ],
+        },
+      }),
+      trainingCategoryBuilder({ // expiring
+        overrides: {
+          category: 'A Category Name',
+          training: [
+            trainingBuilder({
+              overrides: {
+                expires: moment().add(1, 'month').toISOString(),
+              },
+            }),
+          ],
+        },
+      }),
+      trainingCategoryBuilder({  // up to date
+        overrides: {
+          category: 'C Category Name',
+          training: [
+            trainingBuilder({
+              overrides: {
+                expires: moment().add(1, 'year').toISOString(),
+              },
+            }),
+          ],
+        },
+      }),
+      trainingCategoryBuilder({  // Missing
+        overrides: {
+          category: 'D Category Name',
+          training: [missingTrainingBuilder()],
+        },
+      }),
+    ];
+
+
+    const { fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+      ],
+      componentProperties: {
+        workplace,
+        trainingCategories,
+      },
+    });
+
+    fixture.detectChanges();
+    const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortBy')).nativeElement;
+    select.value = select.options[1].value;  // Expiring Soon
+    select.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    let rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
+
+    expect(rows.length).toBe(4);
+    expect(rows[0].innerHTML).toContain('A Category Name');
+    expect(rows[1].innerHTML).toContain('B Category Name');
+    expect(rows[2].innerHTML).toContain('C Category Name');
+    expect(rows[3].innerHTML).toContain('D Category Name');
+
+    select.value = select.options[2].value;  //Missing
+    select.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
+    expect(rows[0].innerHTML).toContain('D Category Name');
+    expect(rows[1].innerHTML).toContain('A Category Name');
+    expect(rows[2].innerHTML).toContain('B Category Name');
+    expect(rows[3].innerHTML).toContain('C Category Name');
   });
 });

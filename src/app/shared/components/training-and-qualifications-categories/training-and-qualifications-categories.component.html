@@ -1,26 +1,49 @@
-
 <div class="govuk-form-group govuk-!-margin-bottom-6">
   <div class="govuk__flex govuk__justify-content-space-between">
-    <div class="govuk-list govuk-list--inline">
-      <a href="#" (click)="this.viewTrainingByCategory.emit(false);false" class="govuk-!-margin-right-6"
+    <div class="govuk__flex govuk__align-items-flex-end">
+      <a class="govuk-!-margin-right-6 govuk-list govuk-list--inline govuk-!-margin-bottom-1" href="#"
+         (click)="this.viewTrainingByCategory.emit(false);false"
       >View by staff name</a
       >
-      <span>View by training category</span>
+      <span class="govuk-list govuk-list--inline govuk-!-margin-bottom-1">View by training category</span>
     </div>
-    <div>
-      <label class="govuk-label" for="filterBy">
-        Filter by
-      </label>
-      <select
-        class="govuk-select"
-        id="filterBy"
-        name="filterBy"
-        [value]="filterByDefault"
-        (change)="toggleFilter($event.target.value)"
-      >
-        <option value="all">All training</option>
-        <option value="mandatory">Mandatory training</option>
-      </select>
+    <div class="govuk-grid-column-one-half">
+      <div class="govuk__flex govuk__justify-content-end">
+        <div class="govuk-!-margin-right-5 govuk-list govuk-list--inline govuk-!-margin-bottom-0">
+          <label class="govuk-label " for="filterBy">
+            Filter by
+          </label>
+          <select
+            class="govuk-select"
+            id="filterBy"
+            name="filterBy"
+            [value]="filterByDefault"
+            (change)="toggleFilter($event.target.value)"
+          >
+            <option value="all">All training</option>
+            <option value="mandatory">Mandatory training</option>
+          </select>
+        </div>
+        <div class="govuk-list govuk-list--inline govuk-!-margin-bottom-0">
+          <label class="govuk-label" for="sortBy">
+            Sort by
+          </label>
+          <select
+            class="govuk-select"
+            id="sortBy"
+            name="sortBy"
+            [value]="sortByDefault"
+            (change)="orderTrainingCategories($event.target.value)"
+          >
+            <option
+              *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
+              value="{{ sortTrainingAndQualsOption.key }}"
+            >
+              {{ sortTrainingAndQualsOption.value }}
+            </option>
+          </select>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -37,7 +60,7 @@
   <tbody class="govuk-table__body">
   <ng-container *ngFor="let trainingCategory of trainingCategories">
     <ng-container *ngIf="filterValue === 'mandatory' ? trainingCategory.isMandatory : true;">
-      <tr class="govuk-table__row">
+      <tr class="govuk-table__row govuk-util__vertical-align-top">
         <td class="govuk-table__cell govuk-!-font-weight-regular">
           {{ trainingCategory.category }}
         </td>
@@ -102,16 +125,17 @@
           <div class="govuk-!-margin-2">
             <table class="govuk-table">
               <thead class="govuk-table__head">
-                <tr class="govuk-table__row">
-                  <th class="govuk-table__header govuk-!-width-one-third" scope="col">Worker ID</th>
-                  <th class="govuk-table__header govuk-!-width-one-third" scope="col">Job role</th>
-                  <th class="govuk-table__header govuk-!-width-one-third" scope="col">Status</th>
-                  <th class="govuk-table__header govuk-!-width-one-third" scope="col"></th>
-                </tr>
+              <tr class="govuk-table__row">
+                <th class="govuk-table__header govuk-!-width-one-third" scope="col">Worker ID</th>
+                <th class="govuk-table__header govuk-!-width-one-third" scope="col">Job role</th>
+                <th class="govuk-table__header govuk-!-width-one-third" scope="col">Status</th>
+                <th class="govuk-table__header govuk-!-width-one-third" scope="col"></th>
+              </tr>
               </thead>
               <tbody class="govuk-table__body">
-              <ng-container *ngFor="let training of orderByTrainingStatusAndName(trainingCategory.training)">
-                <tr class="govuk-table__row">
+
+              <ng-container *ngFor="let training of trainingCategory.training">
+                <tr class="govuk-table__row govuk-util__vertical-align-top">
                   <td class="govuk-table__cell govuk-!-font-weight-regular">
                     <a
                       *ngIf="canEditWorker"
@@ -162,19 +186,20 @@
                       Expiring soon
                     </div>
 
-                      <div *ngIf="trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.ACTIVE">
-                        Up-to-date
-                      </div>
-                    </td>
-                    <td class="govuk-table__cell">
-                      <div *ngIf="(trainingStatus(training) == trainingStatusService.EXPIRED
+                    <div
+                      *ngIf="trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.ACTIVE">
+                      Up-to-date
+                    </div>
+                  </td>
+                  <td class="govuk-table__cell">
+                    <div *ngIf="(trainingStatus(training) == trainingStatusService.EXPIRED
                         || trainingStatus(training) == trainingStatusService.EXPIRING)
                         && canEditWorker">
-                        <a (click)="updateTrainingRecord($event, training)" href="#">Update</a>
-                      </div>
-                    </td>
-                  </tr>
-                </ng-container>
+                      <a (click)="updateTrainingRecord($event, training)" href="#">Update</a>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
               </tbody>
             </table>
           </div>
