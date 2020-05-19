@@ -20,7 +20,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
   public url: string;
   public fromStaffRecord: boolean;
 
-  public lastUpdated : string;
+  public lastUpdated: string;
 
   public now = moment.now();
 
@@ -40,7 +40,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(data => {
-        if (data && data.id) {
+        if (data && data.id !== undefined) {
           this.establishmentUid = data.uid;
           this.subscriptions.add(
             this.workerService.getAllWorkers(data.uid).subscribe(
