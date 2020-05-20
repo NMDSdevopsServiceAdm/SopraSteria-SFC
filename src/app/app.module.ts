@@ -54,6 +54,7 @@ import {
   MigratedUserTermsConditionsComponent,
 } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { ParentRequestComponent } from './src/app/features/search/parent-request/parent-request.component';
+import { ParentRequestsComponent } from './src/app/features/search/parent-requests/parent-requests.component';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { ParentRequestComponent } from './src/app/features/search/parent-request
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
     ParentRequestComponent,
+    ParentRequestsComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
