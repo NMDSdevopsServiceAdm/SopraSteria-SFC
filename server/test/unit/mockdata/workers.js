@@ -47,7 +47,7 @@ exports.data = [
     },
     "otherJobs" : {
       "value": "Yes",
-      "otherJobs": [
+      "jobs": [
         {
           "jobId": 1,
           "budi": 34,
