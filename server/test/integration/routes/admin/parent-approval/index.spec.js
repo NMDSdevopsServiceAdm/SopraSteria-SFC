@@ -47,45 +47,48 @@ describe('Admin/Parent Approval', () => {
 
   beforeEach(async() => {});
 
-  describe('/admin/parent-approval', () => {
-    it('should return a confirmation message and status 200 when an org is granted parent status', async () => {
-      // Arrange
-      const approve = true;
-      if (adminLogin.headers.authorization) {
-        const approval = await apiEndpoint
+  describe('/admin/parent-approval',
+    () => {
+      it('should return a confirmation message and status 200 when an org is granted parent status',
+        async () => {
+          // Arrange
+          const approve = true;
+          if (adminLogin.headers.authorization) {
+            const approval = await apiEndpoint
 
-          // Act
-          .post('/admin/parent-approval')
-          .set({ Authorization: adminLogin.headers.authorization })
-          .send({
-            approve: approve,
-          })
+              // Act
+              .post('/admin/parent-approval')
+              .set({ Authorization: adminLogin.headers.authorization })
+              .send({
+                approve: approve,
+              })
 
-          // Assert
-          .expect('Content-Type', /json/)
-          .expect(200);
-        expect(approval.body.message).to.equal(parentApproval.parentApprovalConfirmation);
-      }
+              // Assert
+              .expect('Content-Type', /json/)
+              .expect(200);
+            expect(approval.body.message).to.equal(parentApproval.parentApprovalConfirmation);
+          }
+        });
+
+      it('should return a confirmation message and status 200 when an org is denied parent status',
+        async () => {
+          // Arrange
+          const approve = false;
+          if (adminLogin.headers.authorization) {
+            const approval = await apiEndpoint
+
+              // Act
+              .post('/admin/parent-approval')
+              .set({ Authorization: adminLogin.headers.authorization })
+              .send({
+                approve: approve,
+              })
+
+              // Assert
+              .expect('Content-Type', /json/)
+              .expect(200);
+            expect(approval.body.message).to.equal(parentApproval.parentRejectionConfirmation);
+          }
+        });
     });
-
-    it('should return a confirmation message and status 200 when an org is denied parent status', async () => {
-      // Arrange
-      const approve = false;
-      if (adminLogin.headers.authorization) {
-        const approval = await apiEndpoint
-
-          // Act
-          .post('/admin/parent-approval')
-          .set({ Authorization: adminLogin.headers.authorization })
-          .send({
-            approve: approve,
-          })
-
-          // Assert
-          .expect('Content-Type', /json/)
-          .expect(200);
-        expect(approval.body.message).to.equal(parentApproval.parentRejectionConfirmation);
-      }
-    })
-  })
 });
