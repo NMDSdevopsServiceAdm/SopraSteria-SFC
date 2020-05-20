@@ -53,8 +53,8 @@ import { AppComponent } from './app.component';
 import {
   MigratedUserTermsConditionsComponent,
 } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
-import { ParentRequestComponent } from './src/app/features/search/parent-request/parent-request.component';
-import { ParentRequestsComponent } from './src/app/features/search/parent-requests/parent-requests.component';
+import { ParentRequestComponent } from '.features/search/parent-request/parent-request.component';
+import { ParentRequestsComponent } from '.features/search/parent-requests/parent-requests.component';
 
 @NgModule({
   declarations: [
