@@ -40,7 +40,7 @@
         </li>
       </ul>
 
-      <section class="govuk-tabs__panel has-border" *ngIf="form.type !== 'registrations'">
+      <section class="govuk-tabs__panel has-border" *ngIf="form.type !== 'registrations' && form.type !== 'parent-requests'">
         <form (ngSubmit)="onSubmit()" novalidate id="server-error">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -227,5 +227,6 @@
     </div>
 
     <app-registrations *ngIf="form.type === 'registrations'"></app-registrations>
+    <app-parent-requests *ngIf="form.type === 'parent-requests'"></app-parent-requests>
   </div>
 </div>

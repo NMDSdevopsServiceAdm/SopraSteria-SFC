@@ -11,13 +11,15 @@ const getParentRequests = async (req, res) => {
   return res.status(200).json(
     {
       parentRequests: [ {
-          establishmentId: 'I1234567',
-          userId: 2222,
-          requestDateTime: '2019-08-27 16:04:35.914'
+          establishmentId: 1111,
+          workplaceId: 'I1234567',
+          username: 'Magnificent Maisie',
+          requested: '2019-08-27 16:04:35.914'
         },{
-          establishmentId: 'B9999999',
-          userId: 3333,
-          requestDateTime: '2020-05-20 16:04:35.914'
+          establishmentId: 3333,
+          workplaceId: 'B9999999',
+          username: 'Everso Stupid',
+          requested: '2020-05-20 16:04:35.914'
       }]
     });
 };
