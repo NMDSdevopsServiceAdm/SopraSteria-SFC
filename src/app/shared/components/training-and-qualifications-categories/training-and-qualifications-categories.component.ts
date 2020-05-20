@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment, SortTrainingAndQualsOptionsCat } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
-import orderBy from 'lodash/orderBy';
-import { Router } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
+import orderBy from 'lodash/orderBy';
 
 @Component({
   selector: 'app-training-and-qualifications-categories',
@@ -75,7 +75,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     event.preventDefault();
 
     this.workerDetails[id] = !this.workerDetails[id];
-    this.workerDetailsLabel[id] = this.workerDetailsLabel[id] === 'Less' ? 'More' : 'Less';
+    this.workerDetailsLabel[id] = this.workerDetailsLabel[id] === 'Close' ? 'Open' : 'Close';
   }
 
   public totalTrainingRecords(training) {
