@@ -25,6 +25,8 @@ import { SearchComponent } from './search.component';
     FirstErrorPipe,
     RegistrationComponent,
     RegistrationsComponent,
+    ParentRequestComponent,
+    ParentRequestsComponent,
   ],
   entryComponents: [AdminUnlockConfirmationDialogComponent]
 })

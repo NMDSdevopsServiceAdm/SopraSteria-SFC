@@ -65,8 +65,10 @@ export class SearchComponent implements OnInit {
       this.form.subTitle = 'Establishment Search';
       this.form.title = 'Define your search criteria';
       this.form.buttonText = 'Search Establishments';
-    } else {
+    } else if (this.router.url === '/registrations') {
       this.form.type = 'registrations';
+    } else {
+      this.form.type = 'parent-requests';
     }
   }
 

@@ -29,6 +29,15 @@
             Registrations
           </a>
         </li>
+        <li class="govuk-tabs__list-item">
+          <a
+            class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'parent-requests'"
+            [routerLink]="['/parent-requests']"
+          >
+            Parent Requests
+          </a>
+        </li>
       </ul>
 
       <section class="govuk-tabs__panel has-border" *ngIf="form.type !== 'registrations'">
