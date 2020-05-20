@@ -7,6 +7,21 @@ const Sequelize = require('sequelize');
 const parentApprovalConfirmation = 'You have approved the request for X to become a parent workplace';
 const parentRejectionConfirmation = 'You have rejected the request for X to become a parent workplace';
 
+const getParentRequests = async (req, res) => {
+  return res.status(200).json(
+    {
+      parentRequests: [ {
+          workplaceId: 'I1234567',
+          userId: 2222,
+          requestDateTime: '2019-08-27 16:04:35.914'
+        },{
+          workplaceId: 'B9999999',
+          userId: 3333,
+          requestDateTime: '2020-05-20 16:04:35.914'
+      }]
+    });
+};
+
 const parentApproval = async (req, res) => {
   if (req.body.approve) {
     await _approveParent(req, res);
@@ -34,9 +49,11 @@ const _notifyRejection = async (req, res) => {
 };
 
 router.route('/').post(parentApproval);
+router.route('/').get(getParentRequests);
 
 module.exports = router;
 module.exports.parentApproval = parentApproval;
+module.exports.getParentRequests = getParentRequests;
 
 module.exports.parentApprovalConfirmation = parentApprovalConfirmation;
 module.exports.parentRejectionConfirmation = parentRejectionConfirmation;

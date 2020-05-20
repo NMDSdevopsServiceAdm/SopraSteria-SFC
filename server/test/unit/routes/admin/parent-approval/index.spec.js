@@ -19,11 +19,11 @@ const _initialiseTestUser = () => {
   testUser.id = 1234;
 };
 
-var testRequestBody = {};
+var approvalRequestBody = {};
 const _initialiseTestRequestBody = () => {
-  testRequestBody.userId = testUser.id;
-  testRequestBody.rejectionReason = "Because I felt like it.";
-  testRequestBody.establishmentId = testWorkplace.id;
+  approvalRequestBody.userId = testUser.id;
+  approvalRequestBody.rejectionReason = "Because I felt like it.";
+  approvalRequestBody.establishmentId = testWorkplace.id;
 };
 
 var returnedJson = null;
@@ -44,9 +44,27 @@ describe('admin/parent-approval route', () => {
     returnedStatus = null;
   });
 
+  describe('fetching parent requests', () => {
+    it('should return an array of parent requests', async() => {
+      // Arrange (see beforeEach)
+
+      // Act
+      await parentApproval.getParentRequests({
+        body: {}
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(200);
+      expect(Array.isArray(returnedJson.parentRequests)).to.equal(true);
+
+      // TO DO: Remove this assertion - it's just testing dummy code while we wait for database stuff.'
+      expect(returnedJson.parentRequests[0].workplaceId).to.deep.equal('I1234567');
+    });
+  });
+
   describe('approving a new parent organisation', () => {
     beforeEach(async() => {
-      testRequestBody.approve = true;
+      approvalRequestBody.approve = true;
     });
 
     it('should return a confirmation message and status 200 when parent status is approved for an org', async() => {
@@ -54,7 +72,7 @@ describe('admin/parent-approval route', () => {
 
       // Act
       await parentApproval.parentApproval({
-        body: testRequestBody
+        body: approvalRequestBody
       }, {status: approvalStatus});
 
       // Assert
@@ -66,7 +84,7 @@ describe('admin/parent-approval route', () => {
 
   describe('rejecting a new parent organisation', () => {
     beforeEach(async() => {
-      testRequestBody.approve = false;
+      approvalRequestBody.approve = false;
     });
 
     it('should return a confirmation message and status 200 when the parent status is rejected', async () => {
@@ -74,7 +92,7 @@ describe('admin/parent-approval route', () => {
 
       // Act
       await parentApproval.parentApproval({
-        body: testRequestBody
+        body: approvalRequestBody
       }, {status: approvalStatus});
 
       // Assert
