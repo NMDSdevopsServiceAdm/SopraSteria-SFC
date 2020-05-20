@@ -431,7 +431,6 @@ class BUDI {
       { ASC: 74, BUDI: 250 },
       { ASC: 74, BUDI: 250 },
       { ASC: 74, BUDI: 250 },
-      { ASC: 57, BUDI: 252 },
       { ASC: 57, BUDI: 262 },
       { ASC: 75, BUDI: 266 },
       { ASC: 77, BUDI: 268 },
@@ -593,11 +592,9 @@ class BUDI {
       { ASC: 172, BUDI: 882 },
       { ASC: 223, BUDI: 887 },
       { ASC: 224, BUDI: 894 },
-      { ASC: 112, BUDI: 895 },
       { ASC: 112, BUDI: 418 },
       { ASC: 60, BUDI: 534 },
       { ASC: 60, BUDI: 535 },
-      { ASC: 109, BUDI: 897 },
       { ASC: 109, BUDI: 995 },
       { ASC: 60, BUDI: 531 }
     ];
@@ -859,10 +856,8 @@ class BUDI {
       { ASC: 201, BUDI: 882 },
       { ASC: 255, BUDI: 887 },
       { ASC: 256, BUDI: 894 },
-      { ASC: 261, BUDI: 895 },
       { ASC: 261, BUDI: 418 },
       { ASC: 262, BUDI: 535 },
-      { ASC: 263, BUDI: 897 },
       { ASC: 263, BUDI: 995 },
       { ASC: 264, BUDI: 534 },
       { ASC: 265, BUDI: 531 }
