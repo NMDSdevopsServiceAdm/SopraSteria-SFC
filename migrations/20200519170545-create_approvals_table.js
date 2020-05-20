@@ -25,6 +25,8 @@ module.exports = {
         },
         allowNull: false
       },
+      ApprovalType: Sequelize.DataTypes.ENUM(['BecomeAParent']),
+      Status: Sequelize.DataTypes.ENUM(['Pending', 'Approved', 'Rejected']),
       RejectionReason: {
         type: Sequelize.DataTypes.TEXT,
         allowNull: true,
