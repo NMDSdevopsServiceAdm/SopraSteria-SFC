@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-third">
     <a
-      class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-right-5"
+      class="govuk-list govuk-list--inline govuk-!-margin-right-5"
       [routerLink]="['/add-mandatory-training']"
       >Manage mandatory training
     </a>
@@ -19,7 +19,7 @@
       </span>
     </a>
   </div>
-  <div *ngIf="lastUpdated" class="govuk-grid-colum-one-third govuk-util__align-right govuk-util__float-right">
+  <div *ngIf="lastUpdated" class="govuk-grid-column-one-third govuk-util__align-right govuk-util__float-right">
     <p>Updated {{ lastUpdated | date: 'd MMMM yyyy' }}</p>
   </div>
 </div>
