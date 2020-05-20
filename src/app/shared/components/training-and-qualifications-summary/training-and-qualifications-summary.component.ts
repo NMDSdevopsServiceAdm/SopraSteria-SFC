@@ -47,13 +47,13 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     if (dropdownValue === 'worker') {
       this.workers = orderBy(
       this.workers,
-      [ 'nameOrId'],
+      [ worker => worker.nameOrId.toLowerCase()],
       [ 'desc'],
     );
     } else {
       this.workers = orderBy(
         this.workers,
-        [sortValue, 'nameOrId'],
+        [sortValue,  worker => worker.nameOrId.toLowerCase()],
         ['desc', 'asc'],
       );
     }

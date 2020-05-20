@@ -55,7 +55,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
       this.trainingCategories = orderBy(
         this.trainingCategories,
         [
-          (tc) => tc.category,
+          (tc) => tc.category.toLowerCase(),
         ],
         ['asc'],
       );
@@ -64,7 +64,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
         this.trainingCategories,
         [
           (tc) => this.trainingStatusService.trainingStatusCount(tc.training, sortValue),
-          (tc) => tc.category,
+          (tc) => tc.category.toLowerCase(),
         ],
         ['desc', 'asc'],
       );
