@@ -3,7 +3,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Approvals', {
-      EtablishmentID: {
+      EstablishmentID: {
         type: Sequelize.DataTypes.INTEGER,
         references: {
           model: {
