@@ -986,7 +986,10 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         await bulkUpload.validate();
 
         // call the method
-        await bulkUpload.transform();
+        await bulkUpload.crossValidate({
+          csvWorkerSchemaErrors,
+          myEstablishments,
+        });
 
         // assert a error was returned
         expect(csvWorkerSchemaErrors.length).to.equal(0);
