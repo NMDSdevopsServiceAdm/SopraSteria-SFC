@@ -49,12 +49,31 @@ describe('Admin/Parent Approval', () => {
 
   describe('/admin/parent-approval',
     () => {
+      it('should return an array when fetching become-a-parent requests',
+        async () => {
+          // Arrange
+          const approve = true;
+          if (adminLogin.headers.authorization) {
+            const result = await apiEndpoint
+
+              // Act
+              .get('/admin/parent-approval')
+              .set({ Authorization: adminLogin.headers.authorization })
+
+              // Assert
+              .expect('Content-Type', /json/)
+              .expect(200);
+            expect(result.body.parentRequests).to.not.equal(undefined);
+            expect(Array.isArray(result.body.parentRequests));
+          }
+        });
+
       it('should return a confirmation message and status 200 when an org is granted parent status',
         async () => {
           // Arrange
           const approve = true;
           if (adminLogin.headers.authorization) {
-            const approval = await apiEndpoint
+            const result = await apiEndpoint
 
               // Act
               .post('/admin/parent-approval')
@@ -66,7 +85,7 @@ describe('Admin/Parent Approval', () => {
               // Assert
               .expect('Content-Type', /json/)
               .expect(200);
-            expect(approval.body.message).to.equal(parentApproval.parentApprovalConfirmation);
+            expect(result.body.message).to.equal(parentApproval.parentApprovalConfirmation);
           }
         });
 
@@ -75,7 +94,7 @@ describe('Admin/Parent Approval', () => {
           // Arrange
           const approve = false;
           if (adminLogin.headers.authorization) {
-            const approval = await apiEndpoint
+            const result = await apiEndpoint
 
               // Act
               .post('/admin/parent-approval')
@@ -87,7 +106,7 @@ describe('Admin/Parent Approval', () => {
               // Assert
               .expect('Content-Type', /json/)
               .expect(200);
-            expect(approval.body.message).to.equal(parentApproval.parentRejectionConfirmation);
+            expect(result.body.message).to.equal(parentApproval.parentRejectionConfirmation);
           }
         });
     });
