@@ -73,8 +73,6 @@ import {
     ResetPasswordConfirmationComponent,
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
-    ParentRequestComponent,
-    ParentRequestsComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
