@@ -5,6 +5,7 @@ const APPRENTICESHIP_TYPE = ['Yes', 'No', 'Don\'t know'];
 exports.WorkerApprenticeshipTrainingProperty = class WorkerApprenticeshipTrainingProperty extends ChangePropertyPrototype {
     constructor() {
         super('ApprenticeshipTraining');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -13,7 +14,7 @@ exports.WorkerApprenticeshipTrainingProperty = class WorkerApprenticeshipTrainin
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.apprenticeshipTraining) {
+        if (document.apprenticeshipTraining || document.apprenticeshipTraining === null) {
             if (APPRENTICESHIP_TYPE.includes(document.apprenticeshipTraining)) {
                 this.property = document.apprenticeshipTraining;
             } else {
@@ -43,7 +44,7 @@ exports.WorkerApprenticeshipTrainingProperty = class WorkerApprenticeshipTrainin
                 apprenticeshipTraining: this.property
             };
         }
-        
+
         return {
             apprenticeshipTraining : {
                 currentValue: this.property,
