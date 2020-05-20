@@ -11,11 +11,11 @@ const getParentRequests = async (req, res) => {
   return res.status(200).json(
     {
       parentRequests: [ {
-          workplaceId: 'I1234567',
+          establishmentId: 'I1234567',
           userId: 2222,
           requestDateTime: '2019-08-27 16:04:35.914'
         },{
-          workplaceId: 'B9999999',
+          establishmentId: 'B9999999',
           userId: 3333,
           requestDateTime: '2020-05-20 16:04:35.914'
       }]
