@@ -24,15 +24,6 @@ const modalRejectText = 'Reject request';
 
 fdescribe('ParentRequestComponent', () => {
 
-  async function getConfirmationModal(buttonText) {
-    const modalDialogs = await within(document.body).findAllByRole('dialog');
-    var modalConfirmationDialog = modalDialogs[0];
-    if (within(modalConfirmationDialog).queryByText(buttonText) === null) {
-      modalConfirmationDialog = modalDialogs[1];
-    }
-    return modalConfirmationDialog;
-  }
-
   async function getParentRequestComponent() {
     const parentRequest = {
       establishmentId: testEstablishmentId,
@@ -80,7 +71,7 @@ fdescribe('ParentRequestComponent', () => {
     const approveButton = component.getByText(approveButtonText);
     approveButton.click();
     
-    var modalConfirmationDialog = await getConfirmationModal(modalApproveText);
+    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalApproveText).click();
 
     expect(parentRequestApproval).toHaveBeenCalledWith({
@@ -99,8 +90,8 @@ fdescribe('ParentRequestComponent', () => {
     
     const rejectButton = component.getByText(rejectButtonText);
     rejectButton.click();
-
-    var modalConfirmationDialog = await getConfirmationModal(modalRejectText);
+    
+    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalRejectText).click();
 
     expect(parentRequestApproval).toHaveBeenCalledWith({
@@ -119,7 +110,7 @@ fdescribe('ParentRequestComponent', () => {
     const confirmationModal = spyOn(component.dialogService, 'open').and.callThrough();
 
     click(getByText(approveButtonText));
-    var modalConfirmationDialog = await getConfirmationModal(modalApproveText);
+    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalApproveText).click();
 
     expect(confirmationModal).toHaveBeenCalled();
@@ -131,7 +122,7 @@ fdescribe('ParentRequestComponent', () => {
     const approveButton = component.getByText(approveButtonText);
     approveButton.click();
     
-    var modalConfirmationDialog = await getConfirmationModal(modalApproveText);
+    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     const paragraph = within(modalConfirmationDialog).getByTestId("parent-confirm-para");
     within(modalConfirmationDialog).getByText(modalApproveText).click();
 
@@ -144,7 +135,7 @@ fdescribe('ParentRequestComponent', () => {
     const rejectButton = component.getByText(rejectButtonText);
     rejectButton.click();
     
-    var modalConfirmationDialog = await getConfirmationModal(modalRejectText);
+    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     const paragraph = within(modalConfirmationDialog).getByTestId("parent-confirm-para");
     within(modalConfirmationDialog).getByText(modalRejectText).click();
     
@@ -157,7 +148,7 @@ fdescribe('ParentRequestComponent', () => {
     const approveButton = component.getByText(approveButtonText);
     approveButton.click();
     
-    var modalConfirmationDialog = await getConfirmationModal(modalApproveText);
+    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     const approveHeading = within(modalConfirmationDialog).getByTestId("parent-confirm-heading");
     const submitButton = within(modalConfirmationDialog).getByText(modalApproveText);
     within(modalConfirmationDialog).getByText(modalApproveText).click();
@@ -172,7 +163,7 @@ fdescribe('ParentRequestComponent', () => {
     const rejectButton = component.getByText(rejectButtonText);
     rejectButton.click();
     
-    var modalConfirmationDialog = await getConfirmationModal(modalRejectText);
+    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     const rejectHeading = within(modalConfirmationDialog).getByTestId("parent-confirm-heading");
     const submitButton = within(modalConfirmationDialog).getByText(modalRejectText);
     within(modalConfirmationDialog).getByText(modalRejectText).click();
@@ -189,7 +180,7 @@ fdescribe('ParentRequestComponent', () => {
     
     const approveButton = component.getByText(approveButtonText);
     approveButton.click();
-    var modalConfirmationDialog = await getConfirmationModal(modalApproveText);
+    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalApproveText).click();
 
     expect(addAlert).toHaveBeenCalledWith({
@@ -206,7 +197,7 @@ fdescribe('ParentRequestComponent', () => {
     
     const approveButton = component.getByText(rejectButtonText);
     approveButton.click();
-    var modalConfirmationDialog = await getConfirmationModal(modalRejectText);
+    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalRejectText).click();
 
     expect(addAlert).toHaveBeenCalledWith({
