@@ -207,11 +207,16 @@ export enum SortStaffOptions {
   '1_dsc' = 'Job role descending',
 }
 
-export enum SortTrainingAndQualsOptions {
-  '0_asc' = 'Staff name ascending',
-  '0_dsc' = 'Staff name descending',
-  '1_asc' = 'Records ascending',
-  '1_dsc' = 'Records descending',
-  '2_asc' = 'Status ascending',
-  '2_dsc' = 'Status descending',
+export enum SortTrainingAndQualsOptionsWorker {
+  '0_expired' = 'Expired',
+  '1_expires_soon' = 'Expires soon',
+  '2_missing' = 'Missing',
+  '3_worker' = 'Staff name'
 }
+export enum SortTrainingAndQualsOptionsCat {
+  '0_expired' = 'Expired',
+  '1_expires_soon' = 'Expires soon',
+  '2_missing' = 'Missing',
+  '3_category' = 'Category'
+}
+

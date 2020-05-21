@@ -1966,7 +1966,7 @@ const printLine = (readable, reportType, errors, sep) => {
     readable.push(`${sep}${key}${sep}`);
     errors[key].forEach(item => {
       if (reportType === 'training') {
-        return readable.push(`For worker with ${item.name} Subsidiary 3 and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`);
+        return readable.push(`For worker with ${item.name} and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`);
       } else if (reportType === 'establishments') {
         return readable.push(`For establishment called ${item.name} on line ${item.lineNumber}${sep}`);
       } else if (reportType === 'workers') {
@@ -2476,6 +2476,7 @@ router.route('/unlock').get(releaseLock);
 router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;
+module.exports.printLine = printLine;
 module.exports.checkDuplicateLocations = checkDuplicateLocations;
 module.exports.checkDuplicateWorkerID = checkDuplicateWorkerID;
 module.exports.validateEstablishmentCsv = validateEstablishmentCsv;

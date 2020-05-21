@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Establishment, SortTrainingAndQualsOptions } from '@core/model/establishment.model';
+import { Establishment, SortTrainingAndQualsOptionsWorker } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import orderBy from 'lodash/orderBy';
@@ -18,68 +18,44 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
   public canViewWorker: boolean;
-  public workersData: Array<Worker>;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
-  constructor(private permissionsService: PermissionsService) {}
+  constructor(
+    private permissionsService: PermissionsService,
+  ) {}
   public getWorkerTrainingAndQualificationsPath(worker: Worker) {
     const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
     return this.wdfView ? [...path, ...['wdf-summary']] : path;
   }
   ngOnInit() {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
-    this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptions;
-    this.sortByDefault = '2_dsc'; //status column
-    //sorting by default on Status column (expiredTrainingCount)
-    this.sortByColumn(this.sortByDefault);
+    this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
+    this.sortByDefault = '0_expired';
+    this.orderWorkers(this.sortByDefault);
   }
-  /**
-   * Function used to sort traingin list based on selected column
-   * @param {string} selected column key
-   * @return {void}
-   */
-  public sortByColumn(selectedColumn: any) {
-    switch (selectedColumn) {
-      case '0_asc': {
-        this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);
-        break;
-      }
-      case '0_dsc': {
-        this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['desc']);
-        break;
-      }
-      case '1_asc': {
-        this.workers = orderBy(this.workers, [(worker) => worker.trainingCount + worker.qualificationCount], ['asc']);
-        break;
-      }
-      case '1_dsc': {
-        this.workers = orderBy(this.workers, [(worker) => worker.trainingCount + worker.qualificationCount], ['desc']);
-        break;
-      }
-      case '2_asc': {
-        this.workers = orderBy(
-          this.workers,
-          ['expiredTrainingCount', 'expiringTrainingCount', 'missingMandatoryTrainingCount'],
-          ['asc', 'asc', 'asc'],
-        );
-        break;
-      }
-      case '2_dsc': {
-        this.workers = orderBy(
-          this.workers,
-          ['expiredTrainingCount', 'expiringTrainingCount', 'missingMandatoryTrainingCount'],
-          ['desc', 'desc', 'desc'],
-        );
-        break;
-      }
-      default: {
-        this.workers = orderBy(
-          this.workers,
-          ['expiredTrainingCount', 'expiringTrainingCount', 'missingMandatoryTrainingCount'],
-          ['desc', 'desc', 'desc'],
-        );
-        break;
-      }
+
+  public orderWorkers(dropdownValue) {
+    let sortValue: string;
+    if (dropdownValue.includes('missing')) {
+      sortValue = 'missingMandatoryTrainingCount';
+    } else if (dropdownValue.includes('expired')) {
+      sortValue = 'expiredTrainingCount';
+    } else if (dropdownValue.includes('expires_soon')) {
+      sortValue = 'expiringTrainingCount';
+    }
+
+    if (dropdownValue === 'worker') {
+      this.workers = orderBy(
+      this.workers,
+      [ worker => worker.nameOrId.toLowerCase()],
+      [ 'desc'],
+    );
+    } else {
+      this.workers = orderBy(
+        this.workers,
+        [sortValue,  worker => worker.nameOrId.toLowerCase()],
+        ['desc', 'asc'],
+      );
     }
   }
 }
