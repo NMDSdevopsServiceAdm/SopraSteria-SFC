@@ -3,6 +3,10 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { render, within } from '@testing-library/angular';
 import { spy } from 'sinon';
+import { AlertService } from '@core/services/alert.service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { WindowRef } from '@core/services/window.ref';
+import { getTestBed } from '@angular/core/testing';
 
 import { ParentRequestComponent } from './parent-request.component';
 
@@ -12,9 +16,23 @@ const testUserId = 1111;
 const testEstablishmentId = 2222;
 const testWorkplaceId = 'B1234567';
 const testRequestedDate = new Date();
-const testRejectionReason = 'Because I can!';
 
-describe('ParentRequestComponent', () => {
+const approveButtonText = 'Approve';
+const rejectButtonText = 'Reject';
+const modalApproveText = 'Approve request';
+const modalRejectText = 'Reject request';
+
+fdescribe('ParentRequestComponent', () => {
+
+  async function getConfirmationModal(buttonText) {
+    const modalDialogs = await within(document.body).findAllByRole('dialog');
+    var modalConfirmationDialog = modalDialogs[0];
+    if (within(modalConfirmationDialog).queryByText(buttonText) === null) {
+      modalConfirmationDialog = modalDialogs[1];
+    }
+    return modalConfirmationDialog;
+  }
+
   async function getParentRequestComponent() {
     const parentRequest = {
       establishmentId: testEstablishmentId,
@@ -29,7 +47,14 @@ describe('ParentRequestComponent', () => {
       imports: [
         ReactiveFormsModule,
         HttpClientTestingModule,
-        SharedModule],
+        SharedModule,
+        RouterTestingModule],
+      providers: [
+        {
+          provide: WindowRef,
+          useClass: WindowRef
+        },
+      ],
       componentProperties: {
         index: 0,
         removeParentRequest: {
@@ -40,25 +65,23 @@ describe('ParentRequestComponent', () => {
     });
   }
 
-  it('should create', async() => {
+  /*it('should create', async() => {
     const component = await getParentRequestComponent();
 
     expect(component).toBeTruthy();
-  });
+  });*/
 
   it('should be able to approve a become-a-parent request', async () => {
     const component = await getParentRequestComponent();
 
     const { componentInstance } = component.fixture;
-    
     const parentRequestApproval = spyOn(componentInstance.parentRequestsService, 'parentApproval').and.callThrough();
     
-    const approveButton = component.getByText('Approve');
+    const approveButton = component.getByText(approveButtonText);
     approveButton.click();
-
-    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
-    const confirm = within(modalConfirmationDialog).getByText('Approve request');
-    confirm.click();
+    
+    var modalConfirmationDialog = await getConfirmationModal(modalApproveText);
+    within(modalConfirmationDialog).getByText(modalApproveText).click();
 
     expect(parentRequestApproval).toHaveBeenCalledWith({
       establishmentId: testEstablishmentId,
@@ -72,20 +95,18 @@ describe('ParentRequestComponent', () => {
     const component = await getParentRequestComponent();
 
     const { componentInstance } = component.fixture;
-    
     const parentRequestApproval = spyOn(componentInstance.parentRequestsService, 'parentApproval').and.callThrough();
     
-    const approveButton = component.getByText('Reject');
-    approveButton.click();
+    const rejectButton = component.getByText(rejectButtonText);
+    rejectButton.click();
 
-    const modalConfirmationDialog = await within(document.body).findByRole('dialog');
-    const confirm = within(modalConfirmationDialog).getByText('Approve request');
-    confirm.click();
+    var modalConfirmationDialog = await getConfirmationModal(modalRejectText);
+    within(modalConfirmationDialog).getByText(modalRejectText).click();
 
     expect(parentRequestApproval).toHaveBeenCalledWith({
       establishmentId: testEstablishmentId,
       userId: testUserId,
-      rejectionReason: 'Because I say so',
+      rejectionReason: 'Rejected',
       approve: false,
     });
   });
@@ -97,23 +118,100 @@ describe('ParentRequestComponent', () => {
 
     const confirmationModal = spyOn(component.dialogService, 'open').and.callThrough();
 
-    click(getByText('Approve'));
+    click(getByText(approveButtonText));
+    var modalConfirmationDialog = await getConfirmationModal(modalApproveText);
+    within(modalConfirmationDialog).getByText(modalApproveText).click();
 
     expect(confirmationModal).toHaveBeenCalled();
   });
 
-  /*it('should send rejection reason when rejecting a become-a-parent request', async () => {
-    const { click, getByText, fixture } = await getParentRequestComponent();
+  it('confirmation modal should display org name when approving a request', async () => {
+    const component = await getParentRequestComponent();
+    
+    const approveButton = component.getByText(approveButtonText);
+    approveButton.click();
+    
+    var modalConfirmationDialog = await getConfirmationModal(modalApproveText);
+    const paragraph = within(modalConfirmationDialog).getByTestId("parent-confirm-para");
+    within(modalConfirmationDialog).getByText(modalApproveText).click();
 
-    const { componentInstance: component } = fixture;
+    expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will become a parent workplace`);
+  });
 
-    const parentRequestApproval = spyOn(component.parentRequestsService, 'parentApproval').and.callThrough();
+  it('confirmation modal should display org name when rejecting a request', async () => {
+    const component = await getParentRequestComponent();
+    
+    const rejectButton = component.getByText(rejectButtonText);
+    rejectButton.click();
+    
+    var modalConfirmationDialog = await getConfirmationModal(modalRejectText);
+    const paragraph = within(modalConfirmationDialog).getByTestId("parent-confirm-para");
+    within(modalConfirmationDialog).getByText(modalRejectText).click();
+    
+    expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will not become a parent workplace`);
+  });
 
-    click(getByText('Approve'));
+  it('confirmation modal should show "Approve request" when approving a request', async () => {
+    const component = await getParentRequestComponent();
+    
+    const approveButton = component.getByText(approveButtonText);
+    approveButton.click();
+    
+    var modalConfirmationDialog = await getConfirmationModal(modalApproveText);
+    const approveHeading = within(modalConfirmationDialog).getByTestId("parent-confirm-heading");
+    const submitButton = within(modalConfirmationDialog).getByText(modalApproveText);
+    within(modalConfirmationDialog).getByText(modalApproveText).click();
+    
+    expect(approveHeading.innerHTML).toContain("You're about to approve this request.");
+    expect(submitButton).toBeTruthy();
+  });
 
-    expect(parentRequestApproval).toHaveBeenCalledWith({
-      rejectionReason: testRejectionReason,
-      approve: false,
+  it('confirmation modal should show "Reject request" when rejecting a request', async () => {
+    const component = await getParentRequestComponent();
+    
+    const rejectButton = component.getByText(rejectButtonText);
+    rejectButton.click();
+    
+    var modalConfirmationDialog = await getConfirmationModal(modalRejectText);
+    const rejectHeading = within(modalConfirmationDialog).getByTestId("parent-confirm-heading");
+    const submitButton = within(modalConfirmationDialog).getByText(modalRejectText);
+    within(modalConfirmationDialog).getByText(modalRejectText).click();
+
+    expect(rejectHeading.innerHTML).toContain("You're about to reject this request.");
+    expect(submitButton).toBeTruthy();
+  });
+
+  it('confirmation message should be shown after approving a request', async () => {
+    const component = await getParentRequestComponent();
+    
+    const { componentInstance } = component.fixture;
+    const addAlert = spyOn(componentInstance.alertService, 'addAlert').and.callThrough();
+    
+    const approveButton = component.getByText(approveButtonText);
+    approveButton.click();
+    var modalConfirmationDialog = await getConfirmationModal(modalApproveText);
+    within(modalConfirmationDialog).getByText(modalApproveText).click();
+
+    expect(addAlert).toHaveBeenCalledWith({
+      type: 'success',
+      message: `You have approved the request for ${testOrgname} to become a parent workplace.`,
     });
-  });*/
+  });
+
+  it('confirmation message should be shown after rejecting a request', async () => {
+    const component = await getParentRequestComponent();
+    
+    const { componentInstance } = component.fixture;
+    const addAlert = spyOn(componentInstance.alertService, 'addAlert').and.callThrough();
+    
+    const approveButton = component.getByText(rejectButtonText);
+    approveButton.click();
+    var modalConfirmationDialog = await getConfirmationModal(modalRejectText);
+    within(modalConfirmationDialog).getByText(modalRejectText).click();
+
+    expect(addAlert).toHaveBeenCalledWith({
+      type: 'success',
+      message: `You have rejected the request for ${testOrgname} to become a parent workplace.`,
+    });
+  });
 });

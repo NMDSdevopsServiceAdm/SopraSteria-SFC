@@ -21,7 +21,7 @@ export class ParentRequestComponent implements OnInit {
   constructor(
     public parentRequestsService: ParentRequestsService,
     public dialogService: DialogService,
-    private alertService: AlertService
+    public alertService: AlertService
   ) {}
   ngOnInit() {
     this.parentRequestForm = new FormGroup({});
