@@ -9,8 +9,7 @@ const parentRejectionConfirmation = 'You have rejected the request for X to beco
 
 const getParentRequests = async (req, res) => {
   return res.status(200).json(
-    {
-      parentRequests: [ {
+      [ {
           establishmentId: 1111,
           workplaceId: 'I1234567',
           username: 'Magnificent Maisie',
@@ -20,8 +19,7 @@ const getParentRequests = async (req, res) => {
           workplaceId: 'B9999999',
           username: 'Everso Stupid',
           requested: '2020-05-20 16:04:35.914'
-      }]
-    });
+      }]);
 };
 
 const parentApproval = async (req, res) => {
