@@ -13,7 +13,6 @@ import { RegistrationComponent } from './registration/registration.component';
 import { RegistrationsComponent } from './registrations/registrations.component';
 import { ParentRequestsComponent } from './parent-requests/parent-requests.component';
 import { ParentRequestComponent } from './parent-request/parent-request.component';
-import { ParentConfirmationDialogComponent } from './parent-request/parent-confirmation-dialog.component';
 import { SearchRoutingModule } from './search-routing.module';
 import { SearchComponent } from './search.component';
 
@@ -34,12 +33,10 @@ import { SearchComponent } from './search.component';
     RegistrationComponent,
     RegistrationsComponent,
     ParentRequestComponent,
-    ParentRequestsComponent,
-    ParentConfirmationDialogComponent
+    ParentRequestsComponent
   ],
   entryComponents: [
-    AdminUnlockConfirmationDialogComponent,
-    ParentConfirmationDialogComponent
+    AdminUnlockConfirmationDialogComponent
   ]
 })
 export class SearchModule { }

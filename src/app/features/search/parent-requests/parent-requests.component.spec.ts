@@ -1,3 +1,4 @@
+import { SharedModule } from '@shared/shared.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -14,9 +15,11 @@ describe('ParentRequestsComponent', () => {
 
   it('should create', async () => {
     component = await render(ParentRequestsComponent, {
-      imports: [ReactiveFormsModule, HttpClientTestingModule],
-      declarations: [FirstErrorPipe, ParentRequestComponent],
-      providers: [ParentRequestsService],
+      imports: [
+        ReactiveFormsModule,
+        HttpClientTestingModule,
+        SharedModule],
+      declarations: [ParentRequestComponent],
     });
 
     expect(component).toBeTruthy();
@@ -44,8 +47,8 @@ describe('ParentRequestsComponent', () => {
       );
 
       const { fixture } = await render(ParentRequestsComponent, {
-        imports: [ReactiveFormsModule, HttpClientTestingModule],
-        declarations: [FirstErrorPipe, ParentRequestComponent],
+        imports: [ReactiveFormsModule, HttpClientTestingModule, SharedModule],
+        declarations: [ParentRequestComponent],
         providers: [
           {
             provide: ParentRequestsService,
@@ -75,9 +78,8 @@ describe('ParentRequestsComponent', () => {
     }];
     
     const { fixture } = await render(ParentRequestsComponent, {
-      imports: [ReactiveFormsModule, HttpClientTestingModule],
-      declarations: [FirstErrorPipe, ParentRequestComponent],
-      providers: [ParentRequestsService],
+      imports: [ReactiveFormsModule, HttpClientTestingModule, SharedModule],
+      declarations: [ParentRequestComponent],
       componentProperties: {
         parentRequests
       },
