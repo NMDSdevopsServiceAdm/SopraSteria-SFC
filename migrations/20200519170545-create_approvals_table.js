@@ -3,6 +3,16 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Approvals', {
+      ID: {
+        type: Sequelize.DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      UUID: {
+        type: Sequelize.DataTypes.UUID,
+        unique: true,
+        allowNull: false,
+      },
       EstablishmentID: {
         type: Sequelize.DataTypes.INTEGER,
         references: {
