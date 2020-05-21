@@ -1,6 +1,7 @@
 export interface ParentRequests {
   [index: number]: {
     establishmentId: number;
+    userId: number;
     workplaceId: string;
     userName: string;
     orgName: string;

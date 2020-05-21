@@ -21,9 +21,9 @@ const _initialiseTestUser = () => {
 
 var approvalRequestBody = {};
 const _initialiseTestRequestBody = () => {
+  approvalRequestBody.establishmentId = testWorkplace.id;
   approvalRequestBody.userId = testUser.id;
   approvalRequestBody.rejectionReason = "Because I felt like it.";
-  approvalRequestBody.establishmentId = testWorkplace.id;
 };
 
 var returnedJson = null;

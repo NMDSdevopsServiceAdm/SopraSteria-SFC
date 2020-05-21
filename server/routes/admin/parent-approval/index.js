@@ -11,12 +11,14 @@ const getParentRequests = async (req, res) => {
   return res.status(200).json(
       [ {
           establishmentId: 1111,
+          userId: 2222,
           workplaceId: 'I1234567',
           userName: 'Magnificent Maisie',
           orgName: 'Marvellous Mansions',
           requested: '2019-08-27 16:04:35.914'
         },{
           establishmentId: 3333,
+          userId: 4444,
           workplaceId: 'B9999999',
           userName: 'Everso Stupid',
           orgName: 'Everly Towers',
@@ -34,20 +36,22 @@ const parentApproval = async (req, res) => {
 
 const _approveParent = async (req, res) => {
   await _notifyApproval(req, res);
+  console.log(`************************************* PARENT APPROVED: USER: ${req.body.userId}, ORG: ${req.body.establishmentId}`);
   return res.status(200).json({ status: '0', message: parentApprovalConfirmation });
 };
 
 const _rejectParent = async (req, res) => {
   await _notifyRejection(req, res);
+  console.log(`************************************* PARENT REJECTED: USER: ${req.body.userId}, ORG: ${req.body.establishmentId}, REASON: ${req.body.rejectionReason}`);
   return res.status(200).json({ status: '0', message: parentRejectionConfirmation });
 };
 
 const _notifyApproval = async (req, res) => {
-  return res.status(200).json({ status: '0', message: parentApprovalConfirmation });
+  return true;
 };
 
 const _notifyRejection = async (req, res) => {
-  return res.status(200).json({ status: '0', message: parentRejectionConfirmation });
+  return true;
 };
 
 router.route('/').post(parentApproval);

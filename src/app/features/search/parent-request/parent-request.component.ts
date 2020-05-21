@@ -35,8 +35,8 @@ export class ParentRequestComponent implements OnInit {
     data = {
       establishmentId: this.parentRequest.establishmentId,
       userId: this.parentRequest.userId,
-      approve: this.approve,
       rejectionReason: this.rejectionReason,
+      approve: this.approve,
     };
 
     this.parentRequestsService.parentApproval(data).subscribe(
