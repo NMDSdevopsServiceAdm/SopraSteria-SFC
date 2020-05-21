@@ -3,10 +3,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { render, within } from '@testing-library/angular';
 import { spy } from 'sinon';
-import { AlertService } from '@core/services/alert.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WindowRef } from '@core/services/window.ref';
-import { getTestBed } from '@angular/core/testing';
 
 import { ParentRequestComponent } from './parent-request.component';
 
@@ -56,20 +54,19 @@ fdescribe('ParentRequestComponent', () => {
     });
   }
 
-  /*it('should create', async() => {
+  it('should create', async() => {
     const component = await getParentRequestComponent();
 
     expect(component).toBeTruthy();
-  });*/
+  });
 
   it('should be able to approve a become-a-parent request', async () => {
     const component = await getParentRequestComponent();
-
-    const { componentInstance } = component.fixture;
-    const parentRequestApproval = spyOn(componentInstance.parentRequestsService, 'parentApproval').and.callThrough();
     
-    const approveButton = component.getByText(approveButtonText);
-    approveButton.click();
+    const { componentInstance } = component.fixture;
+    const parentRequestApproval = spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.callThrough();
+    
+    component.getByText(approveButtonText).click();
     
     const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalApproveText).click();
@@ -86,10 +83,9 @@ fdescribe('ParentRequestComponent', () => {
     const component = await getParentRequestComponent();
 
     const { componentInstance } = component.fixture;
-    const parentRequestApproval = spyOn(componentInstance.parentRequestsService, 'parentApproval').and.callThrough();
+    const parentRequestApproval = spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.callThrough();
     
-    const rejectButton = component.getByText(rejectButtonText);
-    rejectButton.click();
+    component.getByText(rejectButtonText).click();
     
     const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalRejectText).click();
@@ -103,13 +99,12 @@ fdescribe('ParentRequestComponent', () => {
   });
 
   it('should show confirmation modal when approving a request', async () => {
-    const { click, getByText, fixture } = await getParentRequestComponent();
+    const component = await getParentRequestComponent();
 
-    const { componentInstance: component } = fixture;
+    const { componentInstance } = component.fixture;
+    const confirmationModal = spyOn(component.fixture.componentInstance.dialogService, 'open').and.callThrough();
 
-    const confirmationModal = spyOn(component.dialogService, 'open').and.callThrough();
-
-    click(getByText(approveButtonText));
+    component.getByText(approveButtonText).click();
     const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalApproveText).click();
 
@@ -119,8 +114,7 @@ fdescribe('ParentRequestComponent', () => {
   it('confirmation modal should display org name when approving a request', async () => {
     const component = await getParentRequestComponent();
     
-    const approveButton = component.getByText(approveButtonText);
-    approveButton.click();
+    component.getByText(approveButtonText).click();
     
     const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     const paragraph = within(modalConfirmationDialog).getByTestId("parent-confirm-para");
@@ -132,8 +126,7 @@ fdescribe('ParentRequestComponent', () => {
   it('confirmation modal should display org name when rejecting a request', async () => {
     const component = await getParentRequestComponent();
     
-    const rejectButton = component.getByText(rejectButtonText);
-    rejectButton.click();
+    component.getByText(rejectButtonText).click();
     
     const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     const paragraph = within(modalConfirmationDialog).getByTestId("parent-confirm-para");
@@ -145,8 +138,7 @@ fdescribe('ParentRequestComponent', () => {
   it('confirmation modal should show "Approve request" when approving a request', async () => {
     const component = await getParentRequestComponent();
     
-    const approveButton = component.getByText(approveButtonText);
-    approveButton.click();
+    component.getByText(approveButtonText).click();
     
     const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     const approveHeading = within(modalConfirmationDialog).getByTestId("parent-confirm-heading");
@@ -160,8 +152,7 @@ fdescribe('ParentRequestComponent', () => {
   it('confirmation modal should show "Reject request" when rejecting a request', async () => {
     const component = await getParentRequestComponent();
     
-    const rejectButton = component.getByText(rejectButtonText);
-    rejectButton.click();
+    component.getByText(rejectButtonText).click();
     
     const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     const rejectHeading = within(modalConfirmationDialog).getByTestId("parent-confirm-heading");
@@ -176,10 +167,9 @@ fdescribe('ParentRequestComponent', () => {
     const component = await getParentRequestComponent();
     
     const { componentInstance } = component.fixture;
-    const addAlert = spyOn(componentInstance.alertService, 'addAlert').and.callThrough();
+    const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
     
-    const approveButton = component.getByText(approveButtonText);
-    approveButton.click();
+    component.getByText(approveButtonText).click();
     const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalApproveText).click();
 
@@ -193,10 +183,9 @@ fdescribe('ParentRequestComponent', () => {
     const component = await getParentRequestComponent();
     
     const { componentInstance } = component.fixture;
-    const addAlert = spyOn(componentInstance.alertService, 'addAlert').and.callThrough();
+    const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
     
-    const approveButton = component.getByText(rejectButtonText);
-    approveButton.click();
+    component.getByText(rejectButtonText).click();
     const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalRejectText).click();
 
