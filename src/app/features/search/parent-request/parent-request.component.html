@@ -19,7 +19,9 @@
         </td>
         <th class="govuk-table__cell">Workplace</th>
         <td class="govuk-table__cell">
-          {{ parentRequest.workplaceId }}
+          <a (click)="navigateToWorkplace(parentRequest.establishmentId, parentRequest.username, $event)" href="#">
+            {{ parentRequest.orgName }}
+          </a>
         </td>
       </tr>
       <tr class="govuk-table__row">
@@ -28,7 +30,7 @@
             <button
               type="submit"
               class="govuk-button govuk-button--warning govuk-util__float-right"
-              (click)="approveParentRequest(false, 'Because I say so')"
+              (click)="approveParentRequest(false, 'Rejected')"
             >
               Reject
             </button>

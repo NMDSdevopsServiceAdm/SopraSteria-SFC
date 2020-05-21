@@ -36,12 +36,24 @@ export class ParentRequestComponent implements OnInit {
     event.preventDefault();
 
     this.dialogService
-      .open(ParentConfirmationDialogComponent, { })
+      .open(ParentConfirmationDialogComponent,
+        {
+          orgName: this.parentRequest.orgName,
+          headingText: approve ? "You're about to approve this request." : "You're about to reject this request.",
+          paragraphText: approve
+            ? `If you do this, ${this.parentRequest.orgName} will become a parent workplace.`
+            : `If you do this, ${this.parentRequest.orgName} will not become a parent workplace.`,
+          buttonText: approve ? 'Approve request' : 'Reject request'
+        })
       .afterClosed.subscribe(approveConfirmed => {
         if(approveConfirmed) {
           this.approveOrRejectRequest();
         }
       });
+  }
+
+  public navigateToWorkplace(id, username, e): void {
+    // To do: sort this out. The code is all in search.component.ts, in setEsblishmentId
   }
 
   public onSubmit() {

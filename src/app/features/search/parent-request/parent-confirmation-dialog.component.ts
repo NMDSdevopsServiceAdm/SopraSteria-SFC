@@ -8,8 +8,7 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 })
 export class ParentConfirmationDialogComponent extends DialogComponent {
   constructor(
-    //@Inject(DIALOG_DATA) public data: { orgName: string },
-    @Inject(DIALOG_DATA) public data: { orgName: string },
+    @Inject(DIALOG_DATA) public data: { headingText: string, paragraphText: string, buttonText: string },
     public dialog: Dialog<ParentConfirmationDialogComponent>
   ) {
     super(data, dialog);
