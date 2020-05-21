@@ -1,0 +1,5 @@
+const path = require('path');
+
+module.exports = {
+  'config': path.resolve('./server/config', 'sequelize.js')
+}
