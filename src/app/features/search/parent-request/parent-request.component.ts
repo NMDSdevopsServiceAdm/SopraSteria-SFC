@@ -2,6 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
+import { DialogService } from '@core/services/dialog.service';
+import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
 
 @Component({
   selector: 'app-parent-request',
@@ -17,6 +19,7 @@ export class ParentRequestComponent implements OnInit {
 
   constructor(
     public parentRequestsService: ParentRequestsService,
+    public dialogService: DialogService,
   ) {}
   ngOnInit() {
     this.parentRequestForm = new FormGroup({});
@@ -29,8 +32,23 @@ export class ParentRequestComponent implements OnInit {
   public approveParentRequest(approve: boolean, rejectionReason: string) {
     this.approve = approve;
     this.rejectionReason = rejectionReason;
+    
+    event.preventDefault();
+
+    this.dialogService
+      .open(ParentConfirmationDialogComponent, { })
+      .afterClosed.subscribe(approveConfirmed => {
+        if(approveConfirmed) {
+          this.approveOrRejectRequest();
+        }
+      });
   }
+
   public onSubmit() {
+    // Nothing to do here - it's all done via the confirmation dialog.
+  }
+
+  private approveOrRejectRequest() {
     let data;
     data = {
       establishmentId: this.parentRequest.establishmentId,
