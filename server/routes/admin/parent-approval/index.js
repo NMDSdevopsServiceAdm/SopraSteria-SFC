@@ -15,14 +15,14 @@ const getParentRequests = async (req, res) => {
           workplaceId: 'I1234567',
           userName: 'Magnificent Maisie',
           orgName: 'Marvellous Mansions',
-          requested: '2019-08-27 16:04:35.914'
+          requested: '27/8/2019 9:16am'
         },{
           establishmentId: 3333,
           userId: 4444,
           workplaceId: 'B9999999',
           userName: 'Everso Stupid',
           orgName: 'Everly Towers',
-          requested: '2020-05-20 16:04:35.914'
+          requested: '20/5/2020 6:42pm'
       }]);
 };
 
