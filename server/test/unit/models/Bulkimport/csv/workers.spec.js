@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
 const workers = require('../../../mockdata/workers').data;
 const establishmentId = require('../../../mockdata/workers').establishmentId;
+const apprenticeshipTypes = require('../../../mockdata/workers').apprenticeshipTypes;
 const maxquals = require('../../../mockdata/workers').maxquals;
 const knownHeaders = require('../../../mockdata/workers').knownHeaders;
 const moment = require('moment');
@@ -1273,14 +1274,14 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         let nonscqual = '';
         const mappedCsv = mapCsvToWorker(workerCSV, columnHeaders);
 
-        if (Array.isArray(worker.otherJobs.otherJobs)) {
-          worker.otherJobs.otherJobs.forEach((job, index) => {
+        if (Array.isArray(worker.otherJobs.jobs)) {
+          worker.otherJobs.jobs.forEach((job, index) => {
             otherJobs += job.budi;
             if (job.other){
               otherJobsDesc += job.other;
             }
-            index < (worker.otherJobs.otherJobs.length - 1) ? otherJobs += ';' : otherJobs += '';
-            index < (worker.otherJobs.otherJobs.length - 1) ? otherJobsDesc += ';' : otherJobsDesc += '';
+            index < (worker.otherJobs.jobs.length - 1) ? otherJobs += ';' : otherJobs += '';
+            index < (worker.otherJobs.jobs.length - 1) ? otherJobsDesc += ';' : otherJobsDesc += '';
           });
         } else {
           expect(establishment.otherServices).to.equal(null);
@@ -1474,6 +1475,16 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             expect(mappedCsv['QUALACH0' + (i + 1) + 'NOTES']).to.equal('');
           }
         }
+      });
+    });
+    apprenticeshipTypes.forEach(apprenticeshipType => {
+      it('should output the correct apprenticeship figure with apprenticeship value ' + apprenticeshipType.value, async () => {
+        worker.apprenticeship = apprenticeshipType.value;
+        let workerCSV = getUnitInstance();
+        workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
+        const output = workerCSV.split(',');
+        // 19 column is apprenticeship
+        expect(output[18]).to.deep.equal(apprenticeshipType.code);
       });
     });
   });
