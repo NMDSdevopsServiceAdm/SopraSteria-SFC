@@ -25,7 +25,7 @@ export class ParentRequestsComponent implements OnInit {
     );
   }
 
-  public handleParentRequest(index: number) {
+  public removeParentRequest(index: number) {
     this.parentRequests.splice(index, 1);
   }
 

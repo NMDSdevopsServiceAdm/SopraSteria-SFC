@@ -8,7 +8,7 @@ import { ParentRequestsService } from '@core/services/parent-requests.service';
   templateUrl: './parent-request.component.html'
 })
 export class ParentRequestComponent implements OnInit {
-  @Output() handleParentRequest: EventEmitter<any> = new EventEmitter<any>();
+  @Output() removeParentRequest: EventEmitter<any> = new EventEmitter<any>();
   @Input() index: number;
   @Input() parentRequest: any;
   public parentRequestForm: FormGroup;
@@ -19,17 +19,11 @@ export class ParentRequestComponent implements OnInit {
     public parentRequestsService: ParentRequestsService,
   ) {}
   ngOnInit() {
-    this.parentRequestForm = new FormGroup({
-      establishmentId: new FormControl(this.parentRequest.establishment.uid, [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.maxLength(8),
-      ]),
-    });
+    this.parentRequestForm = new FormGroup({});
   }
 
   get establishmentId() {
-    return this.parentRequestForm.get('establishmentId');
+    return this.parentRequest.establishmentId;
   }
 
   public approveParentRequest(approve: boolean, rejectionReason: string) {
@@ -37,26 +31,24 @@ export class ParentRequestComponent implements OnInit {
     this.rejectionReason = rejectionReason;
   }
   public onSubmit() {
-    if (this.parentRequestForm.valid) {
-      let data;
-      data = {
-        establishmentId: this.parentRequest.establishment.uid,
-        userId: this.parentRequest.user.uid,
-        approve: this.approve,
-        rejectionReason: this.rejectionReason,
-      };
+    let data;
+    data = {
+      establishmentId: this.parentRequest.establishmentId,
+      userId: this.parentRequest.userId,
+      approve: this.approve,
+      rejectionReason: this.rejectionReason,
+    };
 
-      this.parentRequestsService.parentApproval(data).subscribe(
-        () => {
-          this.handleParentRequest.emit(this.index);
-        },
-        (err) => {
-          if (err instanceof HttpErrorResponse) {
-            this.populateErrorFromServer(err);
-          }
+    this.parentRequestsService.parentApproval(data).subscribe(
+      () => {
+        this.removeParentRequest.emit(this.index);
+      },
+      (err) => {
+        if (err instanceof HttpErrorResponse) {
+          this.populateErrorFromServer(err);
         }
-      );
-    }
+      }
+    );
   }
 
   private populateErrorFromServer(err) {
