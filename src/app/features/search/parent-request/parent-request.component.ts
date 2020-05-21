@@ -4,6 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { DialogService } from '@core/services/dialog.service';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-parent-request',
@@ -20,6 +21,7 @@ export class ParentRequestComponent implements OnInit {
   constructor(
     public parentRequestsService: ParentRequestsService,
     public dialogService: DialogService,
+    private alertService: AlertService
   ) {}
   ngOnInit() {
     this.parentRequestForm = new FormGroup({});
@@ -68,6 +70,13 @@ export class ParentRequestComponent implements OnInit {
       rejectionReason: this.rejectionReason,
       approve: this.approve,
     };
+
+    const approvedOrRejected = this.approve ? "approved" : "rejected";
+    console.log("******************** About to show alert.");
+    this.alertService.addAlert({
+      type: 'success',
+      message: `You have ${approvedOrRejected} the request for ${this.parentRequest.orgName} to become a parent workplace.`,
+    });
 
     this.parentRequestsService.parentApproval(data).subscribe(
       () => {
