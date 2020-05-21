@@ -1,4 +1,4 @@
-<h2 class="govuk-heading-l">Parent Request from {{ parentRequest.establishment.name }}</h2>
+<h2 class="govuk-heading-l">Parent Request from {{ parentRequest.orgName }}</h2>
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="parentRequestForm" id="form-parent-request">
   <table class="govuk-table">
     <tbody class="govuk-table__body">
@@ -9,7 +9,7 @@
         </td>
         <th class="govuk-table__cell">Username</th>
         <td class="govuk-table__cell">
-          {{ parentRequest.username }}
+          {{ parentRequest.userName }}
         </td>
       </tr>
       <tr class="govuk-table__row">

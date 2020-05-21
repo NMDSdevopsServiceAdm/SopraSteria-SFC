@@ -12,12 +12,14 @@ const getParentRequests = async (req, res) => {
       [ {
           establishmentId: 1111,
           workplaceId: 'I1234567',
-          username: 'Magnificent Maisie',
+          userName: 'Magnificent Maisie',
+          orgName: 'Marvellous Mansions',
           requested: '2019-08-27 16:04:35.914'
         },{
           establishmentId: 3333,
           workplaceId: 'B9999999',
-          username: 'Everso Stupid',
+          userName: 'Everso Stupid',
+          orgName: 'Everly Towers',
           requested: '2020-05-20 16:04:35.914'
       }]);
 };

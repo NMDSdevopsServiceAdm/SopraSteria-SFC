@@ -2,7 +2,8 @@ export interface ParentRequests {
   [index: number]: {
     establishmentId: number;
     workplaceId: string;
-    username: string;
+    userName: string;
+    orgName: string;
     requested: Date;
     /*user: {
       uid: number;
