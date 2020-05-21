@@ -72,7 +72,6 @@ export class ParentRequestComponent implements OnInit {
     };
 
     const approvedOrRejected = this.approve ? "approved" : "rejected";
-    console.log("******************** About to show alert.");
     this.alertService.addAlert({
       type: 'success',
       message: `You have ${approvedOrRejected} the request for ${this.parentRequest.orgName} to become a parent workplace.`,
