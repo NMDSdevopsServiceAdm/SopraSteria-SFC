@@ -50,12 +50,13 @@ module.exports = (sequelize, DataTypes) => {
     Approvals.belongsTo(models.user, {
       foreignKey : 'UserID',
       targetKey: 'id',
+      as: 'User',
     });
 
     Approvals.belongsTo(models.establishment, {
       foreignKey: 'EstablishmentID',
       targetKey: 'id',
-      as: 'establishments',
+      as: 'Establishment',
     });
   };
 
