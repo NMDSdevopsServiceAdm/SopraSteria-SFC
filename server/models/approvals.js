@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       unique: true,
       allowNull: false,
+      defaultValue: DataTypes.UUIDV4
     },
     EstablishmentID: {
       type: DataTypes.INTEGER,
@@ -28,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM,
       allowNull: false,
       values: ['Pending', 'Approved', 'Rejected'],
-      default: 'Pending'
+      defaultValue: 'Pending'
     },
     RejectionReason: {
       type: DataTypes.TEXT,
