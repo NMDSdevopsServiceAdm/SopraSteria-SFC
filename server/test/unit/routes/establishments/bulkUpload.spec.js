@@ -3,6 +3,8 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const rfr = require('rfr');
+const { build, fake } = require('@jackfranklin/test-data-bot');
+
 
 const dbmodels = rfr('server/models');
 sinon.stub(dbmodels.status, 'ready').value(false);
@@ -14,7 +16,60 @@ const { Establishment } = rfr('server/models/classes/establishment');
 const buildEstablishmentCSV = rfr('server/test/factories/establishment/csv');
 const buildWorkerCSV = rfr('server/test/factories/worker/csv');
 
+const errorsBuilder = build('Error', {
+  fields: {
+    name: fake(f => f.company.companyName()),
+    lineNumber: fake(f => f.random.number()),
+    worker: fake(f => f.name.lastName())
+  }
+});
+
 describe('/server/routes/establishment/bulkUpload.js', () => {
+  describe('printLine', () => {
+    it('prints the correct error message for training csv', async () => {
+      const readable = [];
+      const errors = {
+        "error1": [
+          errorsBuilder()
+        ]
+      };
+      const sep = ";";
+      const reportType = 'training';
+      bulkUpload.printLine(readable, reportType, errors, sep);
+      expect(readable.length).equals(2);
+      expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
+      expect(readable[1]).to.eql(`For worker with ${errors.error1[0].name} and UNIQUEWORKERID ${errors.error1[0].worker} on line ${errors.error1[0].lineNumber}${sep}`);
+    });
+    it('prints the correct error message for establishment csv', async () => {
+      const readable = [];
+      const errors = {
+        "error1": [
+          errorsBuilder()
+        ]
+      };
+      const sep = ";";
+      const reportType = 'establishments';
+      bulkUpload.printLine(readable, reportType, errors, sep);
+      expect(readable.length).equals(2);
+      expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
+      expect(readable[1]).to.eql(`For establishment called ${errors.error1[0].name} on line ${errors.error1[0].lineNumber}${sep}`);
+    });
+    it('prints the correct error message for workers csv', async () => {
+      const readable = [];
+      const errors = {
+        "error1": [
+          errorsBuilder()
+        ]
+      };
+      const sep = ";";
+      const reportType = 'workers';
+      bulkUpload.printLine(readable, reportType, errors, sep);
+      expect(readable.length).equals(2);
+      expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
+      expect(readable[1]).to.eql(`For worker with LOCALESTID ${errors.error1[0].name} and UNIQUEWORKERID ${errors.error1[0].worker} on line ${errors.error1[0].lineNumber}${sep}`);
+    });
+  });
+
   describe('checkDuplicateLocations', () => {
     it('can check for duplicate location IDs', async () => {
       const csvEstablishmentSchemaErrors = [];
@@ -83,7 +138,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         );
 
         worker.validate();
-        
+
         return worker;
       });
 
@@ -113,7 +168,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         lineNumber: 1,
         errCode: 998,
         errType: 'DUPLICATE_ERROR',
-        error: 'CHGUNIQUEWORKERID Worker 1 is not unique',
+        error: 'CHGUNIQUEWRKID Worker 1 is not unique',
         name: 'foo',
         source: 'Worker 2',
         worker: 'Worker 2'

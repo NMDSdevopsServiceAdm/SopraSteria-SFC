@@ -6,6 +6,18 @@ import { ReportService } from '@core/services/report.service';
 import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 
+<<<<<<< HEAD
+=======
+import { HttpResponse } from '@angular/common/http';
+import { ReportService } from '@core/services/report.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { Router } from '@angular/router';
+import { Worker } from '@core/model/worker.model';
+import { WorkerService } from '@core/services/worker.service';
+import { take } from 'rxjs/operators';
+import * as moment from 'moment';
+>>>>>>> develop
+
 @Component({
   selector: 'app-trianing-link-panel',
   templateUrl: './trianing-link-panel.component.html',
@@ -16,11 +28,14 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
   public url: string;
   public fromStaffRecord: boolean;
 
-  public currentDate: Date;
+  public lastUpdated: string;
+
+  public now = moment.now();
 
   constructor(
     private reportService: ReportService,
     private establishmentService: EstablishmentService,
+    private workerService: WorkerService,
     private router: Router,
   ) {}
 
@@ -32,10 +47,24 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
       this.fromStaffRecord = true;
       this.establishmentService.isMandatoryTrainingView.next(true);
     }
+
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(data => {
-        if (data && data.id) {
+        if (data && data.id !== undefined) {
           this.establishmentUid = data.uid;
+          this.subscriptions.add(
+            this.workerService.getAllWorkers(data.uid).subscribe(
+              workers => {
+                workers.forEach((worker: Worker) => {
+                  if (worker.trainingCount > 0) {
+                    if (this.lastUpdated === undefined || this.lastUpdated < worker.trainingLastUpdated) {
+                      this.lastUpdated = worker.trainingLastUpdated;
+                    }
+                  }
+                });
+              }
+            ),
+          )
         }
       }),
     );

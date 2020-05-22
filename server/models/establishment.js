@@ -707,5 +707,32 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
+  Establishment.findWithWorkersAndTraining = function (establishmentId) {
+    return this.findByPk(establishmentId, {
+      attributes: ['id'],
+      include: {
+        model: sequelize.models.worker,
+        attributes: ['id', 'uid', 'NameOrIdValue'],
+        as: 'workers',
+        where: {
+          archived: false,
+        },
+        include: [
+          {
+            model: sequelize.models.job,
+            as: 'mainJob',
+            attributes: ['id', 'title'],
+            required: false,
+          },
+          {
+            model: sequelize.models.workerTraining,
+            as: 'workerTraining',
+            attributes: ['id', 'uid', 'title', 'expires', 'categoryFk'],
+          },
+        ],
+      },
+    });
+  }
+
   return Establishment;
 };

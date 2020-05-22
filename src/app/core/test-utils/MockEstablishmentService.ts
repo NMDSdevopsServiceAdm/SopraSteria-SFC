@@ -1,7 +1,15 @@
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Establishment } from '@core/model/establishment.model';
+import { Observable, of } from 'rxjs';
 
 export class MockEstablishmentService extends EstablishmentService {
+  public get establishment$(): Observable<Establishment> {
+    return of({
+      id: 0,
+      uid: ''
+    } as Establishment);
+  }
+
   public get establishmentId(): string {
     return '';
   }

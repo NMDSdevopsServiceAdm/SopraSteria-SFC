@@ -89,6 +89,7 @@ export interface Worker {
   wdfEligible: boolean;
   jobRole?: string;
   trainingCount: number;
+  trainingLastUpdated?: string;
   expiredTrainingCount: number;
   expiringTrainingCount: number;
   missingMandatoryTrainingCount: number;
