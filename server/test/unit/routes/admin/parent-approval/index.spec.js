@@ -19,23 +19,27 @@ const _initialiseTestUser = () => {
   testUser.id = 1234;
 };
 
+var approvalObjectWasSaved = false;
 var fakeApproval = {
   ID: 9,
   UUID: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
   EstablishmentID: testWorkplace.id,
   UserID: testUser.id,
   createdAt: '27/8/2019 9:16am',
+  Status: 'Pending',
   Establishment: {
     nmdsId: 'I1234567',
     NameValue: 'Marvellous Mansions'
   },
   User: {
     FullNameValue: 'Magnificent Maisie'
-  }
+  },
+  save: () => { approvalObjectWasSaved = true; }
 };
 
 var approvalRequestBody = {};
 const _initialiseTestRequestBody = () => {
+  approvalRequestBody.parentRequestId = fakeApproval.ID;
   approvalRequestBody.establishmentId = testWorkplace.id;
   approvalRequestBody.userId = testUser.id;
   approvalRequestBody.rejectionReason = "Because I felt like it.";
@@ -51,6 +55,12 @@ const approvalStatus = (status) => {
 
 sinon.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
   return [ fakeApproval ];
+});
+
+sinon.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
+  if (id === fakeApproval.ID) {
+    return fakeApproval;
+  }
 });
 
 describe('admin/parent-approval route', () => {
@@ -104,6 +114,19 @@ describe('admin/parent-approval route', () => {
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
       expect(returnedJson.message).to.deep.equal(parentApproval.parentApprovalConfirmation);
       expect(returnedStatus).to.deep.equal(200);
+    });
+
+    it('should change the approval status to Approved when approving a parent request', async() => {
+      // Arrange
+      fakeApproval.Status = 'Pending';
+
+      // Act
+      await parentApproval.parentApproval({
+        body: approvalRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(fakeApproval.Status).to.equal('Approved');
     });
   });
 

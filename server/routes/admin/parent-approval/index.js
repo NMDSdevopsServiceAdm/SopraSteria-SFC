@@ -35,7 +35,8 @@ const parentApproval = async (req, res) => {
 
 const _approveParent = async (req, res) => {
   await _notifyApproval(req, res);
-  console.log(`************************************* PARENT APPROVED: USER: ${req.body.userId}, ORG: ${req.body.establishmentId}`);
+  await _updateApprovalStatus(req.body.parentRequestId, 'Approved');
+
   return res.status(200).json({ status: '0', message: parentApprovalConfirmation });
 };
 
@@ -43,6 +44,12 @@ const _rejectParent = async (req, res) => {
   await _notifyRejection(req, res);
   console.log(`************************************* PARENT REJECTED: USER: ${req.body.userId}, ORG: ${req.body.establishmentId}, REASON: ${req.body.rejectionReason}`);
   return res.status(200).json({ status: '0', message: parentRejectionConfirmation });
+};
+
+const _updateApprovalStatus = async (approvalId, status) => {
+  let singleApproval = await models.Approvals.findbyId(approvalId);
+  singleApproval.Status = status;
+  await singleApproval.save();
 };
 
 const _notifyApproval = async (req, res) => {
