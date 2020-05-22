@@ -65,6 +65,7 @@ export class ParentRequestComponent implements OnInit {
   private approveOrRejectRequest() {
     let data;
     data = {
+      parentRequestId: this.parentRequest.requestId,
       establishmentId: this.parentRequest.establishmentId,
       userId: this.parentRequest.userId,
       rejectionReason: this.rejectionReason,

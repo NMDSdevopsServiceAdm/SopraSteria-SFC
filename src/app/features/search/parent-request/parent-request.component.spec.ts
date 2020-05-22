@@ -8,6 +8,8 @@ import { WindowRef } from '@core/services/window.ref';
 
 import { ParentRequestComponent } from './parent-request.component';
 
+const testParentRequestId = 9999;
+const testParentRequestUuid = '360c62a1-2e20-410d-a72b-9d4100a11f4e';
 const testUsername = 'Mary Poppins';
 const testOrgname = 'Fawlty Towers';
 const testUserId = 1111;
@@ -20,10 +22,12 @@ const rejectButtonText = 'Reject';
 const modalApproveText = 'Approve request';
 const modalRejectText = 'Reject request';
 
-describe('ParentRequestComponent', () => {
+fdescribe('ParentRequestComponent', () => {
 
   async function getParentRequestComponent() {
     const parentRequest = {
+      requestId: testParentRequestId,
+      requestUUID: testParentRequestUuid,
       establishmentId: testEstablishmentId,
       userId: testUserId,
       workplaceId: testWorkplaceId,
@@ -86,6 +90,7 @@ describe('ParentRequestComponent', () => {
     
     // Assert
     expect(parentRequestApproval).toHaveBeenCalledWith({
+      parentRequestId: testParentRequestId,
       establishmentId: testEstablishmentId,
       userId: testUserId,
       rejectionReason: 'Approved',
@@ -103,6 +108,7 @@ describe('ParentRequestComponent', () => {
     
     // Assert
     expect(parentRequestApproval).toHaveBeenCalledWith({
+      parentRequestId: testParentRequestId,
       establishmentId: testEstablishmentId,
       userId: testUserId,
       rejectionReason: 'Rejected',
