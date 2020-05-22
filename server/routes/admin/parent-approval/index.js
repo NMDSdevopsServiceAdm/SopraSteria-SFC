@@ -42,7 +42,8 @@ const _approveParent = async (req, res) => {
 
 const _rejectParent = async (req, res) => {
   await _notifyRejection(req, res);
-  console.log(`************************************* PARENT REJECTED: USER: ${req.body.userId}, ORG: ${req.body.establishmentId}, REASON: ${req.body.rejectionReason}`);
+  await _updateApprovalStatus(req.body.parentRequestId, 'Rejected');
+
   return res.status(200).json({ status: '0', message: parentRejectionConfirmation });
 };
 

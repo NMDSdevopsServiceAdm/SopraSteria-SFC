@@ -128,6 +128,19 @@ describe('admin/parent-approval route', () => {
       // Assert
       expect(fakeApproval.Status).to.equal('Approved');
     });
+
+    it('should save the approval object when approving a parent request', async() => {
+      // Arrange
+      approvalObjectWasSaved = false;
+
+      // Act
+      await parentApproval.parentApproval({
+        body: approvalRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(approvalObjectWasSaved).to.equal(true);
+    });
   });
 
   describe('rejecting a new parent organisation', () => {
@@ -147,6 +160,32 @@ describe('admin/parent-approval route', () => {
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
       expect(returnedJson.message).to.deep.equal(parentApproval.parentRejectionConfirmation);
       expect(returnedStatus).to.deep.equal(200);
+    });
+
+    it('should change the approval status to Rejected when rejecting a parent request', async() => {
+      // Arrange
+      fakeApproval.Status = 'Pending';
+
+      // Act
+      await parentApproval.parentApproval({
+        body: approvalRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(fakeApproval.Status).to.equal('Rejected');
+    });
+
+    it('should save the approval object when rejecting a parent request', async() => {
+      // Arrange
+      approvalObjectWasSaved = false;
+
+      // Act
+      await parentApproval.parentApproval({
+        body: approvalRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(approvalObjectWasSaved).to.equal(true);
     });
   });
 });
