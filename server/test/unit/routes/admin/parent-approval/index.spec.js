@@ -58,12 +58,20 @@ const approvalStatus = (status) => {
   return {json: approvalJson, send: () => {} };
 };
 
+var throwErrorWhenFetchingAllRequests = false;
 sinon.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
-  return [ fakeApproval ];
+  if (throwErrorWhenFetchingAllRequests) {
+    throw 'Oopsy!';
+  } else {
+    return [ fakeApproval ];
+  }
 });
 
+var throwErrorWhenFetchingSingleRequest = false;
 sinon.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
-  if (id === fakeApproval.ID) {
+  if (throwErrorWhenFetchingSingleRequest) {
+    throw 'Oopsy!';
+  } else if (id === fakeApproval.ID) {
     return fakeApproval;
   }
 });
@@ -82,6 +90,8 @@ describe('admin/parent-approval route', () => {
     _initialiseTestRequestBody();
     returnedJson = null;
     returnedStatus = null;
+    throwErrorWhenFetchingAllRequests = false;
+    throwErrorWhenFetchingSingleRequest = false;
   });
 
   describe('fetching parent requests', () => {
@@ -105,6 +115,19 @@ describe('admin/parent-approval route', () => {
         orgName: fakeApproval.Establishment.NameValue,
         requested: fakeApproval.createdAt
       }]);
+    });
+
+    it('should return 400 on error', async() => {
+      // Arrange
+      throwErrorWhenFetchingAllRequests = true;
+
+      // Act
+      await parentApproval.getParentRequests({
+        body: {}
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(400);
     });
   });
 
@@ -177,6 +200,19 @@ describe('admin/parent-approval route', () => {
 
       // Assert
       expect(workplaceObjectWasSaved).to.equal(true);
+    });
+
+    it('should return 400 on error', async() => {
+      // Arrange
+      throwErrorWhenFetchingSingleRequest = true;
+
+      // Act
+      await parentApproval.parentApproval({
+        body: approvalRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(returnedStatus).to.deep.equal(400);
     });
   });
 

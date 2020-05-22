@@ -8,28 +8,38 @@ const parentApprovalConfirmation = 'You have approved the request for X to becom
 const parentRejectionConfirmation = 'You have rejected the request for X to become a parent workplace';
 
 const getParentRequests = async (req, res) => {
-  let approvalResults = await models.Approvals.findAllPending('BecomeAParent');
-  let parentRequests = approvalResults.map(approval => {
-      return {
-        requestId: approval.ID,
-        requestUUID: approval.UUID,
-        establishmentId: approval.EstablishmentID,
-        userId: approval.UserID,
-        workplaceId: approval.Establishment.nmdsId,
-        userName: approval.User.FullNameValue,
-        orgName: approval.Establishment.NameValue,
-        requested: approval.createdAt
-      };
-    }
-  );
-  return res.status(200).json(parentRequests);
+  try {
+    let approvalResults = await models.Approvals.findAllPending('BecomeAParent');
+    let parentRequests = approvalResults.map(approval => {
+        return {
+          requestId: approval.ID,
+          requestUUID: approval.UUID,
+          establishmentId: approval.EstablishmentID,
+          userId: approval.UserID,
+          workplaceId: approval.Establishment.nmdsId,
+          userName: approval.User.FullNameValue,
+          orgName: approval.Establishment.NameValue,
+          requested: approval.createdAt
+        };
+      }
+    );
+    return res.status(200).json(parentRequests);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send();
+  }
 };
 
 const parentApproval = async (req, res) => {
-  if (req.body.approve) {
-    await _approveParent(req, res);
-  } else {
-    await _rejectParent(req, res);
+  try {
+    if (req.body.approve) {
+      await _approveParent(req, res);
+    } else {
+      await _rejectParent(req, res);
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send();
   }
 };
 
