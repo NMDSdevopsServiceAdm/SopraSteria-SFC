@@ -71,14 +71,12 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: sequelize.models.establishment,
           as: 'Establishment',
-          attributes: ['nmdsId', 'NameValue'],
-          required: false,
+          attributes: ['nmdsId', 'NameValue']
         },
         {
           model: sequelize.models.user,
           as: 'User',
-          attributes: ['FullNameValue'],
-          required: false,
+          attributes: ['FullNameValue']
         }
       ]
     });
@@ -94,14 +92,12 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: sequelize.models.establishment,
           as: 'Establishment',
-          attributes: ['nmdsId', 'NameValue'],
-          required: false,
+          attributes: ['nmdsId', 'NameValue']
         },
         {
           model: sequelize.models.user,
           as: 'User',
-          attributes: ['FullNameValue'],
-          required: false,
+          attributes: ['FullNameValue']
         }
       ]
     });
@@ -117,14 +113,12 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: sequelize.models.establishment,
           as: 'Establishment',
-          attributes: ['nmdsId', 'NameValue'],
-          required: false,
+          attributes: ['nmdsId', 'NameValue']
         },
         {
           model: sequelize.models.user,
           as: 'User',
-          attributes: ['FullNameValue'],
-          required: false,
+          attributes: ['FullNameValue']
         }
       ]
     });
