@@ -1,22 +1,13 @@
-import { HttpResponse } from '@angular/common/http';
+import { HttpResponse, HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { ReportService } from '@core/services/report.service';
-import { saveAs } from 'file-saver';
-import { Subscription } from 'rxjs';
-
-<<<<<<< HEAD
-=======
-import { HttpResponse } from '@angular/common/http';
-import { ReportService } from '@core/services/report.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { Router } from '@angular/router';
+import { Router, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
+import { EstablishmentService, EstablishmentService } from '@core/services/establishment.service';
+import { ReportService, ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
-import { take } from 'rxjs/operators';
+import { saveAs } from 'file-saver';
 import * as moment from 'moment';
->>>>>>> develop
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-trianing-link-panel',
