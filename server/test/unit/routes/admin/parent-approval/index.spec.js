@@ -19,6 +19,21 @@ const _initialiseTestUser = () => {
   testUser.id = 1234;
 };
 
+var fakeApproval = {
+  ID: 9,
+  UUID: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
+  EstablishmentID: testWorkplace.id,
+  UserID: testUser.id,
+  createdAt: '27/8/2019 9:16am',
+  Establishment: {
+    nmdsId: 'I1234567',
+    NameValue: 'Marvellous Mansions'
+  },
+  User: {
+    FullNameValue: 'Magnificent Maisie'
+  }
+};
+
 var approvalRequestBody = {};
 const _initialiseTestRequestBody = () => {
   approvalRequestBody.establishmentId = testWorkplace.id;
@@ -33,6 +48,10 @@ const approvalStatus = (status) => {
   returnedStatus = status;
   return {json: approvalJson, send: () => {} };
 };
+
+sinon.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
+  return [ fakeApproval ];
+});
 
 describe('admin/parent-approval route', () => {
 
@@ -55,8 +74,16 @@ describe('admin/parent-approval route', () => {
 
       // Assert
       expect(returnedStatus).to.deep.equal(200);
-      expect(Array.isArray(returnedJson)).to.equal(true);
-      expect(returnedJson[0].workplaceId).to.not.equal(undefined);
+      expect(returnedJson).to.deep.equal([{
+        requestId: fakeApproval.ID,
+        requestUUID: fakeApproval.UUID,
+        establishmentId: fakeApproval.EstablishmentID,
+        userId: fakeApproval.UserID,
+        workplaceId: fakeApproval.Establishment.nmdsId,
+        userName: fakeApproval.User.FullNameValue,
+        orgName: fakeApproval.Establishment.NameValue,
+        requested: fakeApproval.createdAt
+      }]);
     });
   });
 
