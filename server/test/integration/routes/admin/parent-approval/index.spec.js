@@ -2,6 +2,7 @@ const supertest = require('supertest');
 const baseEndpoint = require('../../../utils/baseUrl').baseurl;
 const apiEndpoint = supertest(baseEndpoint);
 const expect = require('chai').expect;
+const models = require('../../../../../models');
 
 // mocked real postcode/location data
 // http://localhost:3000/api/test/locations/random?limit=5
@@ -15,6 +16,8 @@ var adminLogin = null;
 describe('Admin/Parent Approval', () => {
   let nonCqcServices = null;
   let nonCQCSite = null;
+  let login = null;
+  let approvalRequest = null;
 
   before(async() => {
 
@@ -43,6 +46,26 @@ describe('Admin/Parent Approval', () => {
         .expect('Content-Type', /json/)
         .expect(200);
     }
+
+    // Create a become-a-parent request.
+    login = await models.login.findOne({
+      where: { username: admin.username },
+      attributes: ['username'],
+      include: [{
+          model: models.user,
+          attributes: ['id'],
+          include: [{
+              model: models.establishment,
+              attributes: ['id']
+            }]
+      }]
+    });
+    approvalRequest = await models.Approvals.create({
+      EstablishmentID: login.user.establishment.id,
+      UserID: login.user.id,
+      Status: 'Pending',
+      ApprovalType: 'BecomeAParent'
+    });
   });
 
   beforeEach(async() => {});
@@ -71,7 +94,6 @@ describe('Admin/Parent Approval', () => {
       it('should return a confirmation message and status 200 when an org is granted parent status',
         async () => {
           // Arrange
-          const approve = true;
           if (adminLogin.headers.authorization) {
             const result = await apiEndpoint
 
@@ -79,34 +101,35 @@ describe('Admin/Parent Approval', () => {
               .post('/admin/parent-approval')
               .set({ Authorization: adminLogin.headers.authorization })
               .send({
-                approve: approve,
-              })
-
-              // Assert
-              .expect('Content-Type', /json/)
-              .expect(200);
-            expect(result.body.message).to.equal(parentApproval.parentApprovalConfirmation);
-          }
-        });
-
-      it('should return a confirmation message and status 200 when an org is denied parent status',
-        async () => {
-          // Arrange
-          const approve = false;
-          if (adminLogin.headers.authorization) {
-            const result = await apiEndpoint
-
-              // Act
-              .post('/admin/parent-approval')
-              .set({ Authorization: adminLogin.headers.authorization })
-              .send({
-                approve: approve,
+                approve: false,
+                parentRequestId: approvalRequest.ID,
+                establishmentId: login.user.establishment.id
               })
 
               // Assert
               .expect('Content-Type', /json/)
               .expect(200);
             expect(result.body.message).to.equal(parentApproval.parentRejectionConfirmation);
+          }
+        });
+
+      it('should return status 400 when passed bad data',
+        async () => {
+          // Arrange
+          if (adminLogin.headers.authorization) {
+            const result = await apiEndpoint
+
+            // Act
+            .post('/admin/parent-approval')
+            .set({ Authorization: adminLogin.headers.authorization })
+            .send({
+              approve: true,
+              parentRequestId: 99999999,
+              establishmentId: 9999
+            })
+
+            // Assert
+            .expect(400);
           }
         });
     });
