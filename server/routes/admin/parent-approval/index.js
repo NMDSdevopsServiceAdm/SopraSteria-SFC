@@ -8,22 +8,21 @@ const parentApprovalConfirmation = 'You have approved the request for X to becom
 const parentRejectionConfirmation = 'You have rejected the request for X to become a parent workplace';
 
 const getParentRequests = async (req, res) => {
-  return res.status(200).json(
-      [ {
-          establishmentId: 1111,
-          userId: 2222,
-          workplaceId: 'I1234567',
-          userName: 'Magnificent Maisie',
-          orgName: 'Marvellous Mansions',
-          requested: '27/8/2019 9:16am'
-        },{
-          establishmentId: 3333,
-          userId: 4444,
-          workplaceId: 'B9999999',
-          userName: 'Everso Stupid',
-          orgName: 'Everly Towers',
-          requested: '20/5/2020 6:42pm'
-      }]);
+  let approvalResults = await models.Approvals.findAllPending('BecomeAParent');
+  let parentRequests = approvalResults.map(approval => {
+      return {
+        requestId: approval.ID,
+        requestUUID: approval.UUID,
+        establishmentId: approval.EstablishmentID,
+        userId: approval.UserID,
+        workplaceId: approval.Establishment.nmdsId,
+        userName: approval.User.FullNameValue,
+        orgName: approval.Establishment.NameValue,
+        requested: approval.createdAt
+      };
+    }
+  );
+  return res.status(200).json(parentRequests);
 };
 
 const parentApproval = async (req, res) => {

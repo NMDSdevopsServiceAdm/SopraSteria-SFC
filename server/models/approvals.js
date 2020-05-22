@@ -60,5 +60,29 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
+  Approvals.findAllPending = function(approvalType) {
+    return this.findAll({
+      where: {
+        ApprovalType: approvalType,
+        Status: 'Pending'
+      },
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status'],
+      include: [
+        {
+          model: sequelize.models.establishment,
+          as: 'Establishment',
+          attributes: ['nmdsId', 'NameValue'],
+          required: false,
+        },
+        {
+          model: sequelize.models.user,
+          as: 'User',
+          attributes: ['FullNameValue'],
+          required: false,
+        }
+      ]
+    });
+  }
+
   return Approvals;
 };

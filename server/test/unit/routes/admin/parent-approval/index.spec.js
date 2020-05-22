@@ -56,9 +56,7 @@ describe('admin/parent-approval route', () => {
       // Assert
       expect(returnedStatus).to.deep.equal(200);
       expect(Array.isArray(returnedJson)).to.equal(true);
-
-      // TO DO: Remove this assertion - it's just testing dummy code while we wait for database stuff.'
-      expect(returnedJson[0].workplaceId).to.deep.equal('I1234567');
+      expect(returnedJson[0].workplaceId).to.not.equal(undefined);
     });
   });
 
