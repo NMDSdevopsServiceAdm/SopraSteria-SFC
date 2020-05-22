@@ -63,8 +63,8 @@ describe('Admin/Parent Approval', () => {
               // Assert
               .expect('Content-Type', /json/)
               .expect(200);
-            expect(result.body.parentRequests).to.not.equal(undefined);
-            expect(Array.isArray(result.body.parentRequests));
+            expect(result.body).to.not.equal(undefined);
+            expect(Array.isArray(result.body));
           }
         });
 
