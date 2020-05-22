@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
 const Sequelize = require('sequelize');
+const moment = require('moment-timezone');
+const config = require('../../../config/config');
 
 const parentApprovalConfirmation = 'You have approved the request for X to become a parent workplace';
 const parentRejectionConfirmation = 'You have rejected the request for X to become a parent workplace';
@@ -19,7 +21,7 @@ const getParentRequests = async (req, res) => {
           workplaceId: approval.Establishment.nmdsId,
           userName: approval.User.FullNameValue,
           orgName: approval.Establishment.NameValue,
-          requested: approval.createdAt
+          requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
         };
       }
     );
