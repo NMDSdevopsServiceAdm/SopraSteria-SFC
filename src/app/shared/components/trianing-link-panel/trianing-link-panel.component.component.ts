@@ -32,7 +32,6 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.url = this.router.url;
-    this.currentDate = new Date();
 
     if (this.url.includes('view-all-mandatory-training')) {
       this.fromStaffRecord = true;
