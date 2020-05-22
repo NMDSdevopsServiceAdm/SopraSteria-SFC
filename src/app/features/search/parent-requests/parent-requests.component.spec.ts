@@ -5,12 +5,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FirstErrorPipe } from '@shared/pipes/first-error.pipe';
 import { render, RenderResult } from '@testing-library/angular';
 import { of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
+import { WindowRef } from '@core/services/window.ref';
 
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { ParentRequestComponent } from '../parent-request/parent-request.component';
 import { ParentRequestsComponent } from './parent-requests.component';
 
-describe('ParentRequestsComponent', () => {
+fdescribe('ParentRequestsComponent', () => {
   let component: RenderResult<ParentRequestsComponent>;
 
   it('should create', async () => {
@@ -18,8 +20,14 @@ describe('ParentRequestsComponent', () => {
       imports: [
         ReactiveFormsModule,
         HttpClientTestingModule,
-        SharedModule],
+        SharedModule,
+        RouterTestingModule],
       declarations: [ParentRequestComponent],
+      providers: [
+        {
+          provide: WindowRef,
+          useClass: WindowRef
+        }],
     });
 
     expect(component).toBeTruthy();
@@ -47,9 +55,17 @@ describe('ParentRequestsComponent', () => {
       );
 
       const { fixture } = await render(ParentRequestsComponent, {
-        imports: [ReactiveFormsModule, HttpClientTestingModule, SharedModule],
+        imports: [
+          ReactiveFormsModule,
+          HttpClientTestingModule,
+          SharedModule,
+          RouterTestingModule],
         declarations: [ParentRequestComponent],
         providers: [
+          {
+            provide: WindowRef,
+            useClass: WindowRef
+          },
           {
             provide: ParentRequestsService,
             useClass: parentRequestsService
@@ -78,8 +94,17 @@ describe('ParentRequestsComponent', () => {
     }];
     
     const { fixture } = await render(ParentRequestsComponent, {
-      imports: [ReactiveFormsModule, HttpClientTestingModule, SharedModule],
+      imports: [
+        ReactiveFormsModule,
+        HttpClientTestingModule,
+        SharedModule,
+        RouterTestingModule],
       declarations: [ParentRequestComponent],
+      providers: [
+        {
+          provide: WindowRef,
+          useClass: WindowRef
+        }],
       componentProperties: {
         parentRequests
       },

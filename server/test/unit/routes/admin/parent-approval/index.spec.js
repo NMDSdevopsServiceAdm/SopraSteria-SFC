@@ -1,7 +1,10 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const util = require('util');
+const moment = require('moment-timezone');
+const config = require('../../../../../config/config');
 const Sequelize = require('sequelize');
+
+const util = require('util');
 // To console.log a deep object:
 // console.log("*************************** json: " + util.inspect(json, false, null, true));
 
@@ -30,9 +33,10 @@ var fakeApproval = {
   UUID: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
   EstablishmentID: testWorkplace.id,
   UserID: testUser.id,
-  createdAt: '27/8/2019 9:16am',
+  createdAt: '2020-05-18 09:25:12.896+01',
   Status: 'Pending',
   Establishment: {
+    uid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
     nmdsId: testWorkplace.nmdsId,
     NameValue: testWorkplace.NameValue
   },
@@ -109,11 +113,12 @@ describe('admin/parent-approval route', () => {
         requestId: fakeApproval.ID,
         requestUUID: fakeApproval.UUID,
         establishmentId: fakeApproval.EstablishmentID,
+        establishmentUid: fakeApproval.Establishment.uid,
         userId: fakeApproval.UserID,
         workplaceId: fakeApproval.Establishment.nmdsId,
         userName: fakeApproval.User.FullNameValue,
         orgName: fakeApproval.Establishment.NameValue,
-        requested: fakeApproval.createdAt
+        requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
       }]);
     });
 

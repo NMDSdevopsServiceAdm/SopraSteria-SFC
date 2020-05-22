@@ -19,7 +19,7 @@
         </td>
         <th class="govuk-table__cell">Workplace</th>
         <td class="govuk-table__cell">
-          <a (click)="navigateToWorkplace(parentRequest.establishmentId, parentRequest.username, $event)" href="#">
+          <a (click)="navigateToWorkplace(parentRequest.establishmentUid, parentRequest.username, parentRequest.workplaceId, $event)" href="#">
             {{ parentRequest.orgName }}
           </a>
         </td>

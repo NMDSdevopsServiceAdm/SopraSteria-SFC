@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { DialogService } from '@core/services/dialog.service';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
 import { AlertService } from '@core/services/alert.service';
@@ -20,6 +21,7 @@ export class ParentRequestComponent implements OnInit {
 
   constructor(
     public parentRequestsService: ParentRequestsService,
+    public switchWorkplaceService: SwitchWorkplaceService,
     public dialogService: DialogService,
     public alertService: AlertService
   ) {}
@@ -54,8 +56,8 @@ export class ParentRequestComponent implements OnInit {
       });
   }
 
-  public navigateToWorkplace(id, username, e): void {
-    // To do: sort this out. The code is all in search.component.ts, in setEsblishmentId
+  public navigateToWorkplace(id, username, nmdsId, e): void {
+    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId, e);
   }
 
   public onSubmit() {

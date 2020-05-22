@@ -14,6 +14,7 @@ const testUsername = 'Mary Poppins';
 const testOrgname = 'Fawlty Towers';
 const testUserId = 1111;
 const testEstablishmentId = 2222;
+const testEstablishmentUid = '9efce151-6167-4e99-9cbf-0b9f8ab987fa';
 const testWorkplaceId = 'B1234567';
 const testRequestedDate = new Date();
 
@@ -22,13 +23,14 @@ const rejectButtonText = 'Reject';
 const modalApproveText = 'Approve request';
 const modalRejectText = 'Reject request';
 
-describe('ParentRequestComponent', () => {
+fdescribe('ParentRequestComponent', () => {
 
   async function getParentRequestComponent() {
     const parentRequest = {
       requestId: testParentRequestId,
       requestUUID: testParentRequestUuid,
       establishmentId: testEstablishmentId,
+      establishmentUid: testEstablishmentUid,
       userId: testUserId,
       workplaceId: testWorkplaceId,
       userName: testUsername,

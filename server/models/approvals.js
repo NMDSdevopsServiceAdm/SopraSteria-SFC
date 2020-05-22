@@ -71,7 +71,7 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: sequelize.models.establishment,
           as: 'Establishment',
-          attributes: ['nmdsId', 'NameValue']
+          attributes: ['uid', 'nmdsId', 'NameValue']
         },
         {
           model: sequelize.models.user,

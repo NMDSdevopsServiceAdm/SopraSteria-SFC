@@ -17,6 +17,7 @@ const getParentRequests = async (req, res) => {
           requestId: approval.ID,
           requestUUID: approval.UUID,
           establishmentId: approval.EstablishmentID,
+          establishmentUid: approval.Establishment.uid,
           userId: approval.UserID,
           workplaceId: approval.Establishment.nmdsId,
           userName: approval.User.FullNameValue,
