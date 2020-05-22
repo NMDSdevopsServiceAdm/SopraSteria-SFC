@@ -10,8 +10,13 @@ const models = require('../../../../../models/index');
 const parentApproval = require('../../../../../routes/admin/parent-approval');
 
 var testWorkplace = {};
+var workplaceObjectWasSaved = false;
 const _initialiseTestWorkplace = () => {
   testWorkplace.id = 4321;
+  testWorkplace.isParent = false;
+  testWorkplace.nmdsId = 'I1234567';
+  testWorkplace.NameValue = 'Marvellous Mansions';
+  testWorkplace.save = () => { workplaceObjectWasSaved = true; };
 };
 
 var testUser = {};
@@ -28,8 +33,8 @@ var fakeApproval = {
   createdAt: '27/8/2019 9:16am',
   Status: 'Pending',
   Establishment: {
-    nmdsId: 'I1234567',
-    NameValue: 'Marvellous Mansions'
+    nmdsId: testWorkplace.nmdsId,
+    NameValue: testWorkplace.NameValue
   },
   User: {
     FullNameValue: 'Magnificent Maisie'
@@ -60,6 +65,12 @@ sinon.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) =>
 sinon.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
   if (id === fakeApproval.ID) {
     return fakeApproval;
+  }
+});
+
+sinon.stub(models.establishment, 'findbyId').callsFake(async (id) => {
+  if (id === testWorkplace.id) {
+    return testWorkplace;
   }
 });
 
@@ -141,6 +152,32 @@ describe('admin/parent-approval route', () => {
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
     });
+
+    it('should change the workplace to a parent workplace when approving a parent request', async() => {
+      // Arrange
+      testWorkplace.isParent = false;
+
+      // Act
+      await parentApproval.parentApproval({
+        body: approvalRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(testWorkplace.isParent).to.equal(true);
+    });
+
+    it('should save the workplace object when approving a parent request', async() => {
+      // Arrange
+      workplaceObjectWasSaved = false;
+
+      // Act
+      await parentApproval.parentApproval({
+        body: approvalRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(workplaceObjectWasSaved).to.equal(true);
+    });
   });
 
   describe('rejecting a new parent organisation', () => {
@@ -186,6 +223,19 @@ describe('admin/parent-approval route', () => {
 
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
+    });
+
+    it('should NOT save the workplace object when rejecting a parent request', async() => {
+      // Arrange
+      workplaceObjectWasSaved = false;
+
+      // Act
+      await parentApproval.parentApproval({
+        body: approvalRequestBody
+      }, {status: approvalStatus});
+
+      // Assert
+      expect(workplaceObjectWasSaved).to.equal(false);
     });
   });
 });

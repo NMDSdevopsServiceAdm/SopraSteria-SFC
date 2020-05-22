@@ -36,6 +36,7 @@ const parentApproval = async (req, res) => {
 const _approveParent = async (req, res) => {
   await _notifyApproval(req, res);
   await _updateApprovalStatus(req.body.parentRequestId, 'Approved');
+  await _makeWorkplaceIntoParent(req.body.establishmentId);
 
   return res.status(200).json({ status: '0', message: parentApprovalConfirmation });
 };
@@ -51,6 +52,12 @@ const _updateApprovalStatus = async (approvalId, status) => {
   let singleApproval = await models.Approvals.findbyId(approvalId);
   singleApproval.Status = status;
   await singleApproval.save();
+};
+
+const _makeWorkplaceIntoParent = async (id) => {
+  let workplace = await models.establishment.findbyId(id);
+  workplace.isParent = true;
+  await workplace.save();
 };
 
 const _notifyApproval = async (req, res) => {
