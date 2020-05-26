@@ -74,15 +74,10 @@ export class ParentRequestComponent implements OnInit {
       approve: this.approve,
     };
 
-    const approvedOrRejected = this.approve ? "approved" : "rejected";
-    this.alertService.addAlert({
-      type: 'success',
-      message: `You have ${approvedOrRejected} the request for ${this.parentRequest.orgName} to become a parent workplace.`,
-    });
-
     this.parentRequestsService.parentApproval(data).subscribe(
       () => {
         this.removeParentRequest.emit(this.index);
+        this.showConfirmationMessage();
       },
       (err) => {
         if (err instanceof HttpErrorResponse) {
@@ -90,6 +85,15 @@ export class ParentRequestComponent implements OnInit {
         }
       }
     );
+  }
+
+  private showConfirmationMessage() {
+    const approvedOrRejected = this.approve ? "approved" : "rejected";
+
+    this.alertService.addAlert({
+      type: 'success',
+      message: `Parent request ${approvedOrRejected} for ${this.parentRequest.orgName}.`,
+    });
   }
 
   private populateErrorFromServer(err) {

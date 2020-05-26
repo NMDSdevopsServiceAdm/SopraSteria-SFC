@@ -6,8 +6,8 @@ const Sequelize = require('sequelize');
 const moment = require('moment-timezone');
 const config = require('../../../config/config');
 
-const parentApprovalConfirmation = 'You have approved the request for X to become a parent workplace';
-const parentRejectionConfirmation = 'You have rejected the request for X to become a parent workplace';
+const parentApprovalConfirmation = 'Parent request approved';
+const parentRejectionConfirmation = 'Parent request rejected';
 
 const getParentRequests = async (req, res) => {
   try {

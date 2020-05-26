@@ -197,7 +197,7 @@ fdescribe('ParentRequestComponent', () => {
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
       type: 'success',
-      message: `You have approved the request for ${testOrgname} to become a parent workplace.`,
+      message: `Parent request approved for ${testOrgname}.`,
     });
   });
 
@@ -212,7 +212,7 @@ fdescribe('ParentRequestComponent', () => {
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
       type: 'success',
-      message: `You have rejected the request for ${testOrgname} to become a parent workplace.`,
+      message: `Parent request rejected for ${testOrgname}.`,
     });
   });
 });
