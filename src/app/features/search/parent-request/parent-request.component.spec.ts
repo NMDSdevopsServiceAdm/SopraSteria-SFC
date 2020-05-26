@@ -3,6 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { render, within } from '@testing-library/angular';
 import { spy } from 'sinon';
+import { of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WindowRef } from '@core/services/window.ref';
 
@@ -190,9 +191,11 @@ fdescribe('ParentRequestComponent', () => {
     // Arrange
     const { component, modalConfirmationDialog } = await clickFirstApproveButton();
     const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
+    spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.returnValue(of({}));
     
     // Act
     within(modalConfirmationDialog).getByText(modalApproveText).click();
+    component.fixture.detectChanges(); 
     
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
@@ -205,9 +208,11 @@ fdescribe('ParentRequestComponent', () => {
     // Arrange
     const { component, modalConfirmationDialog } = await clickFirstRejectButton();
     const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
+    spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.returnValue(of({}));
     
     // Act
     within(modalConfirmationDialog).getByText(modalRejectText).click();
+    component.fixture.detectChanges(); 
     
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
