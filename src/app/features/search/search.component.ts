@@ -38,14 +38,14 @@ export class SearchComponent implements OnInit {
   };
 
   constructor(
-    private router: Router,
+    public router: Router,
+    public http: HttpClient,
+    public establishmentService: EstablishmentService,
+    public permissionsService: PermissionsService,
+    public authService: AuthService,
+    public notificationsService: NotificationsService,
+    private dialogService: DialogService,
     protected backService: BackService,
-    private http: HttpClient,
-    private establishmentService: EstablishmentService,
-    private authService: AuthService,
-    private permissionsService: PermissionsService,
-    private notificationsService: NotificationsService,
-    private dialogService: DialogService
   ) {}
 
   ngOnInit() {
