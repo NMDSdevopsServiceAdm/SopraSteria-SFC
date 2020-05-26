@@ -15,7 +15,8 @@ const permissions = async (req, res) => {
   const approvalRequests = await models.Approvals.findOne({
     where: {
       EstablishmentID: establishmentId,
-      Status: 'Pending'
+      Status: 'Pending',
+      ApprovalType: 'BecomeAParent'
     },
     order: [
       ['createdAt', 'DESC']
