@@ -68,7 +68,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  Approvals.canRequest = async function (establishmentId) {
+  Approvals.canRequestToBecomeAParent = async function (establishmentId) {
     const latest = await this.findOne({
       where: {
         EstablishmentID: establishmentId,

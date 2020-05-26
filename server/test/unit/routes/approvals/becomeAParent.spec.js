@@ -22,7 +22,7 @@ describe('test become a parent endpoint functions', () => {
         id: establishmentId,
       });
 
-      sinon.stub(models.Approvals, 'canRequest').returns(true);
+      sinon.stub(models.Approvals, 'canRequestToBecomeAParent').returns(true);
 
       const req = httpMocks.createRequest({
         method: 'POST',
@@ -112,7 +112,7 @@ describe('test become a parent endpoint functions', () => {
         id: establishmentId,
       });
 
-      sinon.stub(models.Approvals, 'canRequest').returns(false);
+      sinon.stub(models.Approvals, 'canRequestToBecomeAParent').returns(false);
 
       const req = httpMocks.createRequest({
         method: 'POST',
