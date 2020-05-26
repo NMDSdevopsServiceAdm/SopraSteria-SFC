@@ -10,25 +10,19 @@ describe('test become a parent endpoint functions', () => {
       sinon.restore();
     });
 
-    it ('sets user id on the request object', async () => {
+    it('sets user id on the request object', async () => {
       const userId = '123';
       const establishmentId = '123';
 
-      sinon.stub(models.user, 'findByUUID').callsFake(() => {
-        return {
-          id: userId,
-        };
+      sinon.stub(models.user, 'findByUUID').returns({
+        id: userId,
       });
 
-      sinon.stub(models.establishment, 'findByPk').callsFake(() => {
-        return {
-          id: establishmentId,
-        };
+      sinon.stub(models.establishment, 'findByPk').returns({
+        id: establishmentId,
       });
 
-      sinon.stub(models.Approvals, 'canRequest').callsFake(() => {
-        return true;
-      });
+      sinon.stub(models.Approvals, 'canRequest').returns(true);
 
       const req = httpMocks.createRequest({
         method: 'POST',
@@ -38,16 +32,107 @@ describe('test become a parent endpoint functions', () => {
       req.userUid = '123';
       req.establishment = {
         id: establishmentId,
-      }
+      };
 
       const res = httpMocks.createResponse();
 
-      const next = function () {
-      };
+      const next = function () {};
 
       await validateBecomeAParentRequest(req, res, next);
 
       expect(req.userId).equals('123');
+    });
+
+    it('errors out when giving a non-existant user uuid', async () => {
+      const establishmentId = '123';
+
+      sinon.stub(models.user, 'findByUUID').returns(null);
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: `/api/approvals/become-a-parent`,
+      });
+
+      req.userUid = '123';
+      req.establishment = {
+        id: establishmentId,
+      };
+
+      const res = httpMocks.createResponse();
+
+      const next = function () {};
+
+      await validateBecomeAParentRequest(req, res, next);
+
+      const { message } = res._getJSONData();
+      expect(res.statusCode).to.equal(404);
+      expect(message).to.equal('User not found.');
+    });
+
+    it('errors out when giving a non-existant establishment id', async () => {
+      const userId = '123';
+      const establishmentId = '123';
+
+      sinon.stub(models.user, 'findByUUID').returns({
+        id: userId,
+      });
+
+      sinon.stub(models.establishment, 'findByPk').returns(null);
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: `/api/approvals/become-a-parent`,
+      });
+
+      req.userUid = '123';
+      req.establishment = {
+        id: establishmentId,
+      };
+
+      const res = httpMocks.createResponse();
+
+      const next = function () {};
+
+      await validateBecomeAParentRequest(req, res, next);
+
+      const { message } = res._getJSONData();
+      expect(res.statusCode).to.equal(404);
+      expect(message).to.equal('Establishment not found.');
+    });
+
+    it('errors out when a request already exists', async () => {
+      const userId = '123';
+      const establishmentId = '123';
+
+      sinon.stub(models.user, 'findByUUID').returns({
+        id: userId,
+      });
+
+      sinon.stub(models.establishment, 'findByPk').returns({
+        id: establishmentId,
+      });
+
+      sinon.stub(models.Approvals, 'canRequest').returns(false);
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: `/api/approvals/become-a-parent`,
+      });
+
+      req.userUid = '123';
+      req.establishment = {
+        id: establishmentId,
+      };
+
+      const res = httpMocks.createResponse();
+
+      const next = function () {};
+
+      await validateBecomeAParentRequest(req, res, next);
+
+      const { message } = res._getJSONData();
+      expect(res.statusCode).to.equal(422);
+      expect(message).to.equal('There is already an existing Become a Parent request.');
     });
   });
 });

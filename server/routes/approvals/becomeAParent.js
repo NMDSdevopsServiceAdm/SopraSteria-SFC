@@ -8,21 +8,21 @@ const validateBecomeAParentRequest = async (req, res, next) => {
   try {
     const user = await models.user.findByUUID(req.userUid);
     if (!user) {
-      return res.status(404).send({
+      return res.status(404).json({
         message: 'User not found.',
       });
     }
 
     const establishment = await models.establishment.findByPk(req.establishment.id);
     if (!establishment) {
-      return res.status(404).send({
+      return res.status(404).json({
         message: 'Establishment not found.',
       });
     }
 
     const canRequest = await models.Approvals.canRequest(req.establishment.id)
     if (canRequest === false) {
-      return res.status(422).send({
+      return res.status(422).json({
         message: 'There is already an existing Become a Parent request.',
       });
     }
