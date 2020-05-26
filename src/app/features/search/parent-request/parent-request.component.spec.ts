@@ -38,6 +38,43 @@ const modalRejectText = 'Reject request';
 
 fdescribe('ParentRequestComponent', () => {
 
+  async function setupForSwitchWorkplace() {
+    const component = await getParentRequestComponent();
+    const authToken = 'This is an auth token';
+    const swappedEstablishmentData = {
+      headers: {
+        get: (header) => { return header === 'authorization' ? authToken : null; }
+      },
+      body: {
+        establishment: {
+          uid: testEstablishmentUid
+        },
+      }
+    };
+    const httpPost = spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'post').and.returnValue(of(swappedEstablishmentData));
+    const workplace = { uid: testEstablishmentUid }; 
+    spyOn(Observable.prototype, 'pipe').and.returnValue(of(workplace));
+    /*let pipeCount = 0;
+    spyOn(Observable.prototype, 'pipe').and.callFake( () => {
+      pipeCount++;
+      if (pipeCount === 1) {
+        return workplace;
+      } else {
+        return notificationData;
+      }
+    });*/
+    const notificationData = [{ dummyNotification: 'I am a notification' }, { dummyNotification: 'I am another notification' }];    
+    spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService, 'getAllNotifications').and.returnValue(of(notificationData));
+
+    return {
+      component,
+      authToken,
+      workplace,
+      notificationData,
+      httpPost
+    };
+  }
+
   async function getParentRequestComponent() {
     return render(ParentRequestComponent, {
       imports: [
@@ -224,26 +261,9 @@ fdescribe('ParentRequestComponent', () => {
   it('should load notifications if user name not populated.', async () => {
     // Arrange
     parentRequest.username = null;
-    const component = await getParentRequestComponent();
+    const { component } = await setupForSwitchWorkplace();
     const notificationData = { dummyNotification: 'I am a notification' };
     const httpGet = spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'get').and.returnValue(of(notificationData));
-
-    // common setup
-    const authToken = 'This is an auth token';
-    const swappedEstablishmentData = {
-      headers: {
-        get: (header) => { return header === 'authorization' ? authToken : null; }
-      },
-      body: {
-        establishment: {
-          uid: testEstablishmentUid
-        },
-      }
-    };
-    const httpPost = spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'post').and.returnValue(of(swappedEstablishmentData));
-    const workplace = { uid: testEstablishmentUid }; 
-    spyOn(Observable.prototype, 'pipe').and.returnValue(of(workplace));
-    spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService, 'getAllNotifications').and.returnValue(of([notificationData, notificationData]));
     const notificationsNext = spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService.notifications$, 'next').and.callThrough();
 
     // Act
@@ -256,31 +276,13 @@ fdescribe('ParentRequestComponent', () => {
   });
 
   it('should clear permissions when switching to new workplace', async () => {
-    const component = await getParentRequestComponent();
+    const { component, authToken, workplace, notificationData, httpPost } = await setupForSwitchWorkplace();
     const clearPermissions = spyOn(component.fixture.componentInstance.switchWorkplaceService.permissionsService, 'clearPermissions').and.callThrough();
-    const notificationData = [{ dummyNotification: 'I am a notification' }, { dummyNotification: 'I am another notification' }];
     const setPreviousToken = spyOn(component.fixture.componentInstance.switchWorkplaceService.authService, 'setPreviousToken').and.callThrough();
     spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'get').and.returnValue(of(notificationData));
     const setState = spyOn(component.fixture.componentInstance.switchWorkplaceService.establishmentService, 'setState').and.callThrough();
     const setPrimaryWorkplace = spyOn(component.fixture.componentInstance.switchWorkplaceService.establishmentService, 'setPrimaryWorkplace').and.callThrough();
     const navigate = spyOn(component.fixture.componentInstance.switchWorkplaceService.router, 'navigate').and.callThrough();
-    
-    // common setup
-    const authToken = 'This is an auth token';
-    const swappedEstablishmentData = {
-      headers: {
-        get: (header) => { return header === 'authorization' ? authToken : null; }
-      },
-      body: {
-        establishment: {
-          uid: testEstablishmentUid
-        },
-      }
-    };
-    const httpPost = spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'post').and.returnValue(of(swappedEstablishmentData));
-    const workplace = { uid: testEstablishmentUid }; 
-    spyOn(Observable.prototype, 'pipe').and.returnValue(of(workplace));
-    spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService, 'getAllNotifications').and.returnValue(of(notificationData));
     const notificationsNext = spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService.notifications$, 'next').and.callThrough();
     
     // Act
