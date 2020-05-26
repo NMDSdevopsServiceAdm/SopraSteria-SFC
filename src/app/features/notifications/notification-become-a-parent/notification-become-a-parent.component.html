@@ -18,7 +18,7 @@
 <ng-container *ngIf="notification">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div [ngSwitch]="status">
+      <div [ngSwitch]="notification.typeContent.status">
         <div *ngSwitchCase="'Approved'">
           <p data-testid="message">Your request to become a parent has been accepted.</p>
         </div>
