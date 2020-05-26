@@ -859,15 +859,11 @@ const addTypeContent = async notification => {
       break;
 
     case 'BECOMEAPARENT':
-      try {
-        let becomeAParentNotificationDetails = await models.Approvals.findbyUuid(notification.typeUid);
-        if (becomeAParentNotificationDetails) {
-          notification.typeContent = {
-            status: becomeAParentNotificationDetails.Status
-          };
-        }
-      } catch (error) {
-        console.log(error)
+      let becomeAParentNotificationDetails = await models.Approvals.findbyUuid(notification.typeUid);
+      if (becomeAParentNotificationDetails) {
+        notification.typeContent = {
+          status: becomeAParentNotificationDetails.Status
+        };
       }
       break;
   }

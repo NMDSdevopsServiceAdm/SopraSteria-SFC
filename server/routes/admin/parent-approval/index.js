@@ -84,17 +84,15 @@ const _notify = async (approvalId, userUid, establishmentId) => {
     type: 'BECOMEAPARENT',
     typeUid: typUid,
     userUid: userUid
-  }
-  console.log(params)
+  };
   const users = await notifications.getAllUser({establishmentId: establishmentId});
   await Promise.all(users.map(async (user) => {
     const userparams = {
       ...params,
       recipientUserUid: user.UserUID
-    }
-    console.log(userparams)
+    };
     await notifications.insertNewNotification(userparams);
-  }))
+  }));
 };
 
 router.route('/').post(parentApproval);
