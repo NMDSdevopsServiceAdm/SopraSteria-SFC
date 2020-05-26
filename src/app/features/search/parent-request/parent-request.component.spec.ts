@@ -24,7 +24,7 @@ const rejectButtonText = 'Reject';
 const modalApproveText = 'Approve request';
 const modalRejectText = 'Reject request';
 
-fdescribe('ParentRequestComponent', () => {
+describe('ParentRequestComponent', () => {
 
   async function getParentRequestComponent() {
     const parentRequest = {
