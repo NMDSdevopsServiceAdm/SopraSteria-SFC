@@ -57,6 +57,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public isOwnershipRequested = false;
   public primaryWorkplace: Establishment;
   public canLinkToParent: boolean;
+  public canBecomeAParent: boolean;
   public linkToParentRequestedStatus: boolean;
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
@@ -270,6 +271,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canLinkToParent && this.workplace.linkToParentRequested) {
       this.linkToParentRequestedStatus = true;
     }
+    this.canBecomeAParent = this.permissionsService.can(workplaceUid, 'canBecomeAParent');
+    console.log(this.canBecomeAParent);
   }
   //open Staff Tab
   public selectStaffTab(event: Event) {

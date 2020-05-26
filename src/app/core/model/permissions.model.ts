@@ -38,5 +38,6 @@ export type PermissionType =
   | 'canViewWdfReport'
   | 'canViewWorker'
   | 'canLinkToParent'
+  | 'canBecomeAParent'
   | 'canRemoveParentAssociation'
   | 'canDownloadWdfReport';
