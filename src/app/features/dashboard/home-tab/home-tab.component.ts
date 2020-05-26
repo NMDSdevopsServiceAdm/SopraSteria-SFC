@@ -272,7 +272,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.linkToParentRequestedStatus = true;
     }
     this.canBecomeAParent = this.permissionsService.can(workplaceUid, 'canBecomeAParent');
-    console.log(this.canBecomeAParent);
   }
   //open Staff Tab
   public selectStaffTab(event: Event) {
