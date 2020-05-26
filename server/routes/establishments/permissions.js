@@ -37,7 +37,8 @@ const permissions = async (req, res) => {
             permission.canLinkToParent =
               permission.canLinkToParent &&
                 !thisEstablishment.isParent &&
-                !thisEstablishment.parentId
+                !thisEstablishment.parentId &&
+                approvalRequests === null
                 ? true
                 : false;
           }
