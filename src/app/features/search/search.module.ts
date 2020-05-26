@@ -11,13 +11,20 @@ import { SharedModule } from '@shared/shared.module';
 
 import { RegistrationComponent } from './registration/registration.component';
 import { RegistrationsComponent } from './registrations/registrations.component';
-import { ParentRequestComponent } from './parent-request/parent-request.component';
 import { ParentRequestsComponent } from './parent-requests/parent-requests.component';
+import { ParentRequestComponent } from './parent-request/parent-request.component';
 import { SearchRoutingModule } from './search-routing.module';
 import { SearchComponent } from './search.component';
 
 @NgModule({
-  imports: [CommonModule, OverlayModule, ReactiveFormsModule, SharedModule, SearchRoutingModule, FormsModule],
+  imports: [
+    CommonModule,
+    OverlayModule,
+    ReactiveFormsModule,
+    SharedModule,
+    SearchRoutingModule,
+    FormsModule
+  ],
   providers: [DialogService],
   declarations: [
     SearchComponent,
@@ -26,8 +33,10 @@ import { SearchComponent } from './search.component';
     RegistrationComponent,
     RegistrationsComponent,
     ParentRequestComponent,
-    ParentRequestsComponent,
+    ParentRequestsComponent
   ],
-  entryComponents: [AdminUnlockConfirmationDialogComponent]
+  entryComponents: [
+    AdminUnlockConfirmationDialogComponent
+  ]
 })
 export class SearchModule { }
