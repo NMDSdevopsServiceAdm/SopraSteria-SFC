@@ -9,8 +9,8 @@ const notifications = require('../../../data/notifications')
 
 const uuid = require('uuid')
 
-const parentApprovalConfirmation = 'You have approved the request for X to become a parent workplace';
-const parentRejectionConfirmation = 'You have rejected the request for X to become a parent workplace';
+const parentApprovalConfirmation = 'Parent request approved';
+const parentRejectionConfirmation = 'Parent request rejected';
 
 const getParentRequests = async (req, res) => {
   try {
