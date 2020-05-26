@@ -92,3 +92,4 @@ const permissions = async (req, res) => {
 };
 
 module.exports = router;
+module.exports.permissions = permissions;
