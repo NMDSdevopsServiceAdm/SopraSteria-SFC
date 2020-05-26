@@ -12,7 +12,7 @@ import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { ParentRequestComponent } from '../parent-request/parent-request.component';
 import { ParentRequestsComponent } from './parent-requests.component';
 
-fdescribe('ParentRequestsComponent', () => {
+describe('ParentRequestsComponent', () => {
   let component: RenderResult<ParentRequestsComponent>;
 
   it('should create', async () => {
@@ -92,7 +92,7 @@ fdescribe('ParentRequestsComponent', () => {
       orgName: 'Everly Towers',
       requested: '2020-05-20 16:04:35.914'
     }];
-    
+
     const { fixture } = await render(ParentRequestsComponent, {
       imports: [
         ReactiveFormsModule,
@@ -119,3 +119,4 @@ fdescribe('ParentRequestsComponent', () => {
     expect(componentInstance.parentRequests.length).toBe(1);
   });
 });
+
