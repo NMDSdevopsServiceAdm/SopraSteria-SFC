@@ -65,6 +65,7 @@ fdescribe('ParentRequestComponent', () => {
     });*/
     const notificationData = [{ dummyNotification: 'I am a notification' }, { dummyNotification: 'I am another notification' }];    
     spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService, 'getAllNotifications').and.returnValue(of(notificationData));
+    parentRequest.username = testUsername;
 
     return {
       component,
@@ -260,8 +261,8 @@ fdescribe('ParentRequestComponent', () => {
 
   it('should load notifications if user name not populated.', async () => {
     // Arrange
-    parentRequest.username = null;
     const { component } = await setupForSwitchWorkplace();
+    parentRequest.username = null;
     const notificationData = { dummyNotification: 'I am a notification' };
     const httpGet = spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'get').and.returnValue(of(notificationData));
     const notificationsNext = spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService.notifications$, 'next').and.callThrough();
