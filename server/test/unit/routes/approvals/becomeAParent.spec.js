@@ -134,5 +134,34 @@ describe('test become a parent endpoint functions', () => {
       expect(res.statusCode).to.equal(422);
       expect(message).to.equal('There is already an existing Become a Parent request.');
     });
+
+    it('errors out when an exception is thrown', async () => {
+      sinon.stub(console, 'error'); // Hide error messages
+
+      const userUid = '123';
+      const establishmentId = '123';
+
+      sinon.stub(models.user, 'findByUUID').throws(function() { return new Error(); });
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: `/api/approvals/become-a-parent`,
+      });
+
+      req.userUid = userUid;
+      req.establishment = {
+        id: establishmentId,
+      };
+
+      const res = httpMocks.createResponse();
+
+      const next = function () {};
+
+      await validateBecomeAParentRequest(req, res, next);
+
+      const { message } = res._getJSONData();
+      expect(res.statusCode).to.equal(500);
+      expect(message).to.equal('Something went wrong validating the Become a Parent request.');
+    });
   });
 });
