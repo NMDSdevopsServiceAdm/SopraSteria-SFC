@@ -1,9 +1,10 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const util = require('util');
 const Sequelize = require('sequelize');
+
+const util = require('util');
 // To console.log a deep object:
-// console.log("*************************** json: " + util.inspect(json, false, null, true));
+// console.log("*************************** json: " + util.inspect(json, { compact: true, depth: 2, showHidden: false, breakLength: 80 }));
 
 const models = require('../../../../../models/index');
 

@@ -7,6 +7,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { Subscription } from 'rxjs';
+import { ParentRequestsService } from '@core/services/parent-requests.service';
 
 @Component({
   selector: 'app-notification-become-a-parent',
@@ -18,12 +19,14 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
   public notification;
   private subscriptions: Subscription = new Subscription();
   public notificationUid: string;
+  public status: string;
 
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
     private notificationsService: NotificationsService,
+    private parentRequestsService: ParentRequestsService
   ) {}
 
   ngOnInit() {
@@ -33,6 +36,9 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
         this.notification = details;
+        this.parentRequestsService.getParentRequest(this.notification.typeUid).subscribe(request => {
+          this.status = request.status;
+        });
       })
     );
     this.setNotificationViewed(this.notificationUid);
