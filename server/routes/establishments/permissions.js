@@ -3,11 +3,21 @@ const router = express.Router({mergeParams: true});
 const Establishment = require('../../models/classes/establishment');
 const User = require('../../models/classes/user');
 const PermissionCache = require('../../models/cache/singletons/permissions').PermissionCache;
+const models = require('../../models')
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
   const thisUser = new User.User(establishmentId);
+  const approvalRequests = await models.Approvals.findOne({
+    where: {
+      EstablishmentID: establishmentId,
+      Status: 'Pending'
+    },
+    order: [
+      ['createdAt', 'DESC']
+    ]
+  });
   try {
         if (await thisEstablishment.restore(establishmentId)) {
           if(await thisUser.restore(null,thisEstablishment.username, null)) {
@@ -35,6 +45,15 @@ router.route('/').get(async (req, res) => {
                 (permission.canDownloadWdfReport && thisEstablishment.isParent && userData.role === 'Edit')
                   ? true
                   : false;
+            }
+            if (permission.canBecomeAParent) {
+              permission.canBecomeAParent =
+                permission.canBecomeAParent &&
+                !thisEstablishment.isParent &&
+                !thisEstablishment.parentId &&
+                approvalRequests === null
+                ? true
+                : false;
             }
           });
 
