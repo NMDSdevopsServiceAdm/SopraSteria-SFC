@@ -20,7 +20,7 @@ const validateBecomeAParentRequest = async (req, res, next) => {
       });
     }
 
-    const canRequest = await models.establishment.canRequest(req.establishment.id)
+    const canRequest = await models.Approvals.canRequest(req.establishment.id)
     if (canRequest === false) {
       return res.status(422).send({
         message: 'There is already an existing Become a Parent request.',
