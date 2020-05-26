@@ -12,7 +12,7 @@ import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { ParentRequestComponent } from '../parent-request/parent-request.component';
 import { ParentRequestsComponent } from './parent-requests.component';
 
-fdescribe('ParentRequestsComponent', () => {
+describe('ParentRequestsComponent', () => {
   let component: RenderResult<ParentRequestsComponent>;
 
   it('should create', async () => {

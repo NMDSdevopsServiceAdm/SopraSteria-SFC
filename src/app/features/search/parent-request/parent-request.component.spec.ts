@@ -6,6 +6,7 @@ import { spy } from 'sinon';
 import { of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WindowRef } from '@core/services/window.ref';
+import { Observable } from 'rxjs/Observable';
 
 import { ParentRequestComponent } from './parent-request.component';
 
@@ -18,27 +19,26 @@ const testEstablishmentId = 2222;
 const testEstablishmentUid = '9efce151-6167-4e99-9cbf-0b9f8ab987fa';
 const testWorkplaceId = 'B1234567';
 const testRequestedDate = new Date();
+const parentRequest = {
+  requestId: testParentRequestId,
+  requestUUID: testParentRequestUuid,
+  establishmentId: testEstablishmentId,
+  establishmentUid: testEstablishmentUid,
+  userId: testUserId,
+  workplaceId: testWorkplaceId,
+  username: testUsername,
+  orgName: testOrgname,
+  requested: testRequestedDate
+};
 
 const approveButtonText = 'Approve';
 const rejectButtonText = 'Reject';
 const modalApproveText = 'Approve request';
 const modalRejectText = 'Reject request';
 
-describe('ParentRequestComponent', () => {
+fdescribe('ParentRequestComponent', () => {
 
   async function getParentRequestComponent() {
-    const parentRequest = {
-      requestId: testParentRequestId,
-      requestUUID: testParentRequestUuid,
-      establishmentId: testEstablishmentId,
-      establishmentUid: testEstablishmentUid,
-      userId: testUserId,
-      workplaceId: testWorkplaceId,
-      userName: testUsername,
-      orgName: testOrgname,
-      requested: testRequestedDate
-    };
-
     return render(ParentRequestComponent, {
       imports: [
         ReactiveFormsModule,
@@ -219,5 +219,69 @@ describe('ParentRequestComponent', () => {
       type: 'success',
       message: `Parent request rejected for ${testOrgname}.`,
     });
+  });
+
+  it('should load notifications if user name not populated.', async () => {
+    // Arrange
+    parentRequest.username = null;
+    const component = await getParentRequestComponent();
+    const notificationData = { dummyNotification: 'I am a notification' };
+    const httpGet = spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'get').and.returnValue(of(notificationData));
+
+    // Act
+    component.getByText(testOrgname).click();
+    component.fixture.detectChanges();
+
+    // Assert
+    expect(component.fixture.componentInstance.switchWorkplaceService.notificationData).toEqual(notificationData);
+    expect(httpGet).toHaveBeenCalledWith(`/api/user/swap/establishment/notification/${parentRequest.workplaceId}`);
+  });
+
+  it('should clear permissions when switching to new workplace', async () => {
+    // Arrange
+    const component = await getParentRequestComponent();
+    const clearPermissions = spyOn(component.fixture.componentInstance.switchWorkplaceService.permissionsService, 'clearPermissions').and.callThrough();
+    const navigateToWorkplace = spyOn(component.fixture.componentInstance.switchWorkplaceService, 'navigateToWorkplace').and.callThrough();
+    const notificationData = { dummyNotification: 'I am a notification' };
+    const authToken = 'This is an auth token';
+    const swappedEstablishmentData = {
+      headers: {
+        get: (header) => { return header === 'authorization' ? authToken : null; }
+      },
+      body: {
+        establishment: {
+          uid: testEstablishmentUid
+        },
+      }
+    };
+    const setPreviousToken = spyOn(component.fixture.componentInstance.switchWorkplaceService.authService, 'setPreviousToken').and.callThrough();
+    spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'get').and.returnValue(of(notificationData));
+    const httpPost = spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'post').and.returnValue(of(swappedEstablishmentData));
+    const workplace = { uid: testEstablishmentUid }; 
+    const getEstablishment = spyOn(component.fixture.componentInstance.switchWorkplaceService.establishmentService, 'getEstablishment').and.callThrough();
+    const getAllNotifications = spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService, 'getAllNotifications').and.returnValue(of([notificationData, notificationData]));
+    const notificationsNext = spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService.notifications$, 'next').and.callThrough();
+    const setState = spyOn(component.fixture.componentInstance.switchWorkplaceService.establishmentService, 'setState').and.callThrough();
+    const setPrimaryWorkplace = spyOn(component.fixture.componentInstance.switchWorkplaceService.establishmentService, 'setPrimaryWorkplace').and.callThrough();
+    const navigate = spyOn(component.fixture.componentInstance.switchWorkplaceService.router, 'navigate').and.callThrough();
+    spyOn(Observable.prototype, 'pipe').and.returnValue(of(workplace));
+
+    // Act
+    component.getByText(testOrgname).click();
+    component.fixture.detectChanges();
+
+    // Assert
+    expect(navigateToWorkplace).toHaveBeenCalled();
+    expect(clearPermissions).toHaveBeenCalled();
+    expect(setPreviousToken).toHaveBeenCalled();
+    expect(component.fixture.componentInstance.switchWorkplaceService.authService.token).toEqual(authToken);
+    expect(httpPost).toHaveBeenCalledWith('/api/user/swap/establishment/' + parentRequest.establishmentUid, {username: parentRequest.username}, { observe: 'response' });
+    expect(getEstablishment).toHaveBeenCalled();
+    expect(getAllNotifications).toHaveBeenCalled();
+    expect(notificationsNext).toHaveBeenCalledWith(notificationData);
+    expect(setState).toHaveBeenCalledWith(workplace);
+    expect(setPrimaryWorkplace).toHaveBeenCalledWith(workplace);
+    expect(component.fixture.componentInstance.switchWorkplaceService.establishmentService.establishmentId).toEqual(testEstablishmentUid);
+    expect(navigate).toHaveBeenCalledWith(['/dashboard']);
   });
 });
