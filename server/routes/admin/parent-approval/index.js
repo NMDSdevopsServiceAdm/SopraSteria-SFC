@@ -4,7 +4,9 @@ const models = require('../../../models');
 const Sequelize = require('sequelize');
 const moment = require('moment-timezone');
 const config = require('../../../config/config');
-const notifications = require('../../../data/notifications')
+const notifications = require('../../../data/notifications');
+const Authorization = require('../../../utils/security/isAuthenticated');
+const util = require('util');
 
 const uuid = require('uuid')
 
@@ -14,21 +16,23 @@ const parentRejectionConfirmation = 'Parent request rejected';
 const getParentRequests = async (req, res) => {
   try {
     let approvalResults = await models.Approvals.findAllPending('BecomeAParent');
-    let parentRequests = approvalResults.map(approval => {
-        return {
-          requestId: approval.ID,
-          requestUUID: approval.UUID,
-          establishmentId: approval.EstablishmentID,
-          establishmentUid: approval.Establishment.uid,
-          userId: approval.UserID,
-          workplaceId: approval.Establishment.nmdsId,
-          userName: approval.User.FullNameValue,
-          orgName: approval.Establishment.NameValue,
-          requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
-        };
-      }
-    );
+    let parentRequests = await _mapResults(approvalResults);
     return res.status(200).json(parentRequests);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send();
+  }
+};
+
+const getParentRequestByEstablishmentId = async (req, res) => {
+  try {
+    let approvalResult = await models.Approvals.findbyEstablishmentId(req.params.establishmentId, 'BecomeAParent', 'Pending');
+    if (approvalResult) {
+      let parentRequests = await _mapResults([approvalResult]);
+      return res.status(200).json(parentRequests[0]);
+    } else {
+      return res.status(200).json(null);
+    }
   } catch (error) {
     console.log(error);
     return res.status(400).send();
@@ -46,6 +50,23 @@ const parentApproval = async (req, res) => {
     console.log(error);
     return res.status(400).send();
   }
+};
+
+const _mapResults = async (approvalResults) => {
+  return approvalResults.map(approval => {
+      return {
+        requestId: approval.ID,
+        requestUUID: approval.UUID,
+        establishmentId: approval.EstablishmentID,
+        establishmentUid: approval.Establishment.uid,
+        userId: approval.UserID,
+        workplaceId: approval.Establishment.nmdsId,
+        userName: approval.User.FullNameValue,
+        orgName: approval.Establishment.NameValue,
+        requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
+      };
+    }
+  );
 };
 
 const _approveParent = async (req, res) => {
@@ -104,10 +125,12 @@ const _notify = async (approvalId, userUid, establishmentId) => {
 
 router.route('/').post(parentApproval);
 router.route('/').get(getParentRequests);
+router.route('/establishment/:establishmentId').get(getParentRequestByEstablishmentId);
 
 module.exports = router;
 module.exports.parentApproval = parentApproval;
 module.exports.getParentRequests = getParentRequests;
+module.exports.getParentRequestByEstablishmentId = getParentRequestByEstablishmentId;
 
 module.exports.parentApprovalConfirmation = parentApprovalConfirmation;
 module.exports.parentRejectionConfirmation = parentRejectionConfirmation;

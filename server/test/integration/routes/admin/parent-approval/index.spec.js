@@ -3,6 +3,7 @@ const baseEndpoint = require('../../../utils/baseUrl').baseurl;
 const apiEndpoint = supertest(baseEndpoint);
 const expect = require('chai').expect;
 const models = require('../../../../../models');
+const util = require('util');
 
 // mocked real postcode/location data
 // http://localhost:3000/api/test/locations/random?limit=5
@@ -88,6 +89,43 @@ describe('Admin/Parent Approval', () => {
               .expect(200);
             expect(result.body).to.not.equal(undefined);
             expect(Array.isArray(result.body));
+          }
+        });
+
+      it('should return an object when fetching become-a-parent request by establishment id',
+        async () => {
+          // Arrange
+          const approve = true;
+          if (adminLogin.headers.authorization) {
+            const result = await apiEndpoint
+
+              // Act
+              .get(`/admin/parent-approval/establishment/${login.user.establishment.id}`)
+              .set({ Authorization: adminLogin.headers.authorization })
+
+              // Assert
+              .expect('Content-Type', /json/)
+              .expect(200);
+            expect(result.body).to.not.equal(undefined);
+            expect(result.body.establishmentId).to.equal(login.user.establishment.id);
+          }
+        });
+
+      it('should return null when no become-a-parent request exists for specified establishment id',
+        async () => {
+          // Arrange
+          const approve = true;
+          if (adminLogin.headers.authorization) {
+            const result = await apiEndpoint
+
+              // Act
+              .get('/admin/parent-approval/establishment/999999')
+              .set({ Authorization: adminLogin.headers.authorization })
+
+              // Assert
+              .expect('Content-Type', /json/)
+              .expect(200);
+            expect(result.body).to.equal(null);
           }
         });
 

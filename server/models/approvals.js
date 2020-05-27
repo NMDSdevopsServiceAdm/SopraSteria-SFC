@@ -124,6 +124,32 @@ module.exports = (sequelize, DataTypes) => {
     });
   }
 
+  Approvals.findbyEstablishmentId = function(establishmentId, approvalType, status) {
+    return this.findOne({
+      where: {
+        EstablishmentID: establishmentId,
+        ApprovalType: approvalType,
+        Status: status
+      },
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status'],
+      include: [
+        {
+          model: sequelize.models.establishment,
+          as: 'Establishment',
+          attributes: ['nmdsId', 'NameValue']
+        },
+        {
+          model: sequelize.models.user,
+          as: 'User',
+          attributes: ['FullNameValue']
+        }
+      ],
+      order: [
+        ['createdAt', 'DESC']
+      ]
+    });
+  }
+
   Approvals.createBecomeAParentRequest = function (userId, establishmentId) {
     return this.create({
         UserID: userId,
