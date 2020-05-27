@@ -36,7 +36,6 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
         this.notification = details;
-        console.log(this.notification);
         this.parentRequestsService.getParentRequest(this.notification.typUid, this.establishmentService.establishmentId).subscribe(request => {
           this.status = request.status;
         });

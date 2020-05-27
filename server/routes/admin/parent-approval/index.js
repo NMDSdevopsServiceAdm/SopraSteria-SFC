@@ -9,8 +9,8 @@ const notifications = require('../../../data/notifications')
 
 const uuid = require('uuid')
 
-const parentApprovalConfirmation = 'You have approved the request for X to become a parent workplace';
-const parentRejectionConfirmation = 'You have rejected the request for X to become a parent workplace';
+const parentApprovalConfirmation = 'Parent request approved';
+const parentRejectionConfirmation = 'Parent request rejected';
 
 const getParentRequests = async (req, res) => {
   try {
@@ -84,17 +84,15 @@ const _notify = async (approvalId, userUid, establishmentId) => {
     type: 'BECOMEAPARENT',
     typeUid: typUid,
     userUid: userUid
-  }
-  console.log(params)
+  };
   const users = await notifications.getAllUser({establishmentId: establishmentId});
   await Promise.all(users.map(async (user) => {
     const userparams = {
       ...params,
       recipientUserUid: user.UserUID
-    }
-    console.log(userparams)
+    };
     await notifications.insertNewNotification(userparams);
-  }))
+  }));
 };
 
 router.route('/').post(parentApproval);
