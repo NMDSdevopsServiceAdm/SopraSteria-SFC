@@ -1,19 +1,24 @@
 <div class="govuk-form-group govuk-!-margin-bottom-6">
-  <div class="govuk__flex govuk__justify-content-space-between">
-    <div *ngIf="showViewByToggle">
-      <span class="govuk-!-margin-right-6">View by staff name</span>
-      <a href="#" (click)="this.viewTrainingByCategory.emit(true); false" class="govuk-!-margin-right-6">View by training category</a>
+  <div class="govuk__flex govuk__justify-content-space-between govuk-grid-row">
+    <div class="govuk-grid-column-one-half govuk__flex govuk__align-items-flex-end" *ngIf="showViewByToggle">
+      <span class="govuk-list govuk-list--inline govuk-!-margin-bottom-1 govuk-!-margin-right-6">View by staff name</span>
+      <a class="govuk-list govuk-list--inline govuk-!-margin-bottom-1" href="#"
+         (click)="this.viewTrainingByCategory.emit(true); false">
+        View by training category
+      </a>
     </div>
-    <div>
-      <label class="govuk-label" for="sort">
+    <div class="govuk-grid-column-one-quarter"></div>
+    <div
+      class="govuk-list govuk-list--inline govuk-!-margin-bottom-0 govuk-grid-column-one-quarter">
+      <label class="govuk-label" for="sortBy">
         Sort by
       </label>
       <select
-        class="govuk-select"
+        class="govuk-select govuk-!-width-full"
         id="sortBy"
         name="sortBy"
         [value]="sortByDefault"
-        (change)="sortByColumn($event.target.value)"
+        (change)="orderWorkers($event.target.value)"
       >
         <option
           *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
@@ -25,56 +30,59 @@
     </div>
   </div>
 </div>
-<table class="govuk-table">
+<table class="govuk-table" data-testid="training-worker-table">
   <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Staff name</th>
-      <th class="govuk-table__header" scope="col">Records</th>
-      <th class="govuk-table__header" scope="col">Status</th>
-    </tr>
+  <tr class="govuk-table__row">
+    <th class="govuk-table__header" scope="col">Staff name</th>
+    <th class="govuk-table__header" scope="col">Records</th>
+    <th class="govuk-table__header" scope="col">Status</th>
+  </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of workers">
-      <td class="govuk-table__cell govuk-!-font-weight-regular">
-        <ng-container *ngIf="canViewWorker; else nameOrId">
-          <a [routerLink]="getWorkerTrainingAndQualificationsPath(worker)">
-            {{ worker.nameOrId }}
-          </a>
-        </ng-container>
-        <ng-template #nameOrId>
+  <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of workers">
+    <td class="govuk-table__cell govuk-!-font-weight-regular">
+      <ng-container *ngIf="canViewWorker; else nameOrId">
+        <a [routerLink]="getWorkerTrainingAndQualificationsPath(worker)">
           {{ worker.nameOrId }}
-        </ng-template>
-      </td>
-      <td class="govuk-table__cell">{{ worker.trainingCount + worker.qualificationCount }}</td>
-      <td class="govuk-table__cell">
-        <div *ngIf="worker.expiredTrainingCount > 0" class="govuk-!-margin-bottom-1">
-          <img
-            src="/assets/images/flag-red.svg"
-            alt="expired"
-            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-          />
-          {{ worker.expiredTrainingCount }}
-          Expired
-        </div>
-        <div *ngIf="worker.missingMandatoryTrainingCount > 0" class="govuk-!-margin-bottom-1">
-          <img
-            src="/assets/images/flag-red.svg"
-            alt="missing mandatory training"
-            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-          />
-          {{ worker.missingMandatoryTrainingCount }}
-          Missing
-        </div>
-        <div *ngIf="worker.expiringTrainingCount > 0"  class="govuk-!-margin-bottom-1">
-          <img
-            src="/assets/images/flag-orange.svg"
-            alt="expiring"
-            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-          />
-          {{ worker.expiringTrainingCount }} Expiring soon
-        </div>
-        <div *ngIf="worker.expiredTrainingCount === 0 && worker.expiringTrainingCount === 0 && worker.missingMandatoryTrainingCount === 0">Up-to-date</div>
-      </td>
-    </tr>
+        </a>
+      </ng-container>
+      <ng-template #nameOrId>
+        {{ worker.nameOrId }}
+      </ng-template>
+    </td>
+    <td class="govuk-table__cell">{{ worker.trainingCount + worker.qualificationCount }}</td>
+    <td class="govuk-table__cell">
+      <div *ngIf="worker.expiredTrainingCount > 0" class="govuk-!-margin-bottom-1">
+        <img
+          src="/assets/images/flag-red.svg"
+          alt="expired"
+          class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+        />
+        {{ worker.expiredTrainingCount }}
+        Expired
+      </div>
+      <div *ngIf="worker.missingMandatoryTrainingCount > 0" class="govuk-!-margin-bottom-1">
+        <img
+          src="/assets/images/flag-red.svg"
+          alt="missing mandatory training"
+          class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+        />
+        {{ worker.missingMandatoryTrainingCount }}
+        Missing
+      </div>
+      <div *ngIf="worker.expiringTrainingCount > 0" class="govuk-!-margin-bottom-1">
+        <img
+          src="/assets/images/flag-orange.svg"
+          alt="expiring"
+          class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+        />
+        {{ worker.expiringTrainingCount }} Expiring soon
+      </div>
+      <div
+        *ngIf="worker.expiredTrainingCount === 0 && worker.expiringTrainingCount === 0 && worker.missingMandatoryTrainingCount === 0">
+        Up-to-date
+      </div>
+    </td>
+  </tr>
   </tbody>
 </table>
