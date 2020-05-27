@@ -15,9 +15,10 @@ import { ParentRequestsService } from '@core/services/parent-requests.service';
   providers: [Overlay],
 })
 export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription = new Subscription();
+
   public workplace: Establishment;
   public notification;
-  private subscriptions: Subscription = new Subscription();
   public notificationUid: string;
   public status: string;
 
