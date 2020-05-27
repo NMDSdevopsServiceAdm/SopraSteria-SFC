@@ -59,9 +59,7 @@ describe('NotificationBecomeAParentComponent', () => {
 
   it('should display the correct message when the request is approved', async () => {
     const { component } = await setup(true);
-
-    component.debug();
-
+    
     const message = component.getByTestId('message');
     const type = component.getByTestId('type');
 
@@ -71,8 +69,6 @@ describe('NotificationBecomeAParentComponent', () => {
 
   it('should display the correct message when the request is rejected', async () => {
     const { component } = await setup(false);
-
-    component.debug();
 
     const message = component.getByTestId('message');
     const type = component.getByTestId('type');
