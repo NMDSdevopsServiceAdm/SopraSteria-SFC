@@ -35,7 +35,8 @@ describe('NotificationBecomeAParentComponent', () => {
         },
         {
           provide: NotificationsService,
-          useClass: MockNotificationsService
+          useFactory: MockNotificationsService.factory(approved),
+          deps: [HttpClient]
         },
         {
           provide: BreadcrumbService,
@@ -68,7 +69,7 @@ describe('NotificationBecomeAParentComponent', () => {
     expect(type.innerText).toBe('Become a parent organisation');
   });
 
-  it('should display the correct message when the request is approved', async () => {
+  it('should display the correct message when the request is rejected', async () => {
     const { component } = await setup(false);
 
     component.debug();

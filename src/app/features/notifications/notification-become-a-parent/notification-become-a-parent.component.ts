@@ -45,11 +45,6 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
     this.setNotificationViewed(this.notificationUid);
   }
 
-  /**
-   * Function used to set nothification as read
-   * @param {string} notification uid
-   * @return {void}
-   */
   private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
