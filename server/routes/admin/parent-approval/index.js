@@ -1,4 +1,3 @@
-// default route for admin/approval
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
@@ -63,14 +62,22 @@ const _rejectParent = async (req, res) => {
 
 const _updateApprovalStatus = async (approvalId, status) => {
   let singleApproval = await models.Approvals.findbyId(approvalId);
-  singleApproval.Status = status;
-  await singleApproval.save();
+  if (singleApproval) {
+    singleApproval.Status = status;
+    await singleApproval.save();
+  } else {
+    throw `Can't find approval item with id ${approvalId}`;
+  }
 };
 
 const _makeWorkplaceIntoParent = async (id) => {
   let workplace = await models.establishment.findbyId(id);
-  workplace.isParent = true;
-  await workplace.save();
+  if(workplace) {
+    workplace.isParent = true;
+    await workplace.save();
+  } else {
+    throw `Can't find workplace with id ${id}`;
+  }
 };
 
 const _notifyApproval = async (req, res) => {
