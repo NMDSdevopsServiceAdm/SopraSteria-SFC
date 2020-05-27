@@ -51,19 +51,15 @@ describe('ParentRequestComponent', () => {
         },
       }
     };
-    const httpPost = spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'post').and.returnValue(of(swappedEstablishmentData));
+    const getNewEstablishmentId = spyOn(component.fixture.componentInstance.switchWorkplaceService, 'getNewEstablishmentId').and.returnValue(of(swappedEstablishmentData));
     const workplace = { uid: testEstablishmentUid };
-    spyOn(Observable.prototype, 'pipe').and.returnValue(of(workplace));
-    const notificationData = [{ dummyNotification: 'I am a notification' }, { dummyNotification: 'I am another notification' }];  
-    spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService, 'getAllNotifications').and.returnValue(of(notificationData));
     parentRequest.username = testUsername;
 
     return {
       component,
       authToken,
       workplace,
-      notificationData,
-      httpPost
+      getNewEstablishmentId
     };
   }
 
@@ -255,16 +251,14 @@ describe('ParentRequestComponent', () => {
     const { component } = await setupForSwitchWorkplace();
     parentRequest.username = null;
     const notificationData = { dummyNotification: 'I am a notification' };
-    const httpGet = spyOn(component.fixture.componentInstance.switchWorkplaceService.http, 'get').and.returnValue(of(notificationData));
-    const notificationsNext = spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService.notifications$, 'next').and.callThrough();
+    const getAllNotificationWorkplace = spyOn(component.fixture.componentInstance.switchWorkplaceService, 'getAllNotificationWorkplace').and.returnValue(of(notificationData));
 
     // Act
     component.getByText(testOrgname).click();
     component.fixture.detectChanges();
 
     // Assert
-    expect(httpGet).toHaveBeenCalledWith(`/api/user/swap/establishment/notification/${parentRequest.workplaceId}`);
-    expect(notificationsNext).toHaveBeenCalledWith(notificationData);
+    expect(getAllNotificationWorkplace).toHaveBeenCalled();
   });
 
   it('should clear permissions when switching to new workplace', async () => {
@@ -293,52 +287,13 @@ describe('ParentRequestComponent', () => {
   });
 
   it('should swap establishments when switching to new workplace', async () => {
-    const { component, httpPost } = await setupForSwitchWorkplace();
+    const { component, getNewEstablishmentId } = await setupForSwitchWorkplace();
     
     // Act
     component.getByText(testOrgname).click();
     component.fixture.detectChanges();
 
     // Assert
-    expect(httpPost).toHaveBeenCalledWith('/api/user/swap/establishment/' + parentRequest.establishmentUid, {username: parentRequest.username}, { observe: 'response' });
-  });
-
-  it('should load workplace notifications when switching to new workplace', async () => {
-    const { component, notificationData } = await setupForSwitchWorkplace();
-    const notificationsNext = spyOn(component.fixture.componentInstance.switchWorkplaceService.notificationsService.notifications$, 'next').and.callThrough();
-    
-    // Act
-    component.getByText(testOrgname).click();
-    component.fixture.detectChanges();
-
-    // Assert
-    expect(notificationsNext).toHaveBeenCalledWith(notificationData);
-  });
-
-  it('should switch current workplace Id when switching to new workplace', async () => {
-    const { component, workplace } = await setupForSwitchWorkplace();
-    const setState = spyOn(component.fixture.componentInstance.switchWorkplaceService.establishmentService, 'setState').and.callThrough();
-    const setPrimaryWorkplace = spyOn(component.fixture.componentInstance.switchWorkplaceService.establishmentService, 'setPrimaryWorkplace').and.callThrough();
-    
-    // Act
-    component.getByText(testOrgname).click();
-    component.fixture.detectChanges();
-
-    // Assert
-    expect(setState).toHaveBeenCalledWith(workplace);
-    expect(setPrimaryWorkplace).toHaveBeenCalledWith(workplace);
-    expect(component.fixture.componentInstance.switchWorkplaceService.establishmentService.establishmentId).toEqual(testEstablishmentUid);
-  });
-
-  it('should navigate back to dashboard after switching to new workplace', async () => {
-    const { component } = await setupForSwitchWorkplace();
-    const navigate = spyOn(component.fixture.componentInstance.switchWorkplaceService.router, 'navigate').and.callThrough();
-    
-    // Act
-    component.getByText(testOrgname).click();
-    component.fixture.detectChanges();
-
-    // Assert
-    expect(navigate).toHaveBeenCalledWith(['/dashboard']);
+    expect(getNewEstablishmentId).toHaveBeenCalled();
   });
 });
