@@ -14,10 +14,6 @@ export class ParentRequestsService {
     return this.http.get<ParentRequests[]>('/api/admin/parent-approval/');
   }
 
-  public getParentRequest(uuid: string, establishmentId: string): Observable<ParentRequest> {
-    return this.http.get<ParentRequest>(`/api/establishments/${establishmentId}/parentApproval/${uuid}`);
-  }
-
   public parentApproval(data: object) {
     return this.http.post<any>('/api/admin/parent-approval/', data);
   }

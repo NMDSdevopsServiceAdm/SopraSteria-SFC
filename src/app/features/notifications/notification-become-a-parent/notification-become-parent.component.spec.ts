@@ -6,7 +6,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
-import { MockParentRequestsService } from '@core/test-utils/MockParentRequestsService';
 import { NotificationBecomeAParentComponent } from '@features/notifications/notification-become-a-parent/notification-become-a-parent.component';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
@@ -30,11 +29,6 @@ describe('NotificationBecomeAParentComponent', () => {
         NotificationTypePipe,
       ],
       providers: [
-        {
-          provide: ParentRequestsService,
-          useFactory: MockParentRequestsService.factory(approved),
-          deps: [HttpClient]
-        },
         {
           provide: NotificationsService,
           useFactory: MockNotificationsService.factory(approved),

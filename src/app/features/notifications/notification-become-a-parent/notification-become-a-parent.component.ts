@@ -25,8 +25,7 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
-    private notificationsService: NotificationsService,
-    private parentRequestsService: ParentRequestsService
+    private notificationsService: NotificationsService
   ) {}
 
   ngOnInit() {
@@ -36,9 +35,6 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
         this.notification = details;
-        this.parentRequestsService.getParentRequest(this.notification.typUid, this.establishmentService.establishmentId).subscribe(request => {
-          this.status = request.status;
-        });
       })
     );
     this.setNotificationViewed(this.notificationUid);
