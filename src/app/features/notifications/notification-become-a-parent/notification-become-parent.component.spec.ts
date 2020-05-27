@@ -14,6 +14,8 @@ import { NotificationTypePipe } from '@shared/pipes/notification-type.pipe';
 import { getTestBed } from '@angular/core/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import createSpy = jasmine.createSpy;
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
 describe('NotificationBecomeAParentComponent', () => {
   async function setup(approved = true) {
@@ -39,6 +41,10 @@ describe('NotificationBecomeAParentComponent', () => {
           deps: [HttpClient]
         },
         {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService
+        },
+        {
           provide: BreadcrumbService,
           useValue: {
             show: createSpy()
@@ -59,7 +65,7 @@ describe('NotificationBecomeAParentComponent', () => {
 
   it('should display the correct message when the request is approved', async () => {
     const { component } = await setup(true);
-    
+
     const message = component.getByTestId('message');
     const type = component.getByTestId('type');
 
