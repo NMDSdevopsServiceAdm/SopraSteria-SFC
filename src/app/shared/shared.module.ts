@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DialogService } from '@core/services/dialog.service';
+import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
 import {
   DeleteWorkplaceDialogComponent,
 } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
@@ -16,6 +17,7 @@ import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplac
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
+import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-dialog/change-data-owner-dialog.component';
@@ -83,7 +85,6 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -146,6 +147,7 @@ import { ParentConfirmationDialogComponent } from '@features/search/parent-reque
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
     LinkToParentRemoveDialogComponent,
+    BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
     ViewAllMandatoryTrainingComponent,
     DeleteWorkplaceDialogComponent,
@@ -208,6 +210,7 @@ import { ParentConfirmationDialogComponent } from '@features/search/parent-reque
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
     LinkToParentRemoveDialogComponent,
+    BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
     ViewAllMandatoryTrainingComponent,
     DeleteWorkplaceDialogComponent,
@@ -223,6 +226,7 @@ import { ParentConfirmationDialogComponent } from '@features/search/parent-reque
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
     LinkToParentRemoveDialogComponent,
+    BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
     ParentConfirmationDialogComponent
   ],

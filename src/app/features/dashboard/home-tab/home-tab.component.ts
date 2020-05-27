@@ -11,6 +11,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
 import {
   CancelDataOwnerDialogComponent,
 } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
@@ -238,6 +239,17 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  public becomeAParent($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(BecomeAParentDialogComponent, null);
+    dialog.afterClosed.subscribe(confirmToClose => {
+      if (confirmToClose) {
+        this.setPermissionLinks();
+      }
+    });
+  }
+
   /**
    * This function is used to set the permission links
    * @param {void}
