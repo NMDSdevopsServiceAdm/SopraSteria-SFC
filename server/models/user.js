@@ -260,5 +260,10 @@ module.exports = function(sequelize, DataTypes) {
       onDelete: 'CASCADE'
     });
   };
+
+  User.findByUUID = function (uuId) {
+    return this.findOne({ where: { uid: uuId } });
+  };
+
   return User;
 };

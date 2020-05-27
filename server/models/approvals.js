@@ -60,5 +60,35 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
+  Approvals.createBecomeAParentRequest = function (userId, establishmentId) {
+    return this.create({
+        UserID: userId,
+        EstablishmentID: establishmentId,
+        ApprovalType: 'BecomeAParent',
+    });
+  };
+
+  Approvals.canRequestToBecomeAParent = async function (establishmentId) {
+    const latest = await this.findOne({
+      where: {
+        EstablishmentID: establishmentId,
+        ApprovalType: 'BecomeAParent'
+      },
+      order: [
+        ['createdAt', 'DESC']
+      ],
+    });
+
+    if (latest === null) {
+      return true;
+    }
+
+    if (latest.Status === 'Rejected') {
+      return true;
+    }
+
+    return false;
+  };
+
   return Approvals;
 };
