@@ -2,8 +2,8 @@
 const express = require('express');
 const router = express.Router();
 
-const becomeAparent = require('./becomeAParent');
+const becomeAParent = require('./becomeAParent');
 
-router.use('/become-a-parent', becomeAparent);
+router.use('/become-a-parent', becomeAParent);
 
 module.exports = router;
