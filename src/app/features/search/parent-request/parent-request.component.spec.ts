@@ -6,6 +6,7 @@ import { spy } from 'sinon';
 import { of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WindowRef } from '@core/services/window.ref';
+import { Observable } from 'rxjs/Observable';
 
 import { ParentRequestComponent } from './parent-request.component';
 
@@ -18,6 +19,17 @@ const testEstablishmentId = 2222;
 const testEstablishmentUid = '9efce151-6167-4e99-9cbf-0b9f8ab987fa';
 const testWorkplaceId = 'B1234567';
 const testRequestedDate = new Date();
+const parentRequest = {
+  requestId: testParentRequestId,
+  requestUUID: testParentRequestUuid,
+  establishmentId: testEstablishmentId,
+  establishmentUid: testEstablishmentUid,
+  userId: testUserId,
+  workplaceId: testWorkplaceId,
+  username: testUsername,
+  orgName: testOrgname,
+  requested: testRequestedDate
+};
 
 const approveButtonText = 'Approve';
 const rejectButtonText = 'Reject';
@@ -26,19 +38,32 @@ const modalRejectText = 'Reject request';
 
 describe('ParentRequestComponent', () => {
 
-  async function getParentRequestComponent() {
-    const parentRequest = {
-      requestId: testParentRequestId,
-      requestUUID: testParentRequestUuid,
-      establishmentId: testEstablishmentId,
-      establishmentUid: testEstablishmentUid,
-      userId: testUserId,
-      workplaceId: testWorkplaceId,
-      userName: testUsername,
-      orgName: testOrgname,
-      requested: testRequestedDate
+  async function setupForSwitchWorkplace() {
+    const component = await getParentRequestComponent();
+    const authToken = 'This is an auth token';
+    const swappedEstablishmentData = {
+      headers: {
+        get: (header) => { return header === 'authorization' ? authToken : null; }
+      },
+      body: {
+        establishment: {
+          uid: testEstablishmentUid
+        },
+      }
     };
+    const getNewEstablishmentId = spyOn(component.fixture.componentInstance.switchWorkplaceService, 'getNewEstablishmentId').and.returnValue(of(swappedEstablishmentData));
+    const workplace = { uid: testEstablishmentUid };
+    parentRequest.username = testUsername;
 
+    return {
+      component,
+      authToken,
+      workplace,
+      getNewEstablishmentId
+    };
+  }
+
+  async function getParentRequestComponent() {
     return render(ParentRequestComponent, {
       imports: [
         ReactiveFormsModule,
@@ -219,6 +244,57 @@ describe('ParentRequestComponent', () => {
       type: 'success',
       message: `Parent request rejected for ${testOrgname}.`,
     });
+  });
+
+  it('should load workplace-specific notifications if user name not populated when switching to new workplace.', async () => {
+    // Arrange
+    const { component } = await setupForSwitchWorkplace();
+    parentRequest.username = null;
+    const notificationData = { dummyNotification: 'I am a notification' };
+    const getAllNotificationWorkplace = spyOn(component.fixture.componentInstance.switchWorkplaceService, 'getAllNotificationWorkplace').and.returnValue(of(notificationData));
+
+    // Act
+    component.getByText(testOrgname).click();
+    component.fixture.detectChanges();
+
+    // Assert
+    expect(getAllNotificationWorkplace).toHaveBeenCalled();
+  });
+
+  it('should clear permissions when switching to new workplace', async () => {
+    const { component } = await setupForSwitchWorkplace();
+    const clearPermissions = spyOn(component.fixture.componentInstance.switchWorkplaceService.permissionsService, 'clearPermissions').and.callThrough();
+    
+    // Act
+    component.getByText(testOrgname).click();
+    component.fixture.detectChanges();
+
+    // Assert
+    expect(clearPermissions).toHaveBeenCalled();
+  });
+
+  it('should change auth tokens when switching to new workplace', async () => {
+    const { component, authToken } = await setupForSwitchWorkplace();
+    const setPreviousToken = spyOn(component.fixture.componentInstance.switchWorkplaceService.authService, 'setPreviousToken').and.callThrough();
+    
+    // Act
+    component.getByText(testOrgname).click();
+    component.fixture.detectChanges();
+
+    // Assert
+    expect(setPreviousToken).toHaveBeenCalled();
+    expect(component.fixture.componentInstance.switchWorkplaceService.authService.token).toEqual(authToken);
+  });
+
+  it('should swap establishments when switching to new workplace', async () => {
+    const { component, getNewEstablishmentId } = await setupForSwitchWorkplace();
+    
+    // Act
+    component.getByText(testOrgname).click();
+    component.fixture.detectChanges();
+
+    // Assert
+    expect(getNewEstablishmentId).toHaveBeenCalled();
   });
 });
 

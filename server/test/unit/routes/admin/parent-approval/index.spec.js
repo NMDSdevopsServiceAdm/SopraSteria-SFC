@@ -1,12 +1,9 @@
+const faker = require('faker');
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const moment = require('moment-timezone');
 const config = require('../../../../../config/config');
 const Sequelize = require('sequelize');
-
-const util = require('util');
-// To console.log a deep object:
-// console.log("*************************** json: " + util.inspect(json, false, null, true));
 
 const models = require('../../../../../models/index');
 
@@ -18,7 +15,7 @@ const _initialiseTestWorkplace = () => {
   testWorkplace.id = 4321;
   testWorkplace.isParent = false;
   testWorkplace.nmdsId = 'I1234567';
-  testWorkplace.NameValue = 'Marvellous Mansions';
+  testWorkplace.NameValue = faker.lorem.words(4);
   testWorkplace.save = () => { workplaceObjectWasSaved = true; };
 };
 
@@ -41,7 +38,7 @@ var fakeApproval = {
     NameValue: testWorkplace.NameValue
   },
   User: {
-    FullNameValue: 'Magnificent Maisie'
+    FullNameValue: faker.name.findName()
   },
   save: () => { approvalObjectWasSaved = true; }
 };

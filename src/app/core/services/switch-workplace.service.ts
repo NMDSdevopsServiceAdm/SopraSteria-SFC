@@ -15,12 +15,12 @@ export class SwitchWorkplaceService {
   public notificationData: any;
 
   constructor(
-    private router: Router,
-    private http: HttpClient,
-    private permissionsService: PermissionsService,
-    private authService: AuthService,
-    private establishmentService: EstablishmentService,
-  private notificationsService: NotificationsService
+    public router: Router,
+    public http: HttpClient,
+    public establishmentService: EstablishmentService,
+    public permissionsService: PermissionsService,
+    public authService: AuthService,
+    public notificationsService: NotificationsService
   ) {}
 
   public navigateToWorkplace(id, username, nmdsId, e): void {

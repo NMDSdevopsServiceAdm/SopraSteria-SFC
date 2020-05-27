@@ -15,24 +15,6 @@ import { ParentRequestsComponent } from './parent-requests.component';
 describe('ParentRequestsComponent', () => {
   let component: RenderResult<ParentRequestsComponent>;
 
-  it('should create', async () => {
-    component = await render(ParentRequestsComponent, {
-      imports: [
-        ReactiveFormsModule,
-        HttpClientTestingModule,
-        SharedModule,
-        RouterTestingModule],
-      declarations: [ParentRequestComponent],
-      providers: [
-        {
-          provide: WindowRef,
-          useClass: WindowRef
-        }],
-    });
-
-    expect(component).toBeTruthy();
-  });
-
   it('can get parent requests', () => {
     inject([HttpClientTestingModule], async () => {
       const parentRequests = [ {

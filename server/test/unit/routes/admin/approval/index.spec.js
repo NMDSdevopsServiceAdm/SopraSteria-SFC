@@ -1,3 +1,4 @@
+const faker = require('faker');
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const Sequelize = require('sequelize');
@@ -38,7 +39,7 @@ const _initialiseTestUser = () => {
 var testLogin = {};
 const _initialiseTestLogin = () => {
   testLogin.id = testUser.id;
-  testLogin.username = 'pickle-pop-panda';
+  testLogin.username = faker.name.findName();
   testLogin.isActive = false;
   testLogin.status = 'PENDING';
   testLogin.user = testUser;
