@@ -60,6 +60,70 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
+  Approvals.findAllPending = function(approvalType) {
+    return this.findAll({
+      where: {
+        ApprovalType: approvalType,
+        Status: 'Pending'
+      },
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status'],
+      include: [
+        {
+          model: sequelize.models.establishment,
+          as: 'Establishment',
+          attributes: ['uid', 'nmdsId', 'NameValue']
+        },
+        {
+          model: sequelize.models.user,
+          as: 'User',
+          attributes: ['FullNameValue']
+        }
+      ]
+    });
+  }
+
+  Approvals.findbyId = function(id) {
+    return this.findOne({
+      where: {
+        ID: id
+      },
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status'],
+      include: [
+        {
+          model: sequelize.models.establishment,
+          as: 'Establishment',
+          attributes: ['nmdsId', 'NameValue']
+        },
+        {
+          model: sequelize.models.user,
+          as: 'User',
+          attributes: ['FullNameValue']
+        }
+      ]
+    });
+  }
+
+  Approvals.findbyUuid = function(uuid) {
+    return this.findOne({
+      where: {
+        UUID: uuid
+      },
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status'],
+      include: [
+        {
+          model: sequelize.models.establishment,
+          as: 'Establishment',
+          attributes: ['nmdsId', 'NameValue']
+        },
+        {
+          model: sequelize.models.user,
+          as: 'User',
+          attributes: ['FullNameValue']
+        }
+      ]
+    });
+  }
+
   Approvals.createBecomeAParentRequest = function (userId, establishmentId) {
     return this.create({
         UserID: userId,

@@ -8,6 +8,7 @@ const expect = require('chai').expect;
 const postcodes = require('../../../mockdata/postcodes').data;
 const registrationUtils = require('../../../utils/registration');
 const admin = require('../../../utils/admin').admin;
+const approval = require('../../../../../routes/admin/approval');
 
 var adminLogin = null;
 
@@ -51,7 +52,7 @@ describe('Admin/Approval', () => {
       // Arrange
       const approve = true;
       if (adminLogin.headers.authorization) {
-        const approval = await apiEndpoint
+        const result = await apiEndpoint
 
           // Act
           .post('/admin/approval')
@@ -65,7 +66,7 @@ describe('Admin/Approval', () => {
           // Assert
           .expect('Content-Type', /json/)
           .expect(200);
-        expect(approval.body.message).to.equal('User has been set as active');
+        expect(result.body.message).to.equal(approval.userApprovalConfirmation);
       }
     });
 
@@ -73,7 +74,7 @@ describe('Admin/Approval', () => {
       // Arrange
       const approve = false;
       if (adminLogin.headers.authorization) {
-        const approval = await apiEndpoint
+        const result = await apiEndpoint
 
           // Act
           .post('/admin/approval')
@@ -87,7 +88,7 @@ describe('Admin/Approval', () => {
           // Assert
           .expect('Content-Type', /json/)
           .expect(200);
-        expect(approval.body.message).to.equal('User has been removed');
+        expect(result.body.message).to.equal(approval.userRejectionConfirmation);
       }
     })
   })

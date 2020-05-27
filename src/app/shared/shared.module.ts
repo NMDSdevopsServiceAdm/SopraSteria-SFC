@@ -83,6 +83,7 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -147,7 +148,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LinkToParentRemoveDialogComponent,
     OwnershipChangeMessageDialogComponent,
     ViewAllMandatoryTrainingComponent,
-    DeleteWorkplaceDialogComponent
+    DeleteWorkplaceDialogComponent,
+    ParentConfirmationDialogComponent
   ],
   exports: [
     AlertComponent,
@@ -208,7 +210,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LinkToParentRemoveDialogComponent,
     OwnershipChangeMessageDialogComponent,
     ViewAllMandatoryTrainingComponent,
-    DeleteWorkplaceDialogComponent
+    DeleteWorkplaceDialogComponent,
+    ParentConfirmationDialogComponent
   ],
   providers: [DialogService],
   entryComponents: [
@@ -220,7 +223,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LinkToParentDialogComponent,
     LinkToParentCancelDialogComponent,
     LinkToParentRemoveDialogComponent,
-    OwnershipChangeMessageDialogComponent
+    OwnershipChangeMessageDialogComponent,
+    ParentConfirmationDialogComponent
   ],
 })
 export class SharedModule {}

@@ -18,6 +18,7 @@ import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
+import { ParentRequestsComponent } from '@features/search/parent-requests/parent-requests.component';
 import {
   MigratedUserTermsConditionsComponent,
 } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
@@ -153,6 +154,15 @@ const routes: Routes = [
         data: {
           roles: [Roles.Admin],
           title: 'Registrations',
+        },
+      },
+      {
+        path: 'parent-requests',
+        loadChildren: '@features/search/search.module#SearchModule',
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Parent Requests',
         },
       },
       {
