@@ -1,5 +1,4 @@
 const appConfig = require('./config');
-console.log(appConfig.get("db"));
 
 module.exports = {
   development: {
