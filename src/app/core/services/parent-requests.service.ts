@@ -18,7 +18,7 @@ export class ParentRequestsService {
     return this.http.post<any>('/api/admin/parent-approval/', data);
   }
 
-  public becomeParent(data: object) {
-    return this.http.post<any>('/api/approvals/become-a-parent/', data);
+  public becomeParent() {
+    return this.http.post<any>('/api/approvals/become-a-parent/', null);
   }
 }
