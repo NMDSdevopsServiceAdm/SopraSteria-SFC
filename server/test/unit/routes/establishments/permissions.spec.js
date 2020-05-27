@@ -17,17 +17,22 @@ describe('permissions route', () => {
     toJSON: () => {}
   };
 
-  sinon.stub(models.user, 'findOne').callsFake(() => {
-    return user;
-  });
-  sinon.stub(models.establishment, 'findOne').callsFake(() => {
-    return establishmentBuilder();
-  });
-  sinon.stub(models.Approvals, 'findOne').callsFake(() => {
-    return null;
+  beforeEach(() => {
+    sinon.restore();
+
+    sinon.stub(models.user, 'findOne').callsFake(() => {
+      return user;
+    });
+    sinon.stub(models.establishment, 'findOne').callsFake(() => {
+      return establishmentBuilder();
+    });
   });
 
   it('should return canBecomeParent permission if no pending requests', async () => {
+    sinon.stub(models.Approvals, 'findOne').callsFake(() => {
+      return null;
+    });
+
     const req = httpMocks.createRequest({
       method: 'GET',
       url: `/api/establishment/${user.establishmentId}/permissions`,
@@ -54,6 +59,12 @@ describe('permissions route', () => {
   });
 
   it('should not return canBecomeParent permission if pending requests', async () => {
+    sinon.stub(models.Approvals, 'findOne').callsFake(() => {
+      return {
+        id: 123
+      };
+    });
+
     const req = httpMocks.createRequest({
       method: 'GET',
       url: `/api/establishment/${user.establishmentId}/permissions`,
