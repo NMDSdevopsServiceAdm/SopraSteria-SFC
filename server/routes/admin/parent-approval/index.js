@@ -4,6 +4,9 @@ const models = require('../../../models');
 const Sequelize = require('sequelize');
 const moment = require('moment-timezone');
 const config = require('../../../config/config');
+const notifications = require('../../../data/notifications')
+
+const uuid = require('uuid')
 
 const parentApprovalConfirmation = 'Parent request approved';
 const parentRejectionConfirmation = 'Parent request rejected';
@@ -46,7 +49,7 @@ const parentApproval = async (req, res) => {
 };
 
 const _approveParent = async (req, res) => {
-  await _notifyApproval(req, res);
+  await _notify(req.body.parentRequestId, req.userUid, req.body.establishmentId);
   await _updateApprovalStatus(req.body.parentRequestId, 'Approved');
   await _makeWorkplaceIntoParent(req.body.establishmentId);
 
@@ -54,7 +57,7 @@ const _approveParent = async (req, res) => {
 };
 
 const _rejectParent = async (req, res) => {
-  await _notifyRejection(req, res);
+  await _notify(req.body.parentRequestId, req.userUid, req.body.establishmentId);
   await _updateApprovalStatus(req.body.parentRequestId, 'Rejected');
 
   return res.status(200).json({ status: '0', message: parentRejectionConfirmation });
@@ -80,12 +83,23 @@ const _makeWorkplaceIntoParent = async (id) => {
   }
 };
 
-const _notifyApproval = async (req, res) => {
-  return true;
-};
-
-const _notifyRejection = async (req, res) => {
-  return true;
+const _notify = async (approvalId, userUid, establishmentId) => {
+  const approval = await models.Approvals.findbyId(approvalId);
+  const typUid = approval.UUID;
+  const params = {
+    notificationUid: uuid.v4(),
+    type: 'BECOMEAPARENT',
+    typeUid: typUid,
+    userUid: userUid
+  };
+  const users = await notifications.getAllUser({establishmentId: establishmentId});
+  await Promise.all(users.map(async (user) => {
+    const userparams = {
+      ...params,
+      recipientUserUid: user.UserUID
+    };
+    await notifications.insertNewNotification(userparams);
+  }));
 };
 
 router.route('/').post(parentApproval);

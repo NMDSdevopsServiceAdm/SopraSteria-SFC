@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ParentRequests } from '@core/model/parent-requests.model';
 import { Observable } from 'rxjs';
+import { ParentRequest } from '@core/model/parent-request.model';
 
 @Injectable({
   providedIn: 'root',

@@ -74,7 +74,7 @@ describe('ParentRequestsComponent', () => {
       orgName: 'Everly Towers',
       requested: '2020-05-20 16:04:35.914'
     }];
-    
+
     const { fixture } = await render(ParentRequestsComponent, {
       imports: [
         ReactiveFormsModule,
@@ -101,3 +101,4 @@ describe('ParentRequestsComponent', () => {
     expect(componentInstance.parentRequests.length).toBe(1);
   });
 });
+

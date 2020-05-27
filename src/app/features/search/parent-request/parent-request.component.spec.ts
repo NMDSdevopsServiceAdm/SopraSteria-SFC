@@ -103,7 +103,7 @@ describe('ParentRequestComponent', () => {
   it('should create', async() => {
     // Act
     const component = await getParentRequestComponent();
-    
+
     // Assert
     expect(component).toBeTruthy();
   });
@@ -115,7 +115,7 @@ describe('ParentRequestComponent', () => {
 
     // Act
     within(modalConfirmationDialog).getByText(modalApproveText).click();
-    
+
     // Assert
     expect(parentRequestApproval).toHaveBeenCalledWith({
       parentRequestId: testParentRequestId,
@@ -130,10 +130,10 @@ describe('ParentRequestComponent', () => {
     // Arrange
     const { component, modalConfirmationDialog } = await clickFirstRejectButton();
     const parentRequestApproval = spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.callThrough();
-    
+
     // Act
     within(modalConfirmationDialog).getByText(modalRejectText).click();
-    
+
     // Assert
     expect(parentRequestApproval).toHaveBeenCalledWith({
       parentRequestId: testParentRequestId,
@@ -148,14 +148,14 @@ describe('ParentRequestComponent', () => {
     // Arrange
     const component = await getParentRequestComponent();
     const confirmationModal = spyOn(component.fixture.componentInstance.dialogService, 'open').and.callThrough();
-    
+
     // Act
     component.getByText(approveButtonText).click();
 
     // Teardown
     const modalConfirmationDialog = await within(document.body).findByRole('dialog');
     within(modalConfirmationDialog).getByText(modalApproveText).click();
-    
+
     // Assert
     expect(confirmationModal).toHaveBeenCalled();
   });
@@ -164,10 +164,10 @@ describe('ParentRequestComponent', () => {
     // Act
     const { modalConfirmationDialog } = await clickFirstApproveButton();
     const paragraph = within(modalConfirmationDialog).getByTestId("parent-confirm-para");
-    
+
     // Teardown
     within(modalConfirmationDialog).getByText(modalApproveText).click();
-    
+
     // Assert
     expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will become a parent workplace`);
   });
@@ -176,10 +176,10 @@ describe('ParentRequestComponent', () => {
     // Act
     const { modalConfirmationDialog } = await clickFirstRejectButton();
     const paragraph = within(modalConfirmationDialog).getByTestId("parent-confirm-para");
-    
+
     // Teardown
     within(modalConfirmationDialog).getByText(modalRejectText).click();
-    
+
     // Assert
     expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will not become a parent workplace`);
   });
@@ -189,10 +189,10 @@ describe('ParentRequestComponent', () => {
     const { modalConfirmationDialog } = await clickFirstApproveButton();
     const approveHeading = within(modalConfirmationDialog).getByTestId("parent-confirm-heading");
     const submitButton = within(modalConfirmationDialog).getByText(modalApproveText);
-    
+
     // Teardown
     within(modalConfirmationDialog).getByText(modalApproveText).click();
-    
+
     // Assert
     expect(approveHeading.innerHTML).toContain("You're about to approve this request.");
     expect(submitButton).toBeTruthy();
@@ -203,10 +203,10 @@ describe('ParentRequestComponent', () => {
     const { modalConfirmationDialog } = await clickFirstRejectButton();
     const rejectHeading = within(modalConfirmationDialog).getByTestId("parent-confirm-heading");
     const submitButton = within(modalConfirmationDialog).getByText(modalRejectText);
-    
+
     // Teardown
     within(modalConfirmationDialog).getByText(modalRejectText).click();
-    
+
     // Assert
     expect(rejectHeading.innerHTML).toContain("You're about to reject this request.");
     expect(submitButton).toBeTruthy();
@@ -297,3 +297,4 @@ describe('ParentRequestComponent', () => {
     expect(getNewEstablishmentId).toHaveBeenCalled();
   });
 });
+
