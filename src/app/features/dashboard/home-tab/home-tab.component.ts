@@ -8,8 +8,8 @@ import { AlertService } from '@core/services/alert.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
@@ -80,19 +80,24 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.user = this.userService.loggedInUser;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    if (this.workplace && this.canEditEstablishment) {
+    this.setPermissionLinks();
+
+    if (this.workplace) {
+      if (this.canEditEstablishment) {
+        this.subscriptions.add(
+          this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(workers => {
+            this.updateStaffRecords = !(workers.length > 0);
+          })
+        );
+      }
+
       this.subscriptions.add(
-        this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(workers => {
-          this.updateStaffRecords = !(workers.length > 0);
+        this.parentRequestsService.parentStatusRequested(this.workplace.id).subscribe(parentStatusRequested => {
+          this.parentStatusRequested = parentStatusRequested;
+          this.setPermissionLinks();
         })
       );
     }
-    this.subscriptions.add(
-      this.parentRequestsService.parentStatusRequested(this.workplace.id).subscribe(parentStatusRequested => {
-        this.parentStatusRequested = parentStatusRequested;
-        this.setPermissionLinks();
-      })
-    );
   }
 
   public onChangeDataOwner($event: Event) {
@@ -281,7 +286,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
     }
-    
+
     if (this.user.role === 'Admin') {
       this.canLinkToParent = this.workplace && this.workplace.parentUid === null && !this.parentStatusRequested;
       this.canRemoveParentAssociation = this.workplace && this.workplace.parentUid !== null;
