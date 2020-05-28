@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, UrlSerializer } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -37,6 +37,7 @@ export class AddEditTrainingComponent implements OnInit {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    private urlSerializer: UrlSerializer,
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private trainingService: TrainingService,
@@ -54,7 +55,7 @@ export class AddEditTrainingComponent implements OnInit {
     });
     const parsed = this.router.parseUrl(this.previousUrl);
     this.backService.setBackLink({
-      url: [parsed.root.children.primary.toString()],
+      url: [parsed.root.children.primary.segments.map(seg => seg.path).join('/')],
       fragment: parsed.fragment,
       queryParams: parsed.queryParams
     });
@@ -320,6 +321,6 @@ export class AddEditTrainingComponent implements OnInit {
     return null;
   }
   public navigateToPreviousPage() {
-    this.router.navigate([this.previousUrl]);
+    this.router.navigateByUrl(this.previousUrl);
   }
 }
