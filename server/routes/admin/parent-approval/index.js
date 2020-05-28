@@ -1,14 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
-const Sequelize = require('sequelize');
 const moment = require('moment-timezone');
 const config = require('../../../config/config');
 const notifications = require('../../../data/notifications');
-const Authorization = require('../../../utils/security/isAuthenticated');
-const util = require('util');
-
-const uuid = require('uuid')
+const uuid = require('uuid');
 
 const parentApprovalConfirmation = 'Parent request approved';
 const parentRejectionConfirmation = 'Parent request rejected';
@@ -18,21 +14,6 @@ const getParentRequests = async (req, res) => {
     let approvalResults = await models.Approvals.findAllPending('BecomeAParent');
     let parentRequests = await _mapResults(approvalResults);
     return res.status(200).json(parentRequests);
-  } catch (error) {
-    console.log(error);
-    return res.status(400).send();
-  }
-};
-
-const getParentRequestByEstablishmentId = async (req, res) => {
-  try {
-    let approvalResult = await models.Approvals.findbyEstablishmentId(req.params.establishmentId, 'BecomeAParent', 'Pending');
-    if (approvalResult) {
-      let parentRequests = await _mapResults([approvalResult]);
-      return res.status(200).json(parentRequests[0]);
-    } else {
-      return res.status(200).json(null);
-    }
   } catch (error) {
     console.log(error);
     return res.status(400).send();
@@ -108,7 +89,6 @@ const _notify = async (approvalId, userUid, establishmentId) => {
   const approval = await models.Approvals.findbyId(approvalId);
   const typUid = approval.UUID;
   const params = {
-    notificationUid: uuid.v4(),
     type: 'BECOMEAPARENT',
     typeUid: typUid,
     userUid: userUid
@@ -117,7 +97,8 @@ const _notify = async (approvalId, userUid, establishmentId) => {
   await Promise.all(users.map(async (user) => {
     const userparams = {
       ...params,
-      recipientUserUid: user.UserUID
+      recipientUserUid: user.UserUID,
+      notificationUid: uuid.v4(),
     };
     await notifications.insertNewNotification(userparams);
   }));
@@ -125,12 +106,12 @@ const _notify = async (approvalId, userUid, establishmentId) => {
 
 router.route('/').post(parentApproval);
 router.route('/').get(getParentRequests);
-router.route('/establishment/:establishmentId').get(getParentRequestByEstablishmentId);
+
 
 module.exports = router;
 module.exports.parentApproval = parentApproval;
 module.exports.getParentRequests = getParentRequests;
-module.exports.getParentRequestByEstablishmentId = getParentRequestByEstablishmentId;
+
 
 module.exports.parentApprovalConfirmation = parentApprovalConfirmation;
 module.exports.parentRejectionConfirmation = parentRejectionConfirmation;

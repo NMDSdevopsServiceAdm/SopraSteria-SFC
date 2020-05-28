@@ -90,7 +90,7 @@
         <li *ngIf="canRemoveParentAssociation">
           <a (click)="removeLinkToParent($event)" href="#">Remove link to my parent organisation</a>
         </li>
-        <li *ngIf="canBecomeAParent">
+        <li *ngIf="canBecomeAParent && !linkToParentRequestedStatus">
           <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
         </li>
         <li *ngIf="canAddWorker">

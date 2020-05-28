@@ -16,7 +16,7 @@ export class ParentRequestsService {
   }
 
   public getParentRequestByEstablishmentId(establishmentId: number): Observable<boolean> {
-    return this.http.get<boolean>(`/api/admin/parent-approval/establishment/${establishmentId}`);
+    return this.http.get<boolean>(`/api/approvals/become-a-parent/establishment/${establishmentId}`);
   }
 
   public parentStatusRequested(establishmentId: number): Observable<boolean> {
