@@ -114,6 +114,17 @@ exports.data = [
 
 exports.establishmentId = 'My Establishment';
 exports.maxquals = 3;
+exports.apprenticeshipTypes = [ {
+    value: 'No',
+    code: '2',
+  }, {
+    value: 'Don\'t know',
+    code: '999'
+  }, {
+    value: 'Yes',
+    code: '1',
+  }
+];
 
 exports.knownHeaders = [
   'LOCALESTID',

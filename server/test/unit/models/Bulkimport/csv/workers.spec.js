@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
 const workers = require('../../../mockdata/workers').data;
 const establishmentId = require('../../../mockdata/workers').establishmentId;
+const apprenticeshipTypes = require('../../../mockdata/workers').apprenticeshipTypes;
 const maxquals = require('../../../mockdata/workers').maxquals;
 const knownHeaders = require('../../../mockdata/workers').knownHeaders;
 const moment = require('moment');
@@ -1357,6 +1358,16 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             expect(mappedCsv['QUALACH0' + (i + 1) + 'NOTES']).to.equal('');
           }
         }
+      });
+    });
+    apprenticeshipTypes.forEach(apprenticeshipType => {
+      it('should output the correct apprenticeship figure with apprenticeship value ' + apprenticeshipType.value, async () => {
+        worker.apprenticeship = apprenticeshipType.value;
+        let workerCSV = getUnitInstance();
+        workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
+        const output = workerCSV.split(',');
+        // 19 column is apprenticeship
+        expect(output[18]).to.deep.equal(apprenticeshipType.code);
       });
     });
   });
