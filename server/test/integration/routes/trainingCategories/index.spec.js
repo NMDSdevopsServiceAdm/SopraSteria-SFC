@@ -43,7 +43,7 @@ describe('Training Categories API', () => {
     }
   });
 
-  describe.only('/api/trainingCategories/{establishmentId}/with-training', () => {
+  describe('/api/trainingCategories/{establishmentId}/with-training', () => {
     it('should return a 404 if establishment is not found', async () => {
       // Arrange
       const establishmentId = 123;
