@@ -58,7 +58,9 @@
         canViewChangeDataOwner ||
         canViewDataPermissionsLink ||
         canLinkToParent ||
-        canRemoveParentAssociation
+        canRemoveParentAssociation ||
+        canBecomeAParent ||
+        canAddWorker
       "
     >
       <h3 class="govuk-heading-s govuk-!-margin-top-1">Related content</h3>
@@ -88,6 +90,9 @@
         <li *ngIf="canRemoveParentAssociation">
           <a (click)="removeLinkToParent($event)" href="#">Remove link to my parent organisation</a>
         </li>
+        <li *ngIf="canBecomeAParent && !linkToParentRequestedStatus">
+          <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
+        </li>
         <li *ngIf="canAddWorker">
           <a [routerLink]="['/add-mandatory-training']">Manage mandatory training</a>
         </li>
@@ -97,6 +102,7 @@
       <li><a [routerLink]="['/search-users']">Search Users</a></li>
       <li><a [routerLink]="['/search-establishments']">Search Establishments</a></li>
       <li><a [routerLink]="['/registrations']">Registrations</a></li>
+      <li><a [routerLink]="['/parent-requests']">Parent Requests</a></li>
     </ul>
   </div>
 </div>

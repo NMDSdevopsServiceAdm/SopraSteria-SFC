@@ -857,6 +857,15 @@ const addTypeContent = async notification => {
         }
       }
       break;
+
+    case 'BECOMEAPARENT':
+      let becomeAParentNotificationDetails = await models.Approvals.findbyUuid(notification.typeUid);
+      if (becomeAParentNotificationDetails) {
+        notification.typeContent = {
+          status: becomeAParentNotificationDetails.Status
+        };
+      }
+      break;
   }
 
   delete notification.typeUid;

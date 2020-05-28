@@ -1,0 +1,6 @@
+<h1 class="govuk-heading-xl">
+  Requests to Become a Parent
+</h1>
+<div *ngFor="let parentRequest of parentRequests; let i = index">
+  <app-parent-request [index]="i" [parentRequest]="parentRequest" (removeParentRequest)="removeParentRequest($event)"></app-parent-request>
+</div>
