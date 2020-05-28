@@ -43,7 +43,7 @@ describe('Training Categories API', () => {
     }
   });
 
-  describe('/api/trainingCategories/{establishmentId}/with-training', () => {
+  describe.only('/api/trainingCategories/{establishmentId}/with-training', () => {
     it('should return a 404 if establishment is not found', async () => {
       // Arrange
       const establishmentId = 123;
@@ -57,6 +57,10 @@ describe('Training Categories API', () => {
 
         // Assert
         .expect(404);
+
+        expect(response.body).to.deep.equal({
+          message: 'Establishment was not found.',
+        });
       }
     });
   })
