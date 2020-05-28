@@ -79,7 +79,7 @@
         <li *ngIf="canViewDataPermissionsLink">
           <a (click)="setDataPermissions($event)" href="#">Set data permissions</a>
         </li>
-        <li *ngIf="canLinkToParent">
+        <li *ngIf="canLinkToParent && !workplace.isParent">
           <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
             <a (click)="cancelLinkToParent($event)" href="#">Link to my parent organisation pending</a>
           </ng-container>
@@ -90,7 +90,7 @@
         <li *ngIf="canRemoveParentAssociation">
           <a (click)="removeLinkToParent($event)" href="#">Remove link to my parent organisation</a>
         </li>
-        <li *ngIf="canBecomeAParent && !linkToParentRequestedStatus">
+        <li *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
           <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
         </li>
         <li *ngIf="canAddWorker">
