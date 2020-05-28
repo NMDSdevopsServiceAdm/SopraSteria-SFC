@@ -9,8 +9,10 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
 import {
   CancelDataOwnerDialogComponent,
 } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
@@ -59,12 +61,14 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canLinkToParent: boolean;
   public canBecomeAParent: boolean;
   public linkToParentRequestedStatus: boolean;
+  public parentStatusRequested: boolean;
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
     private permissionsService: PermissionsService,
+    private parentRequestsService: ParentRequestsService,
     private userService: UserService,
     private workerService: WorkerService,
     private dialogService: DialogService,
@@ -83,7 +87,12 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         })
       );
     }
-    this.setPermissionLinks();
+    this.subscriptions.add(
+      this.parentRequestsService.parentStatusRequested(this.workplace.id).subscribe(parentStatusRequested => {
+        this.parentStatusRequested = parentStatusRequested;
+        this.setPermissionLinks();
+      })
+    );
   }
 
   public onChangeDataOwner($event: Event) {
@@ -238,6 +247,17 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  public becomeAParent($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(BecomeAParentDialogComponent, null);
+    dialog.afterClosed.subscribe(confirmToClose => {
+      if (confirmToClose) {
+        this.setPermissionLinks();
+      }
+    });
+  }
+
   /**
    * This function is used to set the permission links
    * @param {void}
@@ -260,18 +280,18 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
     }
-
+    
     if (this.user.role === 'Admin') {
-      this.canLinkToParent = this.workplace && this.workplace.parentUid === null;
+      this.canLinkToParent = this.workplace && this.workplace.parentUid === null && !this.parentStatusRequested;
       this.canRemoveParentAssociation = this.workplace && this.workplace.parentUid !== null;
     } else {
-      this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent');
+      this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent') && !this.parentStatusRequested;
       this.canRemoveParentAssociation = this.permissionsService.can(workplaceUid, 'canRemoveParentAssociation');
     }
     if (this.canLinkToParent && this.workplace.linkToParentRequested) {
       this.linkToParentRequestedStatus = true;
     }
-    this.canBecomeAParent = this.permissionsService.can(workplaceUid, 'canBecomeAParent');
+    this.canBecomeAParent = this.permissionsService.can(workplaceUid, 'canBecomeAParent') && !this.parentStatusRequested && !this.linkToParentRequestedStatus;
   }
   //open Staff Tab
   public selectStaffTab(event: Event) {
