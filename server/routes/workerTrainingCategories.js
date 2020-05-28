@@ -29,7 +29,9 @@ const getTrainingByCategory = async (req, res) => {
 
     let establishment = await models.establishment.findWithWorkersAndTraining(establishmentId);
     if (!establishment) {
-      return res.sendStatus(404);
+      return res.status(404).json({
+        message: 'Establishment was not found.',
+      });
     }
 
     let trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
