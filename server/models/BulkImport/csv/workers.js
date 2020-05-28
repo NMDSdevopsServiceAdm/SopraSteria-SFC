@@ -3367,7 +3367,6 @@ class Worker {
         break;
 
       case 'Don\'t know':
-      default:
         apprenticeship = 999;
         break;
     }

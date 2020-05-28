@@ -47,7 +47,7 @@ exports.data = [
     },
     "otherJobs" : {
       "value": "Yes",
-      "otherJobs": [
+      "jobs": [
         {
           "jobId": 1,
           "budi": 34,
@@ -114,6 +114,17 @@ exports.data = [
 
 exports.establishmentId = 'My Establishment';
 exports.maxquals = 3;
+exports.apprenticeshipTypes = [ {
+    value: 'No',
+    code: '2',
+  }, {
+    value: 'Don\'t know',
+    code: '999'
+  }, {
+    value: 'Yes',
+    code: '1',
+  }
+];
 
 exports.knownHeaders = [
   'LOCALESTID',

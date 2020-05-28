@@ -211,7 +211,7 @@ export enum SortTrainingAndQualsOptionsWorker {
   '0_expired' = 'Expired',
   '1_expires_soon' = 'Expires soon',
   '2_missing' = 'Missing',
-  '3_worker' = 'Staff Name'
+  '3_worker' = 'Staff name'
 }
 export enum SortTrainingAndQualsOptionsCat {
   '0_expired' = 'Expired',
