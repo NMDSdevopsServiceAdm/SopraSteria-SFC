@@ -103,9 +103,6 @@ module.exports = (sequelize, DataTypes) => {
           attributes: ['FullNameValue']
         }
       ],
-      order: [
-        ['createdAt', 'DESC']
-      ]
     });
   }
 
@@ -127,9 +124,6 @@ module.exports = (sequelize, DataTypes) => {
           attributes: ['FullNameValue']
         }
       ],
-      order: [
-        ['createdAt', 'DESC']
-      ]
     });
   }
 
@@ -153,9 +147,6 @@ module.exports = (sequelize, DataTypes) => {
           attributes: ['FullNameValue']
         }
       ],
-      order: [
-        ['createdAt', 'DESC']
-      ]
     });
   }
 
@@ -179,9 +170,6 @@ module.exports = (sequelize, DataTypes) => {
           attributes: ['isParent'],
           as: 'Establishment',
         },
-      ],
-      order: [
-        ['createdAt', 'DESC']
       ],
     });
 
