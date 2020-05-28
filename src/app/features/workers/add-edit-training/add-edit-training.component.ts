@@ -54,7 +54,7 @@ export class AddEditTrainingComponent implements OnInit {
     });
     const parsed = this.router.parseUrl(this.previousUrl);
     this.backService.setBackLink({
-      url: [parsed.root.children.primary.toString()],
+      url: [parsed.root.children.primary.segments.map(seg => seg.path).join('/')],
       fragment: parsed.fragment,
       queryParams: parsed.queryParams
     });
@@ -320,6 +320,6 @@ export class AddEditTrainingComponent implements OnInit {
     return null;
   }
   public navigateToPreviousPage() {
-    this.router.navigate([this.previousUrl]);
+    this.router.navigateByUrl(this.previousUrl);
   }
 }
