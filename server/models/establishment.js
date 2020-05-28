@@ -734,5 +734,24 @@ module.exports = function(sequelize, DataTypes) {
     });
   }
 
+  Establishment.findbyId = function(id) {
+    return this.findOne({
+      where: {
+        id: id,
+        archived: false
+      },
+      attributes: [
+        'id',
+        'ustatus',
+        'locationId',
+        'provId',
+        'isRegulated',
+        'isParent',
+        'parentId',
+        'NameValue',
+        'nmdsId']
+    });
+  }
+
   return Establishment;
 };
