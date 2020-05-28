@@ -228,7 +228,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
                   this.router.navigate(['/dashboard']);
                   this.alertService.addAlert({
                     type: 'success',
-                    message: `You are no longer linked to your parent orgenisation.`,
+                    message: `You are no longer linked to your parent organisation.`,
                   });
                 }
               });
@@ -253,7 +253,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     const dialog = this.dialogService.open(BecomeAParentDialogComponent, null);
     dialog.afterClosed.subscribe(confirmToClose => {
       if (confirmToClose) {
-        this.setPermissionLinks();
+        this.canLinkToParent = false;
+        this.canBecomeAParent = false;
       }
     });
   }

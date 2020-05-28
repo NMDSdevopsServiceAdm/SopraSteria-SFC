@@ -164,6 +164,13 @@ module.exports = (sequelize, DataTypes) => {
         EstablishmentID: establishmentId,
         ApprovalType: 'BecomeAParent'
       },
+      include: [
+        {
+          model: sequelize.models.establishment,
+          attributes: ['isParent'],
+          as: 'Establishment',
+        },
+      ],
       order: [
         ['createdAt', 'DESC']
       ],
@@ -174,6 +181,10 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     if (latest.Status === 'Rejected') {
+      return true;
+    }
+
+    if (latest.Status === 'Approved' && latest.Establishment.isParent === false) {
       return true;
     }
 
