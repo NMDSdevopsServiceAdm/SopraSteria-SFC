@@ -274,8 +274,14 @@ export class AddEditTrainingComponent implements OnInit {
   }
 
   private onSuccess() {
+    let url = '';
+    if (this.previousUrl.indexOf('dashboard') > -1) {
+      url = this.previousUrl;
+    } else {
+      url = `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
+    }
     this.router
-      .navigateByUrl(this.previousUrl)
+      .navigateByUrl(url)
       .then(() => {
         if (this.trainingRecordId) {
           this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
