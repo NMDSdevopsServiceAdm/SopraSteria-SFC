@@ -3,6 +3,13 @@ const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot
 const establishmentBuilder = build('Establishment', {
   fields: {
     id: sequence(),
+    uid: fake(f => f.random.uuid()),
+    isParent: false,
+    parentId: null,
+    mainService: {
+      id: 16
+    },
+    postcode: fake(f => f.address.zipCode('??# #??'))
   }
 });
 
@@ -64,6 +71,7 @@ const workerBuilder = build('Worker', {
   },
 });
 
+module.exports.establishmentBuilder = establishmentBuilder;
 module.exports.workerBuilder = workerBuilder;
 module.exports.jobBuilder = jobBuilder;
 module.exports.categoryBuilder = categoryBuilder;

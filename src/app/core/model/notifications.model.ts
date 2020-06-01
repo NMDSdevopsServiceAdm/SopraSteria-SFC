@@ -17,4 +17,5 @@ export enum NotificationType {
   LINKTOPARENTAPPROVED = 'Link to parent organisation',
   LINKTOPARENTREJECTED = 'Link to parent organisation',
   DELINKTOPARENT = 'Remove link to parent organisation',
+  BECOMEAPARENT = 'Become a parent organisation'
 }
