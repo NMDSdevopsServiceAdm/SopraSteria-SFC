@@ -4,13 +4,35 @@ const isRegulatedPropertyClass = require('../../../../../../models/classes/estab
 
 describe('isRegulatedProperty Property', () => {
   describe('restoreFromJson()', () => {
-    it('should return JSON', async() => {
+    it('should return JSON when true', async() => {
       const isRegulatedProperty = new isRegulatedPropertyClass();
       const document = {
         isRegulated: true
       };
       await isRegulatedProperty.restoreFromJson(document);
       expect(isRegulatedProperty.property).to.deep.equal(document.isRegulated);
+    });
+    it('should return JSON when false', async() => {
+      const isRegulatedProperty = new isRegulatedPropertyClass();
+      const document = {
+        isRegulated: false
+      };
+      await isRegulatedProperty.restoreFromJson(document);
+      expect(isRegulatedProperty.property).to.deep.equal(document.isRegulated);
+    });
+    it('should not return JSON when null', async() => {
+      const isRegulatedProperty = new isRegulatedPropertyClass();
+      const document = {
+        isRegulated: null
+      };
+      await isRegulatedProperty.restoreFromJson(document);
+      expect(isRegulatedProperty.property).to.deep.equal(null);
+    });
+    it('should not return JSON when undefined', async() => {
+      const isRegulatedProperty = new isRegulatedPropertyClass();
+      const document = {};
+      await isRegulatedProperty.restoreFromJson(document);
+      expect(isRegulatedProperty.property).to.deep.equal(null);
     });
   });
   describe('restorePropertyFromSequelize()', () => {
