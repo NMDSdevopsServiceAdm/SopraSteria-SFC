@@ -22,7 +22,6 @@ exports.IsRegulatedProperty = class IsRegulatedProperty extends ChangePropertyPr
         return document.isRegulated;
     }
     savePropertyToSequelize() {
-      console.log(this.property);
        return {
             isRegulated: this.property
         };
