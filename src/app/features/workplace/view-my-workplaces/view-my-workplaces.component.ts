@@ -23,7 +23,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public serverErrorsMap: ErrorDefinition[] = [];
   public workplaces: Workplace[] = [];
   public workplacesCount = 0;
-  public pendingWorkplaces: any;
+  public pendingWorkplaces: Workplace[] = [];
 
   constructor(
     private breadcrumbService: BreadcrumbService,
