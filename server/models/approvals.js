@@ -78,6 +78,9 @@ module.exports = (sequelize, DataTypes) => {
           as: 'User',
           attributes: ['FullNameValue']
         }
+      ],
+      order: [
+        ['createdAt', 'DESC']
       ]
     });
   }
@@ -99,7 +102,7 @@ module.exports = (sequelize, DataTypes) => {
           as: 'User',
           attributes: ['FullNameValue']
         }
-      ]
+      ],
     });
   }
 
@@ -120,7 +123,7 @@ module.exports = (sequelize, DataTypes) => {
           as: 'User',
           attributes: ['FullNameValue']
         }
-      ]
+      ],
     });
   }
 
@@ -144,9 +147,6 @@ module.exports = (sequelize, DataTypes) => {
           attributes: ['FullNameValue']
         }
       ],
-      order: [
-        ['createdAt', 'DESC']
-      ]
     });
   }
 
@@ -170,9 +170,6 @@ module.exports = (sequelize, DataTypes) => {
           attributes: ['isParent'],
           as: 'Establishment',
         },
-      ],
-      order: [
-        ['createdAt', 'DESC']
       ],
     });
 

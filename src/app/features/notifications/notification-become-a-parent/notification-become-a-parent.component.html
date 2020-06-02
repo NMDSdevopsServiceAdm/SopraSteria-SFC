@@ -20,7 +20,7 @@
     <div class="govuk-grid-column-two-thirds">
       <div [ngSwitch]="notification.typeContent.status">
         <div *ngSwitchCase="'Approved'">
-          <p data-testid="message">Your request to become a parent has been accepted.</p>
+          <p data-testid="message">Your request to become a parent has been approved.</p>
         </div>
         <div *ngSwitchCase="'Rejected'">
           <p data-testid="message">Your request to become a parent has been rejected.</p>
