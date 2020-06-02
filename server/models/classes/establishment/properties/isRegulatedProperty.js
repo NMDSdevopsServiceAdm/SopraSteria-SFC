@@ -1,5 +1,6 @@
 // the IsRegulated property is a value property only
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
+const values = [true, false];
 
 exports.IsRegulatedProperty = class IsRegulatedProperty extends ChangePropertyPrototype {
     constructor() {
@@ -12,7 +13,7 @@ exports.IsRegulatedProperty = class IsRegulatedProperty extends ChangePropertyPr
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.isRegulated) {
+        if (values.includes(document.isRegulated)) {
           this.property = document.isRegulated;
         }
     }
