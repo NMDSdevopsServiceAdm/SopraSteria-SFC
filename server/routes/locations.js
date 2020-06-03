@@ -19,6 +19,45 @@ const getLocations = async (req, res, matching) => {
     locationData.push(createLocationDetailsObject(data));
   }
 
+  // If the user is an Admin and the Location was not found, we want them to be able to use the location ID that they searched for.
+  if (locationData.length === 0 && req.role === 'Admin') {
+    const establishment = await models.establishment.findByPk(
+      req.establishment.id,
+      {
+        attributes: [
+          'NameValue',
+          'address1',
+          'address2',
+          'town',
+          'county',
+          'postcode',
+          'isRegulated',
+        ],
+        include: [
+          {
+            model: models.services,
+            as: 'mainService',
+            attributes: ['name'],
+          },
+        ],
+      }
+    );
+
+    const data = {
+      locationid: req.params.locationId,
+      locationname: establishment.NameValue,
+      addressline1: establishment.address1,
+      addressline2: establishment.address2,
+      towncity: establishment.town,
+      county: establishment.county,
+      postalcode: establishment.postcode,
+      isRegulated: establishment.isRegulated,
+      ...(establishment.mainService) && { mainservice: establishment.mainService.name }
+    };
+
+    locationData.push(createLocationDetailsObject(data));
+  }
+
   if (matching) {
     let currentEstablishments = await models.establishment.findAll({
       where: {
@@ -32,51 +71,6 @@ const getLocations = async (req, res, matching) => {
   }
 
   if (locationData.length === 0) {
-    // If the user is an Admin and the Location was not found, we want them to be able to use the location ID that they searched for.
-    if (req.role === 'Admin') {
-      const establishment = await models.establishment.findByPk(
-        req.establishment.id,
-        {
-          attributes: [
-            'NameValue',
-            'address1',
-            'address2',
-            'town',
-            'county',
-            'postcode',
-            'isRegulated',
-          ],
-          include: [
-            {
-              model: models.services,
-              as: 'mainService',
-              attributes: ['name'],
-            },
-          ],
-        }
-      );
-
-      const data = {
-        locationid: req.params.locationId,
-        locationname: establishment.NameValue,
-        addressline1: establishment.address1,
-        addressline2: establishment.address2,
-        towncity: establishment.town,
-        county: establishment.county,
-        postalcode: establishment.postcode,
-        isRegulated: establishment.isRegulated,
-        ...(establishment.mainService) && { mainservice: establishment.mainService.name }
-      };
-
-      locationData.push(createLocationDetailsObject(data));
-
-      return res.json({
-        success: 1,
-        message: 'No location found but defaulting to the workplace\'s current location due to the user being an admin',
-        locationdata: locationData,
-      });
-    }
-
     res.status(404);
     return res.json({
       success: 0,
