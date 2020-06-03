@@ -4,6 +4,7 @@ const httpMocks = require('node-mocks-http');
 
 const models = require('../../../models/index');
 const locationsRoute = require('../../../routes/locations');
+const { establishmentBuilder } = require('../../factories/models');
 
 const location = {
   dataValues: {
@@ -81,23 +82,10 @@ describe('locations route', () => {
     });
 
     it('should return a non existent location if the user is an admin', async () => {
-      const establishmentId = 123;
+      const establishment = establishmentBuilder();
       const locationId = 456;
 
-      sinon.stub(models.establishment, 'findByPk').callsFake(async (args) => {
-        return {
-          NameValue: 'Test Workplace',
-          address1: '63 Skills for Care Lane',
-          address2: '',
-          town: 'Leeds',
-          county: 'North West',
-          postcode: 'LS1 3BE',
-          isRegulated: '123',
-          mainService: {
-            name: '123',
-          },
-        };
-      });
+      sinon.stub(models.establishment, 'findByPk').returns(establishment)
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -109,7 +97,7 @@ describe('locations route', () => {
 
       req.role = 'Admin';
       req.establishment = {
-        id: establishmentId,
+        id: establishment.id,
       };
 
       const res = httpMocks.createResponse();
@@ -122,35 +110,22 @@ describe('locations route', () => {
       expect(message).to.deep.equal(`No location found but defaulting to the workplace's current location due to the user being an admin`);
       expect(locationdata).to.deep.equal([{
         locationId: 456,
-        locationName: 'Test Workplace',
-        addressLine1: '63 Skills for Care Lane',
-        addressLine2: '',
-        townCity: 'Leeds',
-        county: 'North West',
-        postalCode: 'LS1 3BE',
-        mainService: '123',
-        isRegulated: '123',
+        locationName: establishment.NameValue,
+        addressLine1: establishment.address1,
+        addressLine2: establishment.address2,
+        townCity: establishment.town,
+        county: establishment.county,
+        postalCode: establishment.postcode,
+        mainService: establishment.mainService.name,
+        isRegulated: establishment.isRegulated,
       }]);
     });
 
     it('should return no locations if not found', async () => {
-      const establishmentId = 123;
+      const establishment = establishmentBuilder();
       const locationId = 456;
 
-      sinon.stub(models.establishment, 'findByPk').callsFake(async (args) => {
-        return {
-          NameValue: 'Test Workplace',
-          address1: '63 Skills for Care Lane',
-          address2: '',
-          town: 'Leeds',
-          county: 'North West',
-          postcode: 'LS1 3BE',
-          isRegulated: '123',
-          mainService: {
-            name: '123',
-          },
-        };
-      });
+      sinon.stub(models.establishment, 'findByPk').returns(establishment)
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -161,7 +136,7 @@ describe('locations route', () => {
       });
 
       req.establishment = {
-        id: establishmentId,
+        id: establishment.id,
       };
 
       const res = httpMocks.createResponse();
