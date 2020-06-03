@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     ApprovalType: {
       type: DataTypes.ENUM,
       allowNull: false,
-      values: ['BecomeAParent'],
+      values: ['BecomeAParent','CqcStatusChange'],
     },
     Status: {
       type: DataTypes.ENUM,
