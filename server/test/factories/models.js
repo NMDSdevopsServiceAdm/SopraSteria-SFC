@@ -9,6 +9,11 @@ const establishmentBuilder = build('Establishment', {
     mainService: {
       id: 16
     },
+    otherServices: [
+      {
+        id: 9
+      }
+    ],
     postcode: fake(f => f.address.zipCode('??# #??'))
   }
 });
