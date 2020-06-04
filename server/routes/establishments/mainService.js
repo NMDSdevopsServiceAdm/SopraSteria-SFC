@@ -5,7 +5,7 @@ const router = express.Router({mergeParams: true});
 const Establishment = require('../../models/classes/establishment');
 const {correctCapacities} = require('../../utils/correctCapacities');
 
-const filteredProperties = ['Name', 'MainServiceFK'];
+const filteredProperties = ['Name', 'MainServiceFK', 'CapacityServices'];
 
 // gets current employer type for the known establishment
 router.route('/').get(async (req, res) => {
