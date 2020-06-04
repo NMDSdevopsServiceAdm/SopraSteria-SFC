@@ -76,7 +76,7 @@ const transformTrainingCategoriesWithMandatoryTraining = function (establishment
         seq: trainingCategory.seq,
         category: trainingCategory.category,
         training: training,
-        isMandatory: trainingCategory.MandatoryTraining.length > 0
+        isMandatory: trainingCategory.MandatoryTraining && trainingCategory.MandatoryTraining.length > 0
       };
     })
     .filter((trainingCategory) => {
