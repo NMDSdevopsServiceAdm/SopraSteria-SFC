@@ -1,5 +1,5 @@
 const {CapacitiesCache} = require('../models/cache/singletons/capacities');
-const models = require('../models/')
+const models = require('../models/');
 
 exports.correctCapacities = async (establishment, mainService = null, otherServices = null) => {
   const allServices = [];
