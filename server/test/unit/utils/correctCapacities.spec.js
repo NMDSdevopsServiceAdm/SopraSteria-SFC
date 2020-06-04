@@ -83,7 +83,7 @@ describe('correctCapacities util', () => {
           }
         }
       });
-      const capacities = await correctCapacities(establishment, null, null);
+      const capacities = await correctCapacities(establishment);
       expect(capacities.length).to.deep.equal(3);
       const allQuestions = establishmentCapacities.map(capacity => capacity.reference.id);
       const allAnswers = establishmentCapacities.map(capacity => capacity.answer);
