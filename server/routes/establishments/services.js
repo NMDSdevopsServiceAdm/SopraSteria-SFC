@@ -2,11 +2,13 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['Name', 'OtherServices'];
+const {correctCapacities} = require('../../utils/correctCapacities');
+
+const filteredProperties = ['Name', 'OtherServices', 'CapacityServices'];
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
-  
+
   const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
   const showHistoryTime = req.query.history === 'timeline' ? true : false;
   const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
@@ -52,11 +54,13 @@ router.route('/').post(async (req, res) => {
     if (await thisEstablishment.restore(establishmentId)) {
       // TODO: JSON validation
 
+      const capacities = await correctCapacities(thisEstablishment, req.body.mainService);
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in services
       const isValidEstablishment = await thisEstablishment.load({
-        services: req.body.services
+        services: req.body.services,
+        capacities
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
@@ -71,13 +75,13 @@ router.route('/').post(async (req, res) => {
       } else {
         return res.status(400).send('Unexpected Input.');
       }
-        
+
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    
+
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
       console.error("Establishment::services POST: ", err.message);
       return res.status(400).send(err.safe);
