@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
         ApprovalType: approvalType,
         Status: 'Pending'
       },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status'],
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status','Data'],
       include: [
         {
           model: sequelize.models.establishment,
@@ -126,7 +126,6 @@ module.exports = (sequelize, DataTypes) => {
       ],
     });
   }
-
   Approvals.findbyEstablishmentId = function(establishmentId, approvalType, status) {
     return this.findOne({
       where: {
