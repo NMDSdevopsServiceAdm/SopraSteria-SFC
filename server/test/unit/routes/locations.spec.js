@@ -29,7 +29,7 @@ describe('locations route', () => {
     sinon.restore();
   });
 
-  describe.only('getLocations()', () => {
+  describe('getLocations()', () => {
     it('should return locations without matching existing establishments', async() => {
       sinon.stub(models.establishment, 'findAll').returns([establishment]);
 
