@@ -1,0 +1,55 @@
+<h2 class="govuk-heading-l">CQC Status Change from {{ cqcStatusChange.orgName }}</h2>
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="cqcStatusChangeForm" id="form-parent-request">
+  <table class="govuk-table">
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">Requested</th>
+        <td class="govuk-table__cell">
+          {{ cqcStatusChange.requested }}
+        </td>
+        <th class="govuk-table__cell">Username</th>
+        <td class="govuk-table__cell">
+          {{ cqcStatusChange.userName }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">Workplace ID</th>
+        <td class="govuk-table__cell">
+          {{ cqcStatusChange.workplaceId }}
+        </td>
+        <th class="govuk-table__cell">Workplace</th>
+        <td class="govuk-table__cell">
+          <a (click)="navigateToWorkplace(cqcStatusChange.establishmentUid, cqcStatusChange.username, cqcStatusChange.workplaceId, $event)" href="#">
+            {{ cqcStatusChange.orgName }}
+          </a>
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">Requested Service</th>
+        <td class="govuk-table__cell">
+          {{ cqcStatusChange.requestedService.name }}
+        </td>
+        <th class="govuk-table__cell">Current Service</th>
+        <td class="govuk-table__cell">
+            {{ cqcStatusChange.currentService.name }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="gov-uk-table__cell" colspan="4">
+          <div class="govuk-button-group">
+            <button
+              type="submit"
+              class="govuk-button govuk-button--warning govuk-util__float-right"
+              (click)="approveCQCRequest(false, 'Rejected')"
+            >
+              Reject
+            </button>
+            <button class="govuk-button" type="submit" name="approve" (click)="approveCQCRequest(true, 'Approved')">
+              Approve
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</form>
