@@ -1,8 +1,11 @@
+
 const express = require('express');
 const router = express.Router({mergeParams: true});
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
+const EstablishmentJsonException = require('../../models/classes/establishment/establishmentExceptions').EstablishmentJsonException;
+
 const filteredProperties = ['Name', 'MainServiceFK'];
 
 // gets current employer type for the known establishment
@@ -41,7 +44,7 @@ router.route('/').get(async (req, res) => {
 
 // updates the current employer type for the known establishment
 router.route('/').post(async (req, res) => {
-  const establishmentId = req.establishmentId;  
+  const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
 
@@ -52,30 +55,14 @@ router.route('/').post(async (req, res) => {
     // by loading the Establishment before updating it, we have all the facts about
     //  an Establishment (if needing to make inter-property decisions)
     if (await thisEstablishment.restore(establishmentId)) {
-      // TODO: JSON validation
-
-      // by loading after the restore, only those properties defined in the
-      //  POST body will be updated (peristed)
-      // With this endpoint we're only interested in name
-      const isValidEstablishment = await thisEstablishment.load({
-        mainService: req.body.mainService
-      });
-
-      // this is an update to an existing Establishment, so no mandatory properties!
-      if (isValidEstablishment) {
-        await thisEstablishment.save(req.username);
-
-        return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
-      } else {
-        return res.status(400).send('Unexpected Input.');
-      }
-        
+      const output = await setMainService(thisEstablishment, req.body.mainService, req.username, req.body.cqc);
+      return res.status(200).json(output);
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    
+
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
       console.error("Establishment::mainService POST: ", err.message);
       return res.status(400).send(err.safe);
@@ -88,4 +75,49 @@ router.route('/').post(async (req, res) => {
   }
 });
 
+async function changeMainService(establishment, mainService, username) {
+  const isValidEstablishment = await establishment.load({
+    mainService: mainService
+  });
+
+  if (isValidEstablishment) {
+    await establishment.save(username);
+
+    return establishment.toJSON(false, false, false, true, false, filteredProperties);
+  } else {
+    throw new EstablishmentJsonException('Unexpected Input.');
+  }
+}
+
+async function deregulateEstablishment(establishment, username) {
+  const isValidEstablishment = await establishment.load({
+    isRegulated: false
+  });
+
+  if (isValidEstablishment) {
+    await establishment.save(username);
+
+    return establishment.toJSON(false, false, false, true, false, filteredProperties);
+  } else {
+    throw new EstablishmentJsonException('Unexpected Input.');
+  }
+}
+
+async function setMainService(establishment, mainService, username, cqc) {
+  if (cqc === undefined) {
+    cqc = establishment.isRegulated;
+  }
+
+  // No switch, same as previous behaviour.
+  if (cqc === establishment.isRegulated) {
+    await changeMainService(establishment, mainService, username);
+  } else if (cqc) { // Non-CQC -> CQC
+
+  } else { // CQC -> Non-CQC
+    await changeMainService(establishment, mainService, username);
+    await deregulateEstablishment(establishment, username);
+  }
+}
+
 module.exports = router;
+module.exports.setMainService = setMainService;
