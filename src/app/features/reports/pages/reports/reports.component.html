@@ -3,6 +3,19 @@
 <div class="govuk-grid-row govuk-!-margin-bottom-3">
   <div class="govuk-grid-column-full">
     <h2 *ngIf="isParent" class="govuk-body-l">Workforce Development Fund</h2>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds-from-desktop">
+        <p>The Department of Health and Social Care is supporting the sector by using the Workforce Development Fund to fund rapid staff training requirements as a response to COVID-19.</p>
+
+        <p>This decision will be reviewed in September.</p>
+
+        <p>
+          <a class="govuk-body-m" href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx">View the latest information on the availability of WDF funding</a>
+        </p>
+      </div>
+    </div>
+
     <ul class="govuk-list govuk-list--inline">
       <li *ngIf="isAdmin">
         <a
@@ -23,7 +36,7 @@
       </li>
     </ul>
 
-    <app-details [title]="'What is the Workforce Development Fund'">
+    <!-- <app-details [title]="'What is the Workforce Development Fund'">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds-from-desktop">
           Find out more about the Workforce Development Fund and how to claim it on
@@ -35,7 +48,7 @@
           website.
         </div>
       </div>
-    </app-details>
+    </app-details> -->
     <ng-container *ngIf="canRunLocalAuthorityReport || isAdmin">
       <h2 class="govuk-body-l">Local Authority Progress</h2>
       <ul class="govuk-list govuk-list--inline govuk-list--download">
