@@ -82,7 +82,7 @@ const _approveChange = async (req, res) => {
 };
 
 const _rejectChange = async (req, res) => {
-  // await _notify(req.body.cqcStatusChangeId, req.userUid, req.body.establishmentId);
+  await _notify(req.body.cqcStatusChangeId, req.userUid, req.body.establishmentId);
   await _updateApprovalStatus(req.body.approvalId, 'Rejected');
 
   return res.status(200).json({ status: '0', message: cqcStatusChangeRejectionConfirmation });
@@ -97,14 +97,6 @@ const _updateApprovalStatus = async (approvalId, status) => {
     throw `Can't find approval item with id ${approvalId}`;
   }
 };
-
-// interface MainServiceRequest {
-//   mainService: {
-//     id: number;
-//     name: string;
-//     other?: string;
-//   };
-// }
 
 const _updateMainService = async (approvalId, username) => {
   const singleApproval = await models.Approvals.findbyId(approvalId);
