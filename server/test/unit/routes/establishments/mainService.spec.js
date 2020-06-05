@@ -8,7 +8,28 @@ const Establishment = require('../../../../models/classes/establishment');
 const ServiceCache = require('../../../../models/cache/singletons/services').ServiceCache;
 
 describe('mainService', () => {
-  sinon.stub(ServiceCache, 'allMyServices').returns([])
+  sinon.stub(ServiceCache, 'allMyServices').returns([
+    {
+      id: 1,
+      name: 'foo',
+      category: 'foo'
+    },
+    {
+      id: 2,
+      name: 'foo',
+      category: 'foo'
+    },
+    {
+      id: 3,
+      name: 'foo',
+      category: 'foo'
+    },
+    {
+      id: 4,
+      name: 'foo',
+      category: 'foo'
+    },
+  ])
 
   const res = {
     status: () => {
@@ -52,14 +73,32 @@ describe('mainService', () => {
   it('should remove CQC related properties when going from CQC -> Non-CQC', async () => {
     const establishment = new Establishment.Establishment('foo');
     establishment._isRegulated = true;
+    establishment._locationId = 'foo';
+    let _otherServices = [
+      {
+        id: 1
+      },
+      {
+        id: 2
+      },
+      {
+        id: 5
+      }
+    ];
     const save = sinon.stub(establishment, 'save');
     const otherServices = sinon.stub(establishment, 'otherServices');
     sinon.stub(establishment._properties, 'restore');
-    otherServices.get(() => []);
+    otherServices.get(() => _otherServices);
+    otherServices.set((value) => {_otherServices = value;});
 
     await setMainService(res, establishment, 'foo', 'bar', false);
 
     expect(establishment._isRegulated).to.equal(false);
     expect(establishment._locationId).to.equal(null);
+    expect(_otherServices).to.deep.equal([
+      {
+        id: 5
+      }
+    ]);
   });
 });
