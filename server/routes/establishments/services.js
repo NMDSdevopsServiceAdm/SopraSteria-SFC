@@ -54,7 +54,7 @@ router.route('/').post(async (req, res) => {
     if (await thisEstablishment.restore(establishmentId)) {
       // TODO: JSON validation
 
-      const capacities = await correctCapacities(thisEstablishment, req.body.mainService);
+      const capacities = await correctCapacities(thisEstablishment, null, req.body.services);
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in services
