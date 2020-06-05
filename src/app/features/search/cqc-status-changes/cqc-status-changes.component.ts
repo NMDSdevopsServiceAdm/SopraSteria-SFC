@@ -17,13 +17,9 @@ export class CqcStatusChangesComponent implements OnInit {
   }
 
   public getCqcStatusChanges() {
-    console.log("calling cqc service");
     this.cqcStatusChangeService.getCqcStatusChange().subscribe(
       data => {
         this.cqcStatusChanges = data;
-        console.log("___________----------------------------------");
-        console.log(data);
-
       },
       error => this.onError(error)
     );
