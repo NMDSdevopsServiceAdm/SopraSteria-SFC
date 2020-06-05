@@ -45,6 +45,7 @@ interface EmployerTypeRequest {
 }
 
 interface MainServiceRequest {
+  cqc: boolean,
   mainService: {
     id: number;
     name: string;

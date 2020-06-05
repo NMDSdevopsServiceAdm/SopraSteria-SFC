@@ -5,63 +5,48 @@ sinon.stub(dbmodels.status, 'on');
 const expect = require('chai').expect;
 const setMainService = require('../../../../routes/establishments/mainService').setMainService;
 const Establishment = require('../../../../models/classes/establishment');
-const ServiceCache = require('../cache/singletons/services').ServiceCache;
+const ServiceCache = require('../../../../models/cache/singletons/services').ServiceCache;
 
 describe('mainService', () => {
-  sinon.stub(ServiceCache, )
+  sinon.stub(ServiceCache, 'allMyServices').returns([])
+
+  const res = {
+    status: () => {
+      return {
+        json: () => {},
+        send: () => {}
+      }
+    }
+  }
 
   it('should change the main service (with no other changes) if regulation state does not change (true)', async () => {
-    const establishment = {
-      isRegulated: true,
-      load: (obj) => {},
-      save: () => {},
-      toJSON: () => {}
-    };
+    const establishment = new Establishment.Establishment('foo');
+    establishment._isRegulated = true;
+    const save = sinon.stub(establishment, 'save');
 
-    const mock = sinon.mock(establishment);
+    await setMainService(res, establishment, 'foo', 'bar', true);
 
-    mock.expects('load').withArgs({mainService: 'foo'}).returns(true);
-    mock.expects('save').once();
-
-    await setMainService(establishment, 'foo', 'bar', true);
-
-    mock.verify();
+    expect(establishment._isRegulated).to.equal(true);
   });
 
   it('should change the main service (with no other changes) if regulation state does not change (false)', async () => {
-    const establishment = {
-      isRegulated: false,
-      load: (obj) => {},
-      save: () => {},
-      toJSON: () => {}
-    };
+    const establishment = new Establishment.Establishment('foo');
+    establishment._isRegulated = false;
+    const save = sinon.stub(establishment, 'save');
 
-    const mock = sinon.mock(establishment);
+    await setMainService(res, establishment, 'foo', 'bar', false);
 
-    mock.expects('load').withArgs({mainService: 'foo'}).returns(true);
-    mock.expects('save').once();
-
-    await setMainService(establishment, 'foo', 'bar', false);
-
-    mock.verify();
+    expect(establishment._isRegulated).to.equal(false);
   });
 
   it('should change the main service (with no other changes) if regulation change not specified (true)', async () => {
-    const establishment = {
-      isRegulated: true,
-      load: (obj) => {},
-      save: () => {},
-      toJSON: () => {}
-    };
+    const establishment = new Establishment.Establishment('foo');
+    establishment._isRegulated = true;
+    sinon.stub(establishment, 'save');
 
-    const mock = sinon.mock(establishment);
+    await setMainService(res, establishment, 'foo', 'bar', undefined);
 
-    mock.expects('load').withArgs({mainService: 'foo'}).returns(true);
-    mock.expects('save').once();
-
-    await setMainService(establishment, 'foo', 'bar', undefined);
-
-    mock.verify();
+    expect(establishment._isRegulated).to.equal(true);
   });
 
   it('should remove CQC related properties when going from CQC -> Non-CQC', async () => {
@@ -72,9 +57,7 @@ describe('mainService', () => {
     sinon.stub(establishment._properties, 'restore');
     otherServices.get(() => []);
 
-    await setMainService(establishment, 'foo', 'bar', false);
-
-    sinon.assert.calledTwice(save);
+    await setMainService(res, establishment, 'foo', 'bar', false);
 
     expect(establishment._isRegulated).to.equal(false);
     expect(establishment._locationId).to.equal(null);

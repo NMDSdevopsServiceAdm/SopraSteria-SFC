@@ -1,3 +1,4 @@
+const { EstablishmentJsonException } = require('../../models/classes/establishment/establishmentExceptions');
 
 const express = require('express');
 const router = express.Router({mergeParams: true});
@@ -5,6 +6,7 @@ const router = express.Router({mergeParams: true});
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
 const {correctCapacities} = require('../../utils/correctCapacities');
+const {correctServices} = require('../../utils/correctServices');
 
 const filteredProperties = ['Name', 'MainServiceFK', 'CapacityServices'];
 
@@ -55,28 +57,7 @@ router.route('/').post(async (req, res) => {
     // by loading the Establishment before updating it, we have all the facts about
     //  an Establishment (if needing to make inter-property decisions)
     if (await thisEstablishment.restore(establishmentId)) {
-      // TODO: JSON validation
-
-      const capacities = await correctCapacities(thisEstablishment, req.body.mainService);
-
-      // by loading after the restore, only those properties defined in the
-      //  POST body will be updated (peristed)
-      // With this endpoint we're only interested in name
-      const isValidEstablishment = await thisEstablishment.load({
-        mainService: req.body.mainService,
-        capacities
-      });
-
-      // do it here
-
-      // this is an update to an existing Establishment, so no mandatory properties!
-      if (isValidEstablishment) {
-        await thisEstablishment.save(req.username);
-
-        return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
-      } else {
-        return res.status(400).send('Unexpected Input.');
-      }
+      return setMainService(res, thisEstablishment, req.body.mainService, req.username, req.body.cqc);
 
     } else {
       // not found worker
@@ -96,47 +77,46 @@ router.route('/').post(async (req, res) => {
   }
 });
 
-async function changeMainService(establishment, mainService, username) {
+async function changeMainService(res, establishment, cqc, mainService, username) {
+  // TODO: JSON validation
+
+  const services = await correctServices(establishment, cqc, mainService);
+  const capacities = await correctCapacities(establishment, mainService, services);
+
+  // by loading after the restore, only those properties defined in the
+  //  POST body will be updated (peristed)
+  // With this endpoint we're only interested in name
   const isValidEstablishment = await establishment.load({
-    mainService: mainService
+    mainService: mainService,
+    services: services,
+    capacities,
+    isRegulated: cqc
   });
 
+  // do it here
+
+  // this is an update to an existing Establishment, so no mandatory properties!
   if (isValidEstablishment) {
     await establishment.save(username);
 
-    return establishment.toJSON(false, false, false, true, false, filteredProperties);
+    return res.status(200).json(establishment.toJSON(false, false, false, true, false, filteredProperties));
   } else {
-    throw new EstablishmentJsonException('Unexpected Input.');
+    return res.status(400).send('Unexpected Input.');
   }
 }
 
-async function deregulateEstablishment(establishment, username) {
-  const isValidEstablishment = await establishment.load({
-    isRegulated: false
-  });
-
-  if (isValidEstablishment) {
-    await establishment.save(username);
-
-    return establishment.toJSON(false, false, false, true, false, filteredProperties);
-  } else {
-    throw new EstablishmentJsonException('Unexpected Input.');
-  }
-}
-
-async function setMainService(establishment, mainService, username, cqc) {
+async function setMainService(res, establishment, mainService, username, cqc) {
   if (cqc === undefined) {
     cqc = establishment.isRegulated;
   }
 
   // No switch, same as previous behaviour.
   if (cqc === establishment.isRegulated) {
-    await changeMainService(establishment, mainService, username);
+    return changeMainService(res, establishment, cqc, mainService, username);
   } else if (cqc) { // Non-CQC -> CQC
 
   } else { // CQC -> Non-CQC
-    await changeMainService(establishment, mainService, username);
-    await deregulateEstablishment(establishment, username);
+    return changeMainService(res, establishment, cqc, mainService, username);
   }
 }
 
