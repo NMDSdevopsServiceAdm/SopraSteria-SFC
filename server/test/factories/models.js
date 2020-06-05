@@ -17,6 +17,12 @@ const establishmentBuilder = build('Establishment', {
       id: 16,
       name: fake(f => f.lorem.sentence()),
     },
+    otherServices: [
+      {
+        id: 9
+      }
+    ],
+    postcode: fake(f => f.address.zipCode('??# #??'))
   }
 });
 

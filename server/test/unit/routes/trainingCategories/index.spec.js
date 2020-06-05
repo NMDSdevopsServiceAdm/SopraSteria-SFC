@@ -141,5 +141,25 @@ describe('test training categories endpoint functions', () => {
         },
       });
     });
+
+    it('returns a list of empty training categories if an establishment has no staff', async () => {
+      const establishmentId = 123;
+      sinon.stub(models.establishment, 'findWithWorkersAndTraining').returns(null);
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: `/api/trainingCategories/${establishmentId}/with-training`,
+      });
+
+      const res = httpMocks.createResponse();
+
+      // Act
+      await workerTrainingCategoriesRoute.getTrainingByCategory(req, res);
+
+      // Assert
+      const { trainingCategories } = res._getJSONData();
+
+      expect(trainingCategories).to.deep.equal([]);
+    });
   });
 });
