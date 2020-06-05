@@ -4,9 +4,9 @@ const router = express.Router({mergeParams: true});
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
-const EstablishmentJsonException = require('../../models/classes/establishment/establishmentExceptions').EstablishmentJsonException;
+const {correctCapacities} = require('../../utils/correctCapacities');
 
-const filteredProperties = ['Name', 'MainServiceFK'];
+const filteredProperties = ['Name', 'MainServiceFK', 'CapacityServices'];
 
 // gets current employer type for the known establishment
 router.route('/').get(async (req, res) => {
@@ -55,8 +55,29 @@ router.route('/').post(async (req, res) => {
     // by loading the Establishment before updating it, we have all the facts about
     //  an Establishment (if needing to make inter-property decisions)
     if (await thisEstablishment.restore(establishmentId)) {
-      const output = await setMainService(thisEstablishment, req.body.mainService, req.username, req.body.cqc);
-      return res.status(200).json(output);
+      // TODO: JSON validation
+
+      const capacities = await correctCapacities(thisEstablishment, req.body.mainService);
+
+      // by loading after the restore, only those properties defined in the
+      //  POST body will be updated (peristed)
+      // With this endpoint we're only interested in name
+      const isValidEstablishment = await thisEstablishment.load({
+        mainService: req.body.mainService,
+        capacities
+      });
+
+      // do it here
+
+      // this is an update to an existing Establishment, so no mandatory properties!
+      if (isValidEstablishment) {
+        await thisEstablishment.save(req.username);
+
+        return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
+      } else {
+        return res.status(400).send('Unexpected Input.');
+      }
+
     } else {
       // not found worker
       return res.status(404).send('Not Found');
