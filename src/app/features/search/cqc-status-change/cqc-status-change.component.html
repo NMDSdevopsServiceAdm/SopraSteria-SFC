@@ -34,6 +34,17 @@
             {{ cqcStatusChange.currentService.name }}
         </td>
       </tr>
+      <tr *ngIf="cqcStatusChange.requestedService.other || cqcStatusChange.currentService.other" class="govuk-table__row">
+        <th class="govuk-table__cell">
+          <span  *ngIf="cqcStatusChange.requestedService.other" >Requested Service Name</span></th>
+        <td class="govuk-table__cell">
+         <span  *ngIf="cqcStatusChange.requestedService.other"> {{ cqcStatusChange.requestedService.other }}</span>
+        </td>
+        <th  class="govuk-table__cell"><span *ngIf="cqcStatusChange.currentService.other">Current Service Name</span></th>
+        <td  class="govuk-table__cell">
+          <span *ngIf="cqcStatusChange.currentService.other">{{ cqcStatusChange.currentService.other }}</span>
+        </td>
+      </tr>
       <tr class="govuk-table__row">
         <td class="gov-uk-table__cell" colspan="4">
           <div class="govuk-button-group">

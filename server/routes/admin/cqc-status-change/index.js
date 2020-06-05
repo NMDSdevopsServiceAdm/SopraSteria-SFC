@@ -41,8 +41,6 @@ const _mapResults = async (approvalResults) => {
     const currentServiceID = data.currentService.id || null;
     const requestedServiceID = data.requestedService.id || null;
     if (!currentServiceID || !requestedServiceID) throw `Can't find request data with ID ${approval.id}`;
-    const currentServiceName = await models.services.findNameByID(currentServiceID);
-    const requestedServiceName = await models.services.findNameByID(requestedServiceID);
     return {
       requestId: approval.ID,
       requestUUID: approval.UUID,
@@ -55,11 +53,13 @@ const _mapResults = async (approvalResults) => {
       requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
       currentService: {
         ID: currentServiceID,
-        name: currentServiceName.name
+        name: data.currentService.name,
+        other: data.currentService.other || null
       },
       requestedService: {
         ID: requestedServiceID,
-        name: requestedServiceName.name
+        name: data.requestedService.name,
+        other: data.requestedService.other || null
       }
     };
   });
