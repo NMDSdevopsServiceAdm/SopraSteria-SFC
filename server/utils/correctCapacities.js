@@ -1,6 +1,22 @@
 const {CapacitiesCache} = require('../models/cache/singletons/capacities');
 const models = require('../models/');
 
+const getCurrentCapacities = async establishmentId => {
+  return await models.establishmentCapacity.findAll({
+    where: {
+      EstablishmentID: establishmentId,
+    },
+    include: [
+      {
+        model: models.serviceCapacity,
+        as: 'reference',
+        attributes: ['id', 'question'],
+      },
+    ],
+    attributes: ['id', 'answer'],
+  });
+};
+
 exports.correctCapacities = async (establishment, mainService = null, otherServices = null) => {
   const allServices = [];
   if (mainService !== null) {
@@ -14,19 +30,7 @@ exports.correctCapacities = async (establishment, mainService = null, otherServi
     establishment.otherServices.map(other => allServices.push(other.id));
   }
   const correctCapacities = CapacitiesCache.allMyCapacities(allServices);
-  const currentCapacities = await models.establishmentCapacity.findAll({
-    where: {
-      EstablishmentID: establishment.id,
-    },
-    include: [
-      {
-        model: models.serviceCapacity,
-        as: 'reference',
-        attributes: ['id', 'question'],
-      },
-    ],
-    attributes: ['id', 'answer'],
-  });
+  const currentCapacities = await getCurrentCapacities(establishment.id);
   const capacity = [];
   if (currentCapacities) {
     correctCapacities.map(correctCapacity => {
