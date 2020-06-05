@@ -11,24 +11,19 @@ export class CqcStatusChangeService {
   constructor(private http: HttpClient) {}
 
   public getCqcStatusChange(): Observable<CqcStatusChanges[]> {
-    console.log("calling /api/admin/cqc-status-change/");
     return this.http.get<CqcStatusChanges[]>('/api/admin/cqc-status-change/');
   }
 
-  public getCqcStatusChangeByEstablishmentId(establishmentId: number): Observable<boolean> {
-    return this.http.get<boolean>(`/api/approvals/cqc-status-change/establishment/${establishmentId}`);
-  }
-
-  public cqcStatusRequested(establishmentId: number): Observable<boolean> {
-    return this.getCqcStatusChangeByEstablishmentId(establishmentId)
-      .pipe(map(result => result != null));
-  }
+  // public getCqcStatusChangeByEstablishmentId(establishmentId: number): Observable<boolean> {
+  //   return this.http.get<boolean>(`/api/approvals/cqc-status-change/establishment/${establishmentId}`);
+  // }
+  //
+  // public cqcStatusRequested(establishmentId: number): Observable<boolean> {
+  //   return this.getCqcStatusChangeByEstablishmentId(establishmentId)
+  //     .pipe(map(result => result != null));
+  // }
 
   public CqcStatusChangeApproval(data: object) {
-    return this.http.post<any>('/api/admin/cqc-approval/', data);
-  }
-
-  public CqcStatusChange() {
-    return this.http.post<any>('/api/approvals/cqc-status-change/', null);
+    return this.http.post<any>('/api/admin/cqc-status-change/', data);
   }
 }

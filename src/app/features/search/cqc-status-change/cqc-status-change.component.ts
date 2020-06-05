@@ -69,7 +69,7 @@ export class CqcStatusChangeComponent implements OnInit {
   private approveOrRejectRequest() {
     let data;
     data = {
-      parentRequestId: this.cqcStatusChange.requestId,
+      approvalId: this.cqcStatusChange.requestId,
       establishmentId: this.cqcStatusChange.establishmentId,
       userId: this.cqcStatusChange.userId,
       rejectionReason: this.rejectionReason,

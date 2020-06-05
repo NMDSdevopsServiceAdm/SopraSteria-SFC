@@ -90,7 +90,7 @@ module.exports = (sequelize, DataTypes) => {
       where: {
         ID: id
       },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status'],
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status','Data'],
       include: [
         {
           model: sequelize.models.establishment,
