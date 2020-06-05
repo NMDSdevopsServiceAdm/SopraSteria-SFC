@@ -3,7 +3,9 @@ const router = express.Router({mergeParams: true});
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['Name', 'MainServiceFK'];
+const {correctCapacities} = require('../../utils/correctCapacities');
+
+const filteredProperties = ['Name', 'MainServiceFK', 'CapacityServices'];
 
 // gets current employer type for the known establishment
 router.route('/').get(async (req, res) => {
@@ -41,7 +43,7 @@ router.route('/').get(async (req, res) => {
 
 // updates the current employer type for the known establishment
 router.route('/').post(async (req, res) => {
-  const establishmentId = req.establishmentId;  
+  const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
 
@@ -54,12 +56,17 @@ router.route('/').post(async (req, res) => {
     if (await thisEstablishment.restore(establishmentId)) {
       // TODO: JSON validation
 
+      const capacities = await correctCapacities(thisEstablishment, req.body.mainService);
+
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in name
       const isValidEstablishment = await thisEstablishment.load({
-        mainService: req.body.mainService
+        mainService: req.body.mainService,
+        capacities
       });
+
+      // do it here
 
       // this is an update to an existing Establishment, so no mandatory properties!
       if (isValidEstablishment) {
@@ -69,13 +76,13 @@ router.route('/').post(async (req, res) => {
       } else {
         return res.status(400).send('Unexpected Input.');
       }
-        
+
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    
+
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
       console.error("Establishment::mainService POST: ", err.message);
       return res.status(400).send(err.safe);
