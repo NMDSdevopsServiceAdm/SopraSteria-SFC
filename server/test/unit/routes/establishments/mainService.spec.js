@@ -77,6 +77,14 @@ describe('mainService', () => {
 
   it('should remove CQC related properties when going from CQC -> Non-CQC', async () => {
     const establishment = new Establishment.Establishment('foo');
+    await establishment.load({
+      share: {
+        enabled: true,
+        with: ['CQC']
+      }
+    });
+
+    console.log(establishment.shareWith)
     establishment._isRegulated = true;
     establishment._locationId = 'foo';
     let _otherServices = [
@@ -96,12 +104,12 @@ describe('mainService', () => {
     otherServices.get(() => _otherServices);
     otherServices.set((value) => {_otherServices = value;});
 
-    await setMainService(res, establishment, 'foo', 'bar', false);
+    await setMainService(res, establishment, {id: 1}, 'bar', false);
 
     expect(establishment.isRegulated).to.equal(false);
     expect(establishment.locationId).to.equal(null);
-    expect(establishment.shareWith).to.not.include('CQC');
-    expect(otherServices).to.deep.equal([
+    expect(establishment.shareWith.with).to.not.include('CQC');
+    expect(_otherServices).to.deep.equal([
       {
         id: 5
       }

@@ -80,7 +80,7 @@ router.route('/').post(async (req, res) => {
 async function changeMainService(res, establishment, cqc, mainService, username) {
   // TODO: JSON validation
 
-  const services = await correctServices(establishment, cqc, mainService);
+  const services = await correctServices(establishment, cqc);
   const capacities = await correctCapacities(establishment, mainService, services);
 
   // by loading after the restore, only those properties defined in the

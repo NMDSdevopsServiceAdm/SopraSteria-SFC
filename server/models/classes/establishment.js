@@ -474,8 +474,6 @@ class Establishment extends EntityValidator {
         document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
 
         await this._properties.restore(document, JSON_DOCUMENT_TYPE);
-        console.log(document.share)
-        console.log(this.shareWith);
         if (document.ustatus) {
           this._ustatus = document.ustatus;
         }
@@ -486,6 +484,10 @@ class Establishment extends EntityValidator {
 
           if(!this.isRegulated) {
             this._locationId = null;
+
+            if (this.shareWith && this.shareWith.with) {
+              this.shareWith.with = this.shareWith.with.filter(x => x !== 'CQC');
+            }
           }
         }
         if (document.locationId) {
