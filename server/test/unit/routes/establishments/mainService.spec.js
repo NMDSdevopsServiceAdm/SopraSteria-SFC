@@ -29,7 +29,9 @@ describe('mainService', () => {
       name: 'foo',
       category: 'foo'
     },
-  ])
+  ]);
+
+  sinon.stub(dbmodels.establishmentCapacity, 'findAll').returns([]);
 
   const res = {
     status: () => {
@@ -43,7 +45,8 @@ describe('mainService', () => {
   it('should change the main service (with no other changes) if regulation state does not change (true)', async () => {
     const establishment = new Establishment.Establishment('foo');
     establishment._isRegulated = true;
-    const save = sinon.stub(establishment, 'save');
+    sinon.stub(establishment, 'save');
+    sinon.stub(establishment._properties, 'restore');
 
     await setMainService(res, establishment, 'foo', 'bar', true);
 
@@ -53,7 +56,8 @@ describe('mainService', () => {
   it('should change the main service (with no other changes) if regulation state does not change (false)', async () => {
     const establishment = new Establishment.Establishment('foo');
     establishment._isRegulated = false;
-    const save = sinon.stub(establishment, 'save');
+    sinon.stub(establishment, 'save');
+    sinon.stub(establishment._properties, 'restore');
 
     await setMainService(res, establishment, 'foo', 'bar', false);
 
@@ -64,6 +68,7 @@ describe('mainService', () => {
     const establishment = new Establishment.Establishment('foo');
     establishment._isRegulated = true;
     sinon.stub(establishment, 'save');
+    sinon.stub(establishment._properties, 'restore');
 
     await setMainService(res, establishment, 'foo', 'bar', undefined);
 
@@ -85,7 +90,7 @@ describe('mainService', () => {
         id: 5
       }
     ];
-    const save = sinon.stub(establishment, 'save');
+    sinon.stub(establishment, 'save');
     const otherServices = sinon.stub(establishment, 'otherServices');
     sinon.stub(establishment._properties, 'restore');
     otherServices.get(() => _otherServices);
@@ -93,9 +98,10 @@ describe('mainService', () => {
 
     await setMainService(res, establishment, 'foo', 'bar', false);
 
-    expect(establishment._isRegulated).to.equal(false);
-    expect(establishment._locationId).to.equal(null);
-    expect(_otherServices).to.deep.equal([
+    expect(establishment.isRegulated).to.equal(false);
+    expect(establishment.locationId).to.equal(null);
+    expect(establishment.shareWith).to.not.include('CQC');
+    expect(otherServices).to.deep.equal([
       {
         id: 5
       }

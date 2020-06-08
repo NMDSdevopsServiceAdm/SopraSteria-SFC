@@ -11,8 +11,8 @@ exports.correctServices = async (establishment, cqc, otherServices = null) => {
   const services = [];
   correctServices.map(correctService => {
     allServices.map(currentService => {
-      if (correctService.id === currentService.reference.id) {
-        services.push(correctService)
+      if (correctService.id === currentService.id) {
+        services.push(correctService);
       }
     })
   });

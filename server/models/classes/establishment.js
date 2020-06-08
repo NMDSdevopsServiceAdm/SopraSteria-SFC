@@ -422,6 +422,10 @@ class Establishment extends EntityValidator {
       if (document.IsCQCRegulated === false || document.isRegulated === false) {
         if (document.share && document.share.with) {
           document.share.with = document.share.with.filter(item => item !== 'CQC');
+        } else {
+          document.share = {
+            with: []
+          };
         }
         document.locationId = null;
       }
@@ -470,6 +474,8 @@ class Establishment extends EntityValidator {
         document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
 
         await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+        console.log(document.share)
+        console.log(this.shareWith);
         if (document.ustatus) {
           this._ustatus = document.ustatus;
         }
@@ -477,6 +483,10 @@ class Establishment extends EntityValidator {
         // CQC regulated/location ID
         if (hasProp(document, 'isRegulated')) {
           this._isRegulated = document.isRegulated;
+
+          if(!this.isRegulated) {
+            this._locationId = null;
+          }
         }
         if (document.locationId) {
           // Note - there is more validation to do on location ID - so this really should be a managed property
