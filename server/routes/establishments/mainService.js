@@ -49,7 +49,6 @@ router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
-
   try {
     // before updating an Establishment, we need to be sure the Establishment is
     //  available to the given user. The best way of doing that
@@ -80,7 +79,7 @@ router.route('/').post(async (req, res) => {
 async function changeMainService(res, establishment, cqc, mainService, username) {
   // TODO: JSON validation
 
-  const services = await correctServices(establishment, cqc);
+  const services = await correctServices(establishment, cqc, mainService);
   const capacities = await correctCapacities(establishment, mainService, services);
 
   // by loading after the restore, only those properties defined in the
@@ -114,7 +113,7 @@ async function setMainService(res, establishment, mainService, username, cqc) {
   if (cqc === establishment.isRegulated) {
     return changeMainService(res, establishment, cqc, mainService, username);
   } else if (cqc) { // Non-CQC -> CQC
-
+    return res.status(200).json(establishment.toJSON(false, false, false, true, false, filteredProperties));
   } else { // CQC -> Non-CQC
     return changeMainService(res, establishment, cqc, mainService, username);
   }

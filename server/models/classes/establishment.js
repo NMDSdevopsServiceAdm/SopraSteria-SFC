@@ -414,10 +414,6 @@ class Establishment extends EntityValidator {
       if (document.IsCQCRegulated === false || document.isRegulated === false) {
         if (document.share && document.share.with) {
           document.share.with = document.share.with.filter(item => item !== 'CQC');
-        } else {
-          document.share = {
-            with: []
-          };
         }
         document.locationId = null;
       }
