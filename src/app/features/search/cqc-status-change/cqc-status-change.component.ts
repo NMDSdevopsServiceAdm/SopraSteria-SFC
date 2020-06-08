@@ -48,7 +48,7 @@ export class CqcStatusChangeComponent implements OnInit {
           paragraphText: approve
             ? `If you do this, ${this.cqcStatusChange.orgName} will be flagged as CQC regulated and their new main service will be ${this.cqcStatusChange.requestedService.name}.`
             : `If you do this, ${this.cqcStatusChange.orgName} will not be flagged as CQC regulated and their main service will still be ${this.cqcStatusChange.currentService.name}.`,
-          buttonText: approve ? 'Approve request' : 'Reject request'
+          buttonText: approve ? 'Approve this change' : 'Reject this change'
         })
       .afterClosed.subscribe(approveConfirmed => {
         if (approveConfirmed) {
