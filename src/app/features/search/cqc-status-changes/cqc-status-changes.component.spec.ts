@@ -14,7 +14,7 @@ import { CqcStatusChangesComponent } from '../cqc-status-changes/cqc-status-chan
 import { CqcStatusChange } from '@core/model/cqc-status-change.model';
 
 
-fdescribe('CqcStatusChangesComponent', () => {
+describe('CqcStatusChangesComponent', () => {
   let component: RenderResult<CqcStatusChangesComponent>;
 
   it('can get a CQC Status Change request', () => {

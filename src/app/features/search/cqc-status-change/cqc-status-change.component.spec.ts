@@ -66,7 +66,7 @@ function cqcStatusChangeGenerator(otherCurrentService = false, otherRequestedSer
   return payload;
 }
 
-fdescribe('CqcStatusChangeComponent', () => {
+describe('CqcStatusChangeComponent', () => {
 
   async function getCqcStatusChangeComponent(otherCurrentService = false, otherRequestedService= false, usernameNull = false) {
     return render(CqcStatusChangeComponent, {
