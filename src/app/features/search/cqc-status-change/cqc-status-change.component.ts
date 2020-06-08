@@ -27,7 +27,6 @@ export class CqcStatusChangeComponent implements OnInit {
     public alertService: AlertService
   ) {}
   ngOnInit() {
-
     this.cqcStatusChangeForm = new FormGroup({});
   }
 
@@ -94,7 +93,7 @@ export class CqcStatusChangeComponent implements OnInit {
 
     this.alertService.addAlert({
       type: 'success',
-      message: `CQC request ${approvedOrRejected} for ${this.cqcStatusChange.orgName}.`,
+      message: `CQC status change ${approvedOrRejected} for ${this.cqcStatusChange.orgName}.`,
     });
   }
 

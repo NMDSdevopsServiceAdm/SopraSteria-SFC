@@ -6,7 +6,7 @@ export interface CqcStatusChange {
   establishmentUid: string;
   userId: number;
   workplaceId: string;
-  userName: string;
+  username: string;
   orgName: string;
   requested: Date;
   status: string;
