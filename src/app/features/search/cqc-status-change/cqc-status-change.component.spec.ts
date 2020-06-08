@@ -66,30 +66,7 @@ function cqcStatusChangeGenerator(otherCurrentService = false, otherRequestedSer
   return payload;
 }
 
-describe('CqcStatusChangeComponent', () => {
-
-  async function setupForSwitchWorkplace(usernameNull = false) {
-    const component = await getCqcStatusChangeComponent(false, false, usernameNull);
-    const authToken = 'This is an auth token';
-    const swappedEstablishmentData = {
-      headers: {
-        get: (header) => header === 'authorization' ? authToken : null
-      },
-      body: {
-        establishment: {
-          uid: testEstablishmentUid
-        },
-      }
-    };
-    const getNewEstablishmentId = spyOn(component.fixture.componentInstance.switchWorkplaceService, 'getNewEstablishmentId').and.returnValue(of(swappedEstablishmentData));
-    const workplace = { uid: testEstablishmentUid };
-    return {
-      component,
-      authToken,
-      workplace,
-      getNewEstablishmentId
-    };
-  }
+fdescribe('CqcStatusChangeComponent', () => {
 
   async function getCqcStatusChangeComponent(otherCurrentService = false, otherRequestedService= false, usernameNull = false) {
     return render(CqcStatusChangeComponent, {
@@ -277,7 +254,7 @@ describe('CqcStatusChangeComponent', () => {
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
       type: 'success',
-      message: `CQC status change approved for ${testOrgname}.`,
+      message: `You\'ve approved the main service change for ${testOrgname}.`
     });
   });
 
@@ -294,59 +271,9 @@ describe('CqcStatusChangeComponent', () => {
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
       type: 'success',
-      message: `CQC status change rejected for ${testOrgname}.`,
+      message: `You\'ve rejected the main service change for ${testOrgname}.`,
     });
   });
 
-  it('should load workplace-specific notifications if user name not populated when switching to new workplace.', async () => {
-    // Arrange
-
-    const { component } = await setupForSwitchWorkplace(true);
-    const notificationData = { dummyNotification: 'I am a notification' };
-    const getAllNotificationWorkplace = spyOn(component.fixture.componentInstance.switchWorkplaceService, 'getAllNotificationWorkplace').and.returnValue(of(notificationData));
-
-    // Act
-    component.getByText(testOrgname).click();
-    component.fixture.detectChanges();
-
-    // Assert
-    expect(getAllNotificationWorkplace).toHaveBeenCalled();
-  });
-
-  it('should clear permissions when switching to new workplace', async () => {
-    const { component } = await setupForSwitchWorkplace();
-    const clearPermissions = spyOn(component.fixture.componentInstance.switchWorkplaceService.permissionsService, 'clearPermissions').and.callThrough();
-
-    // Act
-    component.getByText(testOrgname).click();
-    component.fixture.detectChanges();
-
-    // Assert
-    expect(clearPermissions).toHaveBeenCalled();
-  });
-
-  it('should change auth tokens when switching to new workplace', async () => {
-    const { component, authToken } = await setupForSwitchWorkplace();
-    const setPreviousToken = spyOn(component.fixture.componentInstance.switchWorkplaceService.authService, 'setPreviousToken').and.callThrough();
-
-    // Act
-    component.getByText(testOrgname).click();
-    component.fixture.detectChanges();
-
-    // Assert
-    expect(setPreviousToken).toHaveBeenCalled();
-    expect(component.fixture.componentInstance.switchWorkplaceService.authService.token).toEqual(authToken);
-  });
-
-  it('should swap establishments when switching to new workplace', async () => {
-    const { component, getNewEstablishmentId } = await setupForSwitchWorkplace();
-
-    // Act
-    component.getByText(testOrgname).click();
-    component.fixture.detectChanges();
-
-    // Assert
-    expect(getNewEstablishmentId).toHaveBeenCalled();
-  });
 });
 

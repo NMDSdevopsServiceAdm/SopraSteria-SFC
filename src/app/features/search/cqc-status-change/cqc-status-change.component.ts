@@ -93,7 +93,7 @@ export class CqcStatusChangeComponent implements OnInit {
 
     this.alertService.addAlert({
       type: 'success',
-      message: `CQC status change ${approvedOrRejected} for ${this.cqcStatusChange.orgName}.`,
+      message: `You've ${approvedOrRejected} the main service change for ${this.cqcStatusChange.orgName}.`,
     });
   }
 

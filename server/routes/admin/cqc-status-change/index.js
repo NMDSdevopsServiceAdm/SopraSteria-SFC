@@ -47,7 +47,7 @@ const _mapResults = async (approvalResults) => {
       establishmentUid: approval.Establishment.uid,
       userId: approval.UserID,
       workplaceId: approval.Establishment.nmdsId,
-      userName: approval.User.FullNameValue,
+      username: approval.User.FullNameValue,
       orgName: approval.Establishment.NameValue,
       requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
       currentService: {
@@ -80,7 +80,6 @@ const _approveChange = async (req, res) => {
 };
 
 const _rejectChange = async (req, res) => {
-  await _notify(req.body.cqcStatusChangeId, req.userUid, req.body.establishmentId);
   await _updateApprovalStatus(req.body.approvalId, 'Rejected');
 
   return res.status(200).json({ status: '0', message: cqcStatusChangeRejectionConfirmation });
@@ -100,12 +99,10 @@ const _updateMainService = async (approvalId, username) => {
   const singleApproval = await models.Approvals.findbyId(approvalId);
   data = singleApproval.Data;
   const establishmentId = singleApproval.EstablishmentID;
-  const requestedServiceId = data.requestedService.id;
-  const requestServiceName = await models.services.findNameByID(requestedServiceId).name;
   if (singleApproval) {
     const mainService = {
       id: data.requestedService.id,
-      name: requestServiceName,
+      name: data.requestedService.name,
       ...(data.requestedService.other && { other: data.requestedService.other })
     };
     const addIsRegulated = true;
