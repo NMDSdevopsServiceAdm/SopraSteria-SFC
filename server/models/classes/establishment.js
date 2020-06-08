@@ -236,14 +236,6 @@ class Establishment extends EntityValidator {
     return this._properties.get('OtherServices') ? this._properties.get('OtherServices').property : null;
   }
 
-  // TODO: make sure this works as intended.
-  set otherServices(value) {
-    const otherServices = this._properties.get('OtherServices');
-    if (otherServices) {
-      otherServices.property = value;
-    }
-  }
-
   get capacities() {
     return this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').property : null;
   }

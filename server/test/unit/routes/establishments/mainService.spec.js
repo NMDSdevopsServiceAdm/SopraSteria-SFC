@@ -81,35 +81,33 @@ describe('mainService', () => {
       share: {
         enabled: true,
         with: ['CQC']
-      }
+      },
+      otherServices: [
+        {
+          id: 1, name: 'foo', category: 'foo'
+        },
+        {
+          id: 2, name: 'foo', category: 'foo'
+        },
+        {
+          id: 5, name: 'foo', category: 'foo'
+        }
+      ]
     });
 
     console.log(establishment.shareWith)
     establishment._isRegulated = true;
     establishment._locationId = 'foo';
-    let _otherServices = [
-      {
-        id: 1
-      },
-      {
-        id: 2
-      },
-      {
-        id: 5
-      }
-    ];
     sinon.stub(establishment, 'save');
     const otherServices = sinon.stub(establishment, 'otherServices');
     sinon.stub(establishment._properties, 'restore');
-    otherServices.get(() => _otherServices);
-    otherServices.set((value) => {_otherServices = value;});
 
     await setMainService(res, establishment, {id: 1}, 'bar', false);
 
     expect(establishment.isRegulated).to.equal(false);
     expect(establishment.locationId).to.equal(null);
     expect(establishment.shareWith.with).to.not.include('CQC');
-    expect(_otherServices).to.deep.equal([
+    expect(establishment.otherServices).to.deep.equal([
       {
         id: 5
       }
