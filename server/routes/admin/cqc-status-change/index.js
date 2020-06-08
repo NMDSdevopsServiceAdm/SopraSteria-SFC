@@ -3,7 +3,6 @@ const router = express.Router();
 const models = require('../../../models');
 const moment = require('moment-timezone');
 const config = require('../../../config/config');
-// const notifications = require('../../../data/notifications');
 const uuid = require('uuid');
 const mainServiceRouter = require('../../establishments/mainService');
 
@@ -11,7 +10,6 @@ const cqcStatusChangeApprovalConfirmation = 'CQC status change approved';
 const cqcStatusChangeRejectionConfirmation = 'CQC status change rejected';
 
 const getCqcStatusChanges = async (req, res) => {
-  console.log('CALEED getCQCSTATUS');
   try {
     let approvalResults = await models.Approvals.findAllPending('CqcStatusChange');
     let cqcStatusChanges = await _mapResults(approvalResults);
@@ -30,7 +28,7 @@ const cqcStatusChanges = async (req, res) => {
       await _rejectChange(req, res);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(400).send();
   }
 };
@@ -38,6 +36,7 @@ const cqcStatusChanges = async (req, res) => {
 const _mapResults = async (approvalResults) => {
   const promises = approvalResults.map(async approval => {
     data = approval.Data;
+    console.log(data);
     const currentServiceID = data.currentService.id || null;
     const requestedServiceID = data.requestedService.id || null;
     if (!currentServiceID || !requestedServiceID) throw `Can't find request data with ID ${approval.id}`;
@@ -69,8 +68,7 @@ const _mapResults = async (approvalResults) => {
 const _approveChange = async (req, res) => {
   console.log('_approveChange');
   console.log(req.body.approvalId);
-  // await _notify(req.body.cqcStatusChangeId, req.userUid, req.body.establishmentId);
-  //await _updateApprovalStatus(req.body.approvalId, 'Approved');
+  await _updateApprovalStatus(req.body.approvalId, 'Approved');
   const results = await _updateMainService(req.body.approvalId, req.username);
   console.log('results:');
   console.log(results);
@@ -118,25 +116,6 @@ const _updateMainService = async (approvalId, username) => {
   }
 };
 
-//
-// const _notify = async (approvalId, userUid, establishmentId) => {
-//   const approval = await models.Approvals.findbyId(approvalId);
-//   const typUid = approval.UUID;
-//   const params = {
-//     type: 'CqcStatusChange',
-//     typeUid: typUid,
-//     userUid: userUid
-//   };
-//   const users = await notifications.getAllUser({establishmentId: establishmentId});
-//   await Promise.all(users.map(async (user) => {
-//     const userparams = {
-//       ...params,
-//       recipientUserUid: user.UserUID,
-//       notificationUid: uuid.v4(),
-//     };
-//     await notifications.insertNewNotification(userparams);
-//   }));
-// };
 
 router.route('/').post(cqcStatusChanges);
 router.route('/').get(getCqcStatusChanges);

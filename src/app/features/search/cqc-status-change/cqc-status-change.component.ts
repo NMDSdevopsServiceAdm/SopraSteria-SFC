@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { CqcStatusChange } from '@core/model/cqc-status-change.model';
@@ -21,7 +21,7 @@ export class CqcStatusChangeComponent implements OnInit {
   public rejectionReason: string;
 
   constructor(
-    public cqcRequestsService: CqcStatusChangeService,
+    public cqcStatusChangeService: CqcStatusChangeService,
     public switchWorkplaceService: SwitchWorkplaceService,
     public dialogService: DialogService,
     public alertService: AlertService
@@ -76,7 +76,7 @@ export class CqcStatusChangeComponent implements OnInit {
       approve: this.approve,
     };
 
-    this.cqcRequestsService.CqcStatusChangeApproval(data).subscribe(
+    this.cqcStatusChangeService.CqcStatusChangeApproval(data).subscribe(
       () => {
         this.removeCqcStatusChanges.emit(this.index);
         this.showConfirmationMessage();

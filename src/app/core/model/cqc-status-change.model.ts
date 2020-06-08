@@ -1,4 +1,3 @@
-import { int } from 'aws-sdk/clients/datapipeline';
 
 export interface CqcStatusChange {
   requestId: number;

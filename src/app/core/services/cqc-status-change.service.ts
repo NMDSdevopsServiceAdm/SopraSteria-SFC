@@ -14,15 +14,6 @@ export class CqcStatusChangeService {
     return this.http.get<CqcStatusChanges[]>('/api/admin/cqc-status-change/');
   }
 
-  // public getCqcStatusChangeByEstablishmentId(establishmentId: number): Observable<boolean> {
-  //   return this.http.get<boolean>(`/api/approvals/cqc-status-change/establishment/${establishmentId}`);
-  // }
-  //
-  // public cqcStatusRequested(establishmentId: number): Observable<boolean> {
-  //   return this.getCqcStatusChangeByEstablishmentId(establishmentId)
-  //     .pipe(map(result => result != null));
-  // }
-
   public CqcStatusChangeApproval(data: object) {
     return this.http.post<any>('/api/admin/cqc-status-change/', data);
   }
