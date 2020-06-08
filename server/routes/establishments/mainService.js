@@ -84,7 +84,7 @@ async function changeMainService(res, establishment, cqc, mainService, username)
   const capacities = await correctCapacities(establishment, mainService, services);
 
   // by loading after the restore, only those properties defined in the
-  //  POST body will be updated (peristed)
+  //  POST body will be updated (persisted)
   // With this endpoint we're only interested in name
   const isValidEstablishment = await establishment.load({
     mainService: mainService,
