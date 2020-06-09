@@ -55,7 +55,7 @@ router.route('/').post(async (req, res) => {
     // by loading the Establishment before updating it, we have all the facts about
     //  an Establishment (if needing to make inter-property decisions)
     if (await thisEstablishment.restore(establishmentId)) {
-      const output = await setMainService(thisEstablishment, req.body.mainService, req.username, req.body.cqc);
+      const output = await setMainService(res, thisEstablishment, req.body.mainService, req.username, req.body.cqc);
       return res.status(200).json(output);
     } else {
       // not found worker
