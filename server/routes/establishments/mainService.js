@@ -94,7 +94,7 @@ async function updateMainService(establishmentId, username, mainService,addIsReg
 
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
       console.error("Establishment::mainService POST: ", err.message);
-      return { success: false, errorMsg:err.safe,errorCode: 503 };
+      return { success: false, errorMsg:err.safe, errorCode: 503 };
     } else {
       console.error("Unexpected exception: ", err);
     }
