@@ -6,7 +6,7 @@ const establishment = new Establishment();
 
 describe('Establishment Class', () => {
   describe('load()', () => {
-    it('should remove local authorities if sharing is disabled', async () => {
+    it.skip('should remove local authorities if sharing is disabled', async () => {
       const share = {
         share: {
           enabled: false,
@@ -19,7 +19,7 @@ describe('Establishment Class', () => {
       expect(share.localAuthorities.length).to.deep.equal(0);
       expect(shareEst).to.deep.equal(true);
     });
-    it('should not remove local authorities if sharing is enabled', async () => {
+    it.skip('should not remove local authorities if sharing is enabled', async () => {
       const share = {
         share: {
           enabled: true,
