@@ -22,8 +22,8 @@ const testRequestedDate = new Date();
 
 const approveButtonText = 'Approve';
 const rejectButtonText = 'Reject';
-const modalApproveText = 'Approve request';
-const modalRejectText = 'Reject request';
+const modalApproveText = 'Approve this change';
+const modalRejectText = 'Reject this change';
 
 function cqcStatusChangeGenerator(otherCurrentService = false, otherRequestedService = false, usernameNull = false) {
   const payload = {
@@ -66,7 +66,7 @@ function cqcStatusChangeGenerator(otherCurrentService = false, otherRequestedSer
   return payload;
 }
 
-describe('CqcStatusChangeComponent', () => {
+fdescribe('CqcStatusChangeComponent', () => {
 
   async function getCqcStatusChangeComponent(otherCurrentService = false, otherRequestedService= false, usernameNull = false) {
     return render(CqcStatusChangeComponent, {
@@ -120,7 +120,7 @@ describe('CqcStatusChangeComponent', () => {
     const otherServiceTitle = await within(document.body).findByTestId('cqc-requested-service-other-title');
     const otherServiceValue = await within(document.body).findByTestId('cqc-requested-service-other-value');
     const cqcStatusChange = cqcStatusChangeGenerator(otherCurrentService , otherRequestedService);
-    expect(otherServiceTitle.innerHTML).toContain(`Requested Service Name`);
+    expect(otherServiceTitle.innerHTML).toContain(`Requested service name`);
     expect(otherServiceValue.innerHTML).toContain(cqcStatusChange.requestedService.other);
 
   });
@@ -213,7 +213,7 @@ describe('CqcStatusChangeComponent', () => {
     expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will not be flagged as CQC regulated and their main service will still be ${cqcStatusChange.currentService.name}.`);
   });
 
-  it('confirmation modal should show "Approve request" when approving a request', async () => {
+  it('confirmation modal should show approval message when approving a request', async () => {
     // Act
     const { modalConfirmationDialog } = await clickFirstApproveButton();
     const approveHeading = within(modalConfirmationDialog).getByTestId('CQC-confirm-heading');
@@ -227,7 +227,7 @@ describe('CqcStatusChangeComponent', () => {
     expect(submitButton).toBeTruthy();
   });
 
-  it('confirmation modal should show "Reject request" when rejecting a request', async () => {
+  it('confirmation modal should show rejection message" when rejecting a request', async () => {
     // Act
     const { modalConfirmationDialog } = await clickFirstRejectButton();
     const rejectHeading = within(modalConfirmationDialog).getByTestId('CQC-confirm-heading');
