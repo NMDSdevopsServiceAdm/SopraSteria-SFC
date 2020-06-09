@@ -6,14 +6,16 @@ const config = require('../../../../../config/config');
 const Sequelize = require('sequelize');
 
 const models = require('../../../../../models/index');
+const mainServiceRouter = require('../../../../../routes/establishments/mainService');
 
-const parentApproval = require('../../../../../routes/admin/parent-approval');
-
+const cqcStatusChange = require('../../../../../routes/admin/cqc-status-change');
+const sb = sinon.createSandbox();
 var testWorkplace = {};
 var workplaceObjectWasSaved = false;
 const _initialiseTestWorkplace = () => {
   testWorkplace.id = 4321;
-  testWorkplace.isParent = false;
+  testWorkplace.isRegulated = false;
+  testWorkplace.MainServiceFKValue = 1;
   testWorkplace.nmdsId = 'I1234567';
   testWorkplace.NameValue = faker.lorem.words(4);
   testWorkplace.save = () => {
@@ -42,14 +44,23 @@ var fakeApproval = {
   User: {
     FullNameValue: faker.name.findName()
   },
-  save: () => {
+  Data: {
+    requestedService: {
+      id: 1, name: 'Carers support'
+    },
+    currentService: {
+      id: 14,
+      name: 'Any childrens / young peoples services',
+      other: 'Other Name'
+    }
+  }, save: () => {
     approvalObjectWasSaved = true;
   }
 };
 
 var approvalRequestBody = {};
 const _initialiseTestRequestBody = () => {
-  approvalRequestBody.parentRequestId = fakeApproval.ID;
+  approvalRequestBody.approvalId = fakeApproval.ID;
   approvalRequestBody.establishmentId = testWorkplace.id;
   approvalRequestBody.userId = testUser.id;
   approvalRequestBody.rejectionReason = 'Because I felt like it.';
@@ -67,44 +78,46 @@ const approvalStatus = (status) => {
     }
   };
 };
-
+var updateMainService;
 var throwErrorWhenFetchingAllRequests = false;
-
-
-var noMatchingRequestByEstablishmentId = false;
-
 var throwErrorWhenFetchingSingleRequest = false;
 
-describe('admin/parent-approval route', () => {
+
+describe('admin/cqc-status-change route', () => {
+
+  afterEach(() => {
+    sb.restore();
+  });
 
   beforeEach(async () => {
-    sinon.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
-      if (throwErrorWhenFetchingSingleRequest) {
-        throw 'Oopsy!';
-      } else if (id === fakeApproval.ID) {
-        return fakeApproval;
-      }
-    });
-    sinon.stub(models.establishment, 'findbyId').callsFake(async (id) => {
-      if (id === testWorkplace.id) {
-        return testWorkplace;
-      }
-    });
-    sinon.stub(models.Approvals, 'findbyEstablishmentId').callsFake(async (approvalType) => {
-      if (noMatchingRequestByEstablishmentId) {
-        return null;
-      } else {
-        return fakeApproval;
-      }
-    });
-    sinon.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
+    sb.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
       if (throwErrorWhenFetchingAllRequests) {
         throw 'Oopsy!';
       } else {
         return [fakeApproval];
       }
     });
+    updateMainService = sb.stub(mainServiceRouter, 'updateMainService').callsFake(async (approvalType) => {
+      if (throwErrorWhenFetchingSingleRequest) {
+        return { success: false, errorCode: '400', errorMsg: 'error' };
+      } else {
+        return { success: true, fakeApproval };
+      }
+    });
 
+    sb.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
+      if (throwErrorWhenFetchingSingleRequest) {
+        throw 'Oopsy!';
+      } else if (id === fakeApproval.ID) {
+        return fakeApproval;
+      }
+    });
+
+    sb.stub(models.establishment, 'findbyId').callsFake(async (id) => {
+      if (id === testWorkplace.id) {
+        return testWorkplace;
+      }
+    });
 
     _initialiseTestWorkplace();
     _initialiseTestUser();
@@ -116,12 +129,13 @@ describe('admin/parent-approval route', () => {
     noMatchingRequestByEstablishmentId = false;
   });
 
-  describe('fetching parent requests', () => {
-    it('should return an array of parent requests', async () => {
+
+  describe('fetching CQC Status Approval', () => {
+    it('should return an array of cqc status approvals', async () => {
       // Arrange (see beforeEach)
 
       // Act
-      await parentApproval.getParentRequests({}, { status: approvalStatus });
+      await cqcStatusChange.getCqcStatusChanges({}, { status: approvalStatus });
 
       // Assert
       expect(returnedStatus).to.deep.equal(200);
@@ -132,8 +146,18 @@ describe('admin/parent-approval route', () => {
         establishmentUid: fakeApproval.Establishment.uid,
         userId: fakeApproval.UserID,
         workplaceId: fakeApproval.Establishment.nmdsId,
-        userName: fakeApproval.User.FullNameValue,
+        username: fakeApproval.User.FullNameValue,
         orgName: fakeApproval.Establishment.NameValue,
+        currentService: {
+          ID: fakeApproval.Data.currentService.id,
+          name: fakeApproval.Data.currentService.name,
+          other: fakeApproval.Data.currentService.other
+        },
+        requestedService: {
+          ID: fakeApproval.Data.requestedService.id,
+          name: fakeApproval.Data.requestedService.name,
+          other: null
+        },
         requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
       }]);
     });
@@ -143,81 +167,39 @@ describe('admin/parent-approval route', () => {
       throwErrorWhenFetchingAllRequests = true;
 
       // Act
-      await parentApproval.getParentRequests({}, { status: approvalStatus });
+      await cqcStatusChange.getCqcStatusChanges({}, { status: approvalStatus });
 
       // Assert
       expect(returnedStatus).to.deep.equal(400);
     });
   });
 
-  describe('fetching parent request by establishment id', () => {
-    it('should return a pending parent request for a specified establishment', async () => {
-      // Arrange (see beforeEach)
 
-      // Act
-      await parentApproval.getParentRequestByEstablishmentId({
-        params: {
-          establishmentId: fakeApproval.EstablishmentID
-        }
-      }, { status: approvalStatus });
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(200);
-      expect(returnedJson).to.deep.equal({
-        requestId: fakeApproval.ID,
-        requestUUID: fakeApproval.UUID,
-        establishmentId: fakeApproval.EstablishmentID,
-        establishmentUid: fakeApproval.Establishment.uid,
-        userId: fakeApproval.UserID,
-        workplaceId: fakeApproval.Establishment.nmdsId,
-        userName: fakeApproval.User.FullNameValue,
-        orgName: fakeApproval.Establishment.NameValue,
-        requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
-      });
-    });
-
-    it('should return null when there is no matching parent request', async () => {
-      // Arrange
-      noMatchingRequestByEstablishmentId = true;
-
-      // Act
-      await parentApproval.getParentRequestByEstablishmentId({
-        params: {
-          establishmentId: fakeApproval.EstablishmentID
-        }
-      }, { status: approvalStatus });
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(200);
-      expect(returnedJson).to.deep.equal(null);
-    });
-  });
-
-  describe('approving a new parent organisation', () => {
+  describe('approving a new cqcStatusRequest', () => {
     beforeEach(async () => {
       approvalRequestBody.approve = true;
     });
 
-    it('should return a confirmation message and status 200 when parent status is approved for an org', async () => {
+    it('should return a confirmation message and status 200 when cqc Change Request is approved for an org', async () => {
       // Arrange (see beforeEach)
 
       // Act
-      await parentApproval.parentApproval({
+      await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal(parentApproval.parentApprovalConfirmation);
+      expect(returnedJson.message).to.equal(cqcStatusChange.cqcStatusChangeApprovalConfirmation);
       expect(returnedStatus).to.deep.equal(200);
     });
 
-    it('should change the approval status to Approved when approving a parent request', async () => {
+    it('should change the approval status to Approved when approving a CQC Status Change', async () => {
       // Arrange
       fakeApproval.Status = 'Pending';
 
       // Act
-      await parentApproval.parentApproval({
+      await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -225,12 +207,12 @@ describe('admin/parent-approval route', () => {
       expect(fakeApproval.Status).to.equal('Approved');
     });
 
-    it('should save the approval object when approving a parent request', async () => {
+    it('should save the approval object when approving a CQC Status Change', async () => {
       // Arrange
       approvalObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -238,38 +220,23 @@ describe('admin/parent-approval route', () => {
       expect(approvalObjectWasSaved).to.equal(true);
     });
 
-    it('should change the workplace to a parent workplace when approving a parent request', async () => {
+    it('should call updateMainService if approved', async () => {
       // Arrange
-      testWorkplace.isParent = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
       // Assert
-      expect(testWorkplace.isParent).to.equal(true);
-    });
-
-    it('should save the workplace object when approving a parent request', async () => {
-      // Arrange
-      workplaceObjectWasSaved = false;
-
-      // Act
-      await parentApproval.parentApproval({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
-
-      // Assert
-      expect(workplaceObjectWasSaved).to.equal(true);
+      sinon.assert.called(updateMainService);
     });
 
     it('should return 400 on error', async () => {
       // Arrange
       throwErrorWhenFetchingSingleRequest = true;
-
       // Act
-      await parentApproval.parentApproval({
+      await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -278,31 +245,31 @@ describe('admin/parent-approval route', () => {
     });
   });
 
-  describe('rejecting a new parent organisation', () => {
+  describe('rejecting a new CQC Status Change', () => {
     beforeEach(async () => {
       approvalRequestBody.approve = false;
     });
 
-    it('should return a confirmation message and status 200 when the parent status is rejected', async () => {
+    it('should return a confirmation message and status 200 when the status change is rejected', async () => {
       // Arrange (see beforeEach)
 
       // Act
-      await parentApproval.parentApproval({
+      await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal(parentApproval.parentRejectionConfirmation);
+      expect(returnedJson.message).to.deep.equal(cqcStatusChange.cqcStatusChangeRejectionConfirmation);
       expect(returnedStatus).to.deep.equal(200);
     });
 
-    it('should change the approval status to Rejected when rejecting a parent request', async () => {
+    it('should change the approval status to Rejected when rejecting a cqc status change', async () => {
       // Arrange
       fakeApproval.Status = 'Pending';
 
       // Act
-      await parentApproval.parentApproval({
+      await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -310,12 +277,12 @@ describe('admin/parent-approval route', () => {
       expect(fakeApproval.Status).to.equal('Rejected');
     });
 
-    it('should save the approval object when rejecting a parent request', async () => {
+    it('should save the approval object when rejecting a cqc status change', async () => {
       // Arrange
       approvalObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -323,12 +290,12 @@ describe('admin/parent-approval route', () => {
       expect(approvalObjectWasSaved).to.equal(true);
     });
 
-    it('should NOT save the workplace object when rejecting a parent request', async () => {
+    it('should NOT save the workplace object when rejecting a status change', async () => {
       // Arrange
       workplaceObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
       }, { status: approvalStatus });
 

@@ -41,13 +41,21 @@ router.route('/').get(async (req, res) => {
   }
 });
 
-// updates the current employer type for the known establishment
 router.route('/').post(async (req, res) => {
+
   const establishmentId = req.establishmentId;
-  const thisEstablishment = new Establishment.Establishment(req.username);
-
-
+  const username = req.username;
+  const addIsRegulated = false;
+  const result = await updateMainService(establishmentId,username,req.body.mainService, addIsRegulated);
+  if (result.success) {
+    return res.status(200).json(result.data);
+  } else {
+    return res.status(result.errorCode).send(result.errorMsg);
+  }
+});
+async function updateMainService(establishmentId, username, mainService,addIsRegulated = false){
   try {
+    const thisEstablishment = new Establishment.Establishment(username);
     // before updating an Establishment, we need to be sure the Establishment is
     //  available to the given user. The best way of doing that
     //  is to restore from given UID
@@ -55,44 +63,50 @@ router.route('/').post(async (req, res) => {
     //  an Establishment (if needing to make inter-property decisions)
     if (await thisEstablishment.restore(establishmentId)) {
       // TODO: JSON validation
-
-      const capacities = await correctCapacities(thisEstablishment, req.body.mainService);
-
+      const capacities = await correctCapacities(thisEstablishment, mainService);
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in name
-      const isValidEstablishment = await thisEstablishment.load({
-        mainService: req.body.mainService,
+      const payload = {
+        mainService,
         capacities
-      });
+      };
 
-      // do it here
+      if (addIsRegulated) {
+        payload.isRegulated = true;
+      }
+      // by loading after the restore, only those properties defined in the
+      //  POST body will be updated (peristed)
+      // With this endpoint we're only interested in name
+
+      const isValidEstablishment = await thisEstablishment.load(payload);
 
       // this is an update to an existing Establishment, so no mandatory properties!
       if (isValidEstablishment) {
-        await thisEstablishment.save(req.username);
-
-        return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
+        await thisEstablishment.save(username);
+        return { success: true, data: thisEstablishment.toJSON(false, false, false, true, false, filteredProperties) };
       } else {
-        return res.status(400).send('Unexpected Input.');
+        return { success: false, errorMsg: 'Unexpected Input',errorCode: 400 };
       }
 
     } else {
       // not found worker
-      return res.status(404).send('Not Found');
+      return { success: false, errorMsg: 'Not Found' };
     }
   } catch (err) {
 
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
       console.error("Establishment::mainService POST: ", err.message);
-      return res.status(400).send(err.safe);
+      return { success: false, errorMsg:err.safe,errorCode: 400 };
+
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
       console.error("Establishment::mainService POST: ", err.message);
-      return res.status(503).send(err.safe);
+      return { success: false, errorMsg:err.safe, errorCode: 503 };
     } else {
       console.error("Unexpected exception: ", err);
     }
   }
-});
-
+}
+router.route('/').post(updateMainService);
 module.exports = router;
+module.exports.updateMainService = updateMainService;
