@@ -179,7 +179,7 @@ describe('admin/parent-approval route', () => {
         userName: fakeApproval.User.FullNameValue,
         orgName: fakeApproval.Establishment.NameValue,
         requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
-        data: null
+        data: undefined
       });
     });
 
@@ -215,7 +215,7 @@ describe('admin/parent-approval route', () => {
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal(parentApproval.parentApprovalConfirmation);
+      expect(returnedJson.message).to.deep.equal(adminParentApproval.parentApprovalConfirmation);
       expect(returnedStatus).to.deep.equal(200);
     });
 
@@ -300,7 +300,7 @@ describe('admin/parent-approval route', () => {
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal(parentApproval.parentRejectionConfirmation);
+      expect(returnedJson.message).to.deep.equal(adminParentApproval.parentRejectionConfirmation);
       expect(returnedStatus).to.deep.equal(200);
     });
 
