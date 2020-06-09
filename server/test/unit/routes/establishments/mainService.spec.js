@@ -8,30 +8,35 @@ const Establishment = require('../../../../models/classes/establishment');
 const ServiceCache = require('../../../../models/cache/singletons/services').ServiceCache;
 
 describe('mainService', () => {
-  sinon.stub(ServiceCache, 'allMyServices').returns([
-    {
-      id: 1,
-      name: 'foo',
-      category: 'foo'
-    },
-    {
-      id: 2,
-      name: 'foo',
-      category: 'foo'
-    },
-    {
-      id: 3,
-      name: 'foo',
-      category: 'foo'
-    },
-    {
-      id: 4,
-      name: 'foo',
-      category: 'foo'
-    },
-  ]);
+  beforeEach(() => {
+    sinon.stub(ServiceCache, 'allMyServices').returns([
+      {
+        id: 1,
+        name: 'foo',
+        category: 'foo'
+      },
+      {
+        id: 2,
+        name: 'foo',
+        category: 'foo'
+      },
+      {
+        id: 3,
+        name: 'foo',
+        category: 'foo'
+      },
+      {
+        id: 4,
+        name: 'foo',
+        category: 'foo'
+      },
+    ]);
 
-  sinon.stub(dbmodels.establishmentCapacity, 'findAll').returns([]);
+    sinon.stub(dbmodels.establishmentCapacity, 'findAll').returns([]);
+  });
+  afterEach(() => {
+    sinon.restore();
+  });
 
   const res = {
     status: () => {
@@ -78,21 +83,30 @@ describe('mainService', () => {
   it('should remove CQC related properties when going from CQC -> Non-CQC', async () => {
     const establishment = new Establishment.Establishment('foo');
 
+    const otherServices = [
+      {
+        id: 1, name: 'foo', category: 'foo'
+      },
+      {
+        id: 2, name: 'foo', category: 'foo'
+      },
+      {
+        id: 5, name: 'foo', category: 'foo'
+      }
+    ];
+    sinon.stub(establishment, 'save');
+
     sinon.stub(establishment, 'otherServices').get(() => {
-      return [
-        {
-          id: 1, name: 'foo', category: 'foo'
-        },
-        {
-          id: 2, name: 'foo', category: 'foo'
-        },
-        {
-          id: 5, name: 'foo', category: 'foo'
-        }
-      ];
+      return otherServices;
     });
 
     await establishment.load({
+      name: 'Test Workplace',
+      address1: '123 Fake Street',
+      postcode: 'LS11AA',
+      mainService: {
+        id: 16
+      },
       isRegulated: false,
       share: {
         enabled: true,
@@ -111,16 +125,18 @@ describe('mainService', () => {
       ]
     });
 
-    await setMainService(res, establishment, {id: 1}, 'bar', false);
+    await setMainService(res, establishment, {id: 16}, 'bar', false);
 
     expect(establishment.isRegulated).to.equal(false);
     expect(establishment.locationId).to.equal(null);
-    // expect(establishment.shareWith.with).to.not.include('CQC');
+    expect(establishment.shareWith.with).to.not.include('CQC');
 
-    console.log(establishment);
-    expect(establishment.ser).to.deep.equal([
+    expect(establishment._properties.get('OtherServices').property).to.deep.equal([
       {
-        id: 5
+        id: 1, name: 'foo', category: 'foo', other: undefined
+      },
+      {
+        id: 2, name: 'foo', category: 'foo', other: undefined
       }
     ]);
   });
