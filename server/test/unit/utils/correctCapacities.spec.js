@@ -65,16 +65,20 @@ const correctCapacitiesFromDatabase = [{
   }
 }];
 
-sinon.stub(models.establishmentCapacity, 'findAll').callsFake(async (args) => {
-  return establishmentCapacities;
-});
-
-sinon.stub(CapacitiesCache, 'allMyCapacities').callsFake((args) => {
-  return correctCapacitiesFromDatabase.filter(capacity => args.includes(capacity.service.id));
-});
-
 describe('correctCapacities util', () => {
   describe('correctCapacities()', () => {
+    beforeEach(() => {
+      sinon.stub(models.establishmentCapacity, 'findAll').callsFake(async (args) => {
+        return establishmentCapacities;
+      });
+
+      sinon.stub(CapacitiesCache, 'allMyCapacities').callsFake((args) => {
+        return correctCapacitiesFromDatabase.filter(capacity => args.includes(capacity.service.id));
+      });
+    });
+    afterEach(() => {
+      sinon.restore();
+    });
     it('should return a list of all current capacities with no main service change', async () => {
       const establishment = establishmentBuilder({
         overrides: {

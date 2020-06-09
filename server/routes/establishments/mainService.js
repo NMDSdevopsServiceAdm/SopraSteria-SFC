@@ -44,7 +44,6 @@ router.route('/').get(async (req, res) => {
   }
 });
 
-// updates the current employer type for the known establishment
 router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
@@ -56,8 +55,8 @@ router.route('/').post(async (req, res) => {
     // by loading the Establishment before updating it, we have all the facts about
     //  an Establishment (if needing to make inter-property decisions)
     if (await thisEstablishment.restore(establishmentId)) {
-      return setMainService(res, thisEstablishment, req.body.mainService, req.username, req.body.cqc);
-
+      const output = await setMainService(thisEstablishment, req.body.mainService, req.username, req.body.cqc);
+      return res.status(200).json(output);
     } else {
       // not found worker
       return res.status(404).send('Not Found');

@@ -1,0 +1,10 @@
+<h1 id="dialogHeading" data-testid="CQC-confirm-heading">
+  {{data.headingText}}
+</h1>
+
+<p data-testid="cqc-confirm-para">{{ data.paragraphText }}</p>
+
+<button (click)="close(true)" class="govuk-button">{{ data.buttonText }}</button>
+<button (click)="close(false)" class="govuk-button govuk-button--link govuk-util__float-right">
+  Cancel
+</button>
