@@ -85,13 +85,11 @@ async function changeMainService(res, establishment, cqc, mainService, username)
   //  POST body will be updated (persisted)
   // With this endpoint we're only interested in name
   const isValidEstablishment = await establishment.load({
-    mainService: mainService,
-    services: services,
+    mainService,
+    services,
     capacities,
     isRegulated: cqc
   });
-
-  // do it here
 
   // this is an update to an existing Establishment, so no mandatory properties!
   if (isValidEstablishment) {
