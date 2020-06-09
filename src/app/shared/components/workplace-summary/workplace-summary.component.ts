@@ -5,6 +5,7 @@ import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 import { isArray } from 'util';
@@ -15,12 +16,14 @@ import { isArray } from 'util';
   providers: [I18nPluralPipe],
 })
 export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
-  public capacityMessages = [];
-  public pluralMap = [];
-  public canEditEstablishment: boolean;
   private _workplace: any;
   protected subscriptions: Subscription = new Subscription();
   public hasCapacity: boolean;
+  public capacityMessages = [];
+  public pluralMap = [];
+  public canEditEstablishment: boolean;
+  public cqcStatusRequested: boolean;
+
   @Input() wdfView = false;
   @Input() workerCount?: number;
 
@@ -63,7 +66,8 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     private i18nPluralPipe: I18nPluralPipe,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private cqcStatusChangeService: CqcStatusChangeService
   ) {
     this.pluralMap['How many beds do you currently have?'] = {
       '=1': '# bed available',
@@ -99,6 +103,11 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
           this.permissionsService.setPermissions(this.workplace.uid, hasPermissions.permissions);
           this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
         }
+      })
+    );
+    this.subscriptions.add(
+      this.cqcStatusChangeService.cqcStatusRequested(this.workplace.id).subscribe(cqcStatusRequested => {
+        this.cqcStatusRequested = cqcStatusRequested;
       })
     );
   }

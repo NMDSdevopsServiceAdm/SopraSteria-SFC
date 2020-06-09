@@ -17,4 +17,13 @@ export class CqcStatusChangeService {
   public CqcStatusChangeApproval(data: object) {
     return this.http.post<any>('/api/admin/cqc-status-change/', data);
   }
+
+  public getCqcRequestByEstablishmentId(establishmentId: number): Observable<boolean> {
+    return this.http.get<boolean>(`/api/approvals/cqc-status-change/establishment/${establishmentId}`);
+  }
+
+  public cqcStatusRequested(establishmentId: number): Observable<boolean> {
+    return this.getCqcRequestByEstablishmentId(establishmentId)
+      .pipe(map(result => result != null));
+  }
 }
