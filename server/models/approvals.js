@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
         ApprovalType: approvalType,
         Status: 'Pending'
       },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status','Data'],
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
       include: [
         {
           model: sequelize.models.establishment,
@@ -90,7 +90,7 @@ module.exports = (sequelize, DataTypes) => {
       where: {
         ID: id
       },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status','Data'],
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
       include: [
         {
           model: sequelize.models.establishment,
