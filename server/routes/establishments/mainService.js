@@ -3,7 +3,9 @@ const router = express.Router({mergeParams: true});
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['Name', 'MainServiceFK'];
+const {correctCapacities} = require('../../utils/correctCapacities');
+
+const filteredProperties = ['Name', 'MainServiceFK', 'CapacityServices'];
 
 // gets current employer type for the known establishment
 router.route('/').get(async (req, res) => {
@@ -39,8 +41,6 @@ router.route('/').get(async (req, res) => {
   }
 });
 
-
-
 router.route('/').post(async (req, res) => {
 
   const establishmentId = req.establishmentId;
@@ -63,17 +63,24 @@ async function updateMainService(establishmentId, username, mainService,addIsReg
     //  an Establishment (if needing to make inter-property decisions)
     if (await thisEstablishment.restore(establishmentId)) {
       // TODO: JSON validation
+      const capacities = await correctCapacities(thisEstablishment, mainService);
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in name
       const payload = {
         mainService,
+        capacities
       };
 
       if (addIsRegulated) {
         payload.isRegulated = true;
       }
+      // by loading after the restore, only those properties defined in the
+      //  POST body will be updated (peristed)
+      // With this endpoint we're only interested in name
+
       const isValidEstablishment = await thisEstablishment.load(payload);
+
       // this is an update to an existing Establishment, so no mandatory properties!
       if (isValidEstablishment) {
         await thisEstablishment.save(username);
