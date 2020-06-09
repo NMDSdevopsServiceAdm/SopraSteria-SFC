@@ -14,7 +14,10 @@
       draggable="false"
       class="govuk-list govuk-list--inline govuk-util__float-right"
     >
-      Exit
+      <ng-container *ngIf="exit; else defaultexit">
+        {{ exit }}
+      </ng-container>
+      <ng-template #defaultexit>Exit</ng-template>
     </a>
   </ng-container>
 </div>

@@ -33,12 +33,13 @@ export class SelectMainServiceComponent extends SelectMainService {
   }
 
   protected getServiceCategories() {
-    this.subscriptions.add(this.getServicesByCategory(this.workplace.isRegulated));
+    this.subscriptions.add(this.getServicesByCategory(this.establishmentService.mainServiceCQC));
   }
 
   protected onSuccess() {
     const selectedMainService = this.getSelectedWorkPlaceService();
     const request = {
+      cqc: this.establishmentService.mainServiceCQC,
       mainService: {
         id: selectedMainService.id,
         name: selectedMainService.name,
@@ -48,10 +49,14 @@ export class SelectMainServiceComponent extends SelectMainService {
     this.subscriptions.add(
       this.establishmentService.updateMainService(this.workplace.uid, request).subscribe(data => {
         this.establishmentService.setState({ ...this.workplace, ...data });
-        this.router.navigate(this.establishmentService.returnTo.url, {
-          fragment: this.establishmentService.returnTo.fragment,
-        });
-        this.establishmentService.setReturnTo(null);
+        if(this.establishmentService.mainServiceCQC && !this.workplace.isRegulated) {
+          this.router.navigate(['/workplace', this.workplace.uid, 'main-service-cqc-confirm']);
+        } else {
+          this.router.navigate(this.establishmentService.returnTo.url, {
+            fragment: this.establishmentService.returnTo.fragment,
+          });
+          this.establishmentService.setReturnTo(null);
+        }
       })
     );
   }
