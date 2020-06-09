@@ -42,6 +42,9 @@
   background-color: rgb(86,148,202, 0.2);
   padding: 15px;
 }
+.asc-util-panel-no-pad--light-blue {
+  background-color: rgb(86, 148, 202, 0.2);
+}
 .govuk-panel--warning-prompt {
   @include govuk-font($size: 24, $weight: bold);
   padding: govuk-spacing(3);
