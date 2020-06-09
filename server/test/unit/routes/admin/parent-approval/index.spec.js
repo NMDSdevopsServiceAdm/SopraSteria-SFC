@@ -4,10 +4,12 @@ const sinon = require('sinon');
 const moment = require('moment-timezone');
 const config = require('../../../../../config/config');
 const Sequelize = require('sequelize');
+const sinon_sandbox = sinon.createSandbox();
 
 const models = require('../../../../../models/index');
 
-const parentApproval = require('../../../../../routes/admin/parent-approval');
+const parentApproval = require('../../../../../routes/approvals/becomeAParent');
+const adminParentApproval = require('../../../../../routes/admin/parent-approval');
 
 var testWorkplace = {};
 var workplaceObjectWasSaved = false;
@@ -77,27 +79,31 @@ var throwErrorWhenFetchingSingleRequest = false;
 
 describe('admin/parent-approval route', () => {
 
+  afterEach(() => {
+    sinon_sandbox.restore();
+  });
+
   beforeEach(async () => {
-    sinon.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
+    sinon_sandbox.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
       if (throwErrorWhenFetchingSingleRequest) {
         throw 'Oopsy!';
       } else if (id === fakeApproval.ID) {
         return fakeApproval;
       }
     });
-    sinon.stub(models.establishment, 'findbyId').callsFake(async (id) => {
+    sinon_sandbox.stub(models.establishment, 'findbyId').callsFake(async (id) => {
       if (id === testWorkplace.id) {
         return testWorkplace;
       }
     });
-    sinon.stub(models.Approvals, 'findbyEstablishmentId').callsFake(async (approvalType) => {
+    sinon_sandbox.stub(models.Approvals, 'findbyEstablishmentId').callsFake(async (approvalType) => {
       if (noMatchingRequestByEstablishmentId) {
         return null;
       } else {
         return fakeApproval;
       }
     });
-    sinon.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
+    sinon_sandbox.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
       if (throwErrorWhenFetchingAllRequests) {
         throw 'Oopsy!';
       } else {
@@ -121,7 +127,7 @@ describe('admin/parent-approval route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await parentApproval.getParentRequests({}, { status: approvalStatus });
+      await adminParentApproval.getParentRequests({}, { status: approvalStatus });
 
       // Assert
       expect(returnedStatus).to.deep.equal(200);
@@ -143,7 +149,7 @@ describe('admin/parent-approval route', () => {
       throwErrorWhenFetchingAllRequests = true;
 
       // Act
-      await parentApproval.getParentRequests({}, { status: approvalStatus });
+      await adminParentApproval.getParentRequests({}, { status: approvalStatus });
 
       // Assert
       expect(returnedStatus).to.deep.equal(400);
@@ -172,7 +178,8 @@ describe('admin/parent-approval route', () => {
         workplaceId: fakeApproval.Establishment.nmdsId,
         userName: fakeApproval.User.FullNameValue,
         orgName: fakeApproval.Establishment.NameValue,
-        requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
+        requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
+        data: null
       });
     });
 
@@ -202,7 +209,7 @@ describe('admin/parent-approval route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -217,7 +224,7 @@ describe('admin/parent-approval route', () => {
       fakeApproval.Status = 'Pending';
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -230,7 +237,7 @@ describe('admin/parent-approval route', () => {
       approvalObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -243,7 +250,7 @@ describe('admin/parent-approval route', () => {
       testWorkplace.isParent = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -256,7 +263,7 @@ describe('admin/parent-approval route', () => {
       workplaceObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -269,7 +276,7 @@ describe('admin/parent-approval route', () => {
       throwErrorWhenFetchingSingleRequest = true;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -287,7 +294,7 @@ describe('admin/parent-approval route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -302,7 +309,7 @@ describe('admin/parent-approval route', () => {
       fakeApproval.Status = 'Pending';
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -315,7 +322,7 @@ describe('admin/parent-approval route', () => {
       approvalObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
@@ -328,7 +335,7 @@ describe('admin/parent-approval route', () => {
       workplaceObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
       }, { status: approvalStatus });
 
