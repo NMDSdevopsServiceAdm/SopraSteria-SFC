@@ -18,7 +18,9 @@ const _initialiseTestWorkplace = () => {
   testWorkplace.MainServiceFKValue = 1;
   testWorkplace.nmdsId = 'I1234567';
   testWorkplace.NameValue = faker.lorem.words(4);
-  testWorkplace.save = () => { workplaceObjectWasSaved = true; };
+  testWorkplace.save = () => {
+    workplaceObjectWasSaved = true;
+  };
 };
 
 var testUser = {};
@@ -44,14 +46,16 @@ var fakeApproval = {
   },
   Data: {
     requestedService: {
-      id: 1, name: "Carers support"
+      id: 1, name: 'Carers support'
     },
     currentService: {
       id: 14,
-      name: "Any childrens / young peoples services",
-      other: "Other Name"
+      name: 'Any childrens / young peoples services',
+      other: 'Other Name'
     }
-  }, save: () => { approvalObjectWasSaved = true; }
+  }, save: () => {
+    approvalObjectWasSaved = true;
+  }
 };
 
 var approvalRequestBody = {};
@@ -59,56 +63,61 @@ const _initialiseTestRequestBody = () => {
   approvalRequestBody.approvalId = fakeApproval.ID;
   approvalRequestBody.establishmentId = testWorkplace.id;
   approvalRequestBody.userId = testUser.id;
-  approvalRequestBody.rejectionReason = "Because I felt like it.";
+  approvalRequestBody.rejectionReason = 'Because I felt like it.';
 };
 
 var returnedJson = null;
 var returnedStatus = null;
-const approvalJson = (json) => { returnedJson = json; };
+const approvalJson = (json) => {
+  returnedJson = json;
+};
 const approvalStatus = (status) => {
   returnedStatus = status;
-  return {json: approvalJson, send: () => {} };
+  return {
+    json: approvalJson, send: () => {
+    }
+  };
 };
 var updateMainService;
 var throwErrorWhenFetchingAllRequests = false;
 var throwErrorWhenFetchingSingleRequest = false;
 
 
-describe.only('admin/cqc-status-change route', () => {
+describe('admin/cqc-status-change route', () => {
 
-afterEach(() => {
-  sb.restore();
-});
+  afterEach(() => {
+    sb.restore();
+  });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     sb.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
       if (throwErrorWhenFetchingAllRequests) {
         throw 'Oopsy!';
       } else {
-        return [ fakeApproval ];
+        return [fakeApproval];
       }
     });
-      updateMainService = sb.stub(mainServiceRouter, 'updateMainService').callsFake(async (approvalType) => {
-        if (throwErrorWhenFetchingSingleRequest) {
-          return {success: false,errorCode:"400",errorMsg:"error"  };
-        } else {
-          return {success: true, fakeApproval };
-        }
-      });
+    updateMainService = sb.stub(mainServiceRouter, 'updateMainService').callsFake(async (approvalType) => {
+      if (throwErrorWhenFetchingSingleRequest) {
+        return { success: false, errorCode: '400', errorMsg: 'error' };
+      } else {
+        return { success: true, fakeApproval };
+      }
+    });
 
-      sb.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
-        if (throwErrorWhenFetchingSingleRequest) {
-          throw 'Oopsy!';
-        } else if (id === fakeApproval.ID) {
-          return fakeApproval;
-        }
-      });
+    sb.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
+      if (throwErrorWhenFetchingSingleRequest) {
+        throw 'Oopsy!';
+      } else if (id === fakeApproval.ID) {
+        return fakeApproval;
+      }
+    });
 
-      sb.stub(models.establishment, 'findbyId').callsFake(async (id) => {
-        if (id === testWorkplace.id) {
-          return testWorkplace;
-        }
-      });
+    sb.stub(models.establishment, 'findbyId').callsFake(async (id) => {
+      if (id === testWorkplace.id) {
+        return testWorkplace;
+      }
+    });
 
     _initialiseTestWorkplace();
     _initialiseTestUser();
@@ -121,13 +130,12 @@ afterEach(() => {
   });
 
 
-
   describe('fetching CQC Status Approval', () => {
-    it('should return an array of cqc status approvals', async() => {
+    it('should return an array of cqc status approvals', async () => {
       // Arrange (see beforeEach)
 
       // Act
-      await cqcStatusChange.getCqcStatusChanges({}, {status: approvalStatus});
+      await cqcStatusChange.getCqcStatusChanges({}, { status: approvalStatus });
 
       // Assert
       expect(returnedStatus).to.deep.equal(200);
@@ -149,17 +157,17 @@ afterEach(() => {
           ID: fakeApproval.Data.requestedService.id,
           name: fakeApproval.Data.requestedService.name,
           other: null
-      },
+        },
         requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
       }]);
     });
 
-    it('should return 400 on error', async() => {
+    it('should return 400 on error', async () => {
       // Arrange
       throwErrorWhenFetchingAllRequests = true;
 
       // Act
-      await cqcStatusChange.getCqcStatusChanges({}, {status: approvalStatus});
+      await cqcStatusChange.getCqcStatusChanges({}, { status: approvalStatus });
 
       // Assert
       expect(returnedStatus).to.deep.equal(400);
@@ -168,17 +176,17 @@ afterEach(() => {
 
 
   describe('approving a new cqcStatusRequest', () => {
-    beforeEach(async() => {
+    beforeEach(async () => {
       approvalRequestBody.approve = true;
     });
 
-    it('should return a confirmation message and status 200 when cqc Change Request is approved for an org', async() => {
+    it('should return a confirmation message and status 200 when cqc Change Request is approved for an org', async () => {
       // Arrange (see beforeEach)
 
       // Act
       await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
@@ -186,51 +194,51 @@ afterEach(() => {
       expect(returnedStatus).to.deep.equal(200);
     });
 
-    it('should change the approval status to Approved when approving a CQC Status Change', async() => {
+    it('should change the approval status to Approved when approving a CQC Status Change', async () => {
       // Arrange
       fakeApproval.Status = 'Pending';
 
       // Act
       await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(fakeApproval.Status).to.equal('Approved');
     });
 
-    it('should save the approval object when approving a CQC Status Change', async() => {
+    it('should save the approval object when approving a CQC Status Change', async () => {
       // Arrange
       approvalObjectWasSaved = false;
 
       // Act
       await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
     });
 
-    it('should call updateMainService if approved', async() => {
+    it('should call updateMainService if approved', async () => {
       // Arrange
 
       // Act
       await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       sinon.assert.called(updateMainService);
     });
 
-    it('should return 400 on error', async() => {
+    it('should return 400 on error', async () => {
       // Arrange
       throwErrorWhenFetchingSingleRequest = true;
       // Act
       await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(returnedStatus).to.deep.equal(400);
@@ -238,7 +246,7 @@ afterEach(() => {
   });
 
   describe('rejecting a new CQC Status Change', () => {
-    beforeEach(async() => {
+    beforeEach(async () => {
       approvalRequestBody.approve = false;
     });
 
@@ -248,7 +256,7 @@ afterEach(() => {
       // Act
       await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
@@ -256,40 +264,40 @@ afterEach(() => {
       expect(returnedStatus).to.deep.equal(200);
     });
 
-    it('should change the approval status to Rejected when rejecting a cqc status change', async() => {
+    it('should change the approval status to Rejected when rejecting a cqc status change', async () => {
       // Arrange
       fakeApproval.Status = 'Pending';
 
       // Act
       await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(fakeApproval.Status).to.equal('Rejected');
     });
 
-    it('should save the approval object when rejecting a cqc status change', async() => {
+    it('should save the approval object when rejecting a cqc status change', async () => {
       // Arrange
       approvalObjectWasSaved = false;
 
       // Act
       await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
     });
 
-    it('should NOT save the workplace object when rejecting a status change', async() => {
+    it('should NOT save the workplace object when rejecting a status change', async () => {
       // Arrange
       workplaceObjectWasSaved = false;
 
       // Act
       await cqcStatusChange.cqcStatusChanges({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(workplaceObjectWasSaved).to.equal(false);

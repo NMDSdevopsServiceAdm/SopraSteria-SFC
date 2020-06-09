@@ -15,7 +15,7 @@ const getCqcStatusChanges = async (req, res) => {
     let cqcStatusChanges = await _mapResults(approvalResults);
     return res.status(200).json(cqcStatusChanges);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(400).send();
   }
 };
@@ -36,7 +36,6 @@ const cqcStatusChanges = async (req, res) => {
 const _mapResults = async (approvalResults) => {
   const promises = approvalResults.map(async approval => {
     data = approval.Data;
-    console.log(data);
     const currentServiceID = data.currentService.id || null;
     const requestedServiceID = data.requestedService.id || null;
     if (!currentServiceID || !requestedServiceID) throw `Can't find request data with ID ${approval.id}`;
@@ -66,12 +65,8 @@ const _mapResults = async (approvalResults) => {
 };
 
 const _approveChange = async (req, res) => {
-  console.log('_approveChange');
-  console.log(req.body.approvalId);
   await _updateApprovalStatus(req.body.approvalId, 'Approved');
   const results = await _updateMainService(req.body.approvalId, req.username);
-  console.log('results:');
-  console.log(results);
   if (results.success) {
     return res.status(200).json({ status: '0', message: cqcStatusChangeApprovalConfirmation });
   } else {

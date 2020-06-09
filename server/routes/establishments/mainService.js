@@ -66,16 +66,12 @@ async function updateMainService(establishmentId, username, mainService,addIsReg
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in name
-      let payload = {};
-      if (addIsRegulated){
-        payload =  {
-          mainService: mainService,
-          isRegulated: true
-        };
-      }else{
-        payload =  {
-          mainService: mainService,
-        };
+      const payload = {
+        mainService,
+      };
+
+      if (addIsRegulated) {
+        payload.isRegulated = true;
       }
       const isValidEstablishment = await thisEstablishment.load(payload);
       // this is an update to an existing Establishment, so no mandatory properties!
