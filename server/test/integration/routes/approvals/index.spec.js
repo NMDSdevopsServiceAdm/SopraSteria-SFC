@@ -1,20 +1,19 @@
 const supertest = require('supertest');
-const baseEndpoint = require('../../../utils/baseUrl').baseurl;
+const baseEndpoint = require('../../utils/baseUrl').baseurl;
 const apiEndpoint = supertest(baseEndpoint);
 const expect = require('chai').expect;
-const models = require('../../../../../models');
+const models = require('../../../../models');
 const util = require('util');
 
 // mocked real postcode/location data
 // http://localhost:3000/api/test/locations/random?limit=5
-const postcodes = require('../../../mockdata/postcodes').data;
-const registrationUtils = require('../../../utils/registration');
-const admin = require('../../../utils/admin').admin;
-const parentApproval = require('../../../../../routes/admin/parent-approval');
+const postcodes = require('../../mockdata/postcodes').data;
+const registrationUtils = require('../../utils/registration');
+const admin = require('../../utils/admin').admin;
 
 var adminLogin = null;
 
-describe('Admin/Parent Approval', () => {
+describe('Approvals', () => {
   let nonCqcServices = null;
   let nonCQCSite = null;
   let login = null;
@@ -71,9 +70,9 @@ describe('Admin/Parent Approval', () => {
 
   beforeEach(async() => {});
 
-  describe('/admin/parent-approval',
+  describe('/approvals/establishment',
     () => {
-      it('should return an array when fetching become-a-parent requests',
+      it('should return an object when fetching approval request by establishment id',
         async () => {
           // Arrange
           const approve = true;
@@ -81,56 +80,32 @@ describe('Admin/Parent Approval', () => {
             const result = await apiEndpoint
 
               // Act
-              .get('/admin/parent-approval')
+              .get(`/approvals/establishment/${login.user.establishment.id}?type=BecomeAParent&status=Pending`)
               .set({ Authorization: adminLogin.headers.authorization })
 
               // Assert
               .expect('Content-Type', /json/)
               .expect(200);
             expect(result.body).to.not.equal(undefined);
-            expect(Array.isArray(result.body));
+            expect(result.body.establishmentId).to.equal(login.user.establishment.id);
           }
         });
 
-      it('should return a confirmation message and status 200 when an org is granted parent status',
+      it('should return null when no approval request exists for specified establishment id',
         async () => {
           // Arrange
+          const approve = true;
           if (adminLogin.headers.authorization) {
             const result = await apiEndpoint
 
               // Act
-              .post('/admin/parent-approval')
+              .get('/approvals/establishment/999999?type=BecomeAParent&status=Pending')
               .set({ Authorization: adminLogin.headers.authorization })
-              .send({
-                approve: false,
-                parentRequestId: approvalRequest.ID,
-                establishmentId: login.user.establishment.id
-              })
 
               // Assert
               .expect('Content-Type', /json/)
               .expect(200);
-            expect(result.body.message).to.equal(parentApproval.parentRejectionConfirmation);
-          }
-        });
-
-      it('should return status 400 when passed bad data',
-        async () => {
-          // Arrange
-          if (adminLogin.headers.authorization) {
-            const result = await apiEndpoint
-
-            // Act
-            .post('/admin/parent-approval')
-            .set({ Authorization: adminLogin.headers.authorization })
-            .send({
-              approve: true,
-              parentRequestId: 99999999,
-              establishmentId: 9999
-            })
-
-            // Assert
-            .expect(400);
+            expect(result.body).to.equal(null);
           }
         });
     });
