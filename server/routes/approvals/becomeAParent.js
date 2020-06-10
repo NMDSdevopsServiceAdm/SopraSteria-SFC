@@ -68,7 +68,8 @@ const _mapResults = async (approvalResults) => {
         workplaceId: approval.Establishment.nmdsId,
         userName: approval.User.FullNameValue,
         orgName: approval.Establishment.NameValue,
-        requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
+        requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
+        data: approval.Data
       };
     }
   );
