@@ -36,6 +36,8 @@ export class SelectMainServiceCqcComponent extends Question {
         ],
       },
     ];
+
+    this.form.get('cqc'); // If it's stupid but it works, it isn't stupid.
   }
 
   public onSubmit(): void {
