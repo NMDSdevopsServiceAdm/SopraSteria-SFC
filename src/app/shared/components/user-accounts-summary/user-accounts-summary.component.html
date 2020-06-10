@@ -30,7 +30,10 @@
         <tbody class="govuk-table__body">
           <ng-container *ngFor="let user of users">
             <tr class="govuk-table__row" [class.govuk-error-table__row--highlight]="isPending(user)">
-              <td class="govuk-table__cell">
+              <td [ngClass]="{
+                'asc-util-table__cell--highlight': isPending(user),
+                'govuk-table__cell': !isPending(user)
+              }">
                 <ng-container *ngIf="canViewUser; else noLink">
                   <a [routerLink]="['/workplace', workplace.uid, 'user', user.uid]">{{ user.fullname }}</a>
                 </ng-container>
