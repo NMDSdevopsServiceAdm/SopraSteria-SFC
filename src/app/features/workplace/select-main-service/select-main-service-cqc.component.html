@@ -1,0 +1,48 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">Is your new main service regulated by the Care Quality Commission (CQC)?</h1>
+          </legend>
+          <span class="govuk-hint">
+            If your service is regulated, Skills for Care will need to check your details match the CQC database.
+          </span>
+          <div class="govuk-radios govuk-radios--conditional">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [formControlName]="'cqc'"
+                  id="yes"
+                  name="cqc"
+                  type="radio"
+                  [value]="true"
+                />
+                <label class="govuk-label govuk-radios__label" for="yes">
+                  Yes
+                </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'cqc'"
+                id="no"
+                name="cqc"
+                type="radio"
+                [value]="false"
+              />
+              <label class="govuk-label govuk-radios__label" for="no">
+                No
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <app-submit-exit-buttons cta="Continue" exit="Cancel" [return]="establishmentService.returnTo"></app-submit-exit-buttons>
+</form>
