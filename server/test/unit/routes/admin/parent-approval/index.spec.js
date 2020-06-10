@@ -71,10 +71,6 @@ const approvalStatus = (status) => {
 };
 
 var throwErrorWhenFetchingAllRequests = false;
-
-
-var noMatchingRequestByEstablishmentId = false;
-
 var throwErrorWhenFetchingSingleRequest = false;
 
 describe('admin/parent-approval route', () => {
@@ -96,13 +92,6 @@ describe('admin/parent-approval route', () => {
         return testWorkplace;
       }
     });
-    sinon_sandbox.stub(models.Approvals, 'findbyEstablishmentId').callsFake(async (approvalType) => {
-      if (noMatchingRequestByEstablishmentId) {
-        return null;
-      } else {
-        return fakeApproval;
-      }
-    });
     sinon_sandbox.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
       if (throwErrorWhenFetchingAllRequests) {
         throw 'Oopsy!';
@@ -119,7 +108,6 @@ describe('admin/parent-approval route', () => {
     returnedStatus = null;
     throwErrorWhenFetchingAllRequests = false;
     throwErrorWhenFetchingSingleRequest = false;
-    noMatchingRequestByEstablishmentId = false;
   });
 
   describe('fetching parent requests', () => {
@@ -153,50 +141,6 @@ describe('admin/parent-approval route', () => {
 
       // Assert
       expect(returnedStatus).to.deep.equal(400);
-    });
-  });
-
-  describe('fetching parent request by establishment id', () => {
-    it('should return a pending parent request for a specified establishment', async () => {
-      // Arrange (see beforeEach)
-
-      // Act
-      await parentApproval.getParentRequestByEstablishmentId({
-        params: {
-          establishmentId: fakeApproval.EstablishmentID
-        }
-      }, { status: approvalStatus });
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(200);
-      expect(returnedJson).to.deep.equal({
-        requestId: fakeApproval.ID,
-        requestUUID: fakeApproval.UUID,
-        establishmentId: fakeApproval.EstablishmentID,
-        establishmentUid: fakeApproval.Establishment.uid,
-        userId: fakeApproval.UserID,
-        workplaceId: fakeApproval.Establishment.nmdsId,
-        userName: fakeApproval.User.FullNameValue,
-        orgName: fakeApproval.Establishment.NameValue,
-        requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
-        data: undefined
-      });
-    });
-
-    it('should return null when there is no matching parent request', async () => {
-      // Arrange
-      noMatchingRequestByEstablishmentId = true;
-
-      // Act
-      await parentApproval.getParentRequestByEstablishmentId({
-        params: {
-          establishmentId: fakeApproval.EstablishmentID
-        }
-      }, { status: approvalStatus });
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(200);
-      expect(returnedJson).to.deep.equal(null);
     });
   });
 
