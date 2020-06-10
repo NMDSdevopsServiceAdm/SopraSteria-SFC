@@ -23,6 +23,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public pluralMap = [];
   public canEditEstablishment: boolean;
   public cqcStatusRequested: boolean;
+  public requestedMainService: any;
 
   @Input() wdfView = false;
   @Input() workerCount?: number;
@@ -105,9 +106,16 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
         }
       })
     );
+    this.cqcStatusRequested = false;
     this.subscriptions.add(
-      this.cqcStatusChangeService.cqcStatusRequested(this.workplace.id).subscribe(cqcStatusRequested => {
-        this.cqcStatusRequested = cqcStatusRequested;
+      this.cqcStatusChangeService.getCqcRequestByEstablishmentId(this.workplace.id).subscribe(cqcStatus => {
+        if (cqcStatus != null) {
+          this.cqcStatusRequested = true;
+          this.requestedMainService = {
+            name: cqcStatus.data.requestedService.name,
+            otherName: cqcStatus.data.requestedService.other
+          };
+        }
       })
     );
   }

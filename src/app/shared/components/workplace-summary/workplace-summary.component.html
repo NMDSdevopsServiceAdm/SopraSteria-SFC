@@ -80,8 +80,10 @@
     </dt>
     <dd class="govuk-summary-list__value" [ngClass]="{'asc-util-panel-no-pad--light-blue': cqcStatusRequested}">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.mainService">
-        {{ workplace.mainService?.name }}
-        <ng-container *ngIf="workplace.mainService?.other"> - {{ workplace.mainService?.other }}</ng-container>
+        {{ cqcStatusRequested ? requestedMainService.name : workplace.mainService?.name }}
+        <ng-container *ngIf="(cqcStatusRequested && requestedMainService.otherName)
+        || (workplace.mainService?.other && !cqcStatusRequested)"> - {{ cqcStatusRequested ? requestedMainService.otherName : workplace.mainService?.other }}
+        </ng-container>
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [ngClass]="{'govuk-panel--light-blue': cqcStatusRequested}">
