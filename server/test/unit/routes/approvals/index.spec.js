@@ -93,8 +93,8 @@ describe('test fetching approval requests by establishment id', () => {
           establishmentId: fakeApproval.EstablishmentID
         },
         query: {
-          type: 'becomeaparent',
-          status: 'pending'
+          type: 'BecomeAParent',
+          status: 'Pending'
         }
       }, { status: parentRequestStatus });
 

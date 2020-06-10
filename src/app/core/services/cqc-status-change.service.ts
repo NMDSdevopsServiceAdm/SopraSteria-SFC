@@ -19,7 +19,7 @@ export class CqcStatusChangeService {
   }
 
   public getCqcRequestByEstablishmentId(establishmentId: number): Observable<boolean> {
-    return this.http.get<boolean>(`/api/approvals/cqc-status-change/establishment/${establishmentId}`);
+    return this.http.get<boolean>(`/api/approvals/establishment/${establishmentId}?type=CqcStatusChange&status=Pending`);
   }
 
   public cqcStatusRequested(establishmentId: number): Observable<boolean> {

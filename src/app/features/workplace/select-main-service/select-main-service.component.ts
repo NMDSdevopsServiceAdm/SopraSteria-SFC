@@ -39,6 +39,7 @@ export class SelectMainServiceComponent extends SelectMainService {
   protected onSuccess() {
     const selectedMainService = this.getSelectedWorkPlaceService();
     const request = {
+      cqc: null,
       mainService: {
         id: selectedMainService.id,
         name: selectedMainService.name,
