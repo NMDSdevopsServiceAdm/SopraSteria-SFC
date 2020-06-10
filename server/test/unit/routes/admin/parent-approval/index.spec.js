@@ -8,7 +8,6 @@ const sinon_sandbox = sinon.createSandbox();
 
 const models = require('../../../../../models/index');
 
-const parentApproval = require('../../../../../routes/approvals/becomeAParent');
 const adminParentApproval = require('../../../../../routes/admin/parent-approval');
 
 var testWorkplace = {};
