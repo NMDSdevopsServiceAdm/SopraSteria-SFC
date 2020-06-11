@@ -1,4 +1,5 @@
-const { EstablishmentJsonException } = require('../../models/classes/establishment/establishmentExceptions');
+const models = require('../../models/index');
+const EstablishmentExceptions = require('../../models/classes/establishment/establishmentExceptions');
 
 const express = require('express');
 const router = express.Router({mergeParams: true});
@@ -31,7 +32,7 @@ router.route('/').get(async (req, res) => {
     }
 
   } catch (err) {
-    const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
+    const thisError = new EstablishmentExceptions.EstablishmentRestoreException(
       thisEstablishment.id,
       thisEstablishment.uid,
       null,
@@ -55,18 +56,17 @@ router.route('/').post(async (req, res) => {
     // by loading the Establishment before updating it, we have all the facts about
     //  an Establishment (if needing to make inter-property decisions)
     if (await thisEstablishment.restore(establishmentId)) {
-      const output = await setMainService(res, thisEstablishment, req.body.mainService, req.username, req.body.cqc);
-      return res.status(200).json(output);
+      return setMainService(req, res, thisEstablishment);
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
   } catch (err) {
 
-    if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
+    if (err instanceof EstablishmentExceptions.EstablishmentJsonException) {
       console.error("Establishment::mainService POST: ", err.message);
       return res.status(400).send(err.safe);
-    } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
+    } else if (err instanceof EstablishmentExceptions.EstablishmentSaveException) {
       console.error("Establishment::mainService POST: ", err.message);
       return res.status(503).send(err.safe);
     } else {
@@ -101,7 +101,12 @@ async function changeMainService(res, establishment, cqc, mainService, username)
   }
 }
 
-async function setMainService(res, establishment, mainService, username, cqc) {
+async function setMainService(req, res, establishment) {
+  const mainService = req.body.mainService;
+  const username = req.username;
+  const cqc = req.body.cqc;
+  const user = await models.user.findByUUID(req.userUid);
+
   if (cqc === undefined) {
     cqc = establishment.isRegulated;
   }
@@ -110,6 +115,24 @@ async function setMainService(res, establishment, mainService, username, cqc) {
   if (cqc === establishment.isRegulated) {
     return changeMainService(res, establishment, cqc, mainService, username);
   } else if (cqc) { // Non-CQC -> CQC
+    await models.Approvals.create({
+      EstablishmentID: establishment.id,
+      UserID: user.id,
+      Status: 'Pending',
+      ApprovalType: 'CqcStatusChange',
+      Data: {
+        requestedService: {
+          id: mainService.id,
+          name: mainService.name,
+        },
+        currentService: {
+          id: establishment.mainService.id,
+          name: establishment.mainService.name,
+          ...(establishment.mainService.other && { other: establishment.mainService.other }),
+        }
+      }
+    });
+
     return res.status(200).json(establishment.toJSON(false, false, false, true, false, filteredProperties));
   } else { // CQC -> Non-CQC
     return changeMainService(res, establishment, cqc, mainService, username);
@@ -118,3 +141,4 @@ async function setMainService(res, establishment, mainService, username, cqc) {
 
 module.exports = router;
 module.exports.setMainService = setMainService;
+module.exports.changeMainService = changeMainService;
