@@ -91,7 +91,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Enter their name or ID number.`,
+            message: `Enter their name or ID number`,
           },
         ],
       },
@@ -100,7 +100,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Select their main job role.`,
+            message: `Select their main job role`,
           },
         ],
       },
@@ -109,7 +109,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'maxlength',
-            message: `Your job role must be ${this.otherJobRoleCharacterLimit} characters or less.`,
+            message: `Other job role must be ${this.otherJobRoleCharacterLimit} characters or fewer`,
           },
         ],
       },
@@ -118,7 +118,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Select the type of contract they have.`,
+            message: `Select the type of contract they have`,
           },
         ],
       },
