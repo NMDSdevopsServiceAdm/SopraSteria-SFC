@@ -15,9 +15,13 @@ import { CareCertificateComponent } from './care-certificate/care-certificate.co
 import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
-import { CreateBasicRecordsStartScreenComponent } from './create-basic-records-start-screen/create-basic-records-start-screen.component';
+import {
+  CreateBasicRecordsStartScreenComponent,
+} from './create-basic-records-start-screen/create-basic-records-start-screen.component';
 import { CreateBasicRecordsComponent } from './create-basic-records/create-basic-records.component';
-import { CreateStaffRecordStartScreenComponent } from './create-staff-record-start-screen/create-staff-record-start-screen.component';
+import {
+  CreateStaffRecordStartScreenComponent,
+} from './create-staff-record-start-screen/create-staff-record-start-screen.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DisabilityComponent } from './disability/disability.component';
@@ -26,6 +30,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
+import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
@@ -36,16 +41,20 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level/
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
-import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
+import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
+import {
+  SocialCareQualificationLevelComponent,
+} from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffComponent } from './total-staff/total-staff.component';
-import { TrainingAndQualificationsRecordComponent } from './training-qualifications-record/training-and-qualifications-record.component';
+import {
+  TrainingAndQualificationsRecordComponent,
+} from './training-qualifications-record/training-and-qualifications-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
 
 const routes: Routes = [
   {
@@ -126,6 +135,11 @@ const routes: Routes = [
         path: 'staff-details',
         component: StaffDetailsComponent,
         data: { title: 'Staff Details' },
+      },
+      {
+        path: 'mandatory-details',
+        component: MandatoryDetailsComponent,
+        data: { title: 'Staff Record' },
       },
       {
         path: 'main-job-start-date',

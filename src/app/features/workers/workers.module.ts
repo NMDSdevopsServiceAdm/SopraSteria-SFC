@@ -37,6 +37,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
+import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { MoveWorkerDialogComponent } from './move-worker-dialog/move-worker-dialog.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
@@ -123,6 +124,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     TrainingAndQualificationsRecordComponent,
     SelectRecordTypeComponent,
     MoveWorkerDialogComponent,
+    MandatoryDetailsComponent
   ],
   providers: [DialogService, WorkerResolver],
   entryComponents: [
