@@ -34,5 +34,6 @@ export class MandatoryDetailsComponent extends QuestionComponent {
     this.workerService.setReturnTo(this.returnHere);
     this.next = this.getRoutePath('main-job-start-date');
     this.previous = this.getRoutePath('staff-details');
+    this.alertService.addAlert({type: 'success', message: 'Staff record saved.'});
   }
 }
