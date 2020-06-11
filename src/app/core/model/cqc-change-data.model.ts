@@ -1,5 +1,5 @@
 
-export interface CqcStatusChangeData {
+export interface CqcChangeData {
   currentService: {
     ID: number;
     name: string;

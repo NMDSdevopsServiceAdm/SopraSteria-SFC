@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CqcStatusChanges } from '@core/model/cqc-status-changes.model';
-import { CqcStatusChangeData } from '@core/model/cqc-status-change-data.model';
+import { CqcChangeData } from '@core/model/cqc-change-data.model';
 import { ApprovalRequest } from '@core/model/approval-request.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -21,6 +21,8 @@ export class CqcStatusChangeService {
     return this.http.post<any>('/api/admin/cqc-status-change/', data);
   }
 
-  public getCqcRequestByEstablishmentId(establishmentId: number): Observable<ApprovalRequest<CqcStatusChangeData>> {
-    return this.http.get<ApprovalRequest<CqcStatusChangeData>>(`/api/approvals/establishment/${establishmentId}?type=CqcStatusChange&status=Pending`);
+  public getCqcRequestByEstablishmentId(establishmentId: number): Observable<ApprovalRequest<CqcChangeData>> {
+    return this.http.get<ApprovalRequest<CqcChangeData>>(
+      `/api/approvals/establishment/${establishmentId}?type=CqcStatusChange&status=Pending`);
   }
+}
