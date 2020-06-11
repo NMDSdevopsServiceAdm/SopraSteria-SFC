@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
 
 import { QuestionComponent } from '../question/question.component';
 
@@ -13,8 +13,8 @@ import { QuestionComponent } from '../question/question.component';
   selector: 'app-mandatory-details',
   templateUrl: './mandatory-details.component.html',
 })
-export class MandatoryDetailsComponent extends QuestionComponent implements OnInit, OnDestroy {
-  public subscriptions: Subscription = new Subscription();
+export class MandatoryDetailsComponent extends QuestionComponent {
+  public returnHere: URLStructure;
 
   constructor(
     private alertService: AlertService,
@@ -29,21 +29,9 @@ export class MandatoryDetailsComponent extends QuestionComponent implements OnIn
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
   }
 
-  ngOnInit() {
-    // this.next = this.getRoutePath('gender');
-    // this.previous = this.getRoutePath('date-of-birth');
-
-    // this.subscriptions.add(
-    //   this.workerService.alert$.subscribe(alert => {
-    //     if (alert) {
-    //       this.alertService.addAlert(alert);
-    //     }
-    //   })
-    // );
-  }
-
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  init() {
+    this.returnHere = {url: [this.router.url]};
+    this.next = this.getRoutePath('main-job-start-date');
+    this.previous = this.getRoutePath('staff-details');
   }
 }
