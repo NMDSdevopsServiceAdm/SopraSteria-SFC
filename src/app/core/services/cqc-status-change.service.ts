@@ -13,7 +13,7 @@ import { map } from 'rxjs/operators';
 export class CqcStatusChangeService {
   constructor(private http: HttpClient) {}
 
-  public getCqcStatusChange(): Observable<CqcStatusChanges[]> {
+  public getCqcStatusChanges(): Observable<CqcStatusChanges[]> {
     return this.http.get<CqcStatusChanges[]>('/api/admin/cqc-status-change/');
   }
 

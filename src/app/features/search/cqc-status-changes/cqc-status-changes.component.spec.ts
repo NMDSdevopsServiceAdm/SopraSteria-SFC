@@ -60,7 +60,7 @@ describe('CqcStatusChangesComponent', () => {
     }];
 
       const cqcStatusChangeService = TestBed.get(CqcStatusChangeService);
-      spyOn(cqcStatusChangeService, 'getCqcStatusChange').and.returnValue(
+      spyOn(cqcStatusChangeService, 'getCqcStatusChanges').and.returnValue(
         of(cqcStatusChanges)
       );
 
