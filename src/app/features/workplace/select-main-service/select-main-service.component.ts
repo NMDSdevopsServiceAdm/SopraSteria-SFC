@@ -74,6 +74,6 @@ export class SelectMainServiceComponent extends SelectMainService {
   }
 
   get callToActionLabel() {
-    return 'Save and return';
+    return 'Save this change';
   }
 }
