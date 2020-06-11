@@ -11,7 +11,6 @@ import { WindowRef } from '@core/services/window.ref';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { CqcStatusChangeComponent } from '../cqc-status-change/cqc-status-change.component';
 import { CqcStatusChangesComponent } from '../cqc-status-changes/cqc-status-changes.component';
-import { CqcStatusChange } from '@core/model/cqc-status-change.model';
 
 
 describe('CqcStatusChangesComponent', () => {
@@ -30,14 +29,16 @@ describe('CqcStatusChangesComponent', () => {
         orgName: 'testOrgname',
         requested: '2019-08-27 16:04:35.914',
         status: 'Pending',
-        currentService: {
-        ID: 1,
-          name: 'Carers support',
-      },
-      requestedService: {
-        ID: 2,
-          name: 'Service Name'
-      }
+        data: {
+          currentService: {
+            ID: 1,
+            name: 'Carers support',
+          },
+          requestedService: {
+            ID: 2,
+            name: 'Service Name'
+          }
+        }
     }, {
         requestId: 2,
         requestUUID: '360c62a1-2e20-410d-a72b-9d4100a11f2a',
@@ -49,14 +50,16 @@ describe('CqcStatusChangesComponent', () => {
         orgName: 'testOrgname2',
         requested: '2020-05-20 16:04:35.914',
         status: 'Pending',
-        currentService: {
-        ID: 4,
-          name: ' Some Service',
-      },
-      requestedService: {
-        ID: 3,
-          name: 'Service Name'
-      }
+        data: {
+          currentService: {
+            ID: 4,
+            name: ' Some Service',
+          },
+          requestedService: {
+            ID: 3,
+            name: 'Service Name'
+          }
+        }
     }];
 
       const cqcStatusChangeService = TestBed.get(CqcStatusChangeService);
@@ -100,13 +103,15 @@ describe('CqcStatusChangesComponent', () => {
       orgName: 'testOrgname',
       requested: '2019-08-27 16:04:35.914',
       status: 'Pending',
-      currentService: {
-        ID: 1,
-        name: 'Carers support',
-      },
-      requestedService: {
-        ID: 2,
-        name: 'Service Name'
+      data: {
+        currentService: {
+          ID: 1,
+          name: 'Carers support',
+        },
+        requestedService: {
+          ID: 2,
+          name: 'Service Name'
+        }
       }
     }, {
       requestId: 2,
@@ -119,13 +124,15 @@ describe('CqcStatusChangesComponent', () => {
       orgName: 'testOrgname2',
       requested: '2020-05-20 16:04:35.914',
       status: 'Pending',
-      currentService: {
-        ID: 4,
-        name: ' Some Service',
-      },
-      requestedService: {
-        ID: 3,
-        name: 'Service Name'
+      data: {
+        currentService: {
+          ID: 4,
+          name: ' Some Service',
+        },
+        requestedService: {
+          ID: 3,
+          name: 'Service Name'
+        }
       }
     }]
 
