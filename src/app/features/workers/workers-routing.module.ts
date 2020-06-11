@@ -15,13 +15,6 @@ import { CareCertificateComponent } from './care-certificate/care-certificate.co
 import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
-import {
-  CreateBasicRecordsStartScreenComponent,
-} from './create-basic-records-start-screen/create-basic-records-start-screen.component';
-import { CreateBasicRecordsComponent } from './create-basic-records/create-basic-records.component';
-import {
-  CreateStaffRecordStartScreenComponent,
-} from './create-staff-record-start-screen/create-staff-record-start-screen.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DisabilityComponent } from './disability/disability.component';
@@ -58,15 +51,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
 
 const routes: Routes = [
   {
-    path: 'start-screen',
-    canActivate: [CheckPermissionsGuard],
-    component: CreateStaffRecordStartScreenComponent,
-    data: {
-      permissions: ['canAddWorker'],
-      title: 'Create Staff Record Start',
-    },
-  },
-  {
     path: 'total-staff',
     canActivate: [CheckPermissionsGuard],
     component: TotalStaffComponent,
@@ -76,21 +60,12 @@ const routes: Routes = [
     },
   },
   {
-    path: 'basic-records-start-screen',
+    path: 'create-staff-record',
     canActivate: [CheckPermissionsGuard],
-    component: CreateBasicRecordsStartScreenComponent,
+    component: StaffDetailsComponent,
     data: {
       permissions: ['canAddWorker'],
-      title: 'Create Basic Records Start',
-    },
-  },
-  {
-    path: 'create-basic-records',
-    canActivate: [CheckPermissionsGuard],
-    component: CreateBasicRecordsComponent,
-    data: {
-      permissions: ['canAddWorker'],
-      title: 'Create Basic Records',
+      title: 'Add a Staff Record',
     },
   },
   {
@@ -100,15 +75,6 @@ const routes: Routes = [
     data: {
       permissions: ['canAddWorker'],
       title: 'Basic Records Save Success',
-    },
-  },
-  {
-    path: 'create-staff-record',
-    canActivate: [CheckPermissionsGuard],
-    component: StaffDetailsComponent,
-    data: {
-      permissions: ['canAddWorker'],
-      title: 'Create Staff Records',
     },
   },
   {

@@ -19,10 +19,7 @@ import { CareCertificateComponent } from './care-certificate/care-certificate.co
 import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
-import {
-  CreateBasicRecordsStartScreenComponent,
-} from './create-basic-records-start-screen/create-basic-records-start-screen.component';
-import { CreateBasicRecordsComponent } from './create-basic-records/create-basic-records.component';
+import { CreateStaffRecordComponent } from './create-staff-record/create-staff-record.component';
 import {
   CreateStaffRecordStartScreenComponent,
 } from './create-staff-record-start-screen/create-staff-record-start-screen.component';
@@ -84,8 +81,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     CheckStaffRecordComponent,
     ContractWithZeroHoursComponent,
     CountryOfBirthComponent,
-    CreateBasicRecordsComponent,
-    CreateBasicRecordsStartScreenComponent,
+    CreateStaffRecordComponent,
     CreateStaffRecordStartScreenComponent,
     DateOfBirthComponent,
     DaysOfSicknessComponent,
