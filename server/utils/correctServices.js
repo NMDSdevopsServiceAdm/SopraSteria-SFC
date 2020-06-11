@@ -7,8 +7,9 @@ exports.correctServices = async (establishment, cqc, mainService = null, otherSe
   } else if (establishment && establishment.otherServices && Array.isArray(establishment.otherServices)) {
     establishment.otherServices.map(other => allServices.push(other));
   }
-  const correctServices = ServiceCache.allMyServices(cqc);
+
   const services = [];
+  const correctServices = ServiceCache.allMyServices(cqc);
   correctServices.map(correctService => {
     allServices.map(currentService => {
       if (!(mainService && mainService.id === currentService.id) && correctService.id === currentService.id ) {
@@ -16,5 +17,6 @@ exports.correctServices = async (establishment, cqc, mainService = null, otherSe
       }
     })
   });
+
   return services;
 };
