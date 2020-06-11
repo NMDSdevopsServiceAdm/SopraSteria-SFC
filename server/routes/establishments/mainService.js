@@ -9,7 +9,7 @@ const Establishment = require('../../models/classes/establishment');
 const { correctCapacities } = require('../../utils/correctCapacities');
 const { correctServices } = require('../../utils/correctServices');
 
-const filteredProperties = ['Name', 'MainServiceFK', 'CapacityServices'];
+const filteredProperties = ['Name', 'MainServiceFK', 'OtherServices', 'CapacityServices', 'ShareData', 'IsRegulated', 'LocationId'];
 
 // gets current employer type for the known establishment
 router.route('/').get(async (req, res) => {
@@ -106,7 +106,7 @@ async function changeMainService(res, establishment, cqc, mainService, username)
     if (isValidEstablishment) {
       await establishment.save(username);
 
-      return res.status(200).json(establishment.toJSON(false, false, false, true, false, filteredProperties));
+      return res.status(200).json(establishment.toJSON(false, false, false, false, false, filteredProperties));
     } else {
       return res.status(400).json('Unexpected Input.');
     }
