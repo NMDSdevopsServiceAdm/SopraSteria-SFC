@@ -75,8 +75,11 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     });
 
     this.selectedJobRole(this.worker.mainJob.jobId);
-    if (this.workerService.returnTo !== null) {
-      this.workerService.setReturnTo({url: ['mandatory-details']});
+
+    if (this.workerService.returnTo === null) {
+      const mandatoryDetailsURL = {url: this.getRoutePath('mandatory-details')};
+      this.workerService.setReturnTo(mandatoryDetailsURL);
+      this.return = mandatoryDetailsURL;
     }
 
     this.canExit = true;
