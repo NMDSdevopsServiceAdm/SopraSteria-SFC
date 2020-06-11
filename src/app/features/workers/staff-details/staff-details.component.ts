@@ -153,7 +153,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   onSuccess() {
-    this.next = this.getRoutePath('main-job-start-date');
+    this.next = this.getRoutePath('mandatory-details');
   }
 
 }
