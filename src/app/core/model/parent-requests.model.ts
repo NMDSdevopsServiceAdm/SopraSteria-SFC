@@ -1,5 +1,5 @@
-import { ParentRequest } from '@core/model/parent-request.model';
+import { ApprovalRequest } from '@core/model/approval-request.model';
 
 export interface ParentRequests {
-  [index: number]: ParentRequest;
+  [index: number]: ApprovalRequest<any>;
 }
