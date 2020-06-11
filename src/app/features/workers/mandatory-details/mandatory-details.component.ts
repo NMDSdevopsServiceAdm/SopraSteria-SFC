@@ -31,6 +31,7 @@ export class MandatoryDetailsComponent extends QuestionComponent {
 
   init() {
     this.returnHere = {url: [this.router.url]};
+    this.workerService.setReturnTo(this.returnHere);
     this.next = this.getRoutePath('main-job-start-date');
     this.previous = this.getRoutePath('staff-details');
   }
