@@ -4,7 +4,6 @@ import { CqcStatusChanges } from '@core/model/cqc-status-changes.model';
 import { CqcChangeData } from '@core/model/cqc-change-data.model';
 import { ApprovalRequest } from '@core/model/approval-request.model';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 
 @Injectable({
