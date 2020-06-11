@@ -73,7 +73,7 @@
       </a>
     </dd>
   </div>
-  
+
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key" [ngClass]="{'govuk-panel--light-blue': cqcStatusRequested}">
       Main service
@@ -87,7 +87,7 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [ngClass]="{'govuk-panel--light-blue': cqcStatusRequested}">
-      <a *ngIf="!cqcStatusRequested; else cqcPending" [routerLink]="['/workplace', workplace.uid, 'main-service']" (click)="setReturn()">
+      <a *ngIf="!cqcStatusRequested; else cqcPending" [routerLink]="['/workplace', workplace.uid, 'main-service-cqc']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.mainService">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
