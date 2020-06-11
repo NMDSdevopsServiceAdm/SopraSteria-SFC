@@ -188,7 +188,7 @@ describe('mainService', () => {
       mainService: {
         id: 16
       },
-      isRegulated: false,
+      isRegulated: true,
       share: {
         enabled: true,
         with: ['CQC']
