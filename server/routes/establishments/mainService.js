@@ -120,7 +120,11 @@ async function setMainService(req, res, establishment) {
   const mainService = req.body.mainService;
   const username = req.username;
   const user = await models.user.findByUUID(req.userUid);
-  const cqc = req.body.cqc !== null ? req.body.cqc : establishment.isRegulated;
+
+  let cqc = establishment.isRegulated;
+  if (req.body.cqc === true || req.body.cqc === false) {
+    cqc = req.body.cqc;
+  }
 
   // No switch, same as previous behaviour.
   if (cqc === establishment.isRegulated) {
