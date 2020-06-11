@@ -9,4 +9,5 @@ export interface ParentRequest {
   orgName: string;
   requested: Date;
   status: string;
+  data: any;
 }
