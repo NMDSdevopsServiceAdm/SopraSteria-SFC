@@ -9,7 +9,7 @@
       </h1>
     </div>
   </div>
-  <app-basic-record data-test-id="summary" [basicTitle]="'Mandatory details'" [workplace]="workplace" [worker]="worker" [return]="returnHere"></app-basic-record>
+  <app-basic-record data-testid="summary" [basicTitle]="'Mandatory details'" [workplace]="workplace" [worker]="worker" [return]="returnHere"></app-basic-record>
   <div class="govuk-!-margin-top-6">
     <button data-test-id="add-details-button" class="govuk-button govuk-!-margin-right-9" role="button" draggable="false" (click)="onSubmit({action: 'continue', save: false})">Add details to this record</button>
     <a data-test-id="view-all-workers-link" href="#" class="govuk-button govuk-button--link" (click)="navigateToDashboard($event)"><span>View all staff records</span></a>
