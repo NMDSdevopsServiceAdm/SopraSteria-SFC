@@ -5,12 +5,14 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { WindowRef } from '@core/services/window.ref';
+import { InsetTextComponent } from '@shared/components/inset-text/inset-text.component';
+import { BasicRecordComponent } from '@shared/components/staff-record-summary/basic-record/basic-record.component';
 import { render, RenderResult, within } from '@testing-library/angular';
 
 import { MandatoryDetailsComponent } from './mandatory-details.component';
 
 const sinon = require('sinon');
-const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot');
+const { build, fake, sequence, perBuild, oneOf } = require('@jackfranklin/test-data-bot');
 
 const establishmentBuilder = build('Establishment', {
   fields: {
@@ -31,7 +33,7 @@ const workerBuilder = build('Worker', {
         title: fake((f) => f.lorem.sentence()),
       };
     }),
-    contract: fake((f) => f.oneOf('Permanent', 'Temporary', 'Pool or Bank', 'Agency', 'Other'))
+    contract: oneOf('Permanent', 'Temporary', 'Pool or Bank', 'Agency', 'Other')
   },
 });
 
@@ -82,8 +84,8 @@ fdescribe('MandatoryDetailsComponent', () => {
       imports: [
         RouterTestingModule, HttpClientTestingModule
       ],
-      schemas: [
-        CUSTOM_ELEMENTS_SCHEMA
+      declarations: [
+        InsetTextComponent, BasicRecordComponent
       ],
       providers: [{
         provide: WindowRef,
