@@ -4,9 +4,8 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
-import { render, RenderResult } from '@testing-library/angular';
+import { render, RenderResult, within } from '@testing-library/angular';
 
 import { MandatoryDetailsComponent } from './mandatory-details.component';
 
@@ -41,10 +40,6 @@ fdescribe('MandatoryDetailsComponent', () => {
   const establishment = establishmentBuilder() as Establishment;
 
   it('should create', async () => {
-    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-      can: sinon.stub().returns(true),
-    });
-
     component = await render(MandatoryDetailsComponent, {
       imports: [
         RouterTestingModule, HttpClientTestingModule
@@ -78,5 +73,50 @@ fdescribe('MandatoryDetailsComponent', () => {
     });
 
     expect(component).toBeTruthy();
+  });
+  it('should show Worker information in summary list', async () => {
+
+    const worker = workerBuilder();
+
+    const { click, getByTestId } = await render(MandatoryDetailsComponent, {
+      imports: [
+        RouterTestingModule, HttpClientTestingModule
+      ],
+      schemas: [
+        CUSTOM_ELEMENTS_SCHEMA
+      ],
+      providers: [{
+        provide: WindowRef,
+        useValue: WindowRef
+      },
+      {
+        provide: FormBuilder,
+        useValue: FormBuilder
+      },
+      {
+        provide: ActivatedRoute,
+        useValue: {
+          snapshot: {
+            url: [{ path: 1 }, { path: 2 }]
+          },
+          parent: {
+            snapshot: {
+              data: {
+                establishment
+              }
+            },
+          }
+        }
+      }],
+      componentProperties: {
+        worker
+      }
+    });
+
+    const container = within(getByTestId('summary'));
+
+    expect(container.getAllByText(worker.NameOrIdValue));
+    expect(container.getAllByText(worker.mainJob));
+    expect(container.getAllByText(worker.contract));
   });
 });
