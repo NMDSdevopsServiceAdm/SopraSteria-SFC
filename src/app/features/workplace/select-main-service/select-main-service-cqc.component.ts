@@ -31,7 +31,7 @@ export class SelectMainServiceCqcComponent extends Question {
         type: [
           {
             name: 'required',
-            message: 'Select Yes if your new main service is regulated by the CQC.',
+            message: 'Select yes if your new main service is regulated by the CQC',
           },
         ],
       },

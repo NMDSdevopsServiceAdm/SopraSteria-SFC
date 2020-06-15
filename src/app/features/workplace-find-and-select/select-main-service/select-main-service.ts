@@ -134,7 +134,7 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
    * Then set boolean flag for ui to render the form
    */
   protected preFillForm(): void {
-    if (this.selectedMainService) {
+    if (this.selectedMainService && this.allServices.findIndex(s => s.id === this.selectedMainService.id) > -1) {
       this.form.get('workplaceService').patchValue(this.selectedMainService.id);
 
       if (this.selectedMainService.other && this.form.get(`otherWorkplaceService${this.selectedMainService.id}`)) {
@@ -143,6 +143,7 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.renderForm = true;
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected getSelectedWorkPlaceService(): Service {

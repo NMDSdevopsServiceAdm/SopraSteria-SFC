@@ -1,6 +1,14 @@
-<h1 class="govuk-heading-l">Skills For Care have been notified</h1>
-<p class="govuk-body">We'll check your details match the CQC database and then contact you by phone or email within 24 hours</p>
 
-<p class="govuk-body"><a class="govuk-link govuk-link--no-visited-state" [routerLink]="['/contact-us']">Contact us</a> if you have any questions.</p>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-l">Skills For Care have been notified</h1>
+    <p class="govuk-body">We'll check your details match the CQC database and then contact you by phone or email within 24 hours.</p>
+    <p class="govuk-body">
+      <a class="govuk-link govuk-link--no-visited-state" [routerLink]="['/contact-us']">Contact us</a> if you have any questions.
+    </p>
 
-<button class="govuk-button" data-module="govuk-button" [routerLink]="establishmentService.returnTo.url" [fragment]="establishmentService.returnTo.fragment">View your workplace</button>
+    <div class="govuk-!-margin-top-8">
+      <button class="govuk-button" data-module="govuk-button" [routerLink]="establishmentService.returnTo.url" [fragment]="establishmentService.returnTo.fragment">View your workplace</button>
+    </div>
+  </div>
+</div>
