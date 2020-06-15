@@ -17,7 +17,7 @@ export class CqcStatusChangesComponent implements OnInit {
   }
 
   public getCqcStatusChanges() {
-    this.cqcStatusChangeService.getCqcStatusChange().subscribe(
+    this.cqcStatusChangeService.getCqcStatusChanges().subscribe(
       data => {
         this.cqcStatusChanges = data;
       },
