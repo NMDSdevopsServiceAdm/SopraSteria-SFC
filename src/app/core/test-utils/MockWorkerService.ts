@@ -9,13 +9,11 @@ const workerBuilder = build('Worker', {
     id: sequence(),
     uid: fake((f) => f.random.uuid()),
     nameOrId: fake((f) => f.name.findName()),
-    mainJob: perBuild(() => {
-      return {
-        id: sequence(),
-        title: fake((f) => f.lorem.sentence()),
-        other: null
-      };
-    }),
+    mainJob: {
+      id: sequence(),
+      title: fake((f) => f.lorem.sentence()),
+      other: null
+    },
     contract: oneOf('Permanent', 'Temporary', 'Pool or Bank', 'Agency', 'Other'),
     localIdentifier: fake((f) => f.name.findName()),
     zeroHoursContract: oneOf('Yes', 'No', 'Don\'t know'),
@@ -45,9 +43,12 @@ const workerBuilder = build('Worker', {
     missingMandatoryTrainingCount: 0,
     qualificationCount: 0
   }
-})
+});
+
+const worker = workerBuilder();
+
 export class MockWorkerService extends WorkerService {
-  public worker$ = of(workerBuilder as Worker);
+  public worker$ = of(worker as Worker);
 
   getAllWorkers(establishmentUid: string): Observable<Worker[]> {
     return of([
