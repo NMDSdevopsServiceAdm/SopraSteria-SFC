@@ -34,7 +34,7 @@ function cqcStatusChangeGenerator(otherCurrentService = false, otherRequestedSer
     establishmentUid: testEstablishmentUid,
     userId: testUserId,
     workplaceId: testWorkplaceId,
-    username: testUsername,
+    userName: testUsername,
     orgName: testOrgname,
     requested: testRequestedDate,
     status: 'Pending',
@@ -63,7 +63,7 @@ function cqcStatusChangeGenerator(otherCurrentService = false, otherRequestedSer
       other: 'Other Service Name'
     };
     if (usernameNull) {
-      payload.username = null;
+      payload.userName = null;
     }
   }
   return payload;
