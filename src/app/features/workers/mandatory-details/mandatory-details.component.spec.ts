@@ -86,9 +86,7 @@ fdescribe('MandatoryDetailsComponent', () => {
       can: sinon.stub().returns(true),
     });
 
-    const worker = workerBuilder();
-
-    const { click, getByTestId } = await render(MandatoryDetailsComponent, {
+    const { click, getByTestId, fixture } = await render(MandatoryDetailsComponent, {
       imports: [
         RouterTestingModule, HttpClientTestingModule
       ],
@@ -128,16 +126,16 @@ fdescribe('MandatoryDetailsComponent', () => {
             },
           }
         }
-      }],
-      componentProperties: {
-        worker
-      }
+      }]
     });
 
-    const container = within(getByTestId('summary'));
+    fixture.detectChanges();
 
-    expect(container.getAllByText(worker.NameOrIdValue));
-    expect(container.getAllByText(worker.mainJob));
-    expect(container.getAllByText(worker.contract));
+    const container = within(getByTestId('summary'));
+    const expectedWorker = fixture.componentInstance.worker;
+
+    expect(container.getAllByText(expectedWorker.nameOrId));
+    expect(container.getAllByText(expectedWorker.mainJob.title));
+    expect(container.getAllByText(expectedWorker.contract));
   });
 });
