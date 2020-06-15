@@ -10,14 +10,6 @@ $error_row_padding: $govuk-gutter-half;
   .govuk-table__cell:last-of-type {
     padding-right: $error_row_padding / 2;
   }
-
-  .asc-util-table__cell--highlight:first-of-type {
-    padding-left: 15px;
-  }
-
-  .asc-util-table__cell--highlight:last-of-type {
-    padding-right: 15px;
-  }
 }
 
 .govuk-table__with-action {
@@ -37,7 +29,7 @@ $error_row_padding: $govuk-gutter-half;
 }
 
 .govuk-error-table__row--highlight {
-  background: rgba(govuk-colour('blue'), 0.15);
+  background: rgba(govuk-colour('light-blue'), 0.2);
 }
 
 .govuk-error-table__cell {
