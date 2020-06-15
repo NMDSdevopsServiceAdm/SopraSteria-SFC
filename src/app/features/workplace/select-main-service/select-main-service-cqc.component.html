@@ -8,9 +8,7 @@
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">Is your new main service regulated by the Care Quality Commission (CQC)?</h1>
           </legend>
-          <span class="govuk-hint">
-            If your service is regulated, Skills for Care will need to check your details match the CQC database.
-          </span>
+          <p class="govuk-!-margin-bottom-4">If your service is regulated, Skills for Care will need to check your details match the CQC database.</p>
           <span
             *ngIf="submitted && form.get('cqc').invalid"
             id="cqc-error"
