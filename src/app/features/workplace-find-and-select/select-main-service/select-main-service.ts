@@ -143,6 +143,7 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.renderForm = true;
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected getSelectedWorkPlaceService(): Service {
