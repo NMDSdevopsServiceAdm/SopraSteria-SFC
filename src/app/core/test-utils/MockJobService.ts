@@ -1,7 +1,7 @@
 import { JobService} from '@core/services/job.service';
 import { Observable, of } from 'rxjs';
-import { GetJobsResponse, Job } from '@core/model/job.model';
-import { map } from 'rxjs/operators';
+import { Job } from '@core/model/job.model';
+
 
 export class MockJobService extends JobService {
 
