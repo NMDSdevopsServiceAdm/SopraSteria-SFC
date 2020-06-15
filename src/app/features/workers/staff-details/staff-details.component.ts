@@ -112,7 +112,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'maxlength',
-            message: `Other job role must be ${this.otherJobRoleCharacterLimit} characters or fewer`,
+            message: `Job role must be ${this.otherJobRoleCharacterLimit} characters or fewer `,
           },
         ],
       },
