@@ -11,6 +11,13 @@
           <span class="govuk-hint">
             If your service is regulated, Skills for Care will need to check your details match the CQC database.
           </span>
+          <span
+            *ngIf="submitted && form.get('cqc').invalid"
+            id="cqc-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('cqc') }}
+          </span>
           <div class="govuk-radios govuk-radios--conditional">
               <div class="govuk-radios__item">
                 <input
