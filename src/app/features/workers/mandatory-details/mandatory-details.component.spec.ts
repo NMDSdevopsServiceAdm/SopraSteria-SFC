@@ -138,4 +138,112 @@ fdescribe('MandatoryDetailsComponent', () => {
     expect(container.getAllByText(expectedWorker.mainJob.title));
     expect(container.getAllByText(expectedWorker.contract));
   });
+  it('should show have the title mandatory details on summary', async () => {
+    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
+      can: sinon.stub().returns(true),
+    });
+
+    const { click, getByTestId, fixture } = await render(MandatoryDetailsComponent, {
+      imports: [
+        RouterTestingModule, HttpClientTestingModule
+      ],
+      declarations: [
+        InsetTextComponent, BasicRecordComponent, SummaryRecordValueComponent, EligibilityIconComponent
+      ],
+      providers: [{
+        provide: WindowRef,
+        useValue: WindowRef
+      },
+      {
+        provide: FormBuilder,
+        useValue: FormBuilder
+      },
+      {
+        provide: WorkerService,
+        useClass: MockWorkerService
+      },
+      {
+        provide: PermissionsService,
+        useValue: mockPermissionsService
+      },
+      {
+        provide: ActivatedRoute,
+        useValue: {
+          snapshot: {
+            url: [{ path: 1 }, { path: 2 }],
+            params: {
+              establishmentuid: establishment.uid
+            }
+          },
+          parent: {
+            snapshot: {
+              data: {
+                establishment
+              }
+            },
+          }
+        }
+      }]
+    });
+
+    fixture.detectChanges();
+
+    const container = within(getByTestId('summary'));
+
+    expect(container.getAllByText('Mandatory details'));
+  });
+  it('should return to previous page if you click on the change link', async () => {
+    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
+      can: sinon.stub().returns(true),
+    });
+
+    const { click, getByTestId, fixture } = await render(MandatoryDetailsComponent, {
+      imports: [
+        RouterTestingModule, HttpClientTestingModule
+      ],
+      declarations: [
+        InsetTextComponent, BasicRecordComponent, SummaryRecordValueComponent, EligibilityIconComponent
+      ],
+      providers: [{
+        provide: WindowRef,
+        useValue: WindowRef
+      },
+      {
+        provide: FormBuilder,
+        useValue: FormBuilder
+      },
+      {
+        provide: WorkerService,
+        useClass: MockWorkerService
+      },
+      {
+        provide: PermissionsService,
+        useValue: mockPermissionsService
+      },
+      {
+        provide: ActivatedRoute,
+        useValue: {
+          snapshot: {
+            url: [{ path: 1 }, { path: 2 }],
+            params: {
+              establishmentuid: establishment.uid
+            }
+          },
+          parent: {
+            snapshot: {
+              data: {
+                establishment
+              }
+            },
+          }
+        }
+      }]
+    });
+
+    fixture.detectChanges();
+
+    const container = within(getByTestId('summary'));
+    const change = container.getByText('Change');
+    expect(change.attributes.getNamedItem('href')).toContain('staff-details');
+  });
 });
