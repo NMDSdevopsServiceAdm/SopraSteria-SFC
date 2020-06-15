@@ -1,5 +1,6 @@
-import { CqcStatusChange } from '@core/model/cqc-status-change.model';
+import { CqcChangeData } from '@core/model/cqc-change-data.model';
+import { ApprovalRequest } from '@core/model/approval-request.model';
 
 export interface CqcStatusChanges {
-  [index: number]: CqcStatusChange;
+  [index: number]: ApprovalRequest<CqcChangeData>;
 }

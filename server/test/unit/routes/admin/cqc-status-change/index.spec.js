@@ -148,17 +148,19 @@ describe('admin/cqc-status-change route', () => {
         workplaceId: fakeApproval.Establishment.nmdsId,
         username: fakeApproval.User.FullNameValue,
         orgName: fakeApproval.Establishment.NameValue,
-        currentService: {
-          ID: fakeApproval.Data.currentService.id,
-          name: fakeApproval.Data.currentService.name,
-          other: fakeApproval.Data.currentService.other
-        },
-        requestedService: {
-          ID: fakeApproval.Data.requestedService.id,
-          name: fakeApproval.Data.requestedService.name,
-          other: null
-        },
-        requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
+        requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
+        data: {
+          currentService: {
+            ID: fakeApproval.Data.currentService.id,
+            name: fakeApproval.Data.currentService.name,
+            other: fakeApproval.Data.currentService.other
+          },
+          requestedService: {
+            ID: fakeApproval.Data.requestedService.id,
+            name: fakeApproval.Data.requestedService.name,
+            other: null
+          }
+        }
       }]);
     });
 
