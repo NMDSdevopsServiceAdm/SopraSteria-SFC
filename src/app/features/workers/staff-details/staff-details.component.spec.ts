@@ -15,14 +15,13 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { getTestBed } from '@angular/core/testing';
 import { AuthService } from '@core/services/auth.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { Establishment } from '@core/model/establishment.model';
-import { Worker } from '@core/model/worker.model';
-import { oneOf } from '@jackfranklin/test-data-bot/build';
 import { JobService } from '@core/services/job.service';
 import { MockJobService } from '@core/test-utils/MockJobService';
 import { Contracts } from '@core/model/contracts.enum';
-const { build, fake, sequence, perBuild, } = require('@jackfranklin/test-data-bot');
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+const { build, fake, sequence, } = require('@jackfranklin/test-data-bot');
 
 
 
@@ -34,20 +33,7 @@ describe('StaffDetailsComponent', () => {
       nameOrId: fake((f) => f.lorem.sentence()),
     },
   });
-  const workerBuilder = build('Worker', {
-  fields: {
-    id: sequence(),
-    uid: fake((f) => f.random.uuid()),
-    nameOrId: fake((f) => f.name.findName()),
-    mainJob: perBuild(() => {
-      return {
-        id: sequence(),
-        title: fake((f) => f.lorem.sentence()),
-      };
-    }),
-    contract: oneOf('Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other')
-  },
-});
+
 
   async function setup(isAdmin = true, subsidiaries = 0) {
     const establishment = establishmentBuilder() as Establishment;
@@ -57,11 +43,11 @@ describe('StaffDetailsComponent', () => {
           RouterModule,
           RouterTestingModule,
           HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
         ],
         declarations: [],
+        schemas: [ NO_ERRORS_SCHEMA ],
         providers: [
+          FormBuilder,
           {
             provide: WindowRef,
             useClass: WindowRef
@@ -115,7 +101,6 @@ describe('StaffDetailsComponent', () => {
         ]
       })
     ;
-
     const injector = getTestBed();
     const establishmentService = injector.get(EstablishmentService) as EstablishmentService;
     const router = injector.get(Router) as Router;
