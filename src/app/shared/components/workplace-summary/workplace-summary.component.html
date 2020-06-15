@@ -74,11 +74,11 @@
     </dd>
   </div>
 
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key" [ngClass]="{'govuk-panel--light-blue': cqcStatusRequested}">
+  <div class="govuk-summary-list__row" [ngClass]="{'govuk-panel--light-blue': cqcStatusRequested}">
+    <dt class="govuk-summary-list__key" [ngClass]="{'govuk-!-padding-left-3': cqcStatusRequested}">
       Main service
     </dt>
-    <dd class="govuk-summary-list__value" [ngClass]="{'asc-util-panel-no-pad--light-blue': cqcStatusRequested}">
+    <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.mainService">
         {{ cqcStatusRequested ? requestedMainService.name : workplace.mainService?.name }}
         <ng-container *ngIf="(cqcStatusRequested && requestedMainService.otherName)
@@ -86,7 +86,7 @@
         </ng-container>
       </app-summary-record-value>
     </dd>
-    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [ngClass]="{'govuk-panel--light-blue': cqcStatusRequested}">
+    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [ngClass]="{'govuk-!-padding-right-3': cqcStatusRequested}">
       <a *ngIf="!cqcStatusRequested; else cqcPending" [routerLink]="['/workplace', workplace.uid, 'main-service-cqc']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.mainService">
           Provide information
