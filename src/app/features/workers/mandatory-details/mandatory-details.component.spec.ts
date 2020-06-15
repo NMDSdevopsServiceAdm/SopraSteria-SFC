@@ -244,6 +244,65 @@ fdescribe('MandatoryDetailsComponent', () => {
 
     const container = within(getByTestId('summary'));
     const change = container.getByText('Change');
-    expect(change.attributes.getNamedItem('href')).toContain('staff-details');
+    expect(
+      change.getAttribute('href')
+    ).toEqual(
+      `/workplace/${establishment.uid}/staff-record/${fixture.componentInstance.worker.uid}/staff-details`
+    );
+  });
+  it('should submit and move to next page when add details button clicked', async () => {
+    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
+      can: sinon.stub().returns(true),
+    });
+
+    const { click, getByTestId, fixture } = await render(MandatoryDetailsComponent, {
+      imports: [
+        RouterTestingModule, HttpClientTestingModule
+      ],
+      declarations: [
+        InsetTextComponent, BasicRecordComponent, SummaryRecordValueComponent, EligibilityIconComponent
+      ],
+      providers: [{
+        provide: WindowRef,
+        useValue: WindowRef
+      },
+      {
+        provide: FormBuilder,
+        useValue: FormBuilder
+      },
+      {
+        provide: WorkerService,
+        useClass: MockWorkerService
+      },
+      {
+        provide: PermissionsService,
+        useValue: mockPermissionsService
+      },
+      {
+        provide: ActivatedRoute,
+        useValue: {
+          snapshot: {
+            url: [{ path: 1 }, { path: 2 }],
+            params: {
+              establishmentuid: establishment.uid
+            }
+          },
+          parent: {
+            snapshot: {
+              data: {
+                establishment
+              }
+            },
+          }
+        }
+      }]
+    });
+
+    fixture.detectChanges();
+
+    spyOn(fixture.componentInstance, 'onSubmit');
+    const detailsButton = getByTestId('add-details-button');
+    detailsButton.click();
+    expect(fixture.componentInstance.onSubmit).toHaveBeenCalled();
   });
 });
