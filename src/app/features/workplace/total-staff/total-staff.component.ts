@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -10,11 +11,13 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
+import { Question } from '../question/question.component';
+
 @Component({
   selector: 'app-total-staff',
   templateUrl: './total-staff.component.html',
 })
-export class TotalStaffComponent implements OnInit, OnDestroy {
+export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
   public form: FormGroup;
   public returnToDash = false;
   public submitted = false;
@@ -23,17 +26,18 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   public returnCopy: boolean;
   private totalStaffConstraints = { min: 0, max: 999 };
   public formErrorsMap: Array<ErrorDetails>;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
+    protected router: Router,
+    protected formBuilder: FormBuilder,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
     private route: ActivatedRoute,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private backService: BackService,
-    private errorSummaryService: ErrorSummaryService,
-    private establishmentService: EstablishmentService,
     private workerService: WorkerService
   ) {
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+
     this.form = this.formBuilder.group({
       totalStaff: [
         null,
@@ -81,6 +85,9 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
       });
     }
 
+    this.next = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
+    this.setPreviousRoute();
+
     this.setupFormErrors();
   }
 
@@ -107,13 +114,19 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.establishmentService.postStaff(this.workplace.uid, totalStaff).subscribe(
-        () => this.onSuccess(),
+        data => this._onSuccess(data),
         error => this.onError(error)
       )
     );
   }
 
-  private onSuccess() {
+  private setPreviousRoute(): void {
+    this.previous = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
+      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
+      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+  }
+
+  protected onSuccess() {
     if (this.returnToDash) {
       this.router.navigate(this.return.url, { fragment: this.return.fragment });
     } else if (this.workerService.returnTo) {
@@ -122,8 +135,6 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
       this.router.navigate(['create-basic-records'], { relativeTo: this.route.parent });
     }
   }
-
-  private onError(error) {}
 
   private setupFormErrors(): void {
     this.formErrorsMap = [
