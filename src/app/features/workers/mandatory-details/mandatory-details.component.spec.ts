@@ -34,7 +34,7 @@ const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
 
 let setup;
 
-fdescribe('MandatoryDetailsComponent', () => {
+describe('MandatoryDetailsComponent', () => {
   beforeEach( async () => {
     setup = await render(MandatoryDetailsComponent, {
       imports: [
