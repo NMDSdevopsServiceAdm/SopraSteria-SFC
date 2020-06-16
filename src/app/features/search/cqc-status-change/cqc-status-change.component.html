@@ -1,0 +1,66 @@
+<h2 class="govuk-heading-l">CQC status change for {{ cqcStatusChange.orgName }}</h2>
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="cqcStatusChangeForm" id="form-parent-request">
+  <table class="govuk-table">
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">Requested</th>
+        <td class="govuk-table__cell">
+          {{ cqcStatusChange.requested }}
+        </td>
+        <th class="govuk-table__cell">Username</th>
+        <td class="govuk-table__cell">
+          {{ cqcStatusChange.username }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">Workplace ID</th>
+        <td class="govuk-table__cell">
+          {{ cqcStatusChange.workplaceId }}
+        </td>
+        <th class="govuk-table__cell">Workplace</th>
+        <td class="govuk-table__cell">
+          <a (click)="navigateToWorkplace(cqcStatusChange.establishmentUid, null, cqcStatusChange.workplaceId, $event)" href="#">
+            {{ cqcStatusChange.orgName }}
+          </a>
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__cell">Requested service</th>
+        <td class="govuk-table__cell">
+          {{ cqcStatusChange.data.requestedService.name }}
+        </td>
+        <th class="govuk-table__cell">Current service</th>
+        <td class="govuk-table__cell">
+            {{ cqcStatusChange.data.currentService.name }}
+        </td>
+      </tr>
+      <tr *ngIf="cqcStatusChange.data.requestedService.other || cqcStatusChange.data.currentService.other" class="govuk-table__row">
+        <th class="govuk-table__cell">
+          <span data-testid="cqc-requested-service-other-title"  *ngIf="cqcStatusChange.data.requestedService.other" >Requested service name</span></th>
+        <td class="govuk-table__cell">
+         <span  data-testid="cqc-requested-service-other-value" *ngIf="cqcStatusChange.data.requestedService.other"> {{ cqcStatusChange.data.requestedService.other }}</span>
+        </td>
+        <th  class="govuk-table__cell"><span data-testid="cqc-current-service-other-value" *ngIf="cqcStatusChange.data.currentService.other">Current service name</span></th>
+        <td  class="govuk-table__cell">
+          <span  data-testid="cqc-current-service-other-value" *ngIf="cqcStatusChange.data.currentService.other">{{ cqcStatusChange.data.currentService.other }}</span>
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="gov-uk-table__cell" colspan="4">
+          <div class="govuk-button-group">
+            <button
+              type="submit"
+              class="govuk-button govuk-button--warning govuk-util__float-right"
+              (click)="approveCQCRequest(false, 'Rejected')"
+            >
+              Reject
+            </button>
+            <button class="govuk-button" type="submit" name="approve" (click)="approveCQCRequest(true, 'Approved')">
+              Approve
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</form>

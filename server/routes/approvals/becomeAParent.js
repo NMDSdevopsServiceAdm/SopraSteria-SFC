@@ -1,10 +1,7 @@
-// default route for admin/approval
 const express = require('express');
 const router = express.Router();
 const models = require('../../models');
 const isAuthorised = require('../../utils/security/isAuthenticated').isAuthorised;
-const moment = require('moment-timezone');
-const config = require('../../config/config');
 
 const validateBecomeAParentRequest = async (req, res, next) => {
   try {
@@ -41,39 +38,6 @@ const validateBecomeAParentRequest = async (req, res, next) => {
   }
 };
 
-const getParentRequestByEstablishmentId = async (req, res) => {
-  try {
-    let approvalResult = await models.Approvals.findbyEstablishmentId(req.params.establishmentId, 'BecomeAParent', 'Pending');
-    if (approvalResult) {
-      let parentRequests = await _mapResults([approvalResult]);
-      return res.status(200).json(parentRequests[0]);
-    } else {
-      return res.status(200).json(null);
-    }
-  } catch (error) {
-    console.log(error);
-    return res.status(400).send();
-  }
-};
-
-
-const _mapResults = async (approvalResults) => {
-  return approvalResults.map(approval => {
-      return {
-        requestId: approval.ID,
-        requestUUID: approval.UUID,
-        establishmentId: approval.EstablishmentID,
-        establishmentUid: approval.Establishment.uid,
-        userId: approval.UserID,
-        workplaceId: approval.Establishment.nmdsId,
-        userName: approval.User.FullNameValue,
-        orgName: approval.Establishment.NameValue,
-        requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
-      };
-    }
-  );
-};
-
 const becomeAParentEndpoint = async (req, res) => {
   const becomeAParentRequest = await models.Approvals.createBecomeAParentRequest(req.userId, req.establishment.id);
 
@@ -81,9 +45,7 @@ const becomeAParentEndpoint = async (req, res) => {
 };
 
 router.route('/').post([isAuthorised, validateBecomeAParentRequest, becomeAParentEndpoint]);
-router.route('/establishment/:establishmentId').get(getParentRequestByEstablishmentId);
 
 module.exports = router;
 module.exports.validateBecomeAParentRequest = validateBecomeAParentRequest;
 module.exports.becomeAParentEndpoint = becomeAParentEndpoint;
-module.exports.getParentRequestByEstablishmentId = getParentRequestByEstablishmentId;

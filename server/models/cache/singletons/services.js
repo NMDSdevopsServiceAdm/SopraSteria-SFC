@@ -34,6 +34,8 @@ class ServiceCache {
         .filter(x => isCqcRegulated ? true : x.iscqcregistered === false )
         .map( x => { return { id: x.id, name: x.name, category: x.category, other: x.other }});
     }
+
+    return [];
   }
 }
 

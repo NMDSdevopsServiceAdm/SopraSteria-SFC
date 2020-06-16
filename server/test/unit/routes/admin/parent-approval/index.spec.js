@@ -4,10 +4,11 @@ const sinon = require('sinon');
 const moment = require('moment-timezone');
 const config = require('../../../../../config/config');
 const Sequelize = require('sequelize');
+const sinon_sandbox = sinon.createSandbox();
 
 const models = require('../../../../../models/index');
 
-const parentApproval = require('../../../../../routes/admin/parent-approval');
+const adminParentApproval = require('../../../../../routes/admin/parent-approval');
 
 var testWorkplace = {};
 var workplaceObjectWasSaved = false;
@@ -16,7 +17,9 @@ const _initialiseTestWorkplace = () => {
   testWorkplace.isParent = false;
   testWorkplace.nmdsId = 'I1234567';
   testWorkplace.NameValue = faker.lorem.words(4);
-  testWorkplace.save = () => { workplaceObjectWasSaved = true; };
+  testWorkplace.save = () => {
+    workplaceObjectWasSaved = true;
+  };
 };
 
 var testUser = {};
@@ -40,7 +43,9 @@ var fakeApproval = {
   User: {
     FullNameValue: faker.name.findName()
   },
-  save: () => { approvalObjectWasSaved = true; }
+  save: () => {
+    approvalObjectWasSaved = true;
+  }
 };
 
 var approvalRequestBody = {};
@@ -48,53 +53,53 @@ const _initialiseTestRequestBody = () => {
   approvalRequestBody.parentRequestId = fakeApproval.ID;
   approvalRequestBody.establishmentId = testWorkplace.id;
   approvalRequestBody.userId = testUser.id;
-  approvalRequestBody.rejectionReason = "Because I felt like it.";
+  approvalRequestBody.rejectionReason = 'Because I felt like it.';
 };
 
 var returnedJson = null;
 var returnedStatus = null;
-const approvalJson = (json) => { returnedJson = json; };
+const approvalJson = (json) => {
+  returnedJson = json;
+};
 const approvalStatus = (status) => {
   returnedStatus = status;
-  return {json: approvalJson, send: () => {} };
+  return {
+    json: approvalJson, send: () => {
+    }
+  };
 };
 
 var throwErrorWhenFetchingAllRequests = false;
-sinon.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
-  if (throwErrorWhenFetchingAllRequests) {
-    throw 'Oopsy!';
-  } else {
-    return [ fakeApproval ];
-  }
-});
-
-var noMatchingRequestByEstablishmentId = false;
-sinon.stub(models.Approvals, 'findbyEstablishmentId').callsFake(async (approvalType) => {
-  if (noMatchingRequestByEstablishmentId) {
-    return null;
-  } else {
-    return fakeApproval;
-  }
-});
-
 var throwErrorWhenFetchingSingleRequest = false;
-sinon.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
-  if (throwErrorWhenFetchingSingleRequest) {
-    throw 'Oopsy!';
-  } else if (id === fakeApproval.ID) {
-    return fakeApproval;
-  }
-});
-
-sinon.stub(models.establishment, 'findbyId').callsFake(async (id) => {
-  if (id === testWorkplace.id) {
-    return testWorkplace;
-  }
-});
 
 describe('admin/parent-approval route', () => {
 
-  beforeEach(async() => {
+  afterEach(() => {
+    sinon_sandbox.restore();
+  });
+
+  beforeEach(async () => {
+    sinon_sandbox.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
+      if (throwErrorWhenFetchingSingleRequest) {
+        throw 'Oopsy!';
+      } else if (id === fakeApproval.ID) {
+        return fakeApproval;
+      }
+    });
+    sinon_sandbox.stub(models.establishment, 'findbyId').callsFake(async (id) => {
+      if (id === testWorkplace.id) {
+        return testWorkplace;
+      }
+    });
+    sinon_sandbox.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
+      if (throwErrorWhenFetchingAllRequests) {
+        throw 'Oopsy!';
+      } else {
+        return [fakeApproval];
+      }
+    });
+
+
     _initialiseTestWorkplace();
     _initialiseTestUser();
     _initialiseTestRequestBody();
@@ -102,15 +107,14 @@ describe('admin/parent-approval route', () => {
     returnedStatus = null;
     throwErrorWhenFetchingAllRequests = false;
     throwErrorWhenFetchingSingleRequest = false;
-    noMatchingRequestByEstablishmentId = false;
   });
 
   describe('fetching parent requests', () => {
-    it('should return an array of parent requests', async() => {
+    it('should return an array of parent requests', async () => {
       // Arrange (see beforeEach)
 
       // Act
-      await parentApproval.getParentRequests({}, {status: approvalStatus});
+      await adminParentApproval.getParentRequests({}, { status: approvalStatus });
 
       // Assert
       expect(returnedStatus).to.deep.equal(200);
@@ -127,140 +131,97 @@ describe('admin/parent-approval route', () => {
       }]);
     });
 
-    it('should return 400 on error', async() => {
+    it('should return 400 on error', async () => {
       // Arrange
       throwErrorWhenFetchingAllRequests = true;
 
       // Act
-      await parentApproval.getParentRequests({}, {status: approvalStatus});
+      await adminParentApproval.getParentRequests({}, { status: approvalStatus });
 
       // Assert
       expect(returnedStatus).to.deep.equal(400);
     });
   });
 
-  describe('fetching parent request by establishment id', () => {
-    it('should return a pending parent request for a specified establishment', async() => {
-      // Arrange (see beforeEach)
-
-      // Act
-      await parentApproval.getParentRequestByEstablishmentId({
-        params: {
-          establishmentId: fakeApproval.EstablishmentID
-        }
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(200);
-      expect(returnedJson).to.deep.equal({
-        requestId: fakeApproval.ID,
-        requestUUID: fakeApproval.UUID,
-        establishmentId: fakeApproval.EstablishmentID,
-        establishmentUid: fakeApproval.Establishment.uid,
-        userId: fakeApproval.UserID,
-        workplaceId: fakeApproval.Establishment.nmdsId,
-        userName: fakeApproval.User.FullNameValue,
-        orgName: fakeApproval.Establishment.NameValue,
-        requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
-      });
-    });
-
-    it('should return null when there is no matching parent request', async() => {
-      // Arrange
-      noMatchingRequestByEstablishmentId = true;
-
-      // Act
-      await parentApproval.getParentRequestByEstablishmentId({
-        params: {
-          establishmentId: fakeApproval.EstablishmentID
-        }
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(200);
-      expect(returnedJson).to.deep.equal(null);
-    });
-  });
-
   describe('approving a new parent organisation', () => {
-    beforeEach(async() => {
+    beforeEach(async () => {
       approvalRequestBody.approve = true;
     });
 
-    it('should return a confirmation message and status 200 when parent status is approved for an org', async() => {
+    it('should return a confirmation message and status 200 when parent status is approved for an org', async () => {
       // Arrange (see beforeEach)
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal(parentApproval.parentApprovalConfirmation);
+      expect(returnedJson.message).to.deep.equal(adminParentApproval.parentApprovalConfirmation);
       expect(returnedStatus).to.deep.equal(200);
     });
 
-    it('should change the approval status to Approved when approving a parent request', async() => {
+    it('should change the approval status to Approved when approving a parent request', async () => {
       // Arrange
       fakeApproval.Status = 'Pending';
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(fakeApproval.Status).to.equal('Approved');
     });
 
-    it('should save the approval object when approving a parent request', async() => {
+    it('should save the approval object when approving a parent request', async () => {
       // Arrange
       approvalObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
     });
 
-    it('should change the workplace to a parent workplace when approving a parent request', async() => {
+    it('should change the workplace to a parent workplace when approving a parent request', async () => {
       // Arrange
       testWorkplace.isParent = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(testWorkplace.isParent).to.equal(true);
     });
 
-    it('should save the workplace object when approving a parent request', async() => {
+    it('should save the workplace object when approving a parent request', async () => {
       // Arrange
       workplaceObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(workplaceObjectWasSaved).to.equal(true);
     });
 
-    it('should return 400 on error', async() => {
+    it('should return 400 on error', async () => {
       // Arrange
       throwErrorWhenFetchingSingleRequest = true;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(returnedStatus).to.deep.equal(400);
@@ -268,7 +229,7 @@ describe('admin/parent-approval route', () => {
   });
 
   describe('rejecting a new parent organisation', () => {
-    beforeEach(async() => {
+    beforeEach(async () => {
       approvalRequestBody.approve = false;
     });
 
@@ -276,50 +237,50 @@ describe('admin/parent-approval route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal(parentApproval.parentRejectionConfirmation);
+      expect(returnedJson.message).to.deep.equal(adminParentApproval.parentRejectionConfirmation);
       expect(returnedStatus).to.deep.equal(200);
     });
 
-    it('should change the approval status to Rejected when rejecting a parent request', async() => {
+    it('should change the approval status to Rejected when rejecting a parent request', async () => {
       // Arrange
       fakeApproval.Status = 'Pending';
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(fakeApproval.Status).to.equal('Rejected');
     });
 
-    it('should save the approval object when rejecting a parent request', async() => {
+    it('should save the approval object when rejecting a parent request', async () => {
       // Arrange
       approvalObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
     });
 
-    it('should NOT save the workplace object when rejecting a parent request', async() => {
+    it('should NOT save the workplace object when rejecting a parent request', async () => {
       // Arrange
       workplaceObjectWasSaved = false;
 
       // Act
-      await parentApproval.parentApproval({
+      await adminParentApproval.parentApproval({
         body: approvalRequestBody
-      }, {status: approvalStatus});
+      }, { status: approvalStatus });
 
       // Assert
       expect(workplaceObjectWasSaved).to.equal(false);
