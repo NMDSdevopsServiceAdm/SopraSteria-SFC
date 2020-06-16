@@ -60,7 +60,7 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please select a main service.',
+            message: 'Select your main service',
           },
         ],
       },
