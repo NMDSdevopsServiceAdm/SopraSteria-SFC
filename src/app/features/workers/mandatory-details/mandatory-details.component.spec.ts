@@ -26,21 +26,6 @@ const establishmentBuilder = build('Establishment', {
   },
 });
 
-const workerBuilder = build('Worker', {
-  fields: {
-    id: sequence(),
-    uid: fake((f) => f.random.uuid()),
-    NameOrIdValue: fake((f) => f.name.findName()),
-    mainJob: perBuild(() => {
-      return {
-        id: sequence(),
-        title: fake((f) => f.lorem.sentence()),
-      };
-    }),
-    contract: oneOf('Permanent', 'Temporary', 'Pool or Bank', 'Agency', 'Other')
-  },
-});
-
 const establishment = establishmentBuilder() as Establishment;
 
 const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
