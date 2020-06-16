@@ -2293,12 +2293,8 @@ const completePost = async (req, res) => {
   }
 };
 
-// takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
-const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, responseSend) => {
-  // before being able to write the worker header, we need to know the maximum number of qualifications
-  // columns across all workers
-
-  const determineMaxQuals = await dbModels.sequelize.query(
+const determineMaxQuals = async (primaryEstablishmentId) => {
+  await dbModels.sequelize.query(
     'select cqc.maxQualifications(:givenPrimaryEstablishment);',
     {
       replacements: {
@@ -2307,9 +2303,15 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
       type: dbModels.sequelize.QueryTypes.SELECT
     }
   );
+};
 
-  if (determineMaxQuals && determineMaxQuals[0].maxqualifications && Number.isInteger(parseInt(determineMaxQuals[0].maxqualifications, 10))) {
-    const MAX_QUALS = parseInt(determineMaxQuals[0].maxqualifications, 10);
+// takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
+const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, maxQuals, responseSend) => {
+  // before being able to write the worker header, we need to know the maximum number of qualifications
+  // columns across all workers
+
+  if (maxQuals && maxQuals[0].maxqualifications && Number.isInteger(parseInt(maxQuals[0].maxqualifications, 10))) {
+    const MAX_QUALS = parseInt(maxQuals[0].maxqualifications, 10);
 
     // first the header rows
     let columnNames = '';
@@ -2352,7 +2354,7 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
       }
     });
   } else {
-    console.error('bulk upload exportToCsv - max quals error: ', determineMaxQuals);
+    console.error('bulk upload exportToCsv - max quals error: ', maxQuals);
     throw new Error('max quals error: determineMaxQuals');
   }
 };
@@ -2392,6 +2394,7 @@ const downloadGet = async (req, res) => {
         await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true),
         primaryEstablishmentId,
         downloadType,
+        determineMaxQuals(primaryEstablishmentId),
         responseSend
       );
 
@@ -2484,3 +2487,5 @@ module.exports.printLine = printLine;
 module.exports.checkDuplicateLocations = checkDuplicateLocations;
 module.exports.checkDuplicateWorkerID = checkDuplicateWorkerID;
 module.exports.validateEstablishmentCsv = validateEstablishmentCsv;
+module.exports.exportToCsv = exportToCsv;
+module.exports.determineMaxQuals = determineMaxQuals;

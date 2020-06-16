@@ -12,7 +12,10 @@ sinon.stub(dbmodels.status, 'ready').value(false);
 const bulkUpload = rfr('server/routes/establishments/bulkUpload');
 const EstablishmentCsvValidator = rfr('server/models/BulkImport/csv/establishments');
 const WorkerCsvValidator = rfr('server/models/BulkImport/csv/workers');
+const BUDI = rfr('server/models/Bulkimport/BUDI').BUDI;
 const { Establishment } = rfr('server/models/classes/establishment');
+const { Training } = rfr('server/models/classes/training');
+const { Worker } = rfr('server/models/classes/worker');
 const buildEstablishmentCSV = rfr('server/test/factories/establishment/csv');
 const buildWorkerCSV = rfr('server/test/factories/worker/csv');
 
@@ -25,6 +28,10 @@ const errorsBuilder = build('Error', {
 });
 
 describe('/server/routes/establishment/bulkUpload.js', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe('printLine', () => {
     it('prints the correct error message for training csv', async () => {
       const readable = [];
@@ -479,5 +486,87 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         }
       ]);
     });
+  });
+
+  describe('exportToCsv()', () => {
+    it('should have a blank UNIQUEWORKERID if worker does not have a LocalIdentifier', async () => {
+      sinon.stub(dbmodels.workerTrainingCategories, 'findAll').returns([
+        {
+          id: 1
+        }
+      ]);
+
+      const lines = [];
+
+      const responseSend = (line, stepName = '') => {
+        lines.push(line);
+      };
+
+      const establishment = new Establishment('foo');
+      await establishment.load({
+        name: 'foo',
+        workers: [
+          {
+            nameOrId: 'foobar',
+            training: [
+              {
+                trainingCategory: {
+                  id: 1
+                }
+              }
+            ]
+          }
+        ]
+      }, true);
+
+      await bulkUpload.exportToCsv('', [establishment], 'foo', 'training', [
+        {
+          maxqualifications: "10"
+        }
+      ], responseSend);
+
+      expect(lines[1]).to.equal(`${establishment.name},,${BUDI.trainingCategory(BUDI.FROM_ASC, 1)},,,,,`);
+    });
+
+    it('should have a UNIQUEWORKERID if worker has a LocalIdentifier', async () => {
+      sinon.stub(dbmodels.workerTrainingCategories, 'findAll').returns([
+        {
+          id: 1
+        }
+      ]);
+
+      const lines = [];
+
+      const responseSend = (line, stepName = '') => {
+        lines.push(line);
+      };
+
+      const establishment = new Establishment('foo');
+      await establishment.load({
+        name: 'foo',
+        workers: [
+          {
+            nameOrId: 'foobar',
+            localIdentifier: 'TesterMcTesterson',
+            training: [
+              {
+                trainingCategory: {
+                  id: 1
+                }
+              }
+            ]
+          }
+        ]
+      }, true);
+
+      await bulkUpload.exportToCsv('', [establishment], 'foo', 'training', [
+        {
+          maxqualifications: "10"
+        }
+      ], responseSend);
+
+      expect(lines[1]).to.equal(`${establishment.name},TesterMcTesterson,${BUDI.trainingCategory(BUDI.FROM_ASC, 1)},,,,,`);
+    });
+
   });
 });
