@@ -134,18 +134,41 @@ describe('StaffDetailsComponent', () => {
   it('should be able to pass validation when given correct data', async () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
-    form.controls['nameOrId'].setValue('Jeff');
-    form.controls['mainJob'].setValue('1');
-    form.controls['contract'].setValue('Permanent');
+    form.controls.nameOrId.setValue('Jeff');
+    form.controls.mainJob.setValue('1');
+    form.controls.contract.setValue('Permanent');
     expect(form.valid).toBeTruthy();
   });
   it('should be able to fail validation when given wrong data', async () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
-    form.controls['nameOrId'].setValue('');
-    form.controls['mainJob'].setValue('');
-    form.controls['contract'].setValue('');
+    form.controls.nameOrId.setValue('');
+    form.controls.mainJob.setValue('');
+    form.controls.contract.setValue('');
     expect(form.valid).toBeFalsy();
+  });
+  it('should see other job when not chosen other job', async () => {
+    const { component } = await setup();
+    const form = component.fixture.componentInstance.form;
+    form.controls.nameOrId.setValue('Jeff');
+    form.controls.mainJob.setValue('3');
+    form.controls.contract.setValue('Permanent');
+    const contractSelect = component.fixture.nativeElement.querySelector('#mainJob');
+    contractSelect.dispatchEvent(new Event('change'));
+    component.fixture.detectChanges();
+    const otherjob = component.fixture.nativeElement.querySelector('#otherJobRole-conditional');
+    expect(otherjob).toBeTruthy();
+  });
+  it('should not see other job when not chosen other job type', async () => {
+    const { component } = await setup();
+    const form = component.fixture.componentInstance.form;
+    form.controls.nameOrId.setValue('Jeff');
+    form.controls.mainJob.setValue('2');
+    form.controls.contract.setValue('Permanent');
+    const contractSelect = component.fixture.nativeElement.querySelector('#mainJob');
+    contractSelect.dispatchEvent(new Event('change'));
+    component.fixture.detectChanges();
+    expect(component.fixture.nativeElement.querySelector('.govuk-select__conditional--hidden')).toBeTruthy();
   });
 
 });
