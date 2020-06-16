@@ -5,6 +5,7 @@ import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 import { isArray } from 'util';
@@ -15,12 +16,16 @@ import { isArray } from 'util';
   providers: [I18nPluralPipe],
 })
 export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
-  public capacityMessages = [];
-  public pluralMap = [];
-  public canEditEstablishment: boolean;
   private _workplace: any;
   protected subscriptions: Subscription = new Subscription();
   public hasCapacity: boolean;
+  public capacityMessages = [];
+  public pluralMap = [];
+  public canEditEstablishment: boolean;
+  public cqcStatusRequested: boolean;
+  public requestedServiceName: string;
+  public requestedServiceOtherName: string;
+
   @Input() wdfView = false;
   @Input() workerCount?: number;
 
@@ -63,7 +68,8 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     private i18nPluralPipe: I18nPluralPipe,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private cqcStatusChangeService: CqcStatusChangeService
   ) {
     this.pluralMap['How many beds do you currently have?'] = {
       '=1': '# bed available',
@@ -98,6 +104,16 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
         if (hasPermissions && hasPermissions.permissions) {
           this.permissionsService.setPermissions(this.workplace.uid, hasPermissions.permissions);
           this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+        }
+      })
+    );
+    this.cqcStatusRequested = false;
+    this.subscriptions.add(
+      this.cqcStatusChangeService.getCqcRequestByEstablishmentId(this.workplace.id).subscribe(cqcStatus => {
+        if (cqcStatus != null) {
+          this.cqcStatusRequested = true;
+          this.requestedServiceName = cqcStatus.data.requestedService.name;
+          this.requestedServiceOtherName = cqcStatus.data.requestedService.other;
         }
       })
     );

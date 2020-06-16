@@ -37,7 +37,14 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
-
+  Services.findNameByID = function (id) {
+    return this.findOne({
+      where: {
+        id: id
+      },
+      attributes: ['name'],
+    });
+  };
   Services.associate = (models) => {
     Services.belongsToMany(models.establishment, {
       through: 'establishmentServices',

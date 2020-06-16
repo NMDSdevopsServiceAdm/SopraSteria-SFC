@@ -60,7 +60,7 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please select a main service.',
+            message: 'Select your main service',
           },
         ],
       },
@@ -134,15 +134,16 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
    * Then set boolean flag for ui to render the form
    */
   protected preFillForm(): void {
-    if (this.selectedMainService) {
+    if (this.selectedMainService && this.allServices.findIndex(s => s.id === this.selectedMainService.id) > -1) {
       this.form.get('workplaceService').patchValue(this.selectedMainService.id);
 
-      if (this.selectedMainService.other) {
+      if (this.selectedMainService.other && this.form.get(`otherWorkplaceService${this.selectedMainService.id}`)) {
         this.form.get(`otherWorkplaceService${this.selectedMainService.id}`).patchValue(this.selectedMainService.other);
       }
     }
 
     this.renderForm = true;
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected getSelectedWorkPlaceService(): Service {
