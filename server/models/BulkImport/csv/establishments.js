@@ -1329,12 +1329,16 @@ class Establishment {
     // Is the establishment a local authority?
     const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
 
-    // Is the establishment only shared lives (code 19)?
-    const notSharedLivesOnly = this._mainService.id !== 19;
+
+    let notSharedLivesOnly = false;
+    let notHeadOfficeOnly = false;
+    if (this._mainService && this._mainService.id) {
+      // Is the establishment only shared lives (code 19)?
+     notSharedLivesOnly = this._mainService.id !== 19;
 
     // Is the establishment only head office services (code 16)?
-    const notHeadOfficeOnly = this._mainService.id !== 16;
-
+     notHeadOfficeOnly = this._mainService.id !== 16;
+    }
     if (this._totalPermTemp === employedWorkers + nonEmployedWorkers) {
       if (notHeadOfficeOnly) {
         if (employedWorkers === 0) {
