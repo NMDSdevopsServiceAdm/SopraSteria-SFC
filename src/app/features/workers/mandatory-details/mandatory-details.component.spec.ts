@@ -1,5 +1,4 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -144,5 +143,15 @@ fdescribe('MandatoryDetailsComponent', () => {
     const detailsButton = getByTestId('add-details-button');
     detailsButton.click();
     expect(fixture.componentInstance.onSubmit).toHaveBeenCalled();
+  });
+  it('should submit and move to next page when add details button clicked', async () => {
+    const {click, getByTestId, fixture} = await setup;
+
+    fixture.detectChanges();
+
+    spyOn(fixture.componentInstance, 'navigateToDashboard');
+    const allWOrkersButton = getByTestId('view-all-workers-link');
+    allWOrkersButton.click();
+    expect(fixture.componentInstance.navigateToDashboard).toHaveBeenCalled();
   });
 });
