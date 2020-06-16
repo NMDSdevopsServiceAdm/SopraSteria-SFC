@@ -39,8 +39,7 @@
 }
 
 .govuk-panel--light-blue {
-  background-color: rgb(86,148,202, 0.2);
-  padding: 15px;
+  background-color: rgba(govuk-colour('light-blue'), 0.2);
 }
 .govuk-panel--warning-prompt {
   @include govuk-font($size: 24, $weight: bold);
