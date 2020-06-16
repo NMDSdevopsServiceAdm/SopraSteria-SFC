@@ -59,7 +59,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
   protected init(): void {
     this.getJobs();
-    this.setPreviousRoute();
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'staff-record', 'total-staff'];
     this.prefill();
 
     this.subscriptions.add(
@@ -92,12 +92,6 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       vacancies: this.formBuilder.array([]),
       vacanciesKnown: null,
     });
-  }
-
-  private setPreviousRoute(): void {
-    this.previous = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
-      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
 
   private getJobs(): void {
