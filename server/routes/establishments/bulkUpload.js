@@ -2294,7 +2294,7 @@ const completePost = async (req, res) => {
 };
 
 const determineMaxQuals = async (primaryEstablishmentId) => {
-  await dbModels.sequelize.query(
+  return dbModels.sequelize.query(
     'select cqc.maxQualifications(:givenPrimaryEstablishment);',
     {
       replacements: {
@@ -2388,13 +2388,14 @@ const downloadGet = async (req, res) => {
 
   if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
     try {
+      const maxQuals = await determineMaxQuals(primaryEstablishmentId);
       await exportToCsv(
         NEWLINE,
         // only restore those subs that this primary establishment owns
         await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true),
         primaryEstablishmentId,
         downloadType,
-        determineMaxQuals(primaryEstablishmentId),
+        maxQuals,
         responseSend
       );
 
