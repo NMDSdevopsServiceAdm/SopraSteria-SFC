@@ -15,7 +15,7 @@ import { render, within } from '@testing-library/angular';
 
 import { MandatoryDetailsComponent } from './mandatory-details.component';
 
-fdescribe('MandatoryDetailsComponent', () => {
+describe('MandatoryDetailsComponent', () => {
     const sinon = require('sinon');
     const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
