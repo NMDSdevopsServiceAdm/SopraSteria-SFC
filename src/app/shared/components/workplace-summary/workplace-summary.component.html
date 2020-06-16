@@ -78,7 +78,7 @@
     <dt class="govuk-summary-list__key" [ngClass]="{'govuk-!-padding-left-3': cqcStatusRequested}">
       Main service
     </dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value" data-testid="main-service-name">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.mainService">
         {{ cqcStatusRequested ? requestedServiceName : workplace.mainService?.name }}
         <ng-container *ngIf="(cqcStatusRequested && requestedServiceOtherName)
@@ -86,7 +86,7 @@
         </ng-container>
       </app-summary-record-value>
     </dd>
-    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [ngClass]="{'govuk-!-padding-right-3': cqcStatusRequested}">
+    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [ngClass]="{'govuk-!-padding-right-3': cqcStatusRequested}" data-testid="main-service-change-or-pending">
       <a *ngIf="!cqcStatusRequested; else cqcPending" [routerLink]="['/workplace', workplace.uid, 'main-service-cqc']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.mainService">
           Provide information
