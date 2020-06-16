@@ -42,46 +42,8 @@ const workerBuilder = build('Worker', {
   },
 });
 
-fdescribe('MandatoryDetailsComponent', () => {
-  let component: RenderResult<MandatoryDetailsComponent>;
 const establishment = establishmentBuilder() as Establishment;
 
-  it('should create', async () => {
-    component = await render(MandatoryDetailsComponent, {
-      imports: [
-        RouterTestingModule, HttpClientTestingModule
-      ],
-      schemas: [
-        CUSTOM_ELEMENTS_SCHEMA
-      ],
-      providers: [{
-        provide: WindowRef,
-        useValue: WindowRef
-      },
-      {
-        provide: FormBuilder,
-        useValue: FormBuilder
-      },
-      {
-        provide: ActivatedRoute,
-        useValue: {
-          snapshot: {
-            url: [{ path: 1 }, { path: 2 }]
-          },
-          parent: {
-            snapshot: {
-              data: {
-                establishment
-              }
-            },
-          }
-        }
-      }]
-    });
-
-    expect(component).toBeTruthy();
-  });
-  it('should show Worker information in summary list', async () => {
 const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
   can: sinon.stub().returns(true),
 });
