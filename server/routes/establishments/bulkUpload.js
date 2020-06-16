@@ -2341,7 +2341,11 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
             responseSend(NEWLINE + WorkerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
           } else if (thisWorker.training) { // or for this Worker's training records
             thisWorker.training.forEach(thisTrainingRecord => {
-              responseSend(NEWLINE + TrainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord), 'training');
+              responseSend(NEWLINE + TrainingCsvValidator.toCSV(
+                thisEstablishment.key,
+                thisWorker.localIdentifier ? thisWorker.localIdentifier.replace(/\s/g, '') : '',
+                thisTrainingRecord),
+              'training');
             });
           }
         });
