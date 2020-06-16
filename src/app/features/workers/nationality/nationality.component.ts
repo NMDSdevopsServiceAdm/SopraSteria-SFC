@@ -84,6 +84,10 @@ export class NationalityComponent extends QuestionComponent {
   generateUpdateProps() {
     const { nationalityName, nationalityKnown } = this.form.controls;
 
+    if (this.worker && nationalityKnown.value === 'British') {
+      this.worker.britishCitizenship = null;
+    }
+
     return nationalityKnown.value
       ? {
           nationality: {

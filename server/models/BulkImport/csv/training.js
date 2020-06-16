@@ -303,8 +303,9 @@ class Training {
   }
 
   _validateCategory () {
-    const myCategory = parseInt(this._currentLine.CATEGORY);
-    if (Number.isNaN(myCategory) || !BUDI.trainingCaterogy(BUDI.TO_ASC, this._currentLine.CATEGORY)) {
+    const myCategory = parseInt(this._currentLine.CATEGORY, 10);
+
+    if (Number.isNaN(myCategory) || BUDI.trainingCategory(BUDI.TO_ASC, myCategory) === null) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -322,38 +323,42 @@ class Training {
   }
 
   _validateAccredited () {
-    const myAccredited = parseInt(this._currentLine.ACCREDITED);
-    const ALLOWED_VALUES = [0, 1, 999];
-    if (Number.isNaN(myAccredited) || !ALLOWED_VALUES.includes(myAccredited)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Training.ACCREDITED_ERROR,
-        errType: 'ACCREDITED_ERROR',
-        error: 'ACCREDITED is invalid',
-        source: this._currentLine.ACCREDITED
-      });
-      return false;
-    } else {
-      switch (myAccredited) {
-        case 0:
-          this._accredited = 'No';
-          break;
-        case 1:
-          this._accredited = 'Yes';
-          break;
-        case 999:
-          this._accredited = 'Don\'t know';
-          break;
+    if (this._currentLine.ACCREDITED) {
+      const myAccredited = parseInt(this._currentLine.ACCREDITED, 10);
+      const ALLOWED_VALUES = [0, 1, 999];
+      if (Number.isNaN(myAccredited) || !ALLOWED_VALUES.includes(myAccredited)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Training.ACCREDITED_ERROR,
+          errType: 'ACCREDITED_ERROR',
+          error: 'ACCREDITED is invalid',
+          source: this._currentLine.ACCREDITED
+        });
+        return false;
+      } else {
+        switch (myAccredited) {
+          case 0:
+            this._accredited = 'No';
+            break;
+          case 1:
+            this._accredited = 'Yes';
+            break;
+          case 999:
+            this._accredited = 'Don\'t know';
+            break;
+        }
+        return true;
       }
+    } else {
       return true;
     }
   }
 
   _transformTrainingCategory () {
     if (this._category) {
-      const mappedCategory = BUDI.trainingCaterogy(BUDI.TO_ASC, this._category);
+      const mappedCategory = BUDI.trainingCategory(BUDI.TO_ASC, this._category);
       if (mappedCategory === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -528,7 +533,7 @@ class Training {
     columns.push(csvQuote(establishmentId));
     columns.push(csvQuote(workerId));
 
-    columns.push(BUDI.trainingCaterogy(BUDI.FROM_ASC, entity.category.id));
+    columns.push(BUDI.trainingCategory(BUDI.FROM_ASC, entity.category.id));
     columns.push(entity.title ? csvQuote(entity.title) : '');
 
     columns.push(convertIso8601ToUkDate(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
@@ -551,7 +556,7 @@ class Training {
 
     return columns.join(',');
   }
-  
+
   toCSV(establishmentId, workerId, entity) {
     return Training.toCSV(establishmentId, workerId, entity);
   }

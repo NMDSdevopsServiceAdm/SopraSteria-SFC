@@ -177,7 +177,19 @@ const getReportData = async (date, thisEstablishment) => {
   });
 
   if(reportEstablishments && Array.isArray(reportEstablishments)) {
-    reportData.establishments = reportEstablishments;
+    reportEstablishments.forEach(async est => {
+      const establishmentDetails = await models.establishment.findOne({
+        where: {
+            id: est.workplaceFk
+        },
+        attributes: ['id', 'ustatus']
+      });
+      if(establishmentDetails){
+        if(establishmentDetails.ustatus !== 'PENDING'){
+          reportData.establishments.push(est);
+        }
+      }
+    });
   }
 
   // now grab the workers and format the report data

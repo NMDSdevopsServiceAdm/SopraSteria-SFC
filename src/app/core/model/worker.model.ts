@@ -3,13 +3,18 @@ import { JobRole } from './job.model';
 import { WDFValue } from './wdf.model';
 
 export interface Worker {
+  trainingAlert?: number;
   uid?: string;
+  ustatus?: string;
   nameOrId: string;
   contract: Contracts;
   mainJob: JobRole;
   localIdentifier: string;
   approvedMentalHealthWorker?: string;
-  otherJobs?: JobRole[];
+  otherJobs?: {
+    value: string;
+    jobs: JobRole[];
+  };
   mainJobStartDate?: string;
   nationalInsuranceNumber?: string;
   dateOfBirth?: string;
@@ -83,6 +88,12 @@ export interface Worker {
   wdf?: WorkerWdfRecord;
   wdfEligible: boolean;
   jobRole?: string;
+  trainingCount: number;
+  trainingLastUpdated?: string;
+  expiredTrainingCount: number;
+  expiringTrainingCount: number;
+  missingMandatoryTrainingCount: number;
+  qualificationCount: number;
 }
 
 export interface WorkerPay {
@@ -125,4 +136,9 @@ export interface WorkersResponse {
 
 export interface WorkerEditResponse {
   uid: string;
+}
+
+export enum SelectRecordTypes {
+  Training = 'Training course',
+  Qualification = 'Qualification',
 }

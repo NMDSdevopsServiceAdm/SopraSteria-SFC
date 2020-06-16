@@ -269,16 +269,15 @@ class Training extends EntityValidator {
         if (document.title) {
             // validate title
             const MAX_LENGTH=120;
-            const MIN_LENGTH=3;
-            if (document.title.length < MIN_LENGTH ||
+            if (
                 document.title.length > MAX_LENGTH) {
                     this._validations.push(new ValidationMessage(
                         ValidationMessage.ERROR,
                         110,
-                        `validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`,
+                        `validation: MAX(${MAX_LENGTH}) length`,
                         ['Title']
                     ));
-                    this._log(Training.LOG_ERROR, `title failed validation: title failed validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`);
+                    this._log(Training.LOG_ERROR, `title failed validation: title failed validation: MAX(${MAX_LENGTH}) length`);
                 returnStatus = false;
             }
 
@@ -479,7 +478,7 @@ class Training extends EntityValidator {
                         updatedBy: savedBy.toLowerCase(),
                         source: bulkUploaded ? 'Bulk' : 'Online',
                         categoryFk: this._category.id,
-                        title: this._title,
+                        title: this.title,
                         accredited: this._accredited,
                         completed: this._completed,
                         expires: this._expires,
@@ -531,7 +530,7 @@ class Training extends EntityValidator {
                     // note - if the training was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         categoryFk: this._category.id,
-                        title: this._title,
+                        title: this.title,
                         accredited: this._accredited,
                         completed: this._completed,
                         expires: this._expires,
@@ -714,11 +713,13 @@ class Training extends EntityValidator {
     };
 
     // returns a set of Workers' Training Records based on given filter criteria (all if no filters defined) - restricted to the given Worker
-    static async fetch(establishmentId, workerId, filters=null) {
+    static async fetch(establishmentId, workerId, categoryId = null, filters=null) {
         if (filters) throw new Error("Filters not implemented");
 
         const allTrainingRecords = [];
-        const fetchResults = await models.workerTraining.findAll({
+        let fetchResults;
+        if(categoryId === null){
+          fetchResults = await models.workerTraining.findAll({
             include: [
                 {
                     model: models.worker,
@@ -738,7 +739,33 @@ class Training extends EntityValidator {
                 //['completed', 'DESC'],
                 ['updated', 'DESC']
             ]
+         });
+        }else{
+          fetchResults = await models.workerTraining.findAll({
+            include: [
+                {
+                    model: models.worker,
+                    as: 'worker',
+                    attributes: ['id', 'uid'],
+                    where: {
+                        uid: workerId
+                    }
+                },
+                {
+                    model: models.workerTrainingCategories,
+                    as: 'category',
+                    attributes: ['id', 'category']
+                }
+            ],
+            order: [
+                //['completed', 'DESC'],
+                ['updated', 'DESC']
+            ],
+            where:{
+              categoryFk: categoryId
+            }
         });
+        }
 
         if (fetchResults) {
             fetchResults.forEach(thisRecord => {
@@ -756,7 +783,7 @@ class Training extends EntityValidator {
                     created:  thisRecord.created.toISOString(),
                     updated: thisRecord.updated.toISOString(),
                     updatedBy: thisRecord.updatedBy,
-                })
+                });
             });
         }
 
@@ -807,6 +834,94 @@ class Training extends EntityValidator {
         if (this.category === null) allExistAndValid = false
 
         return allExistAndValid;
+    }
+
+    /**
+     * Function used to get all training expired and expiring soon counts for a worker id
+     * @param {number} establishmentId
+     * @param {object} workerRecords
+     * @return {array} Modified worker records while adding training counts & missing mandatory training counts for each worker object
+     */
+    static async getAllRequiredCounts(establishmentId, workerRecords, categoryId = null){
+      if(workerRecords.length !== 0){
+        let currentDate = moment();
+        for(let i = 0; i < workerRecords.length; i++){
+          const worker = workerRecords[i];
+          const allTrainingRecords = await Training.fetch(establishmentId, worker.uid, categoryId);
+          worker.trainingCount = 0;
+          worker.expiredTrainingCount = 0;
+          worker.expiringTrainingCount = 0;
+          worker.missingMandatoryTrainingCount = 0;
+          if(allTrainingRecords && allTrainingRecords.training.length > 0){
+            //calculate all expired and expiring soon training count
+            let trainings = allTrainingRecords.training;
+            worker.trainingCount = trainings.length;
+            for(let j = 0; j < trainings.length; j++){
+              const training = allTrainingRecords.training[j];
+              if (worker.trainingLastUpdated === undefined
+                || worker.trainingLastUpdated < training.updated) {
+                worker.trainingLastUpdated = training.updated
+              }
+              if(training.expires){
+                let expiringDate = moment(training.expires);
+                let daysDiffrence = expiringDate.diff(currentDate, 'days');
+                if(daysDiffrence < 0){
+                  worker.expiredTrainingCount++;
+                }else if(daysDiffrence >= 0 && daysDiffrence <= 90){
+                  worker.expiringTrainingCount++;
+                }
+              }
+            }
+          }else{
+            if(categoryId !== null){
+              worker.missingMandatoryTrainingCount++;
+            }
+          }
+          if(categoryId === null){
+            worker.missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, worker, allTrainingRecords.training);
+          }
+        }
+        return workerRecords;
+      }
+    }
+
+    /**
+     * Function used to get all missing mandatory training counts for a worker id
+     * @param {number} establishmentId
+     * @param {object} workerRecords
+     * @param {array} trainingLists
+     * @return {array} Modified worker records while adding training counts & missing mandatory training counts for each worker object
+     */
+    static async getAllMissingMandatoryTrainingCounts(establishmentId, workerRecords, trainingLists){
+        // check for missing mandatory training
+        const fetchMandatoryTrainingResults = await models.MandatoryTraining.findAll({
+            where: {
+                establishmentFK: establishmentId,
+                jobFK: (workerRecords.mainJob.jobId)? workerRecords.mainJob.jobId: workerRecords.mainJob.id
+            }
+        });
+        let mandatoryTrainingLength = fetchMandatoryTrainingResults ? fetchMandatoryTrainingResults.length: 0;
+        let trainingLength = trainingLists.length;
+        if(mandatoryTrainingLength > 0){
+            if(trainingLength === 0){
+                return mandatoryTrainingLength;
+            }
+            let missingMandatoryTrainingCount = 0;
+            for(let i = 0; i < mandatoryTrainingLength; i++){
+              let foundMandatoryTraining = false;
+              for(let j = 0; j < trainingLength; j++){
+                if(fetchMandatoryTrainingResults[i].trainingCategoryFK === trainingLists[j].trainingCategory.id){
+                  foundMandatoryTraining = true;
+                }
+              }
+              if(!foundMandatoryTraining){
+                missingMandatoryTrainingCount++;
+              }
+            }
+            return missingMandatoryTrainingCount;
+        }else{
+            return 0;
+        }
     }
 };
 

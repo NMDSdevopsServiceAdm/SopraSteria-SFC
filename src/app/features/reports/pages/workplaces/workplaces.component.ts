@@ -5,6 +5,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { DataPermissions, GetWorkplacesResponse, Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { filter, orderBy } from 'lodash';
@@ -21,22 +22,25 @@ export class WorkplacesComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public primaryWorkplace: Establishment;
   public now: Date = new Date();
+  public canDownloadWdfReport: boolean;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
     private establishmentService: EstablishmentService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.REPORTS);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.canDownloadWdfReport = this.permissionsService.can(this.primaryWorkplace.uid, 'canDownloadWdfReport');
 
     this.subscriptions.add(
       this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
         if (workplaces.subsidaries) {
-          this.workplaces = workplaces.subsidaries.establishments;
+          this.workplaces = workplaces.subsidaries.establishments.filter(item => item.ustatus !== 'PENDING');
 
           if (this.workplaces.length) {
             this.workplaces = filter(this.workplaces, this.exclusionCheck);

@@ -38,6 +38,7 @@ import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
+import { MoveWorkerDialogComponent } from './move-worker-dialog/move-worker-dialog.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
@@ -47,15 +48,19 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level/
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
+import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
 import {
   SocialCareQualificationLevelComponent,
 } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
-import { QualificationsComponent } from './staff-record/qualifications/qualifications.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
-import { TrainingComponent } from './staff-record/training/training.component';
 import { TotalStaffComponent } from './total-staff/total-staff.component';
+import { QualificationsComponent } from './training-qualifications-record/qualifications/qualifications.component';
+import {
+  TrainingAndQualificationsRecordComponent,
+} from './training-qualifications-record/training-and-qualifications-record.component';
+import { TrainingComponent } from './training-qualifications-record/training/training.component';
 import {
   WdfWorkerConfirmationDialogComponent,
 } from './wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
@@ -115,6 +120,9 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     YearArrivedUkComponent,
     WdfStaffSummaryComponent,
     WdfWorkerConfirmationDialogComponent,
+    TrainingAndQualificationsRecordComponent,
+    SelectRecordTypeComponent,
+    MoveWorkerDialogComponent,
   ],
   providers: [DialogService, WorkerResolver],
   entryComponents: [
@@ -122,6 +130,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DeleteTrainingDialogComponent,
     DeleteWorkerDialogComponent,
     WdfWorkerConfirmationDialogComponent,
+    MoveWorkerDialogComponent,
   ],
 })
 export class WorkersModule {}

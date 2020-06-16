@@ -7,6 +7,7 @@ import { AuthService } from '@core/services/auth.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
+import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -25,6 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private idleService: IdleService,
     private authService: AuthService,
+    private userService: UserService,
     private establishmentService: EstablishmentService,
     private router: Router,
     private formBuilder: FormBuilder,
@@ -77,11 +79,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
       {
         name: 401,
         message:
-          'Please Note<br>' +
-          'Your registration request is awaiting approval (contact support)<br>' +
-          'Or<br>' +
-          'Your username / password is incorrect ' +
-          '(please consider resetting your password now, 5 incorrect attempts will lock your account)',
+          'Your username/password is incorrect',
       },
       {
         name: 404,
@@ -91,6 +89,14 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
         name: 503,
         message: 'Unable to authenticate user.',
       },
+      {
+        name: 409,
+        message: 'There is a problem with your account, please contact support on 0113 241 0969',
+      },
+      {
+        name: 405,
+        message: 'Your registration request is awaiting approval, please contact support on 0113 241 0969',
+      }
     ];
   }
 
@@ -111,24 +117,39 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private login(): void {
     const { username, password } = this.form.value;
-
+    console.log('Logging in as ' + username);
+    console.log('Testing we have access to localstorage');
+    localStorage.setItem('test', 'test');
+    console.log(localStorage.getItem('test'));
     this.subscriptions.add(
       this.authService.authenticate(username, password).subscribe(
         response => {
+          console.log('We successfully recieved a reply to the login call');
+          console.log(response);
           if (response.body.establishment && response.body.establishment.uid) {
+            console.log('We have the establishment information');
             // update the establishment service state with the given establishment id
             this.establishmentService.establishmentId = response.body.establishment.uid;
           }
-
+          if (response.body.role === 'Admin') {
+            this.userService.agreedUpdatedTerms = true; // skip term & condition check for admin user
+          } else {
+            this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
+          }
+          console.log('Checking if the user has previously logged in');
           if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
+            console.log('They have so send them to where they were at: ' + this.authService.redirectLocation);
             this.router.navigateByUrl(this.authService.redirectLocation);
           } else {
+            console.log("They haven't, lets take them to the dashboard");
             this.router.navigate(['/dashboard']);
           }
-
+          console.log('Clearing the previous user information, as someone else has logged in');
           this.authService.clearPreviousUser();
 
-          if (response.body.migratedUserFirstLogon) {
+          console.log('Check to make sure they have accepted the terms and conditions');
+          if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
+            console.log("They haven't accepted the terms, sending them to the welcome screen");
             this.router.navigate(['/migrated-user-terms-and-conditions']);
           }
         },

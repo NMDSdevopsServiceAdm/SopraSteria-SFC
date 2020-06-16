@@ -26,9 +26,12 @@ import {
 } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
+import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
+import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StartComponent } from './start/start.component';
@@ -39,6 +42,10 @@ import {
   UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
+import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { ViewAllMandatoryTrainingComponent } from './view-all-mandatory-trainings/view-all-mandatory-training.component';
+import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 
 const routes: Routes = [
   {
@@ -46,6 +53,10 @@ const routes: Routes = [
     component: ViewMyWorkplacesComponent,
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
+  },
+  {
+    path: 'view-all-mandatory-training',
+    component: ViewAllMandatoryTrainingComponent,
   },
   {
     path: 'start-screen',
@@ -64,7 +75,7 @@ const routes: Routes = [
         component: ViewWorkplaceComponent,
         data: {
           permissions: ['canViewEstablishment'],
-          title: 'View Workplace'
+          title: 'View Workplace',
         },
       },
       {
@@ -77,6 +88,44 @@ const routes: Routes = [
         },
       },
       {
+        path: 'regulated-by-cqc',
+        component: RegulatedByCqcComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Regulated by CQC',
+        },
+      },
+
+      {
+        path: 'select-workplace',
+        component: SelectWorkplaceComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Select Workplace',
+        },
+      },
+      {
+        path: 'workplace-not-found',
+        component: WorkplaceNotFoundComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Workplace Not Found',
+        },
+      },
+      {
+        path: 'update-workplace-details',
+        component: EnterWorkplaceAddressComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Update Workplace Details',
+        },
+      },
+
+      {
         path: 'type-of-employer',
         component: TypeOfEmployerComponent,
         canActivate: [RoleGuard],
@@ -88,6 +137,24 @@ const routes: Routes = [
       {
         path: 'main-service',
         component: SelectMainServiceComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Main Service',
+        },
+      },
+      {
+        path: 'main-service-cqc',
+        component: SelectMainServiceCqcComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Main Service',
+        },
+      },
+      {
+        path: 'main-service-cqc-confirm',
+        component: SelectMainServiceCqcConfirmComponent,
         canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin, Roles.Edit],
@@ -275,6 +342,15 @@ const routes: Routes = [
         data: {
           permissions: ['canViewWorker'],
           title: 'Staff Records',
+        },
+      },
+      {
+        path: 'training-and-qualifications-record',
+        loadChildren: '@features/workers/workers.module#WorkersModule',
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canViewWorker'],
+          title: 'Training and qualifications record',
         },
       },
     ],

@@ -30,7 +30,8 @@ var postcodes = require('./server/routes/postcodes');
 var services = require('./server/routes/services');
 var registration = require('./server/routes/registration');
 var establishments = require('./server/routes/establishments');
-var ownershipRequest = require('./server/routes/ownershipRequest')
+var ownershipRequest = require('./server/routes/ownershipRequest');
+var linkParent = require('./server/routes/parentSubLinking');
 var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
@@ -46,6 +47,7 @@ var serviceUsers = require('./server/routes/serviceUsers');
 var workingTrainingCategories = require('./server/routes/workerTrainingCategories');
 var nurseSpecialism = require('./server/routes/nurseSpecialism');
 var availableQualifications = require('./server/routes/availableQualifications');
+var approvals = require('./server/routes/approvals');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -179,7 +181,7 @@ app.use('/api/jobs', [refCacheMiddleware.refcache, jobs]);
 app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveReasons]);
 app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
-app.use('/api/trainingCategories', [refCacheMiddleware.refcache, workingTrainingCategories]);
+app.use('/api/trainingCategories', workingTrainingCategories);
 app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
 app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
 
@@ -191,12 +193,14 @@ app.use('/api/registration', [cacheMiddleware.nocache, registration]);
 app.use('/api/login', [cacheMiddleware.nocache, login]);
 app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
 app.use('/api/ownershipRequest', [cacheMiddleware.nocache,ownershipRequest]);
+app.use('/api/parentLinkingDetails', [cacheMiddleware.nocache,linkParent]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
+app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

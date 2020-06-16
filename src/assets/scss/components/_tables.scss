@@ -4,7 +4,7 @@ $error_row_padding: $govuk-gutter-half;
 
 .govuk-table__row {
   .govuk-table__cell:first-of-type {
-    padding-left: $error_row_padding / 2;
+    padding-left: 0;
   }
 
   .govuk-table__cell:last-of-type {
@@ -29,7 +29,7 @@ $error_row_padding: $govuk-gutter-half;
 }
 
 .govuk-error-table__row--highlight {
-  background: rgba(govuk-colour('blue'), 0.15);
+  background: rgba(govuk-colour('light-blue'), 0.2);
 }
 
 .govuk-error-table__cell {
@@ -79,4 +79,7 @@ $error_row_padding: $govuk-gutter-half;
     background: $shiraz;
     height: 100%;
   }
+}
+.govuk-table-custom-width {
+  width: 20% !important;
 }

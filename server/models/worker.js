@@ -44,6 +44,26 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"EstablishmentFK"'
     },
+    EstablishmentFkSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EstablishmentFkSavedAt"'
+    },
+    EstablishmentFkChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EstablishmentFkChangedAt"'
+    },
+    EstablishmentFkSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EstablishmentFkSavedBy"'
+    },
+    EstablishmentFkChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EstablishmentFkChangedBy"'
+    },
     lastWdfEligibility: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -992,6 +1012,12 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'workerFk',
       sourceKey: 'id',
       as: 'auditEvents',
+      onDelete: 'CASCADE'
+    });
+    Worker.hasMany(models.workerTraining, {
+      foreignKey: 'workerFk',
+      sourceKey: 'id',
+      as: 'workerTraining',
       onDelete: 'CASCADE'
     });
     Worker.belongsTo(models.ethnicity, {

@@ -29,9 +29,27 @@
             Registrations
           </a>
         </li>
+        <li class="govuk-tabs__list-item">
+          <a
+            class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'parent-requests'"
+            [routerLink]="['/parent-requests']"
+          >
+            Parent Requests
+          </a>
+        </li>
+        <li class="govuk-tabs__list-item">
+          <a
+            class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'cqc-status-changes'"
+            [routerLink]="['/cqc-status-changes']"
+          >
+            CQC Changes
+          </a>
+        </li>
       </ul>
 
-      <section class="govuk-tabs__panel has-border" *ngIf="form.type !== 'registrations'">
+      <section class="govuk-tabs__panel has-border" *ngIf="form.type !== 'registrations' && form.type !== 'parent-requests' && form.type !== 'cqc-status-changes' ">
         <form (ngSubmit)="onSubmit()" novalidate id="server-error">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -155,14 +173,17 @@
             <th class="govuk-table__header" scope="col">Security Question</th>
             <th class="govuk-table__header" scope="col">Security Answer</th>
             <th class="govuk-table__header" scope="col">Parent ID</th>
+            <th class="govuk-table__header" scope="col">Locked</th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
-          <tr class="govuk-table__row" *ngFor="let item of results">
+          <tr class="govuk-table__row" *ngFor="let item of results; index as index">
             <td class="govuk-table__cell">{{ item.username }}</td>
             <td class="govuk-table__cell">{{ item.name }}</td>
             <td class="govuk-table__cell">
-              <a (click)="setEsblishmentId(item.establishment.uid, $event)" href="#">{{ item.establishment.name }}</a>
+              <a (click)="setEsblishmentId(item.establishment.uid, item.username, null, $event)" href="#">{{
+                item.establishment.name
+              }}</a>
             </td>
             <td class="govuk-table__cell">{{ item.establishment.nmdsId }}</td>
             <td class="govuk-table__cell">{{ item.establishment.postcode }}</td>
@@ -172,6 +193,9 @@
               {{
                 item.establishment.parent && item.establishment.parent.nmdsId ? item.establishment.parent.nmdsId : ''
               }}
+            </td>
+            <td class="govuk-table__cell">
+              <a (click)="unlockUser(item.username, index, $event)" href="#" *ngIf="item.isLocked">Unlock</a>
             </td>
           </tr>
         </tbody>
@@ -195,7 +219,7 @@
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row" *ngFor="let item of results">
             <td class="govuk-table__cell">
-              <a (click)="setEsblishmentId(item.uid, $event)" href="#">{{ item.name }}</a>
+              <a (click)="setEsblishmentId(item.uid, item.username, item.nmdsId, $event)" href="#">{{ item.name }}</a>
             </td>
             <td class="govuk-table__cell">{{ item.nmdsId }}</td>
             <td class="govuk-table__cell">{{ item.postcode }}</td>
@@ -211,109 +235,8 @@
       </table>
     </div>
 
-    <div *ngIf="form.type === 'registrations'">
-      <h1 class="govuk-heading-xl">
-        Registrations
-      </h1>
-      <div *ngFor="let registration of registrations; let i = index">
-        <h2 class="govuk-heading-l">Registration from {{ registration.establishment.name }}</h2>
-        <table class="govuk-table" *ngIf="registrations && registrations.length">
-          <tbody class="govuk-table__body">
-            <tr class="govuk-table__row">
-              <th class="govuk-table__cell">Created</th>
-              <td class="govuk-table__cell">
-                {{ registration.created }}
-              </td>
-              <th class="govuk-table__cell">Username</th>
-              <td class="govuk-table__cell">
-                {{ registration.username }}
-              </td>
-            </tr>
-            <tr class="govuk-table__row">
-              <th class="govuk-table__cell">Name</th>
-              <td class="govuk-table__cell" colspan="3">
-                {{ registration.name }}
-              </td>
-            </tr>
-            <tr class="govuk-table__row">
-              <th class="govuk-table__cell">Email</th>
-              <td class="govuk-table__cell">
-                <a href="mailto:{{ registration.email }}">{{ registration.email }}</a>
-              </td>
-              <th class="govuk-table__cell">Phone number</th>
-              <td class="govuk-table__cell">
-                {{ registration.phone }}
-              </td>
-            </tr>
-            <tr class="govuk-table__row">
-              <th class="govuk-table__cell">Security question</th>
-              <td class="govuk-table__cell">
-                {{ registration.securityQuestion }}
-              </td>
-              <th class="govuk-table__cell">Security question answer</th>
-              <td class="govuk-table__cell">
-                {{ registration.securityQuestionAnswer }}
-              </td>
-            </tr>
-            <tr class="govuk-table__row">
-              <th class="govuk-table__cell">Regulated</th>
-              <td class="govuk-table__cell">
-                {{ registration.establishment.isRegulated }}
-              </td>
-              <th class="govuk-table__cell">Provider ID</th>
-              <td class="govuk-table__cell">
-                {{ registration.establishment.provId }}
-              </td>
-            </tr>
-            <tr class="govuk-table__row">
-              <th class="govuk-table__cell">Workplace ID</th>
-              <td class="govuk-table__cell">
-                {{ registration.establishment.nmdsId }}
-              </td>
-              <th class="govuk-table__cell">Location ID</th>
-              <td class="govuk-table__cell">
-                {{ registration.establishment.locationId }}
-              </td>
-            </tr>
-            <tr class="govuk-table__row">
-              <th class="govuk-table__cell">Address</th>
-              <td class="govuk-table__cell" colspan="3">
-                {{ registration.establishment.name }}<br />
-                {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
-                {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
-                {{ registration.establishment.address3 }}<br />
-                {{ registration.establishment.town }}<br />
-                {{ registration.establishment.postcode }}
-              </td>
-            </tr>
-            <tr class="govuk-table__row">
-              <th class="govuk-table__cell">County</th>
-              <td class="govuk-table__cell">
-                {{ registration.establishment.county }}
-              </td>
-              <th class="govuk-table__cell">Main Service</th>
-              <td class="govuk-table__cell">
-                {{ registration.establishment.mainService }}
-              </td>
-            </tr>
-            <tr class="govuk-table__row">
-              <td class="gov-uk-table__cell" colspan="4">
-                <div class="govuk-button-group">
-                  <button
-                    class="govuk-button govuk-button--warning govuk-util__float-right"
-                    (click)="approveUser(registration.username, false, i)"
-                  >
-                    Reject
-                  </button>
-                  <button class="govuk-button" (click)="approveUser(registration.username, true, i)">
-                    Approve
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <app-registrations *ngIf="form.type === 'registrations'"></app-registrations>
+    <app-parent-requests *ngIf="form.type === 'parent-requests'"></app-parent-requests>
+    <app-cqc-status-changes *ngIf="form.type === 'cqc-status-changes'"></app-cqc-status-changes>
   </div>
 </div>

@@ -12,6 +12,7 @@ import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { AlertService } from '@core/services/alert.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { filter, findIndex } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -38,13 +39,15 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     other: 'There were # errors in the file',
   };
 
+
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
     private i18nPluralPipe: I18nPluralPipe,
     private router: Router,
     private alertService: AlertService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private errorSummaryService: ErrorSummaryService,
   ) {}
 
   ngOnInit() {
@@ -184,7 +187,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
           }
         },
         response => {
-          this.bulkUploadService.serverError$.next(response.error.message);
+          this.onValidateError(response);
         }
       );
   }
@@ -208,6 +211,14 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       .subscribe(signedURL => {
         window.open(signedURL);
       });
+  }
+
+  /**
+   * Encode the filename so we have valid HTML
+   * @param url string
+   */
+  public encodeUrl(url: string): string {
+    return encodeURI(url);
   }
 
   /**
@@ -259,7 +270,17 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
    */
   private onValidateError(response: HttpErrorResponse): void {
     const error: ValidatedFilesResponse = response.error;
-    console.log(error);
+     //handle 503 with custom message to prevent service unavailable redirection
+    if (response.status === 503) {
+      const customeMessage = [{
+        name: response.status,
+        message: `Bulk upload is unable to continue processing your data due to an issue with your files.
+          Please check and try again or contact Support on 0113 2410969.`,
+      }];
+      this.bulkUploadService.serverError$.next(this.errorSummaryService.getServerErrorMessage(response.status, customeMessage));
+    } else {
+      console.log(error);
+    }
   }
 
   get hasWarnings() {

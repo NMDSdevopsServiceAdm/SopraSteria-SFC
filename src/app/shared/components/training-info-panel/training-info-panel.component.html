@@ -1,0 +1,23 @@
+<dl class="govuk-list--definition">
+  <ng-container *ngIf="totalExpiredTraining > 0">
+    <dt>Expired</dt>
+    <dd>
+      <img src="/assets/images/flag-red.svg" alt="Expired" />
+      {{ totalExpiredTraining }}
+    </dd>
+  </ng-container>
+  <ng-container *ngIf="totalMissingMandatoryTraining > 0">
+    <dt>Missing</dt>
+    <dd>
+      <img src="/assets/images/flag-red.svg" alt="Missing" />
+      {{ totalMissingMandatoryTraining }}
+    </dd>
+  </ng-container>
+  <ng-container *ngIf="totalExpiringTraining > 0">
+    <dt>Expiring soon</dt>
+    <dd>
+      <img src="/assets/images/flag-orange.svg" alt="Expiring soon" />
+      {{ totalExpiringTraining }}
+    </dd>
+  </ng-container>
+</dl>

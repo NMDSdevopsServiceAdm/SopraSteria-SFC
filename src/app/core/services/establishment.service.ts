@@ -1,11 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import {
+  allMandatoryTrainingCategories,
   CancelOwnerShip,
   ChangeOwner,
   Establishment,
   LocalIdentifiersRequest,
   LocalIdentifiersResponse,
+  mandatoryTraining,
   setPermission,
   UpdateJobsRequest,
 } from '@core/model/establishment.model';
@@ -43,11 +45,25 @@ interface EmployerTypeRequest {
 }
 
 interface MainServiceRequest {
+  cqc: boolean,
   mainService: {
     id: number;
     name: string;
     other?: string;
   };
+}
+interface CQCLocationChangeRequest {
+  addressLine1: string;
+  addressLine2?: string;
+  addressLine3?: string;
+  county: string;
+  isRegulated?: boolean;
+  locationId?: string;
+  locationName: string;
+  mainService?: string;
+  mainServiceOther?: string;
+  postalCode: string;
+  townCity: string;
 }
 
 @Injectable({
@@ -59,7 +75,8 @@ export class EstablishmentService {
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
-
+  public isMandatoryTrainingView = new BehaviorSubject<boolean>(false);
+  public mainServiceCQC: boolean = null;
   constructor(private http: HttpClient) {}
 
   private _establishmentId: string = null;
@@ -83,7 +100,7 @@ export class EstablishmentService {
     return this.getEstablishment(this.establishmentId.toString()).pipe(
       tap(establishment => {
         this.setState(establishment);
-      })
+      }),
     );
   }
 
@@ -209,8 +226,12 @@ export class EstablishmentService {
   public updateLocalIdentifiers(request: LocalIdentifiersRequest): Observable<LocalIdentifiersResponse> {
     return this.http.put<LocalIdentifiersResponse>(
       `/api/establishment/${this.establishmentId}/localIdentifier`,
-      request
+      request,
     );
+  }
+
+  updateLocationDetails(establishmentId, data: CQCLocationChangeRequest): Observable<any> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/locationDetails`, data);
   }
 
   public deleteWorkplace(workplaceUid: string): Observable<any> {
@@ -231,11 +252,36 @@ export class EstablishmentService {
   public cancelOwnership(establishmentId, ownershipChangeId, data: CancelOwnerShip): Observable<Establishment> {
     return this.http.post<Establishment>(
       `/api/establishment/${establishmentId}/ownershipChange/${ownershipChangeId}`,
-      data
+      data,
     );
   }
 
   public setDataPermission(establishmentId, data: setPermission): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/dataPermissions`, data);
+  }
+  //get all parent with Post code
+  public getAllParentWithPostCode(): Observable<any> {
+    return this.http.get<any>(`/api/parentLinkingDetails/parents`);
+  }
+
+  //Send data for link to parent
+  public setRequestToParentForLink(establishmentId, data: setPermission): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent`, data);
+  }
+  //Send data for link to parent
+  public cancelRequestToParentForLink(establishmentId, data): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent/cancel`, data);
+  }
+  //Send data for de-link to parent
+  public removeParentAssociation(establishmentId, data): Observable<Establishment> {
+    return this.http.put<Establishment>(`/api/establishment/${establishmentId}/linkToParent/delink`, data);
+  }
+  //get all mandatory training
+  public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
+    return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
+  }
+  //update mandatory training
+  public updateMandatoryTraining(establishmentId, data: mandatoryTraining[]) {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/mandatoryTraining`, data);
   }
 }

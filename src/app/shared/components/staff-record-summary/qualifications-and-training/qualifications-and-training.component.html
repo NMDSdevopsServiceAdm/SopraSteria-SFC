@@ -1,26 +1,4 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half-from-desktop">
-    <h2 class="govuk-heading-m">Qualifications and training</h2>
-  </div>
-  <div *ngIf="showAddButtons && canEditWorker" class="govuk-grid-column-one-half-from-desktop govuk-util__align-right">
-    <a
-      class="govuk-button govuk-button--secondary govuk-!-margin-right-4"
-      [routerLink]="['../add-qualification']"
-      role="button"
-      draggable="false"
-    >
-      Add a qualification
-    </a>
-    <a class="govuk-button govuk-button--secondary" [routerLink]="['../add-training']" role="button" draggable="false">
-      Add training
-    </a>
-    <p class="govuk-caption-m">
-      Adding additional qualifications or training is optional.
-    </p>
-  </div>
-</div>
-
-<dl class="govuk-summary-list govuk-summary-list--top-border">
+<dl class="govuk-summary-list govuk-summary-list--no-top-border">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       Started or completed Care Certificate
@@ -52,7 +30,7 @@
     </dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.qualificationInSocialCare">
-        {{ worker.qualificationInSocialCare | closedEndedAnswer }}
+        {{ worker.qualificationInSocialCare || '-' | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -98,7 +76,7 @@
     </dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.otherQualification">
-        {{ worker.otherQualification | closedEndedAnswer }}
+        {{ worker.otherQualification || '-' | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -143,7 +121,7 @@
       Completing apprenticeship training
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.apprenticeshipTraining | closedEndedAnswer }}
+      {{ worker.apprenticeshipTraining || '-' | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a *ngIf="canEditWorker" [routerLink]="getRoutePath('apprenticeship-training')" (click)="setReturn()">

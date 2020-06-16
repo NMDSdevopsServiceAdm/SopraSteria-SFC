@@ -25,30 +25,150 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"Address1"'
     },
+    Address1SavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"Address1SavedAt"'
+    },
+    Address1ChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"Address1ChangedAt"'
+    },
+    Address1SavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Address1SavedBy"'
+    },
+    Address1ChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Address1ChangedBy"'
+    },
     address2: {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"Address2"'
+    },
+    Address2SavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"Address2SavedAt"'
+    },
+    Address2ChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"Address2ChangedAt"'
+    },
+    Address2SavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Address2SavedBy"'
+    },
+    Address2ChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Address2ChangedBy"'
     },
     address3: {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"Address3"'
     },
+    Address3SavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"Address3SavedAt"'
+    },
+    Address3ChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"Address3ChangedAt"'
+    },
+    Address3SavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Address3SavedBy"'
+    },
+    Address3ChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Address3ChangedBy"'
+    },
     town: {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"Town"'
+    },
+    TownSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"TownSavedAt"'
+    },
+    TownChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"TownChangedAt"'
+    },
+    TownSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"TownSavedBy"'
+    },
+    TownChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"TownChangedBy"'
     },
     county: {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"County"'
     },
+    CountySavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CountySavedAt"'
+    },
+    CountyChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CountyChangedAt"'
+    },
+    CountySavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CountySavedBy"'
+    },
+    CountyChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CountyChangedBy"'
+    },
     locationId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: '"LocationID"'
+    },
+    LocationIdSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocationIdSavedAt"'
+    },
+    LocationIdChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocationIdChangedAt"'
+    },
+    LocationIdSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocationIdSavedBy"'
+    },
+    LocationIdChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocationIdChangedBy"'
     },
     provId: {
       type: DataTypes.INTEGER,
@@ -60,10 +180,50 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"PostCode"'
     },
+    PostcodeSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"PostcodeSavedAt"'
+    },
+    PostcodeChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"PostcodeChangedAt"'
+    },
+    PostcodeSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"PostcodeSavedBy"'
+    },
+    PostcodeChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"PostcodeChangedBy"'
+    },
     isRegulated: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       field: '"IsRegulated"'
+    },
+    IsRegulatedSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"IsRegulatedSavedAt"'
+    },
+    IsRegulatedChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"IsRegulatedChangedAt"'
+    },
+    IsRegulatedSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"IsRegulatedSavedBy"'
+    },
+    IsRegulatedChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"IsRegulatedChangedBy"'
     },
     overallWdfEligibility: {
       type: DataTypes.DATE,
@@ -475,6 +635,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"DataOwnershipRequested"'
     },
+    linkToParentRequested: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LinkToParentRequested"'
+    },
     reasonsForLeaving: {
       type: DataTypes.TEXT,
       allowNull: true,
@@ -561,6 +726,52 @@ module.exports = function(sequelize, DataTypes) {
       onDelete: 'CASCADE'
     });
   };
+
+  Establishment.findWithWorkersAndTraining = function (establishmentId) {
+    return this.findByPk(establishmentId, {
+      attributes: ['id'],
+      include: {
+        model: sequelize.models.worker,
+        attributes: ['id', 'uid', 'NameOrIdValue'],
+        as: 'workers',
+        where: {
+          archived: false,
+        },
+        include: [
+          {
+            model: sequelize.models.job,
+            as: 'mainJob',
+            attributes: ['id', 'title'],
+            required: false,
+          },
+          {
+            model: sequelize.models.workerTraining,
+            as: 'workerTraining',
+            attributes: ['id', 'uid', 'title', 'expires', 'categoryFk'],
+          },
+        ],
+      },
+    });
+  }
+
+  Establishment.findbyId = function(id) {
+    return this.findOne({
+      where: {
+        id: id,
+        archived: false
+      },
+      attributes: [
+        'id',
+        'ustatus',
+        'locationId',
+        'provId',
+        'isRegulated',
+        'isParent',
+        'parentId',
+        'NameValue',
+        'nmdsId']
+    });
+  }
 
   return Establishment;
 };

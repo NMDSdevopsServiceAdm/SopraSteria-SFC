@@ -8,11 +8,8 @@
       </h1>
     </legend>
     <div class="govuk-form-group">
-      <label class="govuk-label" for="reason">
-        Select a reason
-      </label>
       <select class="govuk-select" [formControlName]="'reason'" id="reason" name="reason">
-        <option [ngValue]="null">Select Reason</option>
+        <option [ngValue]="null">Select a reason</option>
         <option *ngFor="let reason of reasons" [value]="reason.id">
           {{ reason.reason }}
         </option>
@@ -40,9 +37,8 @@
       </div>
     </div>
   </fieldset>
-
   <button type="submit" class="govuk-button">Delete record</button>
-  <button type="button" class="govuk-button govuk-button--link govuk-util__float-right" (click)="close()">
-    Cancel
-  </button>
+  <a href="#" class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2" (click)="close($event)"
+    >Cancel</a
+  >
 </form>

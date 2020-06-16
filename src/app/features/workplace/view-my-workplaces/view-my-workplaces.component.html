@@ -18,8 +18,16 @@
   </div>
 </div>
 
-<ng-container *ngIf="workplaces.length; else noWorkPlaces">
-  <ul class="govuk-list">
+<ul class="govuk-list">
+  <ng-container *ngIf="pendingWorkplaces.length">
+    <li class="govuk-util__list-record govuk-!-margin-bottom-0 govuk-panel--light-blue" *ngFor="let workplaces of pendingWorkplaces">
+      <div>
+        <span class="govuk-!-padding-left-3">Your application for {{workplaces.name}} is being reviewed by Skills for Care.</span>
+        <span class="govuk-util__float-right govuk-!-padding-right-3">Pending</span>
+      </div>
+    </li>
+  </ng-container>
+  <ng-container *ngIf="workplaces.length">
     <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngFor="let workplace of workplaces">
       <app-workplace-info-panel
         [workplace]="workplace"
@@ -27,9 +35,6 @@
       >
       </app-workplace-info-panel>
     </li>
-  </ul>
-</ng-container>
-
-<ng-template #noWorkPlaces>
-  <p>There are no workplaces.</p>
-</ng-template>
+  </ng-container>
+</ul>
+<p *ngIf="pendingWorkplaces.length === 0 && workplaces.length === 0">There are no workplaces.</p>

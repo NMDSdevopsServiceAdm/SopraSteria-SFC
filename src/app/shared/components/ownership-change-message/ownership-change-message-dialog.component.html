@@ -1,0 +1,25 @@
+<div class="govuk-form-group">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <h1 id="dialogHeading" class="govuk-fieldset__heading">
+        To remove the link to your parent organisation, you must own your data.
+      </h1>
+    </legend>
+  </fieldset>
+</div>
+
+<a
+  href="#"
+  (click)="ownershipChangeMessage($event)"
+  class="govuk-button govuk-button--link govuk-util__float-left"
+  draggable="false"
+  role="button"
+>
+  Send a request to change ownership of data
+</a>
+<a
+  href="#"
+  class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+  (click)="close($event, null)"
+  >Cancel</a
+>

@@ -220,7 +220,7 @@ class BUDI {
 
     if (direction === BUDI.TO_ASC) {
       const found = fixedMapping.find(thisTrainingCategory => thisTrainingCategory.BUDI === originalCode);
-      return found ? { type: found.ASC } : null;
+      return found ? found.ASC : null;
     }
 
     const found = fixedMapping.find(thisType => thisType.ASC === originalCode);
@@ -270,7 +270,7 @@ class BUDI {
 
   // maps training roles
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static trainingCaterogy (direction, originalCode) {
+  static trainingCategory (direction, originalCode) {
     const fixedMapping = [
       { ASC: 8, BUDI: 1 },
       { ASC: 10, BUDI: 2 },
@@ -431,7 +431,7 @@ class BUDI {
       { ASC: 74, BUDI: 250 },
       { ASC: 74, BUDI: 250 },
       { ASC: 74, BUDI: 250 },
-      { ASC: 57, BUDI: 252 },
+      { ASC: 57, BUDI: 262 },
       { ASC: 75, BUDI: 266 },
       { ASC: 77, BUDI: 268 },
       { ASC: 76, BUDI: 270 },
@@ -592,10 +592,10 @@ class BUDI {
       { ASC: 172, BUDI: 882 },
       { ASC: 223, BUDI: 887 },
       { ASC: 224, BUDI: 894 },
-      { ASC: 112, BUDI: 895 },
+      { ASC: 112, BUDI: 418 },
       { ASC: 60, BUDI: 534 },
       { ASC: 60, BUDI: 535 },
-      { ASC: 109, BUDI: 897 },
+      { ASC: 109, BUDI: 995 },
       { ASC: 60, BUDI: 531 }
     ];
 
@@ -856,9 +856,9 @@ class BUDI {
       { ASC: 201, BUDI: 882 },
       { ASC: 255, BUDI: 887 },
       { ASC: 256, BUDI: 894 },
-      { ASC: 261, BUDI: 895 },
+      { ASC: 261, BUDI: 418 },
       { ASC: 262, BUDI: 535 },
-      { ASC: 263, BUDI: 897 },
+      { ASC: 263, BUDI: 995 },
       { ASC: 264, BUDI: 534 },
       { ASC: 265, BUDI: 531 }
     ];
@@ -995,8 +995,8 @@ class BUDI {
       { BUDI: 62, ASC: 86 },
       { BUDI: 63, ASC: 87 },
       { BUDI: 64, ASC: 88 },
-      { BUDI: 67, ASC: 21 },
-      { BUDI: 68, ASC: 22 },
+      { BUDI: 67, ASC: 66 },
+      { BUDI: 68, ASC: 67 },
       { BUDI: 72, ASC: 23 },
       { BUDI: 73, ASC: 32 },
       { BUDI: 74, ASC: 19 },
@@ -1012,10 +1012,10 @@ class BUDI {
       { BUDI: 89, ASC: 69 },
       { BUDI: 90, ASC: 12 },
       { BUDI: 91, ASC: 18 },
-      { BUDI: 92, ASC: 130 },
+      { BUDI: 92, ASC: 13 },
       { BUDI: 93, ASC: 62 },
-      { BUDI: 94, ASC: 66 },
-      { BUDI: 95, ASC: 67 },
+      { BUDI: 94, ASC: 21 },
+      { BUDI: 95, ASC: 22 },
       { BUDI: 96, ASC: 11 },
       { BUDI: 98, ASC: 59 },
       { BUDI: 99, ASC: 6 },
@@ -1035,7 +1035,6 @@ class BUDI {
       { BUDI: 114, ASC: 135 },
       { BUDI: 115, ASC: 90 },
       { BUDI: 116, ASC: 91 },
-      { BUDI: 92, ASC: 13 },
       { BUDI: 119, ASC: 33 },
       { BUDI: 121, ASC: 34 },
       { BUDI: 136, ASC: 35 },
@@ -1072,6 +1071,7 @@ class BUDI {
       { BUDI: 301, ASC: 127 },
       { BUDI: 305, ASC: 128 },
       { BUDI: 307, ASC: 129 },
+      { BUDI: 309, ASC: 130 },
       { BUDI: 312, ASC: 131 },
       { BUDI: 313, ASC: 132 },
       { BUDI: 311, ASC: 133 }

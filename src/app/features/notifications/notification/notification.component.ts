@@ -2,17 +2,18 @@ import { Overlay } from '@angular/cdk/overlay';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { RejectRequestDialogComponent } from '@shared/components/reject-request-dialog/reject-request-dialog.component';
 import { Subscription } from 'rxjs';
 
 const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
+const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
 
 @Component({
   selector: 'app-notification',
@@ -29,6 +30,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   public ownerShipRequestedFrom: string;
   public ownerShipRequestedTo: string;
   public isSubWorkplace: boolean;
+
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -70,7 +72,6 @@ export class NotificationComponent implements OnInit, OnDestroy {
     });
     this.setNotificationViewed(this.notificationUid);
   }
-
   public approveRequest() {
     if (this.notification) {
       if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
@@ -122,7 +123,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
       );
     }
   }
-  protected setNotificationViewed(notificationUid) {
+  private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
         resp => {
@@ -150,15 +151,42 @@ export class NotificationComponent implements OnInit, OnDestroy {
       const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
       dialog.afterClosed.subscribe(requestRejected => {
         if (requestRejected) {
-          this.router.navigate(['/dashboard']);
-          this.alertService.addAlert({
-            type: 'success',
-            message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.requestorName} `,
-          });
+          this.rejectPermissionRequest(requestRejected);
         }
       });
     }
+  }
+
+  private rejectPermissionRequest(requestRejected) {
+    let requestParameter = {
+      ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
+      approvalStatus: 'DENIED',
+      rejectionReason: requestRejected.rejectionReason,
+      type: OWNERSHIP_REJECTED,
+      exsistingNotificationUid: this.notification.notificationUid,
+    };
+    this.subscriptions.add(
+      this.notificationsService
+        .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
+        .subscribe(
+          request => {
+            if (request) {
+              this.notificationsService.getAllNotifications().subscribe(notify => {
+                this.notificationsService.notifications$.next(notify);
+              });
+              this.router.navigate(['/dashboard']);
+              this.alertService.addAlert({
+                type: 'success',
+                message: `Your decision to transfer ownership of data has been sent to
+                  ${this.notification.typeContent.requestorName} `,
+              });
+            }
+          },
+          error => {
+            console.log('Could not update notification.');
+          }
+        )
+    );
   }
 
   ngOnDestroy(): void {

@@ -21,15 +21,15 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
   public form: FormGroup;
   public formControlsMap: any[] = [
     {
-      label: 'Your full name',
+      label: 'Full name',
       name: 'fullname',
     },
     {
-      label: 'Your job title',
+      label: 'Job title',
       name: 'jobTitle',
     },
     {
-      label: 'Your email address',
+      label: 'Email address',
       name: 'email',
     },
     {
@@ -44,7 +44,7 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   ngOnInit() {
@@ -83,11 +83,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter your full name.',
+            message: 'Please enter full name.',
           },
           {
             name: 'maxlength',
-            message: 'Your fullname must be no longer than 120 characters.',
+            message: 'Full name must be no longer than 120 characters.',
           },
         ],
       },
@@ -96,11 +96,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter your job title.',
+            message: 'Please enter job title.',
           },
           {
             name: 'maxlength',
-            message: 'Your job title must be no longer than 120 characters.',
+            message: 'Job title must be no longer than 120 characters.',
           },
         ],
       },
@@ -109,11 +109,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter your email address.',
+            message: 'Please enter email address.',
           },
           {
             name: 'maxlength',
-            message: 'Your email address must be no longer than 120 characters.',
+            message: 'Email address must be no longer than 120 characters.',
           },
           {
             name: 'pattern',
@@ -126,7 +126,7 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter your contact phone number.',
+            message: 'Please enter contact phone number.',
           },
           {
             name: 'pattern',

@@ -37,7 +37,7 @@ let ALL_PERMISSIONS = [
     code: 'canChangePermissionsForSubsidiary',
     description: 'change permissions for subsidiary views',
     role: ['Edit'],
-    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
     isAdmin: false,
   },
@@ -56,6 +56,14 @@ let ALL_PERMISSIONS = [
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
     isAdmin: false,
+  },
+  {
+    code: 'canDeleteAllEstablishments',
+    description: 'delete an establishment',
+    role: [],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: true,
   },
   {
     code: 'canDeleteUser',
@@ -241,6 +249,38 @@ let ALL_PERMISSIONS = [
     subOwnedByParentAccessBySub: [],
     isAdmin: true,
   },
+ {
+    code: 'canLinkToParent',
+    description: 'Link to any parent',
+    role: ['Edit'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: false,
+  },
+  {
+    code: 'canBecomeAParent',
+    description: 'Become a parent',
+    role: ['Edit'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: false,
+  },
+  {
+    code: 'canRemoveParentAssociation',
+    description: 'Remove Parent Association',
+    role: ['Edit'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace', 'None'],
+    isAdmin: false,
+  },
+  {
+    code: 'canDownloadWdfReport',
+    description: 'download wdf report',
+    role: ['Edit','Read'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: false,
+  }
 ];
 
 class PermissionCache {
@@ -255,11 +295,10 @@ class PermissionCache {
     const estabType = this.getEstablishmentType(requestData.establishment);
     let permissions = [];
     const isLoggedInAsParent = requestData.isParent;
-
     if (requestData.role === 'Admin') {
       // console.log("0")
       permissions = this.filterForAdminRole();
-    } else if (estabType == "Standalone") {
+    } else if (estabType === "Standalone") {
       // console.log("1")
       permissions = this.filterByRole(this.getRoleEnum(requestData.role));
     } else if (!isLoggedInAsParent && estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) === 'Workplace') {
@@ -285,6 +324,10 @@ class PermissionCache {
       } else{
         permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
       }
+    }
+
+    if(estabType !== 'Subsidiary') {
+      permissions = permissions.filter(perm => perm.code !== 'canDeleteEstablishment');
     }
 
     const theirPermissions = permissions.map(thisPerm => {

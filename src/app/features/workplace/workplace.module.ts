@@ -19,11 +19,13 @@ import {
   DataSharingWithLocalAuthoritiesComponent,
 } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
-import { DeleteWorkplaceDialogComponent } from './delete-workplace-dialog/delete-workplace-dialog.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
+import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
+import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StartersComponent } from './starters/starters.component';
@@ -40,11 +42,11 @@ import {
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
-import {
-  WdfWorkplaceConfirmationDialogComponent,
-} from './wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
+import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
@@ -56,7 +58,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     CreateUserAccountComponent,
     DataSharingComponent,
     DataSharingWithLocalAuthoritiesComponent,
-    DeleteWorkplaceDialogComponent,
     EditWorkplaceComponent,
     LeaversComponent,
     OtherServicesComponent,
@@ -75,16 +76,19 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ViewMyWorkplacesComponent,
     ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
-    WdfWorkplaceConfirmationDialogComponent,
     SelectMainServiceComponent,
     UserAccountEditDetailsComponent,
+    RegulatedByCqcComponent,
+    SelectWorkplaceComponent,
+    WorkplaceNotFoundComponent,
+    EnterWorkplaceAddressComponent,
+    SelectMainServiceCqcComponent,
+    SelectMainServiceCqcConfirmComponent
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [
-    DeleteWorkplaceDialogComponent,
     UserAccountChangePrimaryDialogComponent,
     UserAccountDeleteDialogComponent,
-    WdfWorkplaceConfirmationDialogComponent,
   ],
 })
 export class WorkplaceModule {}

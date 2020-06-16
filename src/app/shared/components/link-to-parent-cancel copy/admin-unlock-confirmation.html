@@ -1,0 +1,22 @@
+<app-error-summary *ngIf="serverError" [serverError]="serverError"> </app-error-summary>
+<div class="govuk-form-group">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <h1 id="dialogHeading" class="govuk-fieldset__heading">
+        Are you sure you want to unlock {{data.username}}'s account?
+      </h1>
+    </legend>
+  </fieldset>
+</div>
+<p>
+  <strong>They will be able to login again with 1 more attempt before being locked again.</strong>
+</p>
+
+<button type="button" (click)="closeDialogWindow(null)" class="govuk-button">Close</button>
+<button
+  type="button"
+  (click)="unlockUser(data)"
+  class="govuk-button govuk-button--warning govuk-util__float-right"
+>
+  Unlock account
+</button>

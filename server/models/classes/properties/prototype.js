@@ -4,6 +4,7 @@ class PropertyPrototype {
         this._property = null;
         this._name = name;
         this._notSet = true;
+        this._allowNull = false;
     }
 
     // the encapsulated property
@@ -22,6 +23,11 @@ class PropertyPrototype {
     get modified() {
         return this._modified;
     }
+
+    get allowNull() {
+      return this._allowNull;
+  }
+
     reset() {
         this._modified = false;
     }
@@ -69,7 +75,7 @@ class PropertyPrototype {
 
     // returns true if the property is valid; otherwise false
     get valid() {
-        if (this._notSet || this._property !== null) {
+        if (this._notSet || (this._property !== null || this._allowNull)) {
             return true;
         } else {
             return false;

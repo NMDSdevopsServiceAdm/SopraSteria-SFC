@@ -3,13 +3,14 @@ const hasProp = (obj, prop) =>
   Object.prototype.hasOwnProperty.bind(obj)(prop);
 
 const BUDI = require('../BUDI').BUDI;
+const models = require('../../index');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
 const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
-const permanantContractStatusId = 1;
-const notHeadOfficeOrCqcRegulated = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,/* 16, (16 = Head office service code, which should be excluded) */ 17, 18];
+const employedContractStatusIds = [1, 2];
+const cqcRegulatedServiceCodes = [24, 25, 20, 22, 21, 23, 19, 27, 28, 26, 29, 30, 32, 31, 33, 34];
 
 const csvQuote = toCsv => {
   if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
@@ -19,7 +20,7 @@ const csvQuote = toCsv => {
   }
 };
 
-function updateWorkerTotals(totals, worker) {
+function updateWorkerTotals (totals, worker) {
   const allRoles = worker.otherJobIds;
   if (worker.mainJobRoleId !== null) {
     allRoles.unshift(worker.mainJobRoleId);
@@ -33,10 +34,10 @@ function updateWorkerTotals(totals, worker) {
   }
 
   // Is the worker on a permanant contract? Any workers that are not permanant are considered temporary for validation purposes
-  if (worker.contractTypeId === permanantContractStatusId) {
-    totals.permanantWorkers++;
+  if (employedContractStatusIds.includes(worker.contractTypeId)) {
+    totals.employedWorkers++;
   } else {
-    totals.temporaryWorkers++;
+    totals.nonEmployedWorkers++;
   }
 }
 
@@ -91,6 +92,7 @@ class Establishment {
     this._reasonsForLeaving = null;
 
     this._id = null;
+    this._ignore = false;
 
     // console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   }
@@ -148,10 +150,10 @@ class Establishment {
   static get REASONS_FOR_LEAVING_WARNING () { return 2360; }
 
   get id () {
-    if(this._id === null) {
+    if (this._id === null) {
       const est = this._allCurrentEstablishments.find(currentEstablishment => currentEstablishment.key === this._key);
 
-      if(typeof est !== 'undefined') {
+      if (typeof est !== 'undefined') {
         this._id = est._id;
       }
     }
@@ -456,18 +458,26 @@ class Establishment {
     }
   }
 
-  _validateAddress () {
+  async _validateAddress () {
     const myAddress1 = this._currentLine.ADDRESS1;
     const myAddress2 = this._currentLine.ADDRESS2;
     const myAddress3 = this._currentLine.ADDRESS3;
     const myTown = this._currentLine.POSTTOWN;
     const myPostcode = this._currentLine.POSTCODE;
+    let ignorePostcode = false;
 
     // TODO - if town is empty, match against PAF
-    // TODO - validate postcode against PAF
 
     // adddress 1 is mandatory and no more than 40 characters
     const MAX_LENGTH = 40;
+    const postcodeExists = await models.pcodedata.findAll({
+      where: {
+        postcode: myPostcode
+      },
+      order: [
+        ['uprn', 'ASC']
+      ]
+    });
 
     const localValidationErrors = [];
     if (!myAddress1 || myAddress1.length === 0) {
@@ -521,7 +531,6 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
     }
-
     // TODO - registration/establishment APIs do not validate postcode (relies on the frontend - this must be fixed)
     const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
     const POSTCODE_MAX_LENGTH = 10;
@@ -552,6 +561,26 @@ class Establishment {
         source: myPostcode,
         name: this._currentLine.LOCALESTID
       });
+    } else if (this._status === 'NEW' && !postcodeExists.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ADDRESS_ERROR,
+        errType: 'ADDRESS_ERROR',
+        error: 'The Postcode for this workplace cannot be found in our database and must be registered manually.',
+        source: myPostcode,
+        name: this._currentLine.LOCALESTID
+      });
+      this._ignore = true;
+    } else if (this._status === 'UPDATE' && !postcodeExists.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: Establishment.ADDRESS_ERROR,
+        warnType: 'ADDRESS_ERROR',
+        warning: 'The POSTCODE cannot be found in our database and will be ignored.',
+        source: myPostcode,
+        name: this._currentLine.LOCALESTID
+      });
+      ignorePostcode = true;
     }
 
     if (localValidationErrors.length > 0) {
@@ -564,7 +593,9 @@ class Establishment {
     this._address2 = myAddress2;
     this._address3 = myAddress3;
     this._town = myTown;
-    this._postcode = myPostcode;
+    if (!ignorePostcode) {
+      this._postcode = myPostcode;
+    }
 
     return true;
   }
@@ -762,6 +793,8 @@ class Establishment {
 
   _validateRegType () {
     const myRegType = parseInt(this._currentLine.REGTYPE, 10);
+    const dbServiceCode = BUDI.services(BUDI.TO_ASC, this._mainService);
+    const dbMainServiceCode = 16;
 
     if (!this._currentLine.REGTYPE || this._currentLine.REGTYPE.length === 0) {
       this._validationErrors.push({
@@ -783,7 +816,8 @@ class Establishment {
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if(myRegType === 2 && notHeadOfficeOrCqcRegulated.includes(this._mainService)) {
+    } else if(myRegType === 2 &&
+      !cqcRegulatedServiceCodes.includes(dbServiceCode) && (dbServiceCode !== dbMainServiceCode)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.REGTYPE_ERROR,
@@ -840,52 +874,76 @@ class Establishment {
     }
   }
 
-  _validateLocationID () {
-    // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
-    const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
-    const myLocationID = this._currentLine.LOCATIONID;
+  async _validateLocationID () {
+    try {
+      // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
+      const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
+      const myLocationID = this._currentLine.LOCATIONID;
 
-    // do not use
-    const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
-
-    if (this._regType === 2) {
-      // ignore location i
-      if (!mainServiceIsHeadOffice) {
-        if (!myLocationID || myLocationID.length === 0) {
+      // do not use
+      const mainServiceIsHeadOffice = parseInt(this._currentLine.MAINSERVICE, 10) === 72;
+      const locationExists = await models.establishment.findAll({
+        where: {
+          locationId: myLocationID
+        },
+        attributes: ['id', 'locationId']
+      });
+      let existingEstablishment = false;
+      await locationExists.map(async (establishment) => {
+        if (establishment.id === this._id) existingEstablishment = true;
+      });
+      if (this._regType === 2) {
+        // ignore location i
+        if (!mainServiceIsHeadOffice) {
+          if (!myLocationID || myLocationID.length === 0) {
+            this._validationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.LOCATION_ID_ERROR,
+              errType: 'LOCATION_ID_ERROR',
+              error: 'LOCATIONID has not been supplied',
+              source: myLocationID,
+              name: this._currentLine.LOCALESTID
+            });
+            return false;
+          } else if (!locationIDRegex.test(myLocationID)) {
+            this._validationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.LOCATION_ID_ERROR,
+              errType: 'LOCATION_ID_ERROR',
+              error: 'LOCATIONID is incorrectly formatted',
+              source: myLocationID,
+              name: this._currentLine.LOCALESTID
+            });
+            return false;
+          }
+        }
+        if (locationExists.length > 0 && !existingEstablishment) {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
             errCode: Establishment.LOCATION_ID_ERROR,
             errType: 'LOCATION_ID_ERROR',
-            error: 'LOCATIONID has not been supplied',
-            source: myLocationID,
-            name: this._currentLine.LOCALESTID
-          });
-          return false;
-        } else if (!locationIDRegex.test(myLocationID)) {
-          this._validationErrors.push({
-            lineNumber: this._lineNumber,
-            errCode: Establishment.LOCATION_ID_ERROR,
-            errType: 'LOCATION_ID_ERROR',
-            error: 'LOCATIONID is incorrectly formatted',
+            error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
             source: myLocationID,
             name: this._currentLine.LOCALESTID
           });
           return false;
         }
-      }
 
-      this._locationID = myLocationID;
-      return true;
-    } else if (this._regType === 0 && myLocationID && myLocationID.length > 0) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: Establishment.LOCATION_ID_WARNING,
-        warnType: 'LOCATION_ID_WARNING',
-        warning: 'LOCATIONID will be ignored as not required for this REGTYPE',
-        source: myLocationID,
-        name: this._currentLine.LOCALESTID
-      });
-      return false;
+        this._locationID = myLocationID;
+        return true;
+      } else if (this._regType === 0 && myLocationID && myLocationID.length > 0) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          warnCode: Establishment.LOCATION_ID_WARNING,
+          warnType: 'LOCATION_ID_WARNING',
+          warning: 'LOCATIONID will be ignored as not required for this REGTYPE',
+          source: myLocationID,
+          name: this._currentLine.LOCALESTID
+        });
+        return false;
+      }
+    } catch (error) {
+      throw new Error(error);
     }
   }
 
@@ -1009,6 +1067,7 @@ class Establishment {
 
     const localValidationErrors = [];
     if (this._currentLine.SERVICEUSERS && this._currentLine.SERVICEUSERS.length > 0) {
+      // which is not valid
       const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService, 10))) : true;
       if (!isValid) {
         localValidationErrors.push({
@@ -1135,7 +1194,7 @@ class Establishment {
 
     // all capacities and all utilisations are integers (if given)
     // capacities and utilisations must be less than 999999999
-    const MAX_CAP_UTIL = 999999999;
+    const MAX_CAP_UTIL = 9999;
 
     const areCapacitiesValid = listOfCapacities.every(thisCapacity =>
       thisCapacity === null || thisCapacity.length === 0 || (!Number.isNaN(parseInt(thisCapacity, 10)) && parseInt(thisCapacity, 10) < MAX_CAP_UTIL)
@@ -1199,22 +1258,22 @@ class Establishment {
     const myTotalPermTemp = parseInt(this._currentLine.TOTALPERMTEMP, 10);
     const HEAD_OFFICE_MAIN_SERVICE = 72;
 
-    if (Number.isNaN(myTotalPermTemp)) {
+    if (myTotalPermTemp.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
-        error: 'Total Permanent and Temporary (TOTALPERMTEMP) must be an whole number',
+        error: 'TOTALPERMTEMP is missing',
         source: this._currentLine.PERMCQC,
         name: this._currentLine.LOCALESTID
       });
       return false;
-    } else if (myTotalPermTemp < 0 || myTotalPermTemp > MAX_TOTAL) {
+    } else if (myTotalPermTemp < 0 || myTotalPermTemp > MAX_TOTAL || Number.isNaN(myTotalPermTemp)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
-        error: `Total Permanent and Temporary (TOTALPERMTEMP) must be 0 or more, but less than ${MAX_TOTAL}`,
+        error: `TOTALPERMTEMP must be a number from 0 to ${MAX_TOTAL} if this is correct call support on 0113 241 0969`,
         source: myTotalPermTemp,
         name: this._currentLine.LOCALESTID
       });
@@ -1235,11 +1294,23 @@ class Establishment {
     }
   }
 
-  _crossValidateTotalPermTemp(
+  getDuplicateLocationError() {
+    return {
+      origin: 'Establishments',
+      lineNumber: this._lineNumber,
+      errCode: Establishment.DUPLICATE_ERROR,
+      errType: 'DUPLICATE_ERROR',
+      error: 'LOCATIONID is not unique',
+      source: this._currentLine.LOCATIONID,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+
+  _crossValidateTotalPermTemp (
     csvEstablishmentSchemaErrors,
     {
-      permanantWorkers = 0,
-      temporaryWorkers = 0,
+      employedWorkers = 0,
+      nonEmployedWorkers = 0,
       directCareWorkers = 0,
       managerialProfessionalWorkers = 0
     }) {
@@ -1258,38 +1329,47 @@ class Establishment {
     // Is the establishment a local authority?
     const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
 
-    // All services already includes the main service
-    const allServices = this.allServices;
 
-    // Is the establishment only shared lives (code 19)?
-    const notSharedLivesOnly = allServices.findIndex(service => service !== 19) !== -1;
+    let notSharedLivesOnly = false;
+    let notHeadOfficeOnly = false;
+    if (this._mainService && this._mainService.id) {
+      // Is the establishment only shared lives (code 19)?
+     notSharedLivesOnly = this._mainService.id !== 19;
 
     // Is the establishment only head office services (code 16)?
-    const notHeadOfficeOnly = allServices.findIndex(service => service !== 16) !== -1;
-
-    if (this._totalPermTemp === permanantWorkers + temporaryWorkers) {
+     notHeadOfficeOnly = this._mainService.id !== 16;
+    }
+    if (this._totalPermTemp === employedWorkers + nonEmployedWorkers) {
       if (notHeadOfficeOnly) {
-        if (permanantWorkers + temporaryWorkers === 0) {
-          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-            warning: 'The number of employed staff is 0 please check your staff records',
-          }));
-        } else if (permanantWorkers < temporaryWorkers) {
-          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-            warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records',
-          }));
+        if (employedWorkers === 0) {
+          if(false) {
+            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+              warning: 'The number of employed staff is 0 please check your staff records'
+            }));
+          }
+        } else if (employedWorkers < nonEmployedWorkers) {
+          if(false) {
+            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+              warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records'
+            }));
+          }
         }
 
         if (isCQCRegulated && notSharedLivesOnly && directCareWorkers === 0) {
-          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-            warning: 'The number of direct care staff is 0 please check your staff records',
-          }));
+          if(false) {
+            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+              warning: 'The number of direct care staff is 0 please check your staff records'
+            }));
+          }
         }
       }
 
       if (isLocalAuthority && managerialProfessionalWorkers === 0) {
-        csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-          warning: 'The number of non-direct care staff is 0 please check your staff records',
-        }));
+        if(false) {
+          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+            warning: 'The number of non-direct care staff is 0 please check your staff records'
+          }));
+        }
       }
     }
   }
@@ -1301,10 +1381,23 @@ class Establishment {
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
     const leavers = this._currentLine.LEAVERS.split(';');
+    const myRegType = parseInt(this._currentLine.REGTYPE, 10);
+
+    const regManager = 4;
+    const isCQCRegulated = myRegType === 2;
+
+    const hasRegisteredManagerVacancy =() => {
+      let regManagerVacancies = 0;
+      allJobs.map((job, index) => {
+        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) regManagerVacancies++;
+      });
+      return regManagerVacancies > 0;
+    };
 
     // allJobs can only be empty, if TOTALPERMTEMP is 0
     if (!this._currentLine.ALLJOBROLES || this._currentLine.ALLJOBROLES.length === 0) {
       if(
+        false &&
         [].
         concat(vacancies).
         concat(starters).
@@ -1346,8 +1439,29 @@ class Establishment {
           name: this._currentLine.LOCALESTID
         });
       }
+      if (!isCQCRegulated && hasRegisteredManagerVacancy()) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          warnCode: Establishment.ALL_JOBS_WARNING,
+          warnType: 'ALL_JOBS_WARNING',
+          warning: 'Vacancy for Registered Manager should not be included for this service and will be ignored',
+          source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID
+        });
+      }
     }
 
+    // Need to add if they currently have a registered manager
+    // if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && isCQCRegulated && !hasRegisteredManagerVacancy()) {
+    //   localValidationErrors.push({
+    //     lineNumber: this._lineNumber,
+    //     errCode: Establishment.ALL_JOBS_ERROR,
+    //     errType: 'ALL_JOBS_ERROR',
+    //     error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
+    //     source: this._currentLine.ALLJOBROLES,
+    //     name: this._currentLine.LOCALESTID
+    //   });
+    // }
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
       return false;
@@ -1356,6 +1470,41 @@ class Establishment {
     this._alljobs = allJobs.map(thisJob => parseInt(thisJob, 10));
 
     return true;
+  }
+
+  _crossValidateAllJobRoles (
+    csvEstablishmentSchemaErrors,
+    registeredManager
+    )
+    {
+    const template = {
+      origin: 'Establishments',
+      lineNumber: this._lineNumber,
+      errCode: Establishment.ALL_JOBS_ERROR,
+      errType: 'ALL_JOBS_ERROR',
+      source: this._currentLine.ALLJOBROLES,
+      name: this._currentLine.LOCALESTID
+    };
+    const allJobs = this._currentLine.ALLJOBROLES.split(';');
+    const vacancies = this._currentLine.VACANCIES.split(';');
+    const myRegType = parseInt(this._currentLine.REGTYPE, 10);
+
+    const regManager = 4;
+    const isCQCRegulated = myRegType === 2;
+
+    const hasRegisteredManagerVacancy =() => {
+      let regManagerVacancies = 0;
+      allJobs.map((job, index) => {
+        if (parseInt(job, 10) === regManager && parseInt(vacancies[index], 10) > 0) regManagerVacancies++;
+      });
+      return regManagerVacancies > 0;
+    };
+
+    if(isCQCRegulated && !hasRegisteredManagerVacancy() && registeredManager === 0) {
+      csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
+        error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one'
+      }));
+    }
   }
 
   // includes perm, temp, pool, agency, student, voluntary and other counts
@@ -1456,6 +1605,13 @@ class Establishment {
     this._vacancies = vacancies.map(thisCount => parseInt(thisCount, 10));
     this._starters = starters.map(thisCount => parseInt(thisCount, 10));
     this._leavers = leavers.map(thisCount => parseInt(thisCount, 10));
+
+    // remove RM vacancy
+    if (this._allJobs && this._allJobs.length) {
+      this._allJobs.map((job, index) => {
+        if (job === regManager && this._vacancies[index] > 0) this._vacancies[index] = 0;
+      });
+    }
 
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
@@ -1622,9 +1778,9 @@ class Establishment {
         } else {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
-            errCode: Establishment.SERVICE_USERS_ERROR,
-            errType: 'SERVICE_USERS_ERROR',
-            error: `Service Users (SERVICEUSERS): ${thisService} is unknown`,
+            warnCode: Establishment.SERVICE_USERS_ERROR,
+            warnType: 'SERVICE_USERS_ERROR',
+            warning: `Entry for code ${thisService} in SERVICEUSERS will be ignored as this is invalid`,
             source: this._currentLine.SERVICEUSERS,
             name: this._currentLine.LOCALESTID
           });
@@ -1950,7 +2106,7 @@ class Establishment {
   }
 
   // returns true on success, false is any attribute of Establishment fails
-  validate () {
+  async validate () {
     let status = true;
 
     status = !this._validateLocalisedId() ? false : status;
@@ -1959,7 +2115,7 @@ class Establishment {
 
     // if the status is unchecked or deleted, then don't continue validation
     if (!STOP_VALIDATING_ON.includes(this._status)) {
-      status = !this._validateAddress() ? false : status;
+      status = await this._validateAddress() ? false : status;
       status = !this._validateEstablishmentType() ? false : status;
 
       status = !this._validateShareWithCQC() ? false : status;
@@ -1969,7 +2125,7 @@ class Establishment {
       status = !this._validateMainService() ? false : status;
       status = !this._validateRegType() ? false : status;
       status = !this._validateProvID() ? false : status;
-      status = !this._validateLocationID() ? false : status;
+      status = await this._validateLocationID() ? false : status;
 
       status = !this._validateAllServices() ? false : status;
       status = !this._validateServiceUsers() ? false : status;
@@ -1987,12 +2143,12 @@ class Establishment {
 
   // Adds items to csvEstablishmentSchemaErrors if validations that depend on
   // worker totals give errors or warnings
-  async crossValidate({
+  async crossValidate ({
     csvEstablishmentSchemaErrors,
     myWorkers,
     fetchMyEstablishmentsWorkers
   }) {
-    //if establishment isn't being added or updated then exit early
+    // if establishment isn't being added or updated then exit early
     if (!(['NEW', 'UPDATE'].includes(this._status))) {
       return;
     }
@@ -2000,9 +2156,11 @@ class Establishment {
     const totals = {
       directCareWorkers: 0,
       managerialProfessionalWorkers: 0,
-      permanantWorkers: 0,
-      temporaryWorkers: 0
+      employedWorkers: 0,
+      nonEmployedWorkers: 0
     };
+
+    let registeredManagers = 0;
 
     // ignoreDBWorkers is used as a hashmap of workers that are being modified
     // as part of this bulk upload process. It allows us to prevent a worker's
@@ -2011,7 +2169,6 @@ class Establishment {
     // the establishment
     // i.e. ignore the worker record that comes back from the database result set.
     const ignoreDBWorkers = Object.create(null);
-
     myWorkers.forEach(worker => {
       if (this.key === worker.establishmentKey) {
         switch (worker.status) {
@@ -2019,6 +2176,13 @@ class Establishment {
           case 'UPDATE': {
             /* update totals */
             updateWorkerTotals(totals, worker);
+            if (worker.mainJobRoleId === 4) {
+              registeredManagers++;
+            } else {
+              worker.otherJobIds.map(otherJobId => {
+                otherJobId === 4 ? registeredManagers++ : null;
+              });
+            }
           }
           /* fall through */
 
@@ -2030,6 +2194,7 @@ class Establishment {
     });
 
     // get all the other records that may already exist in the db but aren't being updated or deleted
+    // and check how many registered managers there is
     (await fetchMyEstablishmentsWorkers(this.id, this._key))
       .forEach(worker => {
         worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
@@ -2042,8 +2207,11 @@ class Establishment {
         }
       });
 
+
+
     // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
     this._crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, totals);
+    this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }
 
   // returns true on success, false is any attribute of Establishment fails

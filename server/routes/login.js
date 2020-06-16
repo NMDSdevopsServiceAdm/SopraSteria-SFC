@@ -38,10 +38,9 @@ router.post('/', async (req, res) => {
   try {
     let establishmentUser = givenEstablishmentUid === null ? await models.login.findOne({
       where: {
-        username: givenUsername,
-        isActive:true
+        username: givenUsername
       },
-      attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt'],
+      attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt', 'agreedUpdatedTerms', 'status'],
       include: [ {
         model: models.user,
         attributes: ['id', 'uid', 'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
@@ -61,10 +60,9 @@ router.post('/', async (req, res) => {
       // before returning error, check to see if this is a superadmin user with a given establishment UID, to be assumed as their "logged in session" primary establishment
       establishmentUser = await models.login.findOne({
         where: {
-          username: givenUsername,
-          isActive:true,
+          username: givenUsername
         },
-        attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt'],
+        attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt', 'agreedUpdatedTerms', 'status'],
         include: [ {
           model: models.user,
           attributes: ['id', 'uid',  'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
@@ -104,6 +102,23 @@ router.post('/', async (req, res) => {
       } else {
         console.error(`Failed to find user account associated with: ${givenUsername}`);
         return res.status(401).send({
+          message: 'Authentication failed.',
+        });
+      }
+    }
+
+    //check weather posted user is locked or pending
+    if(establishmentUser){
+      if(!establishmentUser.isActive && establishmentUser.status === 'Locked'){
+        //check for locked status, if locked then return with 409 error
+        console.error(`POST .../login failed: User status is locked`);
+        return res.status(409).send({
+          message: 'Authentication failed.',
+        });
+      } else if(!establishmentUser.isActive && establishmentUser.status === 'PENDING'){
+        //check for Pending status, if Pending then return with 403 error
+        console.error(`POST .../login failed: User status is pending`);
+        return res.status(405).send({
           message: 'Authentication failed.',
         });
       }
@@ -164,6 +179,7 @@ router.post('/', async (req, res) => {
           establishmentUser.user.establishment,
           givenUsername,
           new Date(date).toISOString(),
+          establishmentUser.agreedUpdatedTerms,
           {
             migratedUserFirstLogon,
             migratedUser
@@ -217,7 +233,8 @@ router.post('/', async (req, res) => {
           if (establishmentUser.invalidAttempt === (maxNumberOfFailedAttempts+1)) {
             // lock the account
             const loginUpdate = {
-              isActive: false
+              isActive: false,
+              status: 'Locked'
             };
             await establishmentUser.update(loginUpdate, {transaction: t});
 
@@ -237,9 +254,11 @@ router.post('/', async (req, res) => {
 
             const resetLink = `${req.protocol}://${req.get('host')}/api/registration/validateResetPassword?reset=${requestUuid}`;
 
-            // send email to recipient with the reset UUID
+            // send email to recipient with the reset UUID if user is not locked
             try {
-              await sendMail(establishmentUser.user.EmailValue, establishmentUser.user.FullNameValue, requestUuid);
+              if(establishmentUser.isActive && establishmentUser.status !== 'Locked'){
+                await sendMail(establishmentUser.user.EmailValue, establishmentUser.user.FullNameValue, requestUuid);
+              }
             } catch (err) {
               console.error(err);
             }

@@ -39,11 +39,12 @@ export class WorkerService {
   public addStaffRecordInProgress$ = new BehaviorSubject<boolean>(false);
   public alert$: Observable<Alert> = this._alert$.asObservable();
   public worker$ = this._worker$.asObservable();
-
+  public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
+  public tabChanged: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
 
@@ -68,7 +69,7 @@ export class WorkerService {
   }
 
   public hasJobRole(worker: Worker, id: number) {
-    return worker.mainJob.jobId === id || (worker.otherJobs && worker.otherJobs.some(j => j.jobId === id));
+    return worker.mainJob.jobId === id || (worker.otherJobs && worker.otherJobs.jobs.some(j => j.jobId === id));
   }
 
   setState(worker) {

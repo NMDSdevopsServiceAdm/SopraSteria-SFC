@@ -38,9 +38,15 @@
   }
 }
 
+.govuk-panel--light-blue {
+  background-color: rgba(govuk-colour('light-blue'), 0.2);
+}
 .govuk-panel--warning-prompt {
   @include govuk-font($size: 24, $weight: bold);
   padding: govuk-spacing(3);
   background-color: $govuk-error-colour;
   color: #fff;
+}
+.govuk-panel--gray {
+  background-color: govuk-colour('grey-3');
 }

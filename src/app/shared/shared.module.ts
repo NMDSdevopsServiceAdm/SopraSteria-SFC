@@ -1,13 +1,24 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { DialogService } from '@core/services/dialog.service';
+import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
+import { CqcConfirmationDialogComponent} from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import {
+  ViewAllMandatoryTrainingComponent,
+} from '@features/workplace/view-all-mandatory-trainings/view-all-mandatory-training.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
 import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
+import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-dialog/change-data-owner-dialog.component';
@@ -17,7 +28,17 @@ import { DetailsComponent } from './components/details/details.component';
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
+import {
+  LinkToParentCancelDialogComponent,
+} from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import {
+  LinkToParentRemoveDialogComponent,
+} from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { MessagesComponent } from './components/messages/messages.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
@@ -39,6 +60,17 @@ import { SummaryListComponent } from './components/summary-list/summary-list.com
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
+import {
+  TrainingAndQualificationsCategoriesComponent,
+} from './components/training-and-qualifications-categories/training-and-qualifications-categories.component';
+import {
+  TrainingAndQualificationsSummaryComponent,
+} from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
+import {
+  TrainingAndQualificationsTabComponent,
+} from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
+import { TainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
+import { TrainingLinkPanelComponent } from './components/trianing-link-panel/trianing-link-panel.component.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
@@ -50,12 +82,13 @@ import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
+import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,
@@ -68,6 +101,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     CharacterCountComponent,
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
+    SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
     EligibilityIconComponent,
@@ -94,6 +128,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SummaryRecordValueComponent,
     TabComponent,
     TabsComponent,
+    TrainingLinkPanelComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
     WdfConfirmationPanelComponent,
@@ -106,6 +141,19 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LongDatePipe,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
+    TrainingAndQualificationsCategoriesComponent,
+    TrainingAndQualificationsTabComponent,
+    TrainingAndQualificationsSummaryComponent,
+    TainingInfoPanelComponent,
+    LinkToParentDialogComponent,
+    LinkToParentCancelDialogComponent,
+    LinkToParentRemoveDialogComponent,
+    BecomeAParentDialogComponent,
+    OwnershipChangeMessageDialogComponent,
+    ViewAllMandatoryTrainingComponent,
+    DeleteWorkplaceDialogComponent,
+    ParentConfirmationDialogComponent,
+    CqcConfirmationDialogComponent
   ],
   exports: [
     AlertComponent,
@@ -118,6 +166,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     CharacterCountComponent,
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
+    SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
     EligibilityIconComponent,
@@ -152,15 +201,38 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkplaceSummaryComponent,
     WorkplaceTabComponent,
     OrderOtherPipe,
+    TrainingLinkPanelComponent,
     LongDatePipe,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
+    TrainingAndQualificationsCategoriesComponent,
+    TrainingAndQualificationsTabComponent,
+    TrainingAndQualificationsSummaryComponent,
+    TainingInfoPanelComponent,
+    LinkToParentDialogComponent,
+    LinkToParentCancelDialogComponent,
+    LinkToParentRemoveDialogComponent,
+    BecomeAParentDialogComponent,
+    OwnershipChangeMessageDialogComponent,
+    ViewAllMandatoryTrainingComponent,
+    DeleteWorkplaceDialogComponent,
+    ParentConfirmationDialogComponent,
+    CqcConfirmationDialogComponent
   ],
+  providers: [DialogService],
   entryComponents: [
+    DeleteWorkplaceDialogComponent,
     ChangeDataOwnerDialogComponent,
     CancelDataOwnerDialogComponent,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
+    LinkToParentDialogComponent,
+    LinkToParentCancelDialogComponent,
+    LinkToParentRemoveDialogComponent,
+    BecomeAParentDialogComponent,
+    OwnershipChangeMessageDialogComponent,
+    ParentConfirmationDialogComponent,
+    CqcConfirmationDialogComponent
   ],
 })
 export class SharedModule {}

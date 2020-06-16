@@ -1,0 +1,18 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1>
+      CQC ID. Workplace not found.
+    </h1>
+
+    <p>To continue, you can:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']">go back and try again</a></li>
+
+      <li><a [routerLink]="['/dashboard']" [fragment]="'workplace'">go to home</a></li>
+      <li>
+        contact the ASC-WDS Support Team on 0113 241 0969 or email us at
+        <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support@skillsforcare.org.uk</a>
+      </li>
+    </ul>
+  </div>
+</div>

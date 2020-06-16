@@ -1,0 +1,47 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            Select the type of record
+          </h1>
+        </legend>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
+          <span
+            *ngIf="submitted && form.get('selectRecordType').invalid"
+            id="selectRecordType-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('selectRecordType') }}
+          </span>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let selectRecordType of selectRecordTypes; let i = index">
+              <input
+                class="govuk-radios__input"
+                id="selectRecordType-{{ i }}"
+                name="selectRecordType"
+                [formControlName]="'selectRecordType'"
+                type="radio"
+                [value]="selectRecordType"
+              />
+              <label class="govuk-label govuk-radios__label" for="selectRecordType-{{ i }}">
+                {{ selectRecordType | SelectRecordTypesName }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <button class="govuk-button" type="submit" (click)="addRecord()">Continue</button>
+    </form>
+  </div>
+</div>

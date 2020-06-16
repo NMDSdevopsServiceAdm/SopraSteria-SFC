@@ -6,6 +6,7 @@ const JobHelpers = require('./jobHelper');
 exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype {
     constructor() {
         super('Leavers');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -14,7 +15,7 @@ exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype 
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.leavers) {
+        if (document.leavers || document.leavers === null) {
             const jobDeclaration = ["None", "Don't know"];
             // can be an empty array
             if (Array.isArray(document.leavers)) {

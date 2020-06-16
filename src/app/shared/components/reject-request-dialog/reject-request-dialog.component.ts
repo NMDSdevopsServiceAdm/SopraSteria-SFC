@@ -1,15 +1,11 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { RejectOptions } from '@core/model/my-workplaces.model';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { Subscription } from 'rxjs';
-
-const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
 
 @Component({
   selector: 'app-reject-request-dialog',
@@ -23,18 +19,15 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
   public rejectOptions;
   public displayReason: boolean;
   public reasonCharacterLimit = 500;
-  private serverErrorsMap: Array<ErrorDefinition>;
+
   public reason = '';
   public notification;
-  public serverError: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: FormBuilder,
     public dialog: Dialog<RejectRequestDialogComponent>,
-    private notificationsService: NotificationsService,
-    private router: Router
   ) {
     super(data, dialog);
   }
@@ -44,7 +37,6 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
     this.setRejectOptions();
     this.setupForm();
     this.setupFormErrorsMap();
-    this.setupServerErrorsMap();
   }
 
   private setRejectOptions(): void {
@@ -59,8 +51,9 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
     });
   }
 
-  close(confirm: boolean) {
-    this.dialog.close(confirm);
+  close(event: Event, returnToClose: any) {
+    event.preventDefault();
+    this.dialog.close(returnToClose);
   }
 
   /**
@@ -100,19 +93,6 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
     ];
   }
 
-  private setupServerErrorsMap(): void {
-    this.serverErrorsMap = [
-      {
-        name: 503,
-        message: 'We could not submit your reason for rejecting. You can try again or contact us',
-      },
-      {
-        name: 400,
-        message: 'Unable to update notification.',
-      },
-    ];
-  }
-
   public handleChange(evt) {
     const group = this.form as FormGroup;
     const { rejectOption, reason } = group.controls;
@@ -127,32 +107,9 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
     reason.updateValueAndValidity();
   }
 
-  public rejectPermissionRequest() {
+  public rejectNotificationRequest() {
     if (this.form.valid) {
-      let requestParameter = {
-        ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
-        approvalStatus: 'DENIED',
-        rejectionReason: this.form.value.reason,
-        type: OWNERSHIP_REJECTED,
-        exsistingNotificationUid: this.notification.notificationUid,
-      };
-      this.subscriptions.add(
-        this.notificationsService
-          .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
-          .subscribe(
-            request => {
-              if (request) {
-                this.notificationsService.getAllNotifications().subscribe(notify => {
-                  this.notificationsService.notifications$.next(notify);
-                });
-                this.close(true);
-              }
-            },
-            error => {
-              this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-            }
-          )
-      );
+      this.close(event, { rejectionReason: this.form.value.reason });
     }
   }
 

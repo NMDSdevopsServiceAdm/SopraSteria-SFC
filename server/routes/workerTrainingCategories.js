@@ -1,38 +1,52 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const cacheMiddleware = require('../utils/middleware/noCache');
+const refCacheMiddleware = require('../utils/middleware/refCache');
 const models = require('../models/index');
+const {
+  transformTrainingCategories,
+  transformTrainingCategoriesWithMandatoryTraining,
+} = require('../transformers/trainingCategoryTransformer');
 
-/* GET ALL ethnicities*/
-router.route('/').get(async function (req, res) {
+const getAllTraining = async function (_req, res) {
   try {
     let results = await models.workerTrainingCategories.findAll({
-        order: [
-          ["seq", "ASC"]
-        ]
-      });
+      order: [['seq', 'ASC']],
+    });
 
     res.send({
-      trainingCategories: trainingCategoriesJSON(results)
+      trainingCategories: transformTrainingCategories(results),
     });
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(503).json();
   }
-});
-
-function trainingCategoriesJSON(givenCategories){
-  let categories=[];
-
-  //Go through any results found from DB and map to JSON
-  givenCategories.forEach(thisCategory => {
-    categories.push({
-      id: thisCategory.id,
-      seq: thisCategory.seq,
-      category: thisCategory.category,
-    });
-  });
-
-  return categories;
 };
 
+const getTrainingByCategory = async (req, res) => {
+  try {
+    const establishmentId = req.params.establishmentId;
+
+    const establishmentWithWorkersAndTraining = await models.establishment.findWithWorkersAndTraining(establishmentId);
+    if (establishmentWithWorkersAndTraining === null) {
+      return res.json({
+        trainingCategories: [],
+      });
+    }
+
+    const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
+
+    res.json({
+      trainingCategories: transformTrainingCategoriesWithMandatoryTraining(establishmentWithWorkersAndTraining, trainingCategories),
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(503).json();
+  }
+};
+
+router.route('/').get([refCacheMiddleware.refcache, getAllTraining]);
+router.route('/:establishmentId/with-training').get([cacheMiddleware.nocache, getTrainingByCategory]);
+
 module.exports = router;
+module.exports.getTrainingByCategory = getTrainingByCategory;

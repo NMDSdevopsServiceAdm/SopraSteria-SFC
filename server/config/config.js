@@ -421,6 +421,28 @@ const config = convict({
         env: 'TEST_ADMINPASSWORD'
       }
     }
+  },
+  rateLimiting: {
+    points: {
+      doc: 'How many times you want allow a user to visit sensitive endpoints',
+      format: 'int',
+      default: 60
+    },
+    duration: {
+      doc: 'How long a peroid you want to monitor a user visiting endpoints',
+      format: 'int',
+      default: 1 * 60 * 60 // 1 hour
+    },
+    table: {
+      doc: 'The table name you want to create/update to log user requests',
+      format: String,
+      default: 'SensitiveSessions'
+    }
+  },
+  timezone: {
+    doc: 'What timezone is the service running in?',
+    format: String,
+    default: 'Europe/London'
   }
 });
 

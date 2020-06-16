@@ -1,0 +1,71 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" autocomplete="off">
+  <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h1 id="dialogHeading" class="govuk-fieldset__heading">
+          Send a request to link to your parent organisation
+        </h1>
+      </legend>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="parentNameOrPostCode">Parent name or postcode</label>
+        <span
+          *ngIf="submitted && form.get('parentNameOrPostCode').invalid"
+          id="parentNameOrPostCode-error"
+          class="govuk-error-message"
+        >
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFirstErrorMessage('parentNameOrPostCode') }}
+        </span>
+
+        <app-auto-suggest
+          [formGroup]="form"
+          [dataProvider]="parentNameOrPostCodeFilter"
+          [formControlName]="'parentNameOrPostCode'"
+        ></app-auto-suggest>
+      </div>
+
+      <p class="govuk">Select what data the parent will have view only access to:</p>
+      <span
+        *ngIf="submitted && form.get('dataPermission').invalid"
+        id="dataPermission-error"
+        class="govuk-error-message"
+      >
+        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('dataPermission') }}
+      </span>
+      <div class="govuk-radios">
+        <div class="govuk-radios__item" *ngFor="let dataPermission of dataPermissions; let i = index">
+          <input
+            class="govuk-radios__input"
+            id="dataPermission-{{ i }}"
+            name="dataPermission"
+            [formControlName]="'dataPermission'"
+            type="radio"
+            [value]="dataPermission"
+          />
+          <label class="govuk-label govuk-radios__label" for="dataPermission-{{ i }}">
+            {{ dataPermission | dataViewPermissions }}
+          </label>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+  <p>
+    <strong>Your parent will need to approve your request.</strong>
+  </p>
+
+  <button type="submit" (click)="sendRequestToParent()" class="govuk-button">Send request</button>
+  <a
+    href="#"
+    class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+    (click)="closeDialogWindow($event, null)"
+    >Cancel</a
+  >
+</form>

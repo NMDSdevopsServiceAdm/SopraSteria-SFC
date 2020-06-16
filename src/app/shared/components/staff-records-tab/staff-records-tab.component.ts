@@ -5,7 +5,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-staff-records-tab',
@@ -30,15 +29,20 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(workers => {
-        this.workers = workers;
-        this.incomplete = this.workers.filter(worker => !worker.completed).length;
-      })
+      this.workerService.getAllWorkers(this.workplace.uid).subscribe(
+        workers => {
+          this.workers = workers;
+          this.incomplete = this.workers.filter(worker => !worker.completed).length;
+        },
+        error => {
+          console.error(error.error);
+        }
+      )
     );
 
     this.subscriptions.add(
       this.establishmentService.getStaff(this.workplace.uid).subscribe(totalStaff => {
-        this.totalStaff = totalStaff;
+        this.totalStaff = totalStaff || 0;
       })
     );
 

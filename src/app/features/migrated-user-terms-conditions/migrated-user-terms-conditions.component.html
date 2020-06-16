@@ -1,17 +1,24 @@
-<app-error-summary *ngIf="form.invalid && submitted" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+<app-error-summary
+  *ngIf="(form.invalid || serverError) && submitted"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+>
+</app-error-summary>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <h1 class="govuk-heading-xl">Welcome to the Adult Social Care Workforce Data Set</h1>
 
     <p>
-      You have signed in for the first time so need to check the box to confirm you agree to the
+      Before proceeding, you will need to check the box confirming you agree to the updated
       <a [routerLink]="['/terms-and-conditions']">
-        terms and conditions<span class="govuk-visually-hidden">, (opens in a new window)</span> </a
-      >. You must agree to them before proceeding.
+        terms and conditions<span class="govuk-visually-hidden">, (opens in a new window)</span>
+      </a>
+      of the service.
     </p>
 
-    <p>You will not be required to do this again.</p>
+    <p>You will be required to do this each time we update our terms and conditions.</p>
 
     <form (ngSubmit)="onSubmit()" [formGroup]="form" id="form" class="govuk-!-margin-top-6">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
@@ -31,7 +38,7 @@
               required
             />
             <label class="govuk-label govuk-checkboxes__label" for="termsAndConditions">
-              I agree to the terms and conditions of this service
+              I agree to updated the terms and conditions of this service
             </label>
           </div>
         </div>

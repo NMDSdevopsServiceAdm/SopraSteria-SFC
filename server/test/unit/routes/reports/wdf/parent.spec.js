@@ -13,6 +13,14 @@ const jsdom = require('jsdom');
 const JsZip = require('jszip');
 const fs = require('fs');
 const isWindows = require('is-windows');
+const sinon = require('sinon');
+const config = require('../../../../../../server/config/config');
+
+const AWSMock = require('aws-sdk-mock');
+const AWS = require('aws-sdk');
+AWSMock.setSDKInstance(AWS);
+AWSMock.mock('S3', 'getObject', { Body: "mock response" });
+const uuid = require('uuid');
 
 const readFile = filename =>
   (new Promise((resolve, reject) => {
@@ -53,6 +61,7 @@ describe('/server/routes/reports/wdf/parent', () => {
         {
           locals: {
             require: testUtils.wrapRequire({
+              '../../../../server/config/config': config,
               moment,
               fs: {
                 readFile: fs.readFile
@@ -77,6 +86,8 @@ describe('/server/routes/reports/wdf/parent', () => {
               '../../../models': {},
               jsdom,
               jszip: JsZip,
+              uuid: uuid,
+              'aws-sdk': AWSMock,
               express: {
                 Router: () => ({
                   route: () => ({
@@ -93,6 +104,22 @@ describe('/server/routes/reports/wdf/parent', () => {
           globals: {
             rfr: testUtils.wrapRequire({
               'server/data/parentWDFReport': {
+                getCapicityData: () => [
+                  {
+                    "Answer": 10
+                  }
+                ],
+                getUtilisationData: () => [
+                  {
+                    "Answer": 10
+                  }
+                ],
+                getServiceCapacityDetails: () => [
+                  {
+                    "ServiceID": 12,
+                    "Type": "Capacity"
+                  }
+                ],
                 getEstablishmentData: () => [
                   {
                     EstablishmentID: 479,

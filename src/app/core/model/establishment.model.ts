@@ -58,12 +58,18 @@ export interface Leaver {
   total: number;
 }
 
+export interface Category {
+  trainingId: number;
+  title: string;
+}
+
 export interface WDF {
   effectiveFrom: Date;
   overalWdfEligible: boolean;
-  lastEligibility: Date;
-  isEligible: boolean;
-  currentEligibility: boolean;
+  lastEligibility: Date;  // date establishment was last eligible
+  isEligible: boolean; //  are both the establishment & workers eligible?
+  currentEligibility: boolean; //  is the establishment currently eligible?
+  canConfirm: boolean; // can the establishment confirm their details are up-to-date?
   employerType: WDFValue;
   mainService: WDFValue;
   capacities: WDFValue;
@@ -79,6 +85,7 @@ export interface Establishment {
   createdByUserUID?: string;
   id: number;
   uid: string;
+  ustatus?: string;
   ownerChangeRequestUID?: any;
   name: string;
   address: string;
@@ -116,18 +123,31 @@ export interface Establishment {
   dataPermissions: DataPermissions;
   dataOwnershipRequested: string;
   ownershipChangeRequestId?: string;
+  linkToParentRequested?: string;
+  address1?: string;
+  address2?: string;
+  address3?: string;
+  town?: string;
+  county?: string;
+  locationId?: string;
 }
 
 export interface UpdateJobsRequest {
   leavers?: Leaver[] | string;
   starters?: Starter[] | string;
   vacancies?: Vacancy[] | string;
+  categories?: Category[] | string;
 }
 
 export enum jobOptionsEnum {
   // tslint:disable-next-line: quotemark
   DONT_KNOW = "Don't know",
   NONE = 'None',
+}
+
+export enum mandatoryTrainingJobOption {
+  all = 'all',
+  selected = 'selected',
 }
 
 export interface LocalIdentifiersRequest {
@@ -159,9 +179,44 @@ export interface CancelOwnerShip {
 export interface setPermission {
   permissionToSet: string;
 }
+
+export interface mandatoryJobs {
+  id: number;
+}
+
+export interface mandatoryTraining {
+  trainingCategoryId: number;
+  allJobRoles: boolean;
+  selectedJobRoles?: boolean;
+  jobs: mandatoryJobs[];
+}
+
+export interface allMandatoryTrainingCategories {
+  mandatoryTrainingCount: number;
+  allJobRolesCount: number;
+  mandatoryTraining: mandatoryTraining[];
+}
+export interface mandatoryTrainingCategories {
+  categories: mandatoryTraining[];
+}
+
 export enum SortStaffOptions {
   '0_asc' = 'Staff name ascending',
   '0_dsc' = 'Staff name descending',
   '1_asc' = 'Job role ascending',
   '1_dsc' = 'Job role descending',
 }
+
+export enum SortTrainingAndQualsOptionsWorker {
+  '0_expired' = 'Expired',
+  '1_expires_soon' = 'Expires soon',
+  '2_missing' = 'Missing',
+  '3_worker' = 'Staff name'
+}
+export enum SortTrainingAndQualsOptionsCat {
+  '0_expired' = 'Expired',
+  '1_expires_soon' = 'Expires soon',
+  '2_missing' = 'Missing',
+  '3_category' = 'Category'
+}
+

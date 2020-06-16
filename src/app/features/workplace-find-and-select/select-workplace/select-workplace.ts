@@ -16,6 +16,7 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
+  protected isCQCLocationUpdate: boolean;
 
   constructor(
     protected backService: BackService,
@@ -74,7 +75,6 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.form.valid) {
       this.save();
-      this.router.navigate([`${this.flow}/select-main-service`]);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

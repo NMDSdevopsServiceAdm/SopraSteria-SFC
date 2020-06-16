@@ -1,0 +1,114 @@
+<ng-container *ngIf="trainingRecords.length">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h2 class="govuk-heading-m">Training ({{ trainingCount }})</h2>
+    </div>
+    <div class="govuk-grid-column-one-half govuk-util__float-right govuk-util__align-right">
+      <p>Updated {{ lastUpdated | date: 'd MMMM y' }}</p>
+    </div>
+  </div>
+
+  <table class="govuk-table" *ngIf="trainingRecords.length">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Training category</th>
+        <th class="govuk-table__header govuk-!-width-one-half" scope="col">Training name</th>
+        <th class="govuk-table__header" scope="col">Status</th>
+        <th class="govuk-table__header" scope="col"></th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <ng-container *ngFor="let trainingRecord of trainingRecords">
+        <tr class="govuk-table__row govuk-util__vertical-align-top">
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            {{ trainingRecord.trainingCategory.category }}
+          </td>
+          <td class="govuk-table__cell">{{ trainingRecord.title }}</td>
+          <td class="govuk-table__cell">
+            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt="Missing"
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Missing
+            </div>
+            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRED" class="govuk-!-margin-bottom-1">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt="expired"
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Expired
+            </div>
+            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRING">
+              <img
+                src="/assets/images/flag-orange.svg"
+                alt="expiring"
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Expiring soon
+            </div>
+          </td>
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            <a
+              *ngIf="canEditWorker && !trainingRecord.missing "
+              class="govuk-link--no-visited-state"
+              href="#"
+              (click)="toggleDetails(trainingRecord.uid, $event)"
+              >{{ trainingDetailsLabel[trainingRecord.uid] ? trainingDetailsLabel[trainingRecord.uid] : 'Open' }}</a
+            >
+          </td>
+        </tr>
+        <tr *ngIf="trainingDetails[trainingRecord.uid]" class="govuk-panel--gray ">
+          <td colspan="4">
+            <div class="govuk-grid-row govuk-!-margin-2">
+              <div class="govuk-grid-column-one-quarter">
+                <strong>Expiry date</strong>
+                <div>
+                  {{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd MMM y') : '-' }}
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
+                <strong>Date completed</strong>
+                <div>
+                  {{ trainingRecord.completed ? (trainingRecord.completed | date: 'dd MMM y') : '-' }}
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-half govuk-!-padding-left-0">
+                <strong>Accredited</strong>
+                <div>
+                  {{ trainingRecord.accredited | closedEndedAnswer }}
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter-list__actions govuk-util__float-right">
+                <a
+                  *ngIf="canEditWorker"
+                  class="govuk-link--no-visited-state govuk-!-margin-right-6"
+                  href="#"
+                  (click)="deleteTrainingRecord(trainingRecord, $event)"
+                  >Delete</a
+                >
+                <a
+                  *ngIf="canEditWorker"
+                  class="govuk-link--no-visited-state"
+                  [routerLink]="['../training', trainingRecord.uid]"
+                  (click)="getRoute()"
+                  >Change</a
+                >
+              </div>
+            </div>
+            <div class="govuk-grid-row govuk-!-margin-2">
+              <div class="govuk-grid-column-two-thirds">
+                <strong>Training notes</strong>
+                <div>
+                  {{ trainingRecord.notes ? trainingRecord.notes : '-' }}
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</ng-container>

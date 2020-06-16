@@ -2,14 +2,30 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
       <span *ngIf="workplace?.isParent" class="govuk-caption-xl govuk-!-margin-bottom-3">Parent</span>
+      <span *ngIf="workplace?.parentUid" class="govuk-caption-xl govuk-!-margin-bottom-3">{{
+        workplace?.parentName
+      }}</span>
       {{ workplace?.name }}
     </h1>
+
+    <div *ngIf="workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING'">
+      <button
+        class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
+        (click)="onDeleteWorkplace($event)"
+      >
+        <img src="/assets/images/bin.svg" alt="" />
+        <span class="govuk-!-margin-left-1">
+        Delete <span class="govuk-visually-hidden">{{ workplace.name }}</span> Workplace
+      </span>
+      </button>
+    </div>
     <p class="govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-0">
       Workplace ID: {{ workplace?.nmdsId }}
     </p>
     <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16 govuk-!-margin-top-2">
       Last signed in on {{ lastLoggedIn | date: 'd MMMM y' }}
     </p>
+
   </div>
 
   <div class="govuk-grid-column-one-third contact-col" [class.contact-col--parent]="workplace?.isParent">
@@ -22,7 +38,31 @@
     <p class="govuk-!-font-size-16 govuk-!-margin-top-2">
       <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support@skillsforcare.org.uk</a>
     </p>
+    <p class="govuk__flex govuk__align-items-center govuk-!-font-size-16">
+      <img alt="" src="/assets/images/envelope.svg" class="govuk-!-margin-right-1">
+      <ng-container *ngIf="numberOfNewNotifications > 0; else noNotifications">
+        You have
+        <a [routerLink]="['/notifications']">
+          <span class="notification-alert__count">{{ numberOfNewNotifications }}</span>new
+          {{
+                numberOfNewNotifications
+                  | i18nPlural
+                    : {
+                        '=1': 'notification',
+                        other: 'notifications'
+                      }
+              }}
+        </a>
+      </ng-container>
+      <ng-template #noNotifications>
+        <a [routerLink]="['/notifications']">Notifications</a>
+      </ng-template>
+    </p>
   </div>
+</div>
+<div class="govuk-grid-row">
+
+
 </div>
 
 <div class="govuk-grid-row">
@@ -38,6 +78,15 @@
 
       <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
         <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
+      </app-tab>
+
+      <app-tab
+        *ngIf="workplace && canViewListOfWorkers"
+        [alert]="trainingAlert === 1"
+        [redAlert]="trainingAlert === 2"
+        [title]="'Training and qualifications'"
+      >
+        <app-training-and-qualifications-tab [workplace]="workplace"></app-training-and-qualifications-tab>
       </app-tab>
 
       <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'User accounts'">

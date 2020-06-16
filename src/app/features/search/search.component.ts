@@ -1,20 +1,23 @@
-import { HttpClient } from '@angular/common/http';
+import { Overlay } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { RegistrationsService } from '@core/services/registrations.service';
+import { DialogService } from '@core/services/dialog.service';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import {
+  AdminUnlockConfirmationDialogComponent,
+} from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
 import { take } from 'rxjs/operators';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
+  providers: [DialogService, AdminUnlockConfirmationDialogComponent, Overlay],
 })
 export class SearchComponent implements OnInit {
   public results = [];
-  public registrations = [];
+  public selectedWorkplaceUid: string;
   public form = {
     type: '',
     title: '',
@@ -31,13 +34,11 @@ export class SearchComponent implements OnInit {
   };
 
   constructor(
-    private router: Router,
+    public router: Router,
+    public http: HttpClient,
+    public switchWorkplaceService: SwitchWorkplaceService,
+    private dialogService: DialogService,
     protected backService: BackService,
-    private http: HttpClient,
-    private establishmentService: EstablishmentService,
-    private authService: AuthService,
-    private permissionsService: PermissionsService,
-    private registrationsService: RegistrationsService
   ) {}
 
   ngOnInit() {
@@ -57,38 +58,33 @@ export class SearchComponent implements OnInit {
       this.form.subTitle = 'Establishment Search';
       this.form.title = 'Define your search criteria';
       this.form.buttonText = 'Search Establishments';
-    } else {
+    } else if (this.router.url === '/registrations') {
       this.form.type = 'registrations';
+    } else if (this.router.url === '/cqc-status-changes') {
+      this.form.type = 'cqc-status-changes';
+    } else {
+      this.form.type = 'parent-requests';
     }
-    this.getRegistrations();
   }
 
-  public getRegistrations() {
-    this.registrationsService.getRegistrations().subscribe(
-      data => {
-        this.registrations = data;
-      },
-      error => this.onError(error)
-    );
+  public unlockUser(username: string, index: number, e) {
+    e.preventDefault();
+    const data = {
+      username,
+      index,
+      removeUnlock: () => {
+        this.results[index].isLocked = false;
+      }
+    }
+    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
   }
 
   public searchType(data, type) {
     return this.http.post<any>('/api/admin/search/' + type, data, { observe: 'response' });
   }
 
-  public getNewEstablishmentId(id) {
-    return this.http.post<any>('/api/user/swap/establishment/' + id, null, { observe: 'response' });
-  }
-
-  public setEsblishmentId(id, e): void {
-    e.preventDefault();
-    this.getNewEstablishmentId(id).subscribe(
-      data => {
-        this.permissionsService.clearPermissions();
-        this.onSwapSuccess(data);
-      },
-      error => this.onError(error)
-    );
+  public setEsblishmentId(id, username, nmdsId, e): void {
+    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId, e);
   }
 
   public onSubmit(): void {
@@ -128,36 +124,9 @@ export class SearchComponent implements OnInit {
     this.results = data.body;
   }
 
-  private onSwapSuccess(data) {
-    if (data.body && data.body.establishment && data.body.establishment.uid) {
-      this.authService.token = data.headers.get('authorization');
-
-      const workplaceUid = data.body.establishment.uid;
-
-      this.establishmentService
-        .getEstablishment(workplaceUid)
-        .pipe(take(1))
-        .subscribe(workplace => {
-          this.establishmentService.setState(workplace);
-          this.establishmentService.setPrimaryWorkplace(workplace);
-          this.establishmentService.establishmentId = workplace.uid;
-          this.router.navigate(['/dashboard']);
-        });
-    }
-  }
-
   private onError(error) {}
 
   protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/dashboard'] });
-  }
-
-  public approveUser(username: string, approved: boolean, index: number) {
-    const data = {
-      username,
-      approve: approved,
-    };
-    this.registrations.splice(index, 1);
-    this.registrationsService.userApproval(data).subscribe();
   }
 }

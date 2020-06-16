@@ -1,0 +1,60 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+
+<div class="govuk-grid-row">
+
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+              Select your workplace
+            </h1>
+          </legend>
+
+          <span *ngIf="submitted && form.invalid" id="workplace-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplace', 'required') }}
+          </span>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let item of locationAddresses; let i = index">
+              <input
+                class="govuk-radios__input"
+                id="workplace-{{ i }}"
+                value="{{ item.locationId }}"
+                name="workplace"
+                type="radio"
+                [formControlName]="'workplace'"
+              />
+              <label class="govuk-label govuk-radios__label" for="workplace-{{ i }}">
+                {{ item.locationName }} - {{ item.townCity }} {{ item.postalCode }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <ng-container *ngIf="isCQCLocationUpdate; else CQCLocationAdd">
+      <p>
+      Workplace not displayed?
+      <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']">go back and try again</a>.
+      </p>
+
+      <button class="govuk-button" type="submit">Save and Return</button>
+      <button
+        type="button"
+        class="govuk-button govuk-button--link govuk-util__float-right"
+        (click)="returnToWorkPlace($event)"
+      >
+        Exit
+      </button>
+    </ng-container>
+    <ng-template #CQCLocationAdd>
+      <p>
+        <a [routerLink]="[flow, 'find-workplace-address']" role="button" draggable="false">
+          My workplace isn't displayed
+        </a>
+      </p>
+      <button class="govuk-button" type="submit">Continue</button>
+    </ng-template>
+
+    </form>
+
+</div>

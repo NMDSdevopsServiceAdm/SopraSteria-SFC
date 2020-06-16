@@ -25,7 +25,7 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private localAuthorityService: LocalAuthorityService
+    private localAuthorityService: LocalAuthorityService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -62,11 +62,11 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
       this.localAuthorityService.getAuthorities().subscribe(authorities => {
         const index = findIndex(
           authorities,
-          authority => authority.custodianCode === this.primaryAuthority.custodianCode
+          authority => authority.custodianCode === this.primaryAuthority.custodianCode,
         );
         authorities.splice(index, 1);
         this.authorities = authorities;
-      })
+      }),
     );
 
     this.establishment.localAuthorities.forEach(authority => {
@@ -117,17 +117,18 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
           !this.localAuthoritiesArray.controls.some(
             localAuth =>
               localAuth !== this.localAuthoritiesArray.controls[index] &&
-              parseInt(localAuth.get('custodianCode').value, 10) === authority.custodianCode
-          )
+              parseInt(localAuth.get('custodianCode').value, 10) === authority.custodianCode,
+          ),
       );
     }
   }
 
   protected updateEstablishment(props) {
     this.subscriptions.add(
-      this.establishmentService
-        .updateLocalAuthorities(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateLocalAuthorities(this.establishment.uid, props).subscribe(
+        data => this._onSuccess(data),
+        error => this.onError(error),
+      ),
     );
   }
 }
