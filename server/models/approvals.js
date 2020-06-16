@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     ApprovalType: {
       type: DataTypes.ENUM,
       allowNull: false,
-      values: ['BecomeAParent'],
+      values: ['BecomeAParent','CqcStatusChange'],
     },
     Status: {
       type: DataTypes.ENUM,
@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
         ApprovalType: approvalType,
         Status: 'Pending'
       },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status'],
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
       include: [
         {
           model: sequelize.models.establishment,
@@ -90,7 +90,7 @@ module.exports = (sequelize, DataTypes) => {
       where: {
         ID: id
       },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status'],
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
       include: [
         {
           model: sequelize.models.establishment,
@@ -126,7 +126,6 @@ module.exports = (sequelize, DataTypes) => {
       ],
     });
   }
-
   Approvals.findbyEstablishmentId = function(establishmentId, approvalType, status) {
     return this.findOne({
       where: {
@@ -134,7 +133,7 @@ module.exports = (sequelize, DataTypes) => {
         ApprovalType: approvalType,
         Status: status
       },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status'],
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
       include: [
         {
           model: sequelize.models.establishment,

@@ -1,4 +1,5 @@
-export interface ParentRequest {
+
+export interface ApprovalRequest<T> {
   requestId: number;
   requestUUID: string;
   establishmentId: number;
@@ -9,4 +10,5 @@ export interface ParentRequest {
   orgName: string;
   requested: Date;
   status: string;
+  data: T;
 }

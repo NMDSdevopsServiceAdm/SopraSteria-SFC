@@ -1,0 +1,6 @@
+<h1 class="govuk-heading-xl">
+  CQC status changes
+</h1>
+<div *ngFor="let cqcStatusChange of cqcStatusChanges; let i = index">
+  <app-cqc-status-change [index]="i" [cqcStatusChange]="cqcStatusChange" (removeCqcStatusChanges)="removeCqcStatusChanges($event)"></app-cqc-status-change>
+</div>
