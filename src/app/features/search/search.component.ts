@@ -60,6 +60,8 @@ export class SearchComponent implements OnInit {
       this.form.buttonText = 'Search Establishments';
     } else if (this.router.url === '/registrations') {
       this.form.type = 'registrations';
+    } else if (this.router.url === '/cqc-status-changes') {
+      this.form.type = 'cqc-status-changes';
     } else {
       this.form.type = 'parent-requests';
     }

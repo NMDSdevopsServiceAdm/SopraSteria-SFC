@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DialogService } from '@core/services/dialog.service';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
+import { CqcConfirmationDialogComponent} from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import {
   DeleteWorkplaceDialogComponent,
 } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
@@ -151,7 +152,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     OwnershipChangeMessageDialogComponent,
     ViewAllMandatoryTrainingComponent,
     DeleteWorkplaceDialogComponent,
-    ParentConfirmationDialogComponent
+    ParentConfirmationDialogComponent,
+    CqcConfirmationDialogComponent
   ],
   exports: [
     AlertComponent,
@@ -214,7 +216,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     OwnershipChangeMessageDialogComponent,
     ViewAllMandatoryTrainingComponent,
     DeleteWorkplaceDialogComponent,
-    ParentConfirmationDialogComponent
+    ParentConfirmationDialogComponent,
+    CqcConfirmationDialogComponent
   ],
   providers: [DialogService],
   entryComponents: [
@@ -228,7 +231,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LinkToParentRemoveDialogComponent,
     BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
-    ParentConfirmationDialogComponent
+    ParentConfirmationDialogComponent,
+    CqcConfirmationDialogComponent
   ],
 })
 export class SharedModule {}
