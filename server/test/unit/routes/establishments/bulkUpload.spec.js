@@ -496,6 +496,8 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         }
       ]);
 
+      const trainingCategory = 1;
+
       const lines = [];
 
       const responseSend = (line, stepName = '') => {
@@ -511,7 +513,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
             training: [
               {
                 trainingCategory: {
-                  id: 1
+                  id: trainingCategory
                 }
               }
             ]
@@ -525,7 +527,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         }
       ], responseSend);
 
-      expect(lines[1]).to.equal(`${establishment.name},,${BUDI.trainingCategory(BUDI.FROM_ASC, 1)},,,,,`);
+      expect(lines[1]).to.equal(`${establishment.name},,${BUDI.trainingCategory(BUDI.FROM_ASC, trainingCategory)},,,,,`);
     });
 
     it('should have a UNIQUEWORKERID if worker has a LocalIdentifier', async () => {
@@ -535,6 +537,9 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         }
       ]);
 
+      const trainingCategory = 1;
+      const workerName = 'TesterMcTesterson';
+
       const lines = [];
 
       const responseSend = (line, stepName = '') => {
@@ -547,11 +552,11 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         workers: [
           {
             nameOrId: 'foobar',
-            localIdentifier: 'TesterMcTesterson',
+            localIdentifier: workerName,
             training: [
               {
                 trainingCategory: {
-                  id: 1
+                  id: trainingCategory
                 }
               }
             ]
@@ -565,7 +570,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         }
       ], responseSend);
 
-      expect(lines[1]).to.equal(`${establishment.name},TesterMcTesterson,${BUDI.trainingCategory(BUDI.FROM_ASC, 1)},,,,,`);
+      expect(lines[1]).to.equal(`${establishment.name},${workerName},${BUDI.trainingCategory(BUDI.FROM_ASC, trainingCategory)},,,,,`);
     });
 
   });
