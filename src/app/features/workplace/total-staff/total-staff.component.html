@@ -28,18 +28,5 @@
     </div>
   </div>
 
-  <div class="govuk-button-group">
-    <button type="submit" class="govuk-button">
-      {{ returnCopy ? 'Save and return' : 'Save and continue' }}
-    </button>
-    <a
-      class="govuk-button govuk-button--link govuk-util__float-right"
-      role="button"
-      draggable="false"
-      [routerLink]="return.url"
-      [fragment]="return.fragment"
-    >
-      Cancel
-    </a>
-  </div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
 </form>
