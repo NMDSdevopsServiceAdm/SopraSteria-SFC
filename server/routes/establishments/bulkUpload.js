@@ -2523,3 +2523,4 @@ module.exports.checkDuplicateWorkerID = checkDuplicateWorkerID;
 module.exports.validateEstablishmentCsv = validateEstablishmentCsv;
 module.exports.exportToCsv = exportToCsv;
 module.exports.determineMaxQuals = determineMaxQuals;
+module.exports.sendCountToSlack = sendCountToSlack;
