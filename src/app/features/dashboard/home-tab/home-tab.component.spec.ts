@@ -1,4 +1,3 @@
-import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { spy } from 'sinon';
 import { of } from 'rxjs';
@@ -7,14 +6,10 @@ import { Observable } from 'rxjs/Observable';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { NumericAnswerPipe } from '@shared/pipes/numeric-answer.pipe';
 import { WindowRef } from '@core/services/window.ref';
 import { render, within } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { EligibilityIconComponent } from '../../../shared/components/eligibility-icon/eligibility-icon.component';
-import { InsetTextComponent } from '../../../shared/components/inset-text/inset-text.component';
-import { SummaryRecordValueComponent } from '../../../shared/components/summary-record-value/summary-record-value.component';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { HttpClient } from '@angular/common/http';
@@ -25,6 +20,8 @@ import { UserService } from '@core/services/user.service';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { WorkplaceRoutingModule } from '../../workplace/workplace-routing.module';
+import { WorkplaceModule } from '../../workplace/workplace.module';
 
 import { HomeTabComponent } from './home-tab.component';
 
@@ -32,13 +29,14 @@ import { HomeTabComponent } from './home-tab.component';
 fdescribe('HomeTabComponent', () => {
   async function setup() {
     const component = await render(HomeTabComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        RouterModule,
+        RouterTestingModule,
+        WorkplaceModule,
+        WorkplaceRoutingModule,
+        HttpClientTestingModule],
       declarations: [
-        HomeTabComponent,
-        InsetTextComponent,
-        SummaryRecordValueComponent,
-        NumericAnswerPipe,
-        EligibilityIconComponent
+        HomeTabComponent
       ],
       providers: [
         {
