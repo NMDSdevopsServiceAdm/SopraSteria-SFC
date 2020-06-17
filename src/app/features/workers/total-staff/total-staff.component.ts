@@ -107,13 +107,14 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.establishmentService.postStaff(this.workplace.uid, totalStaff).subscribe(
-        () => this.onSuccess(),
+        data => this.onSuccess(data.numberOfStaff),
         error => this.onError(error)
       )
     );
   }
 
-  private onSuccess() {
+  private onSuccess(numberOfStaff) {
+    this.updateWorkplaceSummary(numberOfStaff);
     if (this.returnToDash) {
       this.router.navigate(this.return.url, { fragment: this.return.fragment });
     } else if (this.workerService.returnTo) {
@@ -121,6 +122,11 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     } else {
       this.router.navigate(['create-basic-records'], { relativeTo: this.route.parent });
     }
+  }
+
+  private updateWorkplaceSummary(numberOfStaff) {
+    this.workplace.numberOfStaff = numberOfStaff;
+    this.establishmentService.setState(this.workplace);
   }
 
   private onError(error) {}
