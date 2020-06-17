@@ -62,6 +62,11 @@ fdescribe('HomeTabComponent', () => {
       ],
     });
 
+    component.fixture.componentInstance.canEditEstablishment = true;
+    component.fixture.componentInstance.workplace = Establishment;
+    component.fixture.componentInstance.workplace.employerType = null;
+    component.fixture.detectChanges();
+
     return {
       component
     };
@@ -74,23 +79,29 @@ fdescribe('HomeTabComponent', () => {
   });
 
   it('has Add Workplace Information', async () => {
+    // Arrange
     const { component } = await setup();
-    component.fixture.componentInstance.canEditEstablishment = true;
-    component.fixture.componentInstance.workplace = Establishment;
-    component.fixture.componentInstance.workplace.employerType = null;
-    component.fixture.detectChanges();
 
+    // Act
     const link = component.getByTestId("add-workplace-info");
+
+    // Assert
     expect(link.innerHTML).toContain("Add workplace information");
   });
 
-  /*it('can click Add Workplace Information', () => {
+  it('can click Add Workplace Information', async () => {
+    // Arrange
+    const { component } = await setup();
+    
+    // Act
     component.getByTestId("add-workplace-info").click();
-    const header = await within(document.body).getByTestId("add-your-workplace-info");
-    expect(header.innerHTML).toContain("Add your workplace information");
-  });*/
+    const header = await within(document.body).findByTestId("add-your-workplace-info");
 
-  /*it('can click Add Workplace Information', () => {
+    // Assert
+    expect(header.innerHTML).toContain("Add your workplace information");
+  });
+
+  /*it('can click Add Workplace Information', async () => {
     component.getByTestId("add-workplace-info").click();
 
     // Start 
