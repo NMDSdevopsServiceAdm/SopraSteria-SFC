@@ -74,7 +74,7 @@ const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validat
     });
   }
 
-  if (workerCount > 30) slack.info("Large Bulk Upload", `${thisEstablishment.name} (ID ${thisEstablishment.nmdsId}) just did a bulk upload with a staff file containing ${workerCount} staff records.`);
+  if (workerCount > 500) slack.info("Large Bulk Upload", `${thisEstablishment.name} (ID ${thisEstablishment.nmdsId}) just did a bulk upload with a staff file containing ${workerCount} staff records.`);
 };
 
 // Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
