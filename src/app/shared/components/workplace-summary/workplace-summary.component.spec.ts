@@ -60,17 +60,17 @@ describe('WorkplaceSummaryComponent', () => {
     component.cqcStatusRequested = true;
     fixture.detectChanges();
 
-    const mainServiceChangeOrPending = await within(document.body).findByTestId('main-service-name');
-    expect(mainServiceChangeOrPending.innerHTML).toContain(component.requestedServiceName);
-    expect(mainServiceChangeOrPending.innerHTML).not.toContain(component.workplace.mainService.name);
+    const mainServiceName = await within(document.body).findByTestId('main-service-name');
+    expect(mainServiceName.innerHTML).toContain(component.requestedServiceName);
+    expect(mainServiceName.innerHTML).not.toContain(component.workplace.mainService.name);
   });
 
   it('should show existing service name when non-CQC to CQC main service change has NOT been requested', async () => {
     component.cqcStatusRequested = false;
     fixture.detectChanges();
 
-    const mainServiceChangeOrPending = await within(document.body).findByTestId('main-service-name');
-    expect(mainServiceChangeOrPending.innerHTML).toContain(component.workplace.mainService.name);
-    expect(mainServiceChangeOrPending.innerHTML).not.toContain(component.requestedServiceName);
+    const mainServiceName = await within(document.body).findByTestId('main-service-name');
+    expect(mainServiceName.innerHTML).toContain(component.workplace.mainService.name);
+    expect(mainServiceName.innerHTML).not.toContain(component.requestedServiceName);
   });
 });
