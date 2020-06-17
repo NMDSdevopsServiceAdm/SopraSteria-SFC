@@ -88,6 +88,6 @@ export class DataSharingComponent extends Question {
 
     this.next = localAuthorities
       ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.uid}`, 'staff-record', 'total-staff'];
+      : ['/workplace', `${this.establishment.uid}`, 'total-staff'];
   }
 }

@@ -59,7 +59,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
   protected init(): void {
     this.getJobs();
-    this.previous = ['/workplace', `${this.establishment.uid}`, 'staff-record', 'total-staff'];
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'total-staff'];
     this.prefill();
 
     this.subscriptions.add(

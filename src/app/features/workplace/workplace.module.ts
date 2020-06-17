@@ -39,6 +39,7 @@ import { UserAccountEditDetailsComponent } from './user-account-edit-details/use
 import {
   UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
+import { TotalStaffComponent } from './total-staff/total-staff.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
@@ -72,6 +73,7 @@ import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select
     UserAccountEditPermissionsComponent,
     UserAccountSavedComponent,
     UserAccountViewComponent,
+    TotalStaffComponent,
     VacanciesComponent,
     ViewMyWorkplacesComponent,
     ViewWorkplaceComponent,
