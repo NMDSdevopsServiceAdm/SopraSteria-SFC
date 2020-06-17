@@ -19,22 +19,16 @@ import { Question } from '../question/question.component';
 })
 export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
   public form: FormGroup;
-  public returnToDash = false;
-  public submitted = false;
   public workplace: Establishment;
-  public return: URLStructure;
-  public returnCopy: boolean;
   private totalStaffConstraints = { min: 0, max: 999 };
   public formErrorsMap: Array<ErrorDetails>;
 
   constructor(
     protected router: Router,
     protected formBuilder: FormBuilder,
-    protected backService: BackService,
+    protected backService: BackService, 
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private route: ActivatedRoute,
-    private workerService: WorkerService
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -51,89 +45,17 @@ export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-    this.workplace = this.route.parent.snapshot.data.establishment;
-    const primaryWorkplaceUid = this.route.snapshot.data.primaryWorkplace
-      ? this.route.snapshot.data.primaryWorkplace.uid
-      : null;
-
-    this.return =
-      this.workplace.uid === primaryWorkplaceUid
-        ? { url: ['/dashboard'], fragment: 'staff-records' }
-        : { url: ['/workplace', this.workplace.uid], fragment: 'staff-records' };
-
+  protected init(): void {
     this.subscriptions.add(
-      this.establishmentService.getStaff(this.workplace.uid).subscribe(staff => {
+      this.establishmentService.getStaff(this.establishment.uid).subscribe(staff => {
         this.form.patchValue({ totalStaff: staff });
       })
     );
-
-    this.returnToDash = this.workerService.totalStaffReturn;
-
-    if (this.returnToDash || this.workerService.returnTo) {
-      this.returnCopy = true;
-    }
-
-    if (this.returnToDash) {
-      this.backService.setBackLink(this.return);
-    } else if (this.workerService.returnTo) {
-      this.backService.setBackLink(this.workerService.returnTo);
-      this.return = this.workerService.returnTo;
-    } else {
-      this.backService.setBackLink({
-        url: ['/workplace', this.workplace.uid, 'staff-record', 'basic-records-start-screen'],
-      });
-    }
 
     this.next = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
     this.setPreviousRoute();
 
     this.setupFormErrors();
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.workerService.setTotalStaffReturn(false);
-  }
-
-  public getFirstErrorMessage(item: string): string {
-    const errorType = Object.keys(this.form.get(item).errors)[0];
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  public onSubmit(): void {
-    this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    if (!this.form.valid) {
-      this.errorSummaryService.scrollToErrorSummary();
-      return;
-    }
-
-    const { totalStaff } = this.form.value;
-
-    this.subscriptions.add(
-      this.establishmentService.postStaff(this.workplace.uid, totalStaff).subscribe(
-        data => this._onSuccess(data),
-        error => this.onError(error)
-      )
-    );
-  }
-
-  private setPreviousRoute(): void {
-    this.previous = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
-      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
-  }
-
-  protected onSuccess() {
-    if (this.returnToDash) {
-      this.router.navigate(this.return.url, { fragment: this.return.fragment });
-    } else if (this.workerService.returnTo) {
-      this.router.navigate(this.workerService.returnTo.url);
-    } else {
-      this.router.navigate(['create-basic-records'], { relativeTo: this.route.parent });
-    }
   }
 
   private setupFormErrors(): void {
@@ -160,5 +82,26 @@ export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
         ],
       },
     ];
+  }
+
+  private setPreviousRoute(): void {
+    this.previous = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
+      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
+      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+  }
+
+  protected generateUpdateProps() {
+    return {
+      totalStaff: this.form.value.totalStaff,
+    };
+  }
+
+  protected updateEstablishment(props): void {
+    this.subscriptions.add(
+      this.establishmentService.postStaff(this.establishment.uid, props.totalStaff).subscribe(
+        data => this._onSuccess(data),
+        error => this.onError(error)
+      )
+    );
   }
 }
