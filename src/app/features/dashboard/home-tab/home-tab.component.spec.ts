@@ -1,3 +1,9 @@
+import { SharedModule } from '@shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
+import { spy } from 'sinon';
+import { of } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -24,11 +30,8 @@ import { HomeTabComponent } from './home-tab.component';
 
 
 fdescribe('HomeTabComponent', () => {
-  let component: HomeTabComponent;
-  let fixture: ComponentFixture<HomeTabComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  async function setup() {
+    const component = await render(HomeTabComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [
         HomeTabComponent,
@@ -57,47 +60,29 @@ fdescribe('HomeTabComponent', () => {
           useClass: MockEstablishmentService
         },
       ],
-    }).compileComponents();
-  }));
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HomeTabComponent);
-    component = fixture.componentInstance;
-    component.workplace = Establishment;
-    component.user = {
-      created: "created",
-      email: "email",
-      establishmentId: 1234,
-      establishmentUid: "establishmentUid",
-      fullname: "fullname",
-      isPrimary: true,
-      jobTitle: "jobTitle",
-      lastLoggedIn: "lastLoggedIn",
-      agreedUpdatedTerms: true,
-      migratedUser: true,
-      migratedUserFirstLogon: true,
-      phone: "phone",
-      role: Roles.Edit,
-      securityQuestion: "securityQuestion",
-      securityQuestionAnswer: "securityQuestionAnswer",
-      status: UserStatus.Pending,
-      uid: "uid",
-      updated: "updated",
-      updatedBy: "updatedBy",
-      username: "username"
+    return {
+      component
     };
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
-  });
+  }
 
-  it('should create', () => {
+  it('should create', async () => {
+    const { component } = await setup();
+
     expect(component).toBeTruthy();
   });
 
-  /*it('has Add Workplace Information', () => {
+  it('has Add Workplace Information', async () => {
+    const { component } = await setup();
+    component.fixture.componentInstance.canEditEstablishment = true;
+    component.fixture.componentInstance.workplace = Establishment;
+    component.fixture.componentInstance.workplace.employerType = null;
+    component.fixture.detectChanges();
+
     const link = component.getByTestId("add-workplace-info");
     expect(link.innerHTML).toContain("Add workplace information");
-  });*/
+  });
 
   /*it('can click Add Workplace Information', () => {
     component.getByTestId("add-workplace-info").click();
