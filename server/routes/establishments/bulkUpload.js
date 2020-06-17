@@ -8,6 +8,7 @@ const rfr = require('rfr');
 const config = rfr('server/config/config');
 const dbModels = rfr('server/models');
 const timerLog = rfr('server/utils/timerLog');
+const slack = rfr('server/utils/slack/slack-logger');
 
 const s3 = new (require('aws-sdk')).S3({
   region: String(config.get('bulkupload.region'))
@@ -45,6 +46,36 @@ const buStates = [
 const ignoreMetaDataObjects = /.*metadata.json$/;
 const ignoreRoot = /.*\/$/;
 const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
+
+const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validationDiferenceReport) => {
+  const thisEstablishment = new Establishment(theLoggedInUser);
+
+  await thisEstablishment.restore(primaryEstablishmentId, false);
+
+  let workerCount = 0;
+  if (validationDiferenceReport.new && validationDiferenceReport.new.length > 0) {
+    validationDiferenceReport.new.map(est => {
+      if (est.workers && est.workers.new) {
+        workerCount = workerCount + est.workers.new.length;
+      }
+      if (est.workers && est.workers.updated) {
+        workerCount = workerCount + est.workers.updated.length;
+      }
+    });
+  }
+  if (validationDiferenceReport.updated && validationDiferenceReport.updated.length > 0) {
+    validationDiferenceReport.updated.map(est => {
+      if (est.workers && est.workers.new) {
+        workerCount = workerCount + est.workers.new.length;
+      }
+      if (est.workers && est.workers.updated) {
+        workerCount = workerCount + est.workers.updated.length;
+      }
+    });
+  }
+
+  if (workerCount > 30) slack.info("Large Bulk Upload", `${thisEstablishment.name} (ID ${thisEstablishment.nmdsId}) just did a bulk upload with a staff file containing ${workerCount} staff records.`);
+};
 
 // Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
@@ -2268,6 +2299,8 @@ const completePost = async (req, res) => {
         const completeEndTime = new Date();
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);
         timerLog('CHECKPOINT - BU COMPLETE - overall', completeStartTime, completeEndTime);
+
+        await sendCountToSlack(theLoggedInUser, primaryEstablishmentId, validationDiferenceReport);
 
         await saveResponse(req, res, 200, {});
       } catch (err) {
