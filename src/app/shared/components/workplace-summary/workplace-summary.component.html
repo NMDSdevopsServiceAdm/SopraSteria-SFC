@@ -360,28 +360,28 @@
     </dd>
   </div>
 
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">
-        Total number of staff
-      </dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.numberOfStaff">
-          {{ workplace.numberOfStaff | numericAnswer }}
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']" (click)="setReturn()">
-          <ng-container *ngIf="!workplace.numberOfStaff">
-            Provide information
-            <span class="govuk-visually-hidden"> for</span>
-          </ng-container>
-          <ng-container *ngIf="workplace.numberOfStaff">
-            Change
-          </ng-container>
-          <span class="govuk-visually-hidden"> total number of staff</span>
-        </a>
-      </dd>
-    </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Total number of staff
+    </dt>
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.numberOfStaff">
+        {{ workplace.numberOfStaff | numericAnswer }}
+      </app-summary-record-value>
+    </dd>
+    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+      <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']" (click)="setReturn()">
+        <ng-container *ngIf="!workplace.numberOfStaff">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="workplace.numberOfStaff">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> total number of staff</span>
+      </a>
+    </dd>
+  </div>
     
   <ng-container *ngIf="wdfView">
     <div *ngIf="totalStaffWarning" class="govuk-summary-list__row govuk-summary-list__row--warning">
