@@ -370,7 +370,7 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.uid, 'total-staff']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.numberOfStaff">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
