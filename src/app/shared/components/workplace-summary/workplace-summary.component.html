@@ -360,7 +360,6 @@
     </dd>
   </div>
 
-  <ng-container>
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">
         Total number of staff
@@ -383,7 +382,8 @@
         </a>
       </dd>
     </div>
-
+    
+  <ng-container *ngIf="wdfView">
     <div *ngIf="totalStaffWarning" class="govuk-summary-list__row govuk-summary-list__row--warning">
       <dt class="govuk-summary-list__key">
         <span class="govuk-visually-hidden">Total number of staff warning</span>
