@@ -2345,7 +2345,7 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
             thisWorker.training.forEach(thisTrainingRecord => {
               responseSend(NEWLINE + TrainingCsvValidator.toCSV(
                 thisEstablishment.key,
-                thisWorker.localIdentifier ? thisWorker.localIdentifier.replace(/\s/g, '') : '',
+                thisWorker.localIdentifier ? thisWorker.localIdentifier : '',
                 thisTrainingRecord),
               'training');
             });
