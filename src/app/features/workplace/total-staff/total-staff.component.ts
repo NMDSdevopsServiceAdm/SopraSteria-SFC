@@ -65,7 +65,7 @@ export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Total Staff is required.',
+            message: 'Enter the total number of staff at your workplace',
           },
           {
             name: 'min',
@@ -77,7 +77,7 @@ export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
           },
           {
             name: 'pattern',
-            message: 'Total Staff must be a number.',
+            message: 'Enter the total number of staff as a digit, like 7',
           },
         ],
       },
