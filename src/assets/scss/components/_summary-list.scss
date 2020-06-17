@@ -1,13 +1,6 @@
-.asc-summarylist-border-top{
-  border-top: 1px solid $govuk-border-colour;
+.govuk-summary-list {
+  margin-bottom: 0px;
 }
-.asc-summarylist-border-bottom{
-   border-bottom:1px solid $govuk-border-colour;
- }
-
-
-//NOTE: Non-offical govuk css:
-
 .govuk-summary-list--wrap-border {
   border: 1px solid $govuk-border-colour;
   border-width: 1px 0;
@@ -96,7 +89,6 @@
   .govuk-summary-list__key {
     width: 40%;
   }
-
   .govuk-summary-list__value {
     width: 60%;
   }
