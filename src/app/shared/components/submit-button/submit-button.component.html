@@ -7,13 +7,15 @@
       (click)="onClick($event, 'summary', false)"
       >View record summary</a
     >
-    <span *ngIf = "this.canExit" class="govuk-visually-hidden">or</span>
-    <a *ngIf = "this.canExit"
-      href="#"
-      class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
-      (click)="onClick($event, 'exit', false)"
-      >Exit</a
-    >
+    <ng-container *ngIf = "this.canExit">
+      <span  class="govuk-visually-hidden">or</span>
+      <a
+        href="#"
+        class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+        (click)="onClick($event, 'exit', false)"
+        >Exit</a
+      >
+    </ng-container>
   </ng-container>
   <ng-template #summary>
     <button type="submit" class="govuk-button" (click)="onClick($event, 'return', true)">
