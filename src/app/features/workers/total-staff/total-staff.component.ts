@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -39,9 +39,10 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
         null,
         [
           Validators.required,
-          Validators.pattern('^[0-9]+$'),
+          this.nonIntegerValidator(new RegExp('\d*[.]\d*')),
           Validators.min(this.totalStaffConstraints.min),
           Validators.max(this.totalStaffConstraints.max),
+          Validators.pattern('^[0-9]+$')
         ],
       ],
     });
@@ -129,6 +130,13 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     this.establishmentService.setState(this.workplace);
   }
 
+  private nonIntegerValidator(nameRe: RegExp): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} | null => {
+      const forbidden = nameRe.test(control.value);
+      return forbidden ? {'nonInteger': {value: control.value}} : null;
+    };
+  }
+
   private onError(error) {}
 
   private setupFormErrors(): void {
@@ -141,12 +149,16 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
             message: 'Enter the total number of staff at your workplace',
           },
           {
+            name: 'nonInteger',
+            message: `Total number of staff must be a whole number between ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
+          },
+          {
             name: 'min',
-            message: `Total Staff must be greater than or equal to ${this.totalStaffConstraints.min}`,
+            message: `Total number of staff must be a whole number between ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
           },
           {
             name: 'max',
-            message: `Total Staff must be lower than or equal to ${this.totalStaffConstraints.max}`,
+            message: `Total number of staff must be a whole number between ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
           },
           {
             name: 'pattern',
