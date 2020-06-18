@@ -18,6 +18,9 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public contractsAvailable: Array<string> = [];
   public jobsAvailable: Job[] = [];
   public showInputTextforOtherRole: boolean;
+  public submitTitle = 'Save staff record';
+  public canExit = false;
+  public canReturn = false;
 
   private otherJobRoleCharacterLimit = 120;
 
@@ -45,12 +48,10 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
     this.subscriptions.add(
       this.jobService.getJobs().subscribe(jobs => {
-        // TODO: Removing Other Jobs should be handled by the Server
-        // https://trello.com/c/x3N7dQJP
         if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
           this.worker.otherJobs.jobs.map((otherjob) => {
             jobs = jobs.filter(j => j.id !== otherjob.jobId);
-          })
+          });
         }
         this.jobsAvailable = jobs;
         if (this.worker) {
@@ -59,7 +60,10 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       })
     );
 
-    this.previous = ['/workplace', this.workplace.uid, 'staff-record', 'start-screen'];
+    this.previous =
+      this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid
+        ? ['/dashboard']
+        : ['/workplace', this.workplace.uid];
   }
 
   renderInEditMode() {
@@ -71,12 +75,16 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     });
 
     this.selectedJobRole(this.worker.mainJob.jobId);
-    // TODO: This is a race condition where this.previous is not getting
-    // picked up by the setBack function as it is done on init.
-    this.previous =
-      this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid
-        ? ['/dashboard']
-        : ['/workplace', this.workplace.uid];
+
+    if (this.workerService.returnTo === null) {
+      const mandatoryDetailsURL = {url: this.getRoutePath('mandatory-details')};
+      this.workerService.setReturnTo(mandatoryDetailsURL);
+      this.return = mandatoryDetailsURL;
+    }
+
+    this.canExit = true;
+    this.canReturn = true;
+    this.submitTitle = 'Save staff record';
   }
 
   public setupFormErrorsMap(): void {
@@ -86,7 +94,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Full name or ID number is required.`,
+            message: `Enter their name or ID number`,
           },
         ],
       },
@@ -95,7 +103,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Main job role is required.`,
+            message: `Select their main job role`,
           },
         ],
       },
@@ -104,7 +112,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'maxlength',
-            message: `Your job role must be ${this.otherJobRoleCharacterLimit} characters or less.`,
+            message: `Job role must be ${this.otherJobRoleCharacterLimit} characters or fewer `,
           },
         ],
       },
@@ -113,7 +121,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Type of contract is required.`,
+            message: `Select the type of contract they have`,
           },
         ],
       },
@@ -142,10 +150,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     return props;
   }
 
-  onSuccess() {
-    this.next = this.getRoutePath('main-job-start-date');
-  }
-
   selectedJobRole(id: number) {
     this.showInputTextforOtherRole = false;
     const otherJob = this.jobsAvailable.find(job => job.id === +id);
@@ -153,4 +157,9 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       this.showInputTextforOtherRole = true;
     }
   }
+
+  onSuccess() {
+    this.next = this.getRoutePath('mandatory-details');
+  }
+
 }

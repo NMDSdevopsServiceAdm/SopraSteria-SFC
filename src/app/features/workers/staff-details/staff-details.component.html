@@ -5,14 +5,14 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">{{ worker ? 'Edit' : 'Enter' }} basic staff record details</h1>
+          <h1 class="govuk-fieldset__heading">{{ worker ? 'Edit' : 'Add' }} a staff record</h1>
         </legend>
         <div
           class="govuk-form-group"
           [class.govuk-form-group--error]="submitted && (form.get('nameOrId').invalid || serverError)"
         >
           <label class="govuk-label" for="nameOrId">
-            Full name or ID number
+            <b>Name or ID number</b>
           </label>
           <span *ngIf="submitted && form.get('nameOrId').errors" id="nameOrId-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
@@ -27,17 +27,18 @@
             type="text"
           />
         </div>
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('mainJob').invalid">
+        <div class="govuk-form-group"
+             [class.govuk-form-group--error]="submitted && (form.get('mainJob').invalid || form.get('otherJobRole').invalid) ">
           <label class="govuk-label" for="mainJob">
-            Main job role
+            <b>Main job role</b>
           </label>
-          <span *ngIf="submitted && form.get('mainJob').errors" id="mainJob-error" class="govuk-error-message">
+          <span *ngIf="submitted && form.get('mainJob').errors " id="mainJob-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFormErrorMessage('mainJob', 'required') }}
           </span>
           <select
             class="govuk-select"
-            [class.govuk-select--error]="submitted && form.get('mainJob').invalid"
+            [class.govuk-select--error]="submitted && form.get('mainJob').invalid  "
             [formControlName]="'mainJob'"
             id="mainJob"
             name="mainJob"
@@ -48,42 +49,41 @@
               {{ job.title }}
             </option>
           </select>
-        </div>
 
-        <div
-          class="govuk-form-group"
-          [class.govuk-form-group--error]="submitted && form.get('otherJobRole').invalid"
-          [class.govuk-select__conditional--hidden]="!showInputTextforOtherRole"
-        >
-          <label class="govuk-label" for="otherJobRole">
-            Enter your job role
-          </label>
-          <span
-            *ngIf="submitted && form.get('otherJobRole').invalid"
-            id="otherJobRole-error"
-            class="govuk-error-message"
+
+          <div
+            class="govuk-radios__conditional govuk-!-margin-top-4"
+            [class.govuk-select__conditional--hidden]="!showInputTextforOtherRole"
           >
-            <span class="govuk-visually-hidden">Error:</span>
-            {{ getFormErrorMessage('otherJobRole', 'maxlength') }}
-          </span>
-          <span id="otherJobRole-hint" class="govuk-hint">
-            Optional
-          </span>
-          <input
-            class="govuk-input govuk-!-width-two-thirds"
-            [formControlName]="'otherJobRole'"
-            id="otherJobRole-conditional"
-            name="otherJobRole"
-            type="text"
-            aria-describedby="otherJobRole-hint"
-          />
+            <label class="govuk-label" for="otherJobRole-conditional">
+              <b>What is the job role?</b>
+            </label>
+            <span
+              *ngIf="submitted && form.get('otherJobRole').invalid"
+              id="otherJobRole-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('otherJobRole', 'maxlength') }}
+            </span>
+            <input
+              class="govuk-input govuk-!-width-two-thirds"
+              [formControlName]="'otherJobRole'"
+              id="otherJobRole-conditional"
+              name="otherJobRole"
+              type="text"
+              aria-describedby="otherJobRole-hint"
+              [class.govuk-select--error]="submitted && form.get('otherJobRole').invalid "
+
+            />
+          </div>
         </div>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('contract').invalid">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend">
               <h1 class="govuk-fieldset__heading">
-                What type of contract do they have?
+                <b> Type of contract </b>
               </h1>
             </legend>
             <span *ngIf="submitted && form.get('contract').errors" id="contract-error" class="govuk-error-message">
@@ -111,5 +111,6 @@
       </fieldset>
     </div>
   </div>
-  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-button [return]="canReturn" [canExit]="canExit" [recordSummary]="false" [callToAction]="this.submitTitle"
+                     (clicked)="onSubmit($event)"></app-submit-button>
 </form>
