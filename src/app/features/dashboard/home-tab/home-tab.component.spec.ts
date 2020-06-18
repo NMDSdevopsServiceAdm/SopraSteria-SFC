@@ -1,10 +1,4 @@
-import { ReactiveFormsModule } from '@angular/forms';
-import { spy } from 'sinon';
-import { of } from 'rxjs';
-import { Observable } from 'rxjs/Observable';
-
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { fakeAsync, tick, async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WindowRef } from '@core/services/window.ref';
 import { render, within } from '@testing-library/angular';
@@ -16,9 +10,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
-import { Location } from "@angular/common";
-import { UserDetails, UserStatus } from "@core/model/userDetails.model";
-import { Roles } from '@core/model/roles.enum';
 import { UserService } from '@core/services/user.service';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { EstablishmentService } from '@core/services/establishment.service';
