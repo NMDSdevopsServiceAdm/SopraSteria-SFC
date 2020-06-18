@@ -21,7 +21,7 @@ import { StartComponent } from '../../workplace/start/start.component';
 import { HomeTabComponent } from './home-tab.component';
 
 
-fdescribe('HomeTabComponent', () => {
+describe('HomeTabComponent', () => {
   async function setup() {
     const component = await render(HomeTabComponent, {
       imports: [
