@@ -5,6 +5,7 @@ const sinon = require('sinon');
 const rfr = require('rfr');
 const { build, fake } = require('@jackfranklin/test-data-bot');
 
+const slack = rfr('server/utils/slack/slack-logger');
 
 const dbmodels = rfr('server/models');
 sinon.stub(dbmodels.status, 'ready').value(false);
@@ -573,5 +574,71 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       expect(lines[1]).to.equal(`${establishment.name},${workerName},${BUDI.trainingCategory(BUDI.FROM_ASC, trainingCategory)},,,,,`);
     });
 
+  });
+  describe('sendCountToSlack()', () => {
+    it('should send notification to slack with over 500 workers', async () => {
+      const differenceReport = {
+        new: [
+          {
+            workers: {
+              new: [],
+              updated: [
+                {
+                  name: 0
+                }
+              ]
+            }
+          }
+        ],
+        updated: [
+          {
+            workers: {
+              new: [
+                {
+                  name: 0
+                }
+              ],
+              updated: [
+                {
+                  name: 0
+                }
+              ]
+            }
+          }
+        ]
+      }
+      for (let i = 0; i < 502; i++) {
+        differenceReport.new[0].workers.new.push({name: i});
+      }
+      const username = 'foo';
+      const primaryId = 123;
+
+      sinon.stub(Establishment.prototype, 'restore');
+
+      const spy = sinon.spy(slack, 'info');
+      await bulkUpload.sendCountToSlack(username, primaryId, differenceReport);
+
+      expect(spy.called).to.deep.equal(true);
+    });
+    it('should not send notification to slack with under 500 workers', async () => {
+      const differenceReport = {
+        new: [
+          {
+            workers: {
+              new: []
+            }
+          }
+        ]
+      }
+      const username = 'foo';
+      const primaryId = 123;
+
+      sinon.stub(Establishment.prototype, 'restore');
+
+      const spy = sinon.spy(slack, 'info');
+      await bulkUpload.sendCountToSlack(username, primaryId, differenceReport);
+
+      expect(spy.called).to.deep.equal(false);
+    });
   });
 });
