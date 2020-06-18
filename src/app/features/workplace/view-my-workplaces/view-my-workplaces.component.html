@@ -22,7 +22,8 @@
   <ng-container *ngIf="pendingWorkplaces.length">
     <li class="govuk-util__list-record govuk-!-margin-bottom-0 govuk-panel--light-blue" *ngFor="let workplaces of pendingWorkplaces">
       <div>
-        Your application for {{workplaces.name}} is being reviewed by Skills for Care. <span class="govuk-util__float-right">Pending</span>
+        <span class="govuk-!-padding-left-3">Your application for {{workplaces.name}} is being reviewed by Skills for Care.</span>
+        <span class="govuk-util__float-right govuk-!-padding-right-3">Pending</span>
       </div>
     </li>
   </ng-container>

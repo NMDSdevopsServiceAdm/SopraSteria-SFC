@@ -45,6 +45,8 @@ import { ViewWorkplaceComponent } from './view-workplace/view-workplace.componen
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
@@ -79,7 +81,9 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     RegulatedByCqcComponent,
     SelectWorkplaceComponent,
     WorkplaceNotFoundComponent,
-    EnterWorkplaceAddressComponent
+    EnterWorkplaceAddressComponent,
+    SelectMainServiceCqcComponent,
+    SelectMainServiceCqcConfirmComponent
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [

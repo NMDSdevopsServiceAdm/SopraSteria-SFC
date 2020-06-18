@@ -2293,12 +2293,8 @@ const completePost = async (req, res) => {
   }
 };
 
-// takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
-const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, responseSend) => {
-  // before being able to write the worker header, we need to know the maximum number of qualifications
-  // columns across all workers
-
-  const determineMaxQuals = await dbModels.sequelize.query(
+const determineMaxQuals = async (primaryEstablishmentId) => {
+  return dbModels.sequelize.query(
     'select cqc.maxQualifications(:givenPrimaryEstablishment);',
     {
       replacements: {
@@ -2307,9 +2303,15 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
       type: dbModels.sequelize.QueryTypes.SELECT
     }
   );
+};
 
-  if (determineMaxQuals && determineMaxQuals[0].maxqualifications && Number.isInteger(parseInt(determineMaxQuals[0].maxqualifications, 10))) {
-    const MAX_QUALS = parseInt(determineMaxQuals[0].maxqualifications, 10);
+// takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
+const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, maxQuals, responseSend) => {
+  // before being able to write the worker header, we need to know the maximum number of qualifications
+  // columns across all workers
+
+  if (maxQuals && maxQuals[0].maxqualifications && Number.isInteger(parseInt(maxQuals[0].maxqualifications, 10))) {
+    const MAX_QUALS = parseInt(maxQuals[0].maxqualifications, 10);
 
     // first the header rows
     let columnNames = '';
@@ -2341,14 +2343,18 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
             responseSend(NEWLINE + WorkerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
           } else if (thisWorker.training) { // or for this Worker's training records
             thisWorker.training.forEach(thisTrainingRecord => {
-              responseSend(NEWLINE + TrainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord), 'training');
+              responseSend(NEWLINE + TrainingCsvValidator.toCSV(
+                thisEstablishment.key,
+                thisWorker.localIdentifier ? thisWorker.localIdentifier : '',
+                thisTrainingRecord),
+              'training');
             });
           }
         });
       }
     });
   } else {
-    console.error('bulk upload exportToCsv - max quals error: ', determineMaxQuals);
+    console.error('bulk upload exportToCsv - max quals error: ', maxQuals);
     throw new Error('max quals error: determineMaxQuals');
   }
 };
@@ -2382,12 +2388,14 @@ const downloadGet = async (req, res) => {
 
   if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
     try {
+      const maxQuals = await determineMaxQuals(primaryEstablishmentId);
       await exportToCsv(
         NEWLINE,
         // only restore those subs that this primary establishment owns
         await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true),
         primaryEstablishmentId,
         downloadType,
+        maxQuals,
         responseSend
       );
 
@@ -2480,3 +2488,5 @@ module.exports.printLine = printLine;
 module.exports.checkDuplicateLocations = checkDuplicateLocations;
 module.exports.checkDuplicateWorkerID = checkDuplicateWorkerID;
 module.exports.validateEstablishmentCsv = validateEstablishmentCsv;
+module.exports.exportToCsv = exportToCsv;
+module.exports.determineMaxQuals = determineMaxQuals;
