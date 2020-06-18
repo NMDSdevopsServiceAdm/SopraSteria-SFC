@@ -8,7 +8,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { WindowRef } from '@core/services/window.ref';
 
 import { CqcStatusChangeComponent } from './cqc-status-change.component';
-import { CqcStatusChange } from '@core/model/cqc-status-change.model';
+import { CqcChangeData } from '@core/model/cqc-change-data.model';
+import { ApprovalRequest } from '@core/model/approval-request.model';
 
 const testChangeRequestId = 9999;
 const testParentRequestUuid = '360c62a1-2e20-410d-a72b-9d4100a11f4e';
@@ -33,34 +34,36 @@ function cqcStatusChangeGenerator(otherCurrentService = false, otherRequestedSer
     establishmentUid: testEstablishmentUid,
     userId: testUserId,
     workplaceId: testWorkplaceId,
-    username: testUsername,
+    userName: testUsername,
     orgName: testOrgname,
     requested: testRequestedDate,
     status: 'Pending',
-    currentService: {
-      ID: 1,
-      name: 'Carers support',
-    },
-    requestedService: {
-      ID: 2,
-      name: 'Service Name'
-    }
-  } as CqcStatusChange;
+    data: {
+      currentService: {
+        ID: 1,
+        name: 'Carers support',
+      },
+      requestedService: {
+        ID: 2,
+        name: 'Service Name'
+      }
+    } as CqcChangeData
+  } as ApprovalRequest<CqcChangeData>;
   if (otherCurrentService) {
-    payload.currentService = {
+    payload.data.currentService = {
       ID: 5,
       name: 'Other Service',
       other: 'Other Service Name'
     };
   }
   if (otherRequestedService) {
-    payload.requestedService = {
+    payload.data.requestedService = {
       ID: 6,
       name: 'Other Service',
       other: 'Other Service Name'
     };
     if (usernameNull) {
-      payload.username = null;
+      payload.userName = null;
     }
   }
   return payload;
@@ -121,7 +124,7 @@ describe('CqcStatusChangeComponent', () => {
     const otherServiceValue = await within(document.body).findByTestId('cqc-requested-service-other-value');
     const cqcStatusChange = cqcStatusChangeGenerator(otherCurrentService , otherRequestedService);
     expect(otherServiceTitle.innerHTML).toContain(`Requested service name`);
-    expect(otherServiceValue.innerHTML).toContain(cqcStatusChange.requestedService.other);
+    expect(otherServiceValue.innerHTML).toContain(cqcStatusChange.data.requestedService.other);
 
   });
   it('shouldn\'t show up current service name if current service doesnt an \'other\' type ', async () => {
@@ -197,7 +200,7 @@ describe('CqcStatusChangeComponent', () => {
     within(modalConfirmationDialog).getByText(modalApproveText).click();
 
     // Assert
-    expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will be flagged as CQC regulated and their new main service will be ${cqcStatusChange.requestedService.name}.`);
+    expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will be flagged as CQC regulated and their new main service will be ${cqcStatusChange.data.requestedService.name}.`);
   });
 
   it('confirmation modal should display org name when rejecting a request', async () => {
@@ -210,7 +213,7 @@ describe('CqcStatusChangeComponent', () => {
     within(modalConfirmationDialog).getByText(modalRejectText).click();
 
     // Assert
-    expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will not be flagged as CQC regulated and their main service will still be ${cqcStatusChange.currentService.name}.`);
+    expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will not be flagged as CQC regulated and their main service will still be ${cqcStatusChange.data.currentService.name}.`);
   });
 
   it('confirmation modal should show approval message when approving a request', async () => {

@@ -27,22 +27,22 @@
       <tr class="govuk-table__row">
         <th class="govuk-table__cell">Requested service</th>
         <td class="govuk-table__cell">
-          {{ cqcStatusChange.requestedService.name }}
+          {{ cqcStatusChange.data.requestedService.name }}
         </td>
         <th class="govuk-table__cell">Current service</th>
         <td class="govuk-table__cell">
-            {{ cqcStatusChange.currentService.name }}
+            {{ cqcStatusChange.data.currentService.name }}
         </td>
       </tr>
-      <tr *ngIf="cqcStatusChange.requestedService.other || cqcStatusChange.currentService.other" class="govuk-table__row">
+      <tr *ngIf="cqcStatusChange.data.requestedService.other || cqcStatusChange.data.currentService.other" class="govuk-table__row">
         <th class="govuk-table__cell">
-          <span data-testid="cqc-requested-service-other-title"  *ngIf="cqcStatusChange.requestedService.other" >Requested service name</span></th>
+          <span data-testid="cqc-requested-service-other-title"  *ngIf="cqcStatusChange.data.requestedService.other" >Requested service name</span></th>
         <td class="govuk-table__cell">
-         <span  data-testid="cqc-requested-service-other-value" *ngIf="cqcStatusChange.requestedService.other"> {{ cqcStatusChange.requestedService.other }}</span>
+         <span  data-testid="cqc-requested-service-other-value" *ngIf="cqcStatusChange.data.requestedService.other"> {{ cqcStatusChange.data.requestedService.other }}</span>
         </td>
-        <th  class="govuk-table__cell"><span data-testid="cqc-current-service-other-value" *ngIf="cqcStatusChange.currentService.other">Current service name</span></th>
+        <th  class="govuk-table__cell"><span data-testid="cqc-current-service-other-value" *ngIf="cqcStatusChange.data.currentService.other">Current service name</span></th>
         <td  class="govuk-table__cell">
-          <span  data-testid="cqc-current-service-other-value" *ngIf="cqcStatusChange.currentService.other">{{ cqcStatusChange.currentService.other }}</span>
+          <span  data-testid="cqc-current-service-other-value" *ngIf="cqcStatusChange.data.currentService.other">{{ cqcStatusChange.data.currentService.other }}</span>
         </td>
       </tr>
       <tr class="govuk-table__row">

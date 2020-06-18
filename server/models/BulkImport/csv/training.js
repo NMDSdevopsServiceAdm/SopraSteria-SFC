@@ -323,31 +323,35 @@ class Training {
   }
 
   _validateAccredited () {
-    const myAccredited = parseInt(this._currentLine.ACCREDITED, 10);
-    const ALLOWED_VALUES = [0, 1, 999];
-    if (Number.isNaN(myAccredited) || !ALLOWED_VALUES.includes(myAccredited)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Training.ACCREDITED_ERROR,
-        errType: 'ACCREDITED_ERROR',
-        error: 'ACCREDITED is invalid',
-        source: this._currentLine.ACCREDITED
-      });
-      return false;
-    } else {
-      switch (myAccredited) {
-        case 0:
-          this._accredited = 'No';
-          break;
-        case 1:
-          this._accredited = 'Yes';
-          break;
-        case 999:
-          this._accredited = 'Don\'t know';
-          break;
+    if (this._currentLine.ACCREDITED) {
+      const myAccredited = parseInt(this._currentLine.ACCREDITED, 10);
+      const ALLOWED_VALUES = [0, 1, 999];
+      if (Number.isNaN(myAccredited) || !ALLOWED_VALUES.includes(myAccredited)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Training.ACCREDITED_ERROR,
+          errType: 'ACCREDITED_ERROR',
+          error: 'ACCREDITED is invalid',
+          source: this._currentLine.ACCREDITED
+        });
+        return false;
+      } else {
+        switch (myAccredited) {
+          case 0:
+            this._accredited = 'No';
+            break;
+          case 1:
+            this._accredited = 'Yes';
+            break;
+          case 999:
+            this._accredited = 'Don\'t know';
+            break;
+        }
+        return true;
       }
+    } else {
       return true;
     }
   }
@@ -552,7 +556,7 @@ class Training {
 
     return columns.join(',');
   }
-  
+
   toCSV(establishmentId, workerId, entity) {
     return Training.toCSV(establishmentId, workerId, entity);
   }
