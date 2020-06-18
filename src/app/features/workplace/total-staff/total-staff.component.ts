@@ -19,6 +19,7 @@ import { Question } from '../question/question.component';
 })
 export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
   public form: FormGroup;
+  public nextRoute: string[];
   public workplace: Establishment;
   private totalStaffConstraints = { min: 0, max: 999 };
   public formErrorsMap: Array<ErrorDetails>;
@@ -28,7 +29,7 @@ export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
     protected formBuilder: FormBuilder,
     protected backService: BackService, 
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService,
+    public establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -52,8 +53,8 @@ export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
         this.form.patchValue({ totalStaff: staff });
       })
     );
-
-    this.next = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
+    
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
     this.setPreviousRoute();
 
     this.setupFormErrors();
@@ -97,7 +98,7 @@ export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
   }
 
   private setPreviousRoute(): void {
-    this.previous = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
+    this.previousRoute = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
       ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
       : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
