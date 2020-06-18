@@ -2,9 +2,14 @@ const models = require('../../../../models/index');
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 const expect = require('chai').expect;
-const { validateBecomeAParentRequest } = require('../../../../routes/approvals/becomeAParent');
+const { validateBecomeAParentRequest, getParentRequestByEstablishmentId } = require('../../../../routes/approvals/becomeAParent');
+const sinon_sandbox = sinon.createSandbox();
+const faker = require('faker');
+const moment = require('moment-timezone');
+const config = require('../../../../config/config');
 
-describe('test become a parent endpoint functions', () => {
+
+describe('test become a parent request functionality', () => {
   describe('validateBecomeAParentRequest', () => {
     afterEach(() => {
       sinon.restore();
