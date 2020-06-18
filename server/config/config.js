@@ -443,6 +443,38 @@ const config = convict({
     doc: 'What timezone is the service running in?',
     format: String,
     default: 'Europe/London'
+  },
+  datadog: {
+    site: {
+      doc: 'Datadog URL',
+      format: String,
+      default: 'datadoghq.eu'
+    },
+    api_key: {
+      doc: 'Datadog API Key',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'DD_API_KEY'
+    }
+  },
+  sentry: {
+    dsn: {
+      doc: 'Sentry Endpoint',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'SENTRY_DSN'
+    }
+  },
+  honeycomb: {
+    api_key: {
+      doc: 'Honeycomb API Key',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'HONEYCOMB_API_KEY'
+    }
   }
 });
 
