@@ -8,6 +8,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WindowRef } from '@core/services/window.ref';
 import { render, within } from '@testing-library/angular';
+import { SharedModule } from '@shared/shared.module';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -23,6 +24,11 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { WorkplaceRoutingModule } from '../../workplace/workplace-routing.module';
 import { WorkplaceModule } from '../../workplace/workplace.module';
 
+ import { NumericAnswerPipe } from '@shared/pipes/numeric-answer.pipe';
+ import { EligibilityIconComponent } from '../../../shared/components/eligibility-icon/eligibility-icon.component';
+ import { InsetTextComponent } from '../../../shared/components/inset-text/inset-text.component';
+ import { SummaryRecordValueComponent } from '../../../shared/components/summary-record-value/summary-record-value.component';
+
 import { HomeTabComponent } from './home-tab.component';
 
 
@@ -30,13 +36,14 @@ fdescribe('HomeTabComponent', () => {
   async function setup() {
     const component = await render(HomeTabComponent, {
       imports: [
+        SharedModule,
         RouterModule,
         RouterTestingModule,
         WorkplaceModule,
         WorkplaceRoutingModule,
         HttpClientTestingModule],
       declarations: [
-        HomeTabComponent
+        HomeTabComponent,
       ],
       providers: [
         {

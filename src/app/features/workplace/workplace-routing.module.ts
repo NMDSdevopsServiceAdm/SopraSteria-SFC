@@ -61,10 +61,6 @@ const routes: Routes = [
     component: ViewAllMandatoryTrainingComponent,
   },
   {
-    path: 'start-screen',
-    data: { title: 'Start' },
-  },
-  {
     path: ':establishmentuid',
     component: EditWorkplaceComponent,
     resolve: { establishment: WorkplaceResolver },
@@ -269,14 +265,6 @@ const routes: Routes = [
         data: {
           roles: [Roles.Admin, Roles.Edit],
           title: 'Confirm Leavers',
-        },
-      },
-      {
-        path: 'volunteers',
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin, Roles.Edit],
-          title: 'Volunteers',
         },
       },
       {
