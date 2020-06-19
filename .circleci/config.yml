@@ -32,7 +32,7 @@ jobs:
       - persist_to_workspace:
           root: *workspace_path
           paths:
-            - project
+            - project/node_modules
 workflows:
     build-test-deploy:
       jobs:
@@ -45,7 +45,7 @@ workflows:
             org: dhsc-skills-for-care-nmds-sc-2
             space: sandbox
             manifest: manifest.circle.yml
-            package: ''
+            package: null
             domain: sfccircle.cloudapps.digital
             workspace_path: /home/circleci/project
 
