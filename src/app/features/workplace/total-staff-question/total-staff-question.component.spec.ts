@@ -26,9 +26,9 @@ const { build, fake, sequence, } = require('@jackfranklin/test-data-bot');
 
 
 
-import { TotalStaffComponent } from './total-staff.component';
+import { TotalStaffQuestionComponent } from './total-staff-question.component';
 
-describe('TotalStaffComponent', () => {
+fdescribe('TotalStaffQuestionComponent', () => {
   const establishmentBuilder = build('Establishment', {
     fields: {
       id: sequence(),
@@ -43,7 +43,7 @@ describe('TotalStaffComponent', () => {
 
     const establishment = establishmentBuilder() as Establishment;
 
-    const component = await render(TotalStaffComponent, {
+    const component = await render(TotalStaffQuestionComponent, {
         imports: [
           SharedModule,
           RouterModule,

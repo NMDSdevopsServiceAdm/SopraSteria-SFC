@@ -14,10 +14,10 @@ import { Subscription } from 'rxjs';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-total-staff',
-  templateUrl: './total-staff.component.html',
+  selector: 'app-total-staff-question',
+  templateUrl: './total-staff-question.component.html',
 })
-export class TotalStaffComponent extends Question implements OnInit, OnDestroy {
+export class TotalStaffQuestionComponent extends Question implements OnInit, OnDestroy {
   public form: FormGroup;
   public nextRoute: string[];
   public workplace: Establishment;
