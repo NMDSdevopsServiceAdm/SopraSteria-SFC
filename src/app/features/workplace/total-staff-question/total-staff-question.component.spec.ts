@@ -24,8 +24,6 @@ import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { of } from 'rxjs';
 const { build, fake, sequence, } = require('@jackfranklin/test-data-bot');
 
-
-
 import { TotalStaffQuestionComponent } from './total-staff-question.component';
 
 fdescribe('TotalStaffQuestionComponent', () => {

@@ -17,8 +17,8 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    protected formBuilder: FormBuilder, 
-    protected errorSummaryService: ErrorSummaryService,
+    public formBuilder: FormBuilder, 
+    public errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
   ) {
     this.form = this.formBuilder.group({
@@ -43,7 +43,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  protected initTotalStaff(establishmentUid): void {
+  public initTotalStaff(establishmentUid): void {
     this.subscriptions.add(
       this.establishmentService.getStaff(establishmentUid).subscribe(staff => {
         this.form.patchValue({ totalStaff: staff });

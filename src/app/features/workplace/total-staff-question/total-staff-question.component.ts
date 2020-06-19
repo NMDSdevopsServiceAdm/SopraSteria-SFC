@@ -1,15 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DataSharingOptions } from '@core/model/data-sharing.model';
-import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
+import { TotalStaffComponent } from '../../../shared/components/total-staff/total-staff.component';
 
 import { Question } from '../question/question.component';
 
@@ -18,83 +13,23 @@ import { Question } from '../question/question.component';
   templateUrl: './total-staff-question.component.html',
 })
 export class TotalStaffQuestionComponent extends Question implements OnInit, OnDestroy {
-  public form: FormGroup;
   public nextRoute: string[];
   public workplace: Establishment;
-  private totalStaffConstraints = { min: 0, max: 999 };
-  public formErrorsMap: Array<ErrorDetails>;
 
   constructor(
     protected router: Router,
-    protected formBuilder: FormBuilder,
     protected backService: BackService, 
-    protected errorSummaryService: ErrorSummaryService,
-    public establishmentService: EstablishmentService,
+    protected establishmentService: EstablishmentService,
+    private totalStaffComponent: TotalStaffComponent
   ) {
-    super(formBuilder, router, backService, errorSummaryService, establishmentService);
-
-    this.form = this.formBuilder.group({
-      totalStaff: [
-        null,
-        [
-          Validators.required,
-          this.nonIntegerValidator(new RegExp('\d*[.]\d*')),
-          Validators.min(this.totalStaffConstraints.min),
-          Validators.max(this.totalStaffConstraints.max),
-          Validators.pattern('^[0-9]+$')
-        ],
-      ],
-    });
+    super(totalStaffComponent.formBuilder, router, backService, totalStaffComponent.errorSummaryService, establishmentService);
   }
 
   protected init(): void {
-    this.subscriptions.add(
-      this.establishmentService.getStaff(this.establishment.uid).subscribe(staff => {
-        this.form.patchValue({ totalStaff: staff });
-      })
-    );
+    this.totalStaffComponent.initTotalStaff(this.establishment.uid);
     
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
     this.setPreviousRoute();
-
-    this.setupFormErrors();
-  }
-
-  private nonIntegerValidator(nameRe: RegExp): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} | null => {
-      const forbidden = nameRe.test(control.value);
-      return forbidden ? {'nonInteger': {value: control.value}} : null;
-    };
-  }
-
-  private setupFormErrors(): void {
-    this.formErrorsMap = [
-      {
-        item: 'totalStaff',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter the total number of staff at your workplace',
-          },
-          {
-            name: 'nonInteger',
-            message: `Total number of staff must be a whole number between ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
-          },
-          {
-            name: 'min',
-            message: `Total number of staff must be a whole number between ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
-          },
-          {
-            name: 'max',
-            message: `Total number of staff must be a whole number between ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
-          },
-          {
-            name: 'pattern',
-            message: 'Enter the total number of staff as a digit, like 7',
-          },
-        ],
-      },
-    ];
   }
 
   private setPreviousRoute(): void {
@@ -105,7 +40,7 @@ export class TotalStaffQuestionComponent extends Question implements OnInit, OnD
 
   protected generateUpdateProps() {
     return {
-      totalStaff: this.form.value.totalStaff,
+      totalStaff: this.totalStaffComponent.form.value.totalStaff,
     };
   }
 
