@@ -45,6 +45,7 @@ workflows:
             org: dhsc-skills-for-care-nmds-sc-2
             space: sandbox
             manifest: manifest.circle.yml
+            package: '.'
             domain: sfccircle.cloudapps.digital
             workspace_path: /home/circleci/project
 
