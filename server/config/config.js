@@ -468,12 +468,12 @@ const config = convict({
     }
   },
   honeycomb: {
-    api_key: {
-      doc: 'Honeycomb API Key',
+    write_key: {
+      doc: 'Honeycomb Write Key',
       format: String,
       default: '',
       sensitive: true,
-      env: 'HONEYCOMB_API_KEY'
+      env: 'HONEYCOMB_WRITE_KEY'
     }
   }
 });
@@ -510,6 +510,9 @@ if (config.get('aws.secrets.use')) {
     config.set('slack.url', AWSSecrets.slackUrl());
     config.set('notify.key', AWSSecrets.govNotify());
     config.set('admin.url', AWSSecrets.adminUrl());
+    config.set('datadog.api_key', AWSSecrets.datadogApiKey());
+    config.set('sentry.dsn', AWSSecrets.sentryDsn());
+    config.set('honeycomb.write_key', AWSSecrets.honeycombWriteKey());
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());

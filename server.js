@@ -1,8 +1,8 @@
 var config = require('./server/config/config');
 
-if (config.get('honeycomb.api_key')) {
+if (config.get('honeycomb.write_key')) {
   require("honeycomb-beeline")({
-    writeKey: config.get('honeycomb.api_key'),
+    writeKey: config.get('honeycomb.write_key'),
     dataset: "sfc",
     serviceName: "sfc",
     express: {
@@ -223,15 +223,9 @@ app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
 
-app.get('/debug-sentry', function mainHandler(req, res) {
-  console.error(new Error('this is an error!'));
-  throw new Error('My first Sentry error!');
-});
-
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
-
 
 app.use(Sentry.Handlers.errorHandler());
 
