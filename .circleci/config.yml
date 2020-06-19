@@ -51,6 +51,6 @@ workflows:
             domain: cloudapps.digital
             build_steps:
                 - run: npm install
-                - run: ng build
+                - run: npm run build
 
 
