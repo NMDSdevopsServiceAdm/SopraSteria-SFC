@@ -32,7 +32,7 @@ jobs:
       - persist_to_workspace:
           root: *workspace_path
           paths:
-            - project/node_modules
+            - project
 workflows:
     build-test-deploy:
       jobs:
