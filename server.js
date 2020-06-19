@@ -3,7 +3,7 @@ var config = require('./server/config/config');
 if (config.get('honeycomb.write_key')) {
   require("honeycomb-beeline")({
     writeKey: config.get('honeycomb.write_key'),
-    dataset: "sfc",
+    dataset: config.get('env'),
     serviceName: "sfc",
     express: {
       userContext: ["id", "username"]
