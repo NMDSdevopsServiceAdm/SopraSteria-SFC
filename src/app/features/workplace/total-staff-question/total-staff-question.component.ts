@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -26,13 +27,21 @@ export class TotalStaffQuestionComponent extends Question implements OnInit, OnD
     protected backService: BackService, 
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
+    protected totalStaffFormService: TotalStaffFormService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    this.form = totalStaffFormService.createForm(formBuilder);
+  }
+
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = this.totalStaffFormService.createFormErrorsMap();
   }
 
   protected init(): void {
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
     this.setPreviousRoute();
+
+    this.setupFormErrorsMap();
   }
 
   private setPreviousRoute(): void {
