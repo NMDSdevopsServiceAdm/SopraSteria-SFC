@@ -4,7 +4,9 @@ import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { TotalStaffComponent } from '../../../shared/components/total-staff/total-staff.component';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 import { Question } from '../question/question.component';
 
@@ -15,14 +17,17 @@ import { Question } from '../question/question.component';
 export class TotalStaffQuestionComponent extends Question implements OnInit, OnDestroy {
   public nextRoute: string[];
   public workplace: Establishment;
+  public form: FormGroup;
+  public formErrorsMap: Array<ErrorDetails> = [];
 
   constructor(
+    protected formBuilder: FormBuilder,
     protected router: Router,
     protected backService: BackService, 
+    protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private totalStaffComponent: TotalStaffComponent
   ) {
-    super(totalStaffComponent.formBuilder, router, backService, totalStaffComponent.errorSummaryService, establishmentService);
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
   protected init(): void {
@@ -38,7 +43,7 @@ export class TotalStaffQuestionComponent extends Question implements OnInit, OnD
 
   protected generateUpdateProps() {
     return {
-      totalStaff: this.totalStaffComponent.form.value.totalStaff,
+      totalStaff: this.form.value.totalStaff,
     };
   }
 

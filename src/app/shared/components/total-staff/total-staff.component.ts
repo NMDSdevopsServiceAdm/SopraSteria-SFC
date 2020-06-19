@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
@@ -11,15 +10,13 @@ import { Subscription } from 'rxjs';
 })
 export class TotalStaffComponent implements OnInit, OnDestroy {
   @Input() establishmentUid: string;
-
-  public form: FormGroup;
-  public formErrorsMap: Array<ErrorDetails>;
+  @Input() form: FormGroup;
+  @Input() formErrorsMap: Array<ErrorDetails>;
   private totalStaffConstraints = { min: 0, max: 999 };
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     public formBuilder: FormBuilder, 
-    public errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
   ) {
     this.form = this.formBuilder.group({
@@ -42,7 +39,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
         this.form.patchValue({ totalStaff: staff });
       })
     );
-    this.setupFormErrors();
+    this.setupFormErrorsMap();
   }
 
   ngOnDestroy() {
@@ -56,7 +53,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     };
   }
 
-  private setupFormErrors(): void {
+  private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'totalStaff',

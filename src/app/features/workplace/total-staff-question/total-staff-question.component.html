@@ -1,5 +1,8 @@
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="totalStaffComponent.form">
-  <app-total-staff [establishmentUid]="establishment.uid">
+  <app-total-staff
+    [establishmentUid]="establishment.uid"
+    [form]="form"
+    [formErrorsMap]="formErrorsMap">
   </app-total-staff>
 
   <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
