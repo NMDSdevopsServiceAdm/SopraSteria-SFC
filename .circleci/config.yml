@@ -46,7 +46,9 @@ workflows:
             space: sandbox
             manifest: manifest.circle.yml
             package: '.'
-            domain: sfccircle.cloudapps.digital
+            dark_subdomain: sfccircle-dark
+            live_subdomain: sfccircle-live
+            domain: cloudapps.digital
             workspace_path: /home/circleci/project
 
 
