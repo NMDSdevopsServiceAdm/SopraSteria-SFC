@@ -24,7 +24,6 @@ const logger = createLogger({
 });
 
 if (config.get('datadog.api_key')) {
-  console.log(httpTransportOptions)
   logger.add(new transports.Http(httpTransportOptions, {
     format: format.combine(
       format.errors({ stack: true }),
