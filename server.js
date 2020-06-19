@@ -18,7 +18,7 @@ var express = require('express');
 const Sentry = require('@sentry/node');
 if (config.get('sentry.dsn')) {
   console.log(config.get('sentry.dsn'));
-  Sentry.init({ dsn: config.get('sentry.dsn') });
+  Sentry.init({ dsn: config.get('sentry.dsn'), environment: config.get('env') });
 }
 
 const logger = require('./server/utils/logger')
