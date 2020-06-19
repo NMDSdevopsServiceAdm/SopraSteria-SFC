@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './total-staff.component.html',
 })
 export class TotalStaffComponent implements OnInit, OnDestroy {
+  @Input() establishmentUid: string;
 
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
@@ -36,19 +37,16 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.subscriptions.add(
+      this.establishmentService.getStaff(this.establishmentUid).subscribe(staff => {
+        this.form.patchValue({ totalStaff: staff });
+      })
+    );
     this.setupFormErrors();
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-  }
-
-  public initTotalStaff(establishmentUid): void {
-    this.subscriptions.add(
-      this.establishmentService.getStaff(establishmentUid).subscribe(staff => {
-        this.form.patchValue({ totalStaff: staff });
-      })
-    );
   }
 
   private nonIntegerValidator(nameRe: RegExp): ValidatorFn {

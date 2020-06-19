@@ -26,8 +26,6 @@ export class TotalStaffQuestionComponent extends Question implements OnInit, OnD
   }
 
   protected init(): void {
-    this.totalStaffComponent.initTotalStaff(this.establishment.uid);
-    
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
     this.setPreviousRoute();
   }

@@ -1,26 +1,30 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('totalStaff').invalid">
-      <h1 class="govuk-label-wrapper">
-        <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="totalStaff">
-          What is the total number of staff at your workplace?
-        </label>
-      </h1>
-      <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
-        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('totalStaff') }}
-      </span>
-      <span id="totalStaff-hint" class="govuk-hint">
-        This includes permanent, temporary, pool or bank, and agency staff.
-      </span>
-      <input
-        class="govuk-input govuk-input--width-4"
-        [class.govuk-input--error]="submitted && form.get('totalStaff').invalid"
-        [formControlName]="'totalStaff'"
-        id="totalStaff"
-        name="totalStaff"
-        type="text"
-        aria-describedby="totalStaff-hint"
-      />
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('totalStaff').invalid">
+        <h1 class="govuk-label-wrapper">
+          <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="totalStaff">
+            What is the total number of staff at your workplace?
+          </label>
+        </h1>
+        <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('totalStaff') }}
+        </span>
+        <span id="totalStaff-hint" class="govuk-hint">
+          This includes permanent, temporary, pool or bank, and agency staff.
+        </span>
+        <input
+          class="govuk-input govuk-input--width-4"
+          [class.govuk-input--error]="submitted && form.get('totalStaff').invalid"
+          [formControlName]="'totalStaff'"
+          id="totalStaff"
+          name="totalStaff"
+          type="text"
+          aria-describedby="totalStaff-hint"
+        />
+      </div>
     </div>
   </div>
-</div>
+</form>
