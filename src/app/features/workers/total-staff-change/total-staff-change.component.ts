@@ -11,10 +11,10 @@ import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-total-staff',
-  templateUrl: './total-staff.component.html',
+  selector: 'app-total-staff-change',
+  templateUrl: './total-staff-change.component.html',
 })
-export class TotalStaffComponent implements OnInit, OnDestroy {
+export class TotalStaffChangeComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public returnToDash = false;
   public submitted = false;
