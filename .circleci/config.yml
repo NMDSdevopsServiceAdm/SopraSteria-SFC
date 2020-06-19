@@ -1,6 +1,15 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
+  cloudfoundry: circleci/cloudfoundry@0.1.73
+
+workspace_path: &workspace_path
+  /home/circleci
+
+use_workspace: &use_workspace
+ attach_workspace:
+   at: *workspace_path
+
 jobs:
   build-and-test:
     executor:
@@ -20,7 +29,24 @@ jobs:
           steps:
             - run: npm install
             - run: npm test
+      - persist_to_workspace:
+          root: *workspace_path
+          paths:
+            - project
 workflows:
-    build-and-test:
+    build-test-deploy:
       jobs:
         - build-and-test
+        - cloudfoundry/blue_green:
+            appname: sfccircle
+            requires:
+                - build-and-test
+            endpoint: https://api.cloud.service.gov.uk
+            org: dhsc-skills-for-care-nmds-sc-2
+            space: sandbox
+            manifest: manifest.circle.yml
+            package: ''
+            domain: sfccircle.cloudapps.digital
+            workspace_path: /home/circleci/project
+
+
