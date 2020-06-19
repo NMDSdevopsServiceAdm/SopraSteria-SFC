@@ -4,20 +4,20 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const { build, fake } = require('@jackfranklin/test-data-bot');
 
-const slack = require('../../../../../utils/slack/slack-logger');
+const slack = require('../../../../utils/slack/slack-logger');
 
-const dbmodels = require('../../../../../models');
+const dbmodels = require('../../../../models');
 sinon.stub(dbmodels.status, 'ready').value(false);
 
-const bulkUpload = require('../../../../../routes/establishments/bulkUpload');
-const EstablishmentCsvValidator = require('../../../../../models/BulkImport/csv/establishments');
-const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers');
-const BUDI = require('../../../../../models/Bulkimport/BUDI').BUDI;
-const { Establishment } = require('../../../../../models/classes/establishment');
-const { Training } = require('../../../../../models/classes/training');
-const { Worker } = require('../../../../../models/classes/worker');
-const buildEstablishmentCSV = require('../../../../../test/factories/establishment/csv');
-const buildWorkerCSV = require('../../../../../test/factories/worker/csv');
+const bulkUpload = require('../../../../routes/establishments/bulkUpload');
+const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments');
+const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers');
+const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
+const { Establishment } = require('../../../../models/classes/establishment');
+const { Training } = require('../../../../models/classes/training');
+const { Worker } = require('../../../../models/classes/worker');
+const buildEstablishmentCSV = require('../../../../test/factories/establishment/csv');
+const buildWorkerCSV = require('../../../../test/factories/worker/csv');
 
 const errorsBuilder = build('Error', {
   fields: {
