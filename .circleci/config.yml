@@ -49,6 +49,7 @@ workflows:
             dark_subdomain: sfccircle-dark
             live_subdomain: sfccircle-live
             domain: cloudapps.digital
-            workspace_path: /home/circleci/project
+            build_steps:
+                - run: npm install
 
 
