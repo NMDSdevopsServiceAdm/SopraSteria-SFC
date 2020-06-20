@@ -12,15 +12,17 @@
       <span id="totalStaff-hint" class="govuk-hint">
         This includes permanent, temporary, pool or bank, and agency staff.
       </span>
-      <input
-        class="govuk-input govuk-input--width-4"
-        [class.govuk-input--error]="submitted && form.get('totalStaff').invalid"
-        [formControlName]="'totalStaff'"
-        id="totalStaff"
-        name="totalStaff"
-        type="text"
-        aria-describedby="totalStaff-hint"
-      />
+      <div [formGroup]="form">
+        <input
+          class="govuk-input govuk-input--width-4"
+          [class.govuk-input--error]="submitted && form.get('totalStaff').invalid"
+          [formControlName]="'totalStaff'"
+          id="totalStaff"
+          name="totalStaff"
+          type="text"
+          aria-describedby="totalStaff-hint"
+        />
+      </div>
     </div>
   </div>
 </div>
