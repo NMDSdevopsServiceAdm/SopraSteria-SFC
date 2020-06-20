@@ -9,6 +9,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 
 @Component({
   selector: 'app-total-staff-change',
@@ -32,20 +33,10 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy {
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private totalStaffFormService: TotalStaffFormService
   ) {
-    this.form = this.formBuilder.group({
-      totalStaff: [
-        null,
-        [
-          Validators.required,
-          this.nonIntegerValidator(new RegExp('\d*[.]\d*')),
-          Validators.min(this.totalStaffConstraints.min),
-          Validators.max(this.totalStaffConstraints.max),
-          Validators.pattern('^[0-9]+$')
-        ],
-      ],
-    });
+    this.form = totalStaffFormService.createForm(formBuilder);
   }
 
   ngOnInit() {
@@ -58,12 +49,6 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy {
       this.workplace.uid === primaryWorkplaceUid
         ? { url: ['/dashboard'], fragment: 'staff-records' }
         : { url: ['/workplace', this.workplace.uid], fragment: 'staff-records' };
-
-    this.subscriptions.add(
-      this.establishmentService.getStaff(this.workplace.uid).subscribe(staff => {
-        this.form.patchValue({ totalStaff: staff });
-      })
-    );
 
     this.returnToDash = this.workerService.totalStaffReturn;
 
@@ -116,6 +101,7 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy {
 
   private onSuccess(numberOfStaff) {
     this.updateWorkplaceSummary(numberOfStaff);
+
     if (this.returnToDash) {
       this.router.navigate(this.return.url, { fragment: this.return.fragment });
     } else if (this.workerService.returnTo) {
@@ -130,42 +116,9 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy {
     this.establishmentService.setState(this.workplace);
   }
 
-  private nonIntegerValidator(nameRe: RegExp): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} | null => {
-      const forbidden = nameRe.test(control.value);
-      return forbidden ? {'nonInteger': {value: control.value}} : null;
-    };
-  }
-
   private onError(error) {}
 
   private setupFormErrors(): void {
-    this.formErrorsMap = [
-      {
-        item: 'totalStaff',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter the total number of staff at your workplace',
-          },
-          {
-            name: 'nonInteger',
-            message: `Total number of staff must be a whole number between ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
-          },
-          {
-            name: 'min',
-            message: `Total number of staff must be a whole number between ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
-          },
-          {
-            name: 'max',
-            message: `Total number of staff must be a whole number between ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
-          },
-          {
-            name: 'pattern',
-            message: 'Enter the total number of staff as a digit, like 7',
-          },
-        ],
-      },
-    ];
+    this.formErrorsMap = this.totalStaffFormService.createFormErrorsMap();
   }
 }

@@ -27,7 +27,7 @@ export class TotalStaffQuestionComponent extends Question implements OnInit, OnD
     protected backService: BackService, 
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    protected totalStaffFormService: TotalStaffFormService,
+    private totalStaffFormService: TotalStaffFormService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
     this.form = totalStaffFormService.createForm(formBuilder);
