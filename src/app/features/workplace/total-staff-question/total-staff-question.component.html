@@ -1,3 +1,5 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <app-total-staff
     [establishmentUid]="establishment.uid"
