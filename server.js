@@ -2,10 +2,17 @@ var config = require('./server/config/config');
 
 //simplify relative requires without using the rfr npm module
 global.rfr = module => require(__dirname + '/' + module);
-var express = require('express');
 
 const Sentry = require('@sentry/node');
-const beeline = require('honeycomb-beeline')
+const beeline = require('honeycomb-beeline')({
+  dataset: config.get('env'),
+  serviceName: "sfc",
+  express: {
+    userContext: ["id", "username"]
+  }
+});
+
+var express = require('express');
 
 const logger = require('./server/utils/logger')
 
@@ -248,14 +255,7 @@ app.use(function(err, req, res, next) {
 
 const startApp = () => {
     if (config.get('honeycomb.write_key')) {
-      beeline({
-        writeKey: config.get('honeycomb.write_key'),
-        dataset: config.get('env'),
-        serviceName: "sfc",
-        express: {
-          userContext: ["id", "username"]
-        }
-      });
+      beeline._apiForTesting().honey.writeKey = config.get('honeycomb.write_key');
     }
     if (config.get('sentry.dsn')) {
       Sentry.init({ dsn: config.get('sentry.dsn'), environment: config.get('env') });
