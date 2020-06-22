@@ -37,7 +37,8 @@ commands:
             cf set-env "<<parameters.appname>>-dark" CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID}"
             cf set-env "<<parameters.appname>>-dark" CIRCLE_PROJECT_USERNAME "${CIRCLE_PROJECT_USERNAME}"
             cf set-env "<<parameters.appname>>-dark" CIRCLE_PROJECT_REPONAME "${CIRCLE_PROJECT_REPONAME}"
-            cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${AWS_ACCESS_KEY_ID}"
+            cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${SFC_CIRCLE_AWS_ACCESS_KEY_ID}"
+            cf set-env <<parameters.appname>> AWS_SECRET_ACCESS_KEY "${SFC_CIRCLE_AWS_SECRET_ACCESS_KEY}"
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
@@ -123,7 +124,8 @@ commands:
             cf set-env "<<parameters.appname>>" CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID}"
             cf set-env "<<parameters.appname>>" CIRCLE_PROJECT_USERNAME "${CIRCLE_PROJECT_USERNAME}"
             cf set-env "<<parameters.appname>>" CIRCLE_PROJECT_REPONAME "${CIRCLE_PROJECT_REPONAME}"
-            cf set-env <<parameters.appname>> AWS_ACCESS_KEY_ID "${AWS_ACCESS_KEY_ID}"
+            cf set-env <<parameters.appname>> AWS_ACCESS_KEY_ID "${SFC_CIRCLE_AWS_ACCESS_KEY_ID}"
+            cf set-env <<parameters.appname>> AWS_SECRET_ACCESS_KEY "${SFC_CIRCLE_AWS_SECRET_ACCESS_KEY}"
             #now start
             cf start "<<parameters.appname>>"
           name: Cloud Foundry Push
