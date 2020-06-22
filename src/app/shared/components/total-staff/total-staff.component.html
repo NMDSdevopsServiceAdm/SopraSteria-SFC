@@ -6,11 +6,11 @@
           What is the total number of staff at your workplace?
         </label>
       </h1>
-      <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
-        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('totalStaff') }}
-      </span>
       <span id="totalStaff-hint" class="govuk-hint">
         This includes permanent, temporary, pool or bank, and agency staff.
+      </span>
+      <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('totalStaff') }}
       </span>
       <div [formGroup]="form">
         <input

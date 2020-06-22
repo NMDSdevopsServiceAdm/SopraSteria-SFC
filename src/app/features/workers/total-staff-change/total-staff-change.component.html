@@ -3,7 +3,9 @@
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <app-total-staff
     [establishmentUid]="workplace.uid"
-    [form]="form">
+    [form]="form"
+    [formErrorsMap]="formErrorsMap"
+    [submitted]="submitted">
   </app-total-staff>
 
   <div class="govuk-button-group">
