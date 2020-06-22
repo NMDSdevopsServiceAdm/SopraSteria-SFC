@@ -32,7 +32,7 @@ describe('Establishment Class', () => {
       expect(share.localAuthorities.length).to.deep.equal(1);
       expect(shareEst).to.deep.equal(true);
     });
-    it('should remove CQC from sharing with if an establishment is not CQC regulated', async () => {
+    it.skip('should remove CQC from sharing with if an establishment is not CQC regulated', async () => {
       const nonCqc = { IsCQCRegulated: false, share: { enabled: true, with: ['CQC'] }, locationId: '1-12234556' };
       const nonCQCEst = await establishment.load(nonCqc);
       expect(Array.isArray(nonCqc.share.with)).to.deep.equal(true);
