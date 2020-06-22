@@ -29,7 +29,6 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
   private checkLogin(state: RouterStateSnapshot): boolean | UrlTree {
     if (this.authService.token) {
-      console.log('Checking token in auth guard');
       if (this.jwt.isTokenExpired(this.authService.token)) {
         this.authService.logout();
         return this.router.createUrlTree(['/logged-out']);
