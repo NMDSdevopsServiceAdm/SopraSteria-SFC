@@ -7,7 +7,7 @@
     "dev": "npm-run-all -p -l build:watch api:proxy",
     "build": "ng build  --extract-css",
     "build:clean": "rimraf dist",
-    "build:watch": "ng build --extract-css --watch --no-delete-output-path",
+    "build:watch": "ng serve --proxy-config proxy.conf.json",
     "build:prod": "npm run build:clean && ng build --extract-css --prod",
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
