@@ -38,7 +38,7 @@
           </span>
           <select
             class="govuk-select"
-            [class.govuk-select--error]="submitted && form.get('mainJob').invalid  "
+            [class.govuk-select--error]="submitted && form.get('mainJob').invalid"
             [formControlName]="'mainJob'"
             id="mainJob"
             name="mainJob"
@@ -73,7 +73,7 @@
               name="otherJobRole"
               type="text"
               aria-describedby="otherJobRole-hint"
-              [class.govuk-select--error]="submitted && form.get('otherJobRole').invalid "
+              [class.govuk-select--error]="submitted && form.get('otherJobRole').invalid"
 
             />
           </div>
