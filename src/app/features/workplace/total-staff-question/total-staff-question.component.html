@@ -5,7 +5,8 @@
     [establishmentUid]="establishment.uid"
     [form]="form"
     [formErrorsMap]="formErrorsMap"
-    [submitted]="submitted">
+    [submitted]="submitted"
+    [errorSummaryService]="errorSummaryService">
   </app-total-staff>
 
   <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>

@@ -14,12 +14,12 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   @Input() form: FormGroup;
   @Input() formErrorsMap: Array<ErrorDetails>;
   @Input() submitted: boolean;
+  @Input() errorSummaryService: ErrorSummaryService;
 
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     protected establishmentService: EstablishmentService,
-    protected errorSummaryService: ErrorSummaryService,
   ) {
   }
 

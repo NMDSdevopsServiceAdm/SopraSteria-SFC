@@ -22,16 +22,16 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public return: URLStructure;
   public returnCopy: boolean;
-  private totalStaffConstraints = { min: 0, max: 999 };
   public formErrorsMap: Array<ErrorDetails>;
+  private totalStaffConstraints = { min: 0, max: 999 };
   private subscriptions: Subscription = new Subscription();
 
   constructor(
+    public errorSummaryService: ErrorSummaryService,
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
     private backService: BackService,
-    private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
     private workerService: WorkerService,
     private totalStaffFormService: TotalStaffFormService

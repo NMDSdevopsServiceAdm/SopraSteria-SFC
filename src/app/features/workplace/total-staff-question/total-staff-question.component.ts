@@ -17,15 +17,14 @@ import { Question } from '../question/question.component';
 })
 export class TotalStaffQuestionComponent extends Question implements OnInit, OnDestroy {
   public nextRoute: string[];
-  public workplace: Establishment;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];
 
   constructor(
+    public errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected backService: BackService, 
-    protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     private totalStaffFormService: TotalStaffFormService,
   ) {
