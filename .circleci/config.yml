@@ -38,7 +38,8 @@ commands:
             cf set-env "<<parameters.appname>>-dark" CIRCLE_PROJECT_USERNAME "${CIRCLE_PROJECT_USERNAME}"
             cf set-env "<<parameters.appname>>-dark" CIRCLE_PROJECT_REPONAME "${CIRCLE_PROJECT_REPONAME}"
             cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${SFC_CIRCLE_AWS_ACCESS_KEY_ID}"
-            cf set-env <<parameters.appname>>-dark AWS_SECRET_ACCESS_KEY "${SFC_CIRCLE_AWS_SECRET_ACCESS_KEY}"
+            cf set-env "<<parameters.appname>>-dark" AWS_SECRET_ACCESS_KEY "${SFC_CIRCLE_AWS_SECRET_ACCESS_KEY}"
+            cf set-env "<<parameters.appname>>-dark" NODE_ENV "test"
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
