@@ -2,22 +2,22 @@
 
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const rfr = require('rfr');
 const { build, fake } = require('@jackfranklin/test-data-bot');
 
+const slack = require('../../../../utils/slack/slack-logger');
 
-const dbmodels = rfr('server/models');
+const dbmodels = require('../../../../models');
 sinon.stub(dbmodels.status, 'ready').value(false);
 
-const bulkUpload = rfr('server/routes/establishments/bulkUpload');
-const EstablishmentCsvValidator = rfr('server/models/BulkImport/csv/establishments');
-const WorkerCsvValidator = rfr('server/models/BulkImport/csv/workers');
-const BUDI = rfr('server/models/Bulkimport/BUDI').BUDI;
-const { Establishment } = rfr('server/models/classes/establishment');
-const { Training } = rfr('server/models/classes/training');
-const { Worker } = rfr('server/models/classes/worker');
-const buildEstablishmentCSV = rfr('server/test/factories/establishment/csv');
-const buildWorkerCSV = rfr('server/test/factories/worker/csv');
+const bulkUpload = require('../../../../routes/establishments/bulkUpload');
+const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments');
+const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers');
+const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
+const { Establishment } = require('../../../../models/classes/establishment');
+const { Training } = require('../../../../models/classes/training');
+const { Worker } = require('../../../../models/classes/worker');
+const buildEstablishmentCSV = require('../../../../test/factories/establishment/csv');
+const buildWorkerCSV = require('../../../../test/factories/worker/csv');
 
 const errorsBuilder = build('Error', {
   fields: {
@@ -573,5 +573,71 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       expect(lines[1]).to.equal(`${establishment.name},${workerName},${BUDI.trainingCategory(BUDI.FROM_ASC, trainingCategory)},,,,,`);
     });
 
+  });
+  describe('sendCountToSlack()', () => {
+    it('should send notification to slack with over 500 workers', async () => {
+      const differenceReport = {
+        new: [
+          {
+            workers: {
+              new: [],
+              updated: [
+                {
+                  name: 0
+                }
+              ]
+            }
+          }
+        ],
+        updated: [
+          {
+            workers: {
+              new: [
+                {
+                  name: 0
+                }
+              ],
+              updated: [
+                {
+                  name: 0
+                }
+              ]
+            }
+          }
+        ]
+      }
+      for (let i = 0; i < 502; i++) {
+        differenceReport.new[0].workers.new.push({name: i});
+      }
+      const username = 'foo';
+      const primaryId = 123;
+
+      sinon.stub(Establishment.prototype, 'restore');
+
+      const spy = sinon.spy(slack, 'info');
+      await bulkUpload.sendCountToSlack(username, primaryId, differenceReport);
+
+      expect(spy.called).to.deep.equal(true);
+    });
+    it('should not send notification to slack with under 500 workers', async () => {
+      const differenceReport = {
+        new: [
+          {
+            workers: {
+              new: []
+            }
+          }
+        ]
+      }
+      const username = 'foo';
+      const primaryId = 123;
+
+      sinon.stub(Establishment.prototype, 'restore');
+
+      const spy = sinon.spy(slack, 'info');
+      await bulkUpload.sendCountToSlack(username, primaryId, differenceReport);
+
+      expect(spy.called).to.deep.equal(false);
+    });
   });
 });

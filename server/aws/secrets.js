@@ -28,6 +28,9 @@ const initialiseSecrets = async (region, wallet) => {
         DB_APP_USER_KEY: mySecrets.DB_APP_USER_KEY,
         DB_APP_USER_CERT: mySecrets.DB_APP_USER_CERT,
         ADMIN_URL: mySecrets.ADMIN_URL,
+        DD_API_KEY: mySecrets.DD_API_KEY,
+        SENTRY_DSN: mySecrets.SENTRY_DSN,
+        HONEYCOMB_WRITE_KEY: mySecrets.HONEYCOMB_WRITE_KEY
       };
     }
 
@@ -112,6 +115,42 @@ const  adminUrl = () => {
   }
 }
 
+const datadogApiKey = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.DD_API_KEY) {
+      throw new Error('Unknown DD_API_KEY secret');
+    } else {
+      return myLocalSecrets.DD_API_KEY;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+}
+
+const sentryDsn = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.SENTRY_DSN) {
+      throw new Error('Unknown SENTRY_DSN secret');
+    } else {
+      return myLocalSecrets.SENTRY_DSN;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+}
+
+const honeycombWriteKey = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.HONEYCOMB_WRITE_KEY) {
+      throw new Error('Unknown HONEYCOMB_WRITE_KEY secret');
+    } else {
+      return myLocalSecrets.HONEYCOMB_WRITE_KEY;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+}
+
 const dbAppUserKey = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_APP_USER_KEY) {
@@ -157,3 +196,6 @@ module.exports.dbAppUserKey = dbAppUserKey;
 module.exports.dbAppUserCertificate = dbAppUserCertificate;
 module.exports.dbAppRootCertificate = dbAppRootCertificate;
 module.exports.adminUrl = adminUrl;
+module.exports.datadogApiKey = datadogApiKey;
+module.exports.sentryDsn = sentryDsn;
+module.exports.honeycombWriteKey = honeycombWriteKey;
