@@ -1,25 +1,18 @@
 var config = require('./server/config/config');
 
-if (config.get('honeycomb.write_key')) {
-  require("honeycomb-beeline")({
-    writeKey: config.get('honeycomb.write_key'),
-    dataset: config.get('env'),
-    serviceName: "sfc",
-    express: {
-      userContext: ["id", "username"]
-    }
-  });
-}
-
 //simplify relative requires without using the rfr npm module
 global.rfr = module => require(__dirname + '/' + module);
-var express = require('express');
 
 const Sentry = require('@sentry/node');
-if (config.get('sentry.dsn')) {
-  console.log(config.get('sentry.dsn'));
-  Sentry.init({ dsn: config.get('sentry.dsn'), environment: config.get('env') });
-}
+const beeline = require('honeycomb-beeline')({
+  dataset: config.get('env'),
+  serviceName: "sfc",
+  express: {
+    userContext: ["id", "username"]
+  }
+});
+
+var express = require('express');
 
 const logger = require('./server/utils/logger')
 
@@ -261,6 +254,13 @@ app.use(function(err, req, res, next) {
 });
 
 const startApp = () => {
+    if (config.get('honeycomb.write_key')) {
+      beeline._apiForTesting().honey.writeKey = config.get('honeycomb.write_key');
+    }
+    if (config.get('sentry.dsn')) {
+      Sentry.init({ dsn: config.get('sentry.dsn'), environment: config.get('env') });
+    }
+    logger.start();
     const listenPort = parseInt(config.get('listen.port'), 10);
     app.set('port', listenPort);
     app.listen(app.get('port'));
