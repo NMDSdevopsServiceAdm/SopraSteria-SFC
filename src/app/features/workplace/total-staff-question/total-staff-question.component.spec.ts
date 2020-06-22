@@ -26,7 +26,7 @@ const { build, fake, sequence, } = require('@jackfranklin/test-data-bot');
 
 import { TotalStaffQuestionComponent } from './total-staff-question.component';
 
-fdescribe('TotalStaffQuestionComponent', () => {
+describe('TotalStaffQuestionComponent', () => {
   const establishmentBuilder = build('Establishment', {
     fields: {
       id: sequence(),
