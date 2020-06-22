@@ -397,7 +397,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <a
           class="govuk-visually-hidden"
-          [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-basic-records']"
+          [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-staff-record']"
           (click)="setReturn()"
         >
           Amend basic staff records
@@ -415,7 +415,7 @@
         </app-summary-record-value>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-basic-records']" (click)="setReturn()">
+        <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-staff-record']" (click)="setReturn()">
           <ng-container *ngIf="!workplace.totalWorkers || !workplace.totalWorkers === 0">
             Provide information
             <span class="govuk-visually-hidden"> for</span>

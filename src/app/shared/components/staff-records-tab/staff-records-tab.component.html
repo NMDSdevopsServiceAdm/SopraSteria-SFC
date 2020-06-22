@@ -7,17 +7,9 @@
       role="button"
       draggable="false"
       class="govuk-button"
-      [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'start-screen']"
+      [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'create-staff-record']"
     >
-      Add a full record
-    </a>
-    <a
-      role="button"
-      draggable="false"
-      class="govuk-button govuk-button--secondary govuk-!-margin-left-8"
-      [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'basic-records-start-screen']"
-    >
-      Add a basic record
+      Add a staff record
     </a>
   </div>
 </div>
@@ -45,26 +37,20 @@
 </ng-container>
 
 <ng-template #noStaffRecords>
-  <app-inset-text color="warning">You need to start adding your staff records</app-inset-text>
+  <app-inset-text color="warning">Start to add your staff records.</app-inset-text>
 
-  <p>You can add full records or basic records.</p>
-
-  <h3>Full record</h3>
-  <p>For each full record you will need to add their:</p>
+  <p>To add a staff record, you need to know that person’s:</p>
   <ul class="govuk-list govuk-list--bullet">
-    <li>full name or ID number</li>
+    <li>name or ID number</li>
     <li>main job role</li>
-    <li>type of contract</li>
-    <li>personal information</li>
-    <li>employment information</li>
-    <li>qualifications and training records</li>
+    <li>contract type</li>
   </ul>
 
-  <h3>Basic record</h3>
-  <p>For each basic record you will need to add their:</p>
+  <p>After you’ve saved the mandatory details you should add details to this record, so that you’ve got a complete record for that person.
+    To complete a record you’ll be asked questions about that person’s:</p>
   <ul class="govuk-list govuk-list--bullet">
-    <li>full name or ID number</li>
-    <li>main job role</li>
-    <li>type of contract</li>
+    <li>personal details, like their date of birth</li>
+    <li>employment details, like when they started their main job role</li>
+    <li>qualifications and training</li>
   </ul>
 </ng-template>

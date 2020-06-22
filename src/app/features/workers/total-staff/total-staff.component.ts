@@ -119,7 +119,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     } else if (this.workerService.returnTo) {
       this.router.navigate(this.workerService.returnTo.url);
     } else {
-      this.router.navigate(['create-basic-records'], { relativeTo: this.route.parent });
+      this.router.navigate(['create-staff-record'], { relativeTo: this.route.parent });
     }
   }
 
