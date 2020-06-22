@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -15,7 +15,8 @@ import { TotalStaffFormService } from '@core/services/total-staff-form.service';
   selector: 'app-total-staff-change',
   templateUrl: './total-staff-change.component.html',
 })
-export class TotalStaffChangeComponent implements OnInit, OnDestroy {
+export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public form: FormGroup;
   public returnToDash = false;
   public submitted = false;
@@ -73,6 +74,11 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
     this.workerService.setTotalStaffReturn(false);
+  }
+
+  ngAfterViewInit() {
+    console.log("************************new1***");
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   public getFirstErrorMessage(item: string): string {
