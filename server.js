@@ -11,6 +11,10 @@ const beeline = require('honeycomb-beeline')({
     userContext: ["id", "username"],
     parentIdSource: 'X-Honeycomb-Trace',
     traceIdSource: 'X-Honeycomb-Trace'
+  },
+  presendHook: (ev) => {
+    delete ev.data["db.query"]
+    delete ev.data["db.query_args"]
   }
 });
 

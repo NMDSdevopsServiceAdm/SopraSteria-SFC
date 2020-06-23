@@ -23,8 +23,7 @@ exports.isAuthorised = (req, res , next) => {
         req.username = claim.sub;
         req.userUid = claim.userUid;
         req.user = {
-          id: claim.userUid,
-          username: claim.sub
+          id: claim.userUid
         }
         req.role = claim.role;
         req.isParent = claim.isParent;
@@ -143,8 +142,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             req.username = claim.sub;
             req.userUid = claim.userUid;
             req.user = {
-              id: claim.userUid,
-              username: claim.sub
+              id: claim.userUid
             };
             req.isParent = claim.isParent;
             req.role = claim.role;
@@ -184,8 +182,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
           req.username = claim.sub;
           req.userUid = claim.userUid;
           req.user = {
-            id: claim.userUid,
-            username: claim.sub
+            id: claim.userUid
           };
           req.isParent = claim.isParent;
           req.role = claim.role;
@@ -289,8 +286,7 @@ exports.isAuthorisedPasswdReset = (req, res, next) => {
         req.username = claim.sub;
         req.fullname = claim.name;
         req.user = {
-          id: claim.userUid,
-          username: claim.sub
+          id: claim.userUid
         };
         next();
       }
@@ -365,8 +361,7 @@ exports.isAdmin = (req, res , next) => {
           req.username = claim.sub;
           req.userUid = claim.userUid;
           req.user = {
-            id: claim.userUid,
-            username: claim.sub
+            id: claim.userUid
           };
           next();
         }
@@ -412,8 +407,7 @@ exports.isAdminOrOnDemandReporting = (req, res , next) => {
         req.username = claim.sub;
         req.userUid = claim.userUid;
         req.user = {
-          id: claim.userUid,
-          username: claim.sub
+          id: claim.userUid
         };
         next();
       }
