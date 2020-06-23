@@ -132,7 +132,7 @@ commands:
           name: Cloud Foundry Push
 
 orbs:
-  node: circleci/node@1.1.6
+  node: circleci/node@3.0.0
 
 workspace_path: &workspace_path
   /home/circleci
@@ -156,13 +156,10 @@ jobs:
             libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 \
             libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates \
             fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
-      - node/with-cache:
-          steps:
-            - run: npm install
-      - persist_to_workspace:
-          root: *workspace_path
-          paths:
-            - project
+      - node/install-packages:
+          cache-path: ~/project/node_modules
+          override-ci-command: npm install
+
   test_frontend:
     executor:
       name: node/default
