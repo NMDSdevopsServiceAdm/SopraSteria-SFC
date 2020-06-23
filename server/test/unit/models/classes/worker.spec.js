@@ -4,7 +4,7 @@ const Worker = require('../../../../models/classes/worker').Worker;
 
 const worker = new Worker();
 
-describe('Worker Class', () => {
+describe.skip('Worker Class', () => {
   describe('load()', () => {
     it('should remove nurse specialism and registered nurse when not a registered nurse', async () => {
       const notRegisteredNurse = {

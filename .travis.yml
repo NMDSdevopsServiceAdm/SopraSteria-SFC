@@ -39,6 +39,7 @@ before_script:
 script:
   - npm run build
   - npm run test-headless
+  - npm run server:test:unit
   # - npm run lint
 
  # - xvfb-run npm run e2e

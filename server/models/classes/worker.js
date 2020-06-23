@@ -1376,7 +1376,7 @@ class Worker extends EntityValidator {
     const wdfPropertyValues = Object.values(wdfByProperty);
 
     // NOTE - the worker does not have to be completed before it can be eligible for WDF
-    console.log('WDF Properties: ', JSON.stringify(wdfByProperty));
+    console.log('WDF Properties: ', wdfByProperty);
     return {
       lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
       isEligible: wdfPropertyValues.every(thisWdfProperty => {

@@ -6,12 +6,11 @@ const maxquals = require('../../../mockdata/workers').maxquals;
 const knownHeaders = require('../../../mockdata/workers').knownHeaders;
 const moment = require('moment');
 const filename = 'server/models/BulkImport/csv/workers.js';
-const rfr = require('rfr');
 const sinon = require('sinon');
-const dbmodels = rfr('server/models');
+const dbmodels = require('../../../../../models');
 sinon.stub(dbmodels.status, 'ready').value(false);
-const BUDI = rfr('server/models/Bulkimport/BUDI').BUDI;
-const WorkerCsvValidator = rfr('server/models/BulkImport/csv/workers').Worker;
+const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
+const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
 const testUtils = require('../../../../../utils/testUtils');
 const csv = require('csvtojson');
 

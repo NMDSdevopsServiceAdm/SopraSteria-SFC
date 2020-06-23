@@ -50,6 +50,8 @@ export class AddEditTrainingComponent implements OnInit {
     this.workerService.getRoute$.subscribe(route => {
       if (route) {
         this.previousUrl = route;
+      } else {
+        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
       }
     });
     const parsed = this.router.parseUrl(this.previousUrl);

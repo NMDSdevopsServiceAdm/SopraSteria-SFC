@@ -44,11 +44,11 @@ export class ServiceUsersComponent extends Question {
       })
     );
 
-    this.next = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         response => {
-          this.previous =
+          this.previousRoute =
             response.allServiceCapacities && response.allServiceCapacities.length
               ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
               : ['/workplace', `${this.establishment.uid}`, 'other-services'];
