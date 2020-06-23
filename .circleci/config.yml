@@ -40,8 +40,8 @@ commands:
             cf set-env "<<parameters.appname>>-dark" CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID}"
             cf set-env "<<parameters.appname>>-dark" CIRCLE_PROJECT_USERNAME "${CIRCLE_PROJECT_USERNAME}"
             cf set-env "<<parameters.appname>>-dark" CIRCLE_PROJECT_REPONAME "${CIRCLE_PROJECT_REPONAME}"
-            cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${SFC_CIRCLE_AWS_ACCESS_KEY_ID}"
-            cf set-env "<<parameters.appname>>-dark" AWS_SECRET_ACCESS_KEY "${SFC_CIRCLE_AWS_SECRET_ACCESS_KEY}"
+            cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${<<parameters.env_prefix>>_AWS_ACCESS_KEY_ID}"
+            cf set-env "<<parameters.appname>>-dark" AWS_SECRET_ACCESS_KEY "${<<parameters.env_prefix>>_AWS_SECRET_ACCESS_KEY}"
             cf set-env "<<parameters.appname>>-dark" NODE_ENV "${<<parameters.env_prefix>>_NODE_ENV}"
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
@@ -101,38 +101,6 @@ commands:
             # Switch name of "dark" version to claim correct name
             cf rename "<<parameters.appname>>-dark" "<<parameters.appname>>"
           name: Cloud Foundry - Re-route live Domain
-  push:
-    parameters:
-      appname:
-        description: App Name
-        type: string
-      manifest:
-        default: ""
-        description: The Cloud Foundry manifest for this environment
-        type: string
-      package:
-        default: ""
-        description: path to the asset/package to push
-        type: string
-      vars:
-        default: ""
-        description: Vars file for variable substitution.
-        type: string
-    steps:
-      - run:
-          command: |
-            #push no start so we can set envars
-            cf push --no-start "<<parameters.appname>>" -f "<<parameters.manifest>>" <<# parameters.vars>> --vars-file "<<parameters.vars>>" <</ parameters.vars>> <<# parameters.package>> -p "<<parameters.package>>" <</ parameters.package>>
-            cf set-env "<<parameters.appname>>" CIRCLE_BUILD_NUM "${CIRCLE_BUILD_NUM}"
-            cf set-env "<<parameters.appname>>" CIRCLE_SHA1 "${CIRCLE_SHA1}"
-            cf set-env "<<parameters.appname>>" CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID}"
-            cf set-env "<<parameters.appname>>" CIRCLE_PROJECT_USERNAME "${CIRCLE_PROJECT_USERNAME}"
-            cf set-env "<<parameters.appname>>" CIRCLE_PROJECT_REPONAME "${CIRCLE_PROJECT_REPONAME}"
-            cf set-env <<parameters.appname>> AWS_ACCESS_KEY_ID "${SFC_CIRCLE_AWS_ACCESS_KEY_ID}"
-            cf set-env <<parameters.appname>> AWS_SECRET_ACCESS_KEY "${SFC_CIRCLE_AWS_SECRET_ACCESS_KEY}"
-            #now start
-            cf start "<<parameters.appname>>"
-          name: Cloud Foundry Push
 
 orbs:
   node: circleci/node@3.0.0
@@ -276,22 +244,22 @@ workflows:
             requires:
               - install
         - blue_green:
-            appname: sfccircle
-            env_prefix: SFC_CIRCLE
+            appname: sfcdev
+            env_prefix: SFC_DEV
             requires:
                 - test_frontend
                 - test_backend
             filters:
                 branches:
                     only:
-                        - feat/circleCiNewConfig
+                        - develop
             endpoint: https://api.cloud.service.gov.uk
             org: dhsc-skills-for-care-nmds-sc-2
             space: sandbox
             manifest: manifest.dev.yml
             package: '.'
-            dark_subdomain: sfccircle-dark
-            live_subdomain: sfccircle
+            dark_subdomain: sfcdev-dark
+            live_subdomain: sfcdev
             domain: cloudapps.digital
             build_steps:
                 - run: npm run build
