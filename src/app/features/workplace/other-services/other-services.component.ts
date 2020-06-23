@@ -51,7 +51,7 @@ export class OtherServicesComponent extends Question {
       )
     );
 
-    this.previous = ['/workplace', `${this.establishment.uid}`, 'type-of-employer'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'type-of-employer'];
   }
 
   private updateForm(): void {
@@ -152,7 +152,7 @@ export class OtherServicesComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         response => {
-          this.next =
+          this.nextRoute =
             response.allServiceCapacities && response.allServiceCapacities.length
               ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
               : ['/workplace', `${this.establishment.uid}`, 'service-users'];

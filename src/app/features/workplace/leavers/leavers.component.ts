@@ -94,7 +94,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   }
 
   private setPreviousRoute(): void {
-    this.previous = ['/workplace', `${this.establishment.uid}`, 'starters'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
   }
 
   private getJobs(): void {
@@ -212,7 +212,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
       this.router.navigate(['/workplace', this.establishment.uid, 'confirm-leavers']);
       this.submitAction.action = null;
     } else {
-      this.next = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
+      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
     }
   }
 
