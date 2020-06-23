@@ -105,13 +105,6 @@ commands:
 orbs:
   node: circleci/node@3.0.0
 
-workspace_path: &workspace_path
-  /home/circleci
-
-use_workspace: &use_workspace
- attach_workspace:
-   at: *workspace_path
-
 jobs:
   install:
     working_directory: ~/project
