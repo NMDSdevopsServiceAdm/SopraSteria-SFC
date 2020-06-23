@@ -159,14 +159,24 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
+      - persist_to_workspace:
+          root: *workspace_path
+          paths:
+            - project
   test_frontend:
+    executor:
+      name: node/default
     steps:
       - checkout
-      - run: npm test
+      - node/with-cache:
+          steps:
+            - run: npm test
   test_backend:
     steps:
       - checkout
-      - run: npm run server:test:unit
+      - node/with-cache:
+          steps:
+            - run: npm run server:test:unit
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
@@ -259,10 +269,10 @@ workflows:
     build-test-deploy:
       jobs:
         - build
-        - test_backend:
+        - test_frontend:
             requires:
               - build
-        - test_frontend:
+        - test_backend:
             requires:
               - build
         - blue_green:
