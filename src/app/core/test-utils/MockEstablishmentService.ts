@@ -1,45 +1,61 @@
+import { HttpClient } from '@angular/common/http';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, Share } from '@core/model/establishment.model';
 import { Observable, of } from 'rxjs';
 import { URLStructure } from '@core/model/url.model';
 
 export class MockEstablishmentService extends EstablishmentService {
+  private share: any = { enabled: false, with: [] };
+
+  public setShare(newShare: any) {
+    this.share = newShare;
+  }
+
+  public static factory(newShare: any) {
+    return (http: HttpClient) => {
+      const service = new MockEstablishmentService(http);
+      if (newShare) {
+        service.setShare(newShare);
+      }
+      return service;
+    };
+  }
+
   public get establishment$(): Observable<Establishment> {
     return of(this.establishment);
   }
 
   public get establishment(): Establishment {
     return {
-      address: '',
+      address: 'mock establishment address',
       capacities: [],
       created: undefined,
       dataOwner: undefined,
-      dataOwnershipRequested: '',
+      dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
       dataPermissions: undefined,
-      employerType: { other: '', value: '' },
+      employerType: { other: 'mock employerType other', value: 'mock employerType value' },
       id: 0,
       isRegulated: false,
       leavers: undefined,
       localAuthorities: [],
       mainService: undefined,
-      name: '',
-      nmdsId: '',
+      name: 'mock establishment name',
+      nmdsId: 'mock nmdsId',
       numberOfStaff: 0,
       otherServices: [],
-      postcode: '',
+      postcode: 'mock establishment postcode',
       primaryAuthority: undefined,
       serviceUsers: [],
-      share: undefined,
+      share: {enabled: this.share.enabled, with: this.share.with},
       starters: undefined,
       totalLeavers: 0,
       totalStarters: 0,
       totalVacancies: 0,
       totalWorkers: 0,
-      uid: '',
+      uid: 'mocked-uid',
       updated: undefined,
-      updatedBy: '',
+      updatedBy: 'mock establishment updatedBy',
       vacancies: undefined
-
     };
   }
 

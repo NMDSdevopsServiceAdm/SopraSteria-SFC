@@ -19,13 +19,6 @@ import { CareCertificateComponent } from './care-certificate/care-certificate.co
 import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
-import {
-  CreateBasicRecordsStartScreenComponent,
-} from './create-basic-records-start-screen/create-basic-records-start-screen.component';
-import { CreateBasicRecordsComponent } from './create-basic-records/create-basic-records.component';
-import {
-  CreateStaffRecordStartScreenComponent,
-} from './create-staff-record-start-screen/create-staff-record-start-screen.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteQualificationDialogComponent } from './delete-qualification-dialog/delete-qualification-dialog.component';
@@ -37,6 +30,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
+import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { MoveWorkerDialogComponent } from './move-worker-dialog/move-worker-dialog.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
@@ -55,7 +49,7 @@ import {
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
-import { TotalStaffComponent } from './total-staff/total-staff.component';
+import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { QualificationsComponent } from './training-qualifications-record/qualifications/qualifications.component';
 import {
   TrainingAndQualificationsRecordComponent,
@@ -83,9 +77,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     CheckStaffRecordComponent,
     ContractWithZeroHoursComponent,
     CountryOfBirthComponent,
-    CreateBasicRecordsComponent,
-    CreateBasicRecordsStartScreenComponent,
-    CreateStaffRecordStartScreenComponent,
     DateOfBirthComponent,
     DaysOfSicknessComponent,
     DeleteQualificationDialogComponent,
@@ -113,7 +104,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     SocialCareQualificationLevelComponent,
     StaffDetailsComponent,
     StaffRecordComponent,
-    TotalStaffComponent,
+    TotalStaffChangeComponent,
     TrainingComponent,
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,
@@ -123,6 +114,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     TrainingAndQualificationsRecordComponent,
     SelectRecordTypeComponent,
     MoveWorkerDialogComponent,
+    MandatoryDetailsComponent
   ],
   providers: [DialogService, WorkerResolver],
   entryComponents: [
