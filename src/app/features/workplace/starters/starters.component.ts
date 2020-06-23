@@ -97,7 +97,7 @@ export class StartersComponent extends Question {
   }
 
   private setPreviousRoute(): void {
-    this.previous = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
   }
 
   private getJobs(): void {
@@ -227,7 +227,7 @@ export class StartersComponent extends Question {
       this.router.navigate(['/workplace', this.establishment.uid, 'confirm-starters']);
       this.submitAction.action = null;
     } else {
-      this.next = ['/workplace', `${this.establishment.uid}`, 'leavers'];
+      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'leavers'];
     }
   }
 
