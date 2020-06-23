@@ -142,7 +142,7 @@ use_workspace: &use_workspace
    at: *workspace_path
 
 jobs:
-  build-and-test:
+  build:
     executor:
       name: node/default
     steps:
@@ -159,12 +159,22 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
-            - run: npm test
-            - run: npm run server:test:unit
       - persist_to_workspace:
           root: *workspace_path
           paths:
             - project
+  test_frontend:
+    executor:
+      name: node/default
+    - node/with-cache:
+      steps:
+        - run: npm test
+  test_backend:
+    executor:
+      name: node/default
+    - node/with-cache:
+       steps:
+         - run: npm run server:test:unit
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
@@ -256,11 +266,18 @@ jobs:
 workflows:
     build-test-deploy:
       jobs:
-        - build-and-test
+        - build
+        - test-frontend:
+            requires:
+              - build
+        - test-backend:
+            requires:
+              - build
         - blue_green:
             appname: sfccircle
             requires:
-                - build-and-test
+                - test-frontend
+                - test-backend
             endpoint: https://api.cloud.service.gov.uk
             org: dhsc-skills-for-care-nmds-sc-2
             space: sandbox
