@@ -28,6 +28,9 @@ commands:
         default: ""
         description: Vars file for variable substitution.
         type: string
+      env_prefix:
+        description: prefix for enviroment variables
+        type: string
     steps:
       - run:
           command: |
@@ -39,7 +42,7 @@ commands:
             cf set-env "<<parameters.appname>>-dark" CIRCLE_PROJECT_REPONAME "${CIRCLE_PROJECT_REPONAME}"
             cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${SFC_CIRCLE_AWS_ACCESS_KEY_ID}"
             cf set-env "<<parameters.appname>>-dark" AWS_SECRET_ACCESS_KEY "${SFC_CIRCLE_AWS_SECRET_ACCESS_KEY}"
-            cf set-env "<<parameters.appname>>-dark" NODE_ENV "test"
+            cf set-env "<<parameters.appname>>-dark" NODE_ENV "${<<parameters.env_prefix>>_NODE_ENV}"
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
@@ -251,6 +254,7 @@ jobs:
           manifest: <<parameters.manifest>>
           package: <<parameters.package>>
           vars: <<parameters.vars>>
+          env_prefix: <<parameters.env_prefix>>
       - when:
           condition: <<parameters.validate_steps>>
           steps: << parameters.validate_steps >>
@@ -269,21 +273,22 @@ workflows:
             requires:
               - install
         - blue_green:
-            appname: sfcdev
+            appname: sfccircle
+            env_prefix: SFC_CIRCLE
             requires:
                 - test_frontend
                 - test_backend
             filters:
                 branches:
                     only:
-                        - develop
+                        - feat/circleCiNewConfig
             endpoint: https://api.cloud.service.gov.uk
             org: dhsc-skills-for-care-nmds-sc-2
             space: sandbox
             manifest: manifest.dev.yml
             package: '.'
-            dark_subdomain: sfcdev-dark
-            live_subdomain: sfcdev
+            dark_subdomain: sfccircle-dark
+            live_subdomain: sfccircle
             domain: cloudapps.digital
             build_steps:
                 - run: npm run build
