@@ -256,6 +256,27 @@ workflows:
             domain: cloudapps.digital
             build_steps:
                 - run: npm run build
+        - blue_green:
+            appname: sfcstaging
+            env_prefix: SFC_STAGING
+            requires:
+              - test_frontend
+              - test_backend
+            filters:
+              branches:
+                only:
+                  - test
+            endpoint: https://api.cloud.service.gov.uk
+            org: dhsc-skills-for-care-nmds-sc-2
+            space: sandbox
+            manifest: manifest.test.yml
+            package: '.'
+            dark_subdomain: sfcstaging-dark
+            live_subdomain: sfcstaging
+            domain: cloudapps.digital
+            build_steps:
+              - run: npm run build
+
 
 
 
