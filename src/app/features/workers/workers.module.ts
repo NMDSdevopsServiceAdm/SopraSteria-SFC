@@ -49,7 +49,7 @@ import {
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
-import { TotalStaffComponent } from './total-staff/total-staff.component';
+import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { QualificationsComponent } from './training-qualifications-record/qualifications/qualifications.component';
 import {
   TrainingAndQualificationsRecordComponent,
@@ -104,7 +104,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     SocialCareQualificationLevelComponent,
     StaffDetailsComponent,
     StaffRecordComponent,
-    TotalStaffComponent,
+    TotalStaffChangeComponent,
     TrainingComponent,
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,

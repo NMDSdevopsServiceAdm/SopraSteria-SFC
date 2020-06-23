@@ -1,0 +1,26 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <app-total-staff
+    [establishmentUid]="workplace.uid"
+    [form]="form"
+    [formErrorsMap]="formErrorsMap"
+    [submitted]="submitted"
+    [errorSummaryService]="errorSummaryService">
+  </app-total-staff>
+
+  <div class="govuk-button-group">
+    <button type="submit" class="govuk-button">
+      {{ returnCopy ? 'Save and return' : 'Save and continue' }}
+    </button>
+    <a
+      class="govuk-button govuk-button--link govuk-util__float-right"
+      role="button"
+      draggable="false"
+      [routerLink]="return.url"
+      [fragment]="return.fragment"
+    >
+      Cancel
+    </a>
+  </div>
+</form>

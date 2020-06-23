@@ -41,7 +41,7 @@ import {
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
-import { TotalStaffComponent } from './total-staff/total-staff.component';
+import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import {
   TrainingAndQualificationsRecordComponent,
 } from './training-qualifications-record/training-and-qualifications-record.component';
@@ -53,7 +53,7 @@ const routes: Routes = [
   {
     path: 'total-staff',
     canActivate: [CheckPermissionsGuard],
-    component: TotalStaffComponent,
+    component: TotalStaffChangeComponent,
     data: {
       permissions: ['canAddWorker'],
       title: 'Total Staff',
