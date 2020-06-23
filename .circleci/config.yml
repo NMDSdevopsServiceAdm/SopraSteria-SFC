@@ -173,7 +173,7 @@ jobs:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:lts
     parameters:
       appname:
         description: App Name
@@ -231,6 +231,7 @@ jobs:
         type: string
     steps:
       - checkout
+      - node/install-packages
       - when:
           condition: <<parameters.build_steps>>
           steps: << parameters.build_steps >>
@@ -281,7 +282,6 @@ workflows:
             live_subdomain: sfccircle-live
             domain: cloudapps.digital
             build_steps:
-                - run: npm install
                 - run: npm run build
 
 
