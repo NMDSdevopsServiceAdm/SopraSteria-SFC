@@ -42,10 +42,12 @@ import {
   UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
+import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { ViewAllMandatoryTrainingComponent } from './view-all-mandatory-trainings/view-all-mandatory-training.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
 import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+
 
 const routes: Routes = [
   {
@@ -57,10 +59,6 @@ const routes: Routes = [
   {
     path: 'view-all-mandatory-training',
     component: ViewAllMandatoryTrainingComponent,
-  },
-  {
-    path: 'start-screen',
-    data: { title: 'Start' },
   },
   {
     path: ':establishmentuid',
@@ -207,6 +205,15 @@ const routes: Routes = [
         },
       },
       {
+        path: 'total-staff',
+        component: TotalStaffQuestionComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Total Staff',
+        },
+      },
+      {
         path: 'vacancies',
         component: VacanciesComponent,
         canActivate: [RoleGuard],
@@ -258,14 +265,6 @@ const routes: Routes = [
         data: {
           roles: [Roles.Admin, Roles.Edit],
           title: 'Confirm Leavers',
-        },
-      },
-      {
-        path: 'volunteers',
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin, Roles.Edit],
-          title: 'Volunteers',
         },
       },
       {

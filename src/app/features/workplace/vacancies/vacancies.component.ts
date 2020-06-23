@@ -59,7 +59,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
   protected init(): void {
     this.getJobs();
-    this.setPreviousRoute();
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'total-staff'];
     this.prefill();
 
     this.subscriptions.add(
@@ -92,12 +92,6 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       vacancies: this.formBuilder.array([]),
       vacanciesKnown: null,
     });
-  }
-
-  private setPreviousRoute(): void {
-    this.previous = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
-      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
 
   private getJobs(): void {
@@ -216,7 +210,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       this.router.navigate(['/workplace', this.establishment.uid, 'confirm-vacancies']);
       this.submitAction.action = null;
     } else {
-      this.next = ['/workplace', `${this.establishment.uid}`, 'starters'];
+      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
     }
   }
 

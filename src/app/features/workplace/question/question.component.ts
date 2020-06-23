@@ -18,8 +18,8 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
 
   public return: URLStructure;
-  public previous: string[];
-  public next: string[];
+  public previousRoute: string[];
+  public nextRoute: string[];
   public back: URLStructure;
 
   public formErrorsMap: Array<ErrorDetails> = [];
@@ -62,7 +62,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setBackLink() {
-    this.back = this.return ? this.return : { url: this.previous };
+    this.back = this.return ? this.return : { url: this.previousRoute };
     this.backService.setBackLink(this.back);
   }
 
@@ -87,7 +87,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
     switch (action) {
       case 'continue':
-        this.router.navigate(this.next);
+        this.router.navigate(this.nextRoute);
         break;
 
       case 'summary':
