@@ -172,6 +172,8 @@ jobs:
           steps:
             - run: npm test
   test_backend:
+    executor:
+      name: node/default
     steps:
       - checkout
       - node/with-cache:
