@@ -143,6 +143,7 @@ use_workspace: &use_workspace
 
 jobs:
   build:
+    working_directory: ~/project
     docker:
       - image: circleci/node:lts-browsers
     steps:
