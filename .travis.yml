@@ -58,16 +58,6 @@ deploy:
       secure: "uEQC9KJwyjzJhH9wYb6XTdFY0WoZF0vFJrEHb8ZiL4HaBTLITGDhl9VujxHQHMMmDQzwhJlW+1V5Y4G7J9uw0rJ+XW+FsIzVpZi+SXd0CUmYYwOrMMTsqNivWuOC8rZ1TXAkhvy6jkwFkDrrQcZeO36IitEqRFcEBX5YKQP2gZ2mqw6RzO3X++8uNHIoYu8/ftszAQkQlcFQBbBNbQtj6sNx30jyUi8SwMJakPtWGyce36VhjK2brK8gLUKbGjbL4j6epsTesMCCo5WgVHeMzppp0yqDo5gpBKcelIRhU/Ja8/rLbpIqUVy+ov5ITCVgrefrckYOBoL5FvB7x6i6MfRZZudYGl6oM/g8zLH+IItHsyawPDa1/UnEE5FZAQ/BHq7pqnnF7qbXlO5loRAstpiRssMettNe7ISYnecew3/OAALvomPQlbc942tdiDtIyDzqCyKe2CzWEbL7TSiNBPdA7W5tTWRusnxD/hhwwbrR61FuTKv8V9l5ioCwWBu0OVSbAXErDsWrSI++4FHylnoVk1U2ULS773JiU/uvdu4qWPfWaLkIv0nERGWkCcE7U/M6VBzKiimkbEloMYvvc2LVVSByfaMxeMopHrfrCaeunNlzyB0jzHuOkcIY1SU4y2oE97ES5FgYnzz1akXph0HJw9EjWtNO9SAqtb44XzM="
     organization: dhsc-skills-for-care-nmds-sc-2
     space: sandbox
-    manifest: manifest.test.yml
-    on:
-        branch: test
-  - provider: cloudfoundry
-    api: https://api.cloud.service.gov.uk
-    username: nmdsdevopsserviceadm@hotmail.com
-    password:
-      secure: "uEQC9KJwyjzJhH9wYb6XTdFY0WoZF0vFJrEHb8ZiL4HaBTLITGDhl9VujxHQHMMmDQzwhJlW+1V5Y4G7J9uw0rJ+XW+FsIzVpZi+SXd0CUmYYwOrMMTsqNivWuOC8rZ1TXAkhvy6jkwFkDrrQcZeO36IitEqRFcEBX5YKQP2gZ2mqw6RzO3X++8uNHIoYu8/ftszAQkQlcFQBbBNbQtj6sNx30jyUi8SwMJakPtWGyce36VhjK2brK8gLUKbGjbL4j6epsTesMCCo5WgVHeMzppp0yqDo5gpBKcelIRhU/Ja8/rLbpIqUVy+ov5ITCVgrefrckYOBoL5FvB7x6i6MfRZZudYGl6oM/g8zLH+IItHsyawPDa1/UnEE5FZAQ/BHq7pqnnF7qbXlO5loRAstpiRssMettNe7ISYnecew3/OAALvomPQlbc942tdiDtIyDzqCyKe2CzWEbL7TSiNBPdA7W5tTWRusnxD/hhwwbrR61FuTKv8V9l5ioCwWBu0OVSbAXErDsWrSI++4FHylnoVk1U2ULS773JiU/uvdu4qWPfWaLkIv0nERGWkCcE7U/M6VBzKiimkbEloMYvvc2LVVSByfaMxeMopHrfrCaeunNlzyB0jzHuOkcIY1SU4y2oE97ES5FgYnzz1akXph0HJw9EjWtNO9SAqtb44XzM="
-    organization: dhsc-skills-for-care-nmds-sc-2
-    space: sandbox
     manifest: manifest.featureGDS.yml
     on:
         branch: develop_accessibility_demo
