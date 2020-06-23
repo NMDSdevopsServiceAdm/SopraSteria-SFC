@@ -232,6 +232,9 @@ jobs:
         description: The key of a workflow workspace which contains artifact. Alternately
           provide `build_steps`
         type: string
+      env_prefix:
+        description: prefix for enviroment variables
+        type: string
     steps:
       - checkout
       - node/install-packages
