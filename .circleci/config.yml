@@ -269,17 +269,17 @@ workflows:
     build-test-deploy:
       jobs:
         - build
-        - test-frontend:
+        - test_frontend:
             requires:
               - build
-        - test-backend:
+        - test_backend:
             requires:
               - build
         - blue_green:
             appname: sfccircle
             requires:
-                - test-frontend
-                - test-backend
+                - test_frontend
+                - test_backend
             endpoint: https://api.cloud.service.gov.uk
             org: dhsc-skills-for-care-nmds-sc-2
             space: sandbox
