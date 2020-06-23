@@ -8,7 +8,9 @@ const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: "sfc",
   express: {
-    userContext: ["id", "username"]
+    userContext: ["id", "username"],
+    parentIdSource: 'X-Honeycomb-Trace',
+    traceIdSource: 'X-Honeycomb-Trace'
   }
 });
 
