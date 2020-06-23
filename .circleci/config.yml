@@ -142,7 +142,7 @@ use_workspace: &use_workspace
    at: *workspace_path
 
 jobs:
-  build:
+  install:
     working_directory: ~/project
     docker:
       - image: circleci/node:lts-browsers
@@ -261,27 +261,32 @@ jobs:
 workflows:
     build-test-deploy:
       jobs:
-        - build
+        - install
         - test_frontend:
             requires:
-              - build
+              - install
         - test_backend:
             requires:
-              - build
+              - install
         - blue_green:
-            appname: sfccircle
+            appname: sfcdev
             requires:
                 - test_frontend
                 - test_backend
+            filters:
+                branches:
+                    only:
+                        - develop
             endpoint: https://api.cloud.service.gov.uk
             org: dhsc-skills-for-care-nmds-sc-2
             space: sandbox
-            manifest: manifest.circle.yml
+            manifest: manifest.dev.yml
             package: '.'
-            dark_subdomain: sfccircle-dark
-            live_subdomain: sfccircle-live
+            dark_subdomain: sfcdev-dark
+            live_subdomain: sfcdev
             domain: cloudapps.digital
             build_steps:
                 - run: npm run build
+
 
 
