@@ -77,7 +77,6 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   ngAfterViewInit() {
-    console.log("************************new1***");
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
