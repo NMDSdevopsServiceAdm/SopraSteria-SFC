@@ -157,6 +157,7 @@ jobs:
       - image: circleci/node:lts-browsers
     steps:
       - checkout
+      - node/install-packages
       - run:
           command: npm run test
   test_backend:
@@ -164,6 +165,7 @@ jobs:
       - image: circleci/node:lts-browsers
     steps:
       - checkout
+      - node/install-packages
       - run:
           command: npm run server:test:unit
 
