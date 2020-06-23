@@ -166,15 +166,17 @@ jobs:
   test_frontend:
     executor:
       name: node/default
-    - node/with-cache:
-      steps:
-        - run: npm test
+    steps:
+      - node/with-cache:
+          steps:
+            - run: npm test
   test_backend:
     executor:
       name: node/default
-    - node/with-cache:
-       steps:
-         - run: npm run server:test:unit
+    steps:
+      - node/with-cache:
+          steps:
+            - run: npm run server:test:unit
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
