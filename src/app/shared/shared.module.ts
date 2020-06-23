@@ -28,6 +28,7 @@ import { DetailsComponent } from './components/details/details.component';
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
+import { TotalStaffComponent } from './components/total-staff/total-staff.component';
 import {
   LinkToParentCancelDialogComponent,
 } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
@@ -153,7 +154,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ViewAllMandatoryTrainingComponent,
     DeleteWorkplaceDialogComponent,
     ParentConfirmationDialogComponent,
-    CqcConfirmationDialogComponent
+    CqcConfirmationDialogComponent,
+    TotalStaffComponent
   ],
   exports: [
     AlertComponent,
@@ -217,9 +219,13 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ViewAllMandatoryTrainingComponent,
     DeleteWorkplaceDialogComponent,
     ParentConfirmationDialogComponent,
-    CqcConfirmationDialogComponent
+    CqcConfirmationDialogComponent,
+    TotalStaffComponent
   ],
-  providers: [DialogService],
+  providers: [
+    DialogService,
+    TotalStaffComponent
+  ],
   entryComponents: [
     DeleteWorkplaceDialogComponent,
     ChangeDataOwnerDialogComponent,
@@ -232,7 +238,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
     ParentConfirmationDialogComponent,
-    CqcConfirmationDialogComponent
+    CqcConfirmationDialogComponent,
+    TotalStaffComponent
   ],
 })
 export class SharedModule {}

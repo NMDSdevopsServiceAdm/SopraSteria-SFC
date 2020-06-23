@@ -1,17 +1,5 @@
 const { createLogger, format, transports } = require('winston');
-const config = require('../config/config');;
-
-const datadogFormat = format((info, opts) => {
-  info.ddtags = `env:${config.get('env')}`
-
-  return info;
-});
-
-const httpTransportOptions = {
-  host: `http-intake.logs.${config.get('datadog.site')}`,
-  path: `/v1/input/${config.get('datadog.api_key')}?ddsource=nodejs&service=sfc`,
-  ssl: true
-};
+const config = require('../config/config');
 
 const logger = createLogger({
   level: 'info',
@@ -19,29 +7,35 @@ const logger = createLogger({
   transports: [
     new transports.Console({
       format: format.simple()
-    }),
-  ],
+    })
+  ]
 });
 
-if (config.get('datadog.api_key')) {
-  logger.add(new transports.Http(httpTransportOptions, {
-    format: format.combine(
-      format.errors({ stack: true }),
-      format.timestamp(),
-      datadogFormat(),
-      format.json()
-    ),
-  }));
-}
+const start = () => {
+  if (config.get('datadog.api_key')) {
+    logger.add(new transports.Http({
+      host: `http-intake.logs.${config.get('datadog.site')}`,
+      path: `/v1/input/${config.get('datadog.api_key')}?ddsource=nodejs&service=sfc&ddtags=env:${config.get('env')}`,
+      ssl: true
+    }, {
+      format: format.combine(
+        format.errors({ stack: true }),
+        format.timestamp(),
+        format.json()
+      )
+    }));
+  }
+};
 
 module.exports = logger;
+module.exports.start = start;
 
-console.log = function(){
-  return logger.info.apply(logger, arguments)
-}
-console.error = function(){
-  return logger.error.apply(logger, arguments)
-}
-console.info = function(){
-  return logger.warn.apply(logger, arguments)
-}
+console.log = function() {
+  return logger.info.apply(logger, arguments);
+};
+console.error = function() {
+  return logger.error.apply(logger, arguments);
+};
+console.info = function() {
+  return logger.warn.apply(logger, arguments);
+};

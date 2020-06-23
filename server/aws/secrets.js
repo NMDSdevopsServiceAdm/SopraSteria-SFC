@@ -118,7 +118,7 @@ const  adminUrl = () => {
 const datadogApiKey = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DD_API_KEY) {
-      throw new Error('Unknown DD_API_KEY secret');
+      return '';
     } else {
       return myLocalSecrets.DD_API_KEY;
     }
@@ -130,7 +130,7 @@ const datadogApiKey = () => {
 const sentryDsn = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.SENTRY_DSN) {
-      throw new Error('Unknown SENTRY_DSN secret');
+      return '';
     } else {
       return myLocalSecrets.SENTRY_DSN;
     }
@@ -142,7 +142,7 @@ const sentryDsn = () => {
 const honeycombWriteKey = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.HONEYCOMB_WRITE_KEY) {
-      throw new Error('Unknown HONEYCOMB_WRITE_KEY secret');
+      return '';
     } else {
       return myLocalSecrets.HONEYCOMB_WRITE_KEY;
     }
