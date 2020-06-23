@@ -1,0 +1,261 @@
+version: 2.1
+# This code is licensed from CircleCI to the user under the MIT license. See
+# https://circleci.com/orbs/registry/licensing for details.
+commands:
+  dark_deploy:
+    parameters:
+      appname:
+        description: App Name
+        type: string
+      dark_subdomain:
+        default: dark
+        description: Cloud Foundry dark domain to prefix domain (i.e. <dark_subdomain>.<domain>,
+          defaults to "dark")
+        type: string
+      domain:
+        description: Cloud Foundry domain registered to handle routes for this space
+          (a "dark" or "live" sub-domain will be used in conjunction with this, i.e.
+          <dark_subdomain>.<domain>)
+        type: string
+      manifest:
+        default: ""
+        description: The Cloud Foundry manifest for this environment
+        type: string
+      package:
+        description: path to the asset/package to push
+        type: string
+      vars:
+        default: ""
+        description: Vars file for variable substitution.
+        type: string
+      env_prefix:
+        description: prefix for enviroment variables
+        type: string
+    steps:
+      - run:
+          command: |
+            cf push --no-start "<<parameters.appname>>-dark" -f "<<parameters.manifest>>"<<# parameters.vars>> --vars-file "<<parameters.vars>>"<</ parameters.vars>> -p "<<parameters.package>>"<<# parameters.dark_subdomain>> -n "<<parameters.dark_subdomain>>"<</ parameters.dark_subdomain>> -d "<<parameters.domain>>"
+            cf set-env "<<parameters.appname>>-dark" CIRCLE_BUILD_NUM "${CIRCLE_BUILD_NUM}"
+            cf set-env "<<parameters.appname>>-dark" CIRCLE_SHA1 "${CIRCLE_SHA1}"
+            cf set-env "<<parameters.appname>>-dark" CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID}"
+            cf set-env "<<parameters.appname>>-dark" CIRCLE_PROJECT_USERNAME "${CIRCLE_PROJECT_USERNAME}"
+            cf set-env "<<parameters.appname>>-dark" CIRCLE_PROJECT_REPONAME "${CIRCLE_PROJECT_REPONAME}"
+            cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${<<parameters.env_prefix>>_AWS_ACCESS_KEY_ID}"
+            cf set-env "<<parameters.appname>>-dark" AWS_SECRET_ACCESS_KEY "${<<parameters.env_prefix>>_AWS_SECRET_ACCESS_KEY}"
+            cf set-env "<<parameters.appname>>-dark" NODE_ENV "${<<parameters.env_prefix>>_NODE_ENV}"
+            # Push as "dark" instance (URL in manifest)
+            cf start "<<parameters.appname>>-dark"
+            # Ensure dark route is exclusive to dark app
+            cf unmap-route "<<parameters.appname>>" "<<parameters.domain>>"<<# parameters.dark_subdomain>> -n "<<parameters.dark_subdomain>>"<</ parameters.dark_subdomain>> || echo "Already exclusive"
+          name: Cloud Foundry Dark Deployment
+  install:
+    description: Installs and authenticates with the latest CLI version if not present.
+    parameters:
+      endpoint:
+        default: https://api.run.pivotal.io
+        description: The domain of the Cloud Foundry runtime API endpoint. Defaults
+          to https://api.run.pivotal.io
+        type: string
+      org:
+        description: Cloud Foundry org to target
+        type: string
+      space:
+        description: Cloud Foundry space to target
+        type: string
+    steps:
+      - run:
+          command: |
+            : "${CF_USERNAME?Cloud Foundry username and password must be set as Environment variables before running this command.}"
+            : "${CF_PASSWORD?Cloud Foundry username and password must be set as Environment variables before running this command.}"
+            curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
+            sudo dpkg -i cf-cli_amd64.deb
+            cf -v
+            cf api "<<parameters.endpoint>>"
+            cf auth "$CF_USERNAME" "$CF_PASSWORD"
+            cf target -o "<<parameters.org>>" -s "<<parameters.space>>"
+          name: Setup CF CLI
+  live_deploy:
+    parameters:
+      appname:
+        description: App Name
+        type: string
+      domain:
+        description: Cloud Foundry domain (a "dark" sub-domain will be used on this.)
+        type: string
+      live_subdomain:
+        default: www
+        description: Cloud Foundry live subdomain to prefix domain (i.e. <live_subdomain>.<domain>,
+          defaults to "wwww")
+        type: string
+    steps:
+      - run:
+          command: |
+            # Send "real" url to new version
+            cf map-route "<<parameters.appname>>-dark" "<<parameters.domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
+            # Stop sending traffic to previous version
+            cf unmap-route "<<parameters.appname>>" "<<parameters.domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
+            # stop previous version
+            cf stop "<<parameters.appname>>"
+            # delete previous version
+            cf delete "<<parameters.appname>>" -f
+            # Switch name of "dark" version to claim correct name
+            cf rename "<<parameters.appname>>-dark" "<<parameters.appname>>"
+          name: Cloud Foundry - Re-route live Domain
+
+orbs:
+  node: circleci/node@3.0.0
+
+jobs:
+  install:
+    working_directory: ~/project
+    docker:
+      - image: circleci/node:lts-browsers
+    steps:
+      - checkout
+      - node/install-packages:
+          cache-path: ~/project/node_modules
+          override-ci-command: npm install
+
+  test_frontend:
+    docker:
+      - image: circleci/node:lts-browsers
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: npm run test
+  test_backend:
+    docker:
+      - image: circleci/node:lts-browsers
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: npm run server:test:unit
+
+  blue_green:
+    description: Execute a blue/green deploy  in a single job. Expects either build_steps
+      or workspace_path for assets to deploy.
+    docker:
+      - image: circleci/node:lts
+    parameters:
+      appname:
+        description: App Name
+        type: string
+      build_steps:
+        default: []
+        description: Steps to generate application package or files. Alternately provide
+          `workspace_path`
+        type: steps
+      dark_subdomain:
+        default: dark
+        description: Cloud Foundry dark domain to prefix domain (i.e. <dark_subdomain>.<domain>,
+          defaults to "dark")
+        type: string
+      domain:
+        description: Cloud Foundry domain registered to handle routes for this space
+          (a "dark" or "live" sub-domain will be used in conjunction with this, i.e.
+          <dark_subdomain>.<domain>)
+        type: string
+      endpoint:
+        default: https://api.run.pivotal.io
+        description: The domain of the Cloud Foundry runtime API endpoint. Defaults
+          to https://api.run.pivotal.io
+        type: string
+      live_subdomain:
+        default: www
+        description: Cloud Foundry live subdomain to prefix domain (i.e. <live_subdomain>.<domain>,
+          defaults to "www")
+        type: string
+      manifest:
+        default: ""
+        description: The Cloud Foundry manifest for this environment
+        type: string
+      org:
+        description: Cloud Foundry Org to target
+        type: string
+      package:
+        description: path to the asset/package to push
+        type: string
+      space:
+        description: Cloud Foundry space to target
+        type: string
+      validate_steps:
+        default: []
+        description: Optional steps to run between the dark and live deployments.
+        type: steps
+      vars:
+        default: ""
+        description: Vars file for variable substitution.
+        type: string
+      workspace_path:
+        default: ""
+        description: The key of a workflow workspace which contains artifact. Alternately
+          provide `build_steps`
+        type: string
+      env_prefix:
+        description: prefix for enviroment variables
+        type: string
+    steps:
+      - checkout
+      - node/install-packages
+      - when:
+          condition: <<parameters.build_steps>>
+          steps: << parameters.build_steps >>
+      - when:
+          condition: <<parameters.workspace_path>>
+          steps:
+            - attach_workspace:
+                at: <<parameters.workspace_path>>
+      - install:
+          endpoint: <<parameters.endpoint>>
+          org: <<parameters.org>>
+          space: <<parameters.space>>
+      - dark_deploy:
+          appname: <<parameters.appname>>
+          dark_subdomain: <<parameters.dark_subdomain>>
+          domain: <<parameters.domain>>
+          manifest: <<parameters.manifest>>
+          package: <<parameters.package>>
+          vars: <<parameters.vars>>
+          env_prefix: <<parameters.env_prefix>>
+      - when:
+          condition: <<parameters.validate_steps>>
+          steps: << parameters.validate_steps >>
+      - live_deploy:
+          appname: <<parameters.appname>>
+          domain: <<parameters.domain>>
+          live_subdomain: <<parameters.live_subdomain>>
+workflows:
+    build-test-deploy:
+      jobs:
+        - install
+        - test_frontend:
+            requires:
+              - install
+        - test_backend:
+            requires:
+              - install
+        - blue_green:
+            appname: sfcdev
+            env_prefix: SFC_DEV
+            requires:
+                - test_frontend
+                - test_backend
+            filters:
+                branches:
+                    only:
+                        - develop
+            endpoint: https://api.cloud.service.gov.uk
+            org: dhsc-skills-for-care-nmds-sc-2
+            space: sandbox
+            manifest: manifest.dev.yml
+            package: '.'
+            dark_subdomain: sfcdev-dark
+            live_subdomain: sfcdev
+            domain: cloudapps.digital
+            build_steps:
+                - run: npm run build
+
+
+
