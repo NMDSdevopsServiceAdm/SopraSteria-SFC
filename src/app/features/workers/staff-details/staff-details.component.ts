@@ -9,6 +9,7 @@ import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-staff-details',
@@ -31,6 +32,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected alertService: AlertService,
     private jobService: JobService
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
@@ -156,6 +158,18 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     if (otherJob && otherJob.other) {
       this.showInputTextforOtherRole = true;
     }
+  }
+
+  protected navigate(action): void {
+    const currentUrl = this.router.url;
+    this.router.navigate(this.next).then(() => {
+      if (currentUrl.endsWith('create-staff-record')) {
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'Staff record saved.'
+        });
+      }
+    });
   }
 
   onSuccess() {
