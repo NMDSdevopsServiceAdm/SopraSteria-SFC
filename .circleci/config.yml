@@ -243,6 +243,9 @@ workflows:
         - test_backend:
             requires:
               - install
+        - performance:
+            requires:
+              - install
         - blue_green:
             appname: sfcdev
             env_prefix: SFC_DEV
