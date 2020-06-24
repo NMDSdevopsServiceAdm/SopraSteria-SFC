@@ -139,6 +139,8 @@ jobs:
       - checkout
       - node/install-packages
       - run:
+          command: npm run build
+      - run:
           command: $(npm bin)/lhci autorun
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
