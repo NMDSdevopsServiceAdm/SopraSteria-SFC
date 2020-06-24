@@ -4,7 +4,7 @@
     <ng-container *ngIf="workplace && canEditEstablishment">
       <p *ngIf="!workplace.employerType || updateStaffRecords">What you need to do first.</p>
       <app-inset-text *ngIf="!workplace.employerType || updateStaffRecords" [color]="'todo'">
-        <a *ngIf="!workplace?.employerType" [routerLink]="['/workplace', workplace?.uid, 'start']"
+        <a *ngIf="!workplace?.employerType" [routerLink]="['/workplace', workplace?.uid, 'start']" data-testid="add-workplace-info"
           >Add workplace information</a
         >
         <br /><a
@@ -58,7 +58,9 @@
         canViewChangeDataOwner ||
         canViewDataPermissionsLink ||
         canLinkToParent ||
-        canRemoveParentAssociation
+        canRemoveParentAssociation ||
+        canBecomeAParent ||
+        canAddWorker
       "
     >
       <h3 class="govuk-heading-s govuk-!-margin-top-1">Related content</h3>
@@ -77,7 +79,7 @@
         <li *ngIf="canViewDataPermissionsLink">
           <a (click)="setDataPermissions($event)" href="#">Set data permissions</a>
         </li>
-        <li *ngIf="canLinkToParent">
+        <li *ngIf="canLinkToParent && !workplace.isParent">
           <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
             <a (click)="cancelLinkToParent($event)" href="#">Link to my parent organisation pending</a>
           </ng-container>
@@ -88,12 +90,20 @@
         <li *ngIf="canRemoveParentAssociation">
           <a (click)="removeLinkToParent($event)" href="#">Remove link to my parent organisation</a>
         </li>
+        <li *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
+          <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
+        </li>
+        <li *ngIf="canAddWorker">
+          <a [routerLink]="['/add-mandatory-training']">Manage mandatory training</a>
+        </li>
       </ul>
     </ng-container>
     <ul *ngIf="[adminRole].includes(user.role)" class="govuk-list">
       <li><a [routerLink]="['/search-users']">Search Users</a></li>
       <li><a [routerLink]="['/search-establishments']">Search Establishments</a></li>
       <li><a [routerLink]="['/registrations']">Registrations</a></li>
+      <li><a [routerLink]="['/parent-requests']">Parent Requests</a></li>
+      <li><a [routerLink]="['/cqc-status-changes']">CQC Status Requests</a></li>
     </ul>
   </div>
 </div>

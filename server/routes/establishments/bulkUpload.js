@@ -8,6 +8,7 @@ const rfr = require('rfr');
 const config = rfr('server/config/config');
 const dbModels = rfr('server/models');
 const timerLog = rfr('server/utils/timerLog');
+const slack = rfr('server/utils/slack/slack-logger');
 
 const s3 = new (require('aws-sdk')).S3({
   region: String(config.get('bulkupload.region'))
@@ -45,6 +46,36 @@ const buStates = [
 const ignoreMetaDataObjects = /.*metadata.json$/;
 const ignoreRoot = /.*\/$/;
 const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
+
+const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validationDiferenceReport) => {
+  const thisEstablishment = new Establishment(theLoggedInUser);
+
+  await thisEstablishment.restore(primaryEstablishmentId, false);
+
+  let workerCount = 0;
+  if (validationDiferenceReport.new && validationDiferenceReport.new.length > 0) {
+    validationDiferenceReport.new.map(est => {
+      if (est.workers && est.workers.new) {
+        workerCount = workerCount + est.workers.new.length;
+      }
+      if (est.workers && est.workers.updated) {
+        workerCount = workerCount + est.workers.updated.length;
+      }
+    });
+  }
+  if (validationDiferenceReport.updated && validationDiferenceReport.updated.length > 0) {
+    validationDiferenceReport.updated.map(est => {
+      if (est.workers && est.workers.new) {
+        workerCount = workerCount + est.workers.new.length;
+      }
+      if (est.workers && est.workers.updated) {
+        workerCount = workerCount + est.workers.updated.length;
+      }
+    });
+  }
+
+  if (workerCount > 500) slack.info("Large Bulk Upload", `${thisEstablishment.name} (ID ${thisEstablishment.nmdsId}) just did a bulk upload with a staff file containing ${workerCount} staff records.`);
+};
 
 // Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
@@ -1113,77 +1144,70 @@ const validateBulkUploadFiles = async (
 
     keepAlive('workers validated'); // keep connection alive
 
-    // having parsed all workers, check for duplicates
-    // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
-    myWorkers.forEach(thisWorker => {
-      // uniquness for a worker is across both the establishment and the worker
-      const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
-      const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
+  // having parsed all workers, check for duplicates
+  // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
+  const allKeys = [];
+  myWorkers.map(worker => {
+    const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+    allKeys.push(id);
+  });
 
-      if (allWorkersByKey[keyNoWhitespace]) {
-        // this worker is a duplicate
-        csvWorkerSchemaErrors.push(thisWorker.addDuplicate(thisWorker.uniqueWorker));
+  myWorkers.forEach(thisWorker => {
+    // uniquness for a worker is across both the establishment and the worker
+    const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+    const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
 
-        // remove the entity
-        delete myAPIWorkers[thisWorker.lineNumber];
+    if(checkDuplicateWorkerID(thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors)) {
 
-      // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
-      } else if (changeKeyNoWhitespace && allWorkersByKey[changeKeyNoWhitespace]) {
-        // this worker is a duplicate
-        csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(thisWorker.changeUniqueWorker));
+      // does not yet exist - check this worker can be associated with a known establishment
+      const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
+
+      const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
+        if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
+          if (thatWorker.weeklyContractedHours) {
+            return sum + thatWorker.weeklyContractedHours;
+          }
+          if (thatWorker.weeklyAverageHours) {
+            return sum + thatWorker.weeklyAverageHours;
+          }
+        }
+        return sum;
+      }, 0);
+
+      if (myWorkersTotalHours > 65) {
+        csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
+      }
+
+      if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
+        // not found the associated establishment
+        csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
 
         // remove the entity
         delete myAPIWorkers[thisWorker.lineNumber];
       } else {
-        // does not yet exist - check this worker can be associated with a known establishment
-        const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
+        // this worker is unique and can be associated to establishment
+        allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
 
-        const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
-          if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
-            if (thatWorker.weeklyContractedHours) {
-              return sum + thatWorker.weeklyContractedHours;
-            }
-            if (thatWorker.weeklyAverageHours) {
-              return sum + thatWorker.weeklyAverageHours;
-            }
-          }
-          return sum;
-        }, 0);
-
-        if (myWorkersTotalHours > 65) {
-          csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
+        // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+        if (changeKeyNoWhitespace) {
+          allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
         }
 
-        if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
-          // not found the associated establishment
-          csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
+        // associate this worker to the known establishment
+        const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace] ? myAPIEstablishments[establishmentKeyNoWhitespace] : null;
 
-          // remove the entity
-          delete myAPIWorkers[thisWorker.lineNumber];
+        // key workers, to be used in training
+        const workerKeyNoWhitespace = (thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID).replace(/\s/g, '');
+        workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
+
+        if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
+          knownEstablishment.associateWorker(myAPIWorkers[thisWorker.lineNumber].key, myAPIWorkers[thisWorker.lineNumber]);
         } else {
-          // this worker is unique and can be associated to establishment
-          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
-
-          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
-          if (changeKeyNoWhitespace) {
-            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
-          }
-
-          // associate this worker to the known establishment
-          const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace] ? myAPIEstablishments[establishmentKeyNoWhitespace] : null;
-
-          // key workers, to be used in training
-          const workerKeyNoWhitespace = (thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID).replace(/\s/g, '');
-          workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
-
-          if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
-            knownEstablishment.associateWorker(myAPIWorkers[thisWorker.lineNumber].key, myAPIWorkers[thisWorker.lineNumber]);
-          } else {
-            // this should never happen
-            console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
-          }
+          // this should never happen
+          console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
         }
       }
+    }
     });
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no workers records');
@@ -1973,7 +1997,7 @@ const printLine = (readable, reportType, errors, sep) => {
     readable.push(`${sep}${key}${sep}`);
     errors[key].forEach(item => {
       if (reportType === 'training') {
-        return readable.push(`For worker with ${item.name} Subsidiary 3 and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`);
+        return readable.push(`For worker with ${item.name} and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`);
       } else if (reportType === 'establishments') {
         return readable.push(`For establishment called ${item.name} on line ${item.lineNumber}${sep}`);
       } else if (reportType === 'workers') {
@@ -2276,6 +2300,8 @@ const completePost = async (req, res) => {
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);
         timerLog('CHECKPOINT - BU COMPLETE - overall', completeStartTime, completeEndTime);
 
+        await sendCountToSlack(theLoggedInUser, primaryEstablishmentId, validationDiferenceReport);
+
         await saveResponse(req, res, 200, {});
       } catch (err) {
         console.error("route('/complete') err: ", err);
@@ -2300,12 +2326,8 @@ const completePost = async (req, res) => {
   }
 };
 
-// takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
-const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, responseSend) => {
-  // before being able to write the worker header, we need to know the maximum number of qualifications
-  // columns across all workers
-
-  const determineMaxQuals = await dbModels.sequelize.query(
+const determineMaxQuals = async (primaryEstablishmentId) => {
+  return dbModels.sequelize.query(
     'select cqc.maxQualifications(:givenPrimaryEstablishment);',
     {
       replacements: {
@@ -2314,9 +2336,15 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
       type: dbModels.sequelize.QueryTypes.SELECT
     }
   );
+};
 
-  if (determineMaxQuals && determineMaxQuals[0].maxqualifications && Number.isInteger(parseInt(determineMaxQuals[0].maxqualifications, 10))) {
-    const MAX_QUALS = parseInt(determineMaxQuals[0].maxqualifications, 10);
+// takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
+const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, maxQuals, responseSend) => {
+  // before being able to write the worker header, we need to know the maximum number of qualifications
+  // columns across all workers
+
+  if (maxQuals && maxQuals[0].maxqualifications && Number.isInteger(parseInt(maxQuals[0].maxqualifications, 10))) {
+    const MAX_QUALS = parseInt(maxQuals[0].maxqualifications, 10);
 
     // first the header rows
     let columnNames = '';
@@ -2348,14 +2376,18 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
             responseSend(NEWLINE + WorkerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
           } else if (thisWorker.training) { // or for this Worker's training records
             thisWorker.training.forEach(thisTrainingRecord => {
-              responseSend(NEWLINE + TrainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord), 'training');
+              responseSend(NEWLINE + TrainingCsvValidator.toCSV(
+                thisEstablishment.key,
+                thisWorker.localIdentifier ? thisWorker.localIdentifier : '',
+                thisTrainingRecord),
+              'training');
             });
           }
         });
       }
     });
   } else {
-    console.error('bulk upload exportToCsv - max quals error: ', determineMaxQuals);
+    console.error('bulk upload exportToCsv - max quals error: ', maxQuals);
     throw new Error('max quals error: determineMaxQuals');
   }
 };
@@ -2389,12 +2421,14 @@ const downloadGet = async (req, res) => {
 
   if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
     try {
+      const maxQuals = await determineMaxQuals(primaryEstablishmentId);
       await exportToCsv(
         NEWLINE,
         // only restore those subs that this primary establishment owns
         await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true),
         primaryEstablishmentId,
         downloadType,
+        maxQuals,
         responseSend
       );
 
@@ -2442,6 +2476,27 @@ const checkDuplicateLocations = async (
     });
 };
 
+const checkDuplicateWorkerID = (thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors ) => {
+  // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
+  if (changeKeyNoWhitespace && (allWorkersByKey[changeKeyNoWhitespace] || allKeys.includes(changeKeyNoWhitespace))) {
+    // this worker is a duplicate
+    csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(thisWorker.changeUniqueWorker));
+
+    // remove the entity
+    delete myAPIWorkers[thisWorker.lineNumber];
+    return false;
+  } else if (allWorkersByKey[keyNoWhitespace] !== undefined) {
+    // this worker is a duplicate
+    csvWorkerSchemaErrors.push(thisWorker.addDuplicate(thisWorker.uniqueWorker));
+
+    // remove the entity
+    delete myAPIWorkers[thisWorker.lineNumber];
+    return false;
+  } else {
+    return true;
+  };
+};
+
 const router = require('express').Router();
 
 router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
@@ -2462,5 +2517,10 @@ router.route('/unlock').get(releaseLock);
 router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;
+module.exports.printLine = printLine;
 module.exports.checkDuplicateLocations = checkDuplicateLocations;
+module.exports.checkDuplicateWorkerID = checkDuplicateWorkerID;
 module.exports.validateEstablishmentCsv = validateEstablishmentCsv;
+module.exports.exportToCsv = exportToCsv;
+module.exports.determineMaxQuals = determineMaxQuals;
+module.exports.sendCountToSlack = sendCountToSlack;

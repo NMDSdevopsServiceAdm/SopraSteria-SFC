@@ -74,7 +74,7 @@ describe('DashboardComponent', () => {
   }
 
   it('should render a DashboardComponent', async () => {
-    const component = await setup();
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 

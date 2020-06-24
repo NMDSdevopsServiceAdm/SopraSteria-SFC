@@ -15,29 +15,35 @@ const establishment = {
   establishmentId: 2
 };
 
-sinon.stub(models.worker, 'findOne').callsFake(async (args) => {
-  return args.i === 3 ? {} : worker;
-});
-sinon.stub(models.worker, 'create').callsFake(async (args) => {
-  return worker;
-});
-sinon.stub(models.worker, 'update').callsFake(async (args) => {
-  const mockWorker = {
-    get: () => {
-      return worker;
-    }
-  }
-  return [1, [mockWorker]];
-});
-sinon.stub(models.workerAudit, 'bulkCreate').callsFake(async (args) => {
-  return {};
-});
-sinon.stub(models.establishment, 'findOne').callsFake(async (args) => {
-  return establishment;
-});
-
 describe('worker route', () => {
-  describe('editWorker()', () => {
+  before(() => {
+    sinon.stub(models.worker, 'findOne').callsFake(async (args) => {
+      return args.i === 3 ? {} : worker;
+    });
+    sinon.stub(models.worker, 'create').callsFake(async (args) => {
+      return worker;
+    });
+    sinon.stub(models.worker, 'update').callsFake(async (args) => {
+      const mockWorker = {
+        get: () => {
+          return worker;
+        }
+      }
+      return [1, [mockWorker]];
+    });
+    sinon.stub(models.workerAudit, 'bulkCreate').callsFake(async (args) => {
+      return {};
+    });
+    sinon.stub(models.establishment, 'findOne').callsFake(async (args) => {
+      return establishment;
+    });
+  });
+
+  after(() => {
+    sinon.restore();
+  });
+
+  describe.skip('editWorker()', () => {
     it('should return worker changes', async() => {
       const updateStatus = (status) => {
         expect(status).to.deep.equal(200);

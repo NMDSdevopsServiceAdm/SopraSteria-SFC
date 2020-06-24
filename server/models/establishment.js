@@ -205,6 +205,26 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"IsRegulated"'
     },
+    IsRegulatedSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"IsRegulatedSavedAt"'
+    },
+    IsRegulatedChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"IsRegulatedChangedAt"'
+    },
+    IsRegulatedSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"IsRegulatedSavedBy"'
+    },
+    IsRegulatedChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"IsRegulatedChangedBy"'
+    },
     overallWdfEligibility: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -706,6 +726,52 @@ module.exports = function(sequelize, DataTypes) {
       onDelete: 'CASCADE'
     });
   };
+
+  Establishment.findWithWorkersAndTraining = function (establishmentId) {
+    return this.findByPk(establishmentId, {
+      attributes: ['id'],
+      include: {
+        model: sequelize.models.worker,
+        attributes: ['id', 'uid', 'NameOrIdValue'],
+        as: 'workers',
+        where: {
+          archived: false,
+        },
+        include: [
+          {
+            model: sequelize.models.job,
+            as: 'mainJob',
+            attributes: ['id', 'title'],
+            required: false,
+          },
+          {
+            model: sequelize.models.workerTraining,
+            as: 'workerTraining',
+            attributes: ['id', 'uid', 'title', 'expires', 'categoryFk'],
+          },
+        ],
+      },
+    });
+  }
+
+  Establishment.findbyId = function(id) {
+    return this.findOne({
+      where: {
+        id: id,
+        archived: false
+      },
+      attributes: [
+        'id',
+        'ustatus',
+        'locationId',
+        'provId',
+        'isRegulated',
+        'isParent',
+        'parentId',
+        'NameValue',
+        'nmdsId']
+    });
+  }
 
   return Establishment;
 };

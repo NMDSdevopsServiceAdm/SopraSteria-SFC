@@ -1,6 +1,6 @@
 <app-reports-header *ngIf="primaryWorkplace" [workplace]="primaryWorkplace"></app-reports-header>
 
-<div class="govuk-grid-row govuk-!-margin-bottom-3">
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h2 *ngIf="isParent" class="govuk-body-l">Workforce Development Fund</h2>
     <ul class="govuk-list govuk-list--inline">
@@ -22,8 +22,14 @@
         <a class="govuk-body-m" [routerLink]="['all-workplaces']">All workplaces</a>
       </li>
     </ul>
-
-    <app-details [title]="'What is the Workforce Development Fund'">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds-from-desktop">
+        <p>
+          <a class="govuk-body-m" href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx">View more information about the Workforce Development Fund</a>
+        </p>
+      </div>
+    </div>
+    <!-- <app-details [title]="'What is the Workforce Development Fund'">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds-from-desktop">
           Find out more about the Workforce Development Fund and how to claim it on
@@ -35,7 +41,7 @@
           website.
         </div>
       </div>
-    </app-details>
+    </app-details> -->
     <ng-container *ngIf="canRunLocalAuthorityReport || isAdmin">
       <h2 class="govuk-body-l">Local Authority Progress</h2>
       <ul class="govuk-list govuk-list--inline govuk-list--download">

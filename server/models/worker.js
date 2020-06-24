@@ -1014,6 +1014,12 @@ module.exports = function(sequelize, DataTypes) {
       as: 'auditEvents',
       onDelete: 'CASCADE'
     });
+    Worker.hasMany(models.workerTraining, {
+      foreignKey: 'workerFk',
+      sourceKey: 'id',
+      as: 'workerTraining',
+      onDelete: 'CASCADE'
+    });
     Worker.belongsTo(models.ethnicity, {
       foreignKey: 'EthnicityFkValue',
       targetKey: 'id',

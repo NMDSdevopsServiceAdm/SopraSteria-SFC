@@ -1,16 +1,14 @@
-<div class="govuk-grid-row">
-  <h2 class="govuk-heading-m govuk-!-margin-left-1">Training and qualifications ({{ totalRecords || 0 }})</h2>
-</div>
+<h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
 <app-trianing-link-panel></app-trianing-link-panel>
 <ng-container *ngIf="workers; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0">
     <div class="govuk-grid-column-two-thirds">
-      <app-inset-text color="warning">Start adding your training and qualifications records.</app-inset-text>
+      <app-inset-text color="warning">You have not added any training or qualification records yet.</app-inset-text>
       <p>
-        Many care providers use ASC-WDS as the place to keep a record of all their staff training and qualifications.
-        The service alerts them when training is expiring e.g. fire safety.
+        Many care providers use this service to store their staff training and qualification records.
+        The service shows them when training is about to expire.
       </p>
-      <h3>Click on a staff name to add a record.</h3>
+      <h3>You need to click on the name of the person you want to add a training or qualification record for.</h3>
     </div>
   </div>
   <app-training-info-panel
@@ -21,10 +19,19 @@
     [totalMissingMandatoryTraining]="missingMandatoryTraining"
   ></app-training-info-panel>
 
+  <app-training-and-qualifications-categories
+    *ngIf="viewTrainingByCategory && trainingCategories.length > 0"
+    [workplace]="workplace"
+    [trainingCategories]="trainingCategories"
+    (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
+  ></app-training-and-qualifications-categories>
+
   <app-training-and-qualifications-summary
-    *ngIf="workers"
+    *ngIf="workers && viewTrainingByCategory === false"
     [workplace]="workplace"
     [workers]="workers"
+    [showViewByToggle]="trainingCategories.length > 0"
+    (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
   ></app-training-and-qualifications-summary>
 </ng-container>
 <ng-template #noStaffRecords>

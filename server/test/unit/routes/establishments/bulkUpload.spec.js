@@ -2,14 +2,81 @@
 
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const rfr = require('rfr');
+const { build, fake } = require('@jackfranklin/test-data-bot');
 
-const bulkUpload = rfr('server/routes/establishments/bulkUpload');
-const EstablishmentCsvValidator = rfr('server/models/BulkImport/csv/establishments');
-const { Establishment } = rfr('server/models/classes/establishment');
-const buildEstablishmentCSV = rfr('server/test/factories/establishment/csv');
+const slack = require('../../../../utils/slack/slack-logger');
+
+const dbmodels = require('../../../../models');
+sinon.stub(dbmodels.status, 'ready').value(false);
+
+const bulkUpload = require('../../../../routes/establishments/bulkUpload');
+const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments');
+const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers');
+const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
+const { Establishment } = require('../../../../models/classes/establishment');
+const { Training } = require('../../../../models/classes/training');
+const { Worker } = require('../../../../models/classes/worker');
+const buildEstablishmentCSV = require('../../../../test/factories/establishment/csv');
+const buildWorkerCSV = require('../../../../test/factories/worker/csv');
+
+const errorsBuilder = build('Error', {
+  fields: {
+    name: fake(f => f.company.companyName()),
+    lineNumber: fake(f => f.random.number()),
+    worker: fake(f => f.name.lastName())
+  }
+});
 
 describe('/server/routes/establishment/bulkUpload.js', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe('printLine', () => {
+    it('prints the correct error message for training csv', async () => {
+      const readable = [];
+      const errors = {
+        "error1": [
+          errorsBuilder()
+        ]
+      };
+      const sep = ";";
+      const reportType = 'training';
+      bulkUpload.printLine(readable, reportType, errors, sep);
+      expect(readable.length).equals(2);
+      expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
+      expect(readable[1]).to.eql(`For worker with ${errors.error1[0].name} and UNIQUEWORKERID ${errors.error1[0].worker} on line ${errors.error1[0].lineNumber}${sep}`);
+    });
+    it('prints the correct error message for establishment csv', async () => {
+      const readable = [];
+      const errors = {
+        "error1": [
+          errorsBuilder()
+        ]
+      };
+      const sep = ";";
+      const reportType = 'establishments';
+      bulkUpload.printLine(readable, reportType, errors, sep);
+      expect(readable.length).equals(2);
+      expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
+      expect(readable[1]).to.eql(`For establishment called ${errors.error1[0].name} on line ${errors.error1[0].lineNumber}${sep}`);
+    });
+    it('prints the correct error message for workers csv', async () => {
+      const readable = [];
+      const errors = {
+        "error1": [
+          errorsBuilder()
+        ]
+      };
+      const sep = ";";
+      const reportType = 'workers';
+      bulkUpload.printLine(readable, reportType, errors, sep);
+      expect(readable.length).equals(2);
+      expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
+      expect(readable[1]).to.eql(`For worker with LOCALESTID ${errors.error1[0].name} and UNIQUEWORKERID ${errors.error1[0].worker} on line ${errors.error1[0].lineNumber}${sep}`);
+    });
+  });
+
   describe('checkDuplicateLocations', () => {
     it('can check for duplicate location IDs', async () => {
       const csvEstablishmentSchemaErrors = [];
@@ -49,6 +116,188 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         name: 'Workplace 2',
       });
     });
+  });
+
+  describe('checkDuplicateWorkerID()', () => {
+    it('errors when CHGUNIQUEWRKID is not unique', async () => {
+      const csvWorkerSchemaErrors = [];
+      const allWorkersByKey = {};
+      const myAPIWorkers = [];
+      const myWorkers = [
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 1'
+          },
+        }),
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 2',
+            CHGUNIQUEWRKID: 'Worker 1'
+          },
+        }),
+      ].map((currentLine, currentLineNumber) => {
+        const worker = new WorkerCsvValidator.Worker(
+          currentLine,
+          currentLineNumber,
+          []
+        );
+
+        worker.validate();
+
+        return worker;
+      });
+
+      const allKeys = myWorkers.map(worker => (worker.local + worker.uniqueWorker).replace(/\s/g, ''));
+
+
+      myWorkers.forEach(thisWorker => {
+        // uniquness for a worker is across both the establishment and the worker
+        const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+        const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
+
+        if (bulkUpload.checkDuplicateWorkerID(
+          myWorkers[1], allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors
+        )) {
+          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+
+          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+          if (changeKeyNoWhitespace) {
+            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+          }
+        }
+      });
+
+      expect(csvWorkerSchemaErrors.length).equals(1);
+      expect(csvWorkerSchemaErrors[0]).to.eql({
+        origin: 'Workers',
+        lineNumber: 1,
+        errCode: 998,
+        errType: 'DUPLICATE_ERROR',
+        error: 'CHGUNIQUEWRKID Worker 1 is not unique',
+        name: 'foo',
+        source: 'Worker 2',
+        worker: 'Worker 2'
+      });
+    });
+
+    it('errors when UNIQUEWORKERID is not unique', async () => {
+      const csvWorkerSchemaErrors = [];
+      const allWorkersByKey = {};
+      const myAPIWorkers = [];
+      const myWorkers = [
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 1'
+          },
+        }),
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 1'
+          },
+        }),
+      ].map((currentLine, currentLineNumber) => {
+        return new WorkerCsvValidator.Worker(
+          currentLine,
+          currentLineNumber,
+          []
+        );
+      });
+
+      const allKeys = [];
+      myWorkers.map(worker => {
+        worker.validate();
+        const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+        allKeys.push(id);
+      });
+
+      myWorkers.forEach(thisWorker => {
+        // uniquness for a worker is across both the establishment and the worker
+        const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+        const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
+
+        if (bulkUpload.checkDuplicateWorkerID(
+          thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors
+        )) {
+          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+
+          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+          if (changeKeyNoWhitespace) {
+            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+          }
+        }
+      });
+      ;
+
+      expect(csvWorkerSchemaErrors.length).equals(1);
+      expect(csvWorkerSchemaErrors[0]).to.eql({
+        origin: 'Workers',
+        lineNumber: 1,
+        errCode: 998,
+        errType: 'DUPLICATE_ERROR',
+        error: 'UNIQUEWORKERID Worker 1 is not unique',
+        name: 'foo',
+        source: 'Worker 1',
+        worker: 'Worker 1'
+      });
+    });
+
+    it('passes when CHGUNIQUEWRKID is unique', async () => {
+      const csvWorkerSchemaErrors = [];
+      const allWorkersByKey = {};
+      const myAPIWorkers = [];
+      const myWorkers = [
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 1'
+          },
+        }),
+        buildWorkerCSV({
+          overrides: {
+            LOCALESTID: 'foo',
+            UNIQUEWORKERID: 'Worker 2',
+            CHGUNIQUEWRKID: 'Worker 3'
+          },
+        }),
+      ].map((currentLine, currentLineNumber) => {
+        return new WorkerCsvValidator.Worker(
+          currentLine,
+          currentLineNumber,
+          []
+        );
+      });
+
+      const allKeys = [];
+      myWorkers.map(worker => {
+        worker.validate();
+        const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+        allKeys.push(id);
+      });
+
+      myWorkers.forEach(thisWorker => {
+        // uniquness for a worker is across both the establishment and the worker
+        const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+        const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
+
+        if (bulkUpload.checkDuplicateWorkerID(
+          myWorkers[1], allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors
+        )) {
+          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+
+          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+          if (changeKeyNoWhitespace) {
+            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+          }
+        }
+      });
+
+      expect(csvWorkerSchemaErrors.length).equals(0);
+    });
+
   });
 
   describe('validateEstablishmentCsv()', () => {
@@ -236,6 +485,159 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           _logLevel: 300
         }
       ]);
+    });
+  });
+
+  describe('exportToCsv()', () => {
+    it('should have a blank UNIQUEWORKERID if worker does not have a LocalIdentifier', async () => {
+      sinon.stub(dbmodels.workerTrainingCategories, 'findAll').returns([
+        {
+          id: 1
+        }
+      ]);
+
+      const trainingCategory = 1;
+
+      const lines = [];
+
+      const responseSend = (line, stepName = '') => {
+        lines.push(line);
+      };
+
+      const establishment = new Establishment('foo');
+      await establishment.load({
+        name: 'foo',
+        workers: [
+          {
+            nameOrId: 'foobar',
+            training: [
+              {
+                trainingCategory: {
+                  id: trainingCategory
+                }
+              }
+            ]
+          }
+        ]
+      }, true);
+
+      await bulkUpload.exportToCsv('', [establishment], 'foo', 'training', [
+        {
+          maxqualifications: "10"
+        }
+      ], responseSend);
+
+      expect(lines[1]).to.equal(`${establishment.name},,${BUDI.trainingCategory(BUDI.FROM_ASC, trainingCategory)},,,,,`);
+    });
+
+    it('should have a UNIQUEWORKERID if worker has a LocalIdentifier', async () => {
+      sinon.stub(dbmodels.workerTrainingCategories, 'findAll').returns([
+        {
+          id: 1
+        }
+      ]);
+
+      const trainingCategory = 1;
+      const workerName = 'TesterMcTesterson';
+
+      const lines = [];
+
+      const responseSend = (line, stepName = '') => {
+        lines.push(line);
+      };
+
+      const establishment = new Establishment('foo');
+      await establishment.load({
+        name: 'foo',
+        workers: [
+          {
+            nameOrId: 'foobar',
+            localIdentifier: workerName,
+            training: [
+              {
+                trainingCategory: {
+                  id: trainingCategory
+                }
+              }
+            ]
+          }
+        ]
+      }, true);
+
+      await bulkUpload.exportToCsv('', [establishment], 'foo', 'training', [
+        {
+          maxqualifications: "10"
+        }
+      ], responseSend);
+
+      expect(lines[1]).to.equal(`${establishment.name},${workerName},${BUDI.trainingCategory(BUDI.FROM_ASC, trainingCategory)},,,,,`);
+    });
+
+  });
+  describe('sendCountToSlack()', () => {
+    it('should send notification to slack with over 500 workers', async () => {
+      const differenceReport = {
+        new: [
+          {
+            workers: {
+              new: [],
+              updated: [
+                {
+                  name: 0
+                }
+              ]
+            }
+          }
+        ],
+        updated: [
+          {
+            workers: {
+              new: [
+                {
+                  name: 0
+                }
+              ],
+              updated: [
+                {
+                  name: 0
+                }
+              ]
+            }
+          }
+        ]
+      }
+      for (let i = 0; i < 502; i++) {
+        differenceReport.new[0].workers.new.push({name: i});
+      }
+      const username = 'foo';
+      const primaryId = 123;
+
+      sinon.stub(Establishment.prototype, 'restore');
+
+      const spy = sinon.spy(slack, 'info');
+      await bulkUpload.sendCountToSlack(username, primaryId, differenceReport);
+
+      expect(spy.called).to.deep.equal(true);
+    });
+    it('should not send notification to slack with under 500 workers', async () => {
+      const differenceReport = {
+        new: [
+          {
+            workers: {
+              new: []
+            }
+          }
+        ]
+      }
+      const username = 'foo';
+      const primaryId = 123;
+
+      sinon.stub(Establishment.prototype, 'restore');
+
+      const spy = sinon.spy(slack, 'info');
+      await bulkUpload.sendCountToSlack(username, primaryId, differenceReport);
+
+      expect(spy.called).to.deep.equal(false);
     });
   });
 });

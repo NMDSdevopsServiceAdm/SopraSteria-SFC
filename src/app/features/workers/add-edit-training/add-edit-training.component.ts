@@ -50,10 +50,15 @@ export class AddEditTrainingComponent implements OnInit {
     this.workerService.getRoute$.subscribe(route => {
       if (route) {
         this.previousUrl = route;
+      } else {
+        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
       }
     });
+    const parsed = this.router.parseUrl(this.previousUrl);
     this.backService.setBackLink({
-      url: [this.previousUrl],
+      url: [parsed.root.children.primary.segments.map(seg => seg.path).join('/')],
+      fragment: parsed.fragment,
+      queryParams: parsed.queryParams
     });
 
     this.form = this.formBuilder.group({
@@ -271,8 +276,14 @@ export class AddEditTrainingComponent implements OnInit {
   }
 
   private onSuccess() {
+    let url = '';
+    if (this.previousUrl.indexOf('dashboard') > -1) {
+      url = this.previousUrl;
+    } else {
+      url = `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
+    }
     this.router
-      .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
+      .navigateByUrl(url)
       .then(() => {
         if (this.trainingRecordId) {
           this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
@@ -317,6 +328,6 @@ export class AddEditTrainingComponent implements OnInit {
     return null;
   }
   public navigateToPreviousPage() {
-    this.router.navigate([this.previousUrl]);
+    this.router.navigateByUrl(this.previousUrl);
   }
 }

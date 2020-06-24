@@ -2526,7 +2526,7 @@ class Worker {
       lineNumber: this._lineNumber,
       errCode: Worker.DUPLICATE_ERROR,
       errType: 'DUPLICATE_ERROR',
-      error: `CHGUNIQUEWORKERID ${CHGUNIQUEWORKERID} is not unique`,
+      error: `CHGUNIQUEWRKID ${CHGUNIQUEWORKERID} is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID
@@ -3367,7 +3367,6 @@ class Worker {
         break;
 
       case 'Don\'t know':
-      default:
         apprenticeship = 999;
         break;
     }

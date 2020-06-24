@@ -29,9 +29,27 @@
             Registrations
           </a>
         </li>
+        <li class="govuk-tabs__list-item">
+          <a
+            class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'parent-requests'"
+            [routerLink]="['/parent-requests']"
+          >
+            Parent Requests
+          </a>
+        </li>
+        <li class="govuk-tabs__list-item">
+          <a
+            class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'cqc-status-changes'"
+            [routerLink]="['/cqc-status-changes']"
+          >
+            CQC Changes
+          </a>
+        </li>
       </ul>
 
-      <section class="govuk-tabs__panel has-border" *ngIf="form.type !== 'registrations'">
+      <section class="govuk-tabs__panel has-border" *ngIf="form.type !== 'registrations' && form.type !== 'parent-requests' && form.type !== 'cqc-status-changes' ">
         <form (ngSubmit)="onSubmit()" novalidate id="server-error">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -218,5 +236,7 @@
     </div>
 
     <app-registrations *ngIf="form.type === 'registrations'"></app-registrations>
+    <app-parent-requests *ngIf="form.type === 'parent-requests'"></app-parent-requests>
+    <app-cqc-status-changes *ngIf="form.type === 'cqc-status-changes'"></app-cqc-status-changes>
   </div>
 </div>
