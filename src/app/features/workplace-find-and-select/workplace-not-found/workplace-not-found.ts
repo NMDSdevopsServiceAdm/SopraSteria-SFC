@@ -12,10 +12,9 @@ import { Subscription } from 'rxjs';
 export class WorkplaceNotFound implements OnInit, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public form: FormGroup;
-  protected flow: string;
   public serverError: string;
   public submitted: boolean;
-
+  protected flow: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(

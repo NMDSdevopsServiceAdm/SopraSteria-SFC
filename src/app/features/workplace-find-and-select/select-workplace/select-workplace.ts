@@ -12,11 +12,11 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public flow: string;
   public locationAddresses: Array<LocationAddress>;
-  protected subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public isCQCLocationUpdate: boolean;
+  protected subscriptions: Subscription = new Subscription();
 
   constructor(
     protected backService: BackService,

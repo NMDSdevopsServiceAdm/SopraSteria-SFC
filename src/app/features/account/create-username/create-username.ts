@@ -15,16 +15,17 @@ import { finalize } from 'rxjs/operators';
 
 export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  protected formErrorsMap: Array<ErrorDetails>;
-  public return: URLStructure;
-  protected serverErrorsMap: Array<ErrorDefinition>;
-  protected subscriptions: Subscription = new Subscription();
-  protected userNameMaxLength = 120;
-  protected userNameMinLength = 3;
+
   public callToActionLabel: string;
   public form: FormGroup;
   public serverError: string;
   public submitted = false;
+  public return: URLStructure;
+  protected formErrorsMap: Array<ErrorDetails>;
+  protected serverErrorsMap: Array<ErrorDefinition>;
+  protected subscriptions: Subscription = new Subscription();
+  protected userNameMaxLength = 120;
+  protected userNameMinLength = 3;
 
   constructor(
     protected backService: BackService,

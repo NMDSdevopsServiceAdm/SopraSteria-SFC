@@ -11,13 +11,10 @@ import { Subscription } from 'rxjs';
 export class SecurityQuestion implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
   public formErrorsMap: Array<ErrorDetails>;
-  private securityDetailsMaxLength = 255;
-  protected back: URLStructure;
-  public return: URLStructure;
-  protected subscriptions: Subscription = new Subscription();
   public callToActionLabel: string;
   public form: FormGroup;
   public submitted = false;
+  public return: URLStructure;
   public formControlsMap: any[] = [
     {
       label: 'Enter a security question',
@@ -28,6 +25,9 @@ export class SecurityQuestion implements OnInit, OnDestroy, AfterViewInit {
       name: 'securityQuestionAnswer',
     },
   ];
+  protected back: URLStructure;
+  protected subscriptions: Subscription = new Subscription();
+  private securityDetailsMaxLength = 255;
 
   constructor(
     protected backService: BackService,

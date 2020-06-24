@@ -14,14 +14,12 @@ import { Subscription } from 'rxjs';
   templateUrl: './trianing-link-panel.component.html',
 })
 export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
-  private subscriptions: Subscription = new Subscription();
   public establishmentUid: string;
   public url: string;
   public fromStaffRecord: boolean;
-
   public lastUpdated: string;
-
   public now = moment.now();
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private reportService: ReportService,

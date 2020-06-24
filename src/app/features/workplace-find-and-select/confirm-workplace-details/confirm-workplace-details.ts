@@ -6,9 +6,9 @@ import { Subscription } from 'rxjs';
 
 export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
   public flow: string;
-  protected subscriptions: Subscription = new Subscription();
   public locationAddress: LocationAddress;
   public workplace: Service;
+  protected subscriptions: Subscription = new Subscription();
 
   constructor(protected backService: BackService) {}
 
