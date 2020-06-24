@@ -1,0 +1,10 @@
+{
+  "ci": {
+    "upload": {
+      "target": "temporary-public-storage"
+    },
+    "collect": {
+      "numberOfRuns": 3
+    }
+  }
+}
