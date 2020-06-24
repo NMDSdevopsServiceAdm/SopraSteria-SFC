@@ -132,7 +132,14 @@ jobs:
       - node/install-packages
       - run:
           command: npm run server:test:unit
-
+  performance:
+    docker:
+      - image: circleci/node:lts-browsers
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: $(npm bin)/lhci autorun
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
