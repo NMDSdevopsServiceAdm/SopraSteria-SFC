@@ -11,11 +11,23 @@ import { SharedModule } from '@shared/shared.module';
 
 import { RegistrationComponent } from './registration/registration.component';
 import { RegistrationsComponent } from './registrations/registrations.component';
+import { ParentRequestsComponent } from './parent-requests/parent-requests.component';
+import { ParentRequestComponent } from './parent-request/parent-request.component';
+import { CqcStatusChangesComponent } from './cqc-status-changes/cqc-status-changes.component';
+import { CqcStatusChangeComponent } from './cqc-status-change/cqc-status-change.component';
 import { SearchRoutingModule } from './search-routing.module';
 import { SearchComponent } from './search.component';
 
+
 @NgModule({
-  imports: [CommonModule, OverlayModule, ReactiveFormsModule, SharedModule, SearchRoutingModule, FormsModule],
+  imports: [
+    CommonModule,
+    OverlayModule,
+    ReactiveFormsModule,
+    SharedModule,
+    SearchRoutingModule,
+    FormsModule
+  ],
   providers: [DialogService],
   declarations: [
     SearchComponent,
@@ -23,7 +35,13 @@ import { SearchComponent } from './search.component';
     FirstErrorPipe,
     RegistrationComponent,
     RegistrationsComponent,
+    ParentRequestComponent,
+    ParentRequestsComponent,
+    CqcStatusChangeComponent,
+    CqcStatusChangesComponent
   ],
-  entryComponents: [AdminUnlockConfirmationDialogComponent]
+  entryComponents: [
+    AdminUnlockConfirmationDialogComponent
+  ]
 })
 export class SearchModule { }

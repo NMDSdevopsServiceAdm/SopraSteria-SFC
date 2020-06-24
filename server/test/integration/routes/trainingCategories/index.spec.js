@@ -57,6 +57,10 @@ describe('Training Categories API', () => {
 
         // Assert
         .expect(404);
+
+        expect(response.body).to.deep.equal({
+          message: 'Establishment was not found.',
+        });
       }
     });
   })

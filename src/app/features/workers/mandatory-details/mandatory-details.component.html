@@ -1,0 +1,14 @@
+<ng-container *ngIf="worker">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">
+        Staff record
+      </h1>
+    </div>
+  </div>
+  <app-basic-record data-testid="summary" [basicTitle]="'Mandatory details'" [workplace]="workplace" [worker]="worker" [return]="returnHere"></app-basic-record>
+  <div class="govuk-!-margin-top-6">
+    <button data-testid="add-details-button" class="govuk-button govuk-!-margin-right-9" role="button" draggable="false" (click)="onSubmit({action: 'continue', save: false})">Add details to this record</button>
+    <button data-testid="view-all-workers-button" class="govuk-button govuk-button--link" (click)="navigateToDashboard($event)"><span>View all staff records</span></button>
+  </div>
+</ng-container>

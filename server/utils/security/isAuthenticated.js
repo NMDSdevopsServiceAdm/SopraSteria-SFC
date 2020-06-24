@@ -22,6 +22,10 @@ exports.isAuthorised = (req, res , next) => {
       } else {
         req.username = claim.sub;
         req.userUid = claim.userUid;
+        req.user = {
+          id: claim.userUid,
+          username: claim.sub
+        }
         req.role = claim.role;
         req.isParent = claim.isParent;
         req.establishment = {
@@ -138,6 +142,10 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             // restore claims
             req.username = claim.sub;
             req.userUid = claim.userUid;
+            req.user = {
+              id: claim.userUid,
+              username: claim.sub
+            };
             req.isParent = claim.isParent;
             req.role = claim.role;
             req.establishment = {
@@ -175,6 +183,10 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
 
           req.username = claim.sub;
           req.userUid = claim.userUid;
+          req.user = {
+            id: claim.userUid,
+            username: claim.sub
+          };
           req.isParent = claim.isParent;
           req.role = claim.role;
           req.establishment = {
@@ -276,6 +288,10 @@ exports.isAuthorisedPasswdReset = (req, res, next) => {
         req.resetUuid = claim.resetUUID;
         req.username = claim.sub;
         req.fullname = claim.name;
+        req.user = {
+          id: claim.userUid,
+          username: claim.sub
+        };
         next();
       }
     });
@@ -348,6 +364,10 @@ exports.isAdmin = (req, res , next) => {
         } else {
           req.username = claim.sub;
           req.userUid = claim.userUid;
+          req.user = {
+            id: claim.userUid,
+            username: claim.sub
+          };
           next();
         }
       }
@@ -391,6 +411,10 @@ exports.isAdminOrOnDemandReporting = (req, res , next) => {
       } else {
         req.username = claim.sub;
         req.userUid = claim.userUid;
+        req.user = {
+          id: claim.userUid,
+          username: claim.sub
+        };
         next();
       }
     });

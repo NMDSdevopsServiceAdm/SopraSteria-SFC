@@ -19,7 +19,7 @@ const getAllTraining = async function (_req, res) {
     });
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(503).json();
   }
 };
 
@@ -27,19 +27,21 @@ const getTrainingByCategory = async (req, res) => {
   try {
     const establishmentId = req.params.establishmentId;
 
-    let establishment = await models.establishment.findWithWorkersAndTraining(establishmentId);
-    if (!establishment) {
-      return res.sendStatus(404);
+    const establishmentWithWorkersAndTraining = await models.establishment.findWithWorkersAndTraining(establishmentId);
+    if (establishmentWithWorkersAndTraining === null) {
+      return res.json({
+        trainingCategories: [],
+      });
     }
 
-    let trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
+    const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
 
     res.json({
-      trainingCategories: transformTrainingCategoriesWithMandatoryTraining(establishment, trainingCategories),
+      trainingCategories: transformTrainingCategoriesWithMandatoryTraining(establishmentWithWorkersAndTraining, trainingCategories),
     });
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(503).json();
   }
 };
 

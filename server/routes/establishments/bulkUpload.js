@@ -8,6 +8,7 @@ const rfr = require('rfr');
 const config = rfr('server/config/config');
 const dbModels = rfr('server/models');
 const timerLog = rfr('server/utils/timerLog');
+const slack = rfr('server/utils/slack/slack-logger');
 
 const s3 = new (require('aws-sdk')).S3({
   region: String(config.get('bulkupload.region'))
@@ -45,6 +46,36 @@ const buStates = [
 const ignoreMetaDataObjects = /.*metadata.json$/;
 const ignoreRoot = /.*\/$/;
 const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
+
+const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validationDiferenceReport) => {
+  const thisEstablishment = new Establishment(theLoggedInUser);
+
+  await thisEstablishment.restore(primaryEstablishmentId, false);
+
+  let workerCount = 0;
+  if (validationDiferenceReport.new && validationDiferenceReport.new.length > 0) {
+    validationDiferenceReport.new.map(est => {
+      if (est.workers && est.workers.new) {
+        workerCount = workerCount + est.workers.new.length;
+      }
+      if (est.workers && est.workers.updated) {
+        workerCount = workerCount + est.workers.updated.length;
+      }
+    });
+  }
+  if (validationDiferenceReport.updated && validationDiferenceReport.updated.length > 0) {
+    validationDiferenceReport.updated.map(est => {
+      if (est.workers && est.workers.new) {
+        workerCount = workerCount + est.workers.new.length;
+      }
+      if (est.workers && est.workers.updated) {
+        workerCount = workerCount + est.workers.updated.length;
+      }
+    });
+  }
+
+  if (workerCount > 500) slack.info("Large Bulk Upload", `${thisEstablishment.name} (ID ${thisEstablishment.nmdsId}) just did a bulk upload with a staff file containing ${workerCount} staff records.`);
+};
 
 // Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
@@ -2269,6 +2300,8 @@ const completePost = async (req, res) => {
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);
         timerLog('CHECKPOINT - BU COMPLETE - overall', completeStartTime, completeEndTime);
 
+        await sendCountToSlack(theLoggedInUser, primaryEstablishmentId, validationDiferenceReport);
+
         await saveResponse(req, res, 200, {});
       } catch (err) {
         console.error("route('/complete') err: ", err);
@@ -2293,12 +2326,8 @@ const completePost = async (req, res) => {
   }
 };
 
-// takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
-const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, responseSend) => {
-  // before being able to write the worker header, we need to know the maximum number of qualifications
-  // columns across all workers
-
-  const determineMaxQuals = await dbModels.sequelize.query(
+const determineMaxQuals = async (primaryEstablishmentId) => {
+  return dbModels.sequelize.query(
     'select cqc.maxQualifications(:givenPrimaryEstablishment);',
     {
       replacements: {
@@ -2307,9 +2336,15 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
       type: dbModels.sequelize.QueryTypes.SELECT
     }
   );
+};
 
-  if (determineMaxQuals && determineMaxQuals[0].maxqualifications && Number.isInteger(parseInt(determineMaxQuals[0].maxqualifications, 10))) {
-    const MAX_QUALS = parseInt(determineMaxQuals[0].maxqualifications, 10);
+// takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
+const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, maxQuals, responseSend) => {
+  // before being able to write the worker header, we need to know the maximum number of qualifications
+  // columns across all workers
+
+  if (maxQuals && maxQuals[0].maxqualifications && Number.isInteger(parseInt(maxQuals[0].maxqualifications, 10))) {
+    const MAX_QUALS = parseInt(maxQuals[0].maxqualifications, 10);
 
     // first the header rows
     let columnNames = '';
@@ -2341,14 +2376,18 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
             responseSend(NEWLINE + WorkerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
           } else if (thisWorker.training) { // or for this Worker's training records
             thisWorker.training.forEach(thisTrainingRecord => {
-              responseSend(NEWLINE + TrainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord), 'training');
+              responseSend(NEWLINE + TrainingCsvValidator.toCSV(
+                thisEstablishment.key,
+                thisWorker.localIdentifier ? thisWorker.localIdentifier : '',
+                thisTrainingRecord),
+              'training');
             });
           }
         });
       }
     });
   } else {
-    console.error('bulk upload exportToCsv - max quals error: ', determineMaxQuals);
+    console.error('bulk upload exportToCsv - max quals error: ', maxQuals);
     throw new Error('max quals error: determineMaxQuals');
   }
 };
@@ -2382,12 +2421,14 @@ const downloadGet = async (req, res) => {
 
   if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
     try {
+      const maxQuals = await determineMaxQuals(primaryEstablishmentId);
       await exportToCsv(
         NEWLINE,
         // only restore those subs that this primary establishment owns
         await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true),
         primaryEstablishmentId,
         downloadType,
+        maxQuals,
         responseSend
       );
 
@@ -2480,3 +2521,6 @@ module.exports.printLine = printLine;
 module.exports.checkDuplicateLocations = checkDuplicateLocations;
 module.exports.checkDuplicateWorkerID = checkDuplicateWorkerID;
 module.exports.validateEstablishmentCsv = validateEstablishmentCsv;
+module.exports.exportToCsv = exportToCsv;
+module.exports.determineMaxQuals = determineMaxQuals;
+module.exports.sendCountToSlack = sendCountToSlack;
