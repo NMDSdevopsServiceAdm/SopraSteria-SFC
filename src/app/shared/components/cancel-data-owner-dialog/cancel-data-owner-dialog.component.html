@@ -1,6 +1,6 @@
 <app-error-summary *ngIf="isCancelOwnershipError" [serverError]="serverError" [form]="form"> </app-error-summary>
 
-<div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+<div class="govuk-form-group">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
       <h1 id="dialogHeading" class="govuk-fieldset__heading">
@@ -8,10 +8,6 @@
       </h1>
     </legend>
     <app-summary-list [wrapBorder]="true" [summaryList]="summaryList"></app-summary-list>
-
-    <span *ngIf="submitted && form.get('dataPermission').invalid" id="dataPermission-error" class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('dataPermission') }}
-    </span>
   </fieldset>
 </div>
 

@@ -10,14 +10,14 @@ import { Subscription } from 'rxjs';
 
 export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  protected flow: string;
-  protected selectedLocationAddress: LocationAddress;
-  protected subscriptions: Subscription = new Subscription();
+  public flow: string;
   public enteredPostcode: string;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public locationAddresses: Array<LocationAddress>;
   public submitted = false;
+  protected selectedLocationAddress: LocationAddress;
+  protected subscriptions: Subscription = new Subscription();
 
   constructor(
     protected backService: BackService,
