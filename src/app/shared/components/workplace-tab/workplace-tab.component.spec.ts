@@ -1,13 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { NumericAnswerPipe } from '@shared/pipes/numeric-answer.pipe';
-
+import { SharedModule } from '@shared/shared.module';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { UserService } from '@core/services/user.service';
 import { Establishment } from '../../../../mockdata/establishment';
-import { EligibilityIconComponent } from '../eligibility-icon/eligibility-icon.component';
-import { InsetTextComponent } from '../inset-text/inset-text.component';
-import { SummaryRecordValueComponent } from '../summary-record-value/summary-record-value.component';
-import { WorkplaceSummaryComponent } from '../workplace-summary/workplace-summary.component';
 import { WorkplaceTabComponent } from './workplace-tab.component';
 
 describe('WorkplaceTabComponent', () => {
@@ -16,14 +16,16 @@ describe('WorkplaceTabComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      declarations: [
-        WorkplaceTabComponent,
-        WorkplaceSummaryComponent,
-        InsetTextComponent,
-        SummaryRecordValueComponent,
-        NumericAnswerPipe,
-        EligibilityIconComponent
+      imports: [
+        SharedModule,
+        RouterTestingModule,
+        HttpClientTestingModule],
+      providers: [
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(),
+          deps: [HttpClient, Router, UserService]
+        },
       ],
     }).compileComponents();
   }));

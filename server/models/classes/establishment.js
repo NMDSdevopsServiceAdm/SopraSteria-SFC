@@ -466,9 +466,17 @@ class Establishment extends EntityValidator {
           this._ustatus = document.ustatus;
         }
 
-        // CQC reugulated/location ID
+        // CQC regulated/location ID
         if (hasProp(document, 'isRegulated')) {
           this._isRegulated = document.isRegulated;
+
+          if(!this.isRegulated) {
+            this._locationId = null;
+
+            if (this.shareWith && this.shareWith.with) {
+              this.shareWith.with = this.shareWith.with.filter(x => x !== 'CQC');
+            }
+          }
         }
         if (document.locationId) {
           // Note - there is more validation to do on location ID - so this really should be a managed property

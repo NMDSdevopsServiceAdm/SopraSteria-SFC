@@ -205,6 +205,26 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"IsRegulated"'
     },
+    IsRegulatedSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"IsRegulatedSavedAt"'
+    },
+    IsRegulatedChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"IsRegulatedChangedAt"'
+    },
+    IsRegulatedSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"IsRegulatedSavedBy"'
+    },
+    IsRegulatedChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"IsRegulatedChangedBy"'
+    },
     overallWdfEligibility: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -731,6 +751,25 @@ module.exports = function(sequelize, DataTypes) {
           },
         ],
       },
+    });
+  }
+
+  Establishment.findbyId = function(id) {
+    return this.findOne({
+      where: {
+        id: id,
+        archived: false
+      },
+      attributes: [
+        'id',
+        'ustatus',
+        'locationId',
+        'provId',
+        'isRegulated',
+        'isParent',
+        'parentId',
+        'NameValue',
+        'nmdsId']
     });
   }
 

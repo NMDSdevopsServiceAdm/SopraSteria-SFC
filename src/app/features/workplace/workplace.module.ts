@@ -39,12 +39,15 @@ import { UserAccountEditDetailsComponent } from './user-account-edit-details/use
 import {
   UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
+import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
@@ -70,6 +73,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     UserAccountEditPermissionsComponent,
     UserAccountSavedComponent,
     UserAccountViewComponent,
+    TotalStaffQuestionComponent,
     VacanciesComponent,
     ViewMyWorkplacesComponent,
     ViewWorkplaceComponent,
@@ -79,7 +83,9 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     RegulatedByCqcComponent,
     SelectWorkplaceComponent,
     WorkplaceNotFoundComponent,
-    EnterWorkplaceAddressComponent
+    EnterWorkplaceAddressComponent,
+    SelectMainServiceCqcComponent,
+    SelectMainServiceCqcConfirmComponent
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [

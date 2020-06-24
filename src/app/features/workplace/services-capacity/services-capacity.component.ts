@@ -101,8 +101,8 @@ export class ServicesCapacityComponent extends Question {
       })
     );
 
-    this.next = ['/workplace', `${this.establishment.uid}`, 'service-users'];
-    this.previous = ['/workplace', `${this.establishment.uid}`, 'other-services'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
   }
 
   protected setupServerErrorsMap(): void {

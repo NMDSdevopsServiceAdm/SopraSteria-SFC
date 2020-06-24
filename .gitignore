@@ -55,3 +55,6 @@ Thumbs.db
 nodemon.json
 CQCLocationAPICall/coverage/
 CQCLocationAPICall/.nyc_output/
+
+# Google Lighthouse Results
+.lighthouseci/

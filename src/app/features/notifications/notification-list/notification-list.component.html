@@ -43,6 +43,12 @@
               class="notification-list-item__link"
               >{{ notification.type | notificationType }}</a
             >
+            <a
+              *ngIf="notification.type === 'BECOMEAPARENT'"
+              [routerLink]="['/notifications', 'notification-become-a-parent', notification.notificationUid]"
+              class="notification-list-item__link"
+            >{{ notification.type | notificationType }}</a
+            >
           </span>
         </td>
         <td class="govuk-table__cell">{{ notification.created | longDate }}</td>

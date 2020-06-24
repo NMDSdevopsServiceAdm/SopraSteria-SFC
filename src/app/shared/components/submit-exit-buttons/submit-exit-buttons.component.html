@@ -1,20 +1,27 @@
-<div class="govuk-button-group">
-  <button type="submit" class="govuk-button">
-    <ng-container *ngIf="cta; else default">
-      {{ cta }}
+<div class="govuk-grid-row govuk-!-margin-top-6">
+  <div class="govuk-grid-column-one-third">
+    <button type="submit" class="govuk-button">
+      <ng-container *ngIf="cta; else default">
+        {{ cta }}
+      </ng-container>
+      <ng-template #default> Save and {{ return ? 'return' : 'continue' }} </ng-template>
+    </button>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <ng-container *ngIf="return">
+      <span class="govuk-visually-hidden">or</span>
+      <a
+        [routerLink]="return.url"
+        [fragment]="return.fragment"
+        role="button"
+        draggable="false"
+        class="govuk-button govuk-button--link"
+      >
+        <ng-container *ngIf="exit; else defaultexit">
+          {{ exit }}
+        </ng-container>
+        <ng-template #defaultexit>Exit</ng-template>
+      </a>
     </ng-container>
-    <ng-template #default> Save and {{ return ? 'return' : 'continue' }} </ng-template>
-  </button>
-  <ng-container *ngIf="return">
-    <span class="govuk-visually-hidden">or</span>
-    <a
-      [routerLink]="return.url"
-      [fragment]="return.fragment"
-      role="button"
-      draggable="false"
-      class="govuk-list govuk-list--inline govuk-util__float-right"
-    >
-      Exit
-    </a>
-  </ng-container>
+  </div>
 </div>

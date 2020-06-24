@@ -44,8 +44,8 @@ export class TypeOfEmployerComponent extends Question {
       });
     }
 
-    this.next = ['/workplace', `${this.establishment.uid}`, 'other-services'];
-    this.previous = ['/workplace', `${this.establishment.uid}`, 'start'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
   }
 
   protected setupFormErrorsMap(): void {
