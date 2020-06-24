@@ -846,33 +846,39 @@ class Training extends EntityValidator {
       if(workerRecords.length !== 0){
         let currentDate = moment();
         for(let i = 0; i < workerRecords.length; i++){
-          const allTrainingRecords = await Training.fetch(establishmentId, workerRecords[i].uid, categoryId);
-          workerRecords[i].trainingCount = 0;
-          workerRecords[i].expiredTrainingCount = 0;
-          workerRecords[i].expiringTrainingCount = 0;
-          workerRecords[i].missingMandatoryTrainingCount = 0;
+          const worker = workerRecords[i];
+          const allTrainingRecords = await Training.fetch(establishmentId, worker.uid, categoryId);
+          worker.trainingCount = 0;
+          worker.expiredTrainingCount = 0;
+          worker.expiringTrainingCount = 0;
+          worker.missingMandatoryTrainingCount = 0;
           if(allTrainingRecords && allTrainingRecords.training.length > 0){
             //calculate all expired and expiring soon training count
             let trainings = allTrainingRecords.training;
-            workerRecords[i].trainingCount = trainings.length;
+            worker.trainingCount = trainings.length;
             for(let j = 0; j < trainings.length; j++){
-              if(allTrainingRecords.training[j].expires){
-                let expiringDate = moment(allTrainingRecords.training[j].expires);
+              const training = allTrainingRecords.training[j];
+              if (worker.trainingLastUpdated === undefined
+                || worker.trainingLastUpdated < training.updated) {
+                worker.trainingLastUpdated = training.updated
+              }
+              if(training.expires){
+                let expiringDate = moment(training.expires);
                 let daysDiffrence = expiringDate.diff(currentDate, 'days');
                 if(daysDiffrence < 0){
-                  workerRecords[i].expiredTrainingCount++;
+                  worker.expiredTrainingCount++;
                 }else if(daysDiffrence >= 0 && daysDiffrence <= 90){
-                  workerRecords[i].expiringTrainingCount++;
+                  worker.expiringTrainingCount++;
                 }
               }
             }
           }else{
             if(categoryId !== null){
-              workerRecords[i].missingMandatoryTrainingCount++;
+              worker.missingMandatoryTrainingCount++;
             }
           }
           if(categoryId === null){
-            workerRecords[i].missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, workerRecords[i], allTrainingRecords.training);
+            worker.missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, worker, allTrainingRecords.training);
           }
         }
         return workerRecords;
