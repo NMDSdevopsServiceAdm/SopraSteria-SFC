@@ -3,8 +3,6 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
 const Sequelize = require('sequelize');
-const util = require('util');
-
 const userApprovalConfirmation = 'User has been set as active';
 const userRejectionConfirmation = 'User has been removed';
 const workplaceApprovalConfirmation = 'Workplace has been set as active';
@@ -24,7 +22,7 @@ const adminApproval = async (req, res) => {
 
 const _approveOrRejectNewUser = async (req, res) => {
   const username = _parseEscapedInputAndSanitizeUsername(req.body.username);
-  
+
   try {
     const login = await _findLoginMatchingUsername(username);
 
@@ -32,7 +30,7 @@ const _approveOrRejectNewUser = async (req, res) => {
     if ((login && login.id) && (username === login.username)) {
       const workplace = await _findWorkplace(login.user.establishment.id);
       const user = await _findUser(login.user.id);
-      
+
       var workplaceIsUnique = await _workplaceIsUnique(login.user.establishment.id, req.body.nmdsId);
       if (!workplaceIsUnique) {
         return res.status(400).json({
@@ -62,7 +60,7 @@ const _approveOrRejectNewWorkplace = async (req, res) => {
       nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
     });
   }
-  
+
   const workplace = await _findWorkplace(req.body.establishmentId);
 
   if (req.body.approve && req.body.establishmentId) {
