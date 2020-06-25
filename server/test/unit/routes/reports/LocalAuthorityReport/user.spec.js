@@ -21,7 +21,7 @@ describe('/server/routes/reports/LocalAuthorityReport/user.js', () => {
   });
 
 
-  describe.only('get report', () => {
+  describe('get report', () => {
     it("should return a report", async () => {
       const reportData = await getReport(new Date(), establishmentBuilder());
       expect(reportData).to.exist;
