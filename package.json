@@ -96,7 +96,7 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.1000.0",
+    "@angular-devkit/build-angular": "^0.802.2",
     "@angular/cli": "~8.3.28",
     "@angular/compiler-cli": "^8.2.14",
     "@angular/language-service": "~8.2.14",
@@ -137,7 +137,7 @@
     "supertest": "^4.0.2",
     "ts-node": "~7.0.1",
     "tslint": "~5.20.1",
-    "typescript": "~3.9.5",
+    "typescript": "^3.5.3",
     "winston": "^3.3.3"
   },
   "engines": {
