@@ -11,11 +11,10 @@ import { Subscription } from 'rxjs';
 
 export class WorkplaceNotFound implements OnInit, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  protected form: FormGroup;
+  public form: FormGroup;
+  public serverError: string;
+  public submitted: boolean;
   protected flow: string;
-  protected serverError: string;
-  protected submitted: boolean;
-
   private subscriptions: Subscription = new Subscription();
 
   constructor(

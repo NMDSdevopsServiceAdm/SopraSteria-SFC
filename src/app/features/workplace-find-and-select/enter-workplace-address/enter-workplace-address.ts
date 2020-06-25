@@ -9,12 +9,8 @@ import { Subscription } from 'rxjs';
 
 export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  protected addressMaxLength = 40;
-  protected flow: string;
-  protected postcodeMaxLength = 8;
-  protected subscriptions: Subscription = new Subscription();
-  protected workplaceNameMaxLength = 120;
-  protected isWorkPlaceUpdate: boolean;
+
+  public isWorkPlaceUpdate: boolean;
   public form: FormGroup;
 
   public formControlsMap: any[] = [
@@ -56,6 +52,11 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   ];
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
+  protected addressMaxLength = 40;
+  protected flow: string;
+  protected postcodeMaxLength = 8;
+  protected subscriptions: Subscription = new Subscription();
+  protected workplaceNameMaxLength = 120;
 
   constructor(
     protected backService: BackService,
