@@ -12,11 +12,8 @@ import { Subscription } from 'rxjs';
 
 export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  protected back: URLStructure;
-  protected formErrorsMap: Array<ErrorDetails>;
-  protected serverError: string;
-  protected serverErrorsMap: Array<ErrorDefinition>;
-  protected subscriptions: Subscription = new Subscription();
+  public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition>;
   public callToActionLabel = 'Continue';
   public form: FormGroup;
   public formControlsMap: any[] = [
@@ -39,6 +36,9 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
   ];
   public submitted = false;
   public return: URLStructure;
+  protected back: URLStructure;
+  protected formErrorsMap: Array<ErrorDetails>;
+  protected subscriptions: Subscription = new Subscription();
 
   constructor(
     protected backService: BackService,
