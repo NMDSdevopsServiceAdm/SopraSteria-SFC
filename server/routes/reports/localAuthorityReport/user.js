@@ -16,7 +16,7 @@ const staffRecordsSheetName = path.join('xl', 'worksheets', 'sheet2.xml');
 const sharedStringsName = path.join('xl', 'sharedStrings.xml');
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 //const debuglog = console.log.bind(console);
-const debuglog = console.log;
+const debuglog = () => {}
 
 //XML DOM manipulation helper functions
 const parseXML = fileContent =>
@@ -129,90 +129,92 @@ const identifyLocalAuthority = async postcode => {
   return '';
 };
 
-const getReportData = async (date, thisEstablishment) => {
-  // for the report
-  const establishmentId = thisEstablishment.id;
+const LAReport = {
+  run :  async (date, thisEstablishment) => {
+    // for the report
+    const establishmentId = thisEstablishment.id;
 
-  // first run the report, which means running the `cqc.localAuthorityReport` function.
-  // this function runs in a single transaction
-  // the function returns true or false; encapsulating any SQL exceptions.
-  const params = {
-    replacements: {
-      givenEstablishmentId: establishmentId,
-      givenFromDate: fromDate,
-      givenToDate: toDate,
-    },
-    type: models.sequelize.QueryTypes.SELECT
-  };
+    // first run the report, which means running the `cqc.localAuthorityReport` function.
+    // this function runs in a single transaction
+    // the function returns true or false; encapsulating any SQL exceptions.
+    const params = {
+      replacements: {
+        givenEstablishmentId: establishmentId,
+        givenFromDate: fromDate,
+        givenToDate: toDate,
+      },
+      type: models.sequelize.QueryTypes.SELECT
+    };
 
-  debuglog("LA user report data started:", params);
+    debuglog("LA user report data started:", params);
 
-  const runReport = await models.sequelize.query(
-    `select cqc.localAuthorityReport(:givenEstablishmentId, :givenFromDate, :givenToDate);`,
-    params
-  );
+    const runReport = await models.sequelize.query(
+      `select cqc.localAuthorityReport(:givenEstablishmentId, :givenFromDate, :givenToDate);`,
+      params
+    );
 
-  // if report fails return no data
-  if(!runReport || String(runReport[0].localauthorityreport) !== 'true') {
-    return null;
-  }
+    // if report fails return no data
+    if (!runReport || String(runReport[0].localauthorityreport) !== 'true') {
+      return null;
+    }
 
-  //Construct the model data object for the report
-  const reportData = {
-    date: date.toISOString(),
-    reportEstablishment: {
-      name: thisEstablishment.name,
-      nmdsId: thisEstablishment.nmdsId,
-      localAuthority: await identifyLocalAuthority(thisEstablishment.postcode)
-    },
-    establishments: [],
-    workers: []
-  };
+    //Construct the model data object for the report
+    const reportData = {
+      date: date.toISOString(),
+      reportEstablishment: {
+        name: thisEstablishment.name,
+        nmdsId: thisEstablishment.nmdsId,
+        localAuthority: await identifyLocalAuthority(thisEstablishment.postcode)
+      },
+      establishments: [],
+      workers: []
+    };
 
-  // now grab the establishments and format the report data
-  const reportEstablishments = await models.localAuthorityReportEstablishment.findAll({
-    where: {
-      establishmentFk: establishmentId
-    },
-    order: [
-      ['workplaceName', 'ASC'],
-    ],
-  });
-
-  if(reportEstablishments && Array.isArray(reportEstablishments)) {
-    reportEstablishments.forEach(async est => {
-      const establishmentDetails = await models.establishment.findOne({
-        where: {
-            id: est.workplaceFk
-        },
-        attributes: ['id', 'ustatus']
-      });
-      if(establishmentDetails){
-        if(establishmentDetails.ustatus !== 'PENDING'){
-          reportData.establishments.push(est);
-        }
-      }
+    // now grab the establishments and format the report data
+    const reportEstablishments = await models.localAuthorityReportEstablishment.findAll({
+      where: {
+        establishmentFk: establishmentId
+      },
+      order: [
+        ['workplaceName', 'ASC'],
+      ],
     });
+
+    if (reportEstablishments && Array.isArray(reportEstablishments)) {
+      reportEstablishments.forEach(async est => {
+        const establishmentDetails = await models.establishment.findOne({
+          where: {
+            id: est.workplaceFk
+          },
+          attributes: ['id', 'ustatus']
+        });
+        if (establishmentDetails) {
+          if (establishmentDetails.ustatus !== 'PENDING') {
+            reportData.establishments.push(est);
+          }
+        }
+      });
+    }
+
+    // now grab the workers and format the report data
+    const reportWorkers = await models.localAuthorityReportWorker.findAll({
+      where: {
+        establishmentFk: establishmentId
+      },
+      order: [
+        ['workplaceName', 'ASC'],
+        ['localId', 'ASC'],
+      ],
+    });
+
+    if (reportWorkers && Array.isArray(reportWorkers)) {
+      reportData.workers = reportWorkers;
+    }
+
+    debuglog("LA user report data finished:", params, reportData.establishments.length, reportData.workers.length);
+
+    return reportData;
   }
-
-  // now grab the workers and format the report data
-  const reportWorkers = await models.localAuthorityReportWorker.findAll({
-    where: {
-      establishmentFk: establishmentId
-    },
-    order: [
-      ['workplaceName', 'ASC'],
-      ['localId', 'ASC'],
-    ],
-  });
-
-  if(reportWorkers && Array.isArray(reportWorkers)) {
-    reportData.workers = reportWorkers;
-  }
-
-  debuglog("LA user report data finished:", params, reportData.establishments.length, reportData.workers.length);
-
-  return reportData;
 };
 
 const styleLookup = {
@@ -1371,9 +1373,8 @@ const updateStaffRecordsSheet = (
 }
 
 const getReport = async (date, thisEstablishment) => {
-  let reportData = await getReportData(date, thisEstablishment);
+  let reportData = await LAReport.run(date, thisEstablishment);
 
-  console.log(reportData);
   if(reportData === null) {
     return null;
   }
@@ -1527,3 +1528,5 @@ router.route('/').get(async (req, res) => {
 });
 
 module.exports = router;
+module.exports.LAReport = LAReport;
+module.exports.getReport = getReport;
