@@ -8,8 +8,8 @@ import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
+import isNull from 'lodash/isNull';
 import { Subscription } from 'rxjs';
-import { isNull } from 'util';
 
 export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;

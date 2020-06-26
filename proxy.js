@@ -29,7 +29,7 @@ app.use('/api', proxy(
 
 // view engine setup
 app.set('views', path.join(__dirname, '/server/views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(favicon(path.join(__dirname, 'dist/favicon.ico')));
 app.use(logger('dev'));

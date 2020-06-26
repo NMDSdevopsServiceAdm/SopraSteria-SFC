@@ -7,8 +7,8 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import isNull from 'lodash/isNull';
 import { Subscription } from 'rxjs';
-import { isNull } from 'util';
 
 export class Question implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl', { static: false }) formEl: ElementRef;
