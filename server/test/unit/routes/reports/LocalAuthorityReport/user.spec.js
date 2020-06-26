@@ -5,10 +5,10 @@ const sinon = require('sinon');
 const Excel = require('exceljs');
 const moment = require('moment');
 
-
 const { establishmentBuilder } = require('../../../../factories/models');
 const { LocalAuthorityReportDataBuilder } = require('../../../../factories/LocalAuthorityReportData/LocalAuthority');
-const  {getReport, LAReport} = require( '../../../../../routes/reports/localAuthorityReport/user');
+const { getReport, LAReport } = require( '../../../../../routes/reports/localAuthorityReport/user');
+
 describe('/server/routes/reports/LocalAuthorityReport/user.js', () => {
   beforeEach(() => {
     const LAreportValues = async (args) => {
