@@ -16,7 +16,7 @@
     "server:coverage": "c8 node server.js",
     "metrics": "opener http://localhost:3000/apimetrics/ui",
     "api:proxy": "node proxy.js",
-    "api:server": "node server.js",
+    "api:server": "nodemon server.js",
     "server": "npm-run-all -p -l build:watch api:server",
     "server:test": "mocha server/test/**/*.spec.js",
     "server:test:unit": "mocha --exit 'server/test/unit/**/*.spec.js'",
