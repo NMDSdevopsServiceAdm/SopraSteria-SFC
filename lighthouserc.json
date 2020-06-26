@@ -10,7 +10,7 @@
       "assertions": {
         "categories:performance": ["error", {"aggregationMethod": "optimistic", "minScore": 0.2}],
         "categories:accessibility": ["error", {"aggregationMethod": "optimistic", "minScore": 0.9}],
-        "categories:best-practices": ["error", {"aggregationMethod": "optimistic", "minScore": 0.75}]
+        "categories:best-practices": ["error", {"aggregationMethod": "optimistic", "minScore": 0.8}]
       }
     }
   }
