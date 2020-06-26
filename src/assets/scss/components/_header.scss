@@ -23,8 +23,6 @@ $govuk-header-nav-item-border-color: #2e3133;
   }
 
   .govuk-header__link {
-    @include govuk-focusable-fill;
-
     text-decoration: none;
     font-weight: 400;
 
@@ -38,7 +36,7 @@ $govuk-header-nav-item-border-color: #2e3133;
     // When focussed, the text colour needs to be darker to ensure that colour
     // contrast is still acceptable
     &:focus {
-      color: $govuk-focus-text-colour;
+      @include govuk-focused-text;
     }
   }
 
