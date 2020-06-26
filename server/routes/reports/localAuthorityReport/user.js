@@ -35,7 +35,6 @@ const putStringTemplate = (
     element,
     value
 ) => {
-  debuglog("putting string");
   let vTag = element.children('v').first();
   let hasVTag = true;
   if (element.children('v').length === 0) {
