@@ -135,8 +135,6 @@ describe('/server/routes/reports/LocalAuthorityReport/user.js', () => {
         sinon.restore();
         const LAreportData = LocalAuthorityReportDataBuilder()
         const LAreportValues = async (args) => {
-          console.log("running stub");
-          console.log(LAreportData);
           return LAreportData;
         };
         sinon.stub(LAReport, 'run').callsFake(LAreportValues);
