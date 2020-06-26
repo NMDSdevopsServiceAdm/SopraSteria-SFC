@@ -15,8 +15,8 @@ import { filter, take, takeWhile } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   private baseTitle = 'Skills for Care';
-  @ViewChild('top', { static: false }) top: ElementRef;
-  @ViewChild('content', { static: false }) content: ElementRef;
+  @ViewChild('top') top: ElementRef;
+  @ViewChild('content') content: ElementRef;
 
   constructor(
     private router: Router,

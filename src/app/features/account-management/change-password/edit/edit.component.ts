@@ -25,7 +25,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './edit.component.html',
 })
 export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
 
   public form: FormGroup;
   public submitted: boolean;
