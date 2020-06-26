@@ -336,7 +336,7 @@ const routes: Routes = [
       },
       {
         path: 'staff-record',
-        loadChildren: '@features/workers/workers.module#WorkersModule',
+        loadChildren: () => import('@features/workers/workers.module').then(m => m.WorkersModule),
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canViewWorker'],
@@ -345,7 +345,7 @@ const routes: Routes = [
       },
       {
         path: 'training-and-qualifications-record',
-        loadChildren: '@features/workers/workers.module#WorkersModule',
+        loadChildren: () => import('@features/workers/workers.module').then(m => m.WorkersModule),
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canViewWorker'],

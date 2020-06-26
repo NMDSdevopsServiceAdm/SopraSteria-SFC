@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES, PASSWORD_PATTERN } from '@core/constants/constants';
@@ -13,8 +13,9 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
+@Directive()
 export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
 
   public callToActionLabel: string;
   public form: FormGroup;

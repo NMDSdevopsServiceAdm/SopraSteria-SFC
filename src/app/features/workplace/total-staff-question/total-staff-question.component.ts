@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DataSharingOptions } from '@core/model/data-sharing.model';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Establishment } from '@core/model/establishment.model';
+import { DataSharingOptions } from '@core/model/data-sharing.model';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffFormService } from '@core/services/total-staff-form.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 import { Question } from '../question/question.component';
 
@@ -24,7 +23,7 @@ export class TotalStaffQuestionComponent extends Question implements OnInit, OnD
     public errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected backService: BackService, 
+    protected backService: BackService,
     protected establishmentService: EstablishmentService,
     private totalStaffFormService: TotalStaffFormService,
   ) {
