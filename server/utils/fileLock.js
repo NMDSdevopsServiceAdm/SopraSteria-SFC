@@ -1,17 +1,44 @@
+const AWS = require('aws-sdk');
+const config = require('../config/config');
+const models = require('../models/');
+const uuid = require('uuid');
+const s3 = new AWS.S3({
+  region: String(config.get('bulkupload.region')),
+});
+const Bucket = String(config.get('bulkupload.bucketname'));
 
-
-// Prevent multiple training report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
+// Prevent multiple report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
-const acquireLock = async function(logic, newState, req, res) {
-  const { establishmentId } = req;
 
+const reportsAvailable = ['LA','Training'];
+
+const acquireLock = async function(report,logic, req, res) {
+  const { establishmentId } = req;
+  console.log(`running acquireLock`);
+  console.log(report);
+  if (!reportsAvailable.includes(report)){
+    // console.log('Lock *NOT* acquired.');
+    // res.status(500).send({
+    //   message: `reportType not correct`,
+    // });
+    return;
+  }
+  LockHeldTitle = report + "ReportLockHeld";
+  ReportState = report + "ReportState";
   req.startTime = new Date().toISOString();
 
   console.log(`Acquiring lock for establishment ${establishmentId}.`);
 
   // attempt to acquire the lock
-  const currentLockState = await attemptToAcquireLock(establishmentId);
-
+  const currentLockState =  await models.establishment.update(
+    {
+      [LockHeldTitle]: true
+    },{
+    where: {
+      EstablishmentID: establishmentId,
+      [LockHeldTitle]: false
+    }
+  });
   // if no records were updated the lock could not be acquired
   // Just respond with a 409 http code and don't call the regular logic
   // close the response either way and continue processing in the background
@@ -24,38 +51,7 @@ const acquireLock = async function(logic, newState, req, res) {
     return;
   }
 
-  console.log('Lock acquired.', newState);
-
-  let nextState;
-
-  switch (newState) {
-    case buStates.DOWNLOADING:
-    {
-      // get the current training report state
-      const currentState = await lockStatus(establishmentId);
-
-      if (currentState.length === 1) {
-        // don't update the status for downloads, just hold the lock
-        newState = currentState[0].TrainingReportState;
-        nextState = null;
-      } else {
-        nextState = buStates.READY;
-      }
-    }
-      break;
-
-    case buStates.COMPLETING:
-      nextState = buStates.READY;
-      break;
-
-    default:
-      newState = buStates.READY;
-      nextState = buStates.READY;
-      break;
-  }
-
-  // update the current state
-  await updateLockState(establishmentId, newState);
+  console.log('Lock acquired.');
 
   req.buRequestId = String(uuid()).toLowerCase();
 
@@ -70,18 +66,32 @@ const acquireLock = async function(logic, newState, req, res) {
   } catch (e) {}
 
   // release the lock
-  await releaseLock(req, null, null, nextState);
+  await releaseLock(report,req, null, null);
 };
 
-const releaseLock = async (req, res, next, nextState = null) => {
+const releaseLock = async (report,req, res, next) => {
   const establishmentId = req.query.subEstId || req.establishmentId;
+  if (!reportsAvailable.includes(report)){
+    console.log('Lock *NOT* acquired.');
+    res.status(500).send({
+      message: `reportType not correct`,
+    });
+    return;
+  }
+  LockHeldTitle = report + "ReportLockHeld";
+  ReportState = report + "ReportState";
 
   if (Number.isInteger(establishmentId)) {
-    await releaseLockQuery(establishmentId, nextState);
-
+        await models.establishment.update(
+          {
+            [LockHeldTitle]: false,
+          },{
+            where: {
+              EstablishmentID: establishmentId,
+            }
+          });
     console.log(`Lock released for establishment ${establishmentId}`);
   }
-
   if (res !== null) {
     res.status(200).send({
       establishmentId,
@@ -89,14 +99,27 @@ const releaseLock = async (req, res, next, nextState = null) => {
   }
 };
 
-const signedUrlGet = async (req, res) => {
+const signedUrlGet = async (report,req, res) => {
   try {
+    console.log('running signedUrlGet');
+    console.log(req);
     const establishmentId = req.establishmentId;
+    if (!reportsAvailable.includes(report)){
+      console.log('Lock *NOT* acquired.');
+      res.status(500).send({
+        message: `reportType not correct`,
+      });
+      return;
+    }
+    reportName = {
+      'LA': 'Local-Authority-Report',
+      'Training': 'Training-Report'
+    };
 
     await saveResponse(req, res, 200, {
       urls: s3.getSignedUrl('putObject', {
         Bucket,
-        Key: `${establishmentId}/latest/${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`,
+        Key: `${establishmentId}/latest/${moment(date).format('YYYY-MM-DD')}-SFC-${reportName[report]}.xlsx`,
         ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         Metadata: {
           username: String(req.username),
@@ -106,7 +129,7 @@ const signedUrlGet = async (req, res) => {
       }),
     });
   } catch (err) {
-    console.error('report/training:PreSigned - failed', err.message);
+    console.error(`report/${report}:PreSigned - failed`, err.message);
     await saveResponse(req, res, 503, {});
   }
 };
@@ -115,7 +138,8 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
   if (!Number.isInteger(statusCode) || statusCode < 100) {
     statusCode = 500;
   }
-
+  console.log('running saveResponse');
+  console.log(req);
   return s3
     .putObject({
       Bucket,
@@ -143,6 +167,7 @@ const responseGet = (req, res) => {
 
     return;
   }
+  console.log('running responseGet');
 
   s3.getObject({
     Bucket,
@@ -163,13 +188,13 @@ const responseGet = (req, res) => {
           res.status(jsonData.responseCode).send(jsonData.responseBody);
         }
       } else {
-        console.log('TrainingReport::responseGet: Response code was not numeric', jsonData);
+        console.log('Report::responseGet: Response code was not numeric', jsonData);
 
         throw new Error('Response code was not numeric');
       }
     })
     .catch(err => {
-      console.log('TrainingReport::responseGet: getting data returned an error:', err);
+      console.log('Report::responseGet: getting data returned an error:', err);
 
       res.status(404).send({
         message: 'Not Found',
@@ -177,58 +202,39 @@ const responseGet = (req, res) => {
     });
 };
 
-const lockStatusGet = async (req, res) => {
+const lockStatusGet = async (report,req, res) => {
   const { establishmentId } = req;
+  if (!reportsAvailable.includes(report)){
+    console.log('Lock *NOT* acquired.');
+    res.status(500).send({
+      message: `reportType not correct`,
+    });
+    return;
+  }
+  LockHeldTitle = report + "ReportLockHeld";
 
-  const currentLockState = await lockStatus(establishmentId);
-
+  const currentLockState =  await models.establishment.findAll({
+    attributes: [['EstablishmentID', 'establishmentId'],LockHeldTitle],
+    where: {
+      EstablishmentID: establishmentId,
+    }
+  });
   res
     .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
     .send(
       currentLockState.length === 0
         ? {
           establishmentId,
-          TrainingReportState: buStates.READY,
-          TrainingReportdLockHeld: true,
+          [LockHeldTitle]: true,
         }
         : currentLockState[0]
     );
 
   return currentLockState[0];
 };
-
-const reportGet = async (req, res) => {
-  try {
-    // first ensure this report can only be run by those establishments that are a parent
-    const thisEstablishment = await models.establishment.findOne({
-      where: {
-        id: req.establishmentId
-      },
-      attributes: ['id']
-    });
-
-    if(thisEstablishment){
-      const date = new Date();
-      const report = await getReport(date, thisEstablishment.id);
-
-      if (report) {
-        await saveResponse(req, res, 200, report, {
-          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`,
-        });
-        console.log('report/training - 200 response');
-      } else {
-        // only allow on those establishments being a parent
-
-        console.log('report/training 403 response');
-        await saveResponse(req, res, 403, {});
-      }
-    }else{
-      console.error('report/training - failed restoring establisment');
-      await saveResponse(req, res, 503, {});
-    }
-  } catch (err) {
-    console.error('report/training - failed', err);
-    await saveResponse(req, res, 503, {});
-  }
-};
+module.exports.acquireLock = acquireLock;
+module.exports.releaseLock = releaseLock;
+module.exports.signedUrlGet = signedUrlGet;
+module.exports.saveResponse = saveResponse;
+module.exports.responseGet = responseGet;
+module.exports.lockStatusGet = lockStatusGet;
