@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -11,8 +11,9 @@ import { WorkerService } from '@core/services/worker.service';
 import isNull from 'lodash/isNull';
 import { Subscription } from 'rxjs';
 
+@Directive()
 export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public worker: Worker;
   public workplace: Establishment;

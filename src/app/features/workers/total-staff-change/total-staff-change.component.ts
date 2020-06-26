@@ -16,7 +16,7 @@ import { TotalStaffFormService } from '@core/services/total-staff-form.service';
   templateUrl: './total-staff-change.component.html',
 })
 export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public returnToDash = false;
   public submitted = false;

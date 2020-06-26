@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
@@ -13,8 +13,9 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
+@Directive()
 export class BulkUploadReferences implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   protected maxLength = 120;
   protected subscriptions: Subscription = new Subscription();
   public establishmentName: string;

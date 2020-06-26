@@ -20,7 +20,7 @@ import { tap } from 'rxjs/operators';
   templateUrl: './files-upload.component.html',
 })
 export class FilesUploadComponent implements OnInit, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public filesUploading = false;
   public filesUploaded = false;
