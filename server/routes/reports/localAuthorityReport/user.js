@@ -187,7 +187,7 @@ const LAReport = {
           },
           attributes: ['id', 'ustatus']
         });
-        if (establishmentDetails && establishmentDetails.ustatus !== 'PENDING')
+        if (establishmentDetails && establishmentDetails.ustatus !== 'PENDING'){
           reportData.establishments.push(est);
         }
       });
