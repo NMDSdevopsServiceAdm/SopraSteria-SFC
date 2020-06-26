@@ -2,46 +2,41 @@
   <div class="govuk-tabs govuk-!-padding-top-0">
     <div class="govuk-grid-column-full">
       <ul class="govuk-tabs__list">
-        <li class="govuk-tabs__list-item">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'users'">
           <a
             class="govuk-tabs__tab"
-            [class.govuk-tabs__tab--selected]="form.type === 'users'"
             [routerLink]="['/search-users']"
           >
             Search Users
           </a>
         </li>
-        <li class="govuk-tabs__list-item">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'establishments'">
           <a
             class="govuk-tabs__tab"
-            [class.govuk-tabs__tab--selected]="form.type === 'establishments'"
             [routerLink]="['/search-establishments']"
           >
             Search Establishments
           </a>
         </li>
-        <li class="govuk-tabs__list-item">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'registrations'">
           <a
             class="govuk-tabs__tab"
-            [class.govuk-tabs__tab--selected]="form.type === 'registrations'"
             [routerLink]="['/registrations']"
           >
             Registrations
           </a>
         </li>
-        <li class="govuk-tabs__list-item">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'parent-requests'">
           <a
             class="govuk-tabs__tab"
-            [class.govuk-tabs__tab--selected]="form.type === 'parent-requests'"
             [routerLink]="['/parent-requests']"
           >
             Parent Requests
           </a>
         </li>
-        <li class="govuk-tabs__list-item">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'cqc-status-changes'">
           <a
             class="govuk-tabs__tab"
-            [class.govuk-tabs__tab--selected]="form.type === 'cqc-status-changes'"
             [routerLink]="['/cqc-status-changes']"
           >
             CQC Changes
