@@ -1,6 +1,6 @@
 'use strict';
 
-const db = rfr('server/utils/datastore');
+const db = rfr('/server/utils/datastore');
 
 const checkAlreadyRequestedOwnershipQuery = `
 SELECT "subEstablishmentID", "approvalStatus"

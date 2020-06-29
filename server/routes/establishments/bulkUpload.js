@@ -3,29 +3,27 @@
 const moment = require('moment');
 const csv = require('csvtojson');
 const uuid = require('uuid');
-const rfr = require('rfr');
-
-const config = rfr('server/config/config');
-const dbModels = rfr('server/models');
-const timerLog = rfr('server/utils/timerLog');
-const slack = rfr('server/utils/slack/slack-logger');
+const config = rfr('/server/config/config');
+const dbModels = rfr('/server/models');
+const timerLog = rfr('/server/utils/timerLog');
+const slack = rfr('/server/utils/slack/slack-logger');
 
 const s3 = new (require('aws-sdk')).S3({
   region: String(config.get('bulkupload.region'))
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
-const EstablishmentCsvValidator = rfr('server/models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = rfr('server/models/BulkImport/csv/workers').Worker;
-const TrainingCsvValidator = rfr('server/models/BulkImport/csv/training').Training;
-const { MetaData } = rfr('server/models/BulkImport/csv/metaData');
+const EstablishmentCsvValidator = rfr('/server/models/BulkImport/csv/establishments').Establishment;
+const WorkerCsvValidator = rfr('/server/models/BulkImport/csv/workers').Worker;
+const TrainingCsvValidator = rfr('/server/models/BulkImport/csv/training').Training;
+const { MetaData } = rfr('/server/models/BulkImport/csv/metaData');
 
-const { Establishment } = rfr('server/models/classes/establishment');
-const { Worker } = rfr('server/models/classes/worker');
-const { Qualification } = rfr('server/models/classes/qualification');
-const { Training } = rfr('server/models/classes/training');
-const { User } = rfr('server/models/classes/user');
-const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('server/data/bulkUploadLock');
+const { Establishment } = rfr('/server/models/classes/establishment');
+const { Worker } = rfr('/server/models/classes/worker');
+const { Qualification } = rfr('/server/models/classes/qualification');
+const { Training } = rfr('/server/models/classes/training');
+const { User } = rfr('/server/models/classes/user');
+const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('/server/data/bulkUploadLock');
 
 const buStates = [
   'READY',

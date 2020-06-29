@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const uuid = require('uuid');
 const Establishment = require('../../models/classes/establishment');
-const notifications = rfr('server/data/notifications');
-const ownership = rfr('server/data/ownership');
+const notifications = rfr('/server/data/notifications');
+const ownership = rfr('/server/data/ownership');
 
 // POST request for ownership change request
 router.route('/').post(async (req, res) => {

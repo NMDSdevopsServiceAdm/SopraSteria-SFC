@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const Establishment = require('../../models/classes/establishment');
 const uuid = require('uuid');
-const linkSubToParent = rfr('server/data/linkToParent');
-const notifications = rfr('server/data/notifications');
+const linkSubToParent = rfr('/server/data/linkToParent');
+const notifications = rfr('/server/data/notifications');
 
 router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;

@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const uuid = require('uuid');
 const Establishment = require('../../models/classes/establishment');
-const ownership = rfr('server/data/ownership');
-const notifications = rfr('server/data/notifications');
+const ownership = rfr('/server/data/ownership');
+const notifications = rfr('/server/data/notifications');
 const Authorization = require('../../utils/security/isAuthenticated');
 
 router.use('/:id', Authorization.isAuthorised);
