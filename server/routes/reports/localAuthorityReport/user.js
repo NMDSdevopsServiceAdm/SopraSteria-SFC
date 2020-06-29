@@ -118,7 +118,7 @@ const identifyLocalAuthority = async postcode => {
     }
   );
 
-  if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch.length === 1 && fuzzyCssrIdMatch[0].CssrID) {
+  if (fuzzyCssrIdMatch && fuzzyCssrIdMatch.length === 1 && fuzzyCssrIdMatch[0].CssrID) {
     return fuzzyCssrIdMatch[0].CssR;
   }
 
