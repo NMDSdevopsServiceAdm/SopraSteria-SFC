@@ -14,20 +14,18 @@ const reportsAvailable = ['la','training'];
 
 const acquireLock = async function(report,logic, req, res) {
   const { establishmentId } = req;
-  console.log(`running acquireLock for report`,report);
   if (!reportsAvailable.includes(report)){
-    // console.log('Lock *NOT* acquired.');
-    // res.status(500).send({
-    //   message: `reportType not correct`,
-    // });
+    error.log('Lock *NOT* acquired.');
+
+    res.status(500).send({
+      message: `reportType not correct`,
+    });
     return;
   }
   const LockHeldTitle = report + "ReportLockHeld";
   const ReportState = report + "ReportState";
   console.log(LockHeldTitle + "  ,  " + ReportState);
   req.startTime = new Date().toISOString();
-
-  console.log(`Acquiring lock for establishment ${establishmentId}.`);
 
   // attempt to acquire the lock
   const currentLockState =  await models.establishment.update(
@@ -39,13 +37,12 @@ const acquireLock = async function(report,logic, req, res) {
         [LockHeldTitle]: false
       }
     });
-console.log(currentLockState);
 
   // if no records were updated the lock could not be acquired
   // Just respond with a 409 http code and don't call the regular logic
   // close the response either way and continue processing in the background
   if (currentLockState[1] === 0) {
-    console.log('Lock *NOT* acquired.');
+    error.log('Lock *NOT* acquired.');
     res.status(409).send({
       message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`,
     });
@@ -53,10 +50,7 @@ console.log(currentLockState);
     return;
   }
 
-  console.log('Lock acquired.');
-
   req.buRequestId = String(uuid()).toLowerCase();
-  console.log('buRequest:' +  req.buRequestId);
   res.status(200).send({
     message: `Lock for establishment ${establishmentId} acquired.`,
     requestId: req.buRequestId,
@@ -74,7 +68,7 @@ console.log(currentLockState);
 const releaseLock = async (report,req, res, next) => {
   const establishmentId = req.query.subEstId || req.establishmentId;
   if (!reportsAvailable.includes(report)){
-    console.log('Lock *NOT* acquired.');
+    error.log('Lock *NOT* acquired.');
     res.status(500).send({
       message: `reportType not correct`,
     });
@@ -92,7 +86,6 @@ const releaseLock = async (report,req, res, next) => {
               id: establishmentId,
             }
           });
-    console.log(`Lock released for establishment ${establishmentId}`);
   }
   if (res !== null) {
     res.status(200).send({
@@ -101,46 +94,12 @@ const releaseLock = async (report,req, res, next) => {
   }
 };
 
-const signedUrlGet = async (report,req, res) => {
-  try {
-    console.log('running signedUrlGet');
-    console.log(req);
-    const establishmentId = req.establishmentId;
-    if (!reportsAvailable.includes(report)){
-      console.log('Lock *NOT* acquired.');
-      res.status(500).send({
-        message: `reportType not correct`,
-      });
-      return;
-    }
-    reportName = {
-      'lA': 'Local-Authority-Report',
-      'training': 'Training-Report'
-    };
-      console.log("SAVING AS:" + establishmentId + "/latest/" + moment(date).format('YYYY-MM-DD')+ "-SFC-${reportName[report]}.xlsx`");
-    await saveResponse(req, res, 200, {
-      urls: s3.getSignedUrl('putObject', {
-        Bucket,
-        Key: `${establishmentId}/latest/${moment(date).format('YYYY-MM-DD')}-SFC-${reportName[report]}.xlsx`,
-        ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        Metadata: {
-          username: String(req.username),
-          establishmentId: String(establishmentId),
-        },
-        Expires: config.get('bulkupload.uploadSignedUrlExpire'),
-      }),
-    });
-  } catch (err) {
-    console.error(`report/${report}:PreSigned - failed`, err.message);
-    await saveResponse(req, res, 503, {});
-  }
-};
+
 
 const saveResponse = async (req, res, statusCode, body, headers) => {
   if (!Number.isInteger(statusCode) || statusCode < 100) {
     statusCode = 500;
   }
-  console.log('running saveResponse for:' + JSON.stringify(req.buRequestId));
 
   return s3.putObject({
       Bucket,
@@ -167,9 +126,6 @@ const responseGet = (req, res) => {
 
     return;
   }
-  console.log('running responseGet');
-  console.log(req.establishmentId + "/intermediary/" +buRequestId +".json")
-  console.log(req.params.buRequestId);
 
   s3.getObject({
     Bucket,
@@ -190,13 +146,13 @@ const responseGet = (req, res) => {
           res.status(jsonData.responseCode).send(jsonData.responseBody);
         }
       } else {
-        console.log('Report::responseGet: Response code was not numeric', jsonData);
+        error.log('Report::responseGet: Response code was not numeric', jsonData);
 
         throw new Error('Response code was not numeric');
       }
     })
     .catch(err => {
-      console.log('Report::responseGet: getting data returned an error:', err);
+      error.log('Report::responseGet: getting data returned an error:', err);
 
       res.status(404).send({
         message: 'Not Found',
@@ -207,24 +163,20 @@ const responseGet = (req, res) => {
 const lockStatusGet = async (report,req, res) => {
   const { establishmentId } = req;
   if (!reportsAvailable.includes(report)){
-    console.log('Lock *NOT* acquired.');
+    error.log('Lock *NOT* acquired.');
     res.status(500).send({
       message: `reportType not correct`,
     });
     return;
   }
-  const LockHeldTitle = report + "ReportLockHeld";
-  const LockHeldDBTitle = name.charAt(0).toUpperCase() + name.slice(1)
-  console.log("TESTTEST")
+  const LockHeldTitle = report.charAt(0).toUpperCase() + report.slice(1) + "ReportLockHeld";
   const currentLockState =  await models.establishment.findAll({
-    attributes: [['EstablishmentID', 'establishmentId'],[LockHeldDBTitle,LockHeldTitle]],
+    attributes: [['EstablishmentID', 'establishmentId'],LockHeldTitle],
     where: {
       id: establishmentId,
     }
   });
 
-  console.log(JSON.stringify(currentLockState[0]));
-  console.log( currentLockState.length === 0);
   res
     .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
     .send(
@@ -240,7 +192,6 @@ const lockStatusGet = async (report,req, res) => {
 };
 module.exports.acquireLock = acquireLock;
 module.exports.releaseLock = releaseLock;
-module.exports.signedUrlGet = signedUrlGet;
 module.exports.saveResponse = saveResponse;
 module.exports.responseGet = responseGet;
 module.exports.lockStatusGet = lockStatusGet;

@@ -25,11 +25,6 @@ const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 
 const debuglog = () => {};
-const buStates = ['READY', 'DOWNLOADING', 'FAILED', 'WARNINGS', 'PASSED', 'COMPLETING'].reduce((acc, item) => {
-  acc[item] = item;
-
-  return acc;
-}, Object.create(null));
 
 const trainingCounts = {
   expiredTrainingCount: 0,
@@ -1041,11 +1036,10 @@ const reportGet = async (req, res) => {
           'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`,
         });
-        console.log('report/training - 200 response');
       } else {
         // only allow on those establishments being a parent
 
-        console.log('report/training 403 response');
+        console.error('report/training 403 response');
         await reportLock.saveResponse(req, res, 403, {});
       }
     }else{
@@ -1066,7 +1060,6 @@ const reportGet = async (req, res) => {
 /**
  * Handle GET API requests to get Training report data
  */
-router.route('/signedUrl').get(reportLock.acquireLock.bind(null,'training', reportLock.signedUrlGet.bind('training')));
 router.route('/report').get(reportLock.acquireLock.bind(null,'training', reportGet));
 router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null,'training'));
 router.route('/unlock').get(reportLock.releaseLock.bind(null,'training'));

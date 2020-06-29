@@ -56,7 +56,7 @@ export class ReportService {
       }
     );
   }
-  //get Traing report from training and qualifications
+  // get Training report from training and qualifications
   public getTrainingReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
     return this.checkTrainingLockStatus(
       () => this.http.get<Blob>(`/api/reports/training/establishment/${workplaceUid}/training/report`),
