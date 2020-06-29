@@ -18,8 +18,8 @@ const s3 = new AWS.S3({
 const Bucket = String(config.get('bulkupload.bucketname'));
 
 const { Establishment } = require('../../../models/classes/establishment');
-const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData, getServiceCapacityDetails } = rfr('server/data/parentWDFReport');
-const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('server/data/parentWDFReportLock');
+const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData, getServiceCapacityDetails } = require('../../../data/parentWDFReport');
+const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = require('../../../data/parentWDFReportLock');
 
 // Constants string needed by this file in several places
 const folderName = 'template';
