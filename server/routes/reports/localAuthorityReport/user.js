@@ -112,13 +112,13 @@ const identifyLocalAuthority = async postcode => {
 
   // must escape the string to prevent SQL injection
   const fuzzyCssrIdMatch = await models.sequelize.query(
-    `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
+    `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR"`,
     {
       type: models.sequelize.QueryTypes.SELECT
     }
   );
 
-  if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
+  if (fuzzyCssrIdMatch && fuzzyCssrIdMatch.length === 1 && fuzzyCssrIdMatch[0].CssrID) {
     return fuzzyCssrIdMatch[0].CssR;
   }
 
@@ -1527,3 +1527,4 @@ router.route('/').get(async (req, res) => {
 });
 
 module.exports = router;
+module.exports.identifyLocalAuthority = identifyLocalAuthority;
