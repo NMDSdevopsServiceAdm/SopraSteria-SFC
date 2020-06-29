@@ -3,27 +3,27 @@
 const moment = require('moment');
 const csv = require('csvtojson');
 const uuid = require('uuid');
-const config = rfr('/server/config/config');
-const dbModels = rfr('/server/models');
-const timerLog = rfr('/server/utils/timerLog');
-const slack = rfr('/server/utils/slack/slack-logger');
+const config = require('../../config/config');
+const dbModels = require('../../models');
+const timerLog = require('../../utils/timerLog');
+const slack = require('../../utils/slack/slack-logger');
 
 const s3 = new (require('aws-sdk')).S3({
   region: String(config.get('bulkupload.region'))
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
-const EstablishmentCsvValidator = rfr('/server/models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = rfr('/server/models/BulkImport/csv/workers').Worker;
-const TrainingCsvValidator = rfr('/server/models/BulkImport/csv/training').Training;
-const { MetaData } = rfr('/server/models/BulkImport/csv/metaData');
+const EstablishmentCsvValidator = require('../../models/BulkImport/csv/establishments').Establishment;
+const WorkerCsvValidator = require('../../models/BulkImport/csv/workers').Worker;
+const TrainingCsvValidator = require('../../models/BulkImport/csv/training').Training;
+const { MetaData } = require('../../models/BulkImport/csv/metaData');
 
-const { Establishment } = rfr('/server/models/classes/establishment');
-const { Worker } = rfr('/server/models/classes/worker');
-const { Qualification } = rfr('/server/models/classes/qualification');
-const { Training } = rfr('/server/models/classes/training');
-const { User } = rfr('/server/models/classes/user');
-const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = rfr('/server/data/bulkUploadLock');
+const { Establishment } = require('../../models/classes/establishment');
+const { Worker } = require('../../models/classes/worker');
+const { Qualification } = require('../../models/classes/qualification');
+const { Training } = require('../../models/classes/training');
+const { User } = require('../../models/classes/user');
+const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = require('../../data/bulkUploadLock');
 
 const buStates = [
   'READY',

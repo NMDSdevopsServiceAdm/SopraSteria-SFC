@@ -1,8 +1,4 @@
 var config = require('./server/config/config');
-
-//simplify relative requires without using the rfr npm module
-global.rfr = module => require(__dirname + '/' + module);
-
 const Sentry = require('@sentry/node');
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),

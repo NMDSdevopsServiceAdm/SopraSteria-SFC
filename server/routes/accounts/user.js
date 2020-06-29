@@ -13,11 +13,11 @@ const usernameCheck = require('../../utils/security/usernameValidation').isUsern
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
 const uuid = require('uuid');
-const linkSubToParent = rfr('/server/data/linkToParent');
+const linkSubToParent = require('../../data/linkToParent');
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
-const notifications = rfr('/server/data/notifications');
-const ownershipChangeRequests = rfr('/server/data/ownership');
+const notifications = require('../../data/notifications');
+const ownershipChangeRequests = require('../../data/ownership');
 
 // default route
 router.route('/').get(async (req, res) => {

@@ -1,6 +1,6 @@
 'use strict';
 
-const db = rfr('/server/utils/datastore');
+const db = require('../utils/datastore');
 
 module.exports = {
   attemptToAcquireLock: establishmentId =>

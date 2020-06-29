@@ -1,8 +1,8 @@
 'use strict';
 
-const db = rfr('/server/utils/datastore');
+const db = require('../utils/datastore');
 
-const effectiveDate = rfr('/server/models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
+const effectiveDate = require('../models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
 
 const getEstablishmentDataQuery =
 `
