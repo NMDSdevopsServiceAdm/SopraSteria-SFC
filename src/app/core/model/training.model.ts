@@ -45,6 +45,5 @@ export interface TrainingRecord {
 
 export interface TrainingLockStatus {
   establishmentId: number;
-  TrainingReportState: string;
-  TrainingReportLockHeld: boolean;
+  trainingReportLockHeld: boolean;
 }

@@ -10,12 +10,11 @@ const Bucket = String(config.get('bulkupload.bucketname'));
 // Prevent multiple report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
 
-const reportsAvailable = ['LA','Training'];
+const reportsAvailable = ['la','training'];
 
 const acquireLock = async function(report,logic, req, res) {
   const { establishmentId } = req;
-  console.log(`running acquireLock`);
-  console.log(report);
+  console.log(`running acquireLock for report`,report);
   if (!reportsAvailable.includes(report)){
     // console.log('Lock *NOT* acquired.');
     // res.status(500).send({
@@ -23,8 +22,9 @@ const acquireLock = async function(report,logic, req, res) {
     // });
     return;
   }
-  LockHeldTitle = report + "ReportLockHeld";
-  ReportState = report + "ReportState";
+  const LockHeldTitle = report + "ReportLockHeld";
+  const ReportState = report + "ReportState";
+  console.log(LockHeldTitle + "  ,  " + ReportState);
   req.startTime = new Date().toISOString();
 
   console.log(`Acquiring lock for establishment ${establishmentId}.`);
@@ -34,11 +34,13 @@ const acquireLock = async function(report,logic, req, res) {
     {
       [LockHeldTitle]: true
     },{
-    where: {
-      EstablishmentID: establishmentId,
-      [LockHeldTitle]: false
-    }
-  });
+      where: {
+        id: establishmentId,
+        [LockHeldTitle]: false
+      }
+    });
+console.log(currentLockState);
+
   // if no records were updated the lock could not be acquired
   // Just respond with a 409 http code and don't call the regular logic
   // close the response either way and continue processing in the background
@@ -54,7 +56,7 @@ const acquireLock = async function(report,logic, req, res) {
   console.log('Lock acquired.');
 
   req.buRequestId = String(uuid()).toLowerCase();
-
+  console.log('buRequest:' +  req.buRequestId);
   res.status(200).send({
     message: `Lock for establishment ${establishmentId} acquired.`,
     requestId: req.buRequestId,
@@ -87,7 +89,7 @@ const releaseLock = async (report,req, res, next) => {
             [LockHeldTitle]: false,
           },{
             where: {
-              EstablishmentID: establishmentId,
+              id: establishmentId,
             }
           });
     console.log(`Lock released for establishment ${establishmentId}`);
@@ -112,10 +114,10 @@ const signedUrlGet = async (report,req, res) => {
       return;
     }
     reportName = {
-      'LA': 'Local-Authority-Report',
-      'Training': 'Training-Report'
+      'lA': 'Local-Authority-Report',
+      'training': 'Training-Report'
     };
-
+      console.log("SAVING AS:" + establishmentId + "/latest/" + moment(date).format('YYYY-MM-DD')+ "-SFC-${reportName[report]}.xlsx`");
     await saveResponse(req, res, 200, {
       urls: s3.getSignedUrl('putObject', {
         Bucket,
@@ -138,10 +140,9 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
   if (!Number.isInteger(statusCode) || statusCode < 100) {
     statusCode = 500;
   }
-  console.log('running saveResponse');
-  console.log(req);
-  return s3
-    .putObject({
+  console.log('running saveResponse for:' + JSON.stringify(req.buRequestId));
+
+  return s3.putObject({
       Bucket,
       Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
       Body: JSON.stringify({
@@ -152,8 +153,7 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
         responseBody: body,
         responseHeaders: typeof headers === 'object' ? headers : undefined,
       }),
-    })
-    .promise();
+    }).promise();
 };
 
 const responseGet = (req, res) => {
@@ -168,6 +168,8 @@ const responseGet = (req, res) => {
     return;
   }
   console.log('running responseGet');
+  console.log(req.establishmentId + "/intermediary/" +buRequestId +".json")
+  console.log(req.params.buRequestId);
 
   s3.getObject({
     Bucket,
@@ -211,14 +213,18 @@ const lockStatusGet = async (report,req, res) => {
     });
     return;
   }
-  LockHeldTitle = report + "ReportLockHeld";
-
+  const LockHeldTitle = report + "ReportLockHeld";
+  const LockHeldDBTitle = name.charAt(0).toUpperCase() + name.slice(1)
+  console.log("TESTTEST")
   const currentLockState =  await models.establishment.findAll({
-    attributes: [['EstablishmentID', 'establishmentId'],LockHeldTitle],
+    attributes: [['EstablishmentID', 'establishmentId'],[LockHeldDBTitle,LockHeldTitle]],
     where: {
-      EstablishmentID: establishmentId,
+      id: establishmentId,
     }
   });
+
+  console.log(JSON.stringify(currentLockState[0]));
+  console.log( currentLockState.length === 0);
   res
     .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
     .send(

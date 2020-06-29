@@ -9,18 +9,10 @@ const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 const JsZip = require('jszip');
-const config = require('../../../../server/config/config');
 const models = require('../../../../server/models');
 
-const AWS = require('aws-sdk');
 const cheerio = require('cheerio');
 const reportLock = require('../../../utils/fileLock');
-
-const s3 = new AWS.S3({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
-
 const Training = require('../../../models/classes/training').Training;
 const { getTrainingData, getJobName, getMndatoryTrainingDetails } = rfr('server/data/trainingReport');
 
@@ -1057,7 +1049,7 @@ const reportGet = async (req, res) => {
         await reportLock.saveResponse(req, res, 403, {});
       }
     }else{
-      console.error('report/training - failed restoring establisment');
+      console.error('report/training - failed restoring establishment');
       await reportLock.saveResponse(req, res, 503, {});
     }
   } catch (err) {
@@ -1074,10 +1066,10 @@ const reportGet = async (req, res) => {
 /**
  * Handle GET API requests to get Training report data
  */
-router.route('/signedUrl').get(reportLock.acquireLock.bind(null,'Training', reportLock.signedUrlGet.bind('Training')));
-router.route('/report').get(reportLock.acquireLock.bind(null,'Training', reportGet));
-router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null,'Training'));
-router.route('/unlock').get(reportLock.releaseLock.bind(null,'Training'));
+router.route('/signedUrl').get(reportLock.acquireLock.bind(null,'training', reportLock.signedUrlGet.bind('training')));
+router.route('/report').get(reportLock.acquireLock.bind(null,'training', reportGet));
+router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null,'training'));
+router.route('/unlock').get(reportLock.releaseLock.bind(null,'training'));
 router.route('/response/:buRequestId').get(reportLock.responseGet);
 
 module.exports = router;
