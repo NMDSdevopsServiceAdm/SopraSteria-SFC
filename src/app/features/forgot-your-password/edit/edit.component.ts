@@ -9,7 +9,7 @@ import { RequestPasswordResetResponse } from '@core/services/password-reset.serv
   templateUrl: './edit.component.html',
 })
 export class ForgotYourPasswordEditComponent implements OnInit, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;

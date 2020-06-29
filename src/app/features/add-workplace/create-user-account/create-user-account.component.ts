@@ -17,7 +17,7 @@ import { combineLatest, Subscription } from 'rxjs';
   templateUrl: './create-user-account.component.html',
 })
 export class CreateUserAccountComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   private flow: string;
   private serverErrorsMap: ErrorDefinition[] = this.workplaceService.serverErrorsMap;
   private subscriptions: Subscription = new Subscription();

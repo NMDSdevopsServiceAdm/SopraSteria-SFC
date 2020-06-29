@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './login.component.html',
 })
 export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public submitted = false;
