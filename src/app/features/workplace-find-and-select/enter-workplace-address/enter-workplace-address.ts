@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -7,14 +7,11 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
+@Directive()
 export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  protected addressMaxLength = 40;
-  protected flow: string;
-  protected postcodeMaxLength = 8;
-  protected subscriptions: Subscription = new Subscription();
-  protected workplaceNameMaxLength = 120;
-  protected isWorkPlaceUpdate: boolean;
+  @ViewChild('formEl') formEl: ElementRef;
+
+  public isWorkPlaceUpdate: boolean;
   public form: FormGroup;
 
   public formControlsMap: any[] = [
@@ -56,6 +53,11 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   ];
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
+  protected addressMaxLength = 40;
+  protected flow: string;
+  protected postcodeMaxLength = 8;
+  protected subscriptions: Subscription = new Subscription();
+  protected workplaceNameMaxLength = 120;
 
   constructor(
     protected backService: BackService,

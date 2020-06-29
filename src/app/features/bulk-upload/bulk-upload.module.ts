@@ -44,6 +44,5 @@ import { WorkplaceReferencesPageComponent } from './workplace-references-page/wo
     ReferencesCreatedPageComponent,
   ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
-  entryComponents: [UploadWarningDialogComponent],
 })
 export class BulkUploadModule {}

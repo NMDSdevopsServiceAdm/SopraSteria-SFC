@@ -15,7 +15,7 @@ export class TabsComponent implements AfterContentInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
 
-  @ViewChild('tablist', { static: false }) tablist: ElementRef;
+  @ViewChild('tablist') tablist: ElementRef;
 
   constructor(private location: Location, private route: ActivatedRoute, private workerService: WorkerService) {
 

@@ -13,7 +13,7 @@ import { RegulatedByCQC } from '@features/workplace-find-and-select/regulated-by
   templateUrl: './regulated-by-cqc.component.html',
 })
 export class RegulatedByCqcComponent extends RegulatedByCQC implements AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   constructor(
     private registrationService: RegistrationService,
     protected backService: BackService,

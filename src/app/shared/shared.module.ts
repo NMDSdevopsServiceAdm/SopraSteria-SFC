@@ -4,8 +4,8 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DialogService } from '@core/services/dialog.service';
+import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
-import { CqcConfirmationDialogComponent} from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import {
   DeleteWorkplaceDialogComponent,
 } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
@@ -60,6 +60,7 @@ import { SummaryListComponent } from './components/summary-list/summary-list.com
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
+import { TotalStaffComponent } from './components/total-staff/total-staff.component';
 import {
   TrainingAndQualificationsCategoriesComponent,
 } from './components/training-and-qualifications-categories/training-and-qualifications-categories.component';
@@ -153,7 +154,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ViewAllMandatoryTrainingComponent,
     DeleteWorkplaceDialogComponent,
     ParentConfirmationDialogComponent,
-    CqcConfirmationDialogComponent
+    CqcConfirmationDialogComponent,
+    TotalStaffComponent
   ],
   exports: [
     AlertComponent,
@@ -217,22 +219,12 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ViewAllMandatoryTrainingComponent,
     DeleteWorkplaceDialogComponent,
     ParentConfirmationDialogComponent,
-    CqcConfirmationDialogComponent
+    CqcConfirmationDialogComponent,
+    TotalStaffComponent
   ],
-  providers: [DialogService],
-  entryComponents: [
-    DeleteWorkplaceDialogComponent,
-    ChangeDataOwnerDialogComponent,
-    CancelDataOwnerDialogComponent,
-    RejectRequestDialogComponent,
-    SetDataPermissionDialogComponent,
-    LinkToParentDialogComponent,
-    LinkToParentCancelDialogComponent,
-    LinkToParentRemoveDialogComponent,
-    BecomeAParentDialogComponent,
-    OwnershipChangeMessageDialogComponent,
-    ParentConfirmationDialogComponent,
-    CqcConfirmationDialogComponent
+  providers: [
+    DialogService,
+    TotalStaffComponent
   ],
 })
 export class SharedModule {}

@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -7,19 +7,20 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import isNull from 'lodash/isNull';
 import { Subscription } from 'rxjs';
-import { isNull } from 'util';
 
+@Directive()
 export class Question implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public establishment: Establishment;
   public primaryWorkplace: Establishment;
   public submitted = false;
 
   public return: URLStructure;
-  public previous: string[];
-  public next: string[];
+  public previousRoute: string[];
+  public nextRoute: string[];
   public back: URLStructure;
 
   public formErrorsMap: Array<ErrorDetails> = [];
@@ -62,7 +63,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setBackLink() {
-    this.back = this.return ? this.return : { url: this.previous };
+    this.back = this.return ? this.return : { url: this.previousRoute };
     this.backService.setBackLink(this.back);
   }
 
@@ -87,7 +88,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
     switch (action) {
       case 'continue':
-        this.router.navigate(this.next);
+        this.router.navigate(this.nextRoute);
         break;
 
       case 'summary':
