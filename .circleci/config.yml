@@ -122,7 +122,9 @@ jobs:
       - image: circleci/node:lts-browsers
     steps:
       - checkout
-      - node/install-packages
+      - restore_cache:
+            keys:
+                - node-deps-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           command: npm run test
   test_backend:
@@ -130,7 +132,9 @@ jobs:
       - image: circleci/node:lts-browsers
     steps:
       - checkout
-      - node/install-packages
+      - restore_cache:
+            keys:
+                - node-deps-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           command: npm run server:test:unit
   performance:
@@ -138,7 +142,9 @@ jobs:
       - image: circleci/node:lts-browsers
     steps:
       - checkout
-      - node/install-packages
+      - restore_cache:
+            keys:
+                - node-deps-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           command: npm run build
       - run:
@@ -208,7 +214,9 @@ jobs:
         type: string
     steps:
       - checkout
-      - node/install-packages
+      - restore_cache:
+            keys:
+                - node-deps-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - when:
           condition: <<parameters.build_steps>>
           steps: << parameters.build_steps >>
