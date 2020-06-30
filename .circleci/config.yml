@@ -146,9 +146,9 @@ jobs:
     docker:
       - image: circleci/node:lts-browsers
     steps:
+        - checkout
         - attach_workspace:
             at: .
-        - checkout
         - restore_cache:
             keys:
                 - node-deps-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
