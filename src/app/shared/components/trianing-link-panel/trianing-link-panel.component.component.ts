@@ -1,28 +1,25 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { saveAs } from 'file-saver';
-import { Subscription } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
-import { ReportService } from '@core/services/report.service';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
-import { take } from 'rxjs/operators';
+import { saveAs } from 'file-saver';
 import * as moment from 'moment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-trianing-link-panel',
   templateUrl: './trianing-link-panel.component.html',
 })
 export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
-  private subscriptions: Subscription = new Subscription();
   public establishmentUid: string;
   public url: string;
   public fromStaffRecord: boolean;
-
   public lastUpdated: string;
-
   public now = moment.now();
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private reportService: ReportService,
@@ -33,6 +30,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.url = this.router.url;
+
     if (this.url.includes('view-all-mandatory-training')) {
       this.fromStaffRecord = true;
       this.establishmentService.isMandatoryTrainingView.next(true);

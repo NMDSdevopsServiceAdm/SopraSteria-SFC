@@ -29,6 +29,5 @@ import { ReportsRoutingModule } from './reports-routing.module';
     WdfWorkplaceConfirmationDialogComponent,
   ],
   providers: [WorkerResolver, DialogService],
-  entryComponents: [WdfWorkplaceConfirmationDialogComponent],
 })
 export class ReportsModule {}

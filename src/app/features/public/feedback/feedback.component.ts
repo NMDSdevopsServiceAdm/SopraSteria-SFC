@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './feedback.component.html',
 })
 export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted = false;
   public serverError: string;

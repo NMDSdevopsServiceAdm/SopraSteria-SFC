@@ -117,12 +117,5 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     MandatoryDetailsComponent
   ],
   providers: [DialogService, WorkerResolver],
-  entryComponents: [
-    DeleteQualificationDialogComponent,
-    DeleteTrainingDialogComponent,
-    DeleteWorkerDialogComponent,
-    WdfWorkerConfirmationDialogComponent,
-    MoveWorkerDialogComponent,
-  ],
 })
 export class WorkersModule {}
