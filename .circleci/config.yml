@@ -43,6 +43,7 @@ commands:
             cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${<<parameters.env_prefix>>_AWS_ACCESS_KEY_ID}"
             cf set-env "<<parameters.appname>>-dark" AWS_SECRET_ACCESS_KEY "${<<parameters.env_prefix>>_AWS_SECRET_ACCESS_KEY}"
             cf set-env "<<parameters.appname>>-dark" NODE_ENV "${<<parameters.env_prefix>>_NODE_ENV}"
+            cf set-env "<<parameters.appname>>-dark" RFR_ROOT "/home/vcap/app"
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
