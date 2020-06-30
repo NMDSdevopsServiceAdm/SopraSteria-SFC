@@ -1048,7 +1048,7 @@ const reportGet = async (req, res) => {
     }
   } catch (err) {
     console.error('report/training - failed', err);
-    await reportLocksaveResponse(req, res, 503, {});
+    await reportLock.saveResponse(req, res, 503, {});
   }
 };
 

@@ -667,6 +667,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue:false,
       field: 'TrainingReportLockHeld'
+    },
+    laReportLockHeld: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue:false,
+      field: 'LaReportLockHeld'
     }
   }, {
     defaultScope: {

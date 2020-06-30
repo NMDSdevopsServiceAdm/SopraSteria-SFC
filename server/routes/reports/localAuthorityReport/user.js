@@ -7,6 +7,7 @@ const fs = require('fs');
 const walk = require('walk');
 const JsZip = new require('jszip');
 const path = require('path');
+const express = require('express');
 
 //Constants string needed by this file in several places
 const folderName = 'template';
@@ -15,9 +16,11 @@ const staffRecordsSheetName = path.join('xl', 'worksheets', 'sheet2.xml');
 const sharedStringsName = path.join('xl', 'sharedStrings.xml');
 const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
+
 //const debuglog = console.log.bind(console);
 const debuglog = () => {};
 
+const reportLock = require('../../../utils/fileLock');
 //XML DOM manipulation helper functions
 const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
 
@@ -1472,11 +1475,10 @@ const getReport = async (date, thisEstablishment) => {
 // NOTE - the Local Authority report is driven mainly by pgsql (postgres functions) and therefore does not
 //    pass through the Establishment/Worker entities. This is done for performance, as these reports
 //    are expected to operate across large sets of data
-const express = require('express');
+
 const router = express.Router();
 
-router.route('/').get(async (req, res) => {
-  req.setTimeout(config.get('app.reports.localAuthority.timeout')*1000);
+const reportGet = async (req, res) => {
 
   try {
     // first ensure this report can only be ran by those establishments with a Local Authority employer type
@@ -1490,22 +1492,20 @@ router.route('/').get(async (req, res) => {
         const report = await getReport(date, thisEstablishment);
 
         if(report) {
-          res.setHeader('Content-disposition',
-            `attachment; filename=${moment(date).format("YYYY-MM-DD")}-SFC-Local-Authority-Report.xlsx`);
-          res.setHeader('Content-Type',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-          res.setHeader('Content-Length', report.length);
+          await reportLock.saveResponse(req, res, 200, report, {
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Local-Authority-Report.xlsx`,
+          });
+        } else {
+          // only allow on those establishments being a parent
 
-          console.log("report/localAuthority/user - 200 response");
-
-          return res.status(200).end(report);
+          console.error('report/training 403 response');
+          await reportLock.saveResponse(req, res, 403, {});
         }
-        else {
-          // failed to run the report
-          console.error('report/localAuthority/user - failed to run the report');
-
-          return res.status(503).send('ERR: Failed to run report');
-        }
+      } else {
+        console.error('report/training - failed restoring establishment');
+        await reportLock.saveResponse(req, res, 503, {});
+      }
       }
       else {
         // only allow on those establishments being a local authority
@@ -1514,16 +1514,15 @@ router.route('/').get(async (req, res) => {
 
         return res.status(403).send();
       }
-    }
-    else {
-      console.error('report/localAuthority/user - failed restoring establisment', err);
-      return res.status(503).send('ERR: Failed to restore establishment');
-    }
   }
   catch(err) {
     console.error('report/localAuthority/user - failed', err);
     return res.status(503).send('ERR: Failed to retrieve report');
   }
-});
+};
 
 module.exports = router;
+router.route('/report').get(reportLock.acquireLock.bind(null,'la', reportGet));
+router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null,'la'));
+router.route('/unlock').get(reportLock.releaseLock.bind(null,'la'));
+router.route('/response/:buRequestId').get(reportLock.responseGet);

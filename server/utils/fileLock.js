@@ -13,6 +13,8 @@ const Bucket = String(config.get('bulkupload.bucketname'));
 const reportsAvailable = ['la','training'];
 
 const acquireLock = async function(report,logic, req, res) {
+
+
   const { establishmentId } = req;
   if (!reportsAvailable.includes(report)){
     error.log('Lock *NOT* acquired.');
@@ -23,10 +25,9 @@ const acquireLock = async function(report,logic, req, res) {
     return;
   }
   const LockHeldTitle = report + "ReportLockHeld";
-  const ReportState = report + "ReportState";
-  console.log(LockHeldTitle + "  ,  " + ReportState);
   req.startTime = new Date().toISOString();
-
+  console.log("acquire lock2");
+  console.log(LockHeldTitle);
   // attempt to acquire the lock
   const currentLockState =  await models.establishment.update(
     {
@@ -126,7 +127,7 @@ const responseGet = (req, res) => {
 
     return;
   }
-
+  console.log(`${req.establishmentId}/intermediary/${buRequestId}.json`);
   s3.getObject({
     Bucket,
     Key: `${req.establishmentId}/intermediary/${buRequestId}.json`,
@@ -134,25 +135,25 @@ const responseGet = (req, res) => {
     .promise()
     .then(data => {
       const jsonData = JSON.parse(data.Body.toString());
-
+console.log("THEN");
       if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
         if (jsonData.responseHeaders) {
           res.set(jsonData.responseHeaders);
         }
-
+        console.log(jsonData.responseCode)
         if (jsonData.responseBody && jsonData.responseBody.type && jsonData.responseBody.type === 'Buffer') {
           res.status(jsonData.responseCode).send(Buffer.from(jsonData.responseBody));
         } else {
           res.status(jsonData.responseCode).send(jsonData.responseBody);
         }
       } else {
-        error.log('Report::responseGet: Response code was not numeric', jsonData);
+        console.error('Report::responseGet: Response code was not numeric', jsonData);
 
         throw new Error('Response code was not numeric');
       }
     })
     .catch(err => {
-      error.log('Report::responseGet: getting data returned an error:', err);
+      console.error('Report::responseGet: getting data returned an error:', err);
 
       res.status(404).send({
         message: 'Not Found',
@@ -171,24 +172,32 @@ const lockStatusGet = async (report,req, res) => {
   }
   const LockHeldTitle = report.charAt(0).toUpperCase() + report.slice(1) + "ReportLockHeld";
   const currentLockState =  await models.establishment.findAll({
-    attributes: [['EstablishmentID', 'establishmentId'],LockHeldTitle],
+    attributes: [['EstablishmentID', 'establishmentId'],[LockHeldTitle,'reportLockHeld']],
     where: {
       id: establishmentId,
     }
+  }).then(res => {
+    return res.map(row => {
+      return row.dataValues;
+    });
   });
 
+  const cl = currentLockState[0]
+
+console.log(cl);
+  console.log(cl.reportLockHeld);
   res
     .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
     .send(
       currentLockState.length === 0
         ? {
           establishmentId,
-          [LockHeldTitle]: true,
+          reportLockHeld: true,
         }
         : currentLockState[0]
     );
 
-  return currentLockState[0];
+  return cl;
 };
 module.exports.acquireLock = acquireLock;
 module.exports.releaseLock = releaseLock;
