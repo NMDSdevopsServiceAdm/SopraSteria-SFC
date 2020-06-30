@@ -1,8 +1,4 @@
 var config = require('./server/config/config');
-
-//simplify relative requires without using the rfr npm module
-global.rfr = module => require(__dirname + '/' + module);
-
 const Sentry = require('@sentry/node');
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
@@ -150,7 +146,7 @@ app.use(unless('/api', 'test', xssClean()));
 
 // view engine setup
 app.set('views', path.join(__dirname, '/server/views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(favicon(path.join(__dirname, 'dist/favicon.ico')));
 app.use(morgan('short', { stream: {write: (text) => { logger.info(text.replace(/\n$/, '')); } } }));

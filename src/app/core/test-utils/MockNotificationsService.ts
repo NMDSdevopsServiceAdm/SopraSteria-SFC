@@ -1,8 +1,10 @@
-import { NotificationsService } from '@core/services/notifications/notifications.service';
-import { Notification } from '@core/model/notifications.model';
-import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Notification } from '@core/model/notifications.model';
+import { NotificationsService } from '@core/services/notifications/notifications.service';
+import { Observable, of } from 'rxjs';
 
+@Injectable()
 export class MockNotificationsService extends NotificationsService {
   private approved = false;
 

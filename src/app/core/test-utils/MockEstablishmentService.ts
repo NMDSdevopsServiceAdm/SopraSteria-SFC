@@ -1,15 +1,14 @@
 import { HttpClient } from '@angular/common/http';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { Establishment, Share } from '@core/model/establishment.model';
-import { Observable, of } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { Observable, of } from 'rxjs';
 
+@Injectable()
 export class MockEstablishmentService extends EstablishmentService {
-  private share: any = { enabled: false, with: [] };
 
-  public setShare(newShare: any) {
-    this.share = newShare;
-  }
+  private share: any = { enabled: false, with: [] };
 
   public static factory(newShare: any) {
     return (http: HttpClient) => {
@@ -19,6 +18,10 @@ export class MockEstablishmentService extends EstablishmentService {
       }
       return service;
     };
+  }
+
+  public setShare(newShare: any) {
+    this.share = newShare;
   }
 
   public get establishment$(): Observable<Establishment> {

@@ -3,8 +3,6 @@ const baseEndpoint = require('../../utils/baseUrl').baseurl;
 const apiEndpoint = supertest(baseEndpoint);
 const expect = require('chai').expect;
 const models = require('../../../../models');
-const util = require('util');
-
 // mocked real postcode/location data
 // http://localhost:3000/api/test/locations/random?limit=5
 const postcodes = require('../../mockdata/postcodes').data;

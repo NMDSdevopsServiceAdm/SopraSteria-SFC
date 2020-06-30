@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -7,8 +7,9 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
+@Directive()
 export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
 
   public isWorkPlaceUpdate: boolean;
   public form: FormGroup;
