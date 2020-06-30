@@ -9,12 +9,12 @@ import {
 import { FirstErrorPipe } from '@shared/pipes/first-error.pipe';
 import { SharedModule } from '@shared/shared.module';
 
+import { CqcStatusChangeComponent } from './cqc-status-change/cqc-status-change.component';
+import { CqcStatusChangesComponent } from './cqc-status-changes/cqc-status-changes.component';
+import { ParentRequestComponent } from './parent-request/parent-request.component';
+import { ParentRequestsComponent } from './parent-requests/parent-requests.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { RegistrationsComponent } from './registrations/registrations.component';
-import { ParentRequestsComponent } from './parent-requests/parent-requests.component';
-import { ParentRequestComponent } from './parent-request/parent-request.component';
-import { CqcStatusChangesComponent } from './cqc-status-changes/cqc-status-changes.component';
-import { CqcStatusChangeComponent } from './cqc-status-change/cqc-status-change.component';
 import { SearchRoutingModule } from './search-routing.module';
 import { SearchComponent } from './search.component';
 
@@ -40,8 +40,5 @@ import { SearchComponent } from './search.component';
     CqcStatusChangeComponent,
     CqcStatusChangesComponent
   ],
-  entryComponents: [
-    AdminUnlockConfirmationDialogComponent
-  ]
 })
 export class SearchModule { }

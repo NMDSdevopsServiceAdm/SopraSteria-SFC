@@ -1,29 +1,29 @@
-import { StaffDetailsComponent } from './staff-details.component';
-import { render } from '@testing-library/angular';
-import { SharedModule } from '@shared/shared.module';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { WindowRef } from '@core/services/window.ref';
-import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { getTestBed } from '@angular/core/testing';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Contracts } from '@core/model/contracts.enum';
+import { Establishment } from '@core/model/establishment.model';
+import { AuthService } from '@core/services/auth.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { JobService } from '@core/services/job.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { WindowRef } from '@core/services/window.ref';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
-import { HttpClient } from '@angular/common/http';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { getTestBed } from '@angular/core/testing';
-import { AuthService } from '@core/services/auth.service';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { FormBuilder } from '@angular/forms';
-import { Establishment } from '@core/model/establishment.model';
-import { JobService } from '@core/services/job.service';
-import { MockJobService } from '@core/test-utils/MockJobService';
-import { Contracts } from '@core/model/contracts.enum';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+
+import { StaffDetailsComponent } from './staff-details.component';
+
 const { build, fake, sequence, } = require('@jackfranklin/test-data-bot');
-
-
 
 describe('StaffDetailsComponent', () => {
   const establishmentBuilder = build('Establishment', {
@@ -33,7 +33,6 @@ describe('StaffDetailsComponent', () => {
       nameOrId: fake((f) => f.lorem.sentence()),
     },
   });
-
 
   async function setup(isAdmin = true, subsidiaries = 0) {
     const establishment = establishmentBuilder() as Establishment;
@@ -50,11 +49,11 @@ describe('StaffDetailsComponent', () => {
           FormBuilder,
           {
             provide: WindowRef,
-            useClass: WindowRef
+            useValue: WindowRef
           },
           {
             provide: Contracts,
-            useClass: Contracts
+            useValue: Contracts
           },
           {
             provide: PermissionsService,
@@ -68,7 +67,7 @@ describe('StaffDetailsComponent', () => {
           },
           {
             provide: EstablishmentService,
-            useClass: MockEstablishmentService
+            useValue: MockEstablishmentService
           },
           {
             provide: JobService,
@@ -76,7 +75,7 @@ describe('StaffDetailsComponent', () => {
           },
           {
             provide: AuthService,
-            useClass: MockAuthService
+            useValue: MockAuthService
           },
           {
             provide: ActivatedRoute,
@@ -102,8 +101,8 @@ describe('StaffDetailsComponent', () => {
       })
     ;
     const injector = getTestBed();
-    const establishmentService = injector.get(EstablishmentService) as EstablishmentService;
-    const router = injector.get(Router) as Router;
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const router = injector.inject(Router) as Router;
 
     return {
       component,

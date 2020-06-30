@@ -1,30 +1,29 @@
-import { render, within } from '@testing-library/angular';
-import { SharedModule } from '@shared/shared.module';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { WindowRef } from '@core/services/window.ref';
-import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Contracts } from '@core/model/contracts.enum';
+import { DataSharingOptions } from '@core/model/data-sharing.model';
+import { Establishment } from '@core/model/establishment.model';
+import { AuthService } from '@core/services/auth.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { JobService } from '@core/services/job.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { WindowRef } from '@core/services/window.ref';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
-import { HttpClient } from '@angular/common/http';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { getTestBed } from '@angular/core/testing';
-import { AuthService } from '@core/services/auth.service';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { FormBuilder } from '@angular/forms';
-import { Establishment, Share } from '@core/model/establishment.model';
-import { JobService } from '@core/services/job.service';
-import { MockJobService } from '@core/test-utils/MockJobService';
-import { Contracts } from '@core/model/contracts.enum';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { DataSharingOptions } from '@core/model/data-sharing.model';
-import { of } from 'rxjs';
-const { build, fake, sequence, } = require('@jackfranklin/test-data-bot');
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { TotalStaffQuestionComponent } from './total-staff-question.component';
+
+const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
 describe('TotalStaffQuestionComponent', () => {
   const establishmentBuilder = build('Establishment', {
@@ -36,7 +35,7 @@ describe('TotalStaffQuestionComponent', () => {
   });
 
 
-  //async function setup(share: Share = null, isAdmin = true, subsidiaries = 0) {
+  // async function setup(share: Share = null, isAdmin = true, subsidiaries = 0) {
   async function setup(share: any = null, isAdmin = true, subsidiaries = 0) {
 
     const establishment = establishmentBuilder() as Establishment;
@@ -54,11 +53,11 @@ describe('TotalStaffQuestionComponent', () => {
           FormBuilder,
           {
             provide: WindowRef,
-            useClass: WindowRef
+            useValue: WindowRef
           },
           {
             provide: Contracts,
-            useClass: Contracts
+            useValue: Contracts
           },
           {
             provide: PermissionsService,
@@ -77,11 +76,11 @@ describe('TotalStaffQuestionComponent', () => {
           },
           {
             provide: JobService,
-            useClass: MockJobService
+            useValue: MockJobService
           },
           {
             provide: AuthService,
-            useClass: MockAuthService
+            useValue: MockAuthService
           },
           {
             provide: ActivatedRoute,
@@ -106,13 +105,9 @@ describe('TotalStaffQuestionComponent', () => {
         ]
       })
     ;
-    const injector = getTestBed();
-    const router = injector.get(Router) as Router;
 
     return {
-      component,
-      router,
-      establishment
+      component
     };
   }
 
@@ -192,23 +187,22 @@ describe('TotalStaffQuestionComponent', () => {
     form.controls.totalStaff.setValue('1000');
     expect(form.valid).toBeFalsy();
   });
-  
+
   it('should return to normal data sharing page if no data sharing options and you click on the back link', async () => {
     const share: any = { enabled: false, with: [] };
     const { component } = await setup(share);
     expect(component.fixture.componentInstance.previousRoute).toEqual(['/workplace', `${component.fixture.componentInstance.establishment.uid}`, 'sharing-data']);
   });
-  
+
   it('should return to data sharing page with LA if sharing options are LA and you click on the back link', async () => {
     const share: any = { enabled: true, with: [DataSharingOptions.LOCAL] };
     const { component } = await setup(share);
     expect(component.fixture.componentInstance.previousRoute).toEqual(['/workplace', `${component.fixture.componentInstance.establishment.uid}`, 'sharing-data-with-local-authorities']);
   });
-  
+
   it('should go on to vacancies page if you click submit', async () => {
     const { component } = await setup();
     expect(component.fixture.componentInstance.nextRoute).toEqual(['/workplace', `${component.fixture.componentInstance.establishment.uid}`, 'vacancies']);
   });
-
 });
 

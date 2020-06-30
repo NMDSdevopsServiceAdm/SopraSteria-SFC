@@ -43,6 +43,7 @@ commands:
             cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${<<parameters.env_prefix>>_AWS_ACCESS_KEY_ID}"
             cf set-env "<<parameters.appname>>-dark" AWS_SECRET_ACCESS_KEY "${<<parameters.env_prefix>>_AWS_SECRET_ACCESS_KEY}"
             cf set-env "<<parameters.appname>>-dark" NODE_ENV "${<<parameters.env_prefix>>_NODE_ENV}"
+            cf set-env "<<parameters.appname>>-dark" RFR_ROOT "/home/vcap/app"
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
@@ -132,7 +133,16 @@ jobs:
       - node/install-packages
       - run:
           command: npm run server:test:unit
-
+  performance:
+    docker:
+      - image: circleci/node:lts-browsers
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: npm run build
+      - run:
+          command: $(npm bin)/lhci autorun
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
@@ -234,6 +244,9 @@ workflows:
             requires:
               - install
         - test_backend:
+            requires:
+              - install
+        - performance:
             requires:
               - install
         - blue_green:

@@ -2,13 +2,12 @@ import { I18nPluralPipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
+import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
-import { isArray } from 'util';
 
 @Component({
   selector: 'app-workplace-summary',
@@ -124,7 +123,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   public isArray(variable): boolean {
-    return isArray(variable);
+    return Array.isArray(variable);
   }
 
   public setReturn(): void {

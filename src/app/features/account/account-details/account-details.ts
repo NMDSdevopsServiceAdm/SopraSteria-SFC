@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EMAIL_PATTERN, PHONE_PATTERN } from '@core/constants/constants';
@@ -10,13 +10,11 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
+@Directive()
 export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
-  protected back: URLStructure;
-  protected formErrorsMap: Array<ErrorDetails>;
-  protected serverError: string;
-  protected serverErrorsMap: Array<ErrorDefinition>;
-  protected subscriptions: Subscription = new Subscription();
+  @ViewChild('formEl') formEl: ElementRef;
+  public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition>;
   public callToActionLabel = 'Continue';
   public form: FormGroup;
   public formControlsMap: any[] = [
@@ -39,6 +37,9 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
   ];
   public submitted = false;
   public return: URLStructure;
+  protected back: URLStructure;
+  protected formErrorsMap: Array<ErrorDetails>;
+  protected subscriptions: Subscription = new Subscription();
 
   constructor(
     protected backService: BackService,

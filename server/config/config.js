@@ -8,6 +8,9 @@ const AWSSecrets = require('../aws/secrets');
 
 const AppConfig = require('./appConfig');
 
+convict.addFormat(require('convict-format-with-validator').ipaddress);
+convict.addFormat(require('convict-format-with-validator').url);
+
 // Define schema
 const config = convict({
   env: {

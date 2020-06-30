@@ -17,7 +17,7 @@ export class SelectMainServiceCqcComponent extends Question {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    public establishmentService: EstablishmentService
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
