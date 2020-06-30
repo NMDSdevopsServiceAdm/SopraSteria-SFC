@@ -17,7 +17,7 @@ const acquireLock = async function(report,logic, req, res) {
 
   const { establishmentId } = req;
   if (!reportsAvailable.includes(report)){
-    error.log('Lock *NOT* acquired.');
+    console.error('Lock *NOT* acquired.');
 
     res.status(500).send({
       message: `reportType not correct`,
@@ -26,8 +26,6 @@ const acquireLock = async function(report,logic, req, res) {
   }
   const LockHeldTitle = report + "ReportLockHeld";
   req.startTime = new Date().toISOString();
-  console.log("acquire lock2");
-  console.log(LockHeldTitle);
   // attempt to acquire the lock
   const currentLockState =  await models.establishment.update(
     {
@@ -43,7 +41,7 @@ const acquireLock = async function(report,logic, req, res) {
   // Just respond with a 409 http code and don't call the regular logic
   // close the response either way and continue processing in the background
   if (currentLockState[1] === 0) {
-    error.log('Lock *NOT* acquired.');
+    console.error('Lock *NOT* acquired.');
     res.status(409).send({
       message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`,
     });
@@ -69,7 +67,7 @@ const acquireLock = async function(report,logic, req, res) {
 const releaseLock = async (report,req, res, next) => {
   const establishmentId = req.query.subEstId || req.establishmentId;
   if (!reportsAvailable.includes(report)){
-    error.log('Lock *NOT* acquired.');
+    console.error('Lock *NOT* acquired.');
     res.status(500).send({
       message: `reportType not correct`,
     });
@@ -127,7 +125,6 @@ const responseGet = (req, res) => {
 
     return;
   }
-  console.log(`${req.establishmentId}/intermediary/${buRequestId}.json`);
   s3.getObject({
     Bucket,
     Key: `${req.establishmentId}/intermediary/${buRequestId}.json`,
@@ -135,16 +132,16 @@ const responseGet = (req, res) => {
     .promise()
     .then(data => {
       const jsonData = JSON.parse(data.Body.toString());
-console.log("THEN");
       if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
         if (jsonData.responseHeaders) {
           res.set(jsonData.responseHeaders);
         }
-        console.log(jsonData.responseCode)
         if (jsonData.responseBody && jsonData.responseBody.type && jsonData.responseBody.type === 'Buffer') {
           res.status(jsonData.responseCode).send(Buffer.from(jsonData.responseBody));
+          console.log(util.inspect(jsonData.responseBody,false,null,true))
         } else {
           res.status(jsonData.responseCode).send(jsonData.responseBody);
+          console.log(util.inspect(jsonData.responseBody,false,null,true))
         }
       } else {
         console.error('Report::responseGet: Response code was not numeric', jsonData);
@@ -164,7 +161,7 @@ console.log("THEN");
 const lockStatusGet = async (report,req, res) => {
   const { establishmentId } = req;
   if (!reportsAvailable.includes(report)){
-    error.log('Lock *NOT* acquired.');
+    console.error('Lock *NOT* acquired.');
     res.status(500).send({
       message: `reportType not correct`,
     });
@@ -181,11 +178,6 @@ const lockStatusGet = async (report,req, res) => {
       return row.dataValues;
     });
   });
-
-  const cl = currentLockState[0]
-
-console.log(cl);
-  console.log(cl.reportLockHeld);
   res
     .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
     .send(
@@ -197,7 +189,7 @@ console.log(cl);
         : currentLockState[0]
     );
 
-  return cl;
+  return currentLockState[0];
 };
 module.exports.acquireLock = acquireLock;
 module.exports.releaseLock = releaseLock;
