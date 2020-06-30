@@ -36,10 +36,7 @@ const putStringTemplate = (
     value
 ) => {
   let vTag = element.children('v').first();
-  let hasVTag = true;
-  if (element.children('v').length === 0) {
-    hasVTag = false;
-  }
+  const hasVTag = element.children('v').length;
 
   const textValue = String(value);
   const isNumber = isNumberRegex.test(textValue);
