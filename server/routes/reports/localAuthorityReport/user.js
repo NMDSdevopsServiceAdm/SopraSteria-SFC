@@ -1527,3 +1527,4 @@ router.route('/').get(async (req, res) => {
 module.exports = router;
 module.exports.LAReport = LAReport;
 module.exports.getReport = getReport;
+module.exports.identifyLocalAuthority = identifyLocalAuthority;
