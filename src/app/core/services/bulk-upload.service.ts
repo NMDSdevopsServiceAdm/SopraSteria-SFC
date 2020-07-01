@@ -206,11 +206,11 @@ export class BulkUploadService {
           },
           {
             name: 'filetype',
-            message: 'The selected files must be a CSV or ZIP.',
+            message: 'The selected files must be in CSV or ZIP format.',
           },
           {
             name: 'prevalidation',
-            message: 'Please ensure both workplace and staff files are uploaded.',
+            message: 'Please ensure you have included a workplace and staff file and your headings are correct.',
           },
         ],
       },

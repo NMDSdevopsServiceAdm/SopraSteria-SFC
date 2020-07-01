@@ -1,8 +1,4 @@
 var config = require('./server/config/config');
-
-//simplify relative requires without using the rfr npm module
-global.rfr = module => require(__dirname + '/' + module);
-
 const Sentry = require('@sentry/node');
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
@@ -24,6 +20,7 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var proxy = require('express-http-proxy');          // for service public/download content
+var compression = require('compression');
 
 // app config
 var AppConfig = require('./server/config/appConfig');
@@ -84,6 +81,7 @@ var testOnly = require('./server/routes/testOnly');
 
 var app = express();
 app.use(Sentry.Handlers.requestHandler());
+app.use(compression());
 
 /* public/download - proxy interception */
 const publicDownloadBaseUrl = config.get('public.download.baseurl');
