@@ -1570,6 +1570,7 @@ const reportGet = async (req, res) => {
 };
 
 module.exports = router;
+module.exports.identifyLocalAuthority = identifyLocalAuthority;
 router.route('/report').get(reportLock.acquireLock.bind(null, 'la', reportGet));
 router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'la'));
 router.route('/unlock').get(reportLock.releaseLock.bind(null, 'la'));
