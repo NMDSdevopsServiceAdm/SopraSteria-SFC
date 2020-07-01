@@ -33,29 +33,28 @@ const serializeXML = dom =>
 
 //helper function to set a spreadsheet cell's value
 const putStringTemplate = (
-    sheetDoc,
-    stringsDoc,
-    sst,
-    sharedStringsUniqueCount,
-    element,
-    value
+  sheetDoc,
+  stringsDoc,
+  sst,
+  sharedStringsUniqueCount,
+  element,
+  value
 ) => {
   let vTag = element.querySelector('v');
   const hasVTag = vTag !== null;
   const textValue = String(value);
   const isNumber = isNumberRegex.test(textValue);
 
-  if(!hasVTag) {
+  if (!hasVTag) {
     vTag = sheetDoc.createElementNS(schema, 'v');
 
     element.appendChild(vTag);
   }
 
-  if(isNumber) {
+  if (isNumber) {
     element.removeAttribute('t');
     vTag.textContent = textValue;
-  }
-  else{
+  } else {
     element.setAttribute('t', 's');
 
     const si = stringsDoc.createElementNS(schema, 'si');
@@ -92,7 +91,7 @@ const identifyLocalAuthority = async postcode => {
   // lookup primary authority by trying to resolve on specific postcode code
   const cssrResults = await models.pcodedata.findOne({
     where: {
-      postcode,
+      postcode
     },
     include: [
       {
@@ -107,7 +106,7 @@ const identifyLocalAuthority = async postcode => {
     cssrResults.theAuthority && cssrResults.theAuthority.id &&
     Number.isInteger(cssrResults.theAuthority.id)) {
 
-    return cssrResults.theAuthority.name
+    return cssrResults.theAuthority.name;
   }
 
   //  using just the first half of the postcode
@@ -140,12 +139,12 @@ const getReportData = async (date, thisEstablishment) => {
     replacements: {
       givenEstablishmentId: establishmentId,
       givenFromDate: fromDate,
-      givenToDate: toDate,
+      givenToDate: toDate
     },
     type: models.sequelize.QueryTypes.SELECT
   };
 
-  debuglog("LA user report data started:", params);
+  debuglog('LA user report data started:', params);
 
   const runReport = await models.sequelize.query(
     `select cqc.localAuthorityReport(:givenEstablishmentId, :givenFromDate, :givenToDate);`,
@@ -153,7 +152,7 @@ const getReportData = async (date, thisEstablishment) => {
   );
 
   // if report fails return no data
-  if(!runReport || String(runReport[0].localauthorityreport) !== 'true') {
+  if (!runReport || String(runReport[0].localauthorityreport) !== 'true') {
     return null;
   }
 
@@ -202,15 +201,15 @@ const getReportData = async (date, thisEstablishment) => {
     },
     order: [
       ['workplaceName', 'ASC'],
-      ['localId', 'ASC'],
-    ],
+      ['localId', 'ASC']
+    ]
   });
 
-  if(reportWorkers && Array.isArray(reportWorkers)) {
+  if (reportWorkers && Array.isArray(reportWorkers)) {
     reportData.workers = reportWorkers;
   }
 
-  debuglog("LA user report data finished:", params, reportData.establishments.length, reportData.workers.length);
+  debuglog('LA user report data finished:', params, reportData.establishments.length, reportData.workers.length);
 
   return reportData;
 };
@@ -243,7 +242,7 @@ const styleLookup = {
       'W': 22,
       'X': 23
     },
-    'ESTLAST' : {
+    'ESTLAST': {
       'A': 30,
       'B': 31,
       'C': 32,
@@ -389,7 +388,7 @@ const styleLookup = {
       'W': 65,
       'X': 66
     },
-    'ESTLAST' : {
+    'ESTLAST': {
       'A': 30,
       'B': 34,
       'C': 70,
@@ -517,53 +516,53 @@ const setStyle = (cellToChange, columnText, rowType, isRed) => {
 const basicValidationUpdate = (putString, cellToChange, value, columnText, rowType) => {
   let isRed = false;
 
-  if(!isNumberRegex.test(String(value))) {
+  if (!isNumberRegex.test(String(value))) {
     value = 'Missing';
     isRed = true;
   }
 
   putString(
-      cellToChange,
-      value
-    );
+    cellToChange,
+    value
+  );
 
   setStyle(cellToChange, columnText, rowType, isRed);
 };
 
 const updateWorkplacesSheet = (
-    workplacesSheet,
-    reportData,
-    sharedStrings,
-    sst,
-    sharedStringsUniqueCount
+  workplacesSheet,
+  reportData,
+  sharedStrings,
+  sst,
+  sharedStringsUniqueCount
 ) => {
-  debuglog("updating workplaces sheet");
+  debuglog('updating workplaces sheet');
 
   const putString = putStringTemplate.bind(null, workplacesSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   //set headers
   putString(
-      workplacesSheet.querySelector("c[r='B5']"),
-      moment(reportData.date).format("DD/MM/YYYY")
-    );
+    workplacesSheet.querySelector('c[r=\'B5\']'),
+    moment(reportData.date).format('DD/MM/YYYY')
+  );
 
   putString(
-      workplacesSheet.querySelector("c[r='B6']"),
-      reportData.reportEstablishment.localAuthority
-    );
+    workplacesSheet.querySelector('c[r=\'B6\']'),
+    reportData.reportEstablishment.localAuthority
+  );
 
   putString(
-      workplacesSheet.querySelector("c[r='B7']"),
-      reportData.reportEstablishment.name
-    );
+    workplacesSheet.querySelector('c[r=\'B7\']'),
+    reportData.reportEstablishment.name
+  );
 
   // clone the row the apropriate number of times
-  const templateRow = workplacesSheet.querySelector("row[r='13']");
+  const templateRow = workplacesSheet.querySelector('row[r=\'13\']');
   let currentRow = templateRow;
   let rowIndex = 14;
 
-  if(reportData.establishments.length > 1) {
-    for(let i = 0; i < reportData.establishments.length-1; i++) {
+  if (reportData.establishments.length > 1) {
+    for (let i = 0; i < reportData.establishments.length - 1; i++) {
       const tempRow = templateRow.cloneNode(true);
 
       tempRow.setAttribute('r', rowIndex);
@@ -579,328 +578,349 @@ const updateWorkplacesSheet = (
     }
 
     currentRow = templateRow;
-  }
-  else if(reportData.establishments.length === 0) {
+  } else if (reportData.establishments.length === 0) {
     templateRow.remove();
     rowIndex = 13;
   }
 
   //fix the last row in the table
-  workplacesSheet.querySelector("sheetData row:last-child").setAttribute('r', rowIndex);
+  workplacesSheet.querySelector('sheetData row:last-child').setAttribute('r', rowIndex);
 
   //fix the dimensions tag value
-  const dimension = workplacesSheet.querySelector("dimension");
-  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, "") + rowIndex);
+  const dimension = workplacesSheet.querySelector('dimension');
+  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndex);
 
   //keep track of the totals for later
   const totals = {
-      numberOfVacancies: 0,
-      numberOfLeavers: 0,
-      numberOfStarters: 0,
-      numberOfStaffRecords: 0,
-      numberOfIndividualStaffRecords: 0,
-      numberOfStaffRecordsNotAgency: 0,
-      numberOfCompleteStaffNotAgency: 0,
-      numberOfAgencyStaffRecords: 0,
-      numberOfCompleteAgencyStaffRecords: 0,
-      workplaceComplete: true
-    };
+    numberOfVacancies: 0,
+    numberOfLeavers: 0,
+    numberOfStarters: 0,
+    numberOfStaffRecords: 0,
+    numberOfIndividualStaffRecords: 0,
+    numberOfStaffRecordsNotAgency: 0,
+    numberOfCompleteStaffNotAgency: 0,
+    numberOfAgencyStaffRecords: 0,
+    numberOfCompleteAgencyStaffRecords: 0,
+    workplaceComplete: true
+  };
 
 
   //update the cell values
-  for(let row = 0; row < reportData.establishments.length; row++) {
-    debuglog("updating establishment", row);
+  for (let row = 0; row < reportData.establishments.length; row++) {
+    debuglog('updating establishment', row);
 
     const rowType = row === 0 ? 'ESTFIRST' : (row === reportData.establishments.length - 1 ? 'ESTLAST' : 'ESTREGULAR');
     let nextSibling = {};
 
-    for(let column = 0; column < 24; column++) {
+    for (let column = 0; column < 24; column++) {
       const columnText = String.fromCharCode(column + 65);
       let isRed = false;
 
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row+13}']`);
+      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 13}']`);
 
-      switch(columnText) {
+      switch (columnText) {
         case 'A': {
           putString(
-              cellToChange,
-              reportData.establishments[row].workplaceName
-            );
+            cellToChange,
+            reportData.establishments[row].workplaceName
+          );
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'B': {
           putString(
-              cellToChange,
-              reportData.establishments[row].workplaceId
-            );
+            cellToChange,
+            reportData.establishments[row].workplaceId
+          );
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'C': {
           putString(
-              cellToChange,
-              moment(reportData.establishments[row].lastUpdated).format("DD/MM/YYYY")
-            );
+            cellToChange,
+            moment(reportData.establishments[row].lastUpdated).format('DD/MM/YYYY')
+          );
 
-          if(!moment(reportData.establishments[row].lastUpdated).isBetween(moment(fromDate).subtract(1, 'd'), moment(toDate).add(1, 'd'))) {
+          if (!moment(reportData.establishments[row].lastUpdated).isBetween(moment(fromDate).subtract(1, 'd'), moment(toDate).add(1, 'd'))) {
             isRed = true;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'E': {
           putString(
-              cellToChange,
-              reportData.establishments[row].establishmentType
-            );
+            cellToChange,
+            reportData.establishments[row].establishmentType
+          );
 
-          if(!String(reportData.establishments[row].establishmentType).toLowerCase().includes('local authority')) {
+          if (!String(reportData.establishments[row].establishmentType).toLowerCase().includes('local authority')) {
             isRed = true;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'F': {
-           putString(
-              cellToChange,
-              reportData.establishments[row].mainService
-            );
+          putString(
+            cellToChange,
+            reportData.establishments[row].mainService
+          );
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'G': {
           putString(
-              cellToChange,
-              reportData.establishments[row].serviceUserGroups
-            );
+            cellToChange,
+            reportData.establishments[row].serviceUserGroups
+          );
 
-          if(reportData.establishments[row].serviceUserGroups === 'Missing') {
+          if (reportData.establishments[row].serviceUserGroups === 'Missing') {
             isRed = true;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'H': {
           putString(
-              cellToChange,
-              reportData.establishments[row].capacityOfMainService
-            );
+            cellToChange,
+            reportData.establishments[row].capacityOfMainService
+          );
 
-          if(reportData.establishments[row].capacityOfMainService === 'Missing') {
+          if (reportData.establishments[row].capacityOfMainService === 'Missing') {
             isRed = true;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'I': {
           putString(
-              cellToChange,
-              reportData.establishments[row].utilisationOfMainService
-            );
+            cellToChange,
+            reportData.establishments[row].utilisationOfMainService
+          );
 
-          if(reportData.establishments[row].utilisationOfMainService === 'Missing') {
+          if (reportData.establishments[row].utilisationOfMainService === 'Missing') {
             isRed = true;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'J': {
           basicValidationUpdate(
-              putString,
-              cellToChange,
-              reportData.establishments[row].numberOfVacancies,
-              columnText,
-              rowType
-            );
+            putString,
+            cellToChange,
+            reportData.establishments[row].numberOfVacancies,
+            columnText,
+            rowType
+          );
 
           totals.numberOfVacancies += parseInt(reportData.establishments[row].numberOfVacancies, 10) || 0;
-        } break;
+        }
+          break;
 
         case 'K': {
           basicValidationUpdate(
-              putString,
-              cellToChange,
-              reportData.establishments[row].numberOfLeavers,
-              columnText,
-              rowType
-            );
+            putString,
+            cellToChange,
+            reportData.establishments[row].numberOfLeavers,
+            columnText,
+            rowType
+          );
 
           totals.numberOfLeavers += parseInt(reportData.establishments[row].numberOfLeavers, 10) || 0;
-        } break;
+        }
+          break;
 
         case 'L': {
           basicValidationUpdate(
-              putString,
-              cellToChange,
-              reportData.establishments[row].numberOfStarters,
-              columnText,
-              rowType
-            );
+            putString,
+            cellToChange,
+            reportData.establishments[row].numberOfStarters,
+            columnText,
+            rowType
+          );
 
           totals.numberOfStarters += parseInt(reportData.establishments[row].numberOfStarters, 10) || 0;
-        } break;
+        }
+          break;
 
         case 'M': {
           basicValidationUpdate(
-              putString,
-              cellToChange,
-              reportData.establishments[row].numberOfStaffRecords,
-              columnText,
-              rowType
-            );
+            putString,
+            cellToChange,
+            reportData.establishments[row].numberOfStaffRecords,
+            columnText,
+            rowType
+          );
 
           totals.numberOfStaffRecords += parseInt(reportData.establishments[row].numberOfStaffRecords, 10) || 0;
-        } break;
+        }
+          break;
 
-      case 'N':
-      case 'O': {
-        putString(
-          cellToChange,
-          ''
-        );
+        case 'N':
+        case 'O': {
+          putString(
+            cellToChange,
+            ''
+          );
 
-        setStyle(cellToChange, columnText, rowType, false);
-      } break;
+          setStyle(cellToChange, columnText, rowType, false);
+        }
+          break;
 
         case 'P': {
           putString(
-              cellToChange,
-              reportData.establishments[row].workplaceComplete ? "Yes" : "No"
-            );
+            cellToChange,
+            reportData.establishments[row].workplaceComplete ? 'Yes' : 'No'
+          );
 
-          if(!reportData.establishments[row].workplaceComplete) {
+          if (!reportData.establishments[row].workplaceComplete) {
             isRed = true;
             totals.workplaceComplete = false;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'Q': {
           basicValidationUpdate(
-              putString,
-              cellToChange,
-              reportData.establishments[row].numberOfIndividualStaffRecords,
-              columnText,
-              rowType
-            );
+            putString,
+            cellToChange,
+            reportData.establishments[row].numberOfIndividualStaffRecords,
+            columnText,
+            rowType
+          );
 
           totals.numberOfIndividualStaffRecords += parseInt(reportData.establishments[row].numberOfIndividualStaffRecords, 10) || 0;
-        } break;
+        }
+          break;
 
         case 'R': {
           let value = reportData.establishments[row].percentageOfStaffRecords;
 
-          if(!isNumberRegex.test(String(value))) {
+          if (!isNumberRegex.test(String(value))) {
             value = 'Missing';
           }
 
           putString(
-              cellToChange,
-              value
-            );
+            cellToChange,
+            value
+          );
 
-          if(value === 'Missing' || value < 90 || value > 100) {
+          if (value === 'Missing' || value < 90 || value > 100) {
             isRed = true;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'S': {
           basicValidationUpdate(
-              putString,
-              cellToChange,
-              reportData.establishments[row].numberOfStaffRecordsNotAgency,
-              columnText,
-              rowType
-            );
+            putString,
+            cellToChange,
+            reportData.establishments[row].numberOfStaffRecordsNotAgency,
+            columnText,
+            rowType
+          );
 
           totals.numberOfStaffRecordsNotAgency += parseInt(reportData.establishments[row].numberOfStaffRecordsNotAgency, 10) || 0;
-        } break;
+        }
+          break;
 
         case 'T': {
           basicValidationUpdate(
-              putString,
-              cellToChange,
-              reportData.establishments[row].numberOfCompleteStaffNotAgency,
-              columnText,
-              rowType
-            );
+            putString,
+            cellToChange,
+            reportData.establishments[row].numberOfCompleteStaffNotAgency,
+            columnText,
+            rowType
+          );
 
           totals.numberOfCompleteStaffNotAgency += parseInt(reportData.establishments[row].numberOfCompleteStaffNotAgency, 10) || 0;
-        } break;
+        }
+          break;
 
         case 'U': {
           let value = reportData.establishments[row].percentageOfCompleteStaffRecords;
 
-          if(!isNumberRegex.test(String(value))) {
+          if (!isNumberRegex.test(String(value))) {
             value = 'Missing';
           }
 
           putString(
-              cellToChange,
-              value
-            );
+            cellToChange,
+            value
+          );
 
-          if(value === 'Missing' || value < 90 || value > 100) {
+          if (value === 'Missing' || value < 90 || value > 100) {
             isRed = true;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'V': {
           basicValidationUpdate(
-              putString,
-              cellToChange,
-              reportData.establishments[row].numberOfAgencyStaffRecords,
-              columnText,
-              rowType
-            );
+            putString,
+            cellToChange,
+            reportData.establishments[row].numberOfAgencyStaffRecords,
+            columnText,
+            rowType
+          );
 
           totals.numberOfAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfAgencyStaffRecords, 10) || 0;
-        } break;
+        }
+          break;
 
         case 'W': {
           basicValidationUpdate(
-              putString,
-              cellToChange,
-              reportData.establishments[row].numberOfCompleteAgencyStaffRecords,
-              columnText,
-              rowType
-            );
+            putString,
+            cellToChange,
+            reportData.establishments[row].numberOfCompleteAgencyStaffRecords,
+            columnText,
+            rowType
+          );
 
           totals.numberOfCompleteAgencyStaffRecords += parseInt(reportData.establishments[row].numberOfCompleteAgencyStaffRecords, 10) || 0;
-        } break;
+        }
+          break;
 
         case 'X': {
           let value = reportData.establishments[row].percentageOfCompleteAgencyStaffRecords;
 
-          if(!isNumberRegex.test(String(value))) {
+          if (!isNumberRegex.test(String(value))) {
             value = 'Missing';
           }
 
           putString(
-              cellToChange,
-              value
-            );
+            cellToChange,
+            value
+          );
 
-          if(value === 'Missing' || value < 90 || value > 100) {
+          if (value === 'Missing' || value < 90 || value > 100) {
             isRed = true;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
       }
 
       nextSibling = cellToChange ? cellToChange.nextSibling : {};
@@ -911,53 +931,57 @@ const updateWorkplacesSheet = (
 
   //update totals
   const rowType = 'ESTTOTAL';
-  for(let column = 0; column < 24; column++) {
-    debuglog("updating establishment totals");
+  for (let column = 0; column < 24; column++) {
+    debuglog('updating establishment totals');
 
     const columnText = String.fromCharCode(column + 65);
 
     const cellToChange = workplacesSheet.querySelector(`c[r='${columnText}12']`);
 
-    switch(columnText) {
+    switch (columnText) {
       case 'J': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfVacancies,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfVacancies,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'K': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfLeavers,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfLeavers,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'L': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfStarters,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfStarters,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'M': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfStaffRecords,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfStaffRecords,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'N':
       case 'O': {
@@ -967,7 +991,8 @@ const updateWorkplacesSheet = (
         );
 
         setStyle(cellToChange, columnText, rowType, false);
-      } break;
+      }
+        break;
 
       case 'P': {
         let isRed = false;
@@ -982,153 +1007,162 @@ const updateWorkplacesSheet = (
         }
 
         setStyle(cellToChange, columnText, rowType, isRed);
-      } break;
+      }
+        break;
 
       case 'Q': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfIndividualStaffRecords,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfIndividualStaffRecords,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'R': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfIndividualStaffRecords /
-            totals.numberOfStaffRecords * 100,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfIndividualStaffRecords /
+          totals.numberOfStaffRecords * 100,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'S': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfStaffRecordsNotAgency,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfStaffRecordsNotAgency,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'T': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfCompleteStaffNotAgency,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfCompleteStaffNotAgency,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'U': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfCompleteStaffNotAgency /
-            totals.numberOfStaffRecordsNotAgency * 100,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfCompleteStaffNotAgency /
+          totals.numberOfStaffRecordsNotAgency * 100,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'V': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfAgencyStaffRecords,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfAgencyStaffRecords,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'W': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfCompleteAgencyStaffRecords,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfCompleteAgencyStaffRecords,
+          columnText,
+          rowType
+        );
+      }
+        break;
 
       case 'X': {
         basicValidationUpdate(
-            putString,
-            cellToChange,
-            totals.numberOfCompleteAgencyStaffRecords /
-            totals.numberOfAgencyStaffRecords * 100,
-            columnText,
-            rowType
-          );
-      } break;
+          putString,
+          cellToChange,
+          totals.numberOfCompleteAgencyStaffRecords /
+          totals.numberOfAgencyStaffRecords * 100,
+          columnText,
+          rowType
+        );
+      }
+        break;
     }
   }
 
-  debuglog("establishments updated");
+  debuglog('establishments updated');
 
   return workplacesSheet;
 };
 
 const redIifMissing = (putString, cellToChange, value, columnText, rowType, columnObj = {}) => {
   let isRed = false;
-  if(String(value) === 'Missing') {
+  if (String(value) === 'Missing') {
     isRed = true;
   }
-  if(Object.keys(columnObj).length !== 0){
+  if (Object.keys(columnObj).length !== 0) {
     let currentRowObj = columnObj.reportObj[columnObj.index];
-    if(currentRowObj.employmentStatus === 'Pool/Bank' || currentRowObj.employmentStatus === 'Agency'){
-      if(currentRowObj.sickDays === 'Missing'){
+    if (currentRowObj.employmentStatus === 'Pool/Bank' || currentRowObj.employmentStatus === 'Agency') {
+      if (currentRowObj.sickDays === 'Missing') {
         isRed = false;
       }
     }
   }
 
   putString(
-      cellToChange,
-      value
-    );
+    cellToChange,
+    value
+  );
 
   setStyle(cellToChange, columnText, rowType, isRed);
-}
+};
 
 const updateStaffRecordsSheet = (
-    staffRecordsSheet,
-    reportData,
-    sharedStrings,
-    sst,
-    sharedStringsUniqueCount
+  staffRecordsSheet,
+  reportData,
+  sharedStrings,
+  sst,
+  sharedStringsUniqueCount
 ) => {
-  debuglog("updating staff sheet");
+  debuglog('updating staff sheet');
 
   const putString = putStringTemplate.bind(null, staffRecordsSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   putString(
-      staffRecordsSheet.querySelector("c[r='B5']"),
-      moment(reportData.date).format("DD/MM/YYYY")
-    );
+    staffRecordsSheet.querySelector('c[r=\'B5\']'),
+    moment(reportData.date).format('DD/MM/YYYY')
+  );
 
   putString(
-      staffRecordsSheet.querySelector("c[r='B6']"),
-      reportData.reportEstablishment.localAuthority
-    );
+    staffRecordsSheet.querySelector('c[r=\'B6\']'),
+    reportData.reportEstablishment.localAuthority
+  );
 
   putString(
-      staffRecordsSheet.querySelector("c[r='B7']"),
-      reportData.reportEstablishment.name
-    );
+    staffRecordsSheet.querySelector('c[r=\'B7\']'),
+    reportData.reportEstablishment.name
+  );
 
   // clone the row the apropriate number of times
-  const templateRow = staffRecordsSheet.querySelector("row[r='11']");
+  const templateRow = staffRecordsSheet.querySelector('row[r=\'11\']');
   let currentRow = templateRow;
   let rowIndex = 12;
 
-  if(reportData.workers.length > 1) {
-    for(let i = 0; i < reportData.workers.length-1; i++) {
+  if (reportData.workers.length > 1) {
+    for (let i = 0; i < reportData.workers.length - 1; i++) {
       const tempRow = templateRow.cloneNode(true);
 
       tempRow.setAttribute('r', rowIndex);
@@ -1144,152 +1178,163 @@ const updateStaffRecordsSheet = (
     }
 
     currentRow = templateRow;
-  }
-  else if(reportData.workers.length === 0) {
+  } else if (reportData.workers.length === 0) {
     templateRow.remove();
     rowIndex = 11;
   }
 
   //fix the last row in the table
-  staffRecordsSheet.querySelector("sheetData row:last-child").setAttribute('r', rowIndex);
+  staffRecordsSheet.querySelector('sheetData row:last-child').setAttribute('r', rowIndex);
 
   //fix the dimensions tag value
-  const dimension = staffRecordsSheet.querySelector("dimension");
-  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, "") + rowIndex);
+  const dimension = staffRecordsSheet.querySelector('dimension');
+  dimension.setAttribute('ref', String(dimension.getAttribute('ref')).replace(/\d+$/, '') + rowIndex);
 
   //update the cell values
-  for(let row = 0; row < reportData.workers.length; row++) {
-    debuglog("updating worker", row);
+  for (let row = 0; row < reportData.workers.length; row++) {
+    debuglog('updating worker', row);
 
     const rowType = row === reportData.workers.length - 1 ? 'WORKERLAST' : 'WORKERREGULAR';
     let nextSibling = {};
 
-    for(let column = 0; column < 18; column++) {
+    for (let column = 0; column < 18; column++) {
       const columnText = String.fromCharCode(column + 65);
 
-      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row+11}']`);
+      const cellToChange = (typeof nextSibling.querySelector === 'function') ? nextSibling : currentRow.querySelector(`c[r='${columnText}${row + 11}']`);
 
-      switch(columnText) {
+      switch (columnText) {
         case 'A': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].localId,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].localId,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'B': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].workplaceName,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].workplaceName,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'D': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].workplaceId,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].workplaceId,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'E': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].gender,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].gender,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'F': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].dateOfBirth,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].dateOfBirth,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'G': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].ethnicity,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].ethnicity,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'H': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].mainJob,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].mainJob,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'I': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].employmentStatus,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].employmentStatus,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'J': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].contractedAverageHours,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].contractedAverageHours,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'K': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].sickDays,
-              columnText,
-              rowType,
-              {reportObj: reportData.workers, index: row}
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].sickDays,
+            columnText,
+            rowType,
+            { reportObj: reportData.workers, index: row }
+          );
+        }
+          break;
 
         case 'L': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].payInterval,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].payInterval,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'M': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].rateOfPay,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].rateOfPay,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'N': {
           let isRed = false;
@@ -1299,176 +1344,185 @@ const updateStaffRecordsSheet = (
             case 'must be yes': {
               isRed = true;
               value = 'No';
-            } break;
+            }
+              break;
 
             case 'missing': {
               isRed = true;
-            } break;
+            }
+              break;
           }
 
           putString(
-              cellToChange,
-              value
-            );
+            cellToChange,
+            value
+          );
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'O': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].highestSocialCareQualification,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].highestSocialCareQualification,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'P': {
           redIifMissing(
-              putString,
-              cellToChange,
-              reportData.workers[row].nonSocialCareQualification,
-              columnText,
-              rowType
-            );
-        } break;
+            putString,
+            cellToChange,
+            reportData.workers[row].nonSocialCareQualification,
+            columnText,
+            rowType
+          );
+        }
+          break;
 
         case 'Q': {
           let isRed = false;
 
           putString(
-              cellToChange,
-              moment(reportData.workers[row].lastUpdated).format("DD/MM/YYYY")
-            );
+            cellToChange,
+            moment(reportData.workers[row].lastUpdated).format('DD/MM/YYYY')
+          );
 
-          if(!moment(reportData.workers[row].lastUpdated).isBetween(moment(fromDate).subtract(1, 'd'), moment(toDate).add(1, 'd'))) {
+          if (!moment(reportData.workers[row].lastUpdated).isBetween(moment(fromDate).subtract(1, 'd'), moment(toDate).add(1, 'd'))) {
             isRed = true;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
 
         case 'R': {
           let isRed = false;
 
           putString(
-              cellToChange,
-              reportData.workers[row].staffRecordComplete ? "Yes" : "No"
-            );
+            cellToChange,
+            reportData.workers[row].staffRecordComplete ? 'Yes' : 'No'
+          );
 
-          if(!reportData.workers[row].staffRecordComplete) {
+          if (!reportData.workers[row].staffRecordComplete) {
             isRed = true;
           }
 
           setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        }
+          break;
       }
 
       nextSibling = cellToChange ? cellToChange.nextSibling : {};
     }
 
     currentRow = currentRow.nextSibling;
-   }
+  }
 
-  debuglog("workers updated");
+  debuglog('workers updated');
 
   return staffRecordsSheet;
-}
+};
 
 const getReport = async (date, thisEstablishment) => {
   let reportData = await getReportData(date, thisEstablishment);
 
-  if(reportData === null) {
+  if (reportData === null) {
     return null;
   }
 
   return (new Promise(resolve => {
-      const thePath = path.join(__dirname, folderName);
-      const walker = walk.walk(thePath);
-      const outputZip = new JsZip();
+    const thePath = path.join(__dirname, folderName);
+    const walker = walk.walk(thePath);
+    const outputZip = new JsZip();
 
-      let workplacesSheet, staffRecordsSheet, sharedStrings;
+    let workplacesSheet, staffRecordsSheet, sharedStrings;
 
-      debuglog("iterating filesystem", thePath);
+    debuglog('iterating filesystem', thePath);
 
-      walker.on("file", (root, fileStats, next) => {
-        const pathName = root.replace(thePath, '').replace('\\', '/').replace(/^\//, "");
-        const zipPath = (pathName === '' ? fileStats.name : path.join(pathName, fileStats.name));
-        const readPath = path.join(thePath, zipPath);
+    walker.on('file', (root, fileStats, next) => {
+      const pathName = root.replace(thePath, '').replace('\\', '/').replace(/^\//, '');
+      const zipPath = (pathName === '' ? fileStats.name : path.join(pathName, fileStats.name));
+      const readPath = path.join(thePath, zipPath);
 
-        debuglog("file found", readPath);
+      debuglog('file found', readPath);
 
-        fs.readFile(`${readPath}`, (err, fileContent) => {
-          debuglog("content read", zipPath);
+      fs.readFile(`${readPath}`, (err, fileContent) => {
+        debuglog('content read', zipPath);
 
-          if(!err) {
-            switch(zipPath) {
-              case workplacesSheetName: {
-                workplacesSheet = parseXML(fileContent);
-              } break;
-
-              case staffRecordsSheetName: {
-                staffRecordsSheet = parseXML(fileContent);
-              } break;
-
-              case sharedStringsName: {
-                sharedStrings = parseXML(fileContent);
-              } break;
-
-              default: {
-                outputZip.file(zipPath, fileContent);
-              } break;
+        if (!err) {
+          switch (zipPath) {
+            case workplacesSheetName: {
+              workplacesSheet = parseXML(fileContent);
             }
+              break;
+
+            case staffRecordsSheetName: {
+              staffRecordsSheet = parseXML(fileContent);
+            }
+              break;
+
+            case sharedStringsName: {
+              sharedStrings = parseXML(fileContent);
+            }
+              break;
+
+            default: {
+              outputZip.file(zipPath, fileContent);
+            }
+              break;
           }
-
-          next();
-        });
-      });
-
-      walker.on("end", () => {
-        debuglog("all files read");
-
-        if(sharedStrings) {
-          const sst = sharedStrings.querySelector("sst");
-
-          const sharedStringsUniqueCount = [parseInt(sst.getAttribute('uniqueCount'), 10)];
-
-          //update the workplaces sheet with the report data and add it to the zip
-          outputZip.file(workplacesSheetName, serializeXML(updateWorkplacesSheet(
-              workplacesSheet,
-              reportData,
-              sharedStrings,
-              sst,
-              sharedStringsUniqueCount  //pass unique count by reference rather than by value
-            )));
-
-          //update the staff records sheet with the report data and add it to the zip
-          outputZip.file(staffRecordsSheetName, serializeXML(updateStaffRecordsSheet(
-              staffRecordsSheet,
-              reportData,
-              sharedStrings,
-              sst,
-              sharedStringsUniqueCount  //pass unique count by reference rather than by value
-            )));
-
-          //update the shared strings counts we've been keeping track of
-          sst.setAttribute('uniqueCount', sharedStringsUniqueCount[0]);
-
-          //add the updated shared strings to the zip
-          outputZip.file(sharedStringsName, serializeXML(sharedStrings));
         }
 
-        debuglog("LA user report: creating zip file");
-
-        resolve(outputZip);
+        next();
       });
-    })).
+    });
 
-    then(outputZip => outputZip.generateAsync({
-      type: 'nodebuffer',
-      compression: 'DEFLATE'
-    }));
+    walker.on('end', () => {
+      debuglog('all files read');
+
+      if (sharedStrings) {
+        const sst = sharedStrings.querySelector('sst');
+
+        const sharedStringsUniqueCount = [parseInt(sst.getAttribute('uniqueCount'), 10)];
+
+        //update the workplaces sheet with the report data and add it to the zip
+        outputZip.file(workplacesSheetName, serializeXML(updateWorkplacesSheet(
+          workplacesSheet,
+          reportData,
+          sharedStrings,
+          sst,
+          sharedStringsUniqueCount  //pass unique count by reference rather than by value
+        )));
+
+        //update the staff records sheet with the report data and add it to the zip
+        outputZip.file(staffRecordsSheetName, serializeXML(updateStaffRecordsSheet(
+          staffRecordsSheet,
+          reportData,
+          sharedStrings,
+          sst,
+          sharedStringsUniqueCount  //pass unique count by reference rather than by value
+        )));
+
+        //update the shared strings counts we've been keeping track of
+        sst.setAttribute('uniqueCount', sharedStringsUniqueCount[0]);
+
+        //add the updated shared strings to the zip
+        outputZip.file(sharedStringsName, serializeXML(sharedStrings));
+      }
+
+      debuglog('LA user report: creating zip file');
+
+      resolve(outputZip);
+    });
+  })).then(outputZip => outputZip.generateAsync({
+    type: 'nodebuffer',
+    compression: 'DEFLATE'
+  }));
 };
 
 // gets report
@@ -1484,17 +1538,17 @@ const reportGet = async (req, res) => {
     // first ensure this report can only be ran by those establishments with a Local Authority employer type
     const thisEstablishment = new Establishment(req.username);
 
-    if(await thisEstablishment.restore(req.establishment.id, false)) {
+    if (await thisEstablishment.restore(req.establishment.id, false)) {
       const theEmployerType = thisEstablishment.employerType;
 
-      if(theEmployerType && (theEmployerType.value).startsWith('Local Authority')) {
+      if (theEmployerType && (theEmployerType.value).startsWith('Local Authority')) {
         const date = new Date();
         const report = await getReport(date, thisEstablishment);
 
-        if(report) {
+        if (report) {
           await reportLock.saveResponse(req, res, 200, report, {
             'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Local-Authority-Report.xlsx`,
+            'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Local-Authority-Report.xlsx`
           });
         } else {
           // only allow on those establishments being a parent
@@ -1506,23 +1560,21 @@ const reportGet = async (req, res) => {
         console.error('report/training - failed restoring establishment');
         await reportLock.saveResponse(req, res, 503, {});
       }
-      }
-      else {
-        // only allow on those establishments being a local authority
+    } else {
+      // only allow on those establishments being a local authority
 
-        console.log("report/localAuthority/user 403 response");
+      console.log('report/localAuthority/user 403 response');
 
-        return res.status(403).send();
-      }
-  }
-  catch(err) {
+      return res.status(403).send();
+    }
+  } catch (err) {
     console.error('report/localAuthority/user - failed', err);
     return res.status(503).send('ERR: Failed to retrieve report');
   }
 };
 
 module.exports = router;
-router.route('/report').get(reportLock.acquireLock.bind(null,'la', reportGet));
-router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null,'la'));
-router.route('/unlock').get(reportLock.releaseLock.bind(null,'la'));
+router.route('/report').get(reportLock.acquireLock.bind(null, 'la', reportGet));
+router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'la'));
+router.route('/unlock').get(reportLock.releaseLock.bind(null, 'la'));
 router.route('/response/:buRequestId').get(reportLock.responseGet);

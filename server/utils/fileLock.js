@@ -73,8 +73,7 @@ const releaseLock = async (report,req, res, next) => {
     });
     return;
   }
-  LockHeldTitle = report + "ReportLockHeld";
-  ReportState = report + "ReportState";
+  const LockHeldTitle = report + "ReportLockHeld";
 
   if (Number.isInteger(establishmentId)) {
         await models.establishment.update(
@@ -92,8 +91,6 @@ const releaseLock = async (report,req, res, next) => {
     });
   }
 };
-
-
 
 const saveResponse = async (req, res, statusCode, body, headers) => {
   if (!Number.isInteger(statusCode) || statusCode < 100) {
@@ -138,10 +135,8 @@ const responseGet = (req, res) => {
         }
         if (jsonData.responseBody && jsonData.responseBody.type && jsonData.responseBody.type === 'Buffer') {
           res.status(jsonData.responseCode).send(Buffer.from(jsonData.responseBody));
-          console.log(util.inspect(jsonData.responseBody,false,null,true))
         } else {
           res.status(jsonData.responseCode).send(jsonData.responseBody);
-          console.log(util.inspect(jsonData.responseBody,false,null,true))
         }
       } else {
         console.error('Report::responseGet: Response code was not numeric', jsonData);

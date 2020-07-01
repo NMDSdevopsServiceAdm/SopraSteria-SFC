@@ -9,10 +9,11 @@ import { concatMap, filter, map, startWith, take } from 'rxjs/operators';
 import { EstablishmentService } from './establishment.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ReportService {
-  constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
+  constructor(private http: HttpClient, private establishmentService: EstablishmentService) {
+  }
 
   getWDFReport(establishmentId: string, updatedEffectiveFrom?: string): Observable<WDFReport> {
     let params: HttpParams;
@@ -22,14 +23,14 @@ export class ReportService {
     }
 
     return this.http.get<WDFReport>(`/api/reports/wdf/establishment/${establishmentId}`, {
-      params,
+      params
     });
   }
 
   public getWdfSummaryReport(): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/wdfSummary`, {
       observe: 'response',
-      responseType: 'blob' as 'json',
+      responseType: 'blob' as 'json'
     });
   }
 
@@ -38,7 +39,7 @@ export class ReportService {
       () => this.http.get<Blob>(`/api/reports/localAuthority/establishment/${workplaceUid}/user/report`),
       {
         observe: 'response',
-        responseType: 'blob' as 'json',
+        responseType: 'blob' as 'json'
       },
       workplaceUid,
       'la'
@@ -48,7 +49,7 @@ export class ReportService {
   public getLocalAuthorityAdminReport(): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/localauthority/admin`, {
       observe: 'response',
-      responseType: 'blob' as 'json',
+      responseType: 'blob' as 'json'
     });
   }
 
@@ -57,17 +58,18 @@ export class ReportService {
       () => this.http.get<Blob>(`/api/reports/wdf/establishment/${workplaceUid}/parent/report`),
       {
         observe: 'response',
-        responseType: 'blob' as 'json',
+        responseType: 'blob' as 'json'
       }
     );
   }
+
   // get Training report from training and qualifications
   public getTrainingReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
     return this.checkLockStatus(
       () => this.http.get<Blob>(`/api/reports/training/establishment/${workplaceUid}/training/report`),
       {
         observe: 'response',
-        responseType: 'blob' as 'json',
+        responseType: 'blob' as 'json'
       },
       workplaceUid,
       'training'
@@ -79,8 +81,8 @@ export class ReportService {
   private checkLockStatus(callback, httpOptions, workplaceUid, report): Observable<any> {
     let requestId;
     const reportData = {
-      training : `/api/reports/training/establishment/${workplaceUid}/training`,
-      la : `/api/reports/localAuthority/establishment/${workplaceUid}/user`
+      training: `/api/reports/training/establishment/${workplaceUid}/training`,
+      la: `/api/reports/localAuthority/establishment/${workplaceUid}/user`
     };
     const apiPath = reportData[report];
     // Run function every second until lock aquired
