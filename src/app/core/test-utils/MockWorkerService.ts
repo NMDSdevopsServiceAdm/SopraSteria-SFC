@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 import { Observable, of } from 'rxjs';
@@ -47,6 +48,7 @@ const workerBuilder = build('Worker', {
 
 const worker = workerBuilder();
 
+@Injectable()
 export class MockWorkerService extends WorkerService {
   public worker$ = of(worker as Worker);
 

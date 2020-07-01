@@ -14,8 +14,6 @@ const uuid = require('uuid');
 const hasProp = (obj, prop) =>
   Object.prototype.hasOwnProperty.bind(obj)(prop);
 
-// const rfr = require('rfr');
-
 // database models
 const models = require('../index');
 
