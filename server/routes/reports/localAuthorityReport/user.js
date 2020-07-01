@@ -1568,10 +1568,10 @@ const reportGet = async (req, res) => {
     return res.status(503).send('ERR: Failed to retrieve report');
   }
 };
-
-module.exports = router;
-module.exports.identifyLocalAuthority = identifyLocalAuthority;
 router.route('/report').get(reportLock.acquireLock.bind(null, 'la', reportGet));
 router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'la'));
 router.route('/unlock').get(reportLock.releaseLock.bind(null, 'la'));
 router.route('/response/:buRequestId').get(reportLock.responseGet);
+
+module.exports = router;
+module.exports.identifyLocalAuthority = identifyLocalAuthority;
