@@ -1,9 +1,8 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { ADD_USER_API, API_PATTERN } from '@core/constants/constants';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
-import { throwError } from 'rxjs';
 import { Observable } from 'rxjs/Observable';
 
 import { AuthService } from './auth.service';
@@ -16,9 +15,6 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.getToken(request.url);
-
-    console.log(token);
-    console.log(this.jwt.isTokenExpired(token));
     if (token) {
       if (this.jwt.isTokenExpired(token)) {
         this.authService.logout();

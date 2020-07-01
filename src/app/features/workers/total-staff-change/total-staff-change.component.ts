@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -9,42 +9,35 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 
 @Component({
-  selector: 'app-total-staff',
-  templateUrl: './total-staff.component.html',
+  selector: 'app-total-staff-change',
+  templateUrl: './total-staff-change.component.html',
 })
-export class TotalStaffComponent implements OnInit, OnDestroy {
+export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public returnToDash = false;
   public submitted = false;
   public workplace: Establishment;
   public return: URLStructure;
   public returnCopy: boolean;
-  private totalStaffConstraints = { min: 0, max: 999 };
   public formErrorsMap: Array<ErrorDetails>;
+  private totalStaffConstraints = { min: 0, max: 999 };
   private subscriptions: Subscription = new Subscription();
 
   constructor(
+    public errorSummaryService: ErrorSummaryService,
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
     private backService: BackService,
-    private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private totalStaffFormService: TotalStaffFormService
   ) {
-    this.form = this.formBuilder.group({
-      totalStaff: [
-        null,
-        [
-          Validators.required,
-          Validators.pattern('^[0-9]+$'),
-          Validators.min(this.totalStaffConstraints.min),
-          Validators.max(this.totalStaffConstraints.max),
-        ],
-      ],
-    });
+    this.form = totalStaffFormService.createForm(formBuilder);
   }
 
   ngOnInit() {
@@ -57,12 +50,6 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
       this.workplace.uid === primaryWorkplaceUid
         ? { url: ['/dashboard'], fragment: 'staff-records' }
         : { url: ['/workplace', this.workplace.uid], fragment: 'staff-records' };
-
-    this.subscriptions.add(
-      this.establishmentService.getStaff(this.workplace.uid).subscribe(staff => {
-        this.form.patchValue({ totalStaff: staff });
-      })
-    );
 
     this.returnToDash = this.workerService.totalStaffReturn;
 
@@ -89,6 +76,10 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     this.workerService.setTotalStaffReturn(false);
   }
 
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
@@ -107,47 +98,32 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.establishmentService.postStaff(this.workplace.uid, totalStaff).subscribe(
-        () => this.onSuccess(),
+        data => this.onSuccess(data.numberOfStaff),
         error => this.onError(error)
       )
     );
   }
 
-  private onSuccess() {
+  private onSuccess(numberOfStaff) {
+    this.updateWorkplaceSummary(numberOfStaff);
+
     if (this.returnToDash) {
       this.router.navigate(this.return.url, { fragment: this.return.fragment });
     } else if (this.workerService.returnTo) {
       this.router.navigate(this.workerService.returnTo.url);
     } else {
-      this.router.navigate(['create-basic-records'], { relativeTo: this.route.parent });
+      this.router.navigate(['create-staff-record'], { relativeTo: this.route.parent });
     }
+  }
+
+  private updateWorkplaceSummary(numberOfStaff) {
+    this.workplace.numberOfStaff = numberOfStaff;
+    this.establishmentService.setState(this.workplace);
   }
 
   private onError(error) {}
 
   private setupFormErrors(): void {
-    this.formErrorsMap = [
-      {
-        item: 'totalStaff',
-        type: [
-          {
-            name: 'required',
-            message: 'Total Staff is required.',
-          },
-          {
-            name: 'min',
-            message: `Total Staff must be greater than or equal to ${this.totalStaffConstraints.min}`,
-          },
-          {
-            name: 'max',
-            message: `Total Staff must be lower than or equal to ${this.totalStaffConstraints.max}`,
-          },
-          {
-            name: 'pattern',
-            message: 'Total Staff must be a number.',
-          },
-        ],
-      },
-    ];
+    this.formErrorsMap = this.totalStaffFormService.createFormErrorsMap();
   }
 }

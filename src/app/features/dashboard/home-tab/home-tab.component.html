@@ -4,7 +4,7 @@
     <ng-container *ngIf="workplace && canEditEstablishment">
       <p *ngIf="!workplace.employerType || updateStaffRecords">What you need to do first.</p>
       <app-inset-text *ngIf="!workplace.employerType || updateStaffRecords" [color]="'todo'">
-        <a *ngIf="!workplace?.employerType" [routerLink]="['/workplace', workplace?.uid, 'start']"
+        <a *ngIf="!workplace?.employerType" [routerLink]="['/workplace', workplace?.uid, 'start']" data-testid="add-workplace-info"
           >Add workplace information</a
         >
         <br /><a

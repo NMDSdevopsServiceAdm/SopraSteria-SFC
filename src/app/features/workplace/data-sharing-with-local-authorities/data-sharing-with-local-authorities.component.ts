@@ -50,11 +50,11 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
 
   protected init(): void {
     if (!this.establishment.share.with.includes(DataSharingOptions.LOCAL)) {
-      this.router.navigate(this.previous, { replaceUrl: true });
+      this.router.navigate(this.previousRoute, { replaceUrl: true });
     }
 
-    this.next = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
-    this.previous = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'total-staff'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
 
     this.primaryAuthority = this.establishment.primaryAuthority;
 

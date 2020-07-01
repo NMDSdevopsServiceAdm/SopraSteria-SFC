@@ -18,8 +18,8 @@ import { AccountDetails } from '@features/account/account-details/account-detail
 })
 export class ChangeYourDetailsComponent extends AccountDetails {
   public callToActionLabel = 'Save and return';
+  public userDetails: UserDetails;
   private primaryWorkplace: Establishment;
-  protected userDetails: UserDetails;
 
   constructor(
     private breadcrumbService: BreadcrumbService,

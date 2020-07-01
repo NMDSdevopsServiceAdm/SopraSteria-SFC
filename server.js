@@ -1,16 +1,29 @@
-//simplify relative requires without using the rfr npm module
-global.rfr = module => require(__dirname + '/' + module);
+var config = require('./server/config/config');
+const Sentry = require('@sentry/node');
+const beeline = require('honeycomb-beeline')({
+  dataset: config.get('env'),
+  serviceName: "sfc",
+  express: {
+    userContext: ["id", "username"],
+    parentIdSource: 'X-Honeycomb-Trace',
+    traceIdSource: 'X-Honeycomb-Trace'
+  }
+});
+
 var express = require('express');
+
+const logger = require('./server/utils/logger')
+
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var proxy = require('express-http-proxy');          // for service public/download content
+var compression = require('compression');
 
 // app config
 var AppConfig = require('./server/config/appConfig');
-var config = require('./server/config/config');
 
 // caching middleware - ref and transactional
 var cacheMiddleware = require('./server/utils/middleware/noCache');
@@ -67,7 +80,8 @@ AWSsns.initialise(config.get('aws.region'));
 var testOnly = require('./server/routes/testOnly');
 
 var app = express();
-
+app.use(Sentry.Handlers.requestHandler());
+app.use(compression());
 
 /* public/download - proxy interception */
 const publicDownloadBaseUrl = config.get('public.download.baseurl');
@@ -134,10 +148,10 @@ app.use(unless('/api', 'test', xssClean()));
 
 // view engine setup
 app.set('views', path.join(__dirname, '/server/views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(favicon(path.join(__dirname, 'dist/favicon.ico')));
-app.use(logger('dev'));
+app.use(morgan('short', { stream: {write: (text) => { logger.info(text.replace(/\n$/, '')); } } }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -206,6 +220,8 @@ app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
+app.use(Sentry.Handlers.errorHandler());
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -238,6 +254,13 @@ app.use(function(err, req, res, next) {
 });
 
 const startApp = () => {
+    if (config.get('honeycomb.write_key')) {
+      beeline._apiForTesting().honey.writeKey = config.get('honeycomb.write_key');
+    }
+    if (config.get('sentry.dsn')) {
+      Sentry.init({ dsn: config.get('sentry.dsn'), environment: config.get('env') });
+    }
+    logger.start();
     const listenPort = parseInt(config.get('listen.port'), 10);
     app.set('port', listenPort);
     app.listen(app.get('port'));

@@ -8,6 +8,9 @@ const AWSSecrets = require('../aws/secrets');
 
 const AppConfig = require('./appConfig');
 
+convict.addFormat(require('convict-format-with-validator').ipaddress);
+convict.addFormat(require('convict-format-with-validator').url);
+
 // Define schema
 const config = convict({
   env: {
@@ -443,6 +446,38 @@ const config = convict({
     doc: 'What timezone is the service running in?',
     format: String,
     default: 'Europe/London'
+  },
+  datadog: {
+    site: {
+      doc: 'Datadog URL',
+      format: String,
+      default: 'datadoghq.eu'
+    },
+    api_key: {
+      doc: 'Datadog API Key',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'DD_API_KEY'
+    }
+  },
+  sentry: {
+    dsn: {
+      doc: 'Sentry Endpoint',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'SENTRY_DSN'
+    }
+  },
+  honeycomb: {
+    write_key: {
+      doc: 'Honeycomb Write Key',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'HONEYCOMB_WRITE_KEY'
+    }
   }
 });
 
@@ -478,6 +513,9 @@ if (config.get('aws.secrets.use')) {
     config.set('slack.url', AWSSecrets.slackUrl());
     config.set('notify.key', AWSSecrets.govNotify());
     config.set('admin.url', AWSSecrets.adminUrl());
+    config.set('datadog.api_key', AWSSecrets.datadogApiKey());
+    config.set('sentry.dsn', AWSSecrets.sentryDsn());
+    config.set('honeycomb.write_key', AWSSecrets.honeycombWriteKey());
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());

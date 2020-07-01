@@ -232,7 +232,7 @@ describe('locations route', () => {
         }
       }, {status: updateStatus, json: updateJson, send: updateJson}, false);
     });
-    it('should not return locations with matching existing establishments', async() => {
+    it.skip('should not return locations with matching existing establishments', async() => {
       const updateStatus = (status) => {
         expect(status).to.deep.equal(404);
       };

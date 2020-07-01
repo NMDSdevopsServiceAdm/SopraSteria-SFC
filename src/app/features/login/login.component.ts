@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './login.component.html',
 })
 export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public submitted = false;
@@ -117,17 +117,11 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private login(): void {
     const { username, password } = this.form.value;
-    console.log('Logging in as ' + username);
-    console.log('Testing we have access to localstorage');
     localStorage.setItem('test', 'test');
-    console.log(localStorage.getItem('test'));
     this.subscriptions.add(
       this.authService.authenticate(username, password).subscribe(
         response => {
-          console.log('We successfully recieved a reply to the login call');
-          console.log(response);
           if (response.body.establishment && response.body.establishment.uid) {
-            console.log('We have the establishment information');
             // update the establishment service state with the given establishment id
             this.establishmentService.establishmentId = response.body.establishment.uid;
           }
@@ -136,20 +130,14 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           } else {
             this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
           }
-          console.log('Checking if the user has previously logged in');
           if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
-            console.log('They have so send them to where they were at: ' + this.authService.redirectLocation);
             this.router.navigateByUrl(this.authService.redirectLocation);
           } else {
-            console.log("They haven't, lets take them to the dashboard");
             this.router.navigate(['/dashboard']);
           }
-          console.log('Clearing the previous user information, as someone else has logged in');
           this.authService.clearPreviousUser();
 
-          console.log('Check to make sure they have accepted the terms and conditions');
           if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
-            console.log("They haven't accepted the terms, sending them to the welcome screen");
             this.router.navigate(['/migrated-user-terms-and-conditions']);
           }
         },
