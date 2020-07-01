@@ -10,9 +10,9 @@ const Bucket = String(config.get('bulkupload.bucketname'));
 // This function can't be an express middleware as it needs to run both before and after the regular logic
 const reportsAvailable = ['la','training'];
 
-const acquireLock = async function(report,logic, req, res) {
+const acquireLock = async function(reportType,logic, req, res) {
   const { establishmentId } = req;
-  if (!reportsAvailable.includes(report)){
+  if (!reportsAvailable.includes(reportType)){
     console.error('Lock *NOT* acquired.');
 
     res.status(500).send({
@@ -20,7 +20,7 @@ const acquireLock = async function(report,logic, req, res) {
     });
     return;
   }
-  const LockHeldTitle = report + "ReportLockHeld";
+  const LockHeldTitle = reportType + "ReportLockHeld";
   req.startTime = new Date().toISOString();
   // attempt to acquire the lock
   const currentLockState =  await models.establishment.update(
@@ -56,19 +56,19 @@ const acquireLock = async function(report,logic, req, res) {
   } catch (e) {}
 
   // release the lock
-  await releaseLock(report,req, null, null);
+  await releaseLock(reportType,req, null, null);
 };
 
-const releaseLock = async (report,req, res, next) => {
+const releaseLock = async (reportType,req, res, next) => {
   const establishmentId = req.query.subEstId || req.establishmentId;
-  if (!reportsAvailable.includes(report)){
+  if (!reportsAvailable.includes(reportType)){
     console.error('Lock *NOT* acquired.');
     res.status(500).send({
       message: `reportType not correct`,
     });
     return;
   }
-  const LockHeldTitle = report + "ReportLockHeld";
+  const LockHeldTitle = reportType + "ReportLockHeld";
   if (Number.isInteger(establishmentId)) {
         await models.establishment.update(
           {
@@ -140,16 +140,16 @@ const responseGet = async (req, res) => {
   }
 };
 
-const lockStatusGet = async (report,req, res) => {
+const lockStatusGet = async (reportType,req, res) => {
   const { establishmentId } = req;
-  if (!reportsAvailable.includes(report)){
+  if (!reportsAvailable.includes(reportType)){
     console.error('Lock *NOT* acquired.');
     res.status(500).send({
       message: `reportType not correct`,
     });
     return;
   }
-  const LockHeldTitle = report.charAt(0).toUpperCase() + report.slice(1) + "ReportLockHeld";
+  const LockHeldTitle = reportType.charAt(0).toUpperCase() + reportType.slice(1) + "ReportLockHeld";
   const currentLockState =  await models.establishment.findAll({
     attributes: [['EstablishmentID', 'establishmentId'],[LockHeldTitle,'reportLockHeld']],
     where: {
