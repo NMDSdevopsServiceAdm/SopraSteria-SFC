@@ -41,7 +41,6 @@ const acquireLock = async function(report,logic, req, res) {
     res.status(409).send({
       message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`,
     });
-
     return;
   }
 
@@ -70,7 +69,6 @@ const releaseLock = async (report,req, res, next) => {
     return;
   }
   const LockHeldTitle = report + "ReportLockHeld";
-
   if (Number.isInteger(establishmentId)) {
         await models.establishment.update(
           {
@@ -107,46 +105,39 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
   }).promise();
 };
 
-const responseGet = (req, res) => {
+const responseGet = async (req, res) => {
   const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
   const buRequestId = String(req.params.buRequestId).toLowerCase();
-
   if (!uuidRegex.test(buRequestId)) {
     res.status(400).send({
       message: 'request id must be a uuid',
     });
-
     return;
   }
-  s3.getObject({
-    Bucket,
-    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`,
-  })
-    .promise()
-    .then(data => {
-      const jsonData = JSON.parse(data.Body.toString());
-      if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
-        if (jsonData.responseHeaders) {
-          res.set(jsonData.responseHeaders);
-        }
-        if (jsonData.responseBody && jsonData.responseBody.type && jsonData.responseBody.type === 'Buffer') {
-          res.status(jsonData.responseCode).send(Buffer.from(jsonData.responseBody));
-        } else {
-          res.status(jsonData.responseCode).send(jsonData.responseBody);
-        }
-      } else {
-        console.error('Report::responseGet: Response code was not numeric', jsonData);
-
-        throw new Error('Response code was not numeric');
+  try {
+    var data = await s3.getObject({
+      Bucket,
+      Key: `${req.establishmentId}/intermediary/${buRequestId}.json`,
+    }).promise();
+    const jsonData = JSON.parse(data.Body.toString());
+    if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
+      if (jsonData.responseHeaders) {
+        res.set(jsonData.responseHeaders);
       }
-    })
-    .catch(err => {
+      if (jsonData.responseBody && jsonData.responseBody.type && jsonData.responseBody.type === 'Buffer') {
+        res.status(jsonData.responseCode).send(Buffer.from(jsonData.responseBody));
+      } else {
+        res.status(jsonData.responseCode).send(jsonData.responseBody);
+      }
+    } else {
+      throw new Error('Response code was not numeric');
+    }
+  } catch(err) {
       console.error('Report::responseGet: getting data returned an error:', err);
-
       res.status(404).send({
         message: 'Not Found',
       });
-    });
+  }
 };
 
 const lockStatusGet = async (report,req, res) => {
@@ -179,7 +170,6 @@ const lockStatusGet = async (report,req, res) => {
         }
         : currentLockState[0]
     );
-
   return currentLockState[0];
 };
 module.exports.acquireLock = acquireLock;
@@ -187,3 +177,4 @@ module.exports.releaseLock = releaseLock;
 module.exports.saveResponse = saveResponse;
 module.exports.responseGet = responseGet;
 module.exports.lockStatusGet = lockStatusGet;
+module.exports.s3 = s3;
