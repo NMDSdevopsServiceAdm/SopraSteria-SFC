@@ -14,7 +14,9 @@ const models = require('../../../../server/models');
 const cheerio = require('cheerio');
 const reportLock = require('../../../utils/fileLock');
 const Training = require('../../../models/classes/training').Training;
-const { getTrainingData, getJobName, getMndatoryTrainingDetails } = rfr('server/data/trainingReport');
+
+const { getTrainingData, getJobName, getMndatoryTrainingDetails } = require('../../../data/trainingReport');
+
 
 // Constants string needed by this file in several places
 const folderName = 'template';
