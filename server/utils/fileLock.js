@@ -160,17 +160,10 @@ const lockStatusGet = async (report,req, res) => {
       return row.dataValues;
     });
   });
-  res
-    .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
-    .send(
-      currentLockState.length === 0
-        ? {
-          establishmentId,
-          reportLockHeld: true,
-        }
-        : currentLockState[0]
-    );
-  return currentLockState[0];
+  if (currentLockState.length >= 0) {
+    return res.status(200).send(currentLockState[0]);
+  }
+  return res.status(200).send({establishmentId, reportLockHeld: true});
 };
 module.exports.acquireLock = acquireLock;
 module.exports.releaseLock = releaseLock;
