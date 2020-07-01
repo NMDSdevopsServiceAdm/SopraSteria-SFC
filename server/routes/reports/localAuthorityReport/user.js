@@ -44,7 +44,7 @@ const putStringTemplate = (
   const textValue = String(value);
   const isNumber = isNumberRegex.test(textValue);
 
-   if (!hasVTag) {
+  if (!hasVTag) {
     vTag = sheetDoc('<v></v>');
     vTag.text(sharedStringsUniqueCount[0]);
 
@@ -129,7 +129,7 @@ const identifyLocalAuthority = async postcode => {
 };
 
 const LAReport = {
-  run :  async (date, thisEstablishment) => {
+  run: async (date, thisEstablishment) => {
     // for the report
     const establishmentId = thisEstablishment.id;
 
@@ -140,12 +140,12 @@ const LAReport = {
       replacements: {
         givenEstablishmentId: establishmentId,
         givenFromDate: fromDate,
-        givenToDate: toDate,
+        givenToDate: toDate
       },
       type: models.sequelize.QueryTypes.SELECT
     };
 
-    debuglog("LA user report data started:", params);
+    debuglog('LA user report data started:', params);
 
     const runReport = await models.sequelize.query(
       `select cqc.localAuthorityReport(:givenEstablishmentId, :givenFromDate, :givenToDate);`,
@@ -175,8 +175,8 @@ const LAReport = {
         establishmentFk: establishmentId
       },
       order: [
-        ['workplaceName', 'ASC'],
-      ],
+        ['workplaceName', 'ASC']
+      ]
     });
 
     if (reportEstablishments && Array.isArray(reportEstablishments)) {
@@ -187,7 +187,7 @@ const LAReport = {
           },
           attributes: ['id', 'ustatus']
         });
-        if (establishmentDetails && establishmentDetails.ustatus !== 'PENDING'){
+        if (establishmentDetails && establishmentDetails.ustatus !== 'PENDING') {
           reportData.establishments.push(est);
         }
       });
@@ -200,15 +200,15 @@ const LAReport = {
       },
       order: [
         ['workplaceName', 'ASC'],
-        ['localId', 'ASC'],
-      ],
+        ['localId', 'ASC']
+      ]
     });
 
     if (reportWorkers && Array.isArray(reportWorkers)) {
       reportData.workers = reportWorkers;
     }
 
-    debuglog("LA user report data finished:", params, reportData.establishments.length, reportData.workers.length);
+    debuglog('LA user report data finished:', params, reportData.establishments.length, reportData.workers.length);
 
     return reportData;
   }
@@ -542,27 +542,27 @@ const updateWorkplacesSheet = (
 
   //set headers
   putString(
-      workplacesSheet("c[r='B5']"),
-      moment(reportData.date).format("DD/MM/YYYY")
-    );
+    workplacesSheet('c[r=\'B5\']'),
+    moment(reportData.date).format('DD/MM/YYYY')
+  );
 
   putString(
-      workplacesSheet("c[r='B6']"),
-      reportData.reportEstablishment.localAuthority
-    );
+    workplacesSheet('c[r=\'B6\']'),
+    reportData.reportEstablishment.localAuthority
+  );
 
   putString(
-      workplacesSheet("c[r='B7']"),
-      reportData.reportEstablishment.name
-    );
+    workplacesSheet('c[r=\'B7\']'),
+    reportData.reportEstablishment.name
+  );
 
   // clone the row the apropriate number of times
-  const templateRow = workplacesSheet("row[r='13']");
+  const templateRow = workplacesSheet('row[r=\'13\']');
   let currentRow = templateRow;
   let rowIndex = 14;
 
-  if(reportData.establishments.length > 1) {
-    for(let i = 0; i < reportData.establishments.length-1; i++) {
+  if (reportData.establishments.length > 1) {
+    for (let i = 0; i < reportData.establishments.length - 1; i++) {
       const tempRow = templateRow.clone(true);
 
       tempRow.attr('r', rowIndex);
@@ -583,11 +583,11 @@ const updateWorkplacesSheet = (
   }
 
   //fix the last row in the table
-  workplacesSheet("sheetData row:last-child").attr('r', rowIndex);
+  workplacesSheet('sheetData row:last-child').attr('r', rowIndex);
 
   //fix the dimensions tag value
-  const dimension = workplacesSheet("dimension");
-  dimension.attr('ref', String(dimension.attr('ref')).replace(/\d+$/, "") + rowIndex);
+  const dimension = workplacesSheet('dimension');
+  dimension.attr('ref', String(dimension.attr('ref')).replace(/\d+$/, '') + rowIndex);
 
   //keep track of the totals for later
   const totals = {
@@ -615,7 +615,7 @@ const updateWorkplacesSheet = (
       const columnText = String.fromCharCode(column + 65);
       let isRed = false;
 
-      const cellToChange = currentRow.children(`c[r='${columnText}${row+13}']`);
+      const cellToChange = currentRow.children(`c[r='${columnText}${row + 13}']`);
 
       switch (columnText) {
         case 'A': {
@@ -1139,27 +1139,27 @@ const updateStaffRecordsSheet = (
   const putString = putStringTemplate.bind(null, staffRecordsSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   putString(
-      staffRecordsSheet("c[r='B5']"),
-      moment(reportData.date).format("DD/MM/YYYY")
-    );
+    staffRecordsSheet('c[r=\'B5\']'),
+    moment(reportData.date).format('DD/MM/YYYY')
+  );
 
   putString(
-      staffRecordsSheet("c[r='B6']"),
-      reportData.reportEstablishment.localAuthority
-    );
+    staffRecordsSheet('c[r=\'B6\']'),
+    reportData.reportEstablishment.localAuthority
+  );
 
   putString(
-      staffRecordsSheet("c[r='B7']"),
-      reportData.reportEstablishment.name
-    );
+    staffRecordsSheet('c[r=\'B7\']'),
+    reportData.reportEstablishment.name
+  );
 
   // clone the row the apropriate number of times
-  const templateRow = staffRecordsSheet("row[r='11']");
+  const templateRow = staffRecordsSheet('row[r=\'11\']');
   let currentRow = templateRow;
   let rowIndex = 12;
 
-  if(reportData.workers.length > 1) {
-    for(let i = 0; i < reportData.workers.length-1; i++) {
+  if (reportData.workers.length > 1) {
+    for (let i = 0; i < reportData.workers.length - 1; i++) {
       const tempRow = templateRow.clone(true);
 
       tempRow.attr('r', rowIndex);
@@ -1181,11 +1181,11 @@ const updateStaffRecordsSheet = (
   }
 
   //fix the last row in the table
-  staffRecordsSheet("sheetData row:last-child").attr('r', rowIndex);
+  staffRecordsSheet('sheetData row:last-child').attr('r', rowIndex);
 
   //fix the dimensions tag value
-  const dimension = staffRecordsSheet("dimension");
-  dimension.attr('ref', String(dimension.attr('ref')).replace(/\d+$/, "") + rowIndex);
+  const dimension = staffRecordsSheet('dimension');
+  dimension.attr('ref', String(dimension.attr('ref')).replace(/\d+$/, '') + rowIndex);
 
   //update the cell values
   for (let row = 0; row < reportData.workers.length; row++) {
@@ -1196,7 +1196,7 @@ const updateStaffRecordsSheet = (
     for (let column = 0; column < 18; column++) {
       const columnText = String.fromCharCode(column + 65);
 
-      const cellToChange = currentRow.children(`c[r='${columnText}${row+11}']`);
+      const cellToChange = currentRow.children(`c[r='${columnText}${row + 11}']`);
 
       switch (columnText) {
         case 'A': {
@@ -1415,7 +1415,7 @@ const updateStaffRecordsSheet = (
     }
 
     currentRow = currentRow.next();
-   }
+  }
 
   debuglog('workers updated');
 
@@ -1479,37 +1479,37 @@ const getReport = async (date, thisEstablishment) => {
     walker.on('end', () => {
       debuglog('all files read');
 
-        if(sharedStrings) {
-          const sst = sharedStrings('sst');
+      if (sharedStrings) {
+        const sst = sharedStrings('sst');
 
-          const sharedStringsUniqueCount = [parseInt(sst.attr('uniqueCount'), 10)];
-          const sharedStringsCount = [parseInt(sst.attr('count'), 10)];
+        const sharedStringsUniqueCount = [parseInt(sst.attr('uniqueCount'), 10)];
+        const sharedStringsCount = [parseInt(sst.attr('count'), 10)];
 
-          //update the workplaces sheet with the report data and add it to the zip
-          outputZip.file(workplacesSheetName, updateWorkplacesSheet(
-              workplacesSheet,
-              reportData,
-              sharedStrings,
-              sst,
-              sharedStringsUniqueCount  //pass unique count by reference rather than by value
-            ).xml());
+        //update the workplaces sheet with the report data and add it to the zip
+        outputZip.file(workplacesSheetName, updateWorkplacesSheet(
+          workplacesSheet,
+          reportData,
+          sharedStrings,
+          sst,
+          sharedStringsUniqueCount  //pass unique count by reference rather than by value
+        ).xml());
 
-          //update the staff records sheet with the report data and add it to the zip
-          outputZip.file(staffRecordsSheetName, updateStaffRecordsSheet(
-              staffRecordsSheet,
-              reportData,
-              sharedStrings,
-              sst,
-              sharedStringsUniqueCount  //pass unique count by reference rather than by value
-            ).xml());
+        //update the staff records sheet with the report data and add it to the zip
+        outputZip.file(staffRecordsSheetName, updateStaffRecordsSheet(
+          staffRecordsSheet,
+          reportData,
+          sharedStrings,
+          sst,
+          sharedStringsUniqueCount  //pass unique count by reference rather than by value
+        ).xml());
 
-          //update the shared strings counts we've been keeping track of
-          sst.attr('uniqueCount', sharedStringsUniqueCount[0]);
-          sst.attr('count', sharedStringsCount[0]);
+        //update the shared strings counts we've been keeping track of
+        sst.attr('uniqueCount', sharedStringsUniqueCount[0]);
+        sst.attr('count', sharedStringsCount[0]);
 
-          //add the updated shared strings to the zip
-          outputZip.file(sharedStringsName, sharedStrings.xml());
-        }
+        //add the updated shared strings to the zip
+        outputZip.file(sharedStringsName, sharedStrings.xml());
+      }
 
       debuglog('LA user report: creating zip file');
 

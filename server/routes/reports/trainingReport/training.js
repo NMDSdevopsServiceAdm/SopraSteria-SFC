@@ -46,7 +46,7 @@ let expiredOrExpiringWorkerRecords = [];
 const parseXML = fileContent =>
   cheerio.load(fileContent, {
     xml: {
-      normalizeWhitespace: true,
+      normalizeWhitespace: true
     }
   });
 
@@ -109,7 +109,7 @@ const getReportData = async (date, thisEstablishment) => {
 
   return {
     date: date.toISOString(),
-    trainings: await getTrainingReportData(thisEstablishment),
+    trainings: await getTrainingReportData(thisEstablishment)
   };
 };
 
@@ -125,14 +125,14 @@ const createExpireExpiringData = async (trainingData) => {
   return trainingData.filter(
     (trainingWorker, index, self) =>
       self.findIndex(t => trainingWorker.ID === t.ID) === index
-    ).map(training => {
+  ).map(training => {
       return {
         ID: training.ID,
         NameOrIdValue: training.NameOrIdValue,
         MandatoryCount: 0,
         NonMandatoryCount: 0,
         Count: 0
-      }
+      };
     }
   );
 
@@ -151,7 +151,7 @@ const getTrainingReportData = async establishmentId => {
   expiringWorkerTrainings = await createExpireExpiringData(trainingData);
   const allWorkers = await models.worker.findAll({
     attributes: ['id', 'uid', 'NameOrIdValue'],
-    where:{
+    where: {
       establishmentFk: establishmentId,
       archived: false
     },
@@ -163,10 +163,10 @@ const getTrainingReportData = async establishmentId => {
       }
     ]
   });
-  if(allWorkers && allWorkers.length > 0){
-    for(let i = 0; i < allWorkers.length; i++){
+  if (allWorkers && allWorkers.length > 0) {
+    for (let i = 0; i < allWorkers.length; i++) {
       const allTrainingRecords = await Training.fetch(establishmentId, allWorkers[i].uid, null);
-      if(allTrainingRecords){
+      if (allTrainingRecords) {
         allWorkers[i].missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, allWorkers[i], allTrainingRecords.training);
       }
     }
@@ -182,29 +182,29 @@ const getTrainingReportData = async establishmentId => {
   trainingCounts.upToDateMandatoryTrainingCount = 0;
   trainingCounts.upToDateNonMandatoryTrainingCount = 0;
   if (expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0) {
-    for(let i = 0; i < trainingData.length; i++){
+    for (let i = 0; i < trainingData.length; i++) {
       let mandatoryTrainingDetails = await getMndatoryTrainingDetails(trainingData[i], establishmentId);
-      if(mandatoryTrainingDetails && +mandatoryTrainingDetails[0].count !== 0){
+      if (mandatoryTrainingDetails && +mandatoryTrainingDetails[0].count !== 0) {
         trainingData[i].MandatoryTraining = 'Yes';
-      }else{
+      } else {
         trainingData[i].MandatoryTraining = 'No';
       }
-      trainingData[i].Title = (trainingData[i].Title === null)? '': unescape(trainingData[i].Title);
-      trainingData[i].Completed = trainingData[i].Completed === null? '': trainingData[i].Completed;
-      trainingData[i].Accredited = trainingData[i].Accredited === null? '': trainingData[i].Accredited;
+      trainingData[i].Title = (trainingData[i].Title === null) ? '' : unescape(trainingData[i].Title);
+      trainingData[i].Completed = trainingData[i].Completed === null ? '' : trainingData[i].Completed;
+      trainingData[i].Accredited = trainingData[i].Accredited === null ? '' : trainingData[i].Accredited;
       let jobNameResult = await getJobName(trainingData[i].MainJobFKValue);
-      if(jobNameResult && jobNameResult.length > 0){
+      if (jobNameResult && jobNameResult.length > 0) {
         trainingData[i].JobName = jobNameResult[0].JobName;
-      }else{
+      } else {
         trainingData[i].JobName = 'Missing';
       }
       if (trainingData[i].Expires && trainingData[i].Expires !== null) {
         let expiringDate = moment(trainingData[i].Expires);
         let currentDate = moment();
         if (currentDate.isAfter(expiringDate, 'day')) {
-          if(trainingData[i].MandatoryTraining === 'Yes'){
+          if (trainingData[i].MandatoryTraining === 'Yes') {
             trainingCounts.expiredMandatoryTrainingCount++;
-          }else{
+          } else {
             trainingCounts.expiredNonMandatoryTrainingCount++;
           }
           trainingCounts.expiredTrainingCount++;
@@ -212,18 +212,18 @@ const getTrainingReportData = async establishmentId => {
           //create expired workers data
           expiredWorkerTrainings.forEach(async worker => {
             if (worker.ID === trainingData[i].ID) {
-              if(trainingData[i].MandatoryTraining === 'Yes'){
+              if (trainingData[i].MandatoryTraining === 'Yes') {
                 worker.MandatoryCount++;
-              }else{
+              } else {
                 worker.NonMandatoryCount++;
               }
               worker.Count++;
             }
           });
         } else if (expiringDate.diff(currentDate, 'days') <= 90) {
-          if(trainingData[i].MandatoryTraining === 'Yes'){
+          if (trainingData[i].MandatoryTraining === 'Yes') {
             trainingCounts.expiringMandatoryTrainingCount++;
-          }else{
+          } else {
             trainingCounts.expiringNonMandatoryTrainingCount++;
           }
           trainingCounts.expiringTrainingCount++;
@@ -231,9 +231,9 @@ const getTrainingReportData = async establishmentId => {
           //create expiring workers data
           expiringWorkerTrainings.forEach(worker => {
             if (worker.ID === trainingData[i].ID) {
-              if(trainingData[i].MandatoryTraining === 'Yes'){
+              if (trainingData[i].MandatoryTraining === 'Yes') {
                 worker.MandatoryCount++;
-              }else{
+              } else {
                 worker.NonMandatoryCount++;
               }
               worker.Count++;
@@ -242,18 +242,18 @@ const getTrainingReportData = async establishmentId => {
         } else {
           trainingData[i].Status = 'Up-to-date';
           trainingCounts.upToDateTrainingCount++;
-          if(trainingData[i].MandatoryTraining === 'Yes'){
+          if (trainingData[i].MandatoryTraining === 'Yes') {
             trainingCounts.upToDateMandatoryTrainingCount++;
-          }else{
+          } else {
             trainingCounts.upToDateNonMandatoryTrainingCount++;
           }
         }
       } else {
         trainingData[i].Status = 'Up-to-date';
         trainingCounts.upToDateTrainingCount++;
-        if(trainingData[i].MandatoryTraining === 'Yes'){
+        if (trainingData[i].MandatoryTraining === 'Yes') {
           trainingCounts.upToDateMandatoryTrainingCount++;
-        }else{
+        } else {
           trainingCounts.upToDateNonMandatoryTrainingCount++;
         }
         trainingData[i].ExpiredOn = '';
@@ -265,12 +265,12 @@ const getTrainingReportData = async establishmentId => {
       });
     }
 
-    expiredWorkerTrainings = expiredWorkerTrainings.filter(item => item.Count !==0);
-    expiringWorkerTrainings = expiringWorkerTrainings.filter(item => item.Count !==0);
-    missingMandatoryTrainingRecords = missingMandatoryTrainingRecords.filter(item => item.missingMandatoryTrainingCount !==0);
+    expiredWorkerTrainings = expiredWorkerTrainings.filter(item => item.Count !== 0);
+    expiringWorkerTrainings = expiringWorkerTrainings.filter(item => item.Count !== 0);
+    missingMandatoryTrainingRecords = missingMandatoryTrainingRecords.filter(item => item.missingMandatoryTrainingCount !== 0);
     let expiredOrExpiringWorkerIds = new Set(expiredWorkerTrainings.map(d => d.ID));
     expiredOrExpiringWorkerRecords = [...expiredWorkerTrainings, ...expiringWorkerTrainings.filter(d => !expiredOrExpiringWorkerIds.has(d.ID))];
-  }else{
+  } else {
     expiredOrExpiringWorkerRecords = [];
   }
   return trainingData;
@@ -294,7 +294,7 @@ const styleLookup = {
       I: 12,
       J: 12,
       K: 12,
-      L: 12,
+      L: 12
     },
     OVRLAST: {
       A: 2,
@@ -309,7 +309,7 @@ const styleLookup = {
       I: 22,
       J: 22,
       K: 22,
-      L: 22,
+      L: 22
     },
     TRNREGULAR: {
       A: 8,
@@ -320,7 +320,7 @@ const styleLookup = {
       //F: 7,
       F: 8,
       G: 8,
-      H: 6,
+      H: 6
     },
     TRNLAST: {
       A: 9,
@@ -331,8 +331,8 @@ const styleLookup = {
       //F: 13,
       F: 9,
       G: 9,
-      H: 7,
-    },
+      H: 7
+    }
   },
   RED: {
     OVRREGULAR: {
@@ -347,7 +347,7 @@ const styleLookup = {
       I: 11,
       J: 21,
       K: 12,
-      L: 66,
+      L: 66
     },
     OVRLAST: {
       A: 2,
@@ -361,7 +361,7 @@ const styleLookup = {
       I: 22,
       J: 22,
       K: 66,
-      L: 66,
+      L: 66
     },
     TRNREGULAR: {
       A: 10,
@@ -372,7 +372,7 @@ const styleLookup = {
       //F: 12,
       F: 10,
       G: 10,
-      H: 12,
+      H: 12
     },
     TRNLAST: {
       A: 11,
@@ -383,9 +383,9 @@ const styleLookup = {
       //F: 13,
       F: 11,
       G: 11,
-      H: 13,
-    },
-  },
+      H: 13
+    }
+  }
 };
 /**
  * Helper function used to set column's font style
@@ -451,77 +451,94 @@ const updateOverviewSheet = (
   let expiringMandatoryCounts = 0;
   let expiringNonMandatoryCounts = 0;
   let expiringTotalCounts = 0;
-  for(let i = 0; i < expiringWorkerTrainings.length; i++){
+  for (let i = 0; i < expiringWorkerTrainings.length; i++) {
     expiringMandatoryCounts = expiringMandatoryCounts + expiringWorkerTrainings[i].MandatoryCount;
     expiringNonMandatoryCounts = expiringNonMandatoryCounts + expiringWorkerTrainings[i].NonMandatoryCount;
     expiringTotalCounts = expiringTotalCounts + expiringWorkerTrainings[i].Count;
   }
-  expiringWorkerTrainings.push({ ID: -1, NameOrIdValue: 'Total', MandatoryCount: expiringMandatoryCounts, NonMandatoryCount: expiringNonMandatoryCounts, Count: expiringTotalCounts});
+  expiringWorkerTrainings.push({
+    ID: -1,
+    NameOrIdValue: 'Total',
+    MandatoryCount: expiringMandatoryCounts,
+    NonMandatoryCount: expiringNonMandatoryCounts,
+    Count: expiringTotalCounts
+  });
   let expiredMandatoryCounts = 0;
   let expiredNonMandatoryCounts = 0;
   let expiredTotalCounts = 0;
-  for(let i = 0; i < expiredWorkerTrainings.length; i++){
+  for (let i = 0; i < expiredWorkerTrainings.length; i++) {
     expiredMandatoryCounts = expiredMandatoryCounts + expiredWorkerTrainings[i].MandatoryCount;
     expiredNonMandatoryCounts = expiredNonMandatoryCounts + expiredWorkerTrainings[i].NonMandatoryCount;
     expiredTotalCounts = expiredTotalCounts + expiredWorkerTrainings[i].Count;
   }
-  expiredWorkerTrainings.push({ ID: -1, NameOrIdValue: 'Total', MandatoryCount: expiredMandatoryCounts, NonMandatoryCount: expiredNonMandatoryCounts, Count: expiredTotalCounts});
+  expiredWorkerTrainings.push({
+    ID: -1,
+    NameOrIdValue: 'Total',
+    MandatoryCount: expiredMandatoryCounts,
+    NonMandatoryCount: expiredNonMandatoryCounts,
+    Count: expiredTotalCounts
+  });
 
   let totalMissingMandatoryTrainingCount = 0;
-  for(let i = 0; i < missingMandatoryTrainingRecords.length; i++){
+  for (let i = 0; i < missingMandatoryTrainingRecords.length; i++) {
     missingMandatoryTrainingRecords[i].count = 'Non applicable';
     totalMissingMandatoryTrainingCount = totalMissingMandatoryTrainingCount + missingMandatoryTrainingRecords[i].missingMandatoryTrainingCount;
   }
-  missingMandatoryTrainingRecords.push({ ID: -1, NameOrIdValue: 'Total', missingMandatoryTrainingCount: totalMissingMandatoryTrainingCount, count: 0});
+  missingMandatoryTrainingRecords.push({
+    ID: -1,
+    NameOrIdValue: 'Total',
+    missingMandatoryTrainingCount: totalMissingMandatoryTrainingCount,
+    count: 0
+  });
   // put total expired mandatory training count
-  putString(overviewSheet("c[r='B3']"), trainingCounts.expiredMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'B3\']'), trainingCounts.expiredMandatoryTrainingCount);
   // put total expired non mandatory training count
-  putString(overviewSheet("c[r='C3']"), trainingCounts.expiredNonMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'C3\']'), trainingCounts.expiredNonMandatoryTrainingCount);
   // put total expired training count
-  putString(overviewSheet("c[r='D3']"), trainingCounts.expiredTrainingCount);
+  putString(overviewSheet('c[r=\'D3\']'), trainingCounts.expiredTrainingCount);
   // put total up-to-date mandatory training count
-  putString(overviewSheet("c[r='B2']"), trainingCounts.upToDateMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'B2\']'), trainingCounts.upToDateMandatoryTrainingCount);
   // put total up-to-date non mandatory training count
-  putString(overviewSheet("c[r='C2']"), trainingCounts.upToDateNonMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'C2\']'), trainingCounts.upToDateNonMandatoryTrainingCount);
   // put total up-to-date training count
-  putString(overviewSheet("c[r='D2']"), trainingCounts.upToDateTrainingCount);
+  putString(overviewSheet('c[r=\'D2\']'), trainingCounts.upToDateTrainingCount);
 
   // put total expiring soon mandatory training count
-  putString(overviewSheet("c[r='B4']"), trainingCounts.expiringMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'B4\']'), trainingCounts.expiringMandatoryTrainingCount);
   // put total expiring soon non mandatory training count
-  putString(overviewSheet("c[r='C4']"), trainingCounts.expiringNonMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'C4\']'), trainingCounts.expiringNonMandatoryTrainingCount);
   // put total expiring soon training count
-  putString(overviewSheet("c[r='D4']"), trainingCounts.expiringTrainingCount);
+  putString(overviewSheet('c[r=\'D4\']'), trainingCounts.expiringTrainingCount);
 
   // put total missing mandatory training count
-  putString(overviewSheet("c[r='B5']"), totalMissingMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'B5\']'), totalMissingMandatoryTrainingCount);
   // put total missing non mandatory training count
-  putString(overviewSheet("c[r='C5']"), 'Non applicable');
+  putString(overviewSheet('c[r=\'C5\']'), 'Non applicable');
   // put total missing training count
-  putString(overviewSheet("c[r='D5']"), totalMissingMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'D5\']'), totalMissingMandatoryTrainingCount);
 
   // put total expiring soon/expired mandatory training count
   putString(
-    overviewSheet("c[r='B6']"),
+    overviewSheet('c[r=\'B6\']'),
     `${trainingCounts.expiredMandatoryTrainingCount + trainingCounts.expiringMandatoryTrainingCount + trainingCounts.upToDateMandatoryTrainingCount + totalMissingMandatoryTrainingCount}`
   );
 
   // put total expiring soon/expired non mandatory training count
   putString(
-    overviewSheet("c[r='C6']"),
+    overviewSheet('c[r=\'C6\']'),
     `${trainingCounts.expiredNonMandatoryTrainingCount + trainingCounts.expiringNonMandatoryTrainingCount + trainingCounts.upToDateNonMandatoryTrainingCount}`
   );
 
   // put total expiring soon/expired training count
   putString(
-    overviewSheet("c[r='D6']"),
+    overviewSheet('c[r=\'D6\']'),
     `${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount + trainingCounts.upToDateTrainingCount + totalMissingMandatoryTrainingCount}`
   );
 
   //put all missing mandatory traing details
-  let currentRowMandatory = overviewSheet("row[r='18']");
+  let currentRowMandatory = overviewSheet('row[r=\'18\']');
   let rowIndexMandatory = 18;
-  let updateMandatoryRowIndex = rowIndexMandatory + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
+  let updateMandatoryRowIndex = rowIndexMandatory + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length - 1);
   for (; rowIndexMandatory >= 15; rowIndexMandatory--, updateMandatoryRowIndex--) {
 
     if (currentRowMandatory.children('c').length) {
@@ -534,13 +551,13 @@ const updateOverviewSheet = (
 
     if (currentRowMandatory.prev().length !== 0) {
       currentRowMandatory = currentRowMandatory.prev();
-      if(currentRowMandatory.name === 'row') {
+      if (currentRowMandatory.name === 'row') {
         break;
       }
     }
   }
 
-  let bottomMandatoryRowIndex = 18 + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
+  let bottomMandatoryRowIndex = 18 + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length - 1);
   const templateRowMissing = overviewSheet(`row[r='${bottomMandatoryRowIndex}']`);
   let currentRowMissing = templateRowMissing;
   let rowIndexMissing = bottomMandatoryRowIndex + 1;
@@ -577,31 +594,27 @@ const updateOverviewSheet = (
       const columnText = String.fromCharCode(column + 65);
       const cellToChange = currentRowMissing.children(`c[r='${columnText}${bottomMandatoryRowIndex + row}']`);
       switch (columnText) {
-        case 'A':
-          {
-            basicValidationUpdate(
-              putString,
-              cellToChange,
-              missingMandatoryTrainingRecords[row].NameOrIdValue,
-              columnText,
-              rowType
-            );
-          }
+        case 'A': {
+          basicValidationUpdate(
+            putString,
+            cellToChange,
+            missingMandatoryTrainingRecords[row].NameOrIdValue,
+            columnText,
+            rowType
+          );
+        }
           break;
-        case 'B':
-          {
-            basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].missingMandatoryTrainingCount, columnText, rowType);
-          }
+        case 'B': {
+          basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].missingMandatoryTrainingCount, columnText, rowType);
+        }
           break;
-        case 'C':
-          {
-            basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].count, columnText, rowType);
-          }
+        case 'C': {
+          basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].count, columnText, rowType);
+        }
           break;
-        case 'D':
-          {
-            basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].missingMandatoryTrainingCount, columnText, rowType);
-          }
+        case 'D': {
+          basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].missingMandatoryTrainingCount, columnText, rowType);
+        }
           break;
       }
     }
@@ -610,7 +623,7 @@ const updateOverviewSheet = (
   }
 
   //put all expiring traing details
-  let currentRowBottom = overviewSheet("row[r='14']");
+  let currentRowBottom = overviewSheet('row[r=\'14\']');
   let rowIndexBottom = 14;
   let updateRowIndex = rowIndexBottom + expiredWorkerTrainings.length - 1;
   for (; rowIndexBottom >= 11; rowIndexBottom--, updateRowIndex--) {
@@ -625,7 +638,7 @@ const updateOverviewSheet = (
 
     if (currentRowBottom.prev().length !== 0) {
       currentRowBottom = currentRowBottom.prev();
-      if(currentRowBottom.name === 'row') {
+      if (currentRowBottom.name === 'row') {
         break;
       }
     }
@@ -662,31 +675,27 @@ const updateOverviewSheet = (
       const columnText = String.fromCharCode(column + 65);
       const cellToChange = currentRowExpiring.children(`c[r='${columnText}${row + bottomRowIndex}']`);
       switch (columnText) {
-        case 'A':
-          {
-            basicValidationUpdate(
-              putString,
-              cellToChange,
-              expiringWorkerTrainings[row].NameOrIdValue,
-              columnText,
-              rowType
-            );
-          }
+        case 'A': {
+          basicValidationUpdate(
+            putString,
+            cellToChange,
+            expiringWorkerTrainings[row].NameOrIdValue,
+            columnText,
+            rowType
+          );
+        }
           break;
-        case 'B':
-          {
-            basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].MandatoryCount, columnText, rowType);
-          }
+        case 'B': {
+          basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].MandatoryCount, columnText, rowType);
+        }
           break;
-        case 'C':
-          {
-            basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
-          }
+        case 'C': {
+          basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
+        }
           break;
-        case 'D':
-          {
-            basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].Count, columnText, rowType);
-          }
+        case 'D': {
+          basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].Count, columnText, rowType);
+        }
           break;
       }
     }
@@ -696,7 +705,7 @@ const updateOverviewSheet = (
 
   //put all expired training details
   // clone the row the apropriate number of times
-  const templateRow = overviewSheet("row[r='10']");
+  const templateRow = overviewSheet('row[r=\'10\']');
   let currentRow = templateRow;
   let rowIndex = 11;
   if (expiredWorkerTrainings.length > 0) {
@@ -726,31 +735,27 @@ const updateOverviewSheet = (
       const columnText = String.fromCharCode(column + 65);
       const cellToChange = currentRow.children(`c[r='${columnText}${row + 10}']`);
       switch (columnText) {
-        case 'A':
-          {
-            basicValidationUpdate(
-              putString,
-              cellToChange,
-              expiredWorkerTrainings[row].NameOrIdValue,
-              columnText,
-              rowType
-            );
-          }
+        case 'A': {
+          basicValidationUpdate(
+            putString,
+            cellToChange,
+            expiredWorkerTrainings[row].NameOrIdValue,
+            columnText,
+            rowType
+          );
+        }
           break;
-        case 'B':
-          {
-            basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].MandatoryCount, columnText, rowType);
-          }
+        case 'B': {
+          basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].MandatoryCount, columnText, rowType);
+        }
           break;
-        case 'C':
-          {
-            basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
-          }
+        case 'C': {
+          basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
+        }
           break;
-        case 'D':
-          {
-            basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].Count, columnText, rowType);
-          }
+        case 'D': {
+          basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].Count, columnText, rowType);
+        }
           break;
       }
     }
@@ -791,7 +796,7 @@ const updateTrainingsSheet = (
   );
 
   // clone the row the apropriate number of times
-  const templateRow = trainingsSheet("row[r='2']");
+  const templateRow = trainingsSheet('row[r=\'2\']');
   let currentRow = templateRow;
   let rowIndex = 3;
   let trainingArray = reportData.trainings;
@@ -834,64 +839,56 @@ const updateTrainingsSheet = (
 
       const cellToChange = currentRow.children(`c[r='${columnText}${row + 2}']`);
       switch (columnText) {
-        case 'A':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].NameOrIdValue, columnText, rowType);
-          }
+        case 'A': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].NameOrIdValue, columnText, rowType);
+        }
           break;
 
-        case 'B':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].JobName, columnText, rowType);
-          }
+        case 'B': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].JobName, columnText, rowType);
+        }
           break;
 
-        case 'C':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].Category, columnText, rowType);
-          }
+        case 'C': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].Category, columnText, rowType);
+        }
           break;
 
-        case 'D':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].Title, columnText, rowType);
-          }
+        case 'D': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].Title, columnText, rowType);
+        }
           break;
 
-        case 'E':
-          {
-            putString(trainingsSheet(`c[r='${columnText}${row + 2}']`), trainingArray[row].Status);
-            let styleCol;
-            if (trainingArray[row].Status === 'Up-to-date') {
-              styleCol = 19;
-            } else if (trainingArray[row].Status === 'Expired') {
-              styleCol = 20;
-            } else if (trainingArray[row].Status === 'Expiring soon') {
-              styleCol = 21;
-            } else {
-              styleCol = 20;
-            }
-            trainingsSheet(`c[r='${columnText}${row + 2}']`).attr('s', styleCol);
+        case 'E': {
+          putString(trainingsSheet(`c[r='${columnText}${row + 2}']`), trainingArray[row].Status);
+          let styleCol;
+          if (trainingArray[row].Status === 'Up-to-date') {
+            styleCol = 19;
+          } else if (trainingArray[row].Status === 'Expired') {
+            styleCol = 20;
+          } else if (trainingArray[row].Status === 'Expiring soon') {
+            styleCol = 21;
+          } else {
+            styleCol = 20;
           }
+          trainingsSheet(`c[r='${columnText}${row + 2}']`).attr('s', styleCol);
+        }
           break;
 
-          case 'F':
-            {
-              basicValidationUpdate(putString, cellToChange, trainingArray[row].ExpiredOn, columnText, rowType);
-            }
-            break;
+        case 'F': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].ExpiredOn, columnText, rowType);
+        }
+          break;
 
-          case 'G':
-            {
-              basicValidationUpdate(putString, cellToChange, trainingArray[row].Completed, columnText, rowType);
-            }
-            break;
+        case 'G': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].Completed, columnText, rowType);
+        }
+          break;
 
-          case 'H':
-            {
-              basicValidationUpdate(putString, cellToChange, trainingArray[row].Accredited, columnText, rowType);
-            }
-            break
+        case 'H': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].Accredited, columnText, rowType);
+        }
+          break;
       }
     }
     currentRow = currentRow.next();
@@ -938,28 +935,24 @@ const getReport = async (date, thisEstablishment) => {
 
         if (!err) {
           switch (zipPath) {
-            case overviewSheetName:
-              {
-                overviewSheet = parseXML(fileContent);
-              }
+            case overviewSheetName: {
+              overviewSheet = parseXML(fileContent);
+            }
               break;
 
-            case trainingsSheetName:
-              {
-                trainingsSheet = parseXML(fileContent);
-              }
+            case trainingsSheetName: {
+              trainingsSheet = parseXML(fileContent);
+            }
               break;
 
-            case sharedStringsName:
-              {
-                sharedStrings = parseXML(fileContent);
-              }
+            case sharedStringsName: {
+              sharedStrings = parseXML(fileContent);
+            }
               break;
 
-            default:
-              {
-                outputZip.file(zipPath, fileContent);
-              }
+            default: {
+              outputZip.file(zipPath, fileContent);
+            }
               break;
           }
         }
@@ -1011,7 +1004,7 @@ const getReport = async (date, thisEstablishment) => {
   }).then(outputZip =>
     outputZip.generateAsync({
       type: 'nodebuffer',
-      compression: 'DEFLATE',
+      compression: 'DEFLATE'
     })
   );
 };
@@ -1022,19 +1015,19 @@ const reportGet = async (req, res) => {
     // first ensure this report can only be run by those establishments that are a parent
     const thisEstablishment = await models.establishment.findOne({
       where: {
-          id: req.establishmentId
+        id: req.establishmentId
       },
       attributes: ['id']
     });
 
-    if(thisEstablishment){
+    if (thisEstablishment) {
       const date = new Date();
       const report = await getReport(date, thisEstablishment.id);
 
       if (report) {
         await reportLock.saveResponse(req, res, 200, report, {
           'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`,
+          'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`
         });
       } else {
         // only allow on those establishments being a parent
@@ -1042,7 +1035,7 @@ const reportGet = async (req, res) => {
         console.error('report/training 403 response');
         await reportLock.saveResponse(req, res, 403, {});
       }
-    }else{
+    } else {
       console.error('report/training - failed restoring establishment');
       await reportLock.saveResponse(req, res, 503, {});
     }
@@ -1060,9 +1053,9 @@ const reportGet = async (req, res) => {
 /**
  * Handle GET API requests to get Training report data
  */
-router.route('/report').get(reportLock.acquireLock.bind(null,'training', reportGet));
-router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null,'training'));
-router.route('/unlock').get(reportLock.releaseLock.bind(null,'training'));
+router.route('/report').get(reportLock.acquireLock.bind(null, 'training', reportGet));
+router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'training'));
+router.route('/unlock').get(reportLock.releaseLock.bind(null, 'training'));
 router.route('/response/:buRequestId').get(reportLock.responseGet);
 
 module.exports = router;
