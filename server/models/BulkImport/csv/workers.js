@@ -663,7 +663,7 @@ class Worker {
         lineNumber: this._lineNumber,
         warnCode: Worker.POSTCODE_WARNING,
         warnType: 'POSTCODE_WARNING',
-        warning: 'POSTCODE is missing',
+        warning: 'POSTCODE is blank',
         source: myPostcode
       });
       return false;
@@ -1292,7 +1292,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
           errType: 'SALARYINT_ERROR',
-          error: 'Salary int (SALARYINT) value must 1(Annual Salary) or 3(Hourly Rate)',
+          error: 'The code you have entered for SALARYINT is incorrect',
           source: this._currentLine.SALARYINT
         });
         return false;
@@ -1330,7 +1330,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
           errType: 'SALARY_ERROR',
-          error: 'Salary (SALARY) only relevant if salary intervakl (SALARYINT) is Annual (1)',
+          error: 'The code you have entered for SALARYINT does not match SALARY',
           source: `SALARYINT (${this._currentLine.SALARYINT}) - SALARY (${this._currentLine.SALARY})`
         });
         return false;
@@ -1368,7 +1368,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.HOURLY_RATE_ERROR,
           errType: 'HOURLY_RATE_ERROR',
-          error: 'Salary (HOURLYRATE) only relevant if salary intervakl (SALARYINT) is Hourly (3)',
+          error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
           source: `SALARYINT(${this._currentLine.SALARYINT}) - HOURLYRATE (${this._currentLine.HOURLYRATE})`
         });
         return false;
@@ -1379,7 +1379,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.HOURLY_RATE_ERROR,
           errType: 'HOURLY_RATE_ERROR',
-          error: 'Hourly Rate (HOURLYRATE) must be decimal with upto two decimal points e.g. 12.0 or 5.31',
+          error: 'The code you have entered for HOURLYRATE is incorrect and will be ignored',
           source: this._currentLine.HOURLYRATE
         });
         return false;
@@ -1767,7 +1767,7 @@ class Worker {
         lineNumber: this._lineNumber,
         warnCode: Worker.NMCREG_WARNING,
         warnType: 'NMCREG_WARNING',
-        warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE/OTHERJOBROLE',
+        warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE',
         source: this._currentLine.NMCREG
       });
       return false;
