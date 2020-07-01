@@ -6,15 +6,11 @@ const s3 = new AWS.S3({
   region: String(config.get('bulkupload.region')),
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
-
 // Prevent multiple report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
-
 const reportsAvailable = ['la','training'];
 
 const acquireLock = async function(report,logic, req, res) {
-
-
   const { establishmentId } = req;
   if (!reportsAvailable.includes(report)){
     console.error('Lock *NOT* acquired.');
@@ -98,17 +94,17 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
   }
 
   return s3.putObject({
-      Bucket,
-      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-      Body: JSON.stringify({
-        url: req.url,
-        startTime: req.startTime,
-        endTime: new Date().toISOString(),
-        responseCode: statusCode,
-        responseBody: body,
-        responseHeaders: typeof headers === 'object' ? headers : undefined,
-      }),
-    }).promise();
+    Bucket,
+    Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
+    Body: JSON.stringify({
+      url: req.url,
+      startTime: req.startTime,
+      endTime: new Date().toISOString(),
+      responseCode: statusCode,
+      responseBody: body,
+      responseHeaders: typeof headers === 'object' ? headers : undefined
+    })
+  }).promise();
 };
 
 const responseGet = (req, res) => {
