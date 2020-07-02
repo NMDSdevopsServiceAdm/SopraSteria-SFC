@@ -159,7 +159,7 @@ const lockStatusGet = async (reportType, req, res) => {
       return row.dataValues;
     });
   });
-  if (currentLockState.length >= 0) {
+  if (currentLockState.length > 0) {
     return res.status(200).send(currentLockState[0]);
   }
   return res.status(200).send({ establishmentId, reportLockHeld: true });
