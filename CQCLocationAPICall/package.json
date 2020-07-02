@@ -16,15 +16,17 @@
     "serverless-webpack": "^5.3.1"
   },
   "dependencies": {
-    "sequelize-mock": "^0.10.2",
     "axios": "^0.18.0",
+    "axios-concurrency": "^1.0.3",
     "axios-retry": "^3.1.2",
+    "camelcase": "^5.3.1",
     "convict": "^5.2.0",
     "events": "^3.0.0",
     "js-yaml": "^3.13.1",
     "pg": "^7.6.0",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.41.0",
-    "sequelize-cli": "^5.2.0"
+    "sequelize": "^4.44.3",
+    "sequelize-cli": "^5.2.0",
+    "sequelize-mock": "^0.10.2"
   }
 }

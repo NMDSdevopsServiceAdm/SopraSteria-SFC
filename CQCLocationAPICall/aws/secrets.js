@@ -6,28 +6,38 @@ const initialiseSecrets = async (region, wallet) => {
   const secrets = new AWS.SecretsManager({
     region
   });
-
+console.log('Initialising AWS Secret');
   try {
+    console.log(wallet);
     if (!wallet) throw new Error('wallet must be defined');
+    const mySecretsValue = await secrets.getSecretValue({SecretId: wallet}).promise().then((mySecretsValue) => {
+      console.log('Got secrets from AWS');
+      return mySecretsValue;
+    }).catch(error => {
+      console.error(error);
+      throw error;
+    });
 
-    const mySecretsValue = await secrets.getSecretValue({SecretId: wallet}).promise();
+    console.log('Checking Secret');
+    console.log(mySecretsValue);
     if (typeof mySecretsValue.SecretString !== 'undefined') {
+      console.log('Got Secrets');
       const mySecrets = JSON.parse(mySecretsValue.SecretString);
 
       if (typeof mySecrets == 'undefined') {
         throw new Error(`Unexpected parsing of secrets wallet: ${wallet}`);
       }
 
+      console.log(mySecrets);
+
       myLocalSecrets = {
-        SLACK_URL: mySecrets.SLACK_URL,
+        DB_USER: mySecrets.CQC_DB_USER,
+        DB_PASS: mySecrets.CQC_DB_PASS,
+        DB_NAME: mySecrets.DB_NAME,
         DB_HOST: mySecrets.DB_HOST,
-        DB_PASS: mySecrets.DB_PASS,
-        Token_Secret: mySecrets.Token_Secret,
-        NOTIFY_KEY: mySecrets.NOTIFY_KEY,
         DB_ROOT_CRT: mySecrets.DB_ROOT_CRT,
         DB_APP_USER_KEY: mySecrets.DB_APP_USER_KEY,
-        DB_APP_USER_CERT: mySecrets.DB_APP_USER_CERT,
-        ADMIN_URL: mySecrets.ADMIN_URL,
+        DB_APP_USER_CERT: mySecrets.DB_APP_USER_CERT
       };
     }
 
@@ -52,6 +62,18 @@ const dbHost = () => {
   }
 }
 
+const dbName = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.DB_NAME) {
+      throw new Error('Unknown DB_NAME secret');
+    } else {
+      return myLocalSecrets.DB_NAME;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+}
+
 const dbPass = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_PASS) {
@@ -64,48 +86,12 @@ const dbPass = () => {
   }
 }
 
-const jwtSecret = () => {
+const dbUser = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.Token_Secret) {
-      throw new Error('Unknown Token_Secret secret');
+    if (!myLocalSecrets.DB_USER) {
+      throw new Error('Unknown DB_USER secret');
     } else {
-      return myLocalSecrets.Token_Secret;
-    }
-  } else {
-    throw new Error('Unknown secrets');
-  }
-}
-
-const slackUrl = () => {
-  if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.SLACK_URL) {
-      throw new Error('Unknown SLACK_URL secret');
-    } else {
-      return myLocalSecrets.SLACK_URL;
-    }
-  } else {
-    throw new Error('Unknown secrets');
-  }
-}
-
-const  govNotify = () => {
-  if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.NOTIFY_KEY) {
-      throw new Error('Unknown NOTIFY_KEY secret');
-    } else {
-      return myLocalSecrets.NOTIFY_KEY;
-    }
-  } else {
-    throw new Error('Unknown secrets');
-  }
-}
-
-const  adminUrl = () => {
-  if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.ADMIN_URL) {
-      throw new Error('Unknown ADMIN_URL secret');
-    } else {
-      return myLocalSecrets.ADMIN_URL;
+      return myLocalSecrets.DB_USER;
     }
   } else {
     throw new Error('Unknown secrets');
@@ -115,7 +101,7 @@ const  adminUrl = () => {
 const dbAppUserKey = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_APP_USER_KEY) {
-      throw new Error('Unknown DB_APP_USER_KEY secret');
+      return '';
     } else {
       return myLocalSecrets.DB_APP_USER_KEY;
     }
@@ -126,7 +112,7 @@ const dbAppUserKey = () => {
 const dbAppUserCertificate = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_APP_USER_CERT) {
-      throw new Error('Unknown DB_APP_USER_CERT secret');
+      return '';
     } else {
       return myLocalSecrets.DB_APP_USER_CERT;
     }
@@ -137,7 +123,7 @@ const dbAppUserCertificate = () => {
 const dbAppRootCertificate = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_ROOT_CRT) {
-      throw new Error('Unknown DB_ROOT_CRT secret');
+      return '';
     } else {
       return myLocalSecrets.DB_ROOT_CRT;
     }
@@ -150,12 +136,10 @@ const dbAppRootCertificate = () => {
 module.exports = {
   initialiseSecrets,
   dbHost,
+  dbName,
   dbPass,
-  jwtSecret,
-  slackUrl,
-  govNotify,
+  dbUser,
   dbAppUserKey,
   dbAppUserCertificate,
-  dbAppRootCertificate,
-  adminUrl
+  dbAppRootCertificate
 };
