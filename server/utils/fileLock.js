@@ -64,9 +64,11 @@ const releaseLock = async (reportType, req, res, next) => {
   const establishmentId = req.query.subEstId || req.establishmentId;
   if (!reportsAvailable.includes(reportType)) {
     console.error('Lock *NOT* acquired.');
-    res.status(500).send({
-      message: `reportType not correct`
-    });
+    if (res !== null) {
+      res.status(500).send({
+        message: `reportType not correct`
+      });
+    }
     return;
   }
   const LockHeldTitle = reportType + 'ReportLockHeld';
@@ -80,9 +82,11 @@ const releaseLock = async (reportType, req, res, next) => {
         }
       });
   }
-  res.status(200).send({
-    establishmentId
-  });
+  if (res !== null) {
+    res.status(200).send({
+      establishmentId
+    });
+  }
 };
 
 const saveResponse = async (req, res, statusCode, body, headers) => {
