@@ -78,7 +78,7 @@ const approvalStatus = (status) => {
     }
   };
 };
-var updateMainService;
+var changeMainService;
 var throwErrorWhenFetchingAllRequests = false;
 var throwErrorWhenFetchingSingleRequest = false;
 
@@ -92,12 +92,12 @@ describe.skip('admin/cqc-status-change route', () => {
   beforeEach(async () => {
     sb.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
       if (throwErrorWhenFetchingAllRequests) {
-        throw 'Oopsy!';
+        throw 'Oopsy! findAllPending throwing error.';
       } else {
         return [fakeApproval];
       }
     });
-    updateMainService = sb.stub(mainServiceRouter, 'updateMainService').callsFake(async (approvalType) => {
+    changeMainService = sb.stub(mainServiceRouter, 'changeMainService').callsFake(async (approvalType) => {
       if (throwErrorWhenFetchingSingleRequest) {
         return { success: false, errorCode: '400', errorMsg: 'error' };
       } else {
@@ -107,9 +107,15 @@ describe.skip('admin/cqc-status-change route', () => {
 
     sb.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
       if (throwErrorWhenFetchingSingleRequest) {
-        throw 'Oopsy!';
+        throw 'Oopsy! findbyId throwing error.';
       } else if (id === fakeApproval.ID) {
         return fakeApproval;
+      }
+    });
+
+    sb.stub(models.establishment, 'findbyId').callsFake(async (id) => {
+      if (id === testWorkplace.id) {
+        return testWorkplace;
       }
     });
 
@@ -220,18 +226,6 @@ describe.skip('admin/cqc-status-change route', () => {
 
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
-    });
-
-    it('should call updateMainService if approved', async () => {
-      // Arrange
-
-      // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
-
-      // Assert
-      sinon.assert.called(updateMainService);
     });
 
     it('should return 400 on error', async () => {

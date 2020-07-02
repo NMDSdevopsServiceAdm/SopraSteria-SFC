@@ -661,6 +661,18 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false,
       field: 'updatedby'
+    },
+    trainingReportLockHeld: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue:false,
+      field: 'TrainingReportLockHeld'
+    },
+    laReportLockHeld: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue:false,
+      field: 'LaReportLockHeld'
     }
   }, {
     defaultScope: {
