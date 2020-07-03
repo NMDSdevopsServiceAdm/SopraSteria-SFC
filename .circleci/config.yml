@@ -115,6 +115,7 @@ jobs:
         - checkout
         - node/install-packages:
             cache-path: ~/project/node_modules
+            cache-version: v2
         - run:
             command: npm run build
         - persist_to_workspace:
