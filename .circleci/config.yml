@@ -113,9 +113,7 @@ jobs:
       - image: circleci/node:lts-browsers
     steps:
         - checkout
-        - node/install-packages:
-            cache-path: ~/project/node_modules
-            override-ci-command: npm install
+        - node/install-packages
         - run:
             command: npm run build
         - persist_to_workspace:
