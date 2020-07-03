@@ -9,20 +9,14 @@ const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 const JsZip = require('jszip');
-const config = require('../../../../server/config/config');
 const models = require('../../../../server/models');
-const uuid = require('uuid');
-const AWS = require('aws-sdk');
+
 const cheerio = require('cheerio');
-
-const s3 = new AWS.S3({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
-
+const reportLock = require('../../../utils/fileLock');
 const Training = require('../../../models/classes/training').Training;
+
 const { getTrainingData, getJobName, getMndatoryTrainingDetails } = require('../../../data/trainingReport');
-const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = require('../../../data/trainingReportLock');
+
 
 // Constants string needed by this file in several places
 const folderName = 'template';
@@ -33,11 +27,6 @@ const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 
 const debuglog = () => {};
-const buStates = ['READY', 'DOWNLOADING', 'FAILED', 'WARNINGS', 'PASSED', 'COMPLETING'].reduce((acc, item) => {
-  acc[item] = item;
-
-  return acc;
-}, Object.create(null));
 
 const trainingCounts = {
   expiredTrainingCount: 0,
@@ -59,7 +48,7 @@ let expiredOrExpiringWorkerRecords = [];
 const parseXML = fileContent =>
   cheerio.load(fileContent, {
     xml: {
-      normalizeWhitespace: true,
+      normalizeWhitespace: true
     }
   });
 
@@ -122,7 +111,7 @@ const getReportData = async (date, thisEstablishment) => {
 
   return {
     date: date.toISOString(),
-    trainings: await getTrainingReportData(thisEstablishment),
+    trainings: await getTrainingReportData(thisEstablishment)
   };
 };
 
@@ -138,14 +127,14 @@ const createExpireExpiringData = async (trainingData) => {
   return trainingData.filter(
     (trainingWorker, index, self) =>
       self.findIndex(t => trainingWorker.ID === t.ID) === index
-    ).map(training => {
+  ).map(training => {
       return {
         ID: training.ID,
         NameOrIdValue: training.NameOrIdValue,
         MandatoryCount: 0,
         NonMandatoryCount: 0,
         Count: 0
-      }
+      };
     }
   );
 
@@ -164,7 +153,7 @@ const getTrainingReportData = async establishmentId => {
   expiringWorkerTrainings = await createExpireExpiringData(trainingData);
   const allWorkers = await models.worker.findAll({
     attributes: ['id', 'uid', 'NameOrIdValue'],
-    where:{
+    where: {
       establishmentFk: establishmentId,
       archived: false
     },
@@ -176,10 +165,10 @@ const getTrainingReportData = async establishmentId => {
       }
     ]
   });
-  if(allWorkers && allWorkers.length > 0){
-    for(let i = 0; i < allWorkers.length; i++){
+  if (allWorkers && allWorkers.length > 0) {
+    for (let i = 0; i < allWorkers.length; i++) {
       const allTrainingRecords = await Training.fetch(establishmentId, allWorkers[i].uid, null);
-      if(allTrainingRecords){
+      if (allTrainingRecords) {
         allWorkers[i].missingMandatoryTrainingCount = await Training.getAllMissingMandatoryTrainingCounts(establishmentId, allWorkers[i], allTrainingRecords.training);
       }
     }
@@ -195,29 +184,29 @@ const getTrainingReportData = async establishmentId => {
   trainingCounts.upToDateMandatoryTrainingCount = 0;
   trainingCounts.upToDateNonMandatoryTrainingCount = 0;
   if (expiredWorkerTrainings.length > 0 && expiringWorkerTrainings.length > 0) {
-    for(let i = 0; i < trainingData.length; i++){
+    for (let i = 0; i < trainingData.length; i++) {
       let mandatoryTrainingDetails = await getMndatoryTrainingDetails(trainingData[i], establishmentId);
-      if(mandatoryTrainingDetails && +mandatoryTrainingDetails[0].count !== 0){
+      if (mandatoryTrainingDetails && +mandatoryTrainingDetails[0].count !== 0) {
         trainingData[i].MandatoryTraining = 'Yes';
-      }else{
+      } else {
         trainingData[i].MandatoryTraining = 'No';
       }
-      trainingData[i].Title = (trainingData[i].Title === null)? '': unescape(trainingData[i].Title);
-      trainingData[i].Completed = trainingData[i].Completed === null? '': trainingData[i].Completed;
-      trainingData[i].Accredited = trainingData[i].Accredited === null? '': trainingData[i].Accredited;
+      trainingData[i].Title = (trainingData[i].Title === null) ? '' : unescape(trainingData[i].Title);
+      trainingData[i].Completed = trainingData[i].Completed === null ? '' : trainingData[i].Completed;
+      trainingData[i].Accredited = trainingData[i].Accredited === null ? '' : trainingData[i].Accredited;
       let jobNameResult = await getJobName(trainingData[i].MainJobFKValue);
-      if(jobNameResult && jobNameResult.length > 0){
+      if (jobNameResult && jobNameResult.length > 0) {
         trainingData[i].JobName = jobNameResult[0].JobName;
-      }else{
+      } else {
         trainingData[i].JobName = 'Missing';
       }
       if (trainingData[i].Expires && trainingData[i].Expires !== null) {
         let expiringDate = moment(trainingData[i].Expires);
         let currentDate = moment();
         if (currentDate.isAfter(expiringDate, 'day')) {
-          if(trainingData[i].MandatoryTraining === 'Yes'){
+          if (trainingData[i].MandatoryTraining === 'Yes') {
             trainingCounts.expiredMandatoryTrainingCount++;
-          }else{
+          } else {
             trainingCounts.expiredNonMandatoryTrainingCount++;
           }
           trainingCounts.expiredTrainingCount++;
@@ -225,18 +214,18 @@ const getTrainingReportData = async establishmentId => {
           //create expired workers data
           expiredWorkerTrainings.forEach(async worker => {
             if (worker.ID === trainingData[i].ID) {
-              if(trainingData[i].MandatoryTraining === 'Yes'){
+              if (trainingData[i].MandatoryTraining === 'Yes') {
                 worker.MandatoryCount++;
-              }else{
+              } else {
                 worker.NonMandatoryCount++;
               }
               worker.Count++;
             }
           });
         } else if (expiringDate.diff(currentDate, 'days') <= 90) {
-          if(trainingData[i].MandatoryTraining === 'Yes'){
+          if (trainingData[i].MandatoryTraining === 'Yes') {
             trainingCounts.expiringMandatoryTrainingCount++;
-          }else{
+          } else {
             trainingCounts.expiringNonMandatoryTrainingCount++;
           }
           trainingCounts.expiringTrainingCount++;
@@ -244,9 +233,9 @@ const getTrainingReportData = async establishmentId => {
           //create expiring workers data
           expiringWorkerTrainings.forEach(worker => {
             if (worker.ID === trainingData[i].ID) {
-              if(trainingData[i].MandatoryTraining === 'Yes'){
+              if (trainingData[i].MandatoryTraining === 'Yes') {
                 worker.MandatoryCount++;
-              }else{
+              } else {
                 worker.NonMandatoryCount++;
               }
               worker.Count++;
@@ -255,18 +244,18 @@ const getTrainingReportData = async establishmentId => {
         } else {
           trainingData[i].Status = 'Up-to-date';
           trainingCounts.upToDateTrainingCount++;
-          if(trainingData[i].MandatoryTraining === 'Yes'){
+          if (trainingData[i].MandatoryTraining === 'Yes') {
             trainingCounts.upToDateMandatoryTrainingCount++;
-          }else{
+          } else {
             trainingCounts.upToDateNonMandatoryTrainingCount++;
           }
         }
       } else {
         trainingData[i].Status = 'Up-to-date';
         trainingCounts.upToDateTrainingCount++;
-        if(trainingData[i].MandatoryTraining === 'Yes'){
+        if (trainingData[i].MandatoryTraining === 'Yes') {
           trainingCounts.upToDateMandatoryTrainingCount++;
-        }else{
+        } else {
           trainingCounts.upToDateNonMandatoryTrainingCount++;
         }
         trainingData[i].ExpiredOn = '';
@@ -278,12 +267,12 @@ const getTrainingReportData = async establishmentId => {
       });
     }
 
-    expiredWorkerTrainings = expiredWorkerTrainings.filter(item => item.Count !==0);
-    expiringWorkerTrainings = expiringWorkerTrainings.filter(item => item.Count !==0);
-    missingMandatoryTrainingRecords = missingMandatoryTrainingRecords.filter(item => item.missingMandatoryTrainingCount !==0);
+    expiredWorkerTrainings = expiredWorkerTrainings.filter(item => item.Count !== 0);
+    expiringWorkerTrainings = expiringWorkerTrainings.filter(item => item.Count !== 0);
+    missingMandatoryTrainingRecords = missingMandatoryTrainingRecords.filter(item => item.missingMandatoryTrainingCount !== 0);
     let expiredOrExpiringWorkerIds = new Set(expiredWorkerTrainings.map(d => d.ID));
     expiredOrExpiringWorkerRecords = [...expiredWorkerTrainings, ...expiringWorkerTrainings.filter(d => !expiredOrExpiringWorkerIds.has(d.ID))];
-  }else{
+  } else {
     expiredOrExpiringWorkerRecords = [];
   }
   return trainingData;
@@ -307,7 +296,7 @@ const styleLookup = {
       I: 12,
       J: 12,
       K: 12,
-      L: 12,
+      L: 12
     },
     OVRLAST: {
       A: 2,
@@ -322,7 +311,7 @@ const styleLookup = {
       I: 22,
       J: 22,
       K: 22,
-      L: 22,
+      L: 22
     },
     TRNREGULAR: {
       A: 8,
@@ -333,7 +322,7 @@ const styleLookup = {
       //F: 7,
       F: 8,
       G: 8,
-      H: 6,
+      H: 6
     },
     TRNLAST: {
       A: 9,
@@ -344,8 +333,8 @@ const styleLookup = {
       //F: 13,
       F: 9,
       G: 9,
-      H: 7,
-    },
+      H: 7
+    }
   },
   RED: {
     OVRREGULAR: {
@@ -360,7 +349,7 @@ const styleLookup = {
       I: 11,
       J: 21,
       K: 12,
-      L: 66,
+      L: 66
     },
     OVRLAST: {
       A: 2,
@@ -374,7 +363,7 @@ const styleLookup = {
       I: 22,
       J: 22,
       K: 66,
-      L: 66,
+      L: 66
     },
     TRNREGULAR: {
       A: 10,
@@ -385,7 +374,7 @@ const styleLookup = {
       //F: 12,
       F: 10,
       G: 10,
-      H: 12,
+      H: 12
     },
     TRNLAST: {
       A: 11,
@@ -396,9 +385,9 @@ const styleLookup = {
       //F: 13,
       F: 11,
       G: 11,
-      H: 13,
-    },
-  },
+      H: 13
+    }
+  }
 };
 /**
  * Helper function used to set column's font style
@@ -464,77 +453,94 @@ const updateOverviewSheet = (
   let expiringMandatoryCounts = 0;
   let expiringNonMandatoryCounts = 0;
   let expiringTotalCounts = 0;
-  for(let i = 0; i < expiringWorkerTrainings.length; i++){
+  for (let i = 0; i < expiringWorkerTrainings.length; i++) {
     expiringMandatoryCounts = expiringMandatoryCounts + expiringWorkerTrainings[i].MandatoryCount;
     expiringNonMandatoryCounts = expiringNonMandatoryCounts + expiringWorkerTrainings[i].NonMandatoryCount;
     expiringTotalCounts = expiringTotalCounts + expiringWorkerTrainings[i].Count;
   }
-  expiringWorkerTrainings.push({ ID: -1, NameOrIdValue: 'Total', MandatoryCount: expiringMandatoryCounts, NonMandatoryCount: expiringNonMandatoryCounts, Count: expiringTotalCounts});
+  expiringWorkerTrainings.push({
+    ID: -1,
+    NameOrIdValue: 'Total',
+    MandatoryCount: expiringMandatoryCounts,
+    NonMandatoryCount: expiringNonMandatoryCounts,
+    Count: expiringTotalCounts
+  });
   let expiredMandatoryCounts = 0;
   let expiredNonMandatoryCounts = 0;
   let expiredTotalCounts = 0;
-  for(let i = 0; i < expiredWorkerTrainings.length; i++){
+  for (let i = 0; i < expiredWorkerTrainings.length; i++) {
     expiredMandatoryCounts = expiredMandatoryCounts + expiredWorkerTrainings[i].MandatoryCount;
     expiredNonMandatoryCounts = expiredNonMandatoryCounts + expiredWorkerTrainings[i].NonMandatoryCount;
     expiredTotalCounts = expiredTotalCounts + expiredWorkerTrainings[i].Count;
   }
-  expiredWorkerTrainings.push({ ID: -1, NameOrIdValue: 'Total', MandatoryCount: expiredMandatoryCounts, NonMandatoryCount: expiredNonMandatoryCounts, Count: expiredTotalCounts});
+  expiredWorkerTrainings.push({
+    ID: -1,
+    NameOrIdValue: 'Total',
+    MandatoryCount: expiredMandatoryCounts,
+    NonMandatoryCount: expiredNonMandatoryCounts,
+    Count: expiredTotalCounts
+  });
 
   let totalMissingMandatoryTrainingCount = 0;
-  for(let i = 0; i < missingMandatoryTrainingRecords.length; i++){
+  for (let i = 0; i < missingMandatoryTrainingRecords.length; i++) {
     missingMandatoryTrainingRecords[i].count = 'Non applicable';
     totalMissingMandatoryTrainingCount = totalMissingMandatoryTrainingCount + missingMandatoryTrainingRecords[i].missingMandatoryTrainingCount;
   }
-  missingMandatoryTrainingRecords.push({ ID: -1, NameOrIdValue: 'Total', missingMandatoryTrainingCount: totalMissingMandatoryTrainingCount, count: 0});
+  missingMandatoryTrainingRecords.push({
+    ID: -1,
+    NameOrIdValue: 'Total',
+    missingMandatoryTrainingCount: totalMissingMandatoryTrainingCount,
+    count: 0
+  });
   // put total expired mandatory training count
-  putString(overviewSheet("c[r='B3']"), trainingCounts.expiredMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'B3\']'), trainingCounts.expiredMandatoryTrainingCount);
   // put total expired non mandatory training count
-  putString(overviewSheet("c[r='C3']"), trainingCounts.expiredNonMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'C3\']'), trainingCounts.expiredNonMandatoryTrainingCount);
   // put total expired training count
-  putString(overviewSheet("c[r='D3']"), trainingCounts.expiredTrainingCount);
+  putString(overviewSheet('c[r=\'D3\']'), trainingCounts.expiredTrainingCount);
   // put total up-to-date mandatory training count
-  putString(overviewSheet("c[r='B2']"), trainingCounts.upToDateMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'B2\']'), trainingCounts.upToDateMandatoryTrainingCount);
   // put total up-to-date non mandatory training count
-  putString(overviewSheet("c[r='C2']"), trainingCounts.upToDateNonMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'C2\']'), trainingCounts.upToDateNonMandatoryTrainingCount);
   // put total up-to-date training count
-  putString(overviewSheet("c[r='D2']"), trainingCounts.upToDateTrainingCount);
+  putString(overviewSheet('c[r=\'D2\']'), trainingCounts.upToDateTrainingCount);
 
   // put total expiring soon mandatory training count
-  putString(overviewSheet("c[r='B4']"), trainingCounts.expiringMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'B4\']'), trainingCounts.expiringMandatoryTrainingCount);
   // put total expiring soon non mandatory training count
-  putString(overviewSheet("c[r='C4']"), trainingCounts.expiringNonMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'C4\']'), trainingCounts.expiringNonMandatoryTrainingCount);
   // put total expiring soon training count
-  putString(overviewSheet("c[r='D4']"), trainingCounts.expiringTrainingCount);
+  putString(overviewSheet('c[r=\'D4\']'), trainingCounts.expiringTrainingCount);
 
   // put total missing mandatory training count
-  putString(overviewSheet("c[r='B5']"), totalMissingMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'B5\']'), totalMissingMandatoryTrainingCount);
   // put total missing non mandatory training count
-  putString(overviewSheet("c[r='C5']"), 'Non applicable');
+  putString(overviewSheet('c[r=\'C5\']'), 'Non applicable');
   // put total missing training count
-  putString(overviewSheet("c[r='D5']"), totalMissingMandatoryTrainingCount);
+  putString(overviewSheet('c[r=\'D5\']'), totalMissingMandatoryTrainingCount);
 
   // put total expiring soon/expired mandatory training count
   putString(
-    overviewSheet("c[r='B6']"),
+    overviewSheet('c[r=\'B6\']'),
     `${trainingCounts.expiredMandatoryTrainingCount + trainingCounts.expiringMandatoryTrainingCount + trainingCounts.upToDateMandatoryTrainingCount + totalMissingMandatoryTrainingCount}`
   );
 
   // put total expiring soon/expired non mandatory training count
   putString(
-    overviewSheet("c[r='C6']"),
+    overviewSheet('c[r=\'C6\']'),
     `${trainingCounts.expiredNonMandatoryTrainingCount + trainingCounts.expiringNonMandatoryTrainingCount + trainingCounts.upToDateNonMandatoryTrainingCount}`
   );
 
   // put total expiring soon/expired training count
   putString(
-    overviewSheet("c[r='D6']"),
+    overviewSheet('c[r=\'D6\']'),
     `${trainingCounts.expiredTrainingCount + trainingCounts.expiringTrainingCount + trainingCounts.upToDateTrainingCount + totalMissingMandatoryTrainingCount}`
   );
 
   //put all missing mandatory traing details
-  let currentRowMandatory = overviewSheet("row[r='18']");
+  let currentRowMandatory = overviewSheet('row[r=\'18\']');
   let rowIndexMandatory = 18;
-  let updateMandatoryRowIndex = rowIndexMandatory + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
+  let updateMandatoryRowIndex = rowIndexMandatory + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length - 1);
   for (; rowIndexMandatory >= 15; rowIndexMandatory--, updateMandatoryRowIndex--) {
 
     if (currentRowMandatory.children('c').length) {
@@ -547,13 +553,13 @@ const updateOverviewSheet = (
 
     if (currentRowMandatory.prev().length !== 0) {
       currentRowMandatory = currentRowMandatory.prev();
-      if(currentRowMandatory.name === 'row') {
+      if (currentRowMandatory.name === 'row') {
         break;
       }
     }
   }
 
-  let bottomMandatoryRowIndex = 18 + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length-1);
+  let bottomMandatoryRowIndex = 18 + (expiredWorkerTrainings.length - 1) + (expiringWorkerTrainings.length - 1);
   const templateRowMissing = overviewSheet(`row[r='${bottomMandatoryRowIndex}']`);
   let currentRowMissing = templateRowMissing;
   let rowIndexMissing = bottomMandatoryRowIndex + 1;
@@ -590,31 +596,27 @@ const updateOverviewSheet = (
       const columnText = String.fromCharCode(column + 65);
       const cellToChange = currentRowMissing.children(`c[r='${columnText}${bottomMandatoryRowIndex + row}']`);
       switch (columnText) {
-        case 'A':
-          {
-            basicValidationUpdate(
-              putString,
-              cellToChange,
-              missingMandatoryTrainingRecords[row].NameOrIdValue,
-              columnText,
-              rowType
-            );
-          }
+        case 'A': {
+          basicValidationUpdate(
+            putString,
+            cellToChange,
+            missingMandatoryTrainingRecords[row].NameOrIdValue,
+            columnText,
+            rowType
+          );
+        }
           break;
-        case 'B':
-          {
-            basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].missingMandatoryTrainingCount, columnText, rowType);
-          }
+        case 'B': {
+          basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].missingMandatoryTrainingCount, columnText, rowType);
+        }
           break;
-        case 'C':
-          {
-            basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].count, columnText, rowType);
-          }
+        case 'C': {
+          basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].count, columnText, rowType);
+        }
           break;
-        case 'D':
-          {
-            basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].missingMandatoryTrainingCount, columnText, rowType);
-          }
+        case 'D': {
+          basicValidationUpdate(putString, cellToChange, missingMandatoryTrainingRecords[row].missingMandatoryTrainingCount, columnText, rowType);
+        }
           break;
       }
     }
@@ -623,7 +625,7 @@ const updateOverviewSheet = (
   }
 
   //put all expiring traing details
-  let currentRowBottom = overviewSheet("row[r='14']");
+  let currentRowBottom = overviewSheet('row[r=\'14\']');
   let rowIndexBottom = 14;
   let updateRowIndex = rowIndexBottom + expiredWorkerTrainings.length - 1;
   for (; rowIndexBottom >= 11; rowIndexBottom--, updateRowIndex--) {
@@ -638,7 +640,7 @@ const updateOverviewSheet = (
 
     if (currentRowBottom.prev().length !== 0) {
       currentRowBottom = currentRowBottom.prev();
-      if(currentRowBottom.name === 'row') {
+      if (currentRowBottom.name === 'row') {
         break;
       }
     }
@@ -675,31 +677,27 @@ const updateOverviewSheet = (
       const columnText = String.fromCharCode(column + 65);
       const cellToChange = currentRowExpiring.children(`c[r='${columnText}${row + bottomRowIndex}']`);
       switch (columnText) {
-        case 'A':
-          {
-            basicValidationUpdate(
-              putString,
-              cellToChange,
-              expiringWorkerTrainings[row].NameOrIdValue,
-              columnText,
-              rowType
-            );
-          }
+        case 'A': {
+          basicValidationUpdate(
+            putString,
+            cellToChange,
+            expiringWorkerTrainings[row].NameOrIdValue,
+            columnText,
+            rowType
+          );
+        }
           break;
-        case 'B':
-          {
-            basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].MandatoryCount, columnText, rowType);
-          }
+        case 'B': {
+          basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].MandatoryCount, columnText, rowType);
+        }
           break;
-        case 'C':
-          {
-            basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
-          }
+        case 'C': {
+          basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
+        }
           break;
-        case 'D':
-          {
-            basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].Count, columnText, rowType);
-          }
+        case 'D': {
+          basicValidationUpdate(putString, cellToChange, expiringWorkerTrainings[row].Count, columnText, rowType);
+        }
           break;
       }
     }
@@ -709,7 +707,7 @@ const updateOverviewSheet = (
 
   //put all expired training details
   // clone the row the apropriate number of times
-  const templateRow = overviewSheet("row[r='10']");
+  const templateRow = overviewSheet('row[r=\'10\']');
   let currentRow = templateRow;
   let rowIndex = 11;
   if (expiredWorkerTrainings.length > 0) {
@@ -739,31 +737,27 @@ const updateOverviewSheet = (
       const columnText = String.fromCharCode(column + 65);
       const cellToChange = currentRow.children(`c[r='${columnText}${row + 10}']`);
       switch (columnText) {
-        case 'A':
-          {
-            basicValidationUpdate(
-              putString,
-              cellToChange,
-              expiredWorkerTrainings[row].NameOrIdValue,
-              columnText,
-              rowType
-            );
-          }
+        case 'A': {
+          basicValidationUpdate(
+            putString,
+            cellToChange,
+            expiredWorkerTrainings[row].NameOrIdValue,
+            columnText,
+            rowType
+          );
+        }
           break;
-        case 'B':
-          {
-            basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].MandatoryCount, columnText, rowType);
-          }
+        case 'B': {
+          basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].MandatoryCount, columnText, rowType);
+        }
           break;
-        case 'C':
-          {
-            basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
-          }
+        case 'C': {
+          basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].NonMandatoryCount, columnText, rowType);
+        }
           break;
-        case 'D':
-          {
-            basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].Count, columnText, rowType);
-          }
+        case 'D': {
+          basicValidationUpdate(putString, cellToChange, expiredWorkerTrainings[row].Count, columnText, rowType);
+        }
           break;
       }
     }
@@ -804,7 +798,7 @@ const updateTrainingsSheet = (
   );
 
   // clone the row the apropriate number of times
-  const templateRow = trainingsSheet("row[r='2']");
+  const templateRow = trainingsSheet('row[r=\'2\']');
   let currentRow = templateRow;
   let rowIndex = 3;
   let trainingArray = reportData.trainings;
@@ -847,64 +841,56 @@ const updateTrainingsSheet = (
 
       const cellToChange = currentRow.children(`c[r='${columnText}${row + 2}']`);
       switch (columnText) {
-        case 'A':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].NameOrIdValue, columnText, rowType);
-          }
+        case 'A': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].NameOrIdValue, columnText, rowType);
+        }
           break;
 
-        case 'B':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].JobName, columnText, rowType);
-          }
+        case 'B': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].JobName, columnText, rowType);
+        }
           break;
 
-        case 'C':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].Category, columnText, rowType);
-          }
+        case 'C': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].Category, columnText, rowType);
+        }
           break;
 
-        case 'D':
-          {
-            basicValidationUpdate(putString, cellToChange, trainingArray[row].Title, columnText, rowType);
-          }
+        case 'D': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].Title, columnText, rowType);
+        }
           break;
 
-        case 'E':
-          {
-            putString(trainingsSheet(`c[r='${columnText}${row + 2}']`), trainingArray[row].Status);
-            let styleCol;
-            if (trainingArray[row].Status === 'Up-to-date') {
-              styleCol = 19;
-            } else if (trainingArray[row].Status === 'Expired') {
-              styleCol = 20;
-            } else if (trainingArray[row].Status === 'Expiring soon') {
-              styleCol = 21;
-            } else {
-              styleCol = 20;
-            }
-            trainingsSheet(`c[r='${columnText}${row + 2}']`).attr('s', styleCol);
+        case 'E': {
+          putString(trainingsSheet(`c[r='${columnText}${row + 2}']`), trainingArray[row].Status);
+          let styleCol;
+          if (trainingArray[row].Status === 'Up-to-date') {
+            styleCol = 19;
+          } else if (trainingArray[row].Status === 'Expired') {
+            styleCol = 20;
+          } else if (trainingArray[row].Status === 'Expiring soon') {
+            styleCol = 21;
+          } else {
+            styleCol = 20;
           }
+          trainingsSheet(`c[r='${columnText}${row + 2}']`).attr('s', styleCol);
+        }
           break;
 
-          case 'F':
-            {
-              basicValidationUpdate(putString, cellToChange, trainingArray[row].ExpiredOn, columnText, rowType);
-            }
-            break;
+        case 'F': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].ExpiredOn, columnText, rowType);
+        }
+          break;
 
-          case 'G':
-            {
-              basicValidationUpdate(putString, cellToChange, trainingArray[row].Completed, columnText, rowType);
-            }
-            break;
+        case 'G': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].Completed, columnText, rowType);
+        }
+          break;
 
-          case 'H':
-            {
-              basicValidationUpdate(putString, cellToChange, trainingArray[row].Accredited, columnText, rowType);
-            }
-            break
+        case 'H': {
+          basicValidationUpdate(putString, cellToChange, trainingArray[row].Accredited, columnText, rowType);
+        }
+          break;
       }
     }
     currentRow = currentRow.next();
@@ -951,28 +937,24 @@ const getReport = async (date, thisEstablishment) => {
 
         if (!err) {
           switch (zipPath) {
-            case overviewSheetName:
-              {
-                overviewSheet = parseXML(fileContent);
-              }
+            case overviewSheetName: {
+              overviewSheet = parseXML(fileContent);
+            }
               break;
 
-            case trainingsSheetName:
-              {
-                trainingsSheet = parseXML(fileContent);
-              }
+            case trainingsSheetName: {
+              trainingsSheet = parseXML(fileContent);
+            }
               break;
 
-            case sharedStringsName:
-              {
-                sharedStrings = parseXML(fileContent);
-              }
+            case sharedStringsName: {
+              sharedStrings = parseXML(fileContent);
+            }
               break;
 
-            default:
-              {
-                outputZip.file(zipPath, fileContent);
-              }
+            default: {
+              outputZip.file(zipPath, fileContent);
+            }
               break;
           }
         }
@@ -1024,241 +1006,44 @@ const getReport = async (date, thisEstablishment) => {
   }).then(outputZip =>
     outputZip.generateAsync({
       type: 'nodebuffer',
-      compression: 'DEFLATE',
+      compression: 'DEFLATE'
     })
   );
 };
 
-// Prevent multiple training report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
-// This function can't be an express middleware as it needs to run both before and after the regular logic
-const acquireLock = async function(logic, newState, req, res) {
-  const { establishmentId } = req;
-
-  req.startTime = new Date().toISOString();
-
-  console.log(`Acquiring lock for establishment ${establishmentId}.`);
-
-  // attempt to acquire the lock
-  const currentLockState = await attemptToAcquireLock(establishmentId);
-
-  // if no records were updated the lock could not be acquired
-  // Just respond with a 409 http code and don't call the regular logic
-  // close the response either way and continue processing in the background
-  if (currentLockState[1] === 0) {
-    console.log('Lock *NOT* acquired.');
-    res.status(409).send({
-      message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`,
-    });
-
-    return;
-  }
-
-  console.log('Lock acquired.', newState);
-
-  let nextState;
-
-  switch (newState) {
-    case buStates.DOWNLOADING:
-      {
-        // get the current training report state
-        const currentState = await lockStatus(establishmentId);
-
-        if (currentState.length === 1) {
-          // don't update the status for downloads, just hold the lock
-          newState = currentState[0].TrainingReportState;
-          nextState = null;
-        } else {
-          nextState = buStates.READY;
-        }
-      }
-      break;
-
-    case buStates.COMPLETING:
-      nextState = buStates.READY;
-      break;
-
-    default:
-      newState = buStates.READY;
-      nextState = buStates.READY;
-      break;
-  }
-
-  // update the current state
-  await updateLockState(establishmentId, newState);
-
-  req.buRequestId = String(uuid()).toLowerCase();
-
-  res.status(200).send({
-    message: `Lock for establishment ${establishmentId} acquired.`,
-    requestId: req.buRequestId,
-  });
-
-  // run whatever the original logic was
-  try {
-    await logic(req, res);
-  } catch (e) {}
-
-  // release the lock
-  await releaseLock(req, null, null, nextState);
-};
-
-const releaseLock = async (req, res, next, nextState = null) => {
-  const establishmentId = req.query.subEstId || req.establishmentId;
-
-  if (Number.isInteger(establishmentId)) {
-    await releaseLockQuery(establishmentId, nextState);
-
-    console.log(`Lock released for establishment ${establishmentId}`);
-  }
-
-  if (res !== null) {
-    res.status(200).send({
-      establishmentId,
-    });
-  }
-};
-
-const signedUrlGet = async (req, res) => {
-  try {
-    const establishmentId = req.establishmentId;
-
-    await saveResponse(req, res, 200, {
-      urls: s3.getSignedUrl('putObject', {
-        Bucket,
-        Key: `${establishmentId}/latest/${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`,
-        ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        Metadata: {
-          username: String(req.username),
-          establishmentId: String(establishmentId),
-        },
-        Expires: config.get('bulkupload.uploadSignedUrlExpire'),
-      }),
-    });
-  } catch (err) {
-    console.error('report/training:PreSigned - failed', err.message);
-    await saveResponse(req, res, 503, {});
-  }
-};
-
-const saveResponse = async (req, res, statusCode, body, headers) => {
-  if (!Number.isInteger(statusCode) || statusCode < 100) {
-    statusCode = 500;
-  }
-
-  return s3
-    .putObject({
-      Bucket,
-      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-      Body: JSON.stringify({
-        url: req.url,
-        startTime: req.startTime,
-        endTime: new Date().toISOString(),
-        responseCode: statusCode,
-        responseBody: body,
-        responseHeaders: typeof headers === 'object' ? headers : undefined,
-      }),
-    })
-    .promise();
-};
-
-const responseGet = (req, res) => {
-  const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
-  const buRequestId = String(req.params.buRequestId).toLowerCase();
-
-  if (!uuidRegex.test(buRequestId)) {
-    res.status(400).send({
-      message: 'request id must be a uuid',
-    });
-
-    return;
-  }
-
-  s3.getObject({
-    Bucket,
-    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`,
-  })
-    .promise()
-    .then(data => {
-      const jsonData = JSON.parse(data.Body.toString());
-
-      if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
-        if (jsonData.responseHeaders) {
-          res.set(jsonData.responseHeaders);
-        }
-
-        if (jsonData.responseBody && jsonData.responseBody.type && jsonData.responseBody.type === 'Buffer') {
-          res.status(jsonData.responseCode).send(Buffer.from(jsonData.responseBody));
-        } else {
-          res.status(jsonData.responseCode).send(jsonData.responseBody);
-        }
-      } else {
-        console.log('TrainingReport::responseGet: Response code was not numeric', jsonData);
-
-        throw new Error('Response code was not numeric');
-      }
-    })
-    .catch(err => {
-      console.log('TrainingReport::responseGet: getting data returned an error:', err);
-
-      res.status(404).send({
-        message: 'Not Found',
-      });
-    });
-};
-
-const lockStatusGet = async (req, res) => {
-  const { establishmentId } = req;
-
-  const currentLockState = await lockStatus(establishmentId);
-
-  res
-    .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
-    .send(
-      currentLockState.length === 0
-        ? {
-            establishmentId,
-            TrainingReportState: buStates.READY,
-            TrainingReportdLockHeld: true,
-          }
-        : currentLockState[0]
-    );
-
-  return currentLockState[0];
-};
 
 const reportGet = async (req, res) => {
   try {
     // first ensure this report can only be run by those establishments that are a parent
     const thisEstablishment = await models.establishment.findOne({
       where: {
-          id: req.establishmentId
+        id: req.establishmentId
       },
       attributes: ['id']
     });
 
-    if(thisEstablishment){
+    if (thisEstablishment) {
       const date = new Date();
       const report = await getReport(date, thisEstablishment.id);
 
       if (report) {
-        await saveResponse(req, res, 200, report, {
+        await reportLock.saveResponse(req, res, 200, report, {
           'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`,
+          'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Training-Report.xlsx`
         });
-        console.log('report/training - 200 response');
       } else {
         // only allow on those establishments being a parent
 
-        console.log('report/training 403 response');
-        await saveResponse(req, res, 403, {});
+        console.error('report/training 403 response');
+        await reportLock.saveResponse(req, res, 403, {});
       }
-    }else{
-      console.error('report/training - failed restoring establisment');
-      await saveResponse(req, res, 503, {});
+    } else {
+      console.error('report/training - failed restoring establishment');
+      await reportLock.saveResponse(req, res, 503, {});
     }
   } catch (err) {
     console.error('report/training - failed', err);
-    await saveResponse(req, res, 503, {});
+    await reportLock.saveResponse(req, res, 503, {});
   }
 };
 
@@ -1270,10 +1055,9 @@ const reportGet = async (req, res) => {
 /**
  * Handle GET API requests to get Training report data
  */
-router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
-router.route('/report').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
-router.route('/lockstatus').get(lockStatusGet);
-router.route('/unlock').get(releaseLock);
-router.route('/response/:buRequestId').get(responseGet);
+router.route('/report').get(reportLock.acquireLock.bind(null, 'training', reportGet));
+router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'training'));
+router.route('/unlock').get(reportLock.releaseLock.bind(null, 'training'));
+router.route('/response/:buRequestId').get(reportLock.responseGet);
 
 module.exports = router;
