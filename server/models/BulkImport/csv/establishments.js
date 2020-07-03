@@ -437,7 +437,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.NAME_ERROR,
         errType: 'NAME_ERROR',
-        error: 'ESTNAME is blank',
+        error: 'ESTNAME has not been supplied',
         source: myName,
         name: this._currentLine.LOCALESTID
       });
@@ -662,7 +662,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         warnCode: Establishment.ESTABLISHMENT_TYPE_WARNING,
         warnType: 'ESTABLISHMENT_TYPE_WARNING',
-        warning: 'OTHERTYPE will be ignored',
+        warning: 'OTHERTYPE will be ignored as not required',
         source: myOtherEstablishmentType,
         name: this._currentLine.LOCALESTID
       });
@@ -1015,7 +1015,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
         errType: 'ALL_SERVICES_ERROR',
-        error: 'ALLSERVICES/CAPACITY/UTILISATION/SERVICEDESC do not have the same number of items (i.e. numbers and/or semi colons',
+        error: 'ALLSERVICES/CAPACITY/UTILISATION/SERVICEDESC do not have the same number of items (i.e. numbers and/or semi colons)',
         source: this._currentLine.SERVICEDESC,
         name: this._currentLine.LOCALESTID
       });
@@ -1397,7 +1397,6 @@ class Establishment {
     // allJobs can only be empty, if TOTALPERMTEMP is 0
     if (!this._currentLine.ALLJOBROLES || this._currentLine.ALLJOBROLES.length === 0) {
       if(
-        false &&
         [].
         concat(vacancies).
         concat(starters).
@@ -1413,15 +1412,6 @@ class Establishment {
           errCode: Establishment.ALL_JOBS_ERROR,
           errType: 'ALL_JOBS_ERROR',
           error: 'ALLJOBROLES cannot be blank as you have STARTERS, LEAVERS, VACANCIES greater than zero',
-          source: this._currentLine.ALLJOBROLES,
-          name: this._currentLine.LOCALESTID
-        });
-      } else {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          warnCode: Establishment.ALL_JOBS_WARNING,
-          warnType: 'ALL_JOBS_WARNING',
-          warning: 'All Job Roles (ALLJOBROLES) missing',
           source: this._currentLine.ALLJOBROLES,
           name: this._currentLine.LOCALESTID
         });
@@ -1733,7 +1723,7 @@ class Establishment {
           lineNumber: this._lineNumber,
           errCode: Establishment.MAIN_SERVICE_ERROR,
           errType: 'MAIN_SERVICE_ERROR',
-          error: `Main Service (MAINSERVICE): ${this._mainService} is unknown`,
+          error: 'The code you have entered for MAINSERVICE is incorrect',
           source: this._currentLine.MAINSERVICE,
           name: this._currentLine.LOCALESTID
         });
@@ -1822,7 +1812,7 @@ class Establishment {
             lineNumber: this._lineNumber,
             errCode: Establishment.LOCAL_AUTHORITIES_ERROR,
             errType: 'LOCAL_AUTHORITIES_ERROR',
-            error: `Local Authorities (SHARELA): ${thisLA} is unknown`,
+            error: `The code ${thisLA} in SHARELA will be ignored as this is invalid`,
             source: this._currentLine.SHARELA,
             name: this._currentLine.LOCALESTID
           });
@@ -1879,7 +1869,8 @@ class Establishment {
         // we're only interested in non null utilisations to map
         if (thisUtilisation !== null) {
           // we need to map from service id to service capacity id
-          const thisMappedUtilisation = BUDI.utilisation(BUDI.TO_ASC, this._allServices[index]);
+          const serviceType = this._allServices[index];
+          const thisMappedUtilisation = BUDI.utilisation(BUDI.TO_ASC, serviceType);
 
           if (thisMappedUtilisation) {
             mappedUtilisations.push({
@@ -1891,7 +1882,7 @@ class Establishment {
               lineNumber: this._lineNumber,
               errCode: Establishment.CAPACITY_UTILISATION_ERROR,
               errType: 'CAPACITY_UTILISATION_ERROR',
-              error: `Utilisations (UTILISATION): position ${index + 1} is unknown utilisation`,
+              error: `UTILISATION for SERVICETYPE ${serviceType} will be ignored as it is not required for this service`,
               source: this._currentLine.UTILISATION,
               name: this._currentLine.LOCALESTID
             });
@@ -1917,7 +1908,7 @@ class Establishment {
             lineNumber: this._lineNumber,
             errCode: Establishment.ALL_JOBS_ERROR,
             errType: 'ALL_JOBS_ERROR',
-            error: `All Job Roles (ALLJOBROLES): ${thisJob} is unknown`,
+            error: 'The code you have entered for ALLJOBROLES is incorrect',
             source: this._currentLine.ALLJOBROLES,
             name: this._currentLine.LOCALESTID
           });

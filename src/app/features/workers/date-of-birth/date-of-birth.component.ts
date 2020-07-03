@@ -15,7 +15,7 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './date-of-birth.component.html',
 })
 export class DateOfBirthComponent extends QuestionComponent implements AfterViewInit {
-  @ViewChild('formEl', { static: false }) formEl: ElementRef;
+  @ViewChild('formEl') formEl: ElementRef;
 
   private minDate = moment()
     .subtract(100, 'years')

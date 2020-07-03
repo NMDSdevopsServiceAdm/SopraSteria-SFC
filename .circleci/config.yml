@@ -43,6 +43,7 @@ commands:
             cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${<<parameters.env_prefix>>_AWS_ACCESS_KEY_ID}"
             cf set-env "<<parameters.appname>>-dark" AWS_SECRET_ACCESS_KEY "${<<parameters.env_prefix>>_AWS_SECRET_ACCESS_KEY}"
             cf set-env "<<parameters.appname>>-dark" NODE_ENV "${<<parameters.env_prefix>>_NODE_ENV}"
+            cf set-env "<<parameters.appname>>-dark" RFR_ROOT "/home/vcap/app"
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
@@ -111,17 +112,24 @@ jobs:
     docker:
       - image: circleci/node:lts-browsers
     steps:
-      - checkout
-      - node/install-packages:
-          cache-path: ~/project/node_modules
-          override-ci-command: npm install
-
+        - checkout
+        - node/install-packages:
+            cache-path: ~/project/node_modules
+            cache-version: v2
+        - run:
+            command: npm run build
+        - persist_to_workspace:
+            root: .
+            paths:
+                - dist
   test_frontend:
     docker:
       - image: circleci/node:lts-browsers
     steps:
       - checkout
-      - node/install-packages
+      - restore_cache:
+            keys:
+                - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           command: npm run test
   test_backend:
@@ -129,10 +137,23 @@ jobs:
       - image: circleci/node:lts-browsers
     steps:
       - checkout
-      - node/install-packages
+      - restore_cache:
+            keys:
+                - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           command: npm run server:test:unit
-
+  performance:
+    docker:
+      - image: circleci/node:lts-browsers
+    steps:
+        - checkout
+        - attach_workspace:
+            at: .
+        - restore_cache:
+            keys:
+                - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+        - run:
+            command: $(npm bin)/lhci autorun
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
@@ -198,7 +219,9 @@ jobs:
         type: string
     steps:
       - checkout
-      - node/install-packages
+      - restore_cache:
+            keys:
+                - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - when:
           condition: <<parameters.build_steps>>
           steps: << parameters.build_steps >>
@@ -234,6 +257,9 @@ workflows:
             requires:
               - install
         - test_backend:
+            requires:
+              - install
+        - performance:
             requires:
               - install
         - blue_green:
@@ -274,8 +300,7 @@ workflows:
             dark_subdomain: sfcstaging-dark
             live_subdomain: sfcstaging
             domain: cloudapps.digital
-            build_steps:
-              - run: npm run build
+            workspace_path: .
 
 
 

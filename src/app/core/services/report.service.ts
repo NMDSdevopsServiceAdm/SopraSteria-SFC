@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { WDFReport } from '@core/model/reports.model';
-import { TrainingLockStatus } from '@core/model/training.model';
+import { LockStatus } from '@core/model/reportPolling.model';
 import { WDFLockStatus } from '@core/model/wdf.model';
 import { from, interval, Observable } from 'rxjs';
 import { concatMap, filter, map, startWith, take } from 'rxjs/operators';
@@ -9,10 +9,11 @@ import { concatMap, filter, map, startWith, take } from 'rxjs/operators';
 import { EstablishmentService } from './establishment.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ReportService {
-  constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
+  constructor(private http: HttpClient, private establishmentService: EstablishmentService) {
+  }
 
   getWDFReport(establishmentId: string, updatedEffectiveFrom?: string): Observable<WDFReport> {
     let params: HttpParams;
@@ -22,28 +23,33 @@ export class ReportService {
     }
 
     return this.http.get<WDFReport>(`/api/reports/wdf/establishment/${establishmentId}`, {
-      params,
+      params
     });
   }
 
   public getWdfSummaryReport(): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/wdfSummary`, {
       observe: 'response',
-      responseType: 'blob' as 'json',
+      responseType: 'blob' as 'json'
     });
   }
 
   public getLocalAuthorityReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/reports/localauthority/${workplaceUid}`, {
-      observe: 'response',
-      responseType: 'blob' as 'json',
-    });
+    return this.checkLockStatus(
+      () => this.http.get<Blob>(`/api/reports/localAuthority/establishment/${workplaceUid}/user/report`),
+      {
+        observe: 'response',
+        responseType: 'blob' as 'json'
+      },
+      workplaceUid,
+      'la'
+    );
   }
 
   public getLocalAuthorityAdminReport(): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/localauthority/admin`, {
       observe: 'response',
-      responseType: 'blob' as 'json',
+      responseType: 'blob' as 'json'
     });
   }
 
@@ -52,25 +58,33 @@ export class ReportService {
       () => this.http.get<Blob>(`/api/reports/wdf/establishment/${workplaceUid}/parent/report`),
       {
         observe: 'response',
-        responseType: 'blob' as 'json',
+        responseType: 'blob' as 'json'
       }
     );
   }
-  //get Traing report from training and qualifications
+
+  // get Training report from training and qualifications
   public getTrainingReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
-    return this.checkTrainingLockStatus(
+    return this.checkLockStatus(
       () => this.http.get<Blob>(`/api/reports/training/establishment/${workplaceUid}/training/report`),
       {
         observe: 'response',
-        responseType: 'blob' as 'json',
+        responseType: 'blob' as 'json'
       },
-      workplaceUid
+      workplaceUid,
+      'training'
     );
   }
 
+
   // Function to check for the lock status
-  private checkTrainingLockStatus(callback, httpOptions, workplaceUid): Observable<any> {
+  private checkLockStatus(callback, httpOptions, workplaceUid, report): Observable<any> {
     let requestId;
+    const reportData = {
+      training: `/api/reports/training/establishment/${workplaceUid}/training`,
+      la: `/api/reports/localAuthority/establishment/${workplaceUid}/user`
+    };
+    const apiPath = reportData[report];
     // Run function every second until lock aquired
     return (
       interval(1000)
@@ -86,28 +100,28 @@ export class ReportService {
           })
         )
         .pipe(
-          // Run serperate function to get the current lock status
+          // Run separate function to get the current lock status
           concatMap(() =>
             interval(1000)
               .pipe(startWith(0))
               .pipe(
                 concatMap(() =>
                   from(
-                    this.http.get<TrainingLockStatus>(
-                      `/api/reports/training/establishment/${workplaceUid}/training/lockstatus`
+                    this.http.get<LockStatus>(
+                      apiPath + '/lockstatus'
                     )
                   )
                 )
               )
           )
         )
-        .pipe(filter(state => state.TrainingReportLockHeld === false))
+        .pipe(filter(state => state.reportLockHeld === false))
         .pipe(take(1))
         .pipe(
           concatMap(() =>
             from(
               this.http.get<any>(
-                `/api/reports/training/establishment/${workplaceUid}/training/response/${requestId}`,
+                apiPath + `/response/${requestId}`,
                 httpOptions
               )
             )

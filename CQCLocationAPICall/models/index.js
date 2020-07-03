@@ -28,7 +28,15 @@ class DBEmitter extends EventEmitter {
 db.status = new DBEmitter();
 
 let sequelize;
-const config = {};
+const config = {
+  pool: {
+    max: 10000,
+    min: 0,
+    idle: 200000,
+    acquire: 200000
+  },
+  retry: { max: 3 }
+};
 
 // allow override of any config value from environment variable
 config.host = appConfig.get('db.host');
@@ -75,7 +83,6 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-
 if (AppConfig.ready) {
   // the config is ready, so the config properties are true and thus the database is ready to use
   db.status.ready = true;
@@ -86,8 +93,11 @@ if (AppConfig.ready) {
   AppConfig.on(AppConfig.READY_EVENT, () => {
     // rebind sensitive database connections
     sequelize.connectionManager.config.host = appConfig.get('db.host');
+    sequelize.connectionManager.config.database = appConfig.get('db.database');
+    sequelize.connectionManager.config.username = appConfig.get('db.username');
+    sequelize.connectionManager.config.user = appConfig.get('db.username');
     sequelize.connectionManager.config.password = appConfig.get('db.password');
-
+    console.log(`Connecting to the database at ${sequelize.connectionManager.config.host}/${sequelize.connectionManager.config.database} as ${sequelize.connectionManager.config.username}`);
 
     // when initialising on config "ready" can only use SSL data
     if (appConfig.get('db.client_ssl.status')) {

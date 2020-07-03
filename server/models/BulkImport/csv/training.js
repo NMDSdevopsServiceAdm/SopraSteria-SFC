@@ -312,7 +312,7 @@ class Training {
         lineNumber: this._lineNumber,
         errCode: Training.CATEGORY_ERROR,
         errType: 'CATEGORY_ERROR',
-        error: 'CATEGORY is invalid',
+        error: 'CATEGORY has not been supplied',
         source: this._currentLine.CATEGORY
       });
       return false;
@@ -366,7 +366,7 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.CATEGORY_ERROR,
           errType: 'CATEGORY_ERROR',
-          error: 'CATEGORY is invalid',
+          error: 'CATEGORY has not been supplied',
           source: this._currentLine.CATEGORY
         });
       } else {
@@ -431,7 +431,7 @@ class Training {
       lineNumber: this._lineNumber,
       errCode: Training.WORKER_DOB_TRAINING_WARNING,
       errType: 'WORKER_DOB_TRAINING_WARNING',
-      error: 'DATECOMPLETED is before staff record’s 14th birthday',
+      error: 'DATECOMPLETED is before staff record\'s date of birth',
       source: this._currentLine.LOCALESTID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID
@@ -458,7 +458,7 @@ class Training {
       lineNumber: this._lineNumber,
       errCode: Training.UNCHECKED_WORKER_ERROR,
       errType: 'UNCHECKED_WORKER_ERROR',
-      error: 'UNIQUEWORKERID and LOCALESTID does not match staff record file details',
+      error: 'UNIQUEWORKERID has not been supplied',
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID

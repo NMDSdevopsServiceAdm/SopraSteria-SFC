@@ -36,22 +36,22 @@ const config = convict({
       env: 'DB_NAME'
     },
     username: {
-        doc: 'Database username',
-        format: String,
-        default: 'sfcadmin',
-        env: 'DB_USER'
+      doc: 'Database username',
+      format: String,
+      default: 'sfcadmin',
+      env: 'DB_USER'
     },
     password: {
-        doc: 'Database username',
-        format: '*',
-      default: 'unknown',           // note - bug in notify - must provide a default value for it to use env var
-        env: 'DB_PASS'
+      doc: 'Database username',
+      format: '*',
+      default: 'unknown',
+      env: 'DB_PASS'
     },
     port: {
-        doc: 'Database port',
-        format: 'port',
-        default: 5432,
-        env: 'DB_PORT'
+      doc: 'Database port',
+      format: 'port',
+      default: 5432,
+      env: 'DB_PORT'
     },
     dialect: {
       doc: 'Database dialect (sequelize)',
@@ -61,39 +61,37 @@ const config = convict({
     ssl: {
       doc: 'Use SSL?',
       format: 'Boolean',
-      default: false,
-      env: 'DB_SSL'
+      default: false
     },
     client_ssl: {
       status: {
         doc: 'Client SSL enabled or not',
         format: 'Boolean',
-        default: false,
-        env: "DB_CLIENT_SSL_STATUS"
+        default: false
       },
       usingFiles: {
         doc: 'If true, retrieves client certificate, client key and root certificate from file; if false, using data values',
         format: 'Boolean',
-        default: true,
+        default: false
       },
       files: {
         certificate: {
           doc: 'The full path location of the client certificate file',
           format: String,
           default: 'TBC',
-          env: "DB_CLIENT_SSL_CERTIFICATE"
+          env: 'DB_ROOT_CRT'
         },
         key: {
           doc: 'The full path location of the client key file',
           format: String,
           default: 'TBC',
-          env: "DB_CLIENT_SSL_KEY"
+          env: 'DB_APP_USER_KEY'
         },
         ca: {
           doc: 'The full path location of the server certificate (authority - ca) file',
           format: String,
           default: 'TBC',
-          env: "DB_CLIENT_SSL_CA"
+          env: 'DB_APP_USER_CERT'
         }
       },
       data: {
@@ -124,23 +122,27 @@ const config = convict({
     bucketname: {
       doc: 'Bucket used to upload all CQC changes',
       format: '*',
-      default: 'cqcchanges'
+      default: 'cqcchanges',
+      env: 'CQC_BUCKET'
     },
     sqsqueue: {
       doc: 'SQS queue to send location changes',
       format: '*',
-      default: 'https://sqs.eu-west-1.amazonaws.com/624216394565/cqctest'
+      default: 'https://sqs.eu-west-1.amazonaws.com/624216394565/cqctest',
+      env: 'CQC_SQS_QUEUE'
     },
     secrets: {
       use: {
         doc: 'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
         format: 'Boolean',
-        default: false
+        default: true
       },
       wallet: {
         doc: 'The name of the AWS Secrets Manager wallet to recall from',
         format: String,
-        default: 'bob'
+        default: 'bob',
+        env: 'CQC_WALLET_ID'
+
       }
     }
   }
@@ -161,17 +163,20 @@ config.validate(
 
 // now, if defined, load secrets from AWS Secret Manager
 if (config.get('aws.secrets.use')) {
+  console.log('Using AWS Secrets');
   AWSSecrets.initialiseSecrets(
     config.get('aws.region'),
     config.get('aws.secrets.wallet')
   ).then(ret => {
     // DB rebind
+    console.log('Setting AWS details');
     config.set('db.host', AWSSecrets.dbHost());
+    config.set('db.database', AWSSecrets.dbName());
     config.set('db.password', AWSSecrets.dbPass());
+    config.set('db.username', AWSSecrets.dbUser());
     config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
     config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
     config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
-
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);
   });

@@ -6,6 +6,10 @@ import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
+import {
+  SelectMainServiceCqcConfirmComponent,
+} from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
 import { StartComponent } from '@features/workplace/start/start.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
@@ -30,6 +34,7 @@ import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
+import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import {
   UserAccountChangePrimaryDialogComponent,
@@ -39,15 +44,12 @@ import { UserAccountEditDetailsComponent } from './user-account-edit-details/use
 import {
   UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
-import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
-import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
-import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
@@ -88,9 +90,5 @@ import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select
     SelectMainServiceCqcConfirmComponent
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
-  entryComponents: [
-    UserAccountChangePrimaryDialogComponent,
-    UserAccountDeleteDialogComponent,
-  ],
 })
 export class WorkplaceModule {}
