@@ -42,6 +42,18 @@ var fakeApproval = {
   User: {
     FullNameValue: faker.name.findName()
   },
+  Data: {
+    requestedService: {
+      id: 1,
+      name: 'Carers support',
+      other: 'Other requested service Name'
+    },
+    currentService: {
+      id: 14,
+      name: 'Any childrens / young peoples services',
+      other: 'Other Name'
+    }
+  },
   save: () => {
     approvalObjectWasSaved = true;
   }
@@ -110,7 +122,7 @@ describe('test fetching approval requests by establishment id', () => {
         userName: fakeApproval.User.FullNameValue,
         orgName: fakeApproval.Establishment.NameValue,
         requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
-        data: undefined
+        data: fakeApproval.Data
       });
     });
 

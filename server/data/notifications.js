@@ -1,8 +1,6 @@
 'use strict';
 
-const rfr = require('rfr');
-
-const db = rfr('server/utils/datastore');
+const db = require('../utils/datastore');
 
 const getListQuery =
 `
