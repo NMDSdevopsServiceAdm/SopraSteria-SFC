@@ -271,5 +271,27 @@ module.exports = function(sequelize, DataTypes) {
     return this.findOne({ where: { uid: uuId } });
   };
 
+  User.closeLock = async function(LockHeldTitle,userUid) {
+    return await this.update(
+      {
+        [LockHeldTitle]: true
+      }, {
+        where: {
+          uid: userUid,
+          [LockHeldTitle]: false
+        }
+      });
+  };
+  User.openLock = async function(LockHeldTitle,userId) {
+    return await this.update(
+      {
+        [LockHeldTitle]: false
+      }, {
+        where: {
+          uid: userId,
+        }
+      });
+  };
+
   return User;
 };
