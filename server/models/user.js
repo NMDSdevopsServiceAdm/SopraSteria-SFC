@@ -215,6 +215,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"TribalID"'
     },
+    laReportLockHeld: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue:false,
+      field: 'LaReportLockHeld'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,
