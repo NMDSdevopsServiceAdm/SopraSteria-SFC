@@ -43,8 +43,3 @@ export interface TrainingRecord {
   missing?: boolean;
 }
 
-export interface TrainingLockStatus {
-  establishmentId: number;
-  TrainingReportState: string;
-  TrainingReportLockHeld: boolean;
-}
