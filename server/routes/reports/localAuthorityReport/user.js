@@ -610,7 +610,6 @@ const updateWorkplacesSheet = (
     debuglog('updating establishment', row);
 
     const rowType = row === 0 ? 'ESTFIRST' : (row === reportData.establishments.length - 1 ? 'ESTLAST' : 'ESTREGULAR');
-    let nextSibling = {};
 
     for (let column = 0; column < 24; column++) {
       const columnText = String.fromCharCode(column + 65);
