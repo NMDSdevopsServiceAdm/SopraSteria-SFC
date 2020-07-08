@@ -1055,9 +1055,9 @@ const reportGet = async (req, res) => {
 /**
  * Handle GET API requests to get Training report data
  */
-router.route('/report').get(reportLock.acquireLock.bind(null, 'training', reportGet));
-router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'training'));
-router.route('/unlock').get(reportLock.releaseLock.bind(null, 'training'));
+router.route('/report').get(reportLock.acquireLock.bind(null, 'training', reportGet,false));
+router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'training',false));
+router.route('/unlock').get(reportLock.releaseLock.bind(null, 'training',false));
 router.route('/response/:buRequestId').get(reportLock.responseGet);
 
 module.exports = router;
