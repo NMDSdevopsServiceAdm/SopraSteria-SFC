@@ -9,6 +9,7 @@ const Bucket = String(config.get('bulkupload.bucketname'));
 // Prevent multiple report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
 const reportsAvailable = ['la', 'training'];
+
 const fileLock = {
 
   acquireLock: async function(reportType, logic, onUser, req, res) {
@@ -16,9 +17,11 @@ const fileLock = {
     let successMessage = null;
     if (!reportsAvailable.includes(reportType)) {
       console.error('Lock *NOT* acquired.');
-      res.status(500).send({
-        message: `reportType not correct`
-      });
+      if (res !== null) {
+        res.status(500).send({
+          message: `reportType not correct`
+        });
+      }
       return;
     }
 
@@ -91,6 +94,7 @@ const fileLock = {
       });
     }
   },
+
   saveResponse: async (req, res, statusCode, body, headers) => {
     if (!Number.isInteger(statusCode) || statusCode < 100) {
       statusCode = 500;
@@ -108,6 +112,7 @@ const fileLock = {
       })
     }).promise();
   },
+
   responseGet: async (req, res) => {
     const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
     const buRequestId = String(req.params.buRequestId).toLowerCase();
@@ -139,6 +144,7 @@ const fileLock = {
       });
     }
   },
+
   getS3: async (key) => {
     const data = await s3.getObject({
       Bucket,
@@ -146,6 +152,7 @@ const fileLock = {
     }).promise();
     return JSON.parse(data.Body.toString());
   },
+
   lockStatusGet: async (reportType, onUser, req, res) => {
     let IDLockOn = null;
     let currentLockState = null;
