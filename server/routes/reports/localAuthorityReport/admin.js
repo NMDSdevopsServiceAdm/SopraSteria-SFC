@@ -3,6 +3,8 @@
 const express = require('express');
 const UserAgentParser = require('ua-parser-js');
 const router = express.Router();
+const reportLock = require('../../../utils/fileLock');
+const moment = require('moment');
 
 // for database
 const models = require('../../../models');
@@ -37,7 +39,7 @@ const _fromDateToCsvDate = (convertThis) => {
 };
 
 // gets report
-router.route('/').get(async (req, res) => {
+const reportGet = async (req, res) => {
   req.setTimeout(config.get('app.reports.localAuthority.timeout')*1000);
 
   const userAgent = UserAgentParser(req.headers['user-agent']);
@@ -49,11 +51,10 @@ router.route('/').get(async (req, res) => {
   try {
 
     const date = new Date().toISOString().split('T')[0];
-    res.setHeader('Content-disposition', 'attachment; filename=' + `${date}-SFC-Local-Authority-Admin-Report.csv`);
-    res.setHeader('Content-Type', 'text/csv');
+
 
     // write the report header
-    res.write('Local Authority, \
+    let csvString = 'Local Authority, \
 Workplace ID,\
 Number of parent account,\
 Name of parent account(s),\
@@ -90,7 +91,7 @@ Contracted/Average hours,\
 Sickness,\
 Pay,\
 Qualifications,\
-Last Years confirmed numbers'+NEWLINE);
+Last Years confirmed numbers'+NEWLINE
 
     const runReport = await models.sequelize.query(
       `select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate);`,
@@ -145,7 +146,7 @@ Last Years confirmed numbers'+NEWLINE);
 
     if (runReport && Array.isArray(runReport)) {
       runReport.forEach(thisPrimaryLaEstablishment => {
-        res.write(`${_csvQuote(thisPrimaryLaEstablishment.LocalAuthority)},\
+       csvString = csvString + `${_csvQuote(thisPrimaryLaEstablishment.LocalAuthority)},\
 ${thisPrimaryLaEstablishment.WorkplaceID},\
 1,\
 ${_csvQuote(thisPrimaryLaEstablishment.WorkplaceName)},\
@@ -182,16 +183,21 @@ ${thisPrimaryLaEstablishment.CountOfContractedAverageHours},\
 ${thisPrimaryLaEstablishment.CountOfSickness},\
 ${thisPrimaryLaEstablishment.CountOfPay},\
 ${thisPrimaryLaEstablishment.CountOfQualification},\
-${thisPrimaryLaEstablishment.LastYearsConfirmedNumbers}`+NEWLINE);
+${thisPrimaryLaEstablishment.LastYearsConfirmedNumbers}`+NEWLINE;
       });
     }
-
-    return res.status(200).end();
-
+    await reportLock.saveResponse(req, res, 200, csvString, {
+                 'Content-Type': 'text/csv',
+                 'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Local-Authority-Admin-Report.csv`
+    });
   } catch (err) {
     console.error('report/localAuthority/admin - failed', err);
     return res.status(503).send('ERR: Failed to retrieve report');
   }
-});
+};
 
+router.route('/report').get(reportLock.acquireLock.bind(null, 'la', reportGet,true));
+router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'la',true));
+router.route('/unlock').get(reportLock.releaseLock.bind(null, 'la',true));
+router.route('/response/:buRequestId').get(reportLock.responseGet);
 module.exports = router;

@@ -33,10 +33,6 @@ var refCacheMiddleware = require('./server/utils/middleware/refCache');
 var helmet = require('helmet');
 var xssClean = require('xss-clean');
 var sanitizer = require('express-sanitizer');
-
-// API metrics
-var swStats = require('swagger-stats');
-
 var routes = require('./server/routes/index');
 var locations = require('./server/routes/locations');
 var postcodes = require('./server/routes/postcodes');
@@ -164,22 +160,6 @@ app.use('/api/test', sanitizer());       // used as demonstration on test routes
 /*
  * end security
  */
-
- // metrics should not be available in 'production' style environments like tets and UAT.
-if (process.env.NODE_ENV !== 'production') {
-    app.use(swStats.getMiddleware({
-            //swaggerSpec:apiSpec,
-            uriPath: '/apimetrics',
-            name: 'ADS-WDS',
-            version: '1.0.0',
-            //ip: '127.0.0.1',
-            timelineBucketDuration: 60000,
-            durationBuckets: [50, 100, 200, 500, 1000, 5000],
-            requestSizeBuckets: [500, 5000, 15000, 50000],
-            responseSizeBuckets: [600, 6000, 6000, 60000],
-        })
-    );
-}
 
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));

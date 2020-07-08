@@ -388,12 +388,12 @@ const config = convict({
         fromDate: {
           doc: 'A fixed from reporting date; in the format YYYY-MM-DD',
           format: String,
-          default: '2019-09-09'
+          default: '2020-09-14'
         },
         toDate: {
           doc: 'A fixed to reporting date; in the format YYYY-MM-DD',
           format: String,
-          default: '2019-10-31'
+          default: '2020-10-31'
         },
         timeout: {
           doc: "The timeout, in seconds, on the Local Authority user and admin API endpoints",
