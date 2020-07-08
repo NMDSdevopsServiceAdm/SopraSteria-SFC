@@ -39,7 +39,7 @@
     "@sentry/node": "^5.18.0",
     "ajv": "^6.12.2",
     "angulartics2": "^7.5.2",
-    "aws-sdk": "^2.704.0",
+    "aws-sdk": "^2.711.0",
     "axios": "^0.19.2",
     "bcrypt-nodejs": "0.0.3",
     "cheerio": "^1.0.0-rc.3",
