@@ -179,7 +179,7 @@ const fileLock = {
       });
 
     } else {
-      IDLockOn = req.establishmentId;
+      IDLockOn = req.query.subEstId || req.establishmentId;
       currentLockState = await models.establishment.findAll({
         attributes: [['EstablishmentID', 'idLockOn'], [LockHeldTitle, 'reportLockHeld']],
         where: {
