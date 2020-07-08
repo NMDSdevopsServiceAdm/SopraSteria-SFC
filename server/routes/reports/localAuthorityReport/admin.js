@@ -54,7 +54,7 @@ const reportGet = async (req, res) => {
 
 
     // write the report header
-    csvString = 'Local Authority, \
+    let csvString = 'Local Authority, \
 Workplace ID,\
 Number of parent account,\
 Name of parent account(s),\

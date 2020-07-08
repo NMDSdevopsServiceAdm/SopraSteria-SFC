@@ -12,7 +12,6 @@ module.exports = {
         type: Sequelize.DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: false,
-
       },
     );
   },
