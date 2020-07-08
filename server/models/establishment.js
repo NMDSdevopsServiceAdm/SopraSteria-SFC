@@ -783,7 +783,29 @@ module.exports = function(sequelize, DataTypes) {
         'NameValue',
         'nmdsId']
     });
-  }
+  };
+  Establishment.closeLock = async function(LockHeldTitle,establishmentId) {
+    return await this.update(
+      {
+        [LockHeldTitle]: true
+      }, {
+        where: {
+          id: establishmentId,
+          [LockHeldTitle]: false
+        }
+      });
+  };
+  Establishment.openLock = async function(LockHeldTitle,establishmentId) {
+    return await this.update(
+      {
+        [LockHeldTitle]: false
+      }, {
+        where: {
+          id: establishmentId,
+        }
+      });
+  };
+
 
   return Establishment;
 };
