@@ -36,7 +36,6 @@ export class ReportService {
 
   public getLocalAuthorityReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
     return this.checkLockStatus(
-      () => this.http.get<Blob>(`/api/reports/localAuthority/establishment/${workplaceUid}/user/report`),
       {
         observe: 'response',
         responseType: 'blob' as 'json'
@@ -47,10 +46,14 @@ export class ReportService {
   }
 
   public getLocalAuthorityAdminReport(): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/reports/localauthority/admin`, {
-      observe: 'response',
-      responseType: 'blob' as 'json'
-    });
+      return this.checkLockStatus(
+        {
+          observe: 'response',
+          responseType: 'blob' as 'json'
+        },
+        null,
+        'adminla'
+      );
   }
 
   public getParentWDFReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
@@ -66,7 +69,6 @@ export class ReportService {
   // get Training report from training and qualifications
   public getTrainingReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
     return this.checkLockStatus(
-      () => this.http.get<Blob>(`/api/reports/training/establishment/${workplaceUid}/training/report`),
       {
         observe: 'response',
         responseType: 'blob' as 'json'
@@ -78,11 +80,12 @@ export class ReportService {
 
 
   // Function to check for the lock status
-  private checkLockStatus(callback, httpOptions, workplaceUid, report): Observable<any> {
+  private checkLockStatus(httpOptions, workplaceUid, report): Observable<any> {
     let requestId;
     const reportData = {
       training: `/api/reports/training/establishment/${workplaceUid}/training`,
-      la: `/api/reports/localAuthority/establishment/${workplaceUid}/user`
+      la: `/api/reports/localAuthority/establishment/${workplaceUid}/user`,
+      adminla: '/api/reports/localauthority/admin'
     };
     const apiPath = reportData[report];
     // Run function every second until lock aquired
@@ -90,7 +93,15 @@ export class ReportService {
       interval(1000)
         // Start he function straight away rather than waiting for the first second
         .pipe(startWith(0))
-        .pipe(concatMap(() => from(callback())))
+        .pipe(
+          concatMap(() =>
+            from(
+              this.http.get<LockStatus>(
+                apiPath + '/report'
+              )
+            )
+          )
+        )
         // Don't go any further unless there's a request ID
         .pipe(filter((request: any) => typeof request.requestId === 'string'))
         .pipe(take(1))

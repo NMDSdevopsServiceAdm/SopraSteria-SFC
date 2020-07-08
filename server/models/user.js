@@ -215,6 +215,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"TribalID"'
     },
+    laReportLockHeld: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue:false,
+      field: 'LaReportLockHeld'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -263,6 +269,28 @@ module.exports = function(sequelize, DataTypes) {
 
   User.findByUUID = function (uuId) {
     return this.findOne({ where: { uid: uuId } });
+  };
+
+  User.closeLock = async function(LockHeldTitle,userUid) {
+    return await this.update(
+      {
+        [LockHeldTitle]: true
+      }, {
+        where: {
+          uid: userUid,
+          [LockHeldTitle]: false
+        }
+      });
+  };
+  User.openLock = async function(LockHeldTitle,userId) {
+    return await this.update(
+      {
+        [LockHeldTitle]: false
+      }, {
+        where: {
+          uid: userId,
+        }
+      });
   };
 
   return User;

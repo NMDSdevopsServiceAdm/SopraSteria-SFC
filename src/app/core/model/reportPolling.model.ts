@@ -1,4 +1,4 @@
 export interface LockStatus {
-  establishmentId: number;
+  IDLockOn: number;
   reportLockHeld: boolean;
 }
