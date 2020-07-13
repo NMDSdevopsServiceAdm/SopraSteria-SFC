@@ -117,6 +117,10 @@ jobs:
             cache-version: v2
         - run:
             command: npm run build
+        - run: |
+            if [ "$CIRCLE_BRANCH" = "live" ]; then
+                npm run build:prod
+            fi
         - persist_to_workspace:
             root: .
             paths:
