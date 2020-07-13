@@ -80,7 +80,7 @@
     "sequelize-cli": "^5.5.1",
     "sequelize-replace-enum-postgres": "^1.5.0",
     "serve-favicon": "^2.5.0",
-    "slugify": "^1.4.2",
+    "slugify": "^1.4.4",
     "tslib": "^1.13.0",
     "ua-parser-js": "^0.7.21",
     "url-parse": "^1.4.7",
