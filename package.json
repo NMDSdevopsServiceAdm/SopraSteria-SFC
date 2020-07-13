@@ -126,7 +126,7 @@
     "protractor": "^7.0.0",
     "puppeteer": "^2.1.1",
     "require-dir": "^1.2.0",
-    "rimraf": "^2.7.1",
+    "rimraf": "^3.0.2",
     "sandboxed-module": "^2.0.4",
     "sinon": "^7.5.0",
     "supertest": "^4.0.2",
