@@ -115,11 +115,11 @@ jobs:
         - node/install-packages:
             cache-path: ~/project/node_modules
             cache-version: v2
-        - run:
-            command: npm run build
         - run: |
             if [ "$CIRCLE_BRANCH" = "live" ]; then
                 npm run build:prod
+            else
+                npm run build
             fi
         - persist_to_workspace:
             root: .
