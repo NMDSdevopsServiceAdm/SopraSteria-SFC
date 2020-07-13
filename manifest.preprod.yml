@@ -1,0 +1,7 @@
+applications:
+- name: sfcuatblue
+  memory: 8G
+  disk_quota: 4GB
+  instances: 10
+  buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.6.32
+stack: cflinuxfs3
