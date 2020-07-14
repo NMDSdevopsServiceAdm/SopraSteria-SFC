@@ -94,7 +94,7 @@
     "@angular-devkit/build-angular": "^0.901.9",
     "@angular/cli": "~9.1.9",
     "@angular/compiler-cli": "^9.1.11",
-    "@angular/language-service": "~9.1.11",
+    "@angular/language-service": "~10.0.3",
     "@jackfranklin/test-data-bot": "^1.3.0",
     "@lhci/cli": "^0.4.1",
     "@testing-library/angular": "^8.2.0",
