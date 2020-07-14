@@ -9,13 +9,13 @@ commands:
         type: string
       dark_subdomain:
         default: dark
-        description: Cloud Foundry dark domain to prefix domain (i.e. <dark_subdomain>.<domain>,
+        description: Cloud Foundry dark domain to prefix domain (i.e. <dark_subdomain>.<dark_domain>,
           defaults to "dark")
         type: string
-      domain:
+      dark_domain:
         description: Cloud Foundry domain registered to handle routes for this space
           (a "dark" or "live" sub-domain will be used in conjunction with this, i.e.
-          <dark_subdomain>.<domain>)
+          <dark_subdomain>.<dark_domain>)
         type: string
       manifest:
         default: ""
@@ -34,7 +34,7 @@ commands:
     steps:
       - run:
           command: |
-            cf push --no-start "<<parameters.appname>>-dark" -f "<<parameters.manifest>>"<<# parameters.vars>> --vars-file "<<parameters.vars>>"<</ parameters.vars>> -p "<<parameters.package>>"<<# parameters.dark_subdomain>> -n "<<parameters.dark_subdomain>>"<</ parameters.dark_subdomain>> -d "<<parameters.domain>>"
+            cf push --no-start "<<parameters.appname>>-dark" -f "<<parameters.manifest>>"<<# parameters.vars>> --vars-file "<<parameters.vars>>"<</ parameters.vars>> -p "<<parameters.package>>"<<# parameters.dark_subdomain>> -n "<<parameters.dark_subdomain>>"<</ parameters.dark_subdomain>> -d "<<parameters.dark_domain>>"
             cf set-env "<<parameters.appname>>-dark" CIRCLE_BUILD_NUM "${CIRCLE_BUILD_NUM}"
             cf set-env "<<parameters.appname>>-dark" CIRCLE_SHA1 "${CIRCLE_SHA1}"
             cf set-env "<<parameters.appname>>-dark" CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID}"
@@ -63,7 +63,7 @@ commands:
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
-            cf unmap-route "<<parameters.appname>>" "<<parameters.domain>>"<<# parameters.dark_subdomain>> -n "<<parameters.dark_subdomain>>"<</ parameters.dark_subdomain>> || echo "Already exclusive"
+            cf unmap-route "<<parameters.appname>>" "<<parameters.dark_domain>>"<<# parameters.dark_subdomain>> -n "<<parameters.dark_subdomain>>"<</ parameters.dark_subdomain>> || echo "Already exclusive"
           name: Cloud Foundry Dark Deployment
   install:
     description: Installs and authenticates with the latest CLI version if not present.
@@ -96,21 +96,21 @@ commands:
       appname:
         description: App Name
         type: string
-      domain:
-        description: Cloud Foundry domain (a "dark" sub-domain will be used on this.)
+      live_domain:
+        description: Cloud Foundry domain (a "live" sub-domain will be used on this.)
         type: string
       live_subdomain:
         default: www
-        description: Cloud Foundry live subdomain to prefix domain (i.e. <live_subdomain>.<domain>,
+        description: Cloud Foundry live subdomain to prefix domain (i.e. <live_subdomain>.<live_domain>,
           defaults to "wwww")
         type: string
     steps:
       - run:
           command: |
             # Send "real" url to new version
-            cf map-route "<<parameters.appname>>-dark" "<<parameters.domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
+            cf map-route "<<parameters.appname>>-dark" "<<parameters.live_domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
             # Stop sending traffic to previous version
-            cf unmap-route "<<parameters.appname>>" "<<parameters.domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
+            cf unmap-route "<<parameters.appname>>" "<<parameters.live_domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
             # stop previous version
             cf stop "<<parameters.appname>>"
             # delete previous version
@@ -190,13 +190,18 @@ jobs:
         type: steps
       dark_subdomain:
         default: dark
-        description: Cloud Foundry dark domain to prefix domain (i.e. <dark_subdomain>.<domain>,
+        description: Cloud Foundry dark domain to prefix domain (i.e. <dark_subdomain>.<dark_domain>,
           defaults to "dark")
         type: string
-      domain:
+      dark_domain:
         description: Cloud Foundry domain registered to handle routes for this space
-          (a "dark" or "live" sub-domain will be used in conjunction with this, i.e.
-          <dark_subdomain>.<domain>)
+          (a "dark" sub-domain will be used in conjunction with this, i.e.
+          <dark_subdomain>.<dark_domain>)
+        type: string
+      live_domain:
+        description: Cloud Foundry domain registered to handle routes for this space
+          (a "live" sub-domain will be used in conjunction with this, i.e.
+          <dark_subdomain>.<live_domain>)
         type: string
       endpoint:
         default: https://api.run.pivotal.io
@@ -205,7 +210,7 @@ jobs:
         type: string
       live_subdomain:
         default: www
-        description: Cloud Foundry live subdomain to prefix domain (i.e. <live_subdomain>.<domain>,
+        description: Cloud Foundry live subdomain to prefix domain (i.e. <live_subdomain>.<live_domain>,
           defaults to "www")
         type: string
       manifest:
@@ -257,7 +262,7 @@ jobs:
       - dark_deploy:
           appname: <<parameters.appname>>
           dark_subdomain: <<parameters.dark_subdomain>>
-          domain: <<parameters.domain>>
+          dark_domain: <<parameters.dark_domain>>
           manifest: <<parameters.manifest>>
           package: <<parameters.package>>
           vars: <<parameters.vars>>
@@ -267,8 +272,8 @@ jobs:
           steps: << parameters.validate_steps >>
       - live_deploy:
           appname: <<parameters.appname>>
-          domain: <<parameters.domain>>
           live_subdomain: <<parameters.live_subdomain>>
+          live_domain: <<parameters.live_domain>>
 workflows:
     build-test-deploy:
       jobs:
@@ -299,8 +304,9 @@ workflows:
             manifest: manifest.dev.yml
             package: '.'
             dark_subdomain: sfcdev-dark
+            dark_domain: cloudapps.digital
             live_subdomain: sfcdev
-            domain: cloudapps.digital
+            live_domain: cloudapps.digital
             build_steps:
                 - run: npm run build
         - blue_green:
@@ -320,10 +326,11 @@ workflows:
             manifest: manifest.test.yml
             package: '.'
             dark_subdomain: sfcstaging-dark
+            dark_domain: cloudapps.digital
             live_subdomain: sfcstaging
-            domain: cloudapps.digital
+            live_domain: cloudapps.digital
             workspace_path: .
-        - hold:
+        - hold_preprod:
             type: approval
             requires:
               - test_frontend
@@ -334,10 +341,11 @@ workflows:
                 only:
                   - live
         - blue_green:
+            name: preprod_deploy
             appname: sfcuatblue
             env_prefix: SFC_PREPROD
             requires:
-              - hold
+              - hold_preprod
             filters:
               branches:
                 only:
@@ -348,8 +356,9 @@ workflows:
             manifest: manifest.preprod.yml
             package: '.'
             dark_subdomain: sfcuatblue-dark
+            dark_domain: cloudapps.digital
             live_subdomain: sfcuatblue
-            domain: cloudapps.digital
+            live_domain: cloudapps.digital
             workspace_path: .
 
 
