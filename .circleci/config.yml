@@ -43,6 +43,23 @@ commands:
             cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${<<parameters.env_prefix>>_AWS_ACCESS_KEY_ID}"
             cf set-env "<<parameters.appname>>-dark" AWS_SECRET_ACCESS_KEY "${<<parameters.env_prefix>>_AWS_SECRET_ACCESS_KEY}"
             cf set-env "<<parameters.appname>>-dark" NODE_ENV "${<<parameters.env_prefix>>_NODE_ENV}"
+
+            if [ -n "${<<parameters.env_prefix>>_DB_HOST}" ]; then
+                cf set-env "<<parameters.appname>>-dark" DB_HOST "${<<parameters.env_prefix>>_DB_HOST}"
+            fi
+
+            if [ -n "${<<parameters.env_prefix>>_DB_NAME}" ]; then
+                cf set-env "<<parameters.appname>>-dark" DB_NAME "${<<parameters.env_prefix>>_DB_NAME}"
+            fi
+
+            if [ -n "${<<parameters.env_prefix>>_DB_USER}" ]; then
+                cf set-env "<<parameters.appname>>-dark" DB_USER "${<<parameters.env_prefix>>_DB_USER}"
+            fi
+
+            if [ -n "${<<parameters.env_prefix>>_DB_PASS}" ]; then
+                cf set-env "<<parameters.appname>>-dark" DB_PASS "${<<parameters.env_prefix>>_DB_PASS}"
+            fi
+
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
