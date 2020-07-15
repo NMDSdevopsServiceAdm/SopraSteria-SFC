@@ -9,6 +9,7 @@ const JsZip = new require('jszip');
 const path = require('path');
 const cheerio = require('cheerio');
 const express = require('express');
+const router = express.Router();
 
 //Constants string needed by this file in several places
 const folderName = 'template';
@@ -609,7 +610,6 @@ const updateWorkplacesSheet = (
     debuglog('updating establishment', row);
 
     const rowType = row === 0 ? 'ESTFIRST' : (row === reportData.establishments.length - 1 ? 'ESTLAST' : 'ESTREGULAR');
-    let nextSibling = {};
 
     for (let column = 0; column < 24; column++) {
       const columnText = String.fromCharCode(column + 65);
@@ -1424,7 +1424,6 @@ const updateStaffRecordsSheet = (
 
 const getReport = async (date, thisEstablishment) => {
   let reportData = await LAReport.run(date, thisEstablishment);
-
   if (reportData === null) {
     return null;
   }
@@ -1526,21 +1525,18 @@ const getReport = async (date, thisEstablishment) => {
 //    pass through the Establishment/Worker entities. This is done for performance, as these reports
 //    are expected to operate across large sets of data
 
-const router = express.Router();
+
 
 const reportGet = async (req, res) => {
-
   try {
     // first ensure this report can only be ran by those establishments with a Local Authority employer type
     const thisEstablishment = new Establishment(req.username);
-
     if (await thisEstablishment.restore(req.establishment.id, false)) {
       const theEmployerType = thisEstablishment.employerType;
 
       if (theEmployerType && (theEmployerType.value).startsWith('Local Authority')) {
         const date = new Date();
         const report = await getReport(date, thisEstablishment);
-
         if (report) {
           await reportLock.saveResponse(req, res, 200, report, {
             'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -1567,9 +1563,10 @@ const reportGet = async (req, res) => {
     return res.status(503).send('ERR: Failed to retrieve report');
   }
 };
-router.route('/report').get(reportLock.acquireLock.bind(null, 'la', reportGet));
-router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'la'));
-router.route('/unlock').get(reportLock.releaseLock.bind(null, 'la'));
+
+router.route('/report').get(reportLock.acquireLock.bind(null, 'la', reportGet,false));
+router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'la',false));
+router.route('/unlock').get(reportLock.releaseLock.bind(null, 'la',false));
 router.route('/response/:buRequestId').get(reportLock.responseGet);
 
 module.exports = router;
