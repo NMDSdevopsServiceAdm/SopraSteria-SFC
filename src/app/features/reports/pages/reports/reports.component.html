@@ -2,9 +2,9 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h2 *ngIf="isParent" class="govuk-body-l">Workforce Development Fund</h2>
-    <ul class="govuk-list govuk-list--inline">
-      <li *ngIf="isAdmin">
+    <h2 *ngIf="isParent" class="govuk-heading-m govuk-!-margin-bottom-6">Workforce Development Fund</h2>
+    <ul class="govuk-list govuk-list--inline govuk-!-margin-bottom-6 ">
+      <li *ngIf="isAdmin" class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
         <a
           href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-summary-report.csv"
           class="govuk-body-m"
@@ -13,18 +13,18 @@
           WDF Summary Report
         </a>
       </li>
-      <li>
+      <li class="govuk-!-margin-right-8 govuk-!-margin-bottom-0">
         <a class="govuk-body-m" [routerLink]="['workplace', primaryWorkplace.uid, 'wdf']">
-          {{ isParent ? 'My workplace' : 'Workforce Development Fund' }}
+          {{ isParent ? 'View my workplace' : 'Workforce Development Fund' }}
         </a>
       </li>
-      <li *ngIf="isParent">
-        <a class="govuk-body-m" [routerLink]="['all-workplaces']">All workplaces</a>
+      <li *ngIf="isParent" class="govuk-!-margin-bottom-0">
+        <a class="govuk-body-m" [routerLink]="['all-workplaces']">View other workplaces</a>
       </li>
     </ul>
-    <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-!-margin-bottom-8">
       <div class="govuk-grid-column-two-thirds-from-desktop">
-        <p>
+        <p class="govuk-!-margin-bottom-0">
           <a class="govuk-body-m" href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx">View more information about the Workforce Development Fund</a>
         </p>
       </div>
@@ -43,7 +43,7 @@
       </div>
     </app-details> -->
     <ng-container *ngIf="canRunLocalAuthorityReport || isAdmin">
-      <h2 class="govuk-body-l">Local Authority Progress</h2>
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-6">Local Authority Progress</h2>
       <ul class="govuk-list govuk-list--inline govuk-list--download">
         <li *ngIf="canRunLocalAuthorityReport">
           <a
