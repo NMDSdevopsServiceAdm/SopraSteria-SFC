@@ -80,6 +80,9 @@ AWSsns.initialise(config.get('aws.region'));
 var testOnly = require('./server/routes/testOnly');
 
 var app = express();
+if (config.get('sentry.dsn')) {
+  Sentry.init({ dsn: config.get('sentry.dsn'), environment: config.get('env') });
+}
 app.use(Sentry.Handlers.requestHandler());
 app.use(compression());
 
@@ -200,12 +203,19 @@ app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
 
+
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
 app.use(Sentry.Handlers.errorHandler());
-
+// Optional fallthrough error handler
+app.use(function onError(err, req, res, next) {
+  // The error id is attached to `res.sentry` to be returned
+  // and optionally displayed to the user for support.
+  res.statusCode = 500;
+  res.end(res.sentry + '\n');
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -241,9 +251,7 @@ const startApp = () => {
     if (config.get('honeycomb.write_key')) {
       beeline._apiForTesting().honey.writeKey = config.get('honeycomb.write_key');
     }
-    if (config.get('sentry.dsn')) {
-      Sentry.init({ dsn: config.get('sentry.dsn'), environment: config.get('env') });
-    }
+
     logger.start();
     const listenPort = parseInt(config.get('listen.port'), 10);
     app.set('port', listenPort);
