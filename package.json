@@ -36,6 +36,7 @@
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
     "@auth0/angular-jwt": "^3.0.1",
+    "@sentry/apm": "^5.19.2",
     "@sentry/browser": "^5.19.2",
     "@sentry/node": "^5.18.0",
     "ajv": "^6.12.2",

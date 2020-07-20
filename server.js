@@ -1,5 +1,6 @@
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
+const Apm = require("@sentry/apm");
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: "sfc",
@@ -81,9 +82,21 @@ var testOnly = require('./server/routes/testOnly');
 
 var app = express();
 if (config.get('sentry.dsn')) {
-  Sentry.init({ dsn: config.get('sentry.dsn'), environment: config.get('env') });
+  Sentry.init({
+    dsn: config.get('sentry.dsn'),
+    integrations: [
+      // enable HTTP calls tracing
+      new Sentry.Integrations.Http({ tracing: true }),
+      // enable Express.js middleware tracing
+      new Apm.Integrations.Express({ app })
+    ],
+    environment: config.get('env'),
+    tracesSampleRate: config.get('sentry.sample_rate'), // Be sure to lower this in production}
+    release: 'SFC@' + process.env.npm_package_version
+  });
 }
 app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.tracingHandler());
 app.use(compression());
 
 /* public/download - proxy interception */

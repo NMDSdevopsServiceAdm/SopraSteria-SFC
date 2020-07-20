@@ -2,17 +2,22 @@ import {  ErrorHandler, Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { environment } from '../environments/environment';
-
 import * as Sentry from '@sentry/browser';
+import { Integrations as ApmIntegrations } from '@sentry/apm';
+
 
 Sentry.init({
   dsn: 'https://59c078b68dc0429aa404e59920f288fd@o409195.ingest.sentry.io/5281212',
   // TryCatch has to be configured to disable XMLHttpRequest wrapping, as we are going to handle
   // http module exceptions manually in Angular's ErrorHandler and we don't want it to capture the same error twice.
   // Please note that TryCatch configuration requires at least @sentry/browser v5.16.0.
-  integrations: [new Sentry.Integrations.TryCatch({
+  integrations: [
+    new Sentry.Integrations.TryCatch({
     XMLHttpRequest: false,
-  })],
+  }),
+    new ApmIntegrations.Tracing()
+  ],
+  tracesSampleRate: 0.3, // Be sure to lower this in production
 });
 
 @Injectable()
@@ -66,7 +71,5 @@ export class SentryErrorHandler implements ErrorHandler {
       console.error(extractedError);
     }
 
-    // Optionally show user dialog to provide details on what happened.
-    Sentry.showReportDialog({ eventId });
   }
 }
