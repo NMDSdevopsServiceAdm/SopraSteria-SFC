@@ -277,14 +277,26 @@ jobs:
 workflows:
     build-test-deploy:
       jobs:
-        - install
+        - install:
+            filters:
+               tags:
+                 only: /^v[0-9]+(\.[0-9]+)*$/
         - test_frontend:
+            filters:
+               tags:
+                 only: /^v[0-9]+(\.[0-9]+)*$/
             requires:
               - install
         - test_backend:
+            filters:
+               tags:
+                 only: /^v[0-9]+(\.[0-9]+)*$/
             requires:
               - install
         - performance:
+            filters:
+               tags:
+                 only: /^v[0-9]+(\.[0-9]+)*$/
             requires:
               - install
         - blue_green:
