@@ -39,5 +39,3 @@ bulkupload:
         storeIntermediaries: true
     completion:
         timeout: 600
-sentry:
-  dsn: https://59c078b68dc0429aa404e59920f288fd@o409195.ingest.sentry.io/5281212

@@ -465,7 +465,7 @@ const config = convict({
     dsn: {
       doc: 'Sentry Endpoint',
       format: String,
-      default: '',
+      default: 'https://59c078b68dc0429aa404e59920f288fd@o409195.ingest.sentry.io/5281212',
       sensitive: true,
       env: 'SENTRY_DSN'
     }
@@ -474,7 +474,7 @@ const config = convict({
     write_key: {
       doc: 'Honeycomb Write Key',
       format: String,
-      default: '',
+      default: 'blank',
       sensitive: true,
       env: 'HONEYCOMB_WRITE_KEY'
     }
