@@ -330,4 +330,62 @@ workflows:
             live_subdomain: sfcstaging
             live_domain: cloudapps.digital
             workspace_path: .
-
+        - blue_green:
+             name: preprod_deploy
+             appname: sfcpreprod
+             env_prefix: SFC_PREPROD
+             requires:
+               - test_frontend
+               - test_backend
+               - performance
+             filters:
+               # ignore any commit on any branch by default
+               branches:
+                 ignore: /.*/
+               # only act on version tags
+               tags:
+                 only: /^v[0-9]+(\.[0-9]+)*$/
+             endpoint: https://api.cloud.service.gov.uk
+             org: dhsc-skills-for-care-nmds-sc-2
+             space: production
+             manifest: manifest.preprod.yml
+             package: '.'
+             dark_subdomain: sfcpreprod-dark
+             dark_domain: cloudapps.digital
+             live_subdomain: sfcpreprod
+             live_domain: cloudapps.digital
+             workspace_path: .
+        - hold_prod:
+            type: approval
+            requires:
+                - preprod_deploy
+            filters:
+                # ignore any commit on any branch by default
+                branches:
+                    ignore: /.*/
+                # only act on version tags
+                tags:
+                    only: /^v[0-9]+(\.[0-9]+)*$/
+        - blue_green:
+            name: prod_deploy
+            appname: sfcprod
+            env_prefix: SFC_PROD
+            requires:
+                - hold_prod
+            filters:
+                # ignore any commit on any branch by default
+                branches:
+                    ignore: /.*/
+                # only act on version tags
+                tags:
+                    only: /^v[0-9]+(\.[0-9]+)*$/
+            endpoint: https://api.cloud.service.gov.uk
+            org: dhsc-skills-for-care-nmds-sc-2
+            space: production
+            manifest: manifest.prod.yml
+            package: '.'
+            dark_subdomain: sfcprod-dark
+            dark_domain: cloudapps.digital
+            live_subdomain: asc-wds
+            live_domain: skillsforcare.org.uk
+            workspace_path: .
