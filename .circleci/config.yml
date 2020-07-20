@@ -112,7 +112,7 @@ commands:
             # Stop sending traffic to previous version
             cf unmap-route "<<parameters.appname>>" "<<parameters.live_domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
             # stop previous version
-            cf app <<parameters.appname>> && cf stop "<<parameters.appname>>"
+            cf stop "<<parameters.appname>>" || echo "Could not stop previous app"
             # delete previous version
             cf delete "<<parameters.appname>>" -f
             # Switch name of "dark" version to claim correct name
