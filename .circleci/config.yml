@@ -368,7 +368,9 @@ workflows:
         - hold_prod:
             type: approval
             requires:
-                - preprod_deploy
+                - test_frontend
+                - test_backend
+                - performance
             filters:
                 # ignore any commit on any branch by default
                 branches:
