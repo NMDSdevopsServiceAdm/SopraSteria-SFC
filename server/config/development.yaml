@@ -43,7 +43,5 @@ bulkupload:
 public:
     download:
         baseurl: https://sfc-public-dev.s3.eu-west-2.amazonaws.com/public/download
-sentry:
-  dsn: https://59c078b68dc0429aa404e59920f288fd@o409195.ingest.sentry.io/5281212
 
 # no notify definition - not used in development
