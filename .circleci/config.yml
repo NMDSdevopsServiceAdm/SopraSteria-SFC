@@ -280,13 +280,18 @@ jobs:
     environment:
       SENTRY_ORG: skills-for-care
       SENTRY_PROJECT: skills-for-care
+    parameters:
+      env:
+        description: Environment
+        type: string
     steps:
       - checkout # check out the code in the project directory
       - run: |
           curl -sL https://sentry.io/get-cli/ | bash
           export SENTRY_RELEASE=$(sentry-cli releases propose-version)
-          sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
+          sentry-cli releases new -p $SENTRY_PROJECT -e <<parameters.env>> $SENTRY_RELEASE
           sentry-cli releases set-commits --auto $SENTRY_RELEASE
+          sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps /dist
           sentry-cli releases finalize $SENTRY_RELEASE
 workflows:
     build-test-deploy:
@@ -412,6 +417,7 @@ workflows:
                branches:
                  only:
                    - develop
+             env: development
         - sentry_release:
             requires:
               - blue_green_staging
@@ -419,3 +425,23 @@ workflows:
               branches:
                 only:
                   - test
+            env: test
+        - sentry_release:
+            requires:
+              - preprod_deploy
+            filters:
+              branches:
+                only:
+                  - live
+            env: preproduction
+        - sentry_release:
+            requires:
+              - prod_deploy
+            filters:
+              # ignore any commit on any branch by default
+              branches:
+                ignore: /.*/
+              # only act on version tags
+              tags:
+                only: /^v[0-9]+(\.[0-9]+)*$/
+            env: production
