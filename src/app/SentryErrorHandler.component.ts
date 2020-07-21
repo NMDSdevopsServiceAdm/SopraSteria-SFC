@@ -17,6 +17,7 @@ Sentry.init({
   }),
     new ApmIntegrations.Tracing()
   ],
+  environment: environment.environmentName,
   tracesSampleRate: 0.3, // Be sure to lower this in production
 });
 
