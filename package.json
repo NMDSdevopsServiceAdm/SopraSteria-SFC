@@ -39,7 +39,7 @@
     "@sentry/apm": "^5.19.2",
     "@sentry/browser": "^5.19.2",
     "@sentry/node": "^5.18.0",
-    "ajv": "^6.12.2",
+    "ajv": "^6.12.3",
     "angulartics2": "^7.5.2",
     "aws-sdk": "^2.712.0",
     "axios": "^0.19.2",
