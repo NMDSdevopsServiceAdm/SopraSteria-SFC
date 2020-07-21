@@ -285,7 +285,9 @@ jobs:
         description: Environment
         type: string
     steps:
-      - checkout # check out the code in the project directory
+      - checkout
+      - attach_workspace:
+          at: .
       - run: |
           curl -sL https://sentry.io/get-cli/ | bash
           export SENTRY_RELEASE=$(sentry-cli releases propose-version)
