@@ -49,5 +49,3 @@ bulkupload:
 public:
     download:
         baseurl: https://sfc-public-prod.s3.eu-west-2.amazonaws.com/public/download
-sentry:
-  dsn: https://59c078b68dc0429aa404e59920f288fd@o409195.ingest.sentry.io/5281212
