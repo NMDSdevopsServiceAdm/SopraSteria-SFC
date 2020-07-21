@@ -110,7 +110,7 @@ commands:
             # Send "real" url to new version
             cf map-route "<<parameters.appname>>-dark" "<<parameters.live_domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
             # Stop sending traffic to previous version
-            cf unmap-route "<<parameters.appname>>" "<<parameters.live_domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
+            cf unmap-route "<<parameters.appname>>" "<<parameters.live_domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>  || echo "Could not unmap route for previous app"
             # stop previous version
             cf stop "<<parameters.appname>>" || echo "Could not stop previous app"
             # delete previous version
