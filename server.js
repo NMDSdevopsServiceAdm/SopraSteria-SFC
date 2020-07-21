@@ -92,7 +92,6 @@ if (config.get('sentry.dsn')) {
     ],
     environment: config.get('env'),
     tracesSampleRate: config.get('sentry.sample_rate'),
-    release: 'skills-for-care@' + process.env.npm_package_version
   });
 }
 app.use(Sentry.Handlers.requestHandler());

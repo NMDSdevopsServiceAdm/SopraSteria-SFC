@@ -5,7 +5,7 @@
 export const environment = {
   production: true,
   environmentName: 'other',
-  tracesSampleRate: 0
+  tracesSampleRate: 0,
 };
 
 /*
