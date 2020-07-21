@@ -12,7 +12,6 @@ exports.sendPasswordReset = async (emailAddress, name, resetUuid) => {
       config.get('notify.templates.resetPassword') === '80d54020-c420-46f1-866d-b8cc3196809d'
      ) {
     // gov.uk notify is not configured
-    // intentionally living this comment (as assist with supporting in production environment)
     console.log("INFO - sendPasswordReset - gov.uk notify is not configured");
     return;
   }
@@ -32,12 +31,10 @@ exports.sendPasswordReset = async (emailAddress, name, resetUuid) => {
       }
     )
 
-    // intentionally living this comment (as assist with supporting in production environment)
-    console.log('sendPasswordReset - Successfully sent (requested) email to: ', emailAddress);
-  
+    console.log('sendPasswordReset - Successfully sent (requested) email');
+
   } catch (err) {
-    // localise the exception - failing to send the email should not cause the calling API endpoint to fail
-    console.error('sendPasswordReset - FAILED to send (request) email to: ', emailAddress);
+    console.error('sendPasswordReset - FAILED to send (request) email');
   }
 };
 
@@ -48,7 +45,6 @@ exports.sendAddUser = async (emailAddress, name, addUserUuid) => {
       config.get('notify.templates.addUser') === '80d54020-c420-46f1-866d-b8cc3196809d'
      ) {
     // gov.uk notify is not configured
-    // intentionally living this comment (as assist with supporting in production environment)
     console.log("INFO - sendAddUser - gov.uk notify is not configured");
     return;
   }
@@ -68,11 +64,8 @@ exports.sendAddUser = async (emailAddress, name, addUserUuid) => {
       }
     )
 
-    // intentionally living this comment (as assist with supporting in production environment)
-    console.log('sendAddUser - Successfully sent (requested) email to: ', emailAddress);
-  
+    console.log('sendAddUser - Successfully sent (requested) email');
   } catch (err) {
-    // localise the exception - failing to send the email should not cause the calling API endpoint to fail
-    console.error('sendAddUser - FAILED to send (requets) email to: ', emailAddress);
+    console.error('sendAddUser - FAILED to send (requested) email to');
   }
 };

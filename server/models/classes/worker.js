@@ -573,12 +573,7 @@ class Worker extends EntityValidator {
           const effectiveDateTime = WdfCalculator.effectiveTime;
 
           let wdfAudit = null;
-          console.log('Current WDF Eligibility: ', JSON.stringify(currentWdfEligibiity));
-          console.log('Last WDF Eligibility: ', this._lastWdfEligibility);
-          console.log('WorkerID: ', this._id);
-          console.log('Effective Time: ', new Date(effectiveDateTime).toISOString());
           if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
-            console.log('Worker is WDF Eligible. Updating lastEligibilityDate and adding to Audit table.');
             modifedCreationDocument.lastWdfEligibility = updatedTimestamp;
             wdfAudit = {
               username: savedBy.toLowerCase(),
@@ -676,12 +671,7 @@ class Worker extends EntityValidator {
           const effectiveDateTime = WdfCalculator.effectiveTime;
 
           let wdfAudit = null;
-          console.log('Current WDF Eligibility: ', JSON.stringify(currentWdfEligibiity));
-          console.log('Last WDF Eligibility: ', this._lastWdfEligibility);
-          console.log('WorkerID: ', this._id);
-          console.log('Effective Time: ', new Date(effectiveDateTime).toISOString());
           if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
-            console.log('Worker is WDF Eligible. Updating lastEligibilityDate and adding to Audit table.');
             updateDocument.lastWdfEligibility = updatedTimestamp;
             wdfAudit = {
               username: savedBy.toLowerCase(),
@@ -1376,7 +1366,6 @@ class Worker extends EntityValidator {
     const wdfPropertyValues = Object.values(wdfByProperty);
 
     // NOTE - the worker does not have to be completed before it can be eligible for WDF
-    console.log('WDF Properties: ', wdfByProperty);
     return {
       lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
       isEligible: wdfPropertyValues.every(thisWdfProperty => {

@@ -465,16 +465,25 @@ const config = convict({
     dsn: {
       doc: 'Sentry Endpoint',
       format: String,
-      default: '',
+      default: 'https://59c078b68dc0429aa404e59920f288fd@o409195.ingest.sentry.io/5281212',
       sensitive: true,
       env: 'SENTRY_DSN'
+    },
+    sample_rate: {
+      doc: 'Sample Rate as a percentage of events to be sent',
+      format: function(val) {
+        if (val !== 0 && (!val || val > 1 || val < 0)) {
+          throw new Error('must be a float between 0 and 1, inclusive');
+        }
+      },
+      default: 0.3,
     }
   },
   honeycomb: {
     write_key: {
       doc: 'Honeycomb Write Key',
       format: String,
-      default: '',
+      default: 'blank',
       sensitive: true,
       env: 'HONEYCOMB_WRITE_KEY'
     }
@@ -513,7 +522,7 @@ if (config.get('aws.secrets.use')) {
     config.set('slack.url', AWSSecrets.slackUrl());
     config.set('notify.key', AWSSecrets.govNotify());
     config.set('admin.url', AWSSecrets.adminUrl());
-    config.set('datadog.api_key', AWSSecrets.datadogApiKey());
+  //  config.set('datadog.api_key', AWSSecrets.datadogApiKey()); // Data dog is still work in progress, checking if we really need this
     config.set('sentry.dsn', AWSSecrets.sentryDsn());
     config.set('honeycomb.write_key', AWSSecrets.honeycombWriteKey());
 
