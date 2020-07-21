@@ -274,6 +274,20 @@ jobs:
           appname: <<parameters.appname>>
           live_subdomain: <<parameters.live_subdomain>>
           live_domain: <<parameters.live_domain>>
+  sentry_release:
+    docker:
+      - image: circleci/node:lts-browsers
+    environment:
+      SENTRY_ORG: skills-for-care
+      SENTRY_PROJECT: skills-for-care
+    steps:
+      - checkout # check out the code in the project directory
+      - run: |
+          curl -sL https://sentry.io/get-cli/ | bash
+          export SENTRY_RELEASE=$(sentry-cli releases propose-version)
+          sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
+          sentry-cli releases set-commits --auto $SENTRY_RELEASE
+          sentry-cli releases finalize $SENTRY_RELEASE
 workflows:
     build-test-deploy:
       jobs:
@@ -288,6 +302,7 @@ workflows:
             requires:
               - install
         - blue_green:
+            name: blue_green_dev
             appname: sfcdev
             env_prefix: SFC_DEV
             requires:
@@ -310,6 +325,7 @@ workflows:
             build_steps:
                 - run: npm run build
         - blue_green:
+            name: blue_green_staging
             appname: sfcstaging
             env_prefix: SFC_STAGING
             requires:
@@ -330,4 +346,19 @@ workflows:
             live_subdomain: sfcstaging
             live_domain: cloudapps.digital
             workspace_path: .
+        -  sentry_release:
+             requires:
+               - blue_green_dev
+             filters:
+               branches:
+                 only:
+                   - develop
+        - sentry_release:
+            requires:
+              - blue_green_staging
+            filters:
+              branches:
+                only:
+                  - test
+
 

@@ -91,8 +91,8 @@ if (config.get('sentry.dsn')) {
       new Apm.Integrations.Express({ app })
     ],
     environment: config.get('env'),
-    tracesSampleRate: config.get('sentry.sample_rate'), // Be sure to lower this in production}
-    release: 'SFC@' + process.env.npm_package_version
+    tracesSampleRate: config.get('sentry.sample_rate'),
+    release: 'skills-for-care@' + process.env.npm_package_version
   });
 }
 app.use(Sentry.Handlers.requestHandler());
