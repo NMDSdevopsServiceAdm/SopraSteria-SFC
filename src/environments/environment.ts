@@ -4,7 +4,8 @@
 
 export const environment = {
   production: true,
-  environmentName: 'other'
+  environmentName: 'other',
+  tracesSampleRate: 0
 };
 
 /*

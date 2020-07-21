@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  environmentName: 'test'
+  environmentName: 'test',
+  tracesSampleRate: 0.3
 };
