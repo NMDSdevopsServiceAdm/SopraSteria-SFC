@@ -367,10 +367,10 @@ workflows:
              workspace_path: .
         - hold_prod:
             type: approval
-             requires:
-               - test_frontend
-               - test_backend
-               - performance
+            requires:
+                - test_frontend
+                - test_backend
+                - performance
             filters:
                 # ignore any commit on any branch by default
                 branches:
