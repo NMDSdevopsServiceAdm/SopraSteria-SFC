@@ -94,7 +94,9 @@ if (config.get('sentry.dsn')) {
     tracesSampleRate: config.get('sentry.sample_rate'),
   });
 }
-app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.requestHandler({
+  user: ['id']
+}));
 app.use(Sentry.Handlers.tracingHandler());
 app.use(compression());
 
