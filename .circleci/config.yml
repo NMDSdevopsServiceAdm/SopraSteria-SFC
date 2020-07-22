@@ -110,9 +110,9 @@ commands:
             # Send "real" url to new version
             cf map-route "<<parameters.appname>>-dark" "<<parameters.live_domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
             # Stop sending traffic to previous version
-            cf unmap-route "<<parameters.appname>>" "<<parameters.live_domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>
+            cf unmap-route "<<parameters.appname>>" "<<parameters.live_domain>>"<<# parameters.live_subdomain>> -n "<<parameters.live_subdomain>>"<</ parameters.live_subdomain>>  || echo "Could not unmap route for previous app"
             # stop previous version
-            cf stop "<<parameters.appname>>"
+            cf stop "<<parameters.appname>>" || echo "Could not stop previous app"
             # delete previous version
             cf delete "<<parameters.appname>>" -f
             # Switch name of "dark" version to claim correct name
@@ -298,14 +298,26 @@ jobs:
 workflows:
     build-test-deploy:
       jobs:
-        - install
+        - install:
+            filters:
+               tags:
+                 only: /^v[0-9]+(\.[0-9]+)*$/
         - test_frontend:
+            filters:
+               tags:
+                 only: /^v[0-9]+(\.[0-9]+)*$/
             requires:
               - install
         - test_backend:
+            filters:
+               tags:
+                 only: /^v[0-9]+(\.[0-9]+)*$/
             requires:
               - install
         - performance:
+            filters:
+               tags:
+                 only: /^v[0-9]+(\.[0-9]+)*$/
             requires:
               - install
         - blue_green:
@@ -364,10 +376,8 @@ workflows:
              filters:
                # ignore any commit on any branch by default
                branches:
-                 ignore: /.*/
-               # only act on version tags
-               tags:
-                 only: /^v[0-9]+(\.[0-9]+)*$/
+                 only:
+                  - live
              endpoint: https://api.cloud.service.gov.uk
              org: dhsc-skills-for-care-nmds-sc-2
              space: production
@@ -381,7 +391,9 @@ workflows:
         - hold_prod:
             type: approval
             requires:
-                - preprod_deploy
+                - test_frontend
+                - test_backend
+                - performance
             filters:
                 # ignore any commit on any branch by default
                 branches:
