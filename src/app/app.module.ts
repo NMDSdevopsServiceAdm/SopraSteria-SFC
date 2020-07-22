@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
@@ -48,6 +48,7 @@ import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { MomentModule } from 'ngx-moment';
 
+import { SentryErrorHandler} from './SentryErrorHandler.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {
@@ -105,6 +106,7 @@ import {
     QualificationService,
     RecruitmentService,
     RegistrationService,
+    { provide: ErrorHandler, useClass: SentryErrorHandler},
     TrainingService,
     WindowRef,
     WorkerService,

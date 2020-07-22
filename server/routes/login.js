@@ -88,7 +88,7 @@ router.post('/', async (req, res) => {
           });
 
           if (establishmentUser.user.establishment && establishmentUser.user.establishment.id) {
-            console.log(`Found admin user (${givenUsername}) and establishment (${givenEstablishmentUid})`);
+            console.log(`Found admin user and establishment`);
           } else {
             console.error('POST .../login failed: on finding the given establishment');
             return res.status(401).send({
@@ -100,7 +100,7 @@ router.post('/', async (req, res) => {
         }
 
       } else {
-        console.error(`Failed to find user account associated with: ${givenUsername}`);
+        console.error(`Failed to find user account`);
         return res.status(401).send({
           message: 'Authentication failed.',
         });

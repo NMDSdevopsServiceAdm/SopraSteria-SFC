@@ -9,6 +9,7 @@ const Bucket = String(config.get('bulkupload.bucketname'));
 // Prevent multiple report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
 const reportsAvailable = ['la', 'training'];
+const Sentry = require("@sentry/node");
 
 const fileLock = {
 
@@ -142,6 +143,7 @@ const fileLock = {
       res.status(404).send({
         message: 'Not Found'
       });
+      Sentry.captureException(err);
     }
   },
 

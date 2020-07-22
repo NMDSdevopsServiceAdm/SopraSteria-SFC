@@ -19,12 +19,12 @@ slack:
 jwt:
     iss: 'asc-wds.skillsforcare.org.uk'
     ttl:
-        login: 5
+        login: 30
 
 db:
     pool:
-        min: 15
-        max: 15
+        min: 10
+        max: 10
     ssl: true
     client_ssl:
         status: false
@@ -48,3 +48,4 @@ bulkupload:
 public:
     download:
         baseurl: https://sfc-public-prod.s3.eu-west-2.amazonaws.com/public/download
+

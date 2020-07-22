@@ -1,12 +1,17 @@
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
+const Apm = require("@sentry/apm");
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: "sfc",
   express: {
-    userContext: ["id", "username"],
+    userContext: ["id"],
     parentIdSource: 'X-Honeycomb-Trace',
     traceIdSource: 'X-Honeycomb-Trace'
+  },
+  presendHook: (ev) => {
+    delete ev.data["db.query"]
+    delete ev.data["db.query_args"]
   }
 });
 
@@ -76,7 +81,23 @@ AWSsns.initialise(config.get('aws.region'));
 var testOnly = require('./server/routes/testOnly');
 
 var app = express();
-app.use(Sentry.Handlers.requestHandler());
+if (config.get('sentry.dsn')) {
+  Sentry.init({
+    dsn: config.get('sentry.dsn'),
+    integrations: [
+      // enable HTTP calls tracing
+      new Sentry.Integrations.Http({ tracing: true }),
+      // enable Express.js middleware tracing
+      new Apm.Integrations.Express({ app })
+    ],
+    environment: config.get('env'),
+    tracesSampleRate: config.get('sentry.sample_rate'),
+  });
+}
+app.use(Sentry.Handlers.requestHandler({
+  user: ['id']
+}));
+app.use(Sentry.Handlers.tracingHandler());
 app.use(compression());
 
 /* public/download - proxy interception */
@@ -196,12 +217,19 @@ app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
 
+
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
 app.use(Sentry.Handlers.errorHandler());
-
+// Optional fallthrough error handler
+app.use(function onError(err, req, res, next) {
+  // The error id is attached to `res.sentry` to be returned
+  // and optionally displayed to the user for support.
+  res.statusCode = 500;
+  res.end(res.sentry + '\n');
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -237,9 +265,7 @@ const startApp = () => {
     if (config.get('honeycomb.write_key')) {
       beeline._apiForTesting().honey.writeKey = config.get('honeycomb.write_key');
     }
-    if (config.get('sentry.dsn')) {
-      Sentry.init({ dsn: config.get('sentry.dsn'), environment: config.get('env') });
-    }
+
     logger.start();
     const listenPort = parseInt(config.get('listen.port'), 10);
     app.set('port', listenPort);
