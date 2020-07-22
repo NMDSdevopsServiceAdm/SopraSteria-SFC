@@ -19,6 +19,8 @@
           "options": {
             "aot": true,
             "outputPath": "dist",
+            "sourceMap": true,
+            "extractCss": true,
             "index": "index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -56,8 +58,6 @@
               ],
               "optimization": true,
               "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
