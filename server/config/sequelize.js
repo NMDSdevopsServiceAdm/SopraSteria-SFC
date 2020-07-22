@@ -1,6 +1,29 @@
 const appConfig = require('./config');
 
 module.exports = {
+  production: {
+    use_env_variable: 'DATABASE_URL',
+  },
+  preproduction: {
+    use_env_variable: 'DATABASE_URL',
+  },
+  test: {
+    username: appConfig.get('db.username'),
+    password: appConfig.get('db.password'),
+    database: appConfig.get('db.database'),
+    host: appConfig.get('db.host'),
+    port: appConfig.get('db.port'),
+    dialect: appConfig.get('db.dialect'),
+    migrationStorageTableSchema: 'cqc',
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized : false,
+        ca   : appConfig.get('db.client_ssl.data.ca'),
+        key  : appConfig.get('db.client_ssl.data.key'),
+        cert : appConfig.get('db.client_ssl.data.certificate'),
+      }
+    }
+  },
   development: {
     username: appConfig.get('db.username'),
     password: appConfig.get('db.password'),
@@ -10,7 +33,12 @@ module.exports = {
     dialect: appConfig.get('db.dialect'),
     migrationStorageTableSchema: 'cqc',
     dialectOptions: {
-      ssl: appConfig.get('db.ssl'),
+      ssl: {
+        rejectUnauthorized : false,
+        ca   : appConfig.get('db.client_ssl.data.ca'),
+        key  : appConfig.get('db.client_ssl.data.key'),
+        cert : appConfig.get('db.client_ssl.data.certificate'),
+      }
     }
   },
   localhost: {
