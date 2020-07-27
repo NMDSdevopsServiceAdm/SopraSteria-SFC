@@ -17,8 +17,6 @@ export class ComparisonGroupDirective {}
 export class BenchmarkTileComponent implements OnInit, OnDestroy {
   @Input() public title: string;
   @Input() public description: string;
-  @Input() public yourWorkplace: string;
-  @Input() public comparisonGroup: string;
   @Input() public showYourWorkplace: boolean;
   @Input() public showComparisonGroup: boolean;
 
