@@ -20,7 +20,6 @@
     bottom: 0;
     right: 22px;
     left: 22px;
-
     @include govuk-media-query($until: desktop) {
       min-height: 260px;
     }
