@@ -1,14 +1,29 @@
 @import '~govuk-frontend/settings/all';
+@import '~govuk-frontend/helpers/_media-queries';
 
 .asc-tile {
   border: 1px solid $govuk-border-colour;
   margin-bottom: 30px;
+  position: relative;
+  padding-bottom: 130px;
+  @include govuk-media-query($until: desktop) {
+    padding-bottom: 260px;
+  }
   .asc-tile-description {
     padding: 22px 20px 0 22px;
     border-bottom: 1px solid $govuk-border-colour;
+    min-height: 111px;
   }
   .asc-tile-key {
-    padding: 0 22px 0 22px;
+    position: absolute;
+    min-height: 130px;
+    bottom: 0;
+    right: 22px;
+    left: 22px;
+
+    @include govuk-media-query($until: desktop) {
+      min-height: 260px;
+    }
   }
 }
 
@@ -19,7 +34,7 @@
 .asc-tile-key-number {
   font-size: 60px;
   font-size: 3.75rem;
-  font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: $govuk-font-family;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 700;
