@@ -92,6 +92,9 @@
       <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'User accounts'">
         <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
       </app-tab>
+      <app-tab *ngIf="workplace" [title]="'Benchmarks'">
+        <app-benchmarks-tab [workplace]="workplace"></app-benchmarks-tab>
+      </app-tab>
     </app-tabs>
   </div>
 </div>
