@@ -24,12 +24,6 @@ export class BenchmarkTileComponent implements OnInit, OnDestroy {
 
   constructor(
   ) {
-    console.log(this.title);
-    const descriptions = {
-      Turnover: 'Staff (permanent and temps) left in the past 12 months.',
-      Pay: 'Average hourly pay for a care worker.'
-    };
-    this.description = descriptions[this.title];
   }
 
   ngOnInit() {
