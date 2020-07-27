@@ -21,9 +21,19 @@ module.exports = async () => {
   return {
     production: {
       use_env_variable: 'DATABASE_URL',
+      dialect: config.get('db.dialect'),
+      dialectOptions: {
+        ssl: config.get('db.ssl'),
+      },
+      migrationStorageTableSchema: 'cqc',
     },
     preproduction: {
       use_env_variable: 'DATABASE_URL',
+      dialect: config.get('db.dialect'),
+      dialectOptions: {
+        ssl: config.get('db.ssl'),
+      },
+      migrationStorageTableSchema: 'cqc',
     },
     test: {
       username: config.get('db.username'),
