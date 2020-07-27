@@ -4,6 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 @Component({
   selector: 'app-benchmarks-tab',
   templateUrl: './benchmarks-tab.component.html',
+  styleUrls: ['./benchmarks-tab.component.scss'],
 })
 export class BenchmarksTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

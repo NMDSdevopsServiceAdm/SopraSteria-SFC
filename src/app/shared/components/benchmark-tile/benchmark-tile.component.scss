@@ -1,18 +1,14 @@
 @import '~govuk-frontend/settings/all';
 
-.asc-tiles {
-  display:grid;
-  grid-auto-rows: 1fr;
-  .asc-tile {
-    border: 1px solid $govuk-border-colour;
-    margin-bottom: 30px;
-    .asc-tile-description {
-      padding: 22px 20px 0 22px;
-      border-bottom: 1px solid $govuk-border-colour;
-    }
-    .asc-tile-key {
-      padding: 0 22px 0 22px;
-    }
+.asc-tile {
+  border: 1px solid $govuk-border-colour;
+  margin-bottom: 30px;
+  .asc-tile-description {
+    padding: 22px 20px 0 22px;
+    border-bottom: 1px solid $govuk-border-colour;
+  }
+  .asc-tile-key {
+    padding: 0 22px 0 22px;
   }
 }
 
