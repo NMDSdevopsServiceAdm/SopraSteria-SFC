@@ -19,6 +19,12 @@ import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplac
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
+import {
+  BenchmarkTileComponent,
+  ComparisonGroupDirective,
+  YourWorkplaceDirective,
+} from './components/benchmark-tile/benchmark-tile.component';
+import { BenchmarksTabComponent } from './components/benchmarks-tab/benchmarks-tab.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-dialog/change-data-owner-dialog.component';
@@ -155,7 +161,11 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     DeleteWorkplaceDialogComponent,
     ParentConfirmationDialogComponent,
     CqcConfirmationDialogComponent,
-    TotalStaffComponent
+    TotalStaffComponent,
+    BenchmarkTileComponent,
+    BenchmarksTabComponent,
+    YourWorkplaceDirective,
+    ComparisonGroupDirective
   ],
   exports: [
     AlertComponent,
@@ -220,7 +230,11 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     DeleteWorkplaceDialogComponent,
     ParentConfirmationDialogComponent,
     CqcConfirmationDialogComponent,
-    TotalStaffComponent
+    TotalStaffComponent,
+    BenchmarkTileComponent,
+    BenchmarksTabComponent,
+    YourWorkplaceDirective,
+    ComparisonGroupDirective
   ],
   providers: [
     DialogService,

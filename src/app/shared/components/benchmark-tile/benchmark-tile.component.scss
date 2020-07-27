@@ -1,0 +1,36 @@
+@import '~govuk-frontend/settings/all';
+
+.asc-tiles {
+  display:grid;
+  grid-auto-rows: 1fr;
+  .asc-tile {
+    border: 1px solid $govuk-border-colour;
+    margin-bottom: 30px;
+    .asc-tile-description {
+      padding: 22px 20px 0 22px;
+      border-bottom: 1px solid $govuk-border-colour;
+    }
+    .asc-tile-key {
+      padding: 0 22px 0 22px;
+    }
+  }
+}
+
+.asc-color-turquoise {
+  color:  govuk-colour("turquoise");
+}
+
+.asc-tile-key-number {
+  font-size: 60px;
+  font-size: 3.75rem;
+  font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 700;
+  line-height: 1.09375;
+  display: block;
+}
+
+.asc-tile-key-text {
+  min-height: 80px;
+}
