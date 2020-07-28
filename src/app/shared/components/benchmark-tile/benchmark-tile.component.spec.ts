@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BenchmarkTileComponent } from './benchmark-tile.component';
 
-fdescribe('BenchmarkTileComponent', () => {
+describe('BenchmarkTileComponent', () => {
   let component: BenchmarkTileComponent;
   let fixture: ComponentFixture<BenchmarkTileComponent>;
 
