@@ -9,10 +9,16 @@
   @include govuk-media-query($until: desktop) {
     padding-bottom: 260px;
   }
+  @include govuk-media-query($until: tablet) {
+    padding-bottom: 220px;
+  }
   .asc-tile-description {
     padding: 22px 20px 0 22px;
     border-bottom: 1px solid $govuk-border-colour;
-    min-height: 111px;
+    min-height: 93px;
+    @include govuk-media-query($until: tablet) {
+      min-height: 73px;
+    }
   }
   .asc-tile-key {
     position: absolute;
@@ -22,6 +28,9 @@
     left: 22px;
     @include govuk-media-query($until: desktop) {
       min-height: 260px;
+    }
+    @include govuk-media-query($until: tablet) {
+      min-height: 220px;
     }
   }
 }
@@ -43,4 +52,7 @@
 
 .asc-tile-key-text {
   min-height: 80px;
+  @include govuk-media-query($until: tablet) {
+    min-height: 50px;
+  }
 }
