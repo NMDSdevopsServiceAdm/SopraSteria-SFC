@@ -108,7 +108,7 @@
     "aws-sdk-mock": "^4.5.0",
     "chai": "^4.2.0",
     "codelyzer": "^5.1.2",
-    "cross-env": "^5.2.1",
+    "cross-env": "^7.0.2",
     "faker": "^4.1.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
