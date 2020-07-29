@@ -1151,6 +1151,9 @@ const validateBulkUploadFiles = async (
   });
 
   myWorkers.forEach(thisWorker => {
+    // check if hours matches others in the same job and same annual pay
+    checkPartTimeSalary(thisWorker,myWorkers,csvWorkerSchemaErrors);
+
     // uniquness for a worker is across both the establishment and the worker
     const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
     const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
@@ -1206,7 +1209,7 @@ const validateBulkUploadFiles = async (
         }
       }
     }
-    });
+  });
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no workers records');
   }
@@ -2473,7 +2476,18 @@ const checkDuplicateLocations = async (
       locations[locationId] = thisEstablishment.lineNumber;
     });
 };
+// check if hours matches others in the same job and same annual pay
+const checkPartTimeSalary = (thisWorker,myWorkers,csvWorkerSchemaErrors) => {
 
+  if ((thisWorker._currentLine.CONTHOURS !== '' && thisWorker._currentLine.CONTHOURS < 37) && (thisWorker._currentLine.SALARY !== '' && thisWorker._currentLine.SALARYINT  === '1')) {
+    const comparisonGroup = myWorkers.filter(function(worker) {
+      return ((thisWorker._currentLine.SALARYINT === '1') && (worker._currentLine.SALARY === thisWorker._currentLine.SALARY) && (worker._currentLine.MAINJOBROLE === thisWorker._currentLine.MAINJOBROLE) && (worker._currentLine.CONTHOURS > 36));
+    });
+    if (comparisonGroup.length) {
+      csvWorkerSchemaErrors.push(thisWorker.ftePayCheckHasDifferentHours());
+    }
+  }
+};
 const checkDuplicateWorkerID = (thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors ) => {
   // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
   if (changeKeyNoWhitespace && (allWorkersByKey[changeKeyNoWhitespace] || allKeys.includes(changeKeyNoWhitespace))) {
@@ -2522,3 +2536,4 @@ module.exports.validateEstablishmentCsv = validateEstablishmentCsv;
 module.exports.exportToCsv = exportToCsv;
 module.exports.determineMaxQuals = determineMaxQuals;
 module.exports.sendCountToSlack = sendCountToSlack;
+module.exports.checkPartTimeSalary = checkPartTimeSalary;

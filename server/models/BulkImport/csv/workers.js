@@ -2561,6 +2561,19 @@ class Worker {
     };
   }
 
+  ftePayCheckHasDifferentHours () {
+    return {
+      origin: 'Workers',
+      lineNumber: this._lineNumber,
+      warnCode: Worker.UNCHECKED_ESTABLISHMENT_ERROR,
+      warnType: 'FTE/PTE_SALARY_WARNING',
+      warning: `The salary for this worker (${this._currentLine.UNIQUEWORKERID}) is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
+      source: this._currentLine.LOCALESTID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+
   preValidate (headers) {
     return this._validateHeaders(headers);
   }
