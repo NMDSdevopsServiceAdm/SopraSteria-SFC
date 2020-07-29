@@ -2477,18 +2477,29 @@ const checkDuplicateLocations = async (
     });
 };
 // check if hours matches others in the same job and same annual pay
-const checkPartTimeSalary = (thisWorker,myWorkers,csvWorkerSchemaErrors) => {
-
-  if ((thisWorker._currentLine.CONTHOURS !== '' && thisWorker._currentLine.CONTHOURS < 37) && (thisWorker._currentLine.SALARY !== '' && thisWorker._currentLine.SALARYINT  === '1')) {
+const checkPartTimeSalary = (thisWorker, myWorkers, csvWorkerSchemaErrors) => {
+  if (thisWorker._currentLine.STATUS === 'UNCHECKED' || thisWorker._currentLine.STATUS === 'DELETE') {
+    return;
+  }
+  if (
+    (thisWorker._currentLine.CONTHOURS !== '' && thisWorker._currentLine.CONTHOURS < 37) &&
+    (thisWorker._currentLine.SALARY !== '' && thisWorker._currentLine.SALARYINT === '1')
+  ) {
     const comparisonGroup = myWorkers.filter(function(worker) {
-      return ((thisWorker._currentLine.SALARYINT === '1') && (worker._currentLine.SALARY === thisWorker._currentLine.SALARY) && (worker._currentLine.MAINJOBROLE === thisWorker._currentLine.MAINJOBROLE) && (worker._currentLine.CONTHOURS > 36));
+      return (
+        (worker._currentLine.STATUS !== 'DELETE' && worker._currentLine.STATUS !== 'UNCHECKED') &&
+        (worker._currentLine.SALARYINT === '1') &&
+        (worker._currentLine.SALARY === thisWorker._currentLine.SALARY) &&
+        (worker._currentLine.MAINJOBROLE === thisWorker._currentLine.MAINJOBROLE) &&
+        (worker._currentLine.CONTHOURS > 36)
+      );
     });
     if (comparisonGroup.length) {
       csvWorkerSchemaErrors.push(thisWorker.ftePayCheckHasDifferentHours());
     }
   }
 };
-const checkDuplicateWorkerID = (thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors ) => {
+const checkDuplicateWorkerID = (thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors) => {
   // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
   if (changeKeyNoWhitespace && (allWorkersByKey[changeKeyNoWhitespace] || allKeys.includes(changeKeyNoWhitespace))) {
     // this worker is a duplicate
