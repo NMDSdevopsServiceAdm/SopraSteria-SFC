@@ -37,7 +37,7 @@ describe('BenchmarkTileComponent', () => {
   it('should have the correct class on the your workplace p when show your workplace is true', async () => {
     component.showYourWorkplace = false;
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector(`p[data-testid='yourworkplace']`).className).toEqual('govuk-!-margin-bottom-0 asc-tile-key-text govuk-body-s govuk-!-margin-top-2');
+    expect(fixture.nativeElement.querySelector(`p[data-testid='yourworkplace']`).className).toEqual('govuk-!-margin-bottom-0 asc-tile-key-text govuk-body-s');
   });
 
   it('should have the correct class on the comparison group p when show comparison group is true', async () => {
@@ -49,6 +49,6 @@ describe('BenchmarkTileComponent', () => {
   it('should have the correct class on the comparison group p when show comparison group is true', async () => {
     component.showComparisonGroup = false;
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector(`p[data-testid='comparisongroup']`).className).toEqual('govuk-!-margin-bottom-0 asc-tile-key-text govuk-body-s govuk-!-margin-top-2');
+    expect(fixture.nativeElement.querySelector(`p[data-testid='comparisongroup']`).className).toEqual('govuk-!-margin-bottom-0 asc-tile-key-text govuk-body-s');
   });
 });
