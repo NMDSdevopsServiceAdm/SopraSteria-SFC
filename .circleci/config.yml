@@ -321,9 +321,9 @@ workflows:
             requires:
               - install
         - blue_green:
-            name: blue_green_dev
-            appname: sfcdev
-            env_prefix: SFC_DEV
+            name: blue_green_benchmarks
+            appname: sfcbenchmarks
+            env_prefix: SFC_BENCHMARKS
             requires:
                 - test_frontend
                 - test_backend
@@ -331,18 +331,17 @@ workflows:
             filters:
                 branches:
                     only:
-                        - develop
+                        - feat/benchmarks
             endpoint: https://api.cloud.service.gov.uk
             org: dhsc-skills-for-care-nmds-sc-2
             space: sandbox
-            manifest: manifest.dev.yml
+            manifest: manifest.benchmarks.yml
             package: '.'
-            dark_subdomain: sfcdev-dark
+            dark_subdomain: sfcbenchmarks-dark
             dark_domain: cloudapps.digital
-            live_subdomain: sfcdev
+            live_subdomain: sfcbenchmarks
             live_domain: cloudapps.digital
-            build_steps:
-                - run: npm run build
+            workspace_path: .
         - blue_green:
             name: blue_green_staging
             appname: sfcstaging
@@ -426,11 +425,11 @@ workflows:
             workspace_path: .
         -  sentry_release:
              requires:
-               - blue_green_dev
+               - blue_green_benchmarks
              filters:
                branches:
                  only:
-                   - develop
+                   - feat/benchmarks
              env: development
         - sentry_release:
             requires:
