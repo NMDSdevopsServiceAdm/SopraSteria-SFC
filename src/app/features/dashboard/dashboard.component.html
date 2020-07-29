@@ -89,8 +89,11 @@
         <app-training-and-qualifications-tab [workplace]="workplace"></app-training-and-qualifications-tab>
       </app-tab>
 
-      <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'User accounts'">
+      <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'Users'">
         <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
+      </app-tab>
+      <app-tab *ngIf="workplace" [title]="'Benchmarks'">
+        <app-benchmarks-tab [workplace]="workplace"></app-benchmarks-tab>
       </app-tab>
     </app-tabs>
   </div>
