@@ -229,8 +229,8 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         expect(csvWorkerSchemaErrors[0]).to.eql({
           origin: 'Workers',
           lineNumber: 1,
-          warnCode: 997,
-          warnType: 'FTE/PTE_SALARY_WARNING',
+          warnCode: 1300,
+          warnType: 'CONT_HOURS_ERROR',
           warning: `The salary for this worker (PTE) is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
           source: 'foo',
           worker: 'PTE',
@@ -326,6 +326,96 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         expect(csvWorkerSchemaErrors.length).equals(0);
 
       });
+      it('shouldnt error when the worker status is DELETE ', async () => {
+        const csvWorkerSchemaErrors = [];
+        const myWorkers = [
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'FTE',
+              CONTHOURS:'50',
+              SALARY: '50',
+              SALARYINT: '1',//Annually
+              HOURLYRATE: '',
+              MAINJOBROLE : '5',
+
+            },
+          }),
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'PTE',
+              CONTHOURS: '10',
+              SALARY:'50',
+              SALARYINT: '1', //Annually
+              HOURLYRATE: '',
+              MAINJOBROLE: '5',
+              STATUS: 'DELETE'
+            },
+          }),
+        ].map((currentLine, currentLineNumber) => {
+          const worker = new WorkerCsvValidator.Worker(
+            currentLine,
+            currentLineNumber,
+            []
+          );
+
+          worker.validate();
+
+          return worker;
+        });
+
+        myWorkers.forEach(thisWorker => {
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,csvWorkerSchemaErrors);
+        });
+        expect(csvWorkerSchemaErrors.length).equals(0);
+
+      });
+      it('shouldnt error when the compared worker status is DELETE ', async () => {
+        const csvWorkerSchemaErrors = [];
+        const myWorkers = [
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'FTE',
+              CONTHOURS:'50',
+              SALARY: '50',
+              SALARYINT: '1',//Annually
+              HOURLYRATE: '',
+              MAINJOBROLE : '5',
+              STATUS: 'DELETE'
+            },
+          }),
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'PTE',
+              CONTHOURS: '10',
+              SALARY:'50',
+              SALARYINT: '1', //Annually
+              HOURLYRATE: '',
+              MAINJOBROLE: '5',
+
+            },
+          }),
+        ].map((currentLine, currentLineNumber) => {
+          const worker = new WorkerCsvValidator.Worker(
+            currentLine,
+            currentLineNumber,
+            []
+          );
+
+          worker.validate();
+
+          return worker;
+        });
+
+        myWorkers.forEach(thisWorker => {
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,csvWorkerSchemaErrors);
+        });
+        expect(csvWorkerSchemaErrors.length).equals(0);
+
+      });
       it('should only show errors on PTEs', async () => {
         const csvWorkerSchemaErrors = [];
         const myWorkers = [
@@ -382,8 +472,8 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         expect(csvWorkerSchemaErrors[0]).to.eql({
           origin: 'Workers',
           lineNumber: 1,
-          warnCode: 997,
-          warnType: 'FTE/PTE_SALARY_WARNING',
+          warnCode: 1300,
+          warnType: 'CONT_HOURS_ERROR',
           warning: `The salary for this worker (PTE) is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
           source: 'foo',
           worker: 'PTE',
@@ -392,8 +482,8 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         expect(csvWorkerSchemaErrors[1]).to.eql({
           origin: 'Workers',
           lineNumber: 2,
-          warnCode: 997,
-          warnType: 'FTE/PTE_SALARY_WARNING',
+          warnCode: 1300,
+          warnType: 'CONT_HOURS_ERROR',
           warning: `The salary for this worker (PTE 2) is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
           source: 'foo',
           worker: 'PTE 2',

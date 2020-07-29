@@ -2565,8 +2565,8 @@ class Worker {
     return {
       origin: 'Workers',
       lineNumber: this._lineNumber,
-      warnCode: Worker.UNCHECKED_ESTABLISHMENT_ERROR,
-      warnType: 'FTE/PTE_SALARY_WARNING',
+      warnCode: Worker.CONT_HOURS_ERROR,
+      warnType: 'CONT_HOURS_ERROR',
       warning: `The salary for this worker (${this._currentLine.UNIQUEWORKERID}) is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
       source: this._currentLine.LOCALESTID,
       worker: this._currentLine.UNIQUEWORKERID,
