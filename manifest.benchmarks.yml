@@ -4,5 +4,5 @@ applications:
   disk_quota: 2GB
   buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.6.32
   services:
-  - sfcbenchmarksdb
+    - sfcbenchmarksdb
 stack: cflinuxfs3
