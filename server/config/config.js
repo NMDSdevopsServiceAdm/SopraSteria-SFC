@@ -15,7 +15,7 @@ convict.addFormat(require('convict-format-with-validator').url);
 const config = convict({
   env: {
     doc: 'The application environment',
-    format: ['production', 'preproduction', 'development', 'test', 'accessibility', 'localhost'],
+    format: ['production', 'preproduction', 'benchmarks', 'development', 'test', 'accessibility', 'localhost'],
     default: 'localhost',
     env: 'NODE_ENV'
   },
