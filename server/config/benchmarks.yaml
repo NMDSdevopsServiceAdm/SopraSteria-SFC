@@ -18,9 +18,6 @@ db:
         min: 10
         max: 10
     ssl: true
-    client_ssl:
-        status: false
-        usingFiles: false
 
 slack:
     level : 3     # enables Slack notifications
@@ -38,9 +35,5 @@ bulkupload:
         storeIntermediaries: true
     completion:
         timeout: 180
-
-public:
-    download:
-        baseurl: https://sfc-public-dev.s3.eu-west-2.amazonaws.com/public/download
 
 # no notify definition - not used in development
