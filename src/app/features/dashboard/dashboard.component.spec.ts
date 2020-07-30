@@ -78,6 +78,45 @@ describe('DashboardComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('Tabs', () => {
+    it('should display the Benchmarks tab when the workplace is CQC Regulated', async () => {
+      const { component } = await setup(true);
+
+      const establishment = {
+        ...component.fixture.componentInstance.workplace
+      };
+      establishment.isRegulated = true;
+      component.fixture.componentInstance.workplace = establishment;
+      component.fixture.detectChanges();
+
+      expect(component.getByText('Benchmarks')).toBeTruthy();
+    });
+    it('should display the Benchmarks tab when the workplace is not CQC Regulated', async () => {
+      const { component } = await setup(true);
+
+      const establishment = {
+        ...component.fixture.componentInstance.workplace
+      };
+      establishment.isRegulated = false;
+      component.fixture.componentInstance.workplace = establishment;
+      component.fixture.detectChanges();
+
+      expect(component.queryByText('Benchmarks')).toBeNull();
+    });
+    it('should display the Users tab', async () => {
+      const { component } = await setup(true);
+
+      const establishment = {
+        ...component.fixture.componentInstance.workplace
+      };
+      establishment.isRegulated = false;
+      component.fixture.componentInstance.workplace = establishment;
+      component.fixture.detectChanges();
+
+      expect(component.getByText('Users')).toBeTruthy();
+    });
+  });
+
   describe('Archive Workplace', () => {
     it('should display a Delete Workplace link if user is an admin', async () => {
       const { component } = await setup(true);
