@@ -2477,12 +2477,12 @@ const checkDuplicateLocations = async (
     });
 };
 // check if hours matches others in the same job and same annual pay
-const checkPartTimeSalary = (thisWorker, myWorkers, csvWorkerSchemaErrors) => {
+const checkPartTimeSalary = (thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors) => {
   if (thisWorker._currentLine.STATUS === 'UNCHECKED' || thisWorker._currentLine.STATUS === 'DELETE') {
     return;
   }
   if (
-    (thisWorker._currentLine.CONTHOURS !== '' && thisWorker._currentLine.CONTHOURS < 37) &&
+    (thisWorker._currentLine.CONTHOURS !== '' && parseFloat(thisWorker._currentLine.CONTHOURS) < 37) &&
     (thisWorker._currentLine.SALARY !== '' && thisWorker._currentLine.SALARYINT === '1')
   ) {
     let workersToCheckinDB = [];
@@ -2492,7 +2492,7 @@ const checkPartTimeSalary = (thisWorker, myWorkers, csvWorkerSchemaErrors) => {
         (worker._currentLine.SALARYINT === '1') &&
         (worker._currentLine.SALARY === thisWorker._currentLine.SALARY) &&
         (worker._currentLine.MAINJOBROLE === thisWorker._currentLine.MAINJOBROLE) &&
-        (worker._currentLine.CONTHOURS > 36)
+        (parseFloat(worker._currentLine.CONTHOURS) > 36)
       ) {
         return true;
       } else if (worker._currentLine.STATUS === 'UNCHECKED' || worker._currentLine.STATUS === 'NOCHANGE') {
@@ -2510,7 +2510,7 @@ const checkPartTimeSalary = (thisWorker, myWorkers, csvWorkerSchemaErrors) => {
             const worker = establishment._workerEntities[localID];
             if ((worker.annualHourlyPay && worker.annualHourlyPay.value === 'Annually' && worker.annualHourlyPay.rate == thisWorker._currentLine.SALARY) && worker.mainJob) {
               const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(thisWorker._currentLine.MAINJOBROLE));
-              if ((worker.mainJob.jobId == mappedRole) && (worker.contractedHours && worker.contractedHours.hours > 36)) {
+              if ((worker.mainJob.jobId == mappedRole) && (worker.contractedHours && parseFloat(worker.contractedHours.hours) > 36)) {
                 return true;
               }
             }
