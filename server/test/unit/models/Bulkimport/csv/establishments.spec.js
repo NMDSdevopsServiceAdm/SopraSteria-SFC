@@ -4,7 +4,8 @@ const buildEstablishmentCSV = require('../../../../factories/establishment/csv')
 const buildWorkerCSV = require('../../../../factories/worker/csv');
 const establishmentCsv = require('../../../../../models/BulkImport/csv/establishments');
 const workerCsv = require('../../../../../models/BulkImport/csv/workers');
-const sinon = require('sinon');
+const models = require('../../../../../models');
+const sandbox = require('sinon').createSandbox();
 
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
   const worker = new workerCsv.Worker(currentLine, lineNumber, allCurrentEstablishments);
@@ -29,7 +30,7 @@ const crossValidate = async (establishmentRow, workerRow, callback) => {
 
   const csvEstablishmentSchemaErrors = [];
 
-  const fetchMyEstablishmentsWorkers = sinon.spy(async () => {
+  const fetchMyEstablishmentsWorkers = sandbox.spy(async () => {
     return [];
   });
 
@@ -44,11 +45,12 @@ const crossValidate = async (establishmentRow, workerRow, callback) => {
 
 describe('Bulk Upload - Establishment CSV', () => {
   beforeEach(() => {
-    sinon.stub(BUDI, 'initialize');
+    sandbox.stub(BUDI, 'initialize');
+    sandbox.stub(models.pcodedata, 'findAll').returns([]);
   });
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
   });
 
   describe('Cross Validations', () => {
