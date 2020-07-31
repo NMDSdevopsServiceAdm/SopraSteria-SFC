@@ -545,7 +545,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
-              error: 'Staff record has a status of UNCHECKED but doens\'t exist, please change to NEW if you want to add this staff record',
+              error: 'Staff record has a status of UNCHECKED but doesn\'t exist, please change to NEW if you want to add this staff record',
               source: myStatus
             });
           }
@@ -2555,6 +2555,19 @@ class Worker {
       errCode: Worker.UNCHECKED_ESTABLISHMENT_ERROR,
       errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
       error: 'LOCALESTID does not exist in Workplace file',
+      source: this._currentLine.LOCALESTID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+
+  ftePayCheckHasDifferentHours () {
+    return {
+      origin: 'Workers',
+      lineNumber: this._lineNumber,
+      warnCode: Worker.SALARY_ERROR,
+      warnType: 'SALARY_ERROR',
+      warning: `SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
       source: this._currentLine.LOCALESTID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID
