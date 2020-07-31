@@ -223,15 +223,15 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         });
 
          myWorkers.forEach(thisWorker => {
-           bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,csvWorkerSchemaErrors);
+           bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{},csvWorkerSchemaErrors);
          });
         expect(csvWorkerSchemaErrors.length).equals(1);
         expect(csvWorkerSchemaErrors[0]).to.eql({
           origin: 'Workers',
           lineNumber: 1,
-          warnCode: 1300,
-          warnType: 'CONT_HOURS_ERROR',
-          warning: `The salary for this worker (PTE) is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
+          warnCode: 1260,
+          warnType: 'SALARY_ERROR',
+          warning: `SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
           source: 'foo',
           worker: 'PTE',
           name: 'foo'
@@ -276,7 +276,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         });
 
         myWorkers.forEach(thisWorker => {
-          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,csvWorkerSchemaErrors);
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{}, csvWorkerSchemaErrors);
         });
         console.log(csvWorkerSchemaErrors);
         expect(csvWorkerSchemaErrors.length).equals(0);
@@ -321,7 +321,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         });
 
         myWorkers.forEach(thisWorker => {
-          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,csvWorkerSchemaErrors);
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{},csvWorkerSchemaErrors);
         });
         expect(csvWorkerSchemaErrors.length).equals(0);
 
@@ -366,7 +366,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         });
 
         myWorkers.forEach(thisWorker => {
-          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,csvWorkerSchemaErrors);
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{},csvWorkerSchemaErrors);
         });
         expect(csvWorkerSchemaErrors.length).equals(0);
 
@@ -411,7 +411,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         });
 
         myWorkers.forEach(thisWorker => {
-          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,csvWorkerSchemaErrors);
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{},csvWorkerSchemaErrors);
         });
         expect(csvWorkerSchemaErrors.length).equals(0);
 
@@ -466,15 +466,15 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         });
 
         myWorkers.forEach(thisWorker => {
-          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,csvWorkerSchemaErrors);
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{},csvWorkerSchemaErrors);
         });
         expect(csvWorkerSchemaErrors.length).equals(2);
         expect(csvWorkerSchemaErrors[0]).to.eql({
           origin: 'Workers',
           lineNumber: 1,
-          warnCode: 1300,
-          warnType: 'CONT_HOURS_ERROR',
-          warning: `The salary for this worker (PTE) is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
+          warnCode: 1260,
+          warnType: 'SALARY_ERROR',
+          warning: `SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
           source: 'foo',
           worker: 'PTE',
           name: 'foo'
@@ -482,15 +482,16 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         expect(csvWorkerSchemaErrors[1]).to.eql({
           origin: 'Workers',
           lineNumber: 2,
-          warnCode: 1300,
-          warnType: 'CONT_HOURS_ERROR',
-          warning: `The salary for this worker (PTE 2) is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
+          warnCode: 1260,
+          warnType: 'SALARY_ERROR',
+          warning: `SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
           source: 'foo',
           worker: 'PTE 2',
           name: 'foo'
         });
 
       });
+
     });
     describe('checkDuplicateWorkerID()', () => {
       it('errors when CHGUNIQUEWRKID is not unique', async () => {
