@@ -1308,69 +1308,25 @@ class Establishment {
 
   _crossValidateTotalPermTemp (
     csvEstablishmentSchemaErrors,
-    {
-      employedWorkers = 0,
-      nonEmployedWorkers = 0,
-      directCareWorkers = 0,
-      managerialProfessionalWorkers = 0
-    }) {
+    { employedWorkers = 0, nonEmployedWorkers = 0 }
+  ) {
     const template = {
       origin: 'Establishments',
       lineNumber: this._lineNumber,
       warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
       warnType: 'TOTAL_PERM_TEMP_WARNING',
       source: this._currentLine.TOTALPERMTEMP,
-      name: this._currentLine.LOCALESTID
+      name: this._currentLine.LOCALESTID,
     };
 
-    // Is the establishment CQC regulated?
-    const isCQCRegulated = this._regType === 2;
+    const totalStaff = employedWorkers + nonEmployedWorkers;
 
-    // Is the establishment a local authority?
-    const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
-
-
-    let notSharedLivesOnly = false;
-    let notHeadOfficeOnly = false;
-    if (this._mainService && this._mainService.id) {
-      // Is the establishment only shared lives (code 19)?
-     notSharedLivesOnly = this._mainService.id !== 19;
-
-    // Is the establishment only head office services (code 16)?
-     notHeadOfficeOnly = this._mainService.id !== 16;
-    }
-    if (this._totalPermTemp === employedWorkers + nonEmployedWorkers) {
-      if (notHeadOfficeOnly) {
-        if (employedWorkers === 0) {
-          if(false) {
-            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-              warning: 'The number of employed staff is 0 please check your staff records'
-            }));
-          }
-        } else if (employedWorkers < nonEmployedWorkers) {
-          if(false) {
-            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-              warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records'
-            }));
-          }
-        }
-
-        if (isCQCRegulated && notSharedLivesOnly && directCareWorkers === 0) {
-          if(false) {
-            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-              warning: 'The number of direct care staff is 0 please check your staff records'
-            }));
-          }
-        }
-      }
-
-      if (isLocalAuthority && managerialProfessionalWorkers === 0) {
-        if(false) {
-          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-            warning: 'The number of non-direct care staff is 0 please check your staff records'
-          }));
-        }
-      }
+    if (this._totalPermTemp !== totalStaff) {
+      csvEstablishmentSchemaErrors.unshift(
+        Object.assign(template, {
+          warning: `Total staff and the number of worker records does not match for ${this._currentLine.ESTNAME}`,
+        })
+      );
     }
   }
 
@@ -2140,7 +2096,7 @@ class Establishment {
     fetchMyEstablishmentsWorkers
   }) {
     // if establishment isn't being added or updated then exit early
-    if (!(['NEW', 'UPDATE'].includes(this._status))) {
+    if (!(['NEW', 'UPDATE', 'NOCHANGE'].includes(this._status))) {
       return;
     }
 
@@ -2198,9 +2154,6 @@ class Establishment {
         }
       });
 
-
-
-    // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
     this._crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, totals);
     this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }
