@@ -1,5 +1,4 @@
 'use strict';
-
 const moment = require('moment');
 const csv = require('csvtojson');
 const uuid = require('uuid');
@@ -7,6 +6,7 @@ const config = require('../../config/config');
 const dbModels = require('../../models');
 const timerLog = require('../../utils/timerLog');
 const slack = require('../../utils/slack/slack-logger');
+const BUDI = require('../../models/BulkImport/BUDI').BUDI;
 
 const s3 = new (require('aws-sdk')).S3({
   region: String(config.get('bulkupload.region'))
@@ -2485,17 +2485,40 @@ const checkPartTimeSalary = (thisWorker, myWorkers, csvWorkerSchemaErrors) => {
     (thisWorker._currentLine.CONTHOURS !== '' && thisWorker._currentLine.CONTHOURS < 37) &&
     (thisWorker._currentLine.SALARY !== '' && thisWorker._currentLine.SALARYINT === '1')
   ) {
-    const comparisonGroup = myWorkers.filter(function(worker) {
-      return (
-        (worker._currentLine.STATUS !== 'DELETE' && worker._currentLine.STATUS !== 'UNCHECKED') &&
+    let workersToCheckinDB = [];
+    let otherWorkerFTE = myWorkers.some(function(worker) {
+      if (
+        (worker._currentLine.STATUS !== 'DELETE' && worker._currentLine.STATUS !== 'UNCHECKED' && worker._currentLine.STATUS !== 'NOCHANGE') &&
         (worker._currentLine.SALARYINT === '1') &&
         (worker._currentLine.SALARY === thisWorker._currentLine.SALARY) &&
         (worker._currentLine.MAINJOBROLE === thisWorker._currentLine.MAINJOBROLE) &&
         (worker._currentLine.CONTHOURS > 36)
-      );
+      ) {
+        return true;
+      } else if (worker._currentLine.STATUS === 'UNCHECKED' || worker._currentLine.STATUS === 'NOCHANGE') {
+        workersToCheckinDB.push(worker._currentLine.UNIQUEWORKERID);
+      }
     });
-    if (comparisonGroup.length) {
+
+    if (otherWorkerFTE) {
       csvWorkerSchemaErrors.push(thisWorker.ftePayCheckHasDifferentHours());
+    } else if (workersToCheckinDB.length) {
+      if (myCurrentEstablishments.some(function(establishment) {
+        return workersToCheckinDB.some(function(localID) {
+          localID = localID.replace(/\s/g, '');
+          if (establishment._workerEntities[localID]) {
+            const worker = establishment._workerEntities[localID.replace(/\s/g, '')];
+            if ((worker.annualHourlyPay && worker.annualHourlyPay.value === 'Annually' && worker.annualHourlyPay.rate == thisWorker._currentLine.SALARY) && (worker.mainJob)) {
+              const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(thisWorker._currentLine.MAINJOBROLE));
+              if ((worker.mainJob.jobId == mappedRole) && (worker.contractedHours && worker.contractedHours.hours > 36)) {
+                return true;
+              }
+            }
+          }
+        });
+      })) {
+        csvWorkerSchemaErrors.push(thisWorker.ftePayCheckHasDifferentHours());
+      }
     }
   }
 };
