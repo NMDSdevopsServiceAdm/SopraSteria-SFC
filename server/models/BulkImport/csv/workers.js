@@ -545,7 +545,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
-              error: 'Staff record has a status of UNCHECKED but doens\'t exist, please change to NEW if you want to add this staff record',
+              error: 'Staff record has a status of UNCHECKED but doesn\'t exist, please change to NEW if you want to add this staff record',
               source: myStatus
             });
           }
