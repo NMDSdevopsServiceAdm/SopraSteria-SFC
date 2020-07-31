@@ -2507,8 +2507,8 @@ const checkPartTimeSalary = (thisWorker, myWorkers, csvWorkerSchemaErrors) => {
         return workersToCheckinDB.some(function(localID) {
           localID = localID.replace(/\s/g, '');
           if (establishment._workerEntities[localID]) {
-            const worker = establishment._workerEntities[localID.replace(/\s/g, '')];
-            if ((worker.annualHourlyPay && worker.annualHourlyPay.value === 'Annually' && worker.annualHourlyPay.rate == thisWorker._currentLine.SALARY) && (worker.mainJob)) {
+            const worker = establishment._workerEntities[localID];
+            if ((worker.annualHourlyPay && worker.annualHourlyPay.value === 'Annually' && worker.annualHourlyPay.rate == thisWorker._currentLine.SALARY) && worker.mainJob) {
               const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(thisWorker._currentLine.MAINJOBROLE));
               if ((worker.mainJob.jobId == mappedRole) && (worker.contractedHours && worker.contractedHours.hours > 36)) {
                 return true;
