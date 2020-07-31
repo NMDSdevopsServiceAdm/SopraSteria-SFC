@@ -47,6 +47,7 @@ describe('Bulk Upload - Establishment CSV', () => {
   beforeEach(() => {
     sandbox.stub(BUDI, 'initialize');
     sandbox.stub(models.pcodedata, 'findAll').returns([]);
+    sandbox.stub(models.establishment, 'findAll').returns([]);
   });
 
   afterEach(() => {
