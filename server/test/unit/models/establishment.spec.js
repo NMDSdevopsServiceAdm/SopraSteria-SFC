@@ -78,12 +78,18 @@ let parentRecords =[
 
 
 describe('/server/models/class/establishment.js', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe('getParentDetails', () => {
-    sinon.stub(Esatblishment, 'fetchAllParentsAndPostcode').callsFake(() => {
-      return parentRecords;
-    })
     it('should return parent name and postcode', async () => {
+      sinon.stub(Esatblishment, 'fetchAllParentsAndPostcode').callsFake(() => {
+        return parentRecords;
+      });
+
       const getParentDetails = await Esatblishment.fetchAllParentsAndPostcode();
+
       if(getParentDetails){
         expect(getParentDetails.length).to.equal(11);
       }
@@ -92,12 +98,17 @@ describe('/server/models/class/establishment.js', () => {
 });
 
 describe('/server/models/class/establishment.js', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe('getParentDetails', () => {
-    const thisEstablishment = new Esatblishment();
-    sinon.stub(thisEstablishment, 'fetchParentDetails').callsFake(() => {
-      return parentDetailsData;
-    });
     it('should return parent details', async () => {
+      const thisEstablishment = new Esatblishment();
+      sinon.stub(thisEstablishment, 'fetchParentDetails').callsFake(() => {
+        return parentDetailsData;
+      });
+
       const getParentDetails = await thisEstablishment.fetchParentDetails(432);
       if (getParentDetails) {
         expect(getParentDetails[0].name).to.equal("Sunset health care");

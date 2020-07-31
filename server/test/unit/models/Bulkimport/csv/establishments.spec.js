@@ -1,4 +1,5 @@
 const expect = require('chai').expect;
+const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
 const buildEstablishmentCSV = require('../../../../factories/establishment/csv');
 const buildWorkerCSV = require('../../../../factories/worker/csv');
 const establishmentCsv = require('../../../../../models/BulkImport/csv/establishments');
@@ -42,6 +43,14 @@ const crossValidate = async (establishmentRow, workerRow, callback) => {
 }
 
 describe('Bulk Upload - Establishment CSV', () => {
+  beforeEach(() => {
+    sinon.stub(BUDI, 'initialize');
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe('Cross Validations', () => {
     it('should validate the total number of staff with the # of staff provided in the Worker CSV when the status is NEW', async () => {
       const establishmentRow = buildEstablishmentCSV({
