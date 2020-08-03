@@ -243,13 +243,6 @@ jobs:
         description: prefix for enviroment variables
         type: string
     steps:
-      - run:
-          name: Check Pull Request
-          command: |
-              if [[ -n "$CIRCLE_PULL_REQUEST" ]]; then
-                echo "Skipping deployment as this is a pull request"
-                circleci step halt
-              fi
       - checkout
       - restore_cache:
             keys:
