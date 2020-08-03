@@ -1323,7 +1323,7 @@ class Establishment {
     if (this._totalPermTemp !== totalStaff) {
       csvEstablishmentSchemaErrors.unshift(
         Object.assign(template, {
-          warning: `Total staff and the number of worker records does not match for ${this._currentLine.ESTNAME}`,
+          warning: `TOTALPERMTEMP (Total staff and the number of worker records) does not match`,
         })
       );
     }

@@ -70,7 +70,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
-        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal(`Total staff and the number of worker records does not match for ${establishmentRow.ESTNAME}`);
+        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal('TOTALPERMTEMP (Total staff and the number of worker records) does not match');
       });
     });
 
@@ -89,7 +89,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
-        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal(`Total staff and the number of worker records does not match for ${establishmentRow.ESTNAME}`);
+        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal('TOTALPERMTEMP (Total staff and the number of worker records) does not match');
       });
     });
 
@@ -108,7 +108,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
-        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal(`Total staff and the number of worker records does not match for ${establishmentRow.ESTNAME}`);
+        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal('TOTALPERMTEMP (Total staff and the number of worker records) does not match');
       });
     });
 
