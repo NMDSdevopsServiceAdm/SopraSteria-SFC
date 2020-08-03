@@ -1152,7 +1152,7 @@ const validateBulkUploadFiles = async (
 
   myWorkers.forEach(thisWorker => {
     // check if hours matches others in the same job and same annual pay
-    checkPartTimeSalary(thisWorker,myWorkers,csvWorkerSchemaErrors);
+      checkPartTimeSalary(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
 
     // uniquness for a worker is across both the establishment and the worker
     const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
