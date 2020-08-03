@@ -118,7 +118,15 @@ commands:
             # Switch name of "dark" version to claim correct name
             cf rename "<<parameters.appname>>-dark" "<<parameters.appname>>"
           name: Cloud Foundry - Re-route live Domain
-
+  skip_if_pr:
+    steps:
+      - run:
+          name: Skip if Pull Request
+          command: |
+              if [[ -n "$CIRCLE_PULL_REQUEST" ]]; then
+                echo "Skipping as this is a pull request"
+                circleci step halt
+              fi
 orbs:
   node: circleci/node@3.0.0
 
@@ -243,13 +251,7 @@ jobs:
         description: prefix for enviroment variables
         type: string
     steps:
-      - run:
-          name: Check Pull Request
-          command: |
-              if [[ -n "$CIRCLE_PULL_REQUEST" ]]; then
-                echo "Skipping deployment as this is a pull request"
-                circleci step halt
-              fi
+      - skip_if_pr
       - checkout
       - restore_cache:
             keys:
@@ -292,6 +294,7 @@ jobs:
         description: Environment
         type: string
     steps:
+      - skip_if_pr
       - checkout
       - attach_workspace:
           at: .
