@@ -4,6 +4,7 @@ const Apm = require("@sentry/apm");
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: "sfc",
+  sampleRate: 7,
   express: {
     userContext: ["id"],
     parentIdSource: 'X-Honeycomb-Trace',
