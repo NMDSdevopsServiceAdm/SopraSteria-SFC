@@ -23,7 +23,7 @@ module.exports = build('WorkerCSV', {
     STARTDATE : moment(fake(f => f.date.past())).format('YYYY'),
     STARTINSECT : moment(fake(f => f.date.past())).format('YYYY'),
     APPRENTICE : '999',
-    EMPLSTATUS : '1',
+    EMPLSTATUS : 1,
     ZEROHRCONT : '2',
     DAYSSICK : '0',
     SALARYINT : '3',
