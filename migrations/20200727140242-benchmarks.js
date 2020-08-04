@@ -3,7 +3,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
    return queryInterface.createTable('Benchmarks', {
-    CssrIDFK: {
+    CssrID: {
       type: Sequelize.DataTypes.INTEGER,
       allowNull: false,
     },
