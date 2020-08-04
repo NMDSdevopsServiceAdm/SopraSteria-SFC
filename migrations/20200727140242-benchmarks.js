@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-   const Benchmarks = queryInterface.createTable('Benchmarks', {
+   return queryInterface.createTable('Benchmarks', {
     CssrIDFK: {
       type: Sequelize.DataTypes.INTEGER,
       allowNull: false,
@@ -45,12 +45,7 @@ module.exports = {
    },
    {
     schema: 'cqc'
-   }
-   )
-
-
-
-   return Benchmarks;
+   });
   },
 
   down: (queryInterface, Sequelize) => {
