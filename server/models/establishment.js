@@ -806,7 +806,7 @@ module.exports = function(sequelize, DataTypes) {
       });
   };
 
-  Establishment.workersPay = function (establishmentId) {
+  Establishment.workers = function (establishmentId) {
     return this.findOne({
       attributes: ['id'],
       include: {

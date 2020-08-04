@@ -7,7 +7,12 @@ router.route('/').get(async (req, res) => {
   try{
     const payData = await pay(req, res, establishmentId);
     const reply = {
-      pay: payData
+      tiles: {
+        pay: payData
+      },
+      meta: {
+
+      }
     }
     return res.status(200).json(reply);
   }catch(err){
@@ -18,23 +23,8 @@ router.route('/').get(async (req, res) => {
 
 const pay = async (req, res, establishmentId) => {
   const establishmentWorkersPay = await models.establishment.workersPay(establishmentId);
-  // const establishmentWorkersPay = await models.establishment.findOne({
-  //   attributes: ['id'],
-  //   include: {
-  //     model: models.worker,
-  //     attributes: ['id', 'uid', 'AnnualHourlyPayRate'],
-  //     as: 'workers',
-  //     where: {
-  //       archived: false,
-  //       MainJobFkValue: 10,
-  //       AnnualHourlyPayValue: 'Hourly'
-  //     }
-  //   }, where: {
-  //     archived: false,
-  //     id: establishmentId
-  //   }
-  // });
   let averagePaidAmount = 0;
+  let stateMessage = '';
   if (establishmentWorkersPay) {
     let paidAmount = 0;
     await Promise.all(establishmentWorkersPay.workers.map(async worker => {
@@ -42,8 +32,20 @@ const pay = async (req, res, establishmentId) => {
       return paidAmount;
     }));
     averagePaidAmount = (paidAmount / establishmentWorkersPay.workers.length).toFixed(2);
+  } else {
+    stateMessage = 'no-workers';
   }
-  return { averagePay: averagePaidAmount };
+
+  const json = {
+      averagePay: {
+        value: averagePaidAmount
+      },
+      comparisonGroup: {
+        value: 0
+      }
+  };
+  if (stateMessage.length) json.averagePay.stateMessage = stateMessage;
+  return json;
 }
 
 module.exports = router;
