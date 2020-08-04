@@ -5,8 +5,8 @@
   [showYourWorkplace]="tileDemo.pay.showYourWorkplace"
   [showComparisonGroup]="tileDemo.pay.showComparisonGroup">
     <your-workplace>
-      <ng-container *ngIf="tileDemo.pay.showYourWorkplace else payYourEmpty">
-        £8.68
+      <ng-container *ngIf="tilesData.tiles && tilesData.tiles.pay.workplaceValue.value else payYourEmpty">
+       {{ tilesData.tiles.pay.workplaceValue.value}}}
       </ng-container>
       <ng-template #payYourEmpty>
         You've not added any data about hourly pay yet.

@@ -806,24 +806,20 @@ module.exports = function(sequelize, DataTypes) {
       });
   };
 
-  Establishment.workers = function (establishmentId) {
+  Establishment.workers = function (establishmentId,where,attribute) {
     return this.findOne({
       attributes: ['id'],
       include: {
         model: sequelize.models.worker,
-        attributes: ['id', 'uid', 'AnnualHourlyPayRate'],
+        attributes: ['id', 'uid', ...attribute],
         as: 'workers',
-        where: {
-          archived: false,
-          MainJobFkValue: 10,
-          AnnualHourlyPayValue: 'Hourly'
-        }
+        where
       }, where: {
-        archived: false,
-        id: establishmentId
+         id: establishmentId
       }
     });
-  }
+  };
+
 
   return Establishment;
 };
