@@ -6,6 +6,7 @@ module.exports = {
     CssrID: {
       type: Sequelize.DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true
     },
     MainServiceFK: {
       type:Sequelize.DataTypes.INTEGER,
@@ -16,7 +17,8 @@ module.exports = {
           schema: 'cqc'
         },
         key: 'reportingID'
-      }
+      },
+      primaryKey: true
     },
     Pay: {
       type:Sequelize.DataTypes.INTEGER,
@@ -45,13 +47,7 @@ module.exports = {
    },
    {
     schema: 'cqc'
-   }).then(() => queryInterface.addConstraint({
-    tableName: 'Benchmarks',
-    schema: 'cqc'
-  }, ['CssrID', 'MainServiceFK'], {
-    type: 'primary key',
-    name: 'benchmarks_pkey'
-  }));
+   });
   },
 
   down: (queryInterface, Sequelize) => {
