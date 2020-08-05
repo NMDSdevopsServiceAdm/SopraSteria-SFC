@@ -38,14 +38,16 @@ const pay = async (req, res, establishmentId) => {
   }
 
   const json = {
-      averagePay: {
-        value: averagePaidAmount
+      workplaceValue: {
+        value: averagePaidAmount,
+        hasValue: stateMessage.length === 0
       },
       comparisonGroup: {
-        value: 0
+        value: 0,
+        hasValue: false
       }
   };
-  if (stateMessage.length) json.averagePay.stateMessage = stateMessage;
+  if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 }
 

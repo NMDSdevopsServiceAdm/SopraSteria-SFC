@@ -2,18 +2,18 @@
   <app-benchmark-tile
   [title]="'Pay'"
   [description]="'Average hourly pay for a care worker.'"
-  [showYourWorkplace]="tileDemo.pay.showYourWorkplace"
-  [showComparisonGroup]="tileDemo.pay.showComparisonGroup">
+  [showYourWorkplace]=" tilesData.tiles.pay.workplaceValue.hasValue"
+  [showComparisonGroup]="tilesData.tiles.pay.comparisonGroup.hasValue">
     <your-workplace>
-      <ng-container *ngIf="!tilesData.tiles && tilesData.tiles.pay.stateMessage else payYourEmpty">
-       {{ tilesData.tiles.pay.value}}}
+      <ng-container *ngIf="tilesData.tiles.pay.workplaceValue.hasValue else payYourEmpty">
+       £{{ tilesData.tiles.pay.workplaceValue.value}}
       </ng-container>
       <ng-template #payYourEmpty>
         You've not added any data about hourly pay yet.
       </ng-template>
     </your-workplace>
     <comparison-group>
-      <ng-container *ngIf="tileDemo.pay.showComparisonGroup else payCompEmpty">
+      <ng-container *ngIf="tilesData.tiles.pay.comparisonGroup.hasValue else payCompEmpty">
         £8.42
       </ng-container>
       <ng-template #payCompEmpty>

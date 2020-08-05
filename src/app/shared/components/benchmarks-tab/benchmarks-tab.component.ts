@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Subscription } from 'rxjs';
 import { BenchmarksService } from '@core/services/benchmarks.service';
-import { Benchmarks } from '@core/model/benchmarks.model';
+import { BenchmarksResponse } from '@core/model/benchmarks.model';
 
 @Component({
   selector: 'app-benchmarks-tab',
@@ -12,7 +12,23 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
 
   @Input() workplace: Establishment;
-  public tilesData: Benchmarks;
+  public tilesData: BenchmarksResponse = {
+    tiles: {
+      pay: {
+        workplaceValue:
+          {
+            value: 0,
+            hasValue: false
+          },
+        comparisonGroup:
+          {
+            value: 0,
+            hasValue: false
+          }
+      }
+    },
+    meta:{}
+  };
   public tileDemo: any = {
     turnover: {
       showYourWorkplace: true,
@@ -42,11 +58,8 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       this.benchmarksService.getAllTiles(this.workplace.uid).subscribe(
         (data) => {
           if (data) {
-           if (data.tiles.pay ){
-             this.tilesData.tiles.pay.showYourWorkplace = !data.tiles.pay.workplaceValue.stateMessage;
-             this.tilesData.tiles.pay.showComparisonGroup = !data.tiles.pay.comparisonGroup.stateMessage;
-
-           }
+            this.tilesData = data;
+            console.log(this.tilesData);
           }
         }
       ))
