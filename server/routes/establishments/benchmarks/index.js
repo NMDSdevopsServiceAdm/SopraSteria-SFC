@@ -22,7 +22,7 @@ router.route('/').get(async (req, res) => {
 });
 
 const pay = async (req, res, establishmentId) => {
-  const whereClause = {MainJobFkValue: 10,archived: false}
+  const whereClause = {MainJobFkValue: 10,archived: false};
   const establishmentWorkersPay = await models.establishment.workers(establishmentId,whereClause,['AnnualHourlyPayRate']);
   let averagePaidAmount = 0;
   let stateMessage = '';
