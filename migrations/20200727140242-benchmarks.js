@@ -45,7 +45,13 @@ module.exports = {
    },
    {
     schema: 'cqc'
-   });
+   }).then(() => queryInterface.addConstraint({
+    tableName: 'Benchmarks',
+    schema: 'cqc'
+  }, ['CssrID', 'MainServiceFK'], {
+    type: 'primary key',
+    name: 'benchmarks_pkey'
+  }));
   },
 
   down: (queryInterface, Sequelize) => {
