@@ -23,6 +23,7 @@
     "server:cover:integration": "nyc --reporter=html mocha server/test/integration/**/*.spec.js",
     "db:migration:generate": "sequelize migration:generate",
     "db:migrate": "sequelize db:migrate",
+    "db:migrate:undo": "sequelize db:migrate:undo",
     "cf:migrate": "node ./bin/cf-migrate.js"
   },
   "private": true,
