@@ -820,6 +820,42 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
+  Establishment.getBenchmarkData = async function (establishmentId) {
+    const postcode = await this.findOne({
+      attributes: ['postcode','id'],
+      where:{id: establishmentId}
+    })
+
+    const cssr = await sequelize.models.pcodedata.findOne({
+      attributes: ['uprn',"postcode"],
+      include:[{
+        model: sequelize.models.cssr,
+        attributes:["id"],
+        as: "theAuthority"
+      }],
+        where:{
+          postcode: postcode.postcode
+        }
+    });
+
+    return this.findOne({
+      attributes:['id'],
+      include:[{
+        model: sequelize.models.services,
+        attributes:['reportingID'],
+        as: "mainService",
+        include:[{
+          model: sequelize.models.benchmarks,
+          where:{
+            CssrID: cssr.theAuthority.id
+          },
+          as:"benchmarks"
+        }]
+      }]
+    });
+
+  };
+
 
   return Establishment;
 };

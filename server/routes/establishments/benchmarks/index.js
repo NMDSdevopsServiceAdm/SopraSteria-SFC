@@ -5,6 +5,7 @@ const models = require('../../../models');
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
   try{
+    const benchmarkComparisonGroup = await models.establishment.getBenchmarkData(establishmentId);
     const payData = await pay(req, res, establishmentId);
     const reply = {
       tiles: {
