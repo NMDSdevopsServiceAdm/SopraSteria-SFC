@@ -34,7 +34,6 @@ module.exports = function(sequelize, DataTypes) {
     reportingID:{
       type: DataTypes.INTEGER,
       allowNull: false,
-      foreignKe
     }
   }, {
     tableName: 'services',
@@ -59,8 +58,8 @@ module.exports = function(sequelize, DataTypes) {
     });
     Services.hasMany(models.benchmarks, {
       foreignKey: 'MainServiceFK',
-      targetKey: 'reportingID',
-      as: 'benchmarks'
+      sourceKey: 'reportingID',
+      as:"benchmarksData"
     });
   };
 

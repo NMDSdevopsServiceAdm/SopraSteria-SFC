@@ -10,31 +10,38 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    Pay: {
+    pay: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      field: "Pay"
     },
-    Sickness: {
+    sickness: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      field: "Sickness"
     },
-    Turnover: {
+    turnover: {
       type: DataTypes.DECIMAL(3, 2),
-      allowNull: true
+      allowNull: true,
+      field: "Turnover"
     },
-    Qualifications: {
+    qualifications: {
       type: DataTypes.DECIMAL(3, 2),
-      allowNull: true
+      allowNull: true,
+      field: "Qualifications"
     },
-    Workplaces: {
+    workplaces: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      field: "Workplaces"
     },
-    Staff: {
+    staff: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    tableName: 'Benchmarks',
+      allowNull: false,
+      field: "Staff"
+
+    }},{
+    tableName: '"Benchmarks"',
     schema: 'cqc',
     createdAt: false,
     updatedAt: false
@@ -43,7 +50,7 @@ module.exports = function(sequelize, DataTypes) {
     Benchmarks.belongsTo(models.services, {
       foreignKey: 'MainServiceFK',
       targetKey: 'reportingID',
-      as: 'mainService'
+      as:"BenchmarkToService"
     });
   };
 

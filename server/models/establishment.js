@@ -837,19 +837,18 @@ module.exports = function(sequelize, DataTypes) {
           postcode: postcode.postcode
         }
     });
-
-    return this.findOne({
+    return await this.findOne({
       attributes:['id'],
+      where:{id: establishmentId },
       include:[{
         model: sequelize.models.services,
-        attributes:['reportingID'],
         as: "mainService",
         include:[{
           model: sequelize.models.benchmarks,
           where:{
             CssrID: cssr.theAuthority.id
           },
-          as:"benchmarks"
+          as:"benchmarksData"
         }]
       }]
     });
