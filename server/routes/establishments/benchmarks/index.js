@@ -6,10 +6,10 @@ const util = require("util");
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
   let benchmarkComparisonGroup = await models.establishment.getBenchmarkData(establishmentId);
-  benchmarkComparisonGroup = benchmarkComparisonGroup.mainService.benchmarksData[0];
-
+  benchmarkComparisonGroup =  benchmarkComparisonGroup.mainService ? benchmarkComparisonGroup.mainService.benchmarksData[0] : null;
+  console.log(JSON.stringify(benchmarkComparisonGroup));
   try{
-    const payData = await pay(req, res, establishmentId,benchmarkComparisonGroup);
+    const payData = await pay(req, res, establishmentId);
 
     let reply = {
       tiles: {
@@ -19,8 +19,8 @@ router.route('/').get(async (req, res) => {
 
       }
     };
+
     reply = await comparisonGroupData(req,res,reply,benchmarkComparisonGroup);
-    console.log(JSON.stringify(reply));
     return res.status(200).json(reply);
   }catch(err){
     console.error(err);
@@ -30,13 +30,19 @@ router.route('/').get(async (req, res) => {
 
 const comparisonGroupData = async (req, res,reply,benchmarkComparisonGroup) => {
   Object.keys(reply.tiles).map(key => {
-    reply.tiles[key].comparisonGroup.value = benchmarkComparisonGroup[key] ? benchmarkComparisonGroup[key] :  0;
-    reply.tiles[key].comparisonGroup.hasValue = !!benchmarkComparisonGroup[key];
-    reply.tiles[key].comparisonGroup.stateMessage = benchmarkComparisonGroup[key] ? "" : "no-data";
+    if (!benchmarkComparisonGroup) {
+      reply.tiles[key].comparisonGroup.value =  0;
+      reply.tiles[key].comparisonGroup.hasValue =  false;
+      reply.tiles[key].comparisonGroup.stateMessage =  "no-data";
+    }else {
+      reply.tiles[key].comparisonGroup.value = benchmarkComparisonGroup[key] ? benchmarkComparisonGroup[key] : 0;
+      reply.tiles[key].comparisonGroup.hasValue = !!benchmarkComparisonGroup[key];
+      reply.tiles[key].comparisonGroup.stateMessage = benchmarkComparisonGroup[key] ? "" : "no-data";
+    }
   });
     return reply;
 }
-const pay = async (req, res, establishmentId,benchmarkComparisonGroup) => {
+const pay = async (req, res, establishmentId) => {
   const whereClause = {MainJobFkValue: 10,archived: false};
   const establishmentWorkersPay = await models.establishment.workers(establishmentId,whereClause,['AnnualHourlyPayRate']);
   let averagePaidAmount = 0;
@@ -66,3 +72,5 @@ const pay = async (req, res, establishmentId,benchmarkComparisonGroup) => {
 }
 
 module.exports = router;
+module.exports.pay = pay;
+module.exports.comparisonGroupData = comparisonGroupData;
