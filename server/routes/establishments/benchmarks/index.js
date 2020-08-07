@@ -5,22 +5,21 @@ const util = require("util");
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
-  let benchmarkComparisonGroup = await models.establishment.getBenchmarkData(establishmentId);
-  benchmarkComparisonGroup =  benchmarkComparisonGroup.mainService ? benchmarkComparisonGroup.mainService.benchmarksData[0] : null;
-  console.log(JSON.stringify(benchmarkComparisonGroup));
+  const tiles = req.query.tiles ? req.query.tiles.split(',') : ['pay'];
   try{
-    const payData = await pay(req, res, establishmentId);
-
+    let benchmarkComparisonGroup = await models.establishment.getBenchmarkData(establishmentId);
+    benchmarkComparisonGroup =  benchmarkComparisonGroup.mainService ? benchmarkComparisonGroup.mainService.benchmarksData[0] : null;
     let reply = {
       tiles: {
-        pay: payData
+
       },
       meta: {
 
       }
     };
+    if (tiles.includes('pay')) reply.tiles.pay = await pay(establishmentId);;
 
-    reply = await comparisonGroupData(req,res,reply,benchmarkComparisonGroup);
+    reply = await comparisonGroupData(reply,benchmarkComparisonGroup);
     return res.status(200).json(reply);
   }catch(err){
     console.error(err);
@@ -28,7 +27,7 @@ router.route('/').get(async (req, res) => {
   }
 });
 
-const comparisonGroupData = async (req, res,reply,benchmarkComparisonGroup) => {
+const comparisonGroupData = async (reply,benchmarkComparisonGroup) => {
   Object.keys(reply.tiles).map(key => {
     if (!benchmarkComparisonGroup) {
       reply.tiles[key].comparisonGroup.value =  0;
@@ -42,7 +41,7 @@ const comparisonGroupData = async (req, res,reply,benchmarkComparisonGroup) => {
   });
     return reply;
 }
-const pay = async (req, res, establishmentId) => {
+const pay = async (establishmentId) => {
   const whereClause = {MainJobFkValue: 10,archived: false};
   const establishmentWorkersPay = await models.establishment.workers(establishmentId,whereClause,['AnnualHourlyPayRate']);
   let averagePaidAmount = 0;
