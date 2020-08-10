@@ -29,7 +29,7 @@ const benchmarksData = benchmarksResponseBuilder();
 @Injectable()
 export class MockBenchmarksService extends BenchmarksService {
 
-  public getAllTiles(establishmentUid: string = '123'): Observable<BenchmarksResponse> {
-    return benchmarksData;
+  public getAllTiles(establishmentUid): Observable<BenchmarksResponse> {
+    return of(benchmarksData) ;
   }
 }
