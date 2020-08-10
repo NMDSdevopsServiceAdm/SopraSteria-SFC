@@ -36,7 +36,9 @@ const comparisonGroupData = async (reply,benchmarkComparisonGroup) => {
     }else {
       reply.tiles[key].comparisonGroup.value = benchmarkComparisonGroup[key] ? benchmarkComparisonGroup[key] : 0;
       reply.tiles[key].comparisonGroup.hasValue = !!benchmarkComparisonGroup[key];
-      reply.tiles[key].comparisonGroup.stateMessage = benchmarkComparisonGroup[key] ? "" : "no-data";
+      if (!benchmarkComparisonGroup[key]){
+        reply.tiles[key].comparisonGroup.stateMessage =  "no-data";
+      }
     }
   });
     return reply;
