@@ -29,21 +29,7 @@ describe('benchmarks', () => {
           ]}
       );
 
-      const req = httpMocks.createRequest({
-        method: 'GET',
-        url: `/api/establishment/${establishmentId}/benchmarks`,
-        params: {
-          establishmentId,
-        },
-      });
-
-      req.establishment = {
-        id: establishmentId,
-      };
-
-      const res = httpMocks.createResponse();
-
-     const json =  await benchmarks.pay(req, res, establishmentId);
+     const json =  await benchmarks.pay(establishmentId);
      const expectedJSON = {
        workplaceValue: {
          value: "25.00",
@@ -62,21 +48,7 @@ describe('benchmarks', () => {
       null
     );
 
-    const req = httpMocks.createRequest({
-      method: 'GET',
-      url: `/api/establishment/${establishmentId}/benchmarks`,
-      params: {
-        establishmentId,
-      },
-    });
-
-    req.establishment = {
-      id: establishmentId,
-    };
-
-    const res = httpMocks.createResponse();
-
-    const json =  await benchmarks.pay(req, res, establishmentId);
+    const json =  await benchmarks.pay(establishmentId);
     const expectedJson = {
       workplaceValue: {
         value: 0,
@@ -107,9 +79,8 @@ describe('benchmarks', () => {
         tiles: {
           pay: {
             workplaceValue: {
-              value: 0,
-              hasValue: false,
-              stateMessage: "no-workers"
+              value: 10,
+              hasValue: true,
             },
             comparisonGroup: {
               value: 0,
@@ -121,13 +92,26 @@ describe('benchmarks', () => {
 
         }
       };
-     const json = await benchmarks.comparisonGroupData(null,null,reply,benchmarkComparisonGroup);
+      const expectedJson = {
+        tiles: {
+          pay: {
+            workplaceValue: {
+              value: 10,
+              hasValue: true,
+            },
+            comparisonGroup: {
+              value: 10,
+              hasValue: true,
+            }
+          }
+        },
+        meta: {
 
-     let expectedJson = reply;
-     expectedJson.tiles.pay.comparisonGroup.value = benchmarkComparisonGroup.pay;
-     expectedJson.tiles.pay.comparisonGroup.hasValue = true;
+        }
+      };
+     const json = await benchmarks.comparisonGroupData(reply,benchmarkComparisonGroup);
 
-     expect(json).to.deep.equal(expectedJson);
+     expect(json.tiles).to.deep.equal(expectedJson.tiles);
     });
     it('should return the correct state message when there is no comparison group value', async () => {
       const benchmarkComparisonGroup = null;
@@ -150,7 +134,7 @@ describe('benchmarks', () => {
 
         }
       };
-      const json = await benchmarks.comparisonGroupData(null,null,reply,benchmarkComparisonGroup);
+      const json = await benchmarks.comparisonGroupData(reply,benchmarkComparisonGroup);
 
       let expectedJson = reply;
       expectedJson.tiles.pay.comparisonGroup.value =0;
