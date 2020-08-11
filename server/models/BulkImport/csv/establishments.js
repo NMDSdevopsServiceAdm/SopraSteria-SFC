@@ -921,7 +921,7 @@ class Establishment {
             lineNumber: this._lineNumber,
             errCode: Establishment.LOCATION_ID_ERROR,
             errType: 'LOCATION_ID_ERROR',
-            error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 09691',
+            error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
             source: myLocationID,
             name: this._currentLine.LOCALESTID
           });
