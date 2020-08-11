@@ -70,26 +70,18 @@ const pay = async (establishmentId) => {
   return json;
 };
 const qualifications = async (establishmentId) => {
-  const seniorCareWorker = 25;
-  const careWorker = 10;
-  const communitySupport = 11;
-  const employmentSupport = 12;
-  const adviceGuidance = 3;
-  const technician = 29;
-  const otherCare = 20;
-  const nurseAssistant = 16;
-  const qualsTileJobs = [seniorCareWorker, careWorker, communitySupport, employmentSupport, adviceGuidance, technician, otherCare, nurseAssistant];
-  const qualsWorkers = await models.worker.specificJobs(establishmentId, qualsTileJobs);
+  const qualsWorkers = await models.worker.specificJobs(establishmentId, models.services.careProvidingStaff);
   let percentOfHigherQuals = 0;
   let stateMessage = '';
   if (qualsWorkers.length) {
-    let higerQualCount = 0;
+    let higherQualCount = 0;
     await Promise.all(qualsWorkers.map(async worker => {
       if (worker.SocialCareQualificationFkValue > 2) {  // SocialCareQualificationFkValue 2 is level 1
-        return higerQualCount++;
+        return higherQualCount++;
       }
     }));
-    percentOfHigherQuals = (higerQualCount / qualsWorkers.length);
+    console.log(higherQualCount +  "   /   " + qualsWorkers.length + "   =  " + (higherQualCount / qualsWorkers.length) );
+    percentOfHigherQuals = (higherQualCount / qualsWorkers.length);
   } else {
     stateMessage = 'no-workers';
   }
