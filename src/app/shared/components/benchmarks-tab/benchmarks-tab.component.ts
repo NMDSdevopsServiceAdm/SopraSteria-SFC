@@ -83,7 +83,6 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
         (data) => {
           if (data) {
             this.tilesData = data;
-            console.log(this.tilesData);
           }
         }
       ))

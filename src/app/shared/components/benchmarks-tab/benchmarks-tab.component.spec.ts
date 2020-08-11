@@ -8,7 +8,7 @@ import { BenchmarksService } from '@core/services/benchmarks.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 
 
-fdescribe('BenchmarksTabComponent', () => {
+describe('BenchmarksTabComponent', () => {
       let component: BenchmarksTabComponent;
       let fixture: ComponentFixture<BenchmarksTabComponent>;
 
