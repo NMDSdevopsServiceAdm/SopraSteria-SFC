@@ -2,10 +2,10 @@
   <app-benchmark-tile
   [title]="'Pay'"
   [description]="'Average hourly pay for a care worker.'"
-  [showYourWorkplace]=" tilesData.tiles.pay.workplaceValue.hasValue"
-  [showComparisonGroup]="tilesData.tiles.pay.comparisonGroup.hasValue">
+  [showYourWorkplace]=" tilesData.tiles.pay && tilesData.tiles.pay.workplaceValue.hasValue"
+  [showComparisonGroup]="tilesData.tiles.pay && tilesData.tiles.pay.comparisonGroup.hasValue">
     <your-workplace>
-      <ng-container *ngIf="tilesData.tiles.pay.workplaceValue.hasValue else payYourEmpty">
+      <ng-container *ngIf="tilesData.tiles.pay && tilesData.tiles.pay.workplaceValue.hasValue else payYourEmpty">
        £{{ tilesData.tiles.pay.workplaceValue.value}}
       </ng-container>
       <ng-template #payYourEmpty>
@@ -13,7 +13,7 @@
       </ng-template>
     </your-workplace>
     <comparison-group>
-      <ng-container *ngIf="tilesData.tiles.pay.comparisonGroup.hasValue else payCompEmpty">
+      <ng-container *ngIf="tilesData.tiles.pay && tilesData.tiles.pay.comparisonGroup.hasValue else payCompEmpty">
         £{{tilesData.tiles.pay.comparisonGroup.value}}
       </ng-container>
       <ng-template #payCompEmpty>
@@ -46,19 +46,19 @@
   <app-benchmark-tile
   [title]="'Sickness'"
   [description]="'Average days each worker was off in the last 12 months.'"
-  [showYourWorkplace]="tileDemo.sickness.showYourWorkplace"
-  [showComparisonGroup]="tileDemo.sickness.showComparisonGroup">
+  [showYourWorkplace]="tilesData.tiles.sickness && tilesData.tiles.sickness.workplaceValue.hasValue"
+  [showComparisonGroup]="tilesData.tiles.sickness && tilesData.tiles.sickness.comparisonGroup.hasValue">
     <your-workplace>
-      <ng-container *ngIf="tileDemo.sickness.showYourWorkplace else sicknessYourEmpty">
-        17
+      <ng-container *ngIf="tilesData.tiles.sickness && tilesData.tiles.sickness.workplaceValue.hasValue else sicknessYourEmpty">
+       {{tilesData.tiles.sickness.workplaceValue.value}}
       </ng-container>
       <ng-template #sicknessYourEmpty>
         You've not added any data about sickness yet.
       </ng-template>
     </your-workplace>
     <comparison-group>
-      <ng-container *ngIf="tileDemo.sickness.showComparisonGroup else sicknessCompEmpty">
-        10
+      <ng-container *ngIf="tilesData.tiles.sickness && tilesData.tiles.sickness.comparisonGroup.hasValue else sicknessCompEmpty">
+        {{tilesData.tiles.sickness.comparisonGroup.value}}
       </ng-container>
       <ng-template #sicknessCompEmpty>
         We do not have enough data to show this comparison yet.

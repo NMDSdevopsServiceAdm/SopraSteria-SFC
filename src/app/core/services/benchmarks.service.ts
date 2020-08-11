@@ -10,6 +10,6 @@ export class BenchmarksService {
   constructor(private http: HttpClient) {}
 
   getAllTiles(establishmentId): Observable<BenchmarksResponse> {
-    return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/`);
+    return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/?tiles=pay,sickness`);
   }
 }

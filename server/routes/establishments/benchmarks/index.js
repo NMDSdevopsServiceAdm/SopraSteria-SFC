@@ -5,7 +5,8 @@ const util = require('util');
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
-  const tiles = req.query.tiles ? req.query.tiles.split(',') : ['pay'];
+  const tiles =  req.query.tiles.split(',');
+
   try {
     let benchmarkComparisonGroup = await models.establishment.getBenchmarkData(establishmentId);
     benchmarkComparisonGroup = benchmarkComparisonGroup.mainService ? benchmarkComparisonGroup.mainService.benchmarksData[0] : null;
@@ -14,6 +15,7 @@ router.route('/').get(async (req, res) => {
       meta: {}
     };
     if (tiles.includes('pay')) reply.tiles.pay = await pay(establishmentId);
+    if (tiles.includes('sickness')) reply.tiles.sickness = await sickness(establishmentId);
 
     reply = await comparisonGroupData(reply, benchmarkComparisonGroup);
     return res.status(200).json(reply);
@@ -67,7 +69,35 @@ const pay = async (establishmentId) => {
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
-
+const sickness = async (establishmentId) => {
+  const whereClause = { DaysSickValue: 'Yes', archived: false };
+  const establishmentWorkers = await models.establishment.workers(establishmentId, whereClause, ['DaysSickDays']);
+  let averageSickDays = 0;
+  let stateMessage = '';
+  if (establishmentWorkers) {
+    let sickness = 0;
+    await Promise.all(establishmentWorkers.workers.map(async worker => {
+      sickness = sickness + Number(worker.DaysSickDays);
+      return sickness;
+    }));
+    averageSickDays = Math.round(sickness / establishmentWorkers.workers.length);
+  } else {
+    stateMessage = 'no-workers';
+  }
+  const json = {
+    workplaceValue: {
+      value: averageSickDays,
+      hasValue: stateMessage.length === 0
+    },
+    comparisonGroup: {
+      value: 0,
+      hasValue: false
+    }
+  };
+  if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
+  return json;
+};
 module.exports = router;
 module.exports.pay = pay;
+module.exports.sickness = sickness;
 module.exports.comparisonGroupData = comparisonGroupData;
