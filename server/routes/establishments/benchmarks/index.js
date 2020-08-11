@@ -80,7 +80,6 @@ const qualifications = async (establishmentId) => {
         return higherQualCount++;
       }
     }));
-    console.log(higherQualCount +  "   /   " + qualsWorkers.length + "   =  " + (higherQualCount / qualsWorkers.length) );
     percentOfHigherQuals = (higherQualCount / qualsWorkers.length);
   } else {
     stateMessage = 'no-workers';
