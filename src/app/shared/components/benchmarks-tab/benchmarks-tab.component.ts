@@ -25,6 +25,18 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
             value: 0,
             hasValue: false
           }
+      },
+      sickness: {
+        workplaceValue:
+          {
+            value: 0,
+            hasValue: false
+          },
+        comparisonGroup:
+          {
+            value: 0,
+            hasValue: false
+          }
       }
     },
     meta:{}
