@@ -71,16 +71,16 @@ const pay = async (establishmentId) => {
 };
 const sickness = async (establishmentId) => {
   const whereClause = { DaysSickValue: 'Yes', archived: false };
-  const establishmentWorkersPay = await models.establishment.workers(establishmentId, whereClause, ['DaysSickDays']);
+  const establishmentWorkers = await models.establishment.workers(establishmentId, whereClause, ['DaysSickDays']);
   let averageSickDays = 0;
   let stateMessage = '';
-  if (establishmentWorkersPay) {
+  if (establishmentWorkers) {
     let sickness = 0;
-    await Promise.all(establishmentWorkersPay.workers.map(async worker => {
+    await Promise.all(establishmentWorkers.workers.map(async worker => {
       sickness = sickness + Number(worker.DaysSickDays);
       return sickness;
     }));
-    averageSickDays = Math.round(sickness / establishmentWorkersPay.workers.length);
+    averageSickDays = Math.round(sickness / establishmentWorkers.workers.length);
   } else {
     stateMessage = 'no-workers';
   }
