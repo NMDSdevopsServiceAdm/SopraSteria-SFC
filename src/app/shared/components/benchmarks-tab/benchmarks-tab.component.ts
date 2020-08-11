@@ -36,8 +36,20 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           {
             value: 0,
             hasValue: false
-          }
-      }
+          },
+      },
+        qualifications: {
+          workplaceValue:
+            {
+              value: 0,
+              hasValue: false
+            },
+          comparisonGroup:
+            {
+              value: 0,
+              hasValue: false
+            }
+        }
     },
     meta:{}
   };
@@ -75,6 +87,13 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           }
         }
       ))
+  }
+
+  public formatPercent(data) {
+    return Math.round(data * 100) + '%'
+  }
+  public formatPay(data) {
+    return  '£' + Number(data).toFixed(2);
   }
 
   ngOnDestroy() {

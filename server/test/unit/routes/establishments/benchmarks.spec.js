@@ -128,6 +128,72 @@ describe('benchmarks', () => {
       expect(json).to.deep.equal(expectedJson);
     });
   });
+  describe('qualifications', () => {
+    it('should return the correct calculation', async () => {
+      const establishmentId = 123;
+      sinon.stub(models.worker, 'specificJobs').returns(
+          [ {
+              'id': '',
+              'uid': '',
+              'SocialCareQualificationFkValue': '1'
+            }, {
+              'id': '',
+              'uid': '',
+              'SocialCareQualificationFkValue': '2'
+            }, {
+              'id': '',
+              'uid': '',
+              'SocialCareQualificationFkValue': '5'
+            }, {
+          'id': '',
+          'uid': '',
+          'SocialCareQualificationFkValue': '4'
+        }, {
+          'id': '',
+          'uid': '',
+          'SocialCareQualificationFkValue': '1'
+        }, {
+          'id': '',
+          'uid': '',
+          'SocialCareQualificationFkValue': '3'
+        }]
+      ); // quals(3)/total(6) = 0.5
+
+      const json = await benchmarks.qualifications(establishmentId);
+      const expectedJSON = {
+        workplaceValue: {
+          value: 0.5,
+          hasValue: true
+        },
+        comparisonGroup: {
+          value: 0,
+          hasValue: false
+        }
+      };
+      expect(json).to.deep.equal(expectedJSON);
+    });
+
+    it('should return the correct state message when there is no workplace value', async () => {
+      const establishmentId = 123;
+      sinon.stub(models.worker, 'specificJobs').returns(
+        []
+      );
+
+      const json = await benchmarks.qualifications(establishmentId);
+      const expectedJson = {
+        workplaceValue: {
+          value: 0,
+          hasValue: false,
+          stateMessage: 'no-workers'
+        },
+        comparisonGroup: {
+          value: 0,
+          hasValue: false
+        }
+      };
+      expect(json).to.deep.equal(expectedJson);
+    });
+  });
   describe('comparisonGroupData', () => {
     it('should return the correct pay comparison Data', async () => {
       const benchmarkComparisonGroup = {
