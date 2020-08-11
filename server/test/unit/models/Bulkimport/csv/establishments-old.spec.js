@@ -1642,7 +1642,7 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
         {
           "errCode": 1110,
           "errType": "LOCATION_ID_ERROR",
-          "error": "LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969",
+          "error": "LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 09691",
           "lineNumber": 2,
           "name": "omar3",
           "origin": "Establishments",

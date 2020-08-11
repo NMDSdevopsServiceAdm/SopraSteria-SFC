@@ -921,7 +921,7 @@ class Establishment {
             lineNumber: this._lineNumber,
             errCode: Establishment.LOCATION_ID_ERROR,
             errType: 'LOCATION_ID_ERROR',
-            error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
+            error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 09691',
             source: myLocationID,
             name: this._currentLine.LOCALESTID
           });
@@ -1331,7 +1331,7 @@ class Establishment {
 
   _validateAllJobs () {
     // optional
-    const allJobs = this._currentLine.ALLJOBROLES.split(';');
+    const allJobs = (this._currentLine.ALLJOBROLES) ? this._currentLine.ALLJOBROLES.split(';') : [];
     const localValidationErrors = [];
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
@@ -2053,38 +2053,36 @@ class Establishment {
 
   // returns true on success, false is any attribute of Establishment fails
   async validate () {
-    let status = true;
-
-    status = !this._validateLocalisedId() ? false : status;
-    status = !this._validateEstablishmentName() ? false : status;
-    status = !this._validateStatus() ? false : status;
+    this._validateLocalisedId();
+    this._validateEstablishmentName();
+    this._validateStatus();
 
     // if the status is unchecked or deleted, then don't continue validation
     if (!STOP_VALIDATING_ON.includes(this._status)) {
-      status = await this._validateAddress() ? false : status;
-      status = !this._validateEstablishmentType() ? false : status;
+      await this._validateAddress();
+      this._validateEstablishmentType();
 
-      status = !this._validateShareWithCQC() ? false : status;
-      status = !this._validateShareWithLA() ? false : status;
-      status = !this._validateLocalAuthorities() ? false : status;
+      this._validateShareWithCQC();
+      this._validateShareWithLA();
+      this._validateLocalAuthorities();
 
-      status = !this._validateMainService() ? false : status;
-      status = !this._validateRegType() ? false : status;
-      status = !this._validateProvID() ? false : status;
-      status = await this._validateLocationID() ? false : status;
+      this._validateMainService();
+      this._validateRegType();
+      this._validateProvID();
+      await this._validateLocationID();
 
-      status = !this._validateAllServices() ? false : status;
-      status = !this._validateServiceUsers() ? false : status;
-      status = !this._validateCapacitiesAndUtilisations() ? false : status;
+      this._validateAllServices();
+      this._validateServiceUsers();
+      this._validateCapacitiesAndUtilisations();
 
-      status = !this._validateTotalPermTemp() ? false : status;
-      status = !this._validateAllJobs() ? false : status;
-      status = !this._validateJobRoleTotals() ? false : status;
+      this._validateTotalPermTemp();
+      this._validateAllJobs();
+      this._validateJobRoleTotals();
 
-      status = !this._validateReasonsForLeaving() ? false : status;
+      this._validateReasonsForLeaving();
     }
 
-    return status;
+    return this.validationErrors.length === 0;
   }
 
   // Adds items to csvEstablishmentSchemaErrors if validations that depend on

@@ -46,12 +46,30 @@ const crossValidate = async (establishmentRow, workerRow, callback) => {
 describe('Bulk Upload - Establishment CSV', () => {
   beforeEach(() => {
     sandbox.stub(BUDI, 'initialize');
-    sandbox.stub(models.pcodedata, 'findAll').returns([]);
+    sandbox.stub(models.pcodedata, 'findAll').returns([
+      {}
+    ]);
     sandbox.stub(models.establishment, 'findAll').returns([]);
   });
 
   afterEach(() => {
     sandbox.restore();
+  });
+
+  describe('Validations', () => {
+    it('should not validate Starters, Leavers, Vacancies if All Job Roles is blank', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+
+      establishmentRow.ALLJOBROLES = '';
+      establishmentRow.STARTERS = '';
+      establishmentRow.LEAVERS = '';
+      establishmentRow.VACANCIES = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      const isValid = await establishment.validate();
+
+      expect(isValid).to.be.true;
+    });
   });
 
   describe('Cross Validations', () => {
