@@ -224,9 +224,16 @@
               <td class="govuk-table__cell">{{ item.nmdsId || '-' }}</td>
               <td class="govuk-table__cell">{{ item.locationId || '-' }}</td>
               <td class="govuk-table__cell">-</td>
-              <td class="govuk-table__cell">Open</td>
+              <td class="govuk-table__cell">
+                <a
+                  class="govuk-link--no-visited-state"
+                  href="#"
+                  (click)="toggleDetails(item.uid, $event)"
+                  >{{ workerDetailsLabel[item.uid] ? workerDetailsLabel[item.uid] : 'Open' }}</a
+                >
+              </td>
             </tr>
-            <tr class="govuk-panel--gray">
+            <tr *ngIf="workerDetails[item.uid]" class="govuk-panel--gray">
               <td colspan="6">
                 <div class="govuk-!-margin-2">
                   <table class="govuk-table">
