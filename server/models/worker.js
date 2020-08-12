@@ -1059,7 +1059,7 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
-  Worker.specificJobs = function (establishmentId,jobArray) {
+  Worker.specificJobs = async function (establishmentId,jobArray) {
     return this.findAll({
       attributes: ['id', 'uid', 'SocialCareQualificationFkValue',],
          where: {
@@ -1072,7 +1072,7 @@ module.exports = function(sequelize, DataTypes) {
          }
     });
   };
-  Worker.benchmarkQualsCount = function (establishmentId,jobArray) {
+  Worker.benchmarkQualsCount = async function (establishmentId,jobArray) {
     return this.count({
       where: {
         establishmentFk: establishmentId,

@@ -806,7 +806,7 @@ module.exports = function(sequelize, DataTypes) {
       });
   };
 
-  Establishment.workers = function (establishmentId,where,attribute) {
+  Establishment.workers = async function (establishmentId,where,attribute) {
     return this.findOne({
       attributes: ['id'],
       include: {
