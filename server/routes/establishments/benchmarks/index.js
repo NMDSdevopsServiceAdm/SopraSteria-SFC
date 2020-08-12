@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../../models');
-const util = require('util');
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
-  const tiles =  req.query.tiles.split(',');
+  const tiles = req.query.tiles.split(',');
 
   try {
     let benchmarkComparisonGroup = await models.establishment.getBenchmarkData(establishmentId);
@@ -16,6 +15,7 @@ router.route('/').get(async (req, res) => {
     };
     if (tiles.includes('pay')) reply.tiles.pay = await pay(establishmentId);
     if (tiles.includes('sickness')) reply.tiles.sickness = await sickness(establishmentId);
+    if (tiles.includes('qualifications')) reply.tiles.qualifications = await qualifications(establishmentId);
 
     reply = await comparisonGroupData(reply, benchmarkComparisonGroup);
     return res.status(200).json(reply);
@@ -52,13 +52,36 @@ const pay = async (establishmentId) => {
       paidAmount = paidAmount + Number(worker.AnnualHourlyPayRate);
       return paidAmount;
     }));
-    averagePaidAmount = (paidAmount / establishmentWorkersPay.workers.length).toFixed(2);
+    averagePaidAmount = paidAmount / establishmentWorkersPay.workers.length;
   } else {
     stateMessage = 'no-workers';
   }
   const json = {
     workplaceValue: {
       value: averagePaidAmount,
+      hasValue: stateMessage.length === 0
+    },
+    comparisonGroup: {
+      value: 0,
+      hasValue: false
+    }
+  };
+  if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
+  return json;
+};
+const qualifications = async (establishmentId) => {
+  const qualsWorkers = await models.worker.specificJobs(establishmentId, models.services.careProvidingStaff);
+  let percentOfHigherQuals = 0;
+  let stateMessage = '';
+  if (qualsWorkers.length) {
+    let higherQualCount =  await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
+    percentOfHigherQuals = (higherQualCount / qualsWorkers.length);
+  } else {
+    stateMessage = 'no-workers';
+  }
+  const json = {
+    workplaceValue: {
+      value: percentOfHigherQuals,
       hasValue: stateMessage.length === 0
     },
     comparisonGroup: {
@@ -100,4 +123,6 @@ const sickness = async (establishmentId) => {
 module.exports = router;
 module.exports.pay = pay;
 module.exports.sickness = sickness;
+module.exports.qualifications = qualifications;
+
 module.exports.comparisonGroupData = comparisonGroupData;

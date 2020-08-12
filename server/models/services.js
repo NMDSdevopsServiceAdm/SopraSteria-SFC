@@ -63,6 +63,17 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
+  Services.careProvidingStaff = [
+    25, // seniorCareWorker,
+    10, //careWorker,
+    11, // communitySupport,
+    12, //employmentSupport,
+    3,  //adviceGuidance,
+    29, //technician,
+    20, //otherCare,
+    16, // nurseAssistant
+  ];
+
 
   return Services;
 };

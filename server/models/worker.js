@@ -943,11 +943,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"RegisteredNurseChangedBy"'
     },
-
-///////////////////////////////////////////////////
-
-
-
     created: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -1064,5 +1059,31 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
+  Worker.specificJobs = function (establishmentId,jobArray) {
+    return this.findAll({
+      attributes: ['id', 'uid', 'SocialCareQualificationFkValue',],
+         where: {
+           establishmentFk: establishmentId,
+           MainJobFkValue: jobArray,
+           archived: false,
+           SocialCareQualificationFkValue:{
+             [sequelize.Op.not]: 10
+           },
+         }
+    });
+  };
+  Worker.benchmarkQualsCount = function (establishmentId,jobArray) {
+    return this.count({
+      where: {
+        establishmentFk: establishmentId,
+        MainJobFkValue: jobArray,
+        archived: false,
+        SocialCareQualificationFkValue:{
+          [sequelize.Op.gt]: 2 ,
+          [sequelize.Op.not]:  [10]
+        },
+      }
+    });
+  };
   return Worker;
 };

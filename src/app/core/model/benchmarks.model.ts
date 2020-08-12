@@ -2,7 +2,8 @@
 export interface BenchmarksResponse {
   tiles:{
     pay: Tile,
-    sickness: Tile
+    sickness: Tile,
+    qualifications: Tile
   }
   meta:{}
 }
