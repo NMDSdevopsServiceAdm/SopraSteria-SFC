@@ -156,8 +156,9 @@ describe('benchmarks', () => {
           'id': '',
           'uid': '',
           'SocialCareQualificationFkValue': '3'
-        }]
-      ); // quals(3)/total(6) = 0.5
+        }]// quals(3)/total(6) = 0.5
+      );
+      sinon.stub(models.worker, 'benchmarkQualsCount').returns(3);
 
       const json = await benchmarks.qualifications(establishmentId);
       const expectedJSON = {
@@ -178,7 +179,7 @@ describe('benchmarks', () => {
       sinon.stub(models.worker, 'specificJobs').returns(
         []
       );
-
+      sinon.stub(models.worker, 'benchmarkQualsCount').returns(null);
       const json = await benchmarks.qualifications(establishmentId);
       const expectedJson = {
         workplaceValue: {
