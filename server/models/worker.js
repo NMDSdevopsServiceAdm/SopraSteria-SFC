@@ -1067,7 +1067,7 @@ module.exports = function(sequelize, DataTypes) {
            MainJobFkValue: jobArray,
            archived: false,
            SocialCareQualificationFkValue:{
-             $not: [10]
+             [sequelize.Op.not]: 10
            },
          }
     });
@@ -1079,8 +1079,8 @@ module.exports = function(sequelize, DataTypes) {
         MainJobFkValue: jobArray,
         archived: false,
         SocialCareQualificationFkValue:{
-           $gt: 2 ,
-          $not: [10]
+          [sequelize.Op.gt]: 2 ,
+          [sequelize.Op.not]:  [10]
         },
       }
     });
