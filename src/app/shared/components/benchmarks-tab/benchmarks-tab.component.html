@@ -24,19 +24,19 @@
   <app-benchmark-tile
   [title]="'Turnover'"
   [description]="'Staff (permanent and temps) left in the last 12 months.'"
-  [showYourWorkplace]="tileDemo.turnover.showYourWorkplace"
-  [showComparisonGroup]="tileDemo.turnover.showComparisonGroup">
+  [showYourWorkplace]="tilesData.tiles.turnover && tilesData.tiles.turnover.workplaceValue.hasValue"
+  [showComparisonGroup]="tilesData.tiles.turnover && tilesData.tiles.turnover.comparisonGroup.hasValue">
     <your-workplace>
-      <ng-container *ngIf="tileDemo.turnover.showYourWorkplace else turnYourEmpty">
-        125%
+      <ng-container *ngIf="tilesData.tiles.turnover && tilesData.tiles.turnover.workplaceValue.hasValue else turnYourEmpty">
+        {{formatPercent(tilesData.tiles.turnover.workplaceValue.value)}}
       </ng-container>
       <ng-template #turnYourEmpty>
         For this to show, there must be a staff record for every staff member.
       </ng-template>
     </your-workplace>
     <comparison-group>
-      <ng-container *ngIf="tileDemo.turnover.showComparisonGroup else turnCompEmpty">
-        192%
+      <ng-container *ngIf="tilesData.tiles.turnover && tilesData.tiles.turnover.comparisonGroup.hasValue else turnCompEmpty">
+        {{formatPercent(tilesData.tiles.turnover.comparisonGroup.value)}}
       </ng-container>
       <ng-template #turnCompEmpty>
         We do not have enough data to show this comparison yet.
