@@ -738,7 +738,19 @@ module.exports = function(sequelize, DataTypes) {
       onDelete: 'CASCADE'
     });
   };
-
+  Establishment.turnOverData = function (establishmentId) {
+    return this.findByPk(establishmentId, {
+      attributes: ['id','NumberOfStaffValue','LeaversValue'],
+      include: {
+        model: sequelize.models.worker,
+        attributes: ['id', 'uid', 'NameOrIdValue','ContractValue'],
+        as: 'workers',
+        where: {
+          archived: false,
+        },
+      },
+    });
+  }
   Establishment.findWithWorkersAndTraining = function (establishmentId) {
     return this.findByPk(establishmentId, {
       attributes: ['id'],

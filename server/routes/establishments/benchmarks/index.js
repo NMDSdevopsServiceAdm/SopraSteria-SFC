@@ -69,6 +69,39 @@ const pay = async (establishmentId) => {
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
+
+const turnover = async (establishmentId) => {
+  const establishment = await models.establishment.turnOverData(establishmentId);
+  let percentOfPermTemp = 0;
+  let stateMessage = '';
+
+  if (establishment && establishment.NumberOfStaffValue > 0 &&
+    establishment.LeaversValue != null &&
+    establishment.workers.length == establishment.NumberOfStaffValue ){
+    let permOrTempCount = 0;
+    const contractTypesNeeded= ['Permanent','Temporary'];
+    await Promise.all(establishment.workers.map(async worker => {
+      if (contractTypesNeeded.includes(worker.ContractValue)) {  // SocialCareQualificationFkValue 2 is level 1
+        return permOrTempCount++;
+      }
+      }));
+      percentOfPermTemp = (permOrTempCount / establishment.workers.length);
+  }else{
+    stateMessage = 'no-workers';
+  }
+  const json = {
+    workplaceValue: {
+      value: percentOfPermTemp,
+      hasValue: stateMessage.length === 0
+    },
+    comparisonGroup: {
+      value: 0,
+      hasValue: false
+    }
+  };
+  if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
+  return json;
+};
 const qualifications = async (establishmentId) => {
   const qualsWorkers = await models.worker.specificJobs(establishmentId, models.services.careProvidingStaff);
   let percentOfHigherQuals = 0;
