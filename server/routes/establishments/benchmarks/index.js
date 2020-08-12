@@ -72,20 +72,21 @@ const pay = async (establishmentId) => {
 
 const turnover = async (establishmentId) => {
   const establishment = await models.establishment.turnOverData(establishmentId);
+  const workerCount = await models.worker.countForEstablishment(establishmentId);
   let percentOfPermTemp = 0;
   let stateMessage = '';
 
   if (establishment && establishment.NumberOfStaffValue > 0 &&
-    establishment.LeaversValue != null &&
-    establishment.workers.length == establishment.NumberOfStaffValue ){
-    let permOrTempCount = 0;
-    const contractTypesNeeded= ['Permanent','Temporary'];
-    await Promise.all(establishment.workers.map(async worker => {
-      if (contractTypesNeeded.includes(worker.ContractValue)) {  // SocialCareQualificationFkValue 2 is level 1
-        return permOrTempCount++;
-      }
-      }));
-      percentOfPermTemp = (permOrTempCount / establishment.workers.length);
+    workerCount == establishment.NumberOfStaffValue ){
+
+    if((establishment.LeaversValue) && ((establishment.LeaversValue / permTemptCount) > 999.4)){
+      const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
+      percentOfPermTemp = (establishment.LeaversValue / permTemptCount);
+    }
+    else{
+    stateMessage = 'no-data';
+  }
+
   }else{
     stateMessage = 'no-workers';
   }
