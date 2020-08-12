@@ -76,31 +76,15 @@ const turnover = async (establishmentId) => {
   const workerCount = await models.worker.countForEstablishment(establishmentId);
   let percentOfPermTemp = 0;
   let stateMessage = '';
-console.log("!*!*!*!*!*!*!*!*!*!!*!**!");
-console.log(JSON.stringify(establishment));
-  console.log(workerCount);
-
   if (establishment && establishment.NumberOfStaffValue > 0 &&
     workerCount === establishment.NumberOfStaffValue ){
-    console.log("!*!*!*!*!*!*2!*!*!*!!*!**!");
     const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
-    console.log(permTemptCount);
-    console.log("!*!*!*!*!*!*error?!*!*!*!!*!**!");
     const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
-    console.log("!*!*!*!*!*!*3!*!*!*!!*!**!");
-
-    console.log(leavers);
-    percentOfPermTemp = (leavers / permTemptCount);
-    console.log(percentOfPermTemp);
-    if((establishment.LeaversValue === "With Jobs") && ((leavers/ permTemptCount) < 999.4)){
-      console.log("!*!*!*!*!*!*4!*!*!*!!*!**!");
+    if((establishment.LeaversValue === "With Jobs") && ((leavers/ permTemptCount) < 9.95)){
       percentOfPermTemp = (leavers/ permTemptCount);
-      console.log(percentOfPermTemp);
+    } else{
+      stateMessage = 'no-data';
     }
-    else{
-    stateMessage = 'no-data';
-  }
-
   }else{
     stateMessage = 'no-workers';
   }
@@ -172,5 +156,5 @@ module.exports = router;
 module.exports.pay = pay;
 module.exports.sickness = sickness;
 module.exports.qualifications = qualifications;
-
+module.exports.turnover = turnover;
 module.exports.comparisonGroupData = comparisonGroupData;

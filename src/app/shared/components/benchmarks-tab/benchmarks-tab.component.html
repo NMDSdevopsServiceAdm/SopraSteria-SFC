@@ -27,12 +27,17 @@
   [showYourWorkplace]="tilesData.tiles.turnover && tilesData.tiles.turnover.workplaceValue.hasValue"
   [showComparisonGroup]="tilesData.tiles.turnover && tilesData.tiles.turnover.comparisonGroup.hasValue">
     <your-workplace>
-      <ng-container *ngIf="tilesData.tiles.turnover && tilesData.tiles.turnover.workplaceValue.hasValue else turnYourEmpty">
+      <ng-container *ngIf="tilesData.tiles.turnover && tilesData.tiles.turnover.workplaceValue.hasValue">
         {{formatPercent(tilesData.tiles.turnover.workplaceValue.value)}}
       </ng-container>
-      <ng-template #turnYourEmpty>
-        For this to show, there must be a staff record for every staff member.
-      </ng-template>
+      <ng-container  [ngSwitch]="tilesData.tiles.turnover.workplaceValue.stateMessage">
+        <ng-container *ngSwitchCase="'no-workers'">
+           For this to show, there must be a staff record for every staff member.
+        </ng-container>
+        <ng-container *ngSwitchCase="'no-data'">
+            You’ve not added any data about leavers yet.
+        </ng-container>
+      </ng-container>
     </your-workplace>
     <comparison-group>
       <ng-container *ngIf="tilesData.tiles.turnover && tilesData.tiles.turnover.comparisonGroup.hasValue else turnCompEmpty">
