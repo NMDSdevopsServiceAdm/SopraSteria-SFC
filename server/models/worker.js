@@ -1061,7 +1061,7 @@ module.exports = function(sequelize, DataTypes) {
 
   Worker.specificJobs = function (establishmentId,jobArray) {
     return this.findAll({
-      attributes: ['id', 'uid', 'SocialCareQualificationFkValue'],
+      attributes: ['id', 'uid', 'SocialCareQualificationFkValue',],
          where: {
            establishmentFk: establishmentId,
            MainJobFkValue: jobArray,
@@ -1070,6 +1070,19 @@ module.exports = function(sequelize, DataTypes) {
              $not: [10]
            },
          }
+    });
+  };
+  Worker.benchmarkQualsCount = function (establishmentId,jobArray) {
+    return this.count({
+      where: {
+        establishmentFk: establishmentId,
+        MainJobFkValue: jobArray,
+        archived: false,
+        SocialCareQualificationFkValue:{
+           $gt: 2 ,
+          $not: [10]
+        },
+      }
     });
   };
   return Worker;

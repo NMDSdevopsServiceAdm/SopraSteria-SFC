@@ -74,12 +74,7 @@ const qualifications = async (establishmentId) => {
   let percentOfHigherQuals = 0;
   let stateMessage = '';
   if (qualsWorkers.length) {
-    let higherQualCount = 0;
-    await Promise.all(qualsWorkers.map(async worker => {
-      if (worker.SocialCareQualificationFkValue > 2) {  // SocialCareQualificationFkValue 2 is level 1
-        return higherQualCount++;
-      }
-    }));
+    let higherQualCount =  await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
     percentOfHigherQuals = (higherQualCount / qualsWorkers.length);
   } else {
     stateMessage = 'no-workers';
