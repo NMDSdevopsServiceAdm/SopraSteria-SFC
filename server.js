@@ -85,19 +85,15 @@ if (config.get('sentry.dsn')) {
   Sentry.init({
     dsn: config.get('sentry.dsn'),
     integrations: [
-      // enable HTTP calls tracing
-      new Sentry.Integrations.Http({ tracing: true }),
       // enable Express.js middleware tracing
       new Apm.Integrations.Express({ app })
     ],
     environment: config.get('env'),
-    tracesSampleRate: config.get('sentry.sample_rate'),
   });
 }
 app.use(Sentry.Handlers.requestHandler({
   user: ['id']
 }));
-app.use(Sentry.Handlers.tracingHandler());
 app.use(compression());
 
 /* public/download - proxy interception */
