@@ -16,6 +16,7 @@ router.route('/').get(async (req, res) => {
     if (tiles.includes('pay')) reply.tiles.pay = await pay(establishmentId);
     if (tiles.includes('sickness')) reply.tiles.sickness = await sickness(establishmentId);
     if (tiles.includes('qualifications')) reply.tiles.qualifications = await qualifications(establishmentId);
+    if (tiles.includes('turnover')) reply.tiles.turnover = await turnover(establishmentId);
 
     reply = await comparisonGroupData(reply, benchmarkComparisonGroup);
     return res.status(200).json(reply);
@@ -75,13 +76,26 @@ const turnover = async (establishmentId) => {
   const workerCount = await models.worker.countForEstablishment(establishmentId);
   let percentOfPermTemp = 0;
   let stateMessage = '';
+console.log("!*!*!*!*!*!*!*!*!*!!*!**!");
+console.log(JSON.stringify(establishment));
+  console.log(workerCount);
 
   if (establishment && establishment.NumberOfStaffValue > 0 &&
-    workerCount == establishment.NumberOfStaffValue ){
+    workerCount === establishment.NumberOfStaffValue ){
+    console.log("!*!*!*!*!*!*2!*!*!*!!*!**!");
+    const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
+    console.log(permTemptCount);
+    console.log("!*!*!*!*!*!*error?!*!*!*!!*!**!");
+    const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
+    console.log("!*!*!*!*!*!*3!*!*!*!!*!**!");
 
-    if((establishment.LeaversValue) && ((establishment.LeaversValue / permTemptCount) > 999.4)){
-      const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
-      percentOfPermTemp = (establishment.LeaversValue / permTemptCount);
+    console.log(leavers);
+    percentOfPermTemp = (leavers / permTemptCount);
+    console.log(percentOfPermTemp);
+    if((establishment.LeaversValue === "With Jobs") && ((leavers/ permTemptCount) < 999.4)){
+      console.log("!*!*!*!*!*!*4!*!*!*!!*!**!");
+      percentOfPermTemp = (leavers/ permTemptCount);
+      console.log(percentOfPermTemp);
     }
     else{
     stateMessage = 'no-data';

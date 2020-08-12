@@ -45,5 +45,14 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
+  EstablishmentJobs.leaversForEstablishment = async function(establishmentID) {
+    return this.sum('total',{
+        where:{
+          establishmentId: establishmentID,
+          type: "Leavers"
+        }
+      });
+  };
+
   return EstablishmentJobs;
 };

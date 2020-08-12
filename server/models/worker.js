@@ -1063,14 +1063,14 @@ module.exports = function(sequelize, DataTypes) {
         where: {
           archived: false,
           ContractValue:  ['Permanent','Temporary'],
-          where:{establishmentId:establishmentId},
+          establishmentFk:establishmentId
         },
     });
   };
   Worker.countForEstablishment = async function(establishmentId){
     return await this.count({
       where:{
-        establishmentId:establishmentId,
+        establishmentFk:establishmentId,
         archived: false
       }
     });
