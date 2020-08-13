@@ -1085,5 +1085,32 @@ module.exports = function(sequelize, DataTypes) {
       }
     });
   };
+  Worker.careworkersWithHourlyPayCount = async function(establishmentId){
+  return this.count({
+    where: {
+      establishmentFk: establishmentId,
+      MainJobFkValue: 10,
+      archived: false,
+      AnnualHourlyPayValue:'Hourly',
+      AnnualHourlyPayRate:{
+        [sequelize.Op.not]: null,
+      },
+    }
+  });
+  };
+  Worker.careworkersTotalHourlyPaySum = async function(establishmentId){
+    return this.sum("AnnualHourlyPayRate",{
+      where: {
+        MainJobFkValue: 10,
+        archived: false,
+        AnnualHourlyPayValue:'Hourly',
+        AnnualHourlyPayRate:{
+          [sequelize.Op.not]: null,
+        },
+        establishmentFk: establishmentId
+      }
+    });
+  };
+
   return Worker;
 };
