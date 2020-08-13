@@ -110,12 +110,14 @@ const turnover = async (establishmentId) => {
   return json;
 };
 const qualifications = async (establishmentId) => {
-  const qualsWorkers = await models.worker.specificJobs(establishmentId, models.services.careProvidingStaff);
+  const noquals = await models.worker.specificJobsAndSocialCareQuals(establishmentId, models.services.careProvidingStaff);
+  const quals = await models.worker.specificJobsAndNoSocialCareQuals(establishmentId, models.services.careProvidingStaff);
+  const denominator = noquals + quals;
   let percentOfHigherQuals = 0;
   let stateMessage = '';
-  if (qualsWorkers.length) {
-    let higherQualCount = await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
-    percentOfHigherQuals = (higherQualCount / qualsWorkers.length);
+  if (denominator > 0) {
+    let higherQualCount =  await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
+    percentOfHigherQuals = (higherQualCount / denominator);
   } else {
     stateMessage = 'no-workers';
   }
