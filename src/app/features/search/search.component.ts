@@ -1,5 +1,5 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { BackService } from '@core/services/back.service';
 import { DialogService } from '@core/services/dialog.service';
 import { HttpClient } from '@angular/common/http';
@@ -16,7 +16,7 @@ import { AuthService } from '@core/services/auth.service';
   templateUrl: './search.component.html',
   providers: [DialogService, AdminUnlockConfirmationDialogComponent, Overlay],
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, AfterViewInit {
   public results = [];
   public selectedWorkplaceUid: string;
   public form = {
@@ -43,8 +43,11 @@ export class SearchComponent implements OnInit {
     protected authService: AuthService,
   ) {}
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.authService.isOnAdminScreen = true;
+  }
+
+  ngOnInit() {
     this.setBackLink();
 
     if (this.router.url === '/search-users') {
