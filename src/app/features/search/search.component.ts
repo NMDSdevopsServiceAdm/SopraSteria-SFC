@@ -81,6 +81,18 @@ export class SearchComponent implements OnInit {
     this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
   }
 
+  public unlockWorkplaceUser(username: string, workplaceIndex: number, userIndex: number, e) {
+    e.preventDefault();
+    const data = {
+      username,
+      removeUnlock: () => {
+        this.results[workplaceIndex].users[userIndex].isLocked = false;
+      }
+    }
+
+    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
+  }
+
   public searchType(data, type) {
     return this.http.post<any>('/api/admin/search/' + type, data, { observe: 'response' });
   }

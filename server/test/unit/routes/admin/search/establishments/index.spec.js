@@ -23,7 +23,11 @@ describe('server/routes/admin/search/establishments', () => {
         isParent: false,
         isRegulated: false,
         dataOwner: 'Workplace',
-        parent: {},
+        Parent: {
+          id: 1,
+          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
+          nmdsId: 'W-1234567',
+        },
         users: [
           {
             uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
@@ -31,6 +35,7 @@ describe('server/routes/admin/search/establishments', () => {
             SecurityQuestionValue: 'Test Security Question',
             SecurityQuestionAnswerValue: 'Test Security Question Answer',
             login: {
+              username: 'thisperson9',
               status: 'Locked',
             }
           }
@@ -71,14 +76,18 @@ describe('server/routes/admin/search/establishments', () => {
       isParent: false,
       isRegulated: false,
       dataOwner: 'Workplace',
-      parent: {},
+      parent: {
+        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
+        nmdsId: 'W-1234567',
+      },
       users: [
         {
           uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+          username: 'thisperson9',
           name: 'Test Name',
           securityQuestion: 'Test Security Question',
           securityAnswer: 'Test Security Question Answer',
-          locked: true,
+          isLocked: true,
         },
       ],
       lastUpdated: '2019-10-07T08:49:30.625Z'

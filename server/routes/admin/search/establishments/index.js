@@ -73,7 +73,7 @@ const search = async function (req, res) {
       include: [
         {
           model: models.establishment,
-          attributes: ['id', 'uid', 'NameValue', 'nmdsId', 'postcode'],
+          attributes: ['id', 'uid', 'nmdsId'],
           as: 'Parent',
           required: false,
         },
@@ -88,7 +88,7 @@ const search = async function (req, res) {
           include: [
             {
               model: models.login,
-              attributes: ['status'],
+              attributes: ['username', 'status'],
             },
           ],
         },
@@ -97,21 +97,19 @@ const search = async function (req, res) {
 
     const results = establishments.map(establishment => {
       const parent = establishment.Parent
-        ? {
-            name: establishment.Parent.NameValue,
-            nmdsId: establishment.Parent.nmdsId,
-            postcode: establishment.Parent.postcode,
-          }
+        ? { uid: establishment.Parent.uid, nmdsId: establishment.Parent.nmdsId }
         : {};
 
       const users = establishment.users
         ? establishment.users.map((user) => {
             return {
               uid: user.uid,
+              username: user.username,
               name: user.FullNameValue,
+              username: user.login?.username,
               securityQuestion: user.SecurityQuestionValue,
               securityAnswer: user.SecurityQuestionAnswerValue,
-              locked: user.login?.status === "Locked",
+              isLocked: user.login?.status === 'Locked',
             };
           })
         : [];

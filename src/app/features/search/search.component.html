@@ -215,10 +215,10 @@
           </tr>
         </thead>
         <tbody class="govuk-table__body">
-          <ng-container *ngFor="let item of results">
+          <ng-container *ngFor="let item of results; index as workplaceIndex">
             <tr class="govuk-table__row">
               <td class="govuk-table__cell">
-                <a (click)="setEsblishmentId(item.uid, item.username, item.nmdsId, $event)" href="#">{{ item.name }}</a>
+                <a (click)="setEsblishmentId(item.uid, '', item.nmdsId, $event)" href="#">{{ item.name }}</a>
               </td>
               <td class="govuk-table__cell">{{ item.postcode }}</td>
               <td class="govuk-table__cell">{{ item.nmdsId || '-' }}</td>
@@ -235,7 +235,7 @@
             </tr>
             <tr *ngIf="workerDetails[item.uid]" class="govuk-panel--gray">
               <td colspan="6">
-                <div class="govuk-!-margin-2">
+                <div class="govuk-!-margin-4">
                   <table class="govuk-table">
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
@@ -251,7 +251,11 @@
                           {{ item.address1 }} {{ item.address2 }} {{ item.town }} {{ item.county }}
                         </td>
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
-                          {{ item.parent?.nmdsId || '-' }}
+                          <ng-container *ngIf="item.parent?.nmdsId else noParentID">
+                            <a (click)="setEsblishmentId(item.parent.uid, '', item.parent.nmdsId, $event)" href="#">{{ item.parent.nmdsId }}</a>
+                          </ng-container>
+
+                          <ng-template #noParentID>-</ng-template>
                         </td>
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
                           {{ item.isRegulated ? 'Yes' : 'No' }}
@@ -263,7 +267,7 @@
                     </tbody>
                   </table>
                 </div>
-                <div class="govuk-!-margin-2" *ngIf="item.users.length > 0">
+                <div class="govuk-!-margin-4" *ngIf="item.users.length > 0">
                   <table class="govuk-table">
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
@@ -274,7 +278,7 @@
                         </tr>
                     </thead>
                     <tbody class="govuk-table__body">
-                      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let user of item.users">
+                      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let user of item.users; index as userIndex">
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
                           {{ user.name }}
                         </td>
@@ -285,7 +289,8 @@
                           {{ user.securityAnswer }}
                         </td>
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
-                          {{ user.locked ? 'Yes' : 'No' }}
+                          <a (click)="unlockWorkplaceUser(user.username, workplaceIndex, userIndex, $event)" href="#" *ngIf="user.isLocked else notLocked">Yes, unlock</a>
+                          <ng-template #notLocked>No</ng-template>
                         </td>
                       </tr>
                     </tbody>
