@@ -106,10 +106,10 @@ const search = async function (req, res) {
               uid: user.uid,
               username: user.username,
               name: user.FullNameValue,
-              username: user.login?.username,
+              username: user.login ? user.login.username : '',
               securityQuestion: user.SecurityQuestionValue,
               securityAnswer: user.SecurityQuestionAnswerValue,
-              isLocked: user.login?.status === 'Locked',
+              isLocked: user.login && user.login.status === 'Locked',
             };
           })
         : [];
