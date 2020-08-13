@@ -46,12 +46,49 @@ const crossValidate = async (establishmentRow, workerRow, callback) => {
 describe('Bulk Upload - Establishment CSV', () => {
   beforeEach(() => {
     sandbox.stub(BUDI, 'initialize');
-    sandbox.stub(models.pcodedata, 'findAll').returns([]);
+    sandbox.stub(models.pcodedata, 'findAll').returns([
+      {}
+    ]);
     sandbox.stub(models.establishment, 'findAll').returns([]);
   });
 
   afterEach(() => {
     sandbox.restore();
+  });
+
+  describe('Validations', () => {
+    it('should validate Starters, Leavers, Vacancies if All Job Roles is blank but S/L/V is not blank', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.ALLJOBROLES = '';
+      establishmentRow.STARTERS = '1';
+      establishmentRow.LEAVERS = '2';
+      establishmentRow.VACANCIES = '3';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+      expect(establishment.validationErrors).to.deep.equal([
+        {
+          origin: 'Establishments',
+          lineNumber: establishment.lineNumber,
+          errCode: 1280,
+          errType: 'ALL_JOBS_ERROR',
+          error: 'ALLJOBROLES cannot be blank as you have STARTERS, LEAVERS, VACANCIES greater than zero',
+          source: '',
+          name: establishmentRow.LOCALESTID
+        }
+      ]);
+    });
+
+    it('should skip validating Starters, Leavers, Vacancies if All Job Roles and S/L/V is blank', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.ALLJOBROLES = '';
+      establishmentRow.STARTERS = '';
+      establishmentRow.LEAVERS = '';
+      establishmentRow.VACANCIES = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      expect(establishment.validationErrors).to.deep.equal([]);
+    });
   });
 
   describe('Cross Validations', () => {
