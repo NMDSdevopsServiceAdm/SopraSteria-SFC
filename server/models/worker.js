@@ -1088,7 +1088,7 @@ module.exports = function(sequelize, DataTypes) {
          }
     });
   };
-  Worker.benchmarkQualsCount = function (establishmentId,jobArray) {
+  Worker.benchmarkQualsCount = async function (establishmentId,jobArray) {
     return this.count({
       where: {
         establishmentFk: establishmentId,
