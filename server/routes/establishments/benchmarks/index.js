@@ -75,20 +75,21 @@ const turnoverGetData = async (establishmentId) => {
   const workerCount = await models.worker.countForEstablishment(establishmentId);
   if (!establishment || establishment.NumberOfStaffValue === 0 ||
     workerCount !== establishment.NumberOfStaffValue) {
-    return {percentOfPermTemp: 0, stateMessage: 'no-workers'};
+    return { percentOfPermTemp: 0, stateMessage: 'no-workers' };
+  }
+  if (establishment.LeaversValue !== 'With Jobs') {
+    return { percentOfPermTemp: 0, stateMessage: 'no-data' };
   }
   const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
   const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
-  if (establishment.LeaversValue !== 'With Jobs') {
-    return {percentOfPermTemp: 0, stateMessage: 'no-data'};
+  const percentOfPermTemp = (leavers / permTemptCount);
+  if (percentOfPermTemp > 9.95) {
+    return { percentOfPermTemp: 0, stateMessage: 'check-data' };
   }
-  if ((leavers / permTemptCount) > 9.95) {
-    return {percentOfPermTemp: 0, stateMessage: 'check-data'};
-  }
-  return {percentOfPermTemp: (leavers / permTemptCount), stateMessage: ''};
+  return { percentOfPermTemp, stateMessage: '' };
 };
 const turnover = async (establishmentId) => {
-  const {percentOfPermTemp, stateMessage} = await turnoverGetData(establishmentId);
+  const { percentOfPermTemp, stateMessage } = await turnoverGetData(establishmentId);
   const json = {
     workplaceValue: {
       value: percentOfPermTemp,
