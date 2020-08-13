@@ -34,6 +34,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return this.authService.isAuthenticated();
   }
 
+  public isAdminUser(): boolean {
+    return this.userService.loggedInUser ?
+      this.userService.loggedInUser.role === 'Admin'
+      : false;
+  }
+
   public toggleMenu(): void {
     this.showDropdown = !this.showDropdown;
   }

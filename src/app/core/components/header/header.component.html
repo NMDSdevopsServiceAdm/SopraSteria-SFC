@@ -36,7 +36,7 @@
         </ng-container>
       </ul>
       <ul class="govuk-header__navigation" id="navigation2" aria-label="Top Level Navigation">
-        <ng-container>
+        <ng-container *ngIf="isAdminUser()">
           <li class="govuk-header__navigation-item">
             <a [routerLink]="['/search-users']" class="govuk-link">Back to admin</a>
           </li>
