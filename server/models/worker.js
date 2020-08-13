@@ -1082,10 +1082,21 @@ module.exports = function(sequelize, DataTypes) {
            establishmentFk: establishmentId,
            MainJobFkValue: jobArray,
            archived: false,
-           SocialCareQualificationFkValue:{
-             [sequelize.Op.not]: 10
-           },
+           QualificationInSocialCareValue: "No"
          }
+    });
+  };
+  Worker.specificJobsAndSocialCareQuals = async function (establishmentId,jobArray) {
+    return this.count({
+      where: {
+        establishmentFk: establishmentId,
+        MainJobFkValue: jobArray,
+        archived: false,
+        QualificationInSocialCareValue: "Yes",
+        SocialCareQualificationFkValue:{
+          [sequelize.Op.not]:  [10]
+        },
+      }
     });
   };
   Worker.benchmarkQualsCount = async function (establishmentId,jobArray) {
