@@ -1059,17 +1059,29 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
-  Worker.specificJobs = async function (establishmentId,jobArray) {
-    return this.findAll({
+  Worker.specificJobsAndNoSocialCareQuals = async function (establishmentId,jobArray) {
+    return this.count({
       attributes: ['id', 'uid', 'SocialCareQualificationFkValue',],
          where: {
            establishmentFk: establishmentId,
            MainJobFkValue: jobArray,
            archived: false,
-           SocialCareQualificationFkValue:{
-             [sequelize.Op.not]: 10
-           },
+           QualificationInSocialCareValue: "NO"
          }
+    });
+  };
+  Worker.specificJobsAndSocialCareQuals = async function (establishmentId,jobArray) {
+    return this.count({
+      attributes: ['id', 'uid', 'SocialCareQualificationFkValue',],
+      where: {
+        establishmentFk: establishmentId,
+        MainJobFkValue: jobArray,
+        archived: false,
+        QualificationInSocialCareValue: "YES",
+        SocialCareQualificationFkValue:{
+          [sequelize.Op.not]:  [10,null]
+        },
+      }
     });
   };
   Worker.benchmarkQualsCount = async function (establishmentId,jobArray) {
