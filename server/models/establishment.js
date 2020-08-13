@@ -831,8 +831,10 @@ module.exports = function(sequelize, DataTypes) {
     const postcode = await this.findOne({
       attributes: ['postcode','id'],
       where:{id: establishmentId}
-    })
-
+    });
+    if (!postcode){
+      return {};
+    }
     const cssr = await sequelize.models.pcodedata.findOne({
       attributes: ['uprn',"postcode"],
       include:[{
@@ -844,6 +846,9 @@ module.exports = function(sequelize, DataTypes) {
           postcode: postcode.postcode
         }
     });
+    if (!cssr){
+      return {};
+    }
     return await this.findOne({
       attributes:['id'],
       where:{id: establishmentId },
