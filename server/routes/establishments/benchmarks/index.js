@@ -42,7 +42,9 @@ const comparisonGroupData = async (reply, benchmarkComparisonGroup) => {
   return reply;
 };
 const pay = async (establishmentId) => {
-  const whereClause = { MainJobFkValue: 10, archived: false };
+  const whereClause = { MainJobFkValue: 10, archived: false, AnnualHourlyPayValue:'Hourly',  AnnualHourlyPayRate:{
+      [models.sequelize.Op.not]: null
+    }};
   const establishmentWorkersPay = await models.establishment.workers(establishmentId, whereClause, ['AnnualHourlyPayRate']);
   let averagePaidAmount = 0;
   let stateMessage = '';
