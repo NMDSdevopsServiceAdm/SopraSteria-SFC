@@ -104,7 +104,6 @@ const search = async function (req, res) {
         ? establishment.users.map((user) => {
             return {
               uid: user.uid,
-              username: user.username,
               name: user.FullNameValue,
               username: user.login ? user.login.username : '',
               securityQuestion: user.SecurityQuestionValue,
