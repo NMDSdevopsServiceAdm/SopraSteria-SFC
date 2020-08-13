@@ -80,8 +80,12 @@ const turnover = async (establishmentId) => {
     workerCount === establishment.NumberOfStaffValue ){
     const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
     const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
-    if((establishment.LeaversValue === "With Jobs") && ((leavers/ permTemptCount) < 9.95)){
-      percentOfPermTemp = (leavers/ permTemptCount);
+    if(establishment.LeaversValue === "With Jobs"){
+      if((leavers/ permTemptCount) < 9.95){
+        percentOfPermTemp = (leavers / permTemptCount);
+      }else{
+        stateMessage = 'check-data';
+      }
     } else{
       stateMessage = 'no-data';
     }
