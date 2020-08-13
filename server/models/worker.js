@@ -1058,9 +1058,26 @@ module.exports = function(sequelize, DataTypes) {
       as: 'otherJobs'
     });
   };
-
-  Worker.specificJobsAndNoSocialCareQuals = async function (establishmentId,jobArray) {
-    return this.count({
+  Worker.permAndTempCountForEstablishment = function (establishmentId) {
+    return this.count( {
+        where: {
+          archived: false,
+          ContractValue:  ['Permanent','Temporary'],
+          establishmentFk:establishmentId
+        },
+    });
+  };
+  Worker.countForEstablishment = async function(establishmentId){
+    return await this.count({
+      where:{
+        establishmentFk:establishmentId,
+        archived: false
+      }
+    });
+  }
+  Worker.specificJobs = function (establishmentId,jobArray) {
+    return this.findAll({
+      attributes: ['id', 'uid', 'SocialCareQualificationFkValue',],
          where: {
            establishmentFk: establishmentId,
            MainJobFkValue: jobArray,
@@ -1095,5 +1112,32 @@ module.exports = function(sequelize, DataTypes) {
       }
     });
   };
+  Worker.careworkersWithHourlyPayCount = async function(establishmentId){
+  return this.count({
+    where: {
+      establishmentFk: establishmentId,
+      MainJobFkValue: 10,
+      archived: false,
+      AnnualHourlyPayValue:'Hourly',
+      AnnualHourlyPayRate:{
+        [sequelize.Op.not]: null,
+      },
+    }
+  });
+  };
+  Worker.careworkersTotalHourlyPaySum = async function(establishmentId){
+    return this.sum("AnnualHourlyPayRate",{
+      where: {
+        MainJobFkValue: 10,
+        archived: false,
+        AnnualHourlyPayValue:'Hourly',
+        AnnualHourlyPayRate:{
+          [sequelize.Op.not]: null,
+        },
+        establishmentFk: establishmentId
+      }
+    });
+  };
+
   return Worker;
 };

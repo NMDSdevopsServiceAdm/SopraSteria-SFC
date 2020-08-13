@@ -739,6 +739,13 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
+
+  Establishment.turnOverData = function (establishmentId) {
+    return this.findByPk(establishmentId, {
+      attributes: ['id','NumberOfStaffValue','LeaversValue'],
+    });
+  };
+
   Establishment.findWithWorkersAndTraining = function (establishmentId) {
     return this.findByPk(establishmentId, {
       attributes: ['id'],

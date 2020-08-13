@@ -36,40 +36,34 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           {
             value: 0,
             hasValue: false
-          },
+          }
       },
-        qualifications: {
-          workplaceValue:
-            {
-              value: 0,
-              hasValue: false
-            },
-          comparisonGroup:
-            {
-              value: 0,
-              hasValue: false
-            }
-        }
+      qualifications: {
+        workplaceValue:
+          {
+            value: 0,
+            hasValue: false
+          },
+        comparisonGroup:
+          {
+            value: 0,
+            hasValue: false
+          }
+      },
+      turnover: {
+        workplaceValue:
+          {
+            value: 0,
+            hasValue: false
+          },
+        comparisonGroup:
+          {
+            value: 0,
+            hasValue: false
+          }
+      }
     },
-    meta:{}
-  };
-  public tileDemo: any = {
-    turnover: {
-      showYourWorkplace: true,
-      showComparisonGroup: true
-    },
-    pay: {
-      showYourWorkplace: true,
-      showComparisonGroup: false
-    },
-    sickness: {
-      showYourWorkplace: false,
-      showComparisonGroup: true
-    },
-    qualifications: {
-      showYourWorkplace: false,
-      showComparisonGroup: false
-    }
+    meta: {}
   };
   constructor(
     private benchmarksService: BenchmarksService
