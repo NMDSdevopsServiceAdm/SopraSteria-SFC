@@ -16,6 +16,7 @@ router.route('/').get(async (req, res) => {
     if (tiles.includes('pay')) reply.tiles.pay = await pay(establishmentId);
     if (tiles.includes('sickness')) reply.tiles.sickness = await sickness(establishmentId);
     if (tiles.includes('qualifications')) reply.tiles.qualifications = await qualifications(establishmentId);
+    if (tiles.includes('turnover')) reply.tiles.turnover = await turnover(establishmentId);
 
     reply = await comparisonGroupData(reply, benchmarkComparisonGroup);
     return res.status(200).json(reply);
@@ -65,12 +66,45 @@ const pay = async (establishmentId) => {
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
+const turnoverGetData = async (establishmentId) => {
+  const establishment = await models.establishment.turnOverData(establishmentId);
+  const workerCount = await models.worker.countForEstablishment(establishmentId);
+  if (!establishment || establishment.NumberOfStaffValue === 0 ||
+    workerCount !== establishment.NumberOfStaffValue) {
+    return { percentOfPermTemp: 0, stateMessage: 'no-workers' };
+  }
+  if (establishment.LeaversValue !== 'With Jobs') {
+    return { percentOfPermTemp: 0, stateMessage: 'no-data' };
+  }
+  const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
+  const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
+  const percentOfPermTemp = (leavers / permTemptCount);
+  if (percentOfPermTemp > 9.95) {
+    return { percentOfPermTemp: 0, stateMessage: 'check-data' };
+  }
+  return { percentOfPermTemp, stateMessage: '' };
+};
+const turnover = async (establishmentId) => {
+  const { percentOfPermTemp, stateMessage } = await turnoverGetData(establishmentId);
+  const json = {
+    workplaceValue: {
+      value: percentOfPermTemp,
+      hasValue: stateMessage.length === 0
+    },
+    comparisonGroup: {
+      value: 0,
+      hasValue: false
+    }
+  };
+  if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
+  return json;
+};
 const qualifications = async (establishmentId) => {
   const qualsWorkers = await models.worker.specificJobs(establishmentId, models.services.careProvidingStaff);
   let percentOfHigherQuals = 0;
   let stateMessage = '';
   if (qualsWorkers.length) {
-    let higherQualCount =  await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
+    let higherQualCount = await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
     percentOfHigherQuals = (higherQualCount / qualsWorkers.length);
   } else {
     stateMessage = 'no-workers';
@@ -120,5 +154,5 @@ module.exports = router;
 module.exports.pay = pay;
 module.exports.sickness = sickness;
 module.exports.qualifications = qualifications;
-
+module.exports.turnover = turnover;
 module.exports.comparisonGroupData = comparisonGroupData;

@@ -1058,8 +1058,24 @@ module.exports = function(sequelize, DataTypes) {
       as: 'otherJobs'
     });
   };
-
-  Worker.specificJobs = async function (establishmentId,jobArray) {
+  Worker.permAndTempCountForEstablishment = function (establishmentId) {
+    return this.count( {
+        where: {
+          archived: false,
+          ContractValue:  ['Permanent','Temporary'],
+          establishmentFk:establishmentId
+        },
+    });
+  };
+  Worker.countForEstablishment = async function(establishmentId){
+    return await this.count({
+      where:{
+        establishmentFk:establishmentId,
+        archived: false
+      }
+    });
+  }
+  Worker.specificJobs = function (establishmentId,jobArray) {
     return this.findAll({
       attributes: ['id', 'uid', 'SocialCareQualificationFkValue',],
          where: {
