@@ -89,7 +89,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     return this.http.post<any>('/api/admin/search/' + type, data, { observe: 'response' });
   }
 
-  public setEsblishmentId(id, username, nmdsId, e): void {
+  public setEstablishmentId(id, username, nmdsId, e): void {
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId, e);
   }
 
