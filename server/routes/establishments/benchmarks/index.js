@@ -31,10 +31,11 @@ const getMetaData = async (reply,benchmarkComparisonGroup) => {
     reply.meta.workplaces = 0;
     reply.meta.staff = 0;
   }
-    reply.meta.workplaces = benchmarkComparisonGroup.workplaces;
+  reply.meta.workplaces = benchmarkComparisonGroup.workplaces;
   reply.meta.staff = benchmarkComparisonGroup.staff;
+  return reply;
 
-}
+};
 const comparisonGroupData = async (reply, benchmarkComparisonGroup) => {
   Object.keys(reply.tiles).map(key => {
     if (!benchmarkComparisonGroup) {

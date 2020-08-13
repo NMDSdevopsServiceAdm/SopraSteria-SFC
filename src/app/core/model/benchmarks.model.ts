@@ -5,9 +5,9 @@ export interface BenchmarksResponse {
     sickness: Tile,
     qualifications: Tile,
     turnover:Tile
-  }
+  },
   meta:{
-    workplace: number
+    workplaces: number
     staff: number
   }
 }
