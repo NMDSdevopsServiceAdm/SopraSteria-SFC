@@ -70,28 +70,25 @@ const pay = async (establishmentId) => {
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
-
-const turnover = async (establishmentId) => {
+const turnoverGetData = async (establishmentId) => {
   const establishment = await models.establishment.turnOverData(establishmentId);
   const workerCount = await models.worker.countForEstablishment(establishmentId);
-  let percentOfPermTemp = 0;
-  let stateMessage = '';
-  if (establishment && establishment.NumberOfStaffValue > 0 &&
-    workerCount === establishment.NumberOfStaffValue ){
-    const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
-    const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
-    if(establishment.LeaversValue === "With Jobs"){
-      if((leavers/ permTemptCount) < 9.95){
-        percentOfPermTemp = (leavers / permTemptCount);
-      }else{
-        stateMessage = 'check-data';
-      }
-    } else{
-      stateMessage = 'no-data';
-    }
-  }else{
-    stateMessage = 'no-workers';
+  if (!establishment || establishment.NumberOfStaffValue === 0 ||
+    workerCount !== establishment.NumberOfStaffValue) {
+    return {percentOfPermTemp: 0, stateMessage: 'no-workers'};
   }
+  const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
+  const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
+  if (establishment.LeaversValue !== 'With Jobs') {
+    return {percentOfPermTemp: 0, stateMessage: 'no-data'};
+  }
+  if ((leavers / permTemptCount) > 9.95) {
+    return {percentOfPermTemp: 0, stateMessage: 'check-data'};
+  }
+  return {percentOfPermTemp: (leavers / permTemptCount), stateMessage: ''};
+};
+const turnover = async (establishmentId) => {
+  const {percentOfPermTemp, stateMessage} = await turnoverGetData(establishmentId);
   const json = {
     workplaceValue: {
       value: percentOfPermTemp,
@@ -110,7 +107,7 @@ const qualifications = async (establishmentId) => {
   let percentOfHigherQuals = 0;
   let stateMessage = '';
   if (qualsWorkers.length) {
-    let higherQualCount =  await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
+    let higherQualCount = await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
     percentOfHigherQuals = (higherQualCount / qualsWorkers.length);
   } else {
     stateMessage = 'no-workers';
