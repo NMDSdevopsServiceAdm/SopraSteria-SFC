@@ -42,17 +42,13 @@ const comparisonGroupData = async (reply, benchmarkComparisonGroup) => {
   return reply;
 };
 const pay = async (establishmentId) => {
-  const whereClause = { MainJobFkValue: 10, archived: false };
-  const establishmentWorkersPay = await models.establishment.workers(establishmentId, whereClause, ['AnnualHourlyPayRate']);
+
+  const careworkersWithHourlyPayCount = await models.worker.careworkersWithHourlyPayCount(establishmentId);
   let averagePaidAmount = 0;
   let stateMessage = '';
-  if (establishmentWorkersPay) {
-    let paidAmount = 0;
-    await Promise.all(establishmentWorkersPay.workers.map(async worker => {
-      paidAmount = paidAmount + Number(worker.AnnualHourlyPayRate);
-      return paidAmount;
-    }));
-    averagePaidAmount = paidAmount / establishmentWorkersPay.workers.length;
+  if (careworkersWithHourlyPayCount > 0) {
+    let paidAmount = await models.worker.careworkersTotalHourlyPaySum(establishmentId);
+    averagePaidAmount = paidAmount / careworkersWithHourlyPayCount;
   } else {
     stateMessage = 'no-workers';
   }
