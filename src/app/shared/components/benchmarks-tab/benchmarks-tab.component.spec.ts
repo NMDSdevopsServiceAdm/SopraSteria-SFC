@@ -30,4 +30,12 @@ describe('BenchmarksTabComponent', () => {
       it('should create', () => {
         expect(component).toBeTruthy();
       });
+  it('should format Pay data correctly', () => {
+    const paydata = component.formatPay(5.12345);
+    expect(paydata).toBe('£5.12');
+  });
+  it('should format percent data correctly', () => {
+    const percentData = component.formatPercent(0.357894767643573);
+    expect(percentData).toBe('36%');
+  });
 });

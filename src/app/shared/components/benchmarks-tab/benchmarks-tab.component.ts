@@ -65,24 +65,6 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     },
     meta: {}
   };
-  public tileDemo: any = {
-    turnover: {
-      showYourWorkplace: true,
-      showComparisonGroup: true
-    },
-    pay: {
-      showYourWorkplace: true,
-      showComparisonGroup: false
-    },
-    sickness: {
-      showYourWorkplace: false,
-      showComparisonGroup: true
-    },
-    qualifications: {
-      showYourWorkplace: false,
-      showComparisonGroup: false
-    }
-  };
   constructor(
     private benchmarksService: BenchmarksService
   ) {

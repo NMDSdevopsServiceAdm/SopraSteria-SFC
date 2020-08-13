@@ -239,7 +239,7 @@ describe('benchmarks', () => {
       };
       expect(json).to.deep.equal(expectedJSON);
     });
-    it('should return the no-data when calculation > 9.95', async () => {
+    it('should return the check-data when calculation > 9.95', async () => {
       const establishmentId = 123;
       sinon.stub(models.establishment, 'turnOverData').returns(
         {id:"2",NumberOfStaffValue:3,LeaversValue:"With Jobs"}
@@ -252,7 +252,7 @@ describe('benchmarks', () => {
         workplaceValue: {
           value: 0,
           hasValue: false,
-          stateMessage: 'no-data'
+          stateMessage: 'check-data'
         },
         comparisonGroup: {
           value: 0,

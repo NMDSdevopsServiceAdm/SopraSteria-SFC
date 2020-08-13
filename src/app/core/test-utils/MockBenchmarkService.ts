@@ -9,18 +9,55 @@ const benchmarksResponseBuilder = build('BenchmarksResponse', {
   fields: {
     tiles: {
       pay: {
-        workplaceValue: {
-          value: 15,
-          hasValue: true
-        },
-        comparisonGroup: {
-          value: 10,
-          hasValue: true
-        }
+        workplaceValue:
+          {
+            value: 0,
+            hasValue: false
+          },
+        comparisonGroup:
+          {
+            value: 0,
+            hasValue: false
+          }
       },
+      sickness: {
+        workplaceValue:
+          {
+            value: 0,
+            hasValue: false
+          },
+        comparisonGroup:
+          {
+            value: 0,
+            hasValue: false
+          }
+      },
+      qualifications: {
+        workplaceValue:
+          {
+            value: 0,
+            hasValue: false
+          },
+        comparisonGroup:
+          {
+            value: 0,
+            hasValue: false
+          }
+      },
+      turnover: {
+        workplaceValue:
+          {
+            value: 0,
+            hasValue: false
+          },
+        comparisonGroup:
+          {
+            value: 0,
+            hasValue: false
+          }
+      }
     },
-    meta: {
-    }
+    meta: {}
   }
 });
 
