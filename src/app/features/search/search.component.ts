@@ -48,16 +48,18 @@ export class SearchComponent implements OnInit {
       this.form.type = 'users';
       this.form.usernameLabel = 'Username';
       this.form.nameLabel = 'Name';
-      this.form.subTitle = 'User Search';
-      this.form.title = 'Define your search criteria';
+      this.form.title = 'Search for a user';
       this.form.buttonText = 'Search Users';
     } else if (this.router.url === '/search-establishments') {
       this.form.type = 'establishments';
       this.form.usernameLabel = 'Postcode';
       this.form.nameLabel = 'Workplace ID';
-      this.form.subTitle = 'Establishment Search';
-      this.form.title = 'Define your search criteria';
-      this.form.buttonText = 'Search Establishments';
+      this.form.title = 'Search for a workplace';
+      this.form.buttonText = 'Search workplaces';
+    } else if (this.router.url === '/search-groups') {
+      this.form.type = 'groups';
+      this.form.title = 'Search for a group';
+      this.form.buttonText = 'Search groups';
     } else if (this.router.url === '/registrations') {
       this.form.type = 'registrations';
     } else if (this.router.url === '/cqc-status-changes') {

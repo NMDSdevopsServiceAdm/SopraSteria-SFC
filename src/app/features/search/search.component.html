@@ -8,7 +8,7 @@
             [class.govuk-tabs__tab--selected]="form.type === 'users'"
             [routerLink]="['/search-users']"
           >
-            Search Users
+            Users
           </a>
         </li>
         <li class="govuk-tabs__list-item">
@@ -17,7 +17,16 @@
             [class.govuk-tabs__tab--selected]="form.type === 'establishments'"
             [routerLink]="['/search-establishments']"
           >
-            Search Establishments
+            Workplaces
+          </a>
+        </li>
+        <li class="govuk-tabs__list-item">
+          <a
+            class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'groups'"
+            [routerLink]="['/search-groups']"
+          >
+            Groups
           </a>
         </li>
         <li class="govuk-tabs__list-item">
@@ -85,6 +94,7 @@
                   'govuk-grid-column-one-half': form.type === 'users',
                   'govuk-grid-column-one-third': form.type === 'establishments'
                 }"
+                *ngIf="form.type === 'users' || form.type === 'establishments'"
               >
                 <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
                   <label class="govuk-label" for="username">
@@ -107,6 +117,7 @@
                   'govuk-grid-column-one-half': form.type === 'users',
                   'govuk-grid-column-one-third': form.type === 'establishments'
                 }"
+                *ngIf="form.type === 'users' || form.type === 'establishments'"
               >
                 <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
                   <label class="govuk-label" for="name">
@@ -123,6 +134,7 @@
                   />
                 </div>
               </div>
+
               <div class="govuk-grid-column-one-third" *ngIf="form.type === 'establishments'">
                 <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
                   <label class="govuk-label" for="locationid">
@@ -139,6 +151,31 @@
                   />
                 </div>
               </div>
+
+              <div class="govuk-grid-column-one-half" *ngIf="form.type === 'groups'">
+                <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
+                  <label class="govuk-label" for="employerType">
+                    Employer Type
+                  </label>
+                  <select
+                    class="govuk-select"
+                    id="employerType"
+                    name="employerType"
+                    [class.govuk-select--error]="form.errors && form.errors.length"
+                  >
+                    <option value="All">All</option>
+                    <option value="Local Authority (adult services)">Local Authority (adult services)</option>
+                    <option value="Local Authority (generic/other)">Local Authority (generic/other)</option>
+                    <option value="Private Sector">Private Sector</option>
+                    <option value="Voluntary / Charity">Voluntary / Charity</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+
+
+
             </div>
           </fieldset>
 
