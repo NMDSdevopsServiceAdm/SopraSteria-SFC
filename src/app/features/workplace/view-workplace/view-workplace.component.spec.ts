@@ -31,9 +31,7 @@ describe('view-workplace', () => {
         RouterTestingModule,
         HttpClientTestingModule
       ],
-      declarations: [
-        // HomeTabComponent
-      ],
+      declarations: [],
       providers: [
         {
           provide: WindowRef,
@@ -83,108 +81,103 @@ describe('view-workplace', () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
-//
-//   describe('Tabs', () => {
-//     it('should display the Benchmarks tab when the workplace is CQC Regulated', async () => {
-//       const { component } = await setup(true);
-//
-//       const establishment = {
-//         ...component.fixture.componentInstance.workplace
-//       };
-//       establishment.isRegulated = true;
-//       component.fixture.componentInstance.workplace = establishment;
-//       component.fixture.detectChanges();
-//
-//       expect(component.getByText('Benchmarks')).toBeTruthy();
-//     });
-//     it('should display the Benchmarks tab when the workplace is not CQC Regulated', async () => {
-//       const { component } = await setup(true);
-//
-//       const establishment = {
-//         ...component.fixture.componentInstance.workplace
-//       };
-//       establishment.isRegulated = false;
-//       component.fixture.componentInstance.workplace = establishment;
-//       component.fixture.detectChanges();
-//
-//       expect(component.queryByText('Benchmarks')).toBeNull();
-//     });
-//     it('should display the Users tab', async () => {
-//       const { component } = await setup(true);
-//
-//       const establishment = {
-//         ...component.fixture.componentInstance.workplace
-//       };
-//       establishment.isRegulated = false;
-//       component.fixture.componentInstance.workplace = establishment;
-//       component.fixture.detectChanges();
-//
-//       expect(component.getByText('Users')).toBeTruthy();
-//     });
-//   });
-//
-//   describe('Archive Workplace', () => {
-//     it('should display a Delete Workplace link if user is an admin', async () => {
-//       const { component } = await setup(true);
-//
-//       component.getByText('Delete Workplace');
-//     });
-//
-//     it('should not display a Delete Workplace link if the workplace has subsidiaries', async () => {
-//       const { component } = await setup(true, 1);
-//
-//       expect(component.queryByText('Delete Workplace')).toBeNull();
-//     });
-//
-//     it('should not display a Delete Workplace link if user not an admin', async () => {
-//       const { component } = await setup(false);
-//
-//       expect(component.queryByText('Delete Workplace')).toBeNull();
-//     });
-//
-//     it('should display a modal when the user clicks on Delete Workplace', async () => {
-//       const { component } = await setup(true);
-//
-//       const deleteWorkplace = component.getByText('Delete Workplace');
-//       deleteWorkplace.click();
-//
-//       const dialog = await within(document.body).findByRole('dialog');
-//
-//       const cancel = within(dialog).getByText('Cancel');
-//       cancel.click();
-//     });
-//
-//     it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
-//       const { component, establishmentService } = await setup(true);
-//
-//       const spy = spyOn(establishmentService, 'deleteWorkplace');
-//
-//       const deleteWorkplace = component.getByText('Delete Workplace');
-//       deleteWorkplace.click();
-//
-//       const dialog = await within(document.body).findByRole('dialog');
-//       const confirm = within(dialog).getByText('Delete workplace');
-//       confirm.click();
-//
-//       expect(spy).toHaveBeenCalled();
-//     });
-//
-//     it('should redirect the user after deleting a workplace', async () => {
-//       const { component, establishmentService, router } = await setup(true);
-//
-//       spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
-//       const spy = spyOn(router, 'navigate');
-//       spy.and.returnValue(Promise.resolve({}));
-//
-//       const deleteWorkplace = component.getByText('Delete Workplace');
-//       deleteWorkplace.click();
-//
-//       const dialog = await within(document.body).findByRole('dialog');
-//       const confirm = within(dialog).getByText('Delete workplace');
-//       confirm.click();
-//
-//       expect(spy).toHaveBeenCalled();
-//     });
-//   });
+
+  describe('Tabs', () => {
+    it('should display the Benchmarks tab when the workplace is CQC Regulated', async () => {
+      const { component } = await setup(true);
+
+      const establishment = {
+        ...component.fixture.componentInstance.workplace
+      };
+      establishment.isRegulated = true;
+      component.fixture.componentInstance.workplace = establishment;
+      component.fixture.detectChanges();
+
+      expect(component.getByText('Benchmarks')).toBeTruthy();
+    });
+    it('should not display the Benchmarks tab when the workplace is not CQC Regulated', async () => {
+      const { component } = await setup(true);
+
+      const establishment = {
+        ...component.fixture.componentInstance.workplace
+      };
+      establishment.isRegulated = false;
+      component.fixture.componentInstance.workplace = establishment;
+      component.fixture.detectChanges();
+
+      expect(component.queryByText('Benchmarks')).toBeNull();
+    });
+    it('should display the Users tab', async () => {
+      const { component } = await setup(true);
+
+      const establishment = {
+        ...component.fixture.componentInstance.workplace
+      };
+      establishment.isRegulated = false;
+      component.fixture.componentInstance.workplace = establishment;
+      component.fixture.detectChanges();
+
+      expect(component.getByText('Users')).toBeTruthy();
+    });
+  });
+
+  describe('Archive Workplace', () => {
+    it('should display a Delete Workplace link if user is an admin', async () => {
+      const { component } = await setup(true);
+
+      component.getByText('Delete Workplace');
+    });
+
+
+    it('should not display a Delete Workplace link if user not an admin', async () => {
+      const { component } = await setup(false);
+
+      expect(component.queryByText('Delete Workplace')).toBeNull();
+    });
+
+    it('should display a modal when the user clicks on Delete Workplace', async () => {
+      const { component } = await setup(true);
+
+      const deleteWorkplace = component.getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      const cancel = within(dialog).getByText('Cancel');
+      cancel.click();
+    });
+
+    it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
+      const { component, establishmentService } = await setup(true);
+
+      const spy = spyOn(establishmentService, 'deleteWorkplace');
+
+      const deleteWorkplace = component.getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete workplace');
+      confirm.click();
+
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should redirect the user after deleting a workplace', async () => {
+      const { component, establishmentService, router } = await setup(true);
+
+      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+      const spy = spyOn(router, 'navigate');
+      spy.and.returnValue(Promise.resolve({}));
+
+      const deleteWorkplace = component.getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete workplace');
+      confirm.click();
+
+      expect(spy).toHaveBeenCalled();
+    });
+  });
 });
 
