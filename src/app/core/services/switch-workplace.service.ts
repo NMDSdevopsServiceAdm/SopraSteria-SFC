@@ -40,7 +40,7 @@ export class SwitchWorkplaceService {
       error => this.onError(error)
     );
   }
-  
+
   public getAllNotificationWorkplace(nmdsId) {
     return this.http.get<any>(`/api/user/swap/establishment/notification/${nmdsId}`);
   }
@@ -54,6 +54,7 @@ export class SwitchWorkplaceService {
 
   private onSwapSuccess(data) {
     if (data.body && data.body.establishment && data.body.establishment.uid) {
+      this.authService.isOnAdminScreen = false;
       this.authService.setPreviousToken();
       this.authService.token = data.headers.get('authorization');
       const workplaceUid = data.body.establishment.uid;

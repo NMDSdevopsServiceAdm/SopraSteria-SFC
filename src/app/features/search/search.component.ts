@@ -9,6 +9,7 @@ import {
 } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
 import { take } from 'rxjs/operators';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-search',
@@ -39,9 +40,11 @@ export class SearchComponent implements OnInit {
     public switchWorkplaceService: SwitchWorkplaceService,
     private dialogService: DialogService,
     protected backService: BackService,
+    protected authService: AuthService,
   ) {}
 
   ngOnInit() {
+    this.authService.isOnAdminScreen = true;
     this.setBackLink();
 
     if (this.router.url === '/search-users') {

@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
+  private _isOnAdminScreen: boolean;
   public fullname: string;
   public user: UserDetails;
   public showDropdown = false;
@@ -22,6 +23,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.userService.loggedInUser$.subscribe(user => {
         this.user = user;
         this.fullname = user && user.fullname ? user.fullname.split(' ')[0] : null;
+      })
+    );
+    this.subscriptions.add(
+      this.authService.isOnAdminScreen$.subscribe(isOnAdminScreen => {
+        this._isOnAdminScreen = isOnAdminScreen;
       })
     );
   }
@@ -38,6 +44,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return this.userService.loggedInUser ?
       this.userService.loggedInUser.role === 'Admin'
       : false;
+  }
+
+  public isOnAdminScreen(): boolean {
+    return this._isOnAdminScreen;
   }
 
   public toggleMenu(): void {
