@@ -1061,25 +1061,23 @@ module.exports = function(sequelize, DataTypes) {
 
   Worker.specificJobsAndNoSocialCareQuals = async function (establishmentId,jobArray) {
     return this.count({
-      attributes: ['id', 'uid', 'SocialCareQualificationFkValue',],
          where: {
            establishmentFk: establishmentId,
            MainJobFkValue: jobArray,
            archived: false,
-           QualificationInSocialCareValue: "NO"
+           QualificationInSocialCareValue: "No"
          }
     });
   };
   Worker.specificJobsAndSocialCareQuals = async function (establishmentId,jobArray) {
     return this.count({
-      attributes: ['id', 'uid', 'SocialCareQualificationFkValue',],
       where: {
         establishmentFk: establishmentId,
         MainJobFkValue: jobArray,
         archived: false,
-        QualificationInSocialCareValue: "YES",
+        QualificationInSocialCareValue: "Yes",
         SocialCareQualificationFkValue:{
-          [sequelize.Op.not]:  [10,null]
+          [sequelize.Op.not]:  [10]
         },
       }
     });

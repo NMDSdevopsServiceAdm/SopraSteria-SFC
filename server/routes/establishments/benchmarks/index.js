@@ -72,10 +72,10 @@ const pay = async (establishmentId) => {
 const qualifications = async (establishmentId) => {
   const noquals = await models.worker.specificJobsAndSocialCareQuals(establishmentId, models.services.careProvidingStaff);
   const quals = await models.worker.specificJobsAndNoSocialCareQuals(establishmentId, models.services.careProvidingStaff);
-  const denominator =noquals +quals;
+  const denominator = noquals + quals;
   let percentOfHigherQuals = 0;
   let stateMessage = '';
-  if (qualsWorkers.length) {
+  if (denominator > 0) {
     let higherQualCount =  await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
     percentOfHigherQuals = (higherQualCount / denominator);
   } else {
