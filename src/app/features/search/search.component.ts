@@ -1,14 +1,13 @@
 import { Overlay } from '@angular/cdk/overlay';
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { DialogService } from '@core/services/dialog.service';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import {
   AdminUnlockConfirmationDialogComponent,
 } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
-import { take } from 'rxjs/operators';
-import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
 @Component({
   selector: 'app-search',
@@ -32,6 +31,9 @@ export class SearchComponent implements OnInit {
     locationid: '',
     errors: [],
   };
+
+  public workerDetails = [];
+  public workerDetailsLabel = [];
 
   constructor(
     public router: Router,
@@ -76,6 +78,18 @@ export class SearchComponent implements OnInit {
         this.results[index].isLocked = false;
       }
     }
+    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
+  }
+
+  public unlockWorkplaceUser(username: string, workplaceIndex: number, userIndex: number, e) {
+    e.preventDefault();
+    const data = {
+      username,
+      removeUnlock: () => {
+        this.results[workplaceIndex].users[userIndex].isLocked = false;
+      }
+    }
+
     this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
   }
 
@@ -128,5 +142,11 @@ export class SearchComponent implements OnInit {
 
   protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/dashboard'] });
+  }
+
+  public toggleDetails(uid: string, event) {
+    event.preventDefault();
+    this.workerDetails[uid] = !this.workerDetails[uid];
+    this.workerDetailsLabel[uid] = this.workerDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
   }
 }

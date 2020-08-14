@@ -687,6 +687,12 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Establishment.associate = (models) => {
+    Establishment.belongsTo(models.establishment, {
+      as: 'Parent',
+      foreignKey: 'ParentID',
+      targetKey: 'id'
+    });
+
     Establishment.hasMany(models.user, {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
@@ -805,7 +811,6 @@ module.exports = function(sequelize, DataTypes) {
         }
       });
   };
-
 
   return Establishment;
 };
