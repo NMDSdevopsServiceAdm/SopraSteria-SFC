@@ -1,7 +1,4 @@
-<div class="govuk-grid-row">
-  <p *ngIf="tilesData.meta.staff && tilesData.meta.workplaces else noCompGroup"><b>Your comparison group</b> is {{tilesData.meta.staff}} staff from {{tilesData.meta.workplaces}} workplaces providing the same main services as you in your local authority</p>
-  <ng-template #noCompGroup><b>Your comparison group</b> information is not available at the moment.</ng-template>
-</div>
+<app-comparison-group-header [meta]=tilesData.meta></app-comparison-group-header>
 <div class="govuk-grid-row">
   <app-benchmark-tile
   [title]="'Pay'"

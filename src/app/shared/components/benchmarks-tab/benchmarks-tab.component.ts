@@ -91,7 +91,14 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public formatPay(data) {
     return  '£' + Number(data).toFixed(2);
   }
+  public formatNumber(data) {
+    return  data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
 
+  public pluralizeWorkplaces(workplaces){
+    return workplaces > 1 ? 'workplaces' : 'workplace'
+  }
   ngOnDestroy() {
+    this.subscriptions.unsubscribe()
   }
 }

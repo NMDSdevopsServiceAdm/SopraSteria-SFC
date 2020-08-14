@@ -6,10 +6,11 @@ export interface BenchmarksResponse {
     qualifications: Tile,
     turnover:Tile
   },
-  meta:{
-    workplaces: number
-    staff: number
-  }
+  meta: Meta,
+}
+export interface Meta {
+  workplaces: number
+  staff: number
 }
 export interface Tile {
   workplaceValue: BenchmarkValue,
