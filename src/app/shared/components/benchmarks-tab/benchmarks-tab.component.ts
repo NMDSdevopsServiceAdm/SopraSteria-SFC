@@ -63,7 +63,10 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           }
       }
     },
-    meta: {}
+    meta: {
+      workplaces:0,
+      staff:0
+    }
   };
   constructor(
     private benchmarksService: BenchmarksService
