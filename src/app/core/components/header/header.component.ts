@@ -4,6 +4,7 @@ import { AuthService } from '@core/services/auth.service';
 import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
+import { Roles } from '@core/model/roles.enum';
 
 @Component({
   selector: 'app-header',
@@ -42,7 +43,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public isAdminUser(): boolean {
     return this.userService.loggedInUser ?
-      this.userService.loggedInUser.role === 'Admin'
+      this.userService.loggedInUser.role === Roles.Admin
       : false;
   }
 
