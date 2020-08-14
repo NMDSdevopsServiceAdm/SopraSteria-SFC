@@ -30,6 +30,7 @@ const getMetaData = async (reply,benchmarkComparisonGroup) => {
   if (!benchmarkComparisonGroup) {
     reply.meta.workplaces = 0;
     reply.meta.staff = 0;
+    return reply;
   }
   reply.meta.workplaces = benchmarkComparisonGroup.workplaces;
   reply.meta.staff = benchmarkComparisonGroup.staff;
@@ -168,3 +169,4 @@ module.exports.sickness = sickness;
 module.exports.qualifications = qualifications;
 module.exports.turnover = turnover;
 module.exports.comparisonGroupData = comparisonGroupData;
+module.exports.getMetaData = getMetaData;
