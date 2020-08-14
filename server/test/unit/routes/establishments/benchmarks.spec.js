@@ -150,7 +150,7 @@ describe('benchmarks', () => {
       expect(json).to.deep.equal(expectedJson);
     });
   });
-  describe.only('turnover', () => {
+  describe('turnover', () => {
     it('should return the correct calculation', async () => {
       const establishmentId = 123;
       sinon.stub(models.establishment, 'turnOverData').returns(

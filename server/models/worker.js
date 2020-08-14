@@ -1086,6 +1086,17 @@ module.exports = function(sequelize, DataTypes) {
          }
     });
   };
+  Worker.specificJobsAndNoSocialCareQuals = async function (establishmentId,jobArray) {
+    return this.count({
+      where: {
+        establishmentFk: establishmentId,
+        MainJobFkValue: jobArray,
+        archived: false,
+        QualificationInSocialCareValue: "No",
+
+      }
+    });
+  };
   Worker.specificJobsAndSocialCareQuals = async function (establishmentId,jobArray) {
     return this.count({
       where: {
