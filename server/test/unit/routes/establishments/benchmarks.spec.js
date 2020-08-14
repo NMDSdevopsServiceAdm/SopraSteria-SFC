@@ -403,6 +403,96 @@ describe('benchmarks', () => {
       expect(json).to.deep.equal(expectedJson);
     });
   });
+  describe('getMetaData', () => {
+    it('should return the correct meta  Data', async () => {
+      const benchmarkComparisonGroup = {
+        'CssrID': 0,
+        'MainServiceFK': 0,
+        'pay': 10,
+        'sickness': 10,
+        'turnover': '9.99',
+        'qualifications': '9.99',
+        'workplaces': 5,
+        'staff': 1000
+      };
 
+      const reply = {
+        tiles: {
+          pay: {
+            workplaceValue: {
+              value: 10,
+              hasValue: true
+            },
+            comparisonGroup: {
+              value: 10,
+              hasValue: true
+            }
+          }
+        },
+        meta: {}
+      };
+      const expectedJson = {
+        tiles: {
+          pay: {
+            workplaceValue: {
+              value: 10,
+              hasValue: true
+            },
+            comparisonGroup: {
+              value: 10,
+              hasValue: true
+            }
+          }
+        },
+        meta: {
+          workplaces:5,
+          staff: 1000
+        }
+      };
+      const json = await benchmarks.getMetaData(reply, benchmarkComparisonGroup);
+
+      expect(json.meta).to.deep.equal(expectedJson.meta);
+    });
+    it('should return the correct meta data when there is no comparison group data', async () => {
+      const benchmarkComparisonGroup = null;
+
+      const reply = {
+        tiles: {
+          pay: {
+            workplaceValue: {
+              value: 10,
+              hasValue: true
+            },
+            comparisonGroup: {
+              value: 10,
+              hasValue: true
+            }
+          }
+        },
+        meta: {}
+      };
+      const expectedJson = {
+        tiles: {
+          pay: {
+            workplaceValue: {
+              value: 10,
+              hasValue: true
+            },
+            comparisonGroup: {
+              value: 10,
+              hasValue: true
+            }
+          }
+        },
+        meta: {
+          workplaces:0,
+          staff: 0
+        }
+      };
+      const json = await benchmarks.getMetaData(reply, benchmarkComparisonGroup);
+
+      expect(json.meta).to.deep.equal(expectedJson.meta);
+    });
+  });
 })
 ;
