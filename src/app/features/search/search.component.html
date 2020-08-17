@@ -248,7 +248,7 @@
                     <tbody class="govuk-table__body">
                       <tr class="govuk-table__row govuk-util__vertical-align-top">
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
-                          {{ item.address1 }} {{ [item.address2, item.town, item.county].join(', ') }}
+                          {{ displayAddress(item) }}
                         </td>
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
                           <ng-container *ngIf="item.parent?.nmdsId else noParentID">
