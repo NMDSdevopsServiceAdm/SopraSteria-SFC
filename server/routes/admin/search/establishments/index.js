@@ -84,6 +84,7 @@ const search = async function (req, res) {
           required: false,
           where: {
             UserRoleValue: 'Edit',
+            archived: false,
           },
           include: [
             {
