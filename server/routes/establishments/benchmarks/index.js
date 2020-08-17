@@ -84,8 +84,11 @@ const turnoverGetData = async (establishmentId) => {
     workerCount !== establishment.NumberOfStaffValue) {
     return { percentOfPermTemp: 0, stateMessage: 'no-workers' };
   }
-  if (establishment.LeaversValue !== 'With Jobs') {
+  if (establishment.LeaversValue === 'Don\'t know' || !establishment.LeaversValue) {
     return { percentOfPermTemp: 0, stateMessage: 'no-data' };
+  }
+  if (establishment.LeaversValue === 'None') {
+    return { percentOfPermTemp: 0,stateMessage: '' };
   }
   const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
   const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
