@@ -29,6 +29,7 @@ export class SearchComponent implements OnInit {
     name: '',
     nameLabel: '',
     locationid: '',
+    employerType: '',
     errors: [],
   };
 
@@ -121,6 +122,10 @@ export class SearchComponent implements OnInit {
           username: this.form.username,
           name: this.form.name,
         };
+      } else if (this.form.type === 'groups') {
+        data = {
+          employerType: this.form.employerType
+        }
       } else {
         data = {
           postcode: this.form.username,
