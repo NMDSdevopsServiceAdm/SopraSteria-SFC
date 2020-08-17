@@ -174,6 +174,28 @@
                   </select>
                 </div>
               </div>
+
+              <div class="govuk-grid-column-one-half" *ngIf="form.type === 'groups'">
+                <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
+                  <label class="govuk-label">
+                    Parents
+                  </label>
+                  <div class="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                      <input id="parent"
+                      name="parent"
+                      [(ngModel)]="form.parent"
+                      class="govuk-checkboxes__input"
+                      type="checkbox"
+                      value="true"
+                      [class.govuk-select--error]="form.errors && form.errors.length">
+                      <label class="govuk-label govuk-checkboxes__label" for="parent">
+                        Only search for parents
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </fieldset>
 

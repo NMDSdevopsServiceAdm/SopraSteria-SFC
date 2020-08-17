@@ -31,6 +31,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     nameLabel: '',
     locationid: '',
     employerType: 'All',
+    parent: false,
     errors: [],
   };
 
@@ -132,6 +133,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
       } else if (this.form.type === 'groups') {
         data = {
           employerType: this.form.employerType,
+          parent: this.form.parent
         }
       } else {
         data = {
