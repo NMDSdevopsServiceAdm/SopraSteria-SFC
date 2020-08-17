@@ -5,6 +5,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { isNull } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
+import * as Sentry from '@sentry/browser';
 
 import { EstablishmentService } from './establishment.service';
 import { PermissionsService } from './permissions/permissions.service';
@@ -15,6 +16,7 @@ import { UserService } from './user.service';
 })
 export class AuthService {
   private _isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  private _isOnAdminScreen$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private jwt = new JwtHelperService();
   private previousUser: string;
   private previousToken: string = null;
@@ -39,6 +41,18 @@ export class AuthService {
     const authenticated = this.token ? !this.jwt.isTokenExpired(this.token) : false;
     this._isAuthenticated$.next(authenticated);
     return this._isAuthenticated$.value;
+  }
+
+  public get isOnAdminScreen$(): Observable<boolean> {
+    return this._isOnAdminScreen$.asObservable();
+  }
+
+  public get isOnAdminScreen(): boolean {
+    return this._isOnAdminScreen$.value;
+  }
+
+  public set isOnAdminScreen(isOnAdminScreen: boolean) {
+    this._isOnAdminScreen$.next(isOnAdminScreen);
   }
 
   public get token() {
@@ -74,6 +88,11 @@ export class AuthService {
           console.log('Got response from API');
           console.log(response);
           this.token = response.headers.get('authorization');
+          Sentry.configureScope(scope => {
+            scope.setUser({
+              id: response.body.uid
+            });
+          });
         },
         error => console.error(error)
       )
@@ -103,6 +122,11 @@ export class AuthService {
     this.userService.resetAgreedUpdatedTermsStatus = null;
     this.establishmentService.resetState();
     this.permissionsService.clearPermissions();
+    Sentry.configureScope(scope => {
+      scope.setUser({
+        id: ''
+      });
+   });
   }
 
   public setPreviousToken(): void {
