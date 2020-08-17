@@ -150,6 +150,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.backService.setBackLink({ url: ['/dashboard'] });
   }
 
+  protected displayAddress(workplace) {
+    const secondaryAddress = ' ' + [workplace.address2, workplace.town, workplace.county].filter(Boolean).join(', ') || '';
+
+    return workplace.address1 + secondaryAddress;
+  }
+
   public toggleDetails(uid: string, event) {
     event.preventDefault();
     this.workerDetails[uid] = !this.workerDetails[uid];
