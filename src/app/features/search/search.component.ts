@@ -1,21 +1,21 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { DialogService } from '@core/services/dialog.service';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import {
   AdminUnlockConfirmationDialogComponent,
 } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
-import { take } from 'rxjs/operators';
-import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   providers: [DialogService, AdminUnlockConfirmationDialogComponent, Overlay],
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, AfterViewInit {
   public results = [];
   public selectedWorkplaceUid: string;
   public form = {
@@ -33,13 +33,21 @@ export class SearchComponent implements OnInit {
     errors: [],
   };
 
+  public workerDetails = [];
+  public workerDetailsLabel = [];
+
   constructor(
     public router: Router,
     public http: HttpClient,
     public switchWorkplaceService: SwitchWorkplaceService,
     private dialogService: DialogService,
     protected backService: BackService,
+    protected authService: AuthService,
   ) {}
+
+  ngAfterViewInit() {
+    this.authService.isOnAdminScreen = true;
+  }
 
   ngOnInit() {
     this.setBackLink();
@@ -79,11 +87,23 @@ export class SearchComponent implements OnInit {
     this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
   }
 
+  public unlockWorkplaceUser(username: string, workplaceIndex: number, userIndex: number, e) {
+    e.preventDefault();
+    const data = {
+      username,
+      removeUnlock: () => {
+        this.results[workplaceIndex].users[userIndex].isLocked = false;
+      }
+    }
+
+    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
+  }
+
   public searchType(data, type) {
     return this.http.post<any>('/api/admin/search/' + type, data, { observe: 'response' });
   }
 
-  public setEsblishmentId(id, username, nmdsId, e): void {
+  public setEstablishmentId(id, username, nmdsId, e): void {
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId, e);
   }
 
@@ -128,5 +148,17 @@ export class SearchComponent implements OnInit {
 
   protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/dashboard'] });
+  }
+
+  protected displayAddress(workplace) {
+    const secondaryAddress = ' ' + [workplace.address2, workplace.town, workplace.county].filter(Boolean).join(', ') || '';
+
+    return workplace.address1 + secondaryAddress;
+  }
+
+  public toggleDetails(uid: string, event) {
+    event.preventDefault();
+    this.workerDetails[uid] = !this.workerDetails[uid];
+    this.workerDetailsLabel[uid] = this.workerDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
   }
 }
