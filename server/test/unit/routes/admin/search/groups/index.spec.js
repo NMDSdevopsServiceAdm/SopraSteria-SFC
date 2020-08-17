@@ -6,9 +6,9 @@ const adminGroupsSearchRoute = require('../../../../../../routes/admin/search/gr
 const { establishmentBuilder } = require('../../../../../factories/models');
 
 describe('server/routes/admin/search/groups', () => {
-  let findEstablishments;
+  let searchEstablishments;
   beforeEach(() => {
-    findEstablishments = sinon.spy(models.establishment, "findEstablishments");
+    searchEstablishments = sinon.spy(models.establishment, "searchEstablishments");
 
     sinon.stub(models.establishment, 'findAll').returns([
       {
@@ -77,7 +77,7 @@ describe('server/routes/admin/search/groups', () => {
 
     const response = res._getJSONData();
 
-    expect(findEstablishments.called).to.deep.equal(true);
+    expect(searchEstablishments.called).to.deep.equal(true);
     expect(response).to.deep.equal([{
       uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
       name: '123444',

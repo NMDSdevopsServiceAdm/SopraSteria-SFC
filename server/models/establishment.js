@@ -811,7 +811,7 @@ module.exports = function(sequelize, DataTypes) {
         }
       });
   };
-  Establishment.findEstablishments = async function(where) {
+  Establishment.searchEstablishments = async function(where) {
     return await this.findAll({
       attributes: [
         'id',
