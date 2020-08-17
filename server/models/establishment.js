@@ -831,7 +831,12 @@ module.exports = function(sequelize, DataTypes) {
         'EmployerTypeValue',
         'EmployerTypeOther'
       ],
-      where,
+      where: {
+        ustatus: {
+          [sequelize.Op.is]: null,
+        },
+        ...where
+      },
       order: [['NameValue', 'ASC']],
       include: [
         {
