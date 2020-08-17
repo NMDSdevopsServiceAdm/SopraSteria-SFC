@@ -92,6 +92,9 @@ const turnoverGetData = async (establishmentId) => {
   }
   const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
   const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
+  if (permTemptCount === 0 ){
+    return { percentOfPermTemp: 0 , stateMessage: 'no-permTemp' };
+  }
   const percentOfPermTemp = (leavers / permTemptCount);
   if (percentOfPermTemp > 9.95) {
     return { percentOfPermTemp: 0, stateMessage: 'check-data' };
