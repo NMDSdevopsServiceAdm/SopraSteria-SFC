@@ -9,7 +9,6 @@ const search = async function (req, res) {
       EmployerTypeValue: searchFields.employerType
     };
     const establishments = await models.establishment.findEstablishments(where);
-    // console.log(JSON.stringify(establishments));
 
     const results = establishments.map(establishment => {
       const parent = establishment.Parent
@@ -45,7 +44,7 @@ const search = async function (req, res) {
         lastUpdated: establishment.updated,
         employerType: {
           value: establishment.EmployerTypeValue,
-          other: null
+          other: establishment.EmployerTypeOther
         },
         parent,
         users,

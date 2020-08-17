@@ -828,7 +828,8 @@ module.exports = function(sequelize, DataTypes) {
         'locationId',
         'dataOwner',
         'updated',
-        'EmployerTypeValue'
+        'EmployerTypeValue',
+        'EmployerTypeOther'
       ],
       where,
       order: [['NameValue', 'ASC']],
@@ -846,6 +847,7 @@ module.exports = function(sequelize, DataTypes) {
           required: false,
           where: {
             UserRoleValue: 'Edit',
+            archived: false
           },
           include: [
             {
