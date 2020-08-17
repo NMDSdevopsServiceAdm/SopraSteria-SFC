@@ -16,6 +16,7 @@ import { UserService } from './user.service';
 })
 export class AuthService {
   private _isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  private _isOnAdminScreen$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private jwt = new JwtHelperService();
   private previousUser: string;
   private previousToken: string = null;
@@ -40,6 +41,18 @@ export class AuthService {
     const authenticated = this.token ? !this.jwt.isTokenExpired(this.token) : false;
     this._isAuthenticated$.next(authenticated);
     return this._isAuthenticated$.value;
+  }
+
+  public get isOnAdminScreen$(): Observable<boolean> {
+    return this._isOnAdminScreen$.asObservable();
+  }
+
+  public get isOnAdminScreen(): boolean {
+    return this._isOnAdminScreen$.value;
+  }
+
+  public set isOnAdminScreen(isOnAdminScreen: boolean) {
+    this._isOnAdminScreen$.next(isOnAdminScreen);
   }
 
   public get token() {

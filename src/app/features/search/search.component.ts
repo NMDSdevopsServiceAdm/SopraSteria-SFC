@@ -1,7 +1,8 @@
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
@@ -14,7 +15,7 @@ import {
   templateUrl: './search.component.html',
   providers: [DialogService, AdminUnlockConfirmationDialogComponent, Overlay],
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, AfterViewInit {
   public results = [];
   public selectedWorkplaceUid: string;
   public form = {
@@ -41,7 +42,12 @@ export class SearchComponent implements OnInit {
     public switchWorkplaceService: SwitchWorkplaceService,
     private dialogService: DialogService,
     protected backService: BackService,
+    protected authService: AuthService,
   ) {}
+
+  ngAfterViewInit() {
+    this.authService.isOnAdminScreen = true;
+  }
 
   ngOnInit() {
     this.setBackLink();
@@ -97,7 +103,7 @@ export class SearchComponent implements OnInit {
     return this.http.post<any>('/api/admin/search/' + type, data, { observe: 'response' });
   }
 
-  public setEsblishmentId(id, username, nmdsId, e): void {
+  public setEstablishmentId(id, username, nmdsId, e): void {
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId, e);
   }
 
