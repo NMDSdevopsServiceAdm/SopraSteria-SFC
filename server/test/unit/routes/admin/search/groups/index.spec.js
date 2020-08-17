@@ -2,11 +2,14 @@ const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 const models = require('../../../../../../models/index');
-const adminEstablishmentSearchRoute = require('../../../../../../routes/admin/search/establishments');
+const adminGroupsSearchRoute = require('../../../../../../routes/admin/search/groups');
 const { establishmentBuilder } = require('../../../../../factories/models');
 
-describe('server/routes/admin/search/establishments', () => {
+describe('server/routes/admin/search/groups', () => {
+  let findEstablishments;
   beforeEach(() => {
+    findEstablishments = sinon.spy(models.establishment, "findEstablishments");
+
     sinon.stub(models.establishment, 'findAll').returns([
       {
         uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
@@ -21,6 +24,8 @@ describe('server/routes/admin/search/establishments', () => {
         isParent: false,
         isRegulated: false,
         dataOwner: 'Workplace',
+        EmployerTypeValue: 'Local Authority (generic/other)',
+        EmployerTypeOther: null,
         Parent: {
           id: 1,
           uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
@@ -42,12 +47,11 @@ describe('server/routes/admin/search/establishments', () => {
       },
     ]);
   });
-
-  afterEach(() => {
+  afterEach(()=> {
     sinon.restore();
   });
 
-  it('should search establishments by postcode', async () => {
+  it('should search establishments by employer type', async () => {
     const establishment = establishmentBuilder();
 
     const req = httpMocks.createRequest({
@@ -63,12 +67,17 @@ describe('server/routes/admin/search/establishments', () => {
       id: establishment.id,
     };
 
+    req.body = {
+      employerType: 'Local Authority (generic/other)'
+    };
+
     const res = httpMocks.createResponse();
 
-    await adminEstablishmentSearchRoute.search(req, res);
+    await adminGroupsSearchRoute.search(req, res);
 
     const response = res._getJSONData();
 
+    expect(findEstablishments.called).to.deep.equal(true);
     expect(response).to.deep.equal([{
       uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
       name: '123444',
@@ -79,6 +88,10 @@ describe('server/routes/admin/search/establishments', () => {
       town: 'Leeds',
       county: 'West Yorkshire',
       postcode: 'WF14 9TS',
+      employerType: {
+        value: 'Local Authority (generic/other)',
+        other: null
+      },
       isParent: false,
       isRegulated: false,
       dataOwner: 'Workplace',
