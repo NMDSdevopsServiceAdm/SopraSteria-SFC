@@ -7,7 +7,6 @@ const models = require('../../index');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
-const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
 const employedContractStatusIds = [1, 2];
 const cqcRegulatedServiceCodes = [24, 25, 20, 22, 21, 23, 19, 27, 28, 26, 29, 30, 32, 31, 33, 34];
@@ -1308,75 +1307,31 @@ class Establishment {
 
   _crossValidateTotalPermTemp (
     csvEstablishmentSchemaErrors,
-    {
-      employedWorkers = 0,
-      nonEmployedWorkers = 0,
-      directCareWorkers = 0,
-      managerialProfessionalWorkers = 0
-    }) {
+    { employedWorkers = 0, nonEmployedWorkers = 0 }
+  ) {
     const template = {
       origin: 'Establishments',
       lineNumber: this._lineNumber,
       warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
       warnType: 'TOTAL_PERM_TEMP_WARNING',
       source: this._currentLine.TOTALPERMTEMP,
-      name: this._currentLine.LOCALESTID
+      name: this._currentLine.LOCALESTID,
     };
 
-    // Is the establishment CQC regulated?
-    const isCQCRegulated = this._regType === 2;
+    const totalStaff = employedWorkers + nonEmployedWorkers;
 
-    // Is the establishment a local authority?
-    const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
-
-
-    let notSharedLivesOnly = false;
-    let notHeadOfficeOnly = false;
-    if (this._mainService && this._mainService.id) {
-      // Is the establishment only shared lives (code 19)?
-     notSharedLivesOnly = this._mainService.id !== 19;
-
-    // Is the establishment only head office services (code 16)?
-     notHeadOfficeOnly = this._mainService.id !== 16;
-    }
-    if (this._totalPermTemp === employedWorkers + nonEmployedWorkers) {
-      if (notHeadOfficeOnly) {
-        if (employedWorkers === 0) {
-          if(false) {
-            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-              warning: 'The number of employed staff is 0 please check your staff records'
-            }));
-          }
-        } else if (employedWorkers < nonEmployedWorkers) {
-          if(false) {
-            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-              warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records'
-            }));
-          }
-        }
-
-        if (isCQCRegulated && notSharedLivesOnly && directCareWorkers === 0) {
-          if(false) {
-            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-              warning: 'The number of direct care staff is 0 please check your staff records'
-            }));
-          }
-        }
-      }
-
-      if (isLocalAuthority && managerialProfessionalWorkers === 0) {
-        if(false) {
-          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-            warning: 'The number of non-direct care staff is 0 please check your staff records'
-          }));
-        }
-      }
+    if (this._totalPermTemp !== totalStaff) {
+      csvEstablishmentSchemaErrors.unshift(
+        Object.assign(template, {
+          warning: `TOTALPERMTEMP (Total staff and the number of worker records) does not match`,
+        })
+      );
     }
   }
 
   _validateAllJobs () {
     // optional
-    const allJobs = this._currentLine.ALLJOBROLES.split(';');
+    const allJobs = (this._currentLine.ALLJOBROLES) ? this._currentLine.ALLJOBROLES.split(';') : [];
     const localValidationErrors = [];
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
@@ -2098,38 +2053,36 @@ class Establishment {
 
   // returns true on success, false is any attribute of Establishment fails
   async validate () {
-    let status = true;
-
-    status = !this._validateLocalisedId() ? false : status;
-    status = !this._validateEstablishmentName() ? false : status;
-    status = !this._validateStatus() ? false : status;
+    this._validateLocalisedId();
+    this._validateEstablishmentName();
+    this._validateStatus();
 
     // if the status is unchecked or deleted, then don't continue validation
     if (!STOP_VALIDATING_ON.includes(this._status)) {
-      status = await this._validateAddress() ? false : status;
-      status = !this._validateEstablishmentType() ? false : status;
+      await this._validateAddress();
+      this._validateEstablishmentType();
 
-      status = !this._validateShareWithCQC() ? false : status;
-      status = !this._validateShareWithLA() ? false : status;
-      status = !this._validateLocalAuthorities() ? false : status;
+      this._validateShareWithCQC();
+      this._validateShareWithLA();
+      this._validateLocalAuthorities();
 
-      status = !this._validateMainService() ? false : status;
-      status = !this._validateRegType() ? false : status;
-      status = !this._validateProvID() ? false : status;
-      status = await this._validateLocationID() ? false : status;
+      this._validateMainService();
+      this._validateRegType();
+      this._validateProvID();
+      await this._validateLocationID();
 
-      status = !this._validateAllServices() ? false : status;
-      status = !this._validateServiceUsers() ? false : status;
-      status = !this._validateCapacitiesAndUtilisations() ? false : status;
+      this._validateAllServices();
+      this._validateServiceUsers();
+      this._validateCapacitiesAndUtilisations();
 
-      status = !this._validateTotalPermTemp() ? false : status;
-      status = !this._validateAllJobs() ? false : status;
-      status = !this._validateJobRoleTotals() ? false : status;
+      this._validateTotalPermTemp();
+      this._validateAllJobs();
+      this._validateJobRoleTotals();
 
-      status = !this._validateReasonsForLeaving() ? false : status;
+      this._validateReasonsForLeaving();
     }
 
-    return status;
+    return this.validationErrors.length === 0;
   }
 
   // Adds items to csvEstablishmentSchemaErrors if validations that depend on
@@ -2140,7 +2093,7 @@ class Establishment {
     fetchMyEstablishmentsWorkers
   }) {
     // if establishment isn't being added or updated then exit early
-    if (!(['NEW', 'UPDATE'].includes(this._status))) {
+    if (!(['NEW', 'UPDATE', 'NOCHANGE'].includes(this._status))) {
       return;
     }
 
@@ -2198,9 +2151,6 @@ class Establishment {
         }
       });
 
-
-
-    // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
     this._crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, totals);
     this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }

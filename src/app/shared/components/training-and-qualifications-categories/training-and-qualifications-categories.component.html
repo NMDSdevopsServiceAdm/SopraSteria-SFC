@@ -132,18 +132,22 @@
               <ng-container *ngFor="let training of trainingCategory.training">
                 <tr class="govuk-table__row govuk-util__vertical-align-top">
                   <td class="govuk-table__cell govuk-!-font-weight-regular">
-                    <a
-                      *ngIf="canEditWorker"
-                      [routerLink]="[
-                          '/workplace',
-                          this.workplace.uid,
-                          'training-and-qualifications-record',
-                          training.worker.uid,
-                          'training'
-                        ]"
-                    >
-                      {{ training.worker.NameOrIdValue }}</a
-                    >
+                    <ng-container *ngIf="canEditWorker else nameOrId">
+                      <a
+                        [routerLink]="[
+                            '/workplace',
+                            this.workplace.uid,
+                            'training-and-qualifications-record',
+                            training.worker.uid,
+                            'training'
+                          ]"
+                      >
+                        {{ training.worker.NameOrIdValue }}</a
+                      >
+                      </ng-container>
+                      <ng-template #nameOrId>
+                        {{ training.worker.NameOrIdValue }}
+                      </ng-template>
                   </td>
                   <td class="govuk-table__cell govuk-!-font-weight-regular">
                     {{ training.worker.mainJob?.title }}

@@ -181,125 +181,318 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         worker: 'Worker 2'
       });
     });
-
-    it('errors when UNIQUEWORKERID is not unique', async () => {
-      const csvWorkerSchemaErrors = [];
-      const allWorkersByKey = {};
-      const myAPIWorkers = [];
-      const myWorkers = [
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'Worker 1'
-          },
-        }),
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'Worker 1'
-          },
-        }),
-      ].map((currentLine, currentLineNumber) => {
-        return new WorkerCsvValidator.Worker(
-          currentLine,
-          currentLineNumber,
-          []
-        );
-      });
-
-      const allKeys = [];
-      myWorkers.map(worker => {
-        worker.validate();
-        const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
-        allKeys.push(id);
-      });
-
-      myWorkers.forEach(thisWorker => {
-        // uniquness for a worker is across both the establishment and the worker
-        const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
-        const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
-
-        if (bulkUpload.checkDuplicateWorkerID(
-          thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors
-        )) {
-          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
-
-          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
-          if (changeKeyNoWhitespace) {
-            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
-          }
-        }
-      });
-      ;
-
-      expect(csvWorkerSchemaErrors.length).equals(1);
-      expect(csvWorkerSchemaErrors[0]).to.eql({
-        origin: 'Workers',
-        lineNumber: 1,
-        errCode: 998,
-        errType: 'DUPLICATE_ERROR',
-        error: 'UNIQUEWORKERID Worker 1 is not unique',
-        name: 'foo',
-        source: 'Worker 1',
-        worker: 'Worker 1'
-      });
-    });
-
-    it('passes when CHGUNIQUEWRKID is unique', async () => {
-      const csvWorkerSchemaErrors = [];
-      const allWorkersByKey = {};
-      const myAPIWorkers = [];
-      const myWorkers = [
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'Worker 1'
-          },
-        }),
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'Worker 2',
-            CHGUNIQUEWRKID: 'Worker 3'
-          },
-        }),
-      ].map((currentLine, currentLineNumber) => {
-        return new WorkerCsvValidator.Worker(
-          currentLine,
-          currentLineNumber,
-          []
-        );
-      });
-
-      const allKeys = [];
-      myWorkers.map(worker => {
-        worker.validate();
-        const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
-        allKeys.push(id);
-      });
-
-      myWorkers.forEach(thisWorker => {
-        // uniquness for a worker is across both the establishment and the worker
-        const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
-        const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
-
-        if (bulkUpload.checkDuplicateWorkerID(
-          myWorkers[1], allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors
-        )) {
-          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
-
-          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
-          if (changeKeyNoWhitespace) {
-            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
-          }
-        }
-      });
-
-      expect(csvWorkerSchemaErrors.length).equals(0);
-    });
-
   });
+  describe('checkPartTimeSalary()', () => {
+      // FTE / PTE : Full / Part Time Employee . FTE > 36 hours a week, PTE < 37
+      it('errors when one worker has the same salary as a FTE but works PTE', async () => {
+        const csvWorkerSchemaErrors = [];
+        const myWorkers = [
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'FTE',
+              CONTHOURS:'50',
+              SALARY: '50',
+              SALARYINT: '1',//Annually
+              HOURLYRATE: '',
+              MAINJOBROLE : '5',
 
+            },
+          }),
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'PTE',
+              CONTHOURS: '10',
+              SALARY:'50',
+              SALARYINT: '1', //Annually
+              HOURLYRATE: '',
+              MAINJOBROLE: '5',
+            },
+          }),
+        ].map((currentLine, currentLineNumber) => {
+          const worker = new WorkerCsvValidator.Worker(
+            currentLine,
+            currentLineNumber,
+            []
+          );
+
+          worker.validate();
+
+          return worker;
+        });
+
+         myWorkers.forEach(thisWorker => {
+           bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{},csvWorkerSchemaErrors);
+         });
+        expect(csvWorkerSchemaErrors.length).equals(1);
+        expect(csvWorkerSchemaErrors[0]).to.eql({
+          origin: 'Workers',
+          lineNumber: 1,
+          warnCode: 1260,
+          warnType: 'SALARY_ERROR',
+          warning: `SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
+          source: 'foo',
+          worker: 'PTE',
+          name: 'foo'
+        });
+      });
+      it('shouldnt error when two worker has the same salary, different job and one is FTE and one is PTE ', async () => {
+        const csvWorkerSchemaErrors = [];
+        const myWorkers = [
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'FTE',
+              CONTHOURS:'50',
+              SALARY: '50',
+              SALARYINT: '1',//Annually
+              HOURLYRATE: '',
+              MAINJOBROLE : '3',
+
+            },
+          }),
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'PTE',
+              CONTHOURS: '10',
+              SALARY:'50',
+              SALARYINT: '1', //Annually
+              HOURLYRATE: '',
+              MAINJOBROLE: '5',
+            },
+          }),
+        ].map((currentLine, currentLineNumber) => {
+          const worker = new WorkerCsvValidator.Worker(
+            currentLine,
+            currentLineNumber,
+            []
+          );
+
+          worker.validate();
+
+          return worker;
+        });
+
+        myWorkers.forEach(thisWorker => {
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{}, csvWorkerSchemaErrors);
+        });
+        console.log(csvWorkerSchemaErrors);
+        expect(csvWorkerSchemaErrors.length).equals(0);
+
+      });
+      it('shouldnt error when two worker has the same salary, same job and both are FTE ', async () => {
+        const csvWorkerSchemaErrors = [];
+        const myWorkers = [
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'FTE',
+              CONTHOURS:'50',
+              SALARY: '50',
+              SALARYINT: '1',//Annually
+              HOURLYRATE: '',
+              MAINJOBROLE : '5',
+
+            },
+          }),
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'FTE',
+              CONTHOURS: '50',
+              SALARY:'50',
+              SALARYINT: '1', //Annually
+              HOURLYRATE: '',
+              MAINJOBROLE: '5',
+            },
+          }),
+        ].map((currentLine, currentLineNumber) => {
+          const worker = new WorkerCsvValidator.Worker(
+            currentLine,
+            currentLineNumber,
+            []
+          );
+
+          worker.validate();
+
+          return worker;
+        });
+
+        myWorkers.forEach(thisWorker => {
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{},csvWorkerSchemaErrors);
+        });
+        expect(csvWorkerSchemaErrors.length).equals(0);
+
+      });
+      it('shouldnt error when the worker status is DELETE ', async () => {
+        const csvWorkerSchemaErrors = [];
+        const myWorkers = [
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'FTE',
+              CONTHOURS:'50',
+              SALARY: '50',
+              SALARYINT: '1',//Annually
+              HOURLYRATE: '',
+              MAINJOBROLE : '5',
+
+            },
+          }),
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'PTE',
+              CONTHOURS: '10',
+              SALARY:'50',
+              SALARYINT: '1', //Annually
+              HOURLYRATE: '',
+              MAINJOBROLE: '5',
+              STATUS: 'DELETE'
+            },
+          }),
+        ].map((currentLine, currentLineNumber) => {
+          const worker = new WorkerCsvValidator.Worker(
+            currentLine,
+            currentLineNumber,
+            []
+          );
+
+          worker.validate();
+
+          return worker;
+        });
+
+        myWorkers.forEach(thisWorker => {
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{},csvWorkerSchemaErrors);
+        });
+        expect(csvWorkerSchemaErrors.length).equals(0);
+
+      });
+      it('shouldnt error when the compared worker status is DELETE ', async () => {
+        const csvWorkerSchemaErrors = [];
+        const myWorkers = [
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'FTE',
+              CONTHOURS:'50',
+              SALARY: '50',
+              SALARYINT: '1',//Annually
+              HOURLYRATE: '',
+              MAINJOBROLE : '5',
+              STATUS: 'DELETE'
+            },
+          }),
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'PTE',
+              CONTHOURS: '10',
+              SALARY:'50',
+              SALARYINT: '1', //Annually
+              HOURLYRATE: '',
+              MAINJOBROLE: '5',
+
+            },
+          }),
+        ].map((currentLine, currentLineNumber) => {
+          const worker = new WorkerCsvValidator.Worker(
+            currentLine,
+            currentLineNumber,
+            []
+          );
+
+          worker.validate();
+
+          return worker;
+        });
+
+        myWorkers.forEach(thisWorker => {
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{},csvWorkerSchemaErrors);
+        });
+        expect(csvWorkerSchemaErrors.length).equals(0);
+
+      });
+      it('should only show errors on PTEs', async () => {
+        const csvWorkerSchemaErrors = [];
+        const myWorkers = [
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'FTE',
+              CONTHOURS:'50',
+              SALARY: '50',
+              SALARYINT: '1',//Annually
+              HOURLYRATE: '',
+              MAINJOBROLE : '5',
+
+            },
+          }),
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'PTE',
+              CONTHOURS: '10',
+              SALARY:'50',
+              SALARYINT: '1', //Annually
+              HOURLYRATE: '',
+              MAINJOBROLE: '5',
+            },
+          }),
+          buildWorkerCSV({
+            overrides: {
+              LOCALESTID: 'foo',
+              UNIQUEWORKERID: 'PTE 2',
+              CONTHOURS: '10',
+              SALARY:'50',
+              SALARYINT: '1', //Annually
+              HOURLYRATE: '',
+              MAINJOBROLE: '5',
+            },
+          }),
+        ].map((currentLine, currentLineNumber) => {
+          const worker = new WorkerCsvValidator.Worker(
+            currentLine,
+            currentLineNumber,
+            []
+          );
+
+          worker.validate();
+
+          return worker;
+        });
+
+        myWorkers.forEach(thisWorker => {
+          bulkUpload.checkPartTimeSalary(thisWorker,myWorkers,{},csvWorkerSchemaErrors);
+        });
+        expect(csvWorkerSchemaErrors.length).equals(2);
+        expect(csvWorkerSchemaErrors[0]).to.eql({
+          origin: 'Workers',
+          lineNumber: 1,
+          warnCode: 1260,
+          warnType: 'SALARY_ERROR',
+          warning: `SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
+          source: 'foo',
+          worker: 'PTE',
+          name: 'foo'
+        });
+        expect(csvWorkerSchemaErrors[1]).to.eql({
+          origin: 'Workers',
+          lineNumber: 2,
+          warnCode: 1260,
+          warnType: 'SALARY_ERROR',
+          warning: `SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
+          source: 'foo',
+          worker: 'PTE 2',
+          name: 'foo'
+        });
+
+      });
+
+    });
   describe('validateEstablishmentCsv()', () => {
     it('should validate each line of the establishments CSV', async () => {
       const workplace = { Address1: 'First Line',
