@@ -811,6 +811,13 @@ module.exports = function(sequelize, DataTypes) {
         }
       });
   };
+  Establishment.byEstablishmentType = async function(establishmentType) {
+    return await this.findAll({
+        where: {
+          EmployerTypeValue: establishmentType
+        }
+      });
+  };
 
   return Establishment;
 };
