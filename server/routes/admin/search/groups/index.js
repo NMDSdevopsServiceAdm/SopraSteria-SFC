@@ -5,9 +5,16 @@ const models = require('../../../../models');
 const search = async function (req, res) {
   try {
     const searchFields = req.body;
-    const where = {
-      EmployerTypeValue: searchFields.employerType
-    };
+    let where;
+
+    if (searchFields.employerType === 'All') {
+      where = {};
+    } else {
+      where = {
+        EmployerTypeValue: searchFields.employerType
+      };
+    }
+
     const establishments = await models.establishment.findEstablishments(where);
 
     const results = establishments.map(establishment => {
