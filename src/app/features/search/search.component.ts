@@ -30,7 +30,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     name: '',
     nameLabel: '',
     locationid: '',
-    employerType: '',
+    employerType: 'All',
     errors: [],
   };
 
@@ -114,7 +114,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.form.errors = [];
     this.form.submitted = true;
     // this.errorSummaryService.syncFormErrorsEvent.next(true);
-    if (this.form.username.length === 0 && this.form.name.length === 0 && this.form.locationid.length === 0) {
+
+    if (this.form.username.length === 0 && this.form.name.length === 0 && this.form.locationid.length === 0, this.form.employerType.length === 0) {
       this.form.errors.push({
         error: 'Please enter at least 1 search value',
         id: 'username',
@@ -130,7 +131,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         };
       } else if (this.form.type === 'groups') {
         data = {
-          employerType: this.form.employerType
+          employerType: this.form.employerType,
         }
       } else {
         data = {
@@ -159,6 +160,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   protected displayAddress(workplace) {
     const secondaryAddress = ' ' + [workplace.address2, workplace.town, workplace.county].filter(Boolean).join(', ') || '';
+
+    return workplace.address1 + secondaryAddress;
+  }
+
+  protected displayAddressForGroups(workplace) {
+    const secondaryAddress = ' ' + [workplace.address2, workplace.town, workplace.county, workplace.postcode].filter(Boolean).join(', ') || '';
 
     return workplace.address1 + secondaryAddress;
   }
