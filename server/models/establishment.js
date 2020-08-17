@@ -811,12 +811,51 @@ module.exports = function(sequelize, DataTypes) {
         }
       });
   };
-  Establishment.byEstablishmentType = async function(establishmentType) {
+  Establishment.findEstablishments = async function(where) {
     return await this.findAll({
-        where: {
-          EmployerTypeValue: establishmentType
-        }
-      });
+      attributes: [
+        'id',
+        'uid',
+        'NameValue',
+        'nmdsId',
+        'isRegulated',
+        'isParent',
+        'address1',
+        'address2',
+        'town',
+        'county',
+        'postcode',
+        'locationId',
+        'dataOwner',
+        'updated',
+        'EmployerTypeValue'
+      ],
+      where,
+      order: [['NameValue', 'ASC']],
+      include: [
+        {
+          model: sequelize.models.establishment,
+          attributes: ['id', 'uid', 'nmdsId'],
+          as: 'Parent',
+          required: false,
+        },
+        {
+          model: sequelize.models.user,
+          attributes: ['id', 'uid', 'FullNameValue', 'SecurityQuestionValue', 'SecurityQuestionAnswerValue'],
+          as: 'users',
+          required: false,
+          where: {
+            UserRoleValue: 'Edit',
+          },
+          include: [
+            {
+              model: sequelize.models.login,
+              attributes: ['username', 'status'],
+            },
+          ],
+        },
+      ],
+    });
   };
 
   return Establishment;
