@@ -5,6 +5,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { isNull } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
+import * as Sentry from '@sentry/browser';
 
 import { EstablishmentService } from './establishment.service';
 import { PermissionsService } from './permissions/permissions.service';
@@ -74,6 +75,11 @@ export class AuthService {
           console.log('Got response from API');
           console.log(response);
           this.token = response.headers.get('authorization');
+          Sentry.configureScope(scope => {
+            scope.setUser({
+              id: response.body.uid
+            });
+          });
         },
         error => console.error(error)
       )
@@ -103,6 +109,11 @@ export class AuthService {
     this.userService.resetAgreedUpdatedTermsStatus = null;
     this.establishmentService.resetState();
     this.permissionsService.clearPermissions();
+    Sentry.configureScope(scope => {
+      scope.setUser({
+        id: ''
+      });
+   });
   }
 
   public setPreviousToken(): void {
