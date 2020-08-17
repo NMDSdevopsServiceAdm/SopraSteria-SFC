@@ -811,9 +811,9 @@ module.exports = function(sequelize, DataTypes) {
         }
       });
   };
-  Establishment.byEstablishmentType = async function(establishmentType) {
+  Establishment.findEstablishments = async function(where) {
     return await this.findAll({
-        attributes: [
+      attributes: [
         'id',
         'uid',
         'NameValue',
@@ -823,14 +823,15 @@ module.exports = function(sequelize, DataTypes) {
         'address1',
         'address2',
         'town',
+        'county',
         'postcode',
+        'locationId',
         'dataOwner',
         'updated',
         'EmployerTypeValue'
       ],
-      where: {
-        EmployerTypeValue: establishmentType
-      },
+      where,
+      order: [['NameValue', 'ASC']],
       include: [
         {
           model: sequelize.models.establishment,
