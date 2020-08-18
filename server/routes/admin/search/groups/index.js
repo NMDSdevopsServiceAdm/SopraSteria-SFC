@@ -9,6 +9,8 @@ const search = async function (req, res) {
 
     if (models.establishment.rawAttributes.EmployerTypeValue.values.includes(searchFields.employerType)) where.EmployerTypeValue = searchFields.employerType;
 
+    if (searchFields.parent === true) where.isParent = true;
+
     const establishments = await models.establishment.searchEstablishments(where);
 
     const results = establishments.map(establishment => {
