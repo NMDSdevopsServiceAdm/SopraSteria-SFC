@@ -30,6 +30,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
     name: '',
     nameLabel: '',
     locationid: '',
+    employerType: 'All',
+    parent: false,
     errors: [],
   };
 
@@ -56,16 +58,18 @@ export class SearchComponent implements OnInit, AfterViewInit {
       this.form.type = 'users';
       this.form.usernameLabel = 'Username';
       this.form.nameLabel = 'Name';
-      this.form.subTitle = 'User Search';
-      this.form.title = 'Define your search criteria';
-      this.form.buttonText = 'Search Users';
+      this.form.title = 'Search for a user';
+      this.form.buttonText = 'Search users';
     } else if (this.router.url === '/search-establishments') {
       this.form.type = 'establishments';
       this.form.usernameLabel = 'Postcode';
       this.form.nameLabel = 'Workplace ID';
-      this.form.subTitle = 'Establishment Search';
-      this.form.title = 'Define your search criteria';
-      this.form.buttonText = 'Search Establishments';
+      this.form.title = 'Search for a workplace';
+      this.form.buttonText = 'Search workplaces';
+    } else if (this.router.url === '/search-groups') {
+      this.form.type = 'groups';
+      this.form.title = 'Search for a group';
+      this.form.buttonText = 'Search groups';
     } else if (this.router.url === '/registrations') {
       this.form.type = 'registrations';
     } else if (this.router.url === '/cqc-status-changes') {
@@ -111,7 +115,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.form.errors = [];
     this.form.submitted = true;
     // this.errorSummaryService.syncFormErrorsEvent.next(true);
-    if (this.form.username.length === 0 && this.form.name.length === 0 && this.form.locationid.length === 0) {
+
+    if (this.form.username.length === 0 &&
+      this.form.name.length === 0 &&
+      this.form.locationid.length === 0 &&
+      this.form.employerType.length === 0) {
       this.form.errors.push({
         error: 'Please enter at least 1 search value',
         id: 'username',
@@ -125,6 +133,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
           username: this.form.username,
           name: this.form.name,
         };
+      } else if (this.form.type === 'groups') {
+        data = {
+          employerType: this.form.employerType,
+          parent: this.form.parent
+        }
       } else {
         data = {
           postcode: this.form.username,
@@ -152,6 +165,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   protected displayAddress(workplace) {
     const secondaryAddress = ' ' + [workplace.address2, workplace.town, workplace.county].filter(Boolean).join(', ') || '';
+
+    return workplace.address1 + secondaryAddress;
+  }
+
+  protected displayAddressForGroups(workplace) {
+    const secondaryAddress = ' ' + [workplace.address2, workplace.town, workplace.county, workplace.postcode].filter(Boolean).join(', ') || '';
 
     return workplace.address1 + secondaryAddress;
   }
