@@ -8,7 +8,9 @@ const search = async function (req, res) {
     const searchFields = req.body;
     const where = {};
 
-    if (models.establishment.rawAttributes.EmployerTypeValue.values.includes(searchFields.employerType)) where.EmployerTypeValue = searchFields.employerType;
+    if (models.establishment.rawAttributes.EmployerTypeValue.values.includes(searchFields.employerType)) {
+      where.EmployerTypeValue = searchFields.employerType;
+    }
 
     if (searchFields.parent === true) where.isParent = true;
 
