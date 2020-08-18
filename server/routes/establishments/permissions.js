@@ -26,7 +26,7 @@ const permissions = async (req, res) => {
     if (await thisEstablishment.restore(establishmentId)) {
       if (await thisUser.restore(null, thisEstablishment.username, null)) {
         let userData = thisUser.toJSON();
-        permissionsCheck(thisEstablishment, userData, becomeAParentRequest, req, res);
+        await permissionsCheck (thisEstablishment, userData, becomeAParentRequest, req, res);
       }
     } else {
       return res.status(404).send('Not Found');
