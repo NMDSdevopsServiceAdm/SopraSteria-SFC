@@ -115,7 +115,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.form.submitted = true;
     // this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    if (this.form.username.length === 0 && this.form.name.length === 0 && this.form.locationid.length === 0, this.form.employerType.length === 0) {
+    if (this.form.username.length === 0 &&
+      this.form.name.length === 0 &&
+      this.form.locationid.length === 0 &&
+      this.form.employerType.length === 0) {
       this.form.errors.push({
         error: 'Please enter at least 1 search value',
         id: 'username',
