@@ -79,26 +79,19 @@ describe('DashboardComponent', () => {
   });
 
   describe('Tabs', () => {
-    it('should display the Benchmarks tab when the workplace is CQC Regulated', async () => {
+    it('should display the Benchmarks tab when canViewBenchmarks is true', async () => {
       const { component } = await setup(true);
 
-      const establishment = {
-        ...component.fixture.componentInstance.workplace
-      };
-      establishment.isRegulated = true;
-      component.fixture.componentInstance.workplace = establishment;
+      component.fixture.componentInstance.canViewBenchmarks = true;
       component.fixture.detectChanges();
 
       expect(component.getByText('Benchmarks')).toBeTruthy();
     });
-    it('should display the Benchmarks tab when the workplace is not CQC Regulated', async () => {
+    it('should not display the Benchmarks tab when canViewBenchmarks is false', async () => {
       const { component } = await setup(true);
 
-      const establishment = {
-        ...component.fixture.componentInstance.workplace
-      };
-      establishment.isRegulated = false;
-      component.fixture.componentInstance.workplace = establishment;
+      component.fixture.componentInstance.canViewBenchmarks = false;
+
       component.fixture.detectChanges();
 
       expect(component.queryByText('Benchmarks')).toBeNull();
