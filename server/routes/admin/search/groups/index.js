@@ -5,15 +5,9 @@ const models = require('../../../../models');
 const search = async function (req, res) {
   try {
     const searchFields = req.body;
-    let where;
+    let where = {};
 
-    if (searchFields.employerType === 'All') {
-      where = {};
-    } else {
-      where = {
-        EmployerTypeValue: searchFields.employerType
-      };
-    }
+    if (models.establishment.rawAttributes.EmployerTypeValue.values.includes(searchFields.employerType)) where.EmployerTypeValue = searchFields.employerType;
 
     const establishments = await models.establishment.searchEstablishments(where);
 
