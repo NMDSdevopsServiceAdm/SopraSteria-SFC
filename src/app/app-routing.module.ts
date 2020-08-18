@@ -147,6 +147,15 @@ const routes: Routes = [
         },
       },
       {
+        path: 'search-groups',
+        loadChildren: () => import('@features/search/search.module').then(m => m.SearchModule),
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Search Groups',
+        },
+      },
+      {
         path: 'registrations',
         loadChildren: () => import('@features/search/search.module').then(m => m.SearchModule),
         canActivate: [RoleGuard],
