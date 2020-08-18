@@ -29,6 +29,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public trainingAlert: number;
   public subsidiaryCount: number;
+  public canViewBenchmarks: boolean;
 
 
   constructor(
@@ -52,6 +53,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canDeleteEstablishment = this.permissionsService.can(workplaceUid, 'canDeleteAllEstablishments');
 
     if (this.workplace) {
+      this.subscriptions.add(this.permissionsService.getPermissions(workplaceUid).subscribe(
+        permission => {
+          this.canViewBenchmarks = permission.permissions.canViewBenchmarks
+        }
+      ));
       this.subscriptions.add(
         this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
           total => {
