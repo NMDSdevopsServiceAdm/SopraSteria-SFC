@@ -10,6 +10,7 @@ export class ComparisonGroupHeaderComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
 
   @Input() meta: Meta;
+  @Input() workplaceID : string;
 
   constructor() {}
 

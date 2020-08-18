@@ -1,7 +1,9 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Meta } from '@core/model/benchmarks.model';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BenchmarksService } from '@core/services/benchmarks.service';
+import { Meta } from '@core/model/benchmarks.model';
+import { BackService } from '@core/services/back.service';
 
 @Component({
   selector: 'app-benchmarks-about-the-data',
@@ -9,14 +11,30 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
-
-  @Input() meta: Meta;
+  public meta: Meta;
 
   constructor(
     protected router: Router,
-    protected route: ActivatedRoute,) {}
+    protected route: ActivatedRoute,
+    protected benchmarksService: BenchmarksService,
+    protected backService: BackService
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.subscriptions.add(
+      this.benchmarksService.getMeta(this.route.snapshot.params.establishmentID).subscribe(
+        (data) => {
+          if (data) {
+            console.log(data);
+            this.meta = data.meta;
+          }
+        }
+      ))
+    this.backService.setBackLink({
+      url: ['dashboard'],
+      fragment: 'benchmarks',
+    });
+  }
 
   public formatNumber(data) {
     return  data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -25,9 +43,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   public pluralizeWorkplaces(workplaces){
     return workplaces > 1 ? 'workplaces' : 'workplace'
   }
-  public getRoutePath(name: string) {
-    return ['/benchmarks'];
-  }
+
   ngOnDestroy() {
   }
 }

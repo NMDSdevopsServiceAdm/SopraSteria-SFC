@@ -12,4 +12,7 @@ export class BenchmarksService {
   getAllTiles(establishmentId): Observable<BenchmarksResponse> {
     return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/?tiles=pay,sickness,qualifications,turnover`);
   }
+  getMeta(establishmentId): Observable<BenchmarksResponse> {
+    return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/?tiles`);
+  }
 }

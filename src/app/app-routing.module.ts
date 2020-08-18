@@ -96,6 +96,11 @@ const routes: Routes = [
         data: { title: 'Workplace' },
       },
       {
+        path: 'benchmarks',
+        loadChildren: () => import('./shared/components/benchmarks-tab/benchmarks.module').then(m => m.BenchmarksModule),
+        data: { title: 'Benchmarks' },
+      },
+      {
         path: 'reports',
         loadChildren: () => import('@features/reports/reports.module').then(m => m.ReportsModule),
         data: { title: 'Reports' },
