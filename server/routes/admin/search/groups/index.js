@@ -6,7 +6,7 @@ const EstablishmentTransformer = require('../../../../transformers/adminSearchTr
 const search = async function (req, res) {
   try {
     const searchFields = req.body;
-    let where = {};
+    const where = {};
 
     if (models.establishment.rawAttributes.EmployerTypeValue.values.includes(searchFields.employerType)) where.EmployerTypeValue = searchFields.employerType;
 
