@@ -59,7 +59,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
       this.form.usernameLabel = 'Username';
       this.form.nameLabel = 'Name';
       this.form.title = 'Search for a user';
-      this.form.buttonText = 'Search Users';
+      this.form.buttonText = 'Search users';
     } else if (this.router.url === '/search-establishments') {
       this.form.type = 'establishments';
       this.form.usernameLabel = 'Postcode';
