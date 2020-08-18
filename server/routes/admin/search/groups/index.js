@@ -15,6 +15,8 @@ const search = async function (req, res) {
       };
     }
 
+    if (searchFields.parent === true) where.isParent = true;
+
     const establishments = await models.establishment.searchEstablishments(where);
 
     const results = establishments.map(establishment => {
