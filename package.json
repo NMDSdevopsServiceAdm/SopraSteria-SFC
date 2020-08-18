@@ -61,6 +61,7 @@
     "govuk-frontend": "^2.13.0",
     "helmet": "^3.23.2",
     "honeycomb-beeline": "^2.1.1",
+    "is-ci": "^2.0.0",
     "js-yaml": "^3.14.0",
     "jsonwebtoken": "^8.5.1",
     "jszip": "^3.5.0",
