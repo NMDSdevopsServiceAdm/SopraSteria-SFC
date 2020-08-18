@@ -3,7 +3,7 @@ const router = express.Router({ mergeParams: true });
 const Establishment = require('../../models/classes/establishment');
 const User = require('../../models/classes/user');
 const PermissionCache = require('../../models/cache/singletons/permissions').PermissionCache;
-const models = require('../../models')
+const models = require('../../models');
 
 router.route('/').get(async (req, res) => {
   return await permissions(req, res);
@@ -26,58 +26,7 @@ const permissions = async (req, res) => {
     if (await thisEstablishment.restore(establishmentId)) {
       if (await thisUser.restore(null, thisEstablishment.username, null)) {
         let userData = thisUser.toJSON();
-        const permissions = await PermissionCache.myPermissions(req).map(item => {
-          if (item.code === 'canChangeDataOwner' && thisEstablishment.dataOwnershipRequested !== null) {
-            return { [item.code]: false };
-          } else {
-            return { [item.code]: true };
-          }
-        });
-        permissions.forEach(permission => {
-          if (permission.canLinkToParent) {
-            permission.canLinkToParent =
-              permission.canLinkToParent &&
-                !thisEstablishment.isParent &&
-                !thisEstablishment.parentId &&
-                becomeAParentRequest === null
-                ? true
-                : false;
-          }
-          if (permission.canRemoveParentAssociation) {
-            permission.canRemoveParentAssociation =
-              permission.canRemoveParentAssociation &&
-                !thisEstablishment.isParent &&
-                thisEstablishment.parentId &&
-                userData.role !== 'Read'
-                ? true
-                : false;
-          }
-          if (permission.canDownloadWdfReport) {
-            permission.canDownloadWdfReport =
-              permission.canDownloadWdfReport &&
-                thisEstablishment.isParent &&
-                userData.role === 'Edit'
-                ? true
-                : false;
-          }
-          if (permission.canBecomeAParent) {
-            permission.canBecomeAParent =
-              permission.canBecomeAParent &&
-                !thisEstablishment.isParent &&
-                !thisEstablishment.parentId &&
-                becomeAParentRequest === null
-                ? true
-                : false;
-          }
-          if (permission.canViewBenchmarks) { // only selected mainservices can view Benchmarks
-            permission.canViewBenchmarks = [24,25,20].includes(thisEstablishment.mainService.id) && thisEstablishment.isRegulated ;
-          }
-        });
-
-        return res.status(200).json({
-          uid: thisEstablishment.uid,
-          permissions: Object.assign({}, ...permissions),
-        });
+        permissionsCheck(thisEstablishment, userData, becomeAParentRequest, req, res);
       }
     } else {
       return res.status(404).send('Not Found');
@@ -96,5 +45,62 @@ const permissions = async (req, res) => {
   }
 };
 
+const permissionsCheck = async (thisEstablishment, userData, becomeAParentRequest, req, res) => {
+
+  const permissions = await PermissionCache.myPermissions(req).map(item => {
+    if (item.code === 'canChangeDataOwner' && thisEstablishment.dataOwnershipRequested !== null) {
+      return { [item.code]: false };
+    } else {
+      return { [item.code]: true };
+    }
+  });
+  permissions.forEach(permission => {
+    if (permission.canLinkToParent) {
+      permission.canLinkToParent =
+        permission.canLinkToParent &&
+        !thisEstablishment.isParent &&
+        !thisEstablishment.parentId &&
+        becomeAParentRequest === null
+          ? true
+          : false;
+    }
+    if (permission.canRemoveParentAssociation) {
+      permission.canRemoveParentAssociation =
+        permission.canRemoveParentAssociation &&
+        !thisEstablishment.isParent &&
+        thisEstablishment.parentId &&
+        userData.role !== 'Read'
+          ? true
+          : false;
+    }
+    if (permission.canDownloadWdfReport) {
+      permission.canDownloadWdfReport =
+        permission.canDownloadWdfReport &&
+        thisEstablishment.isParent &&
+        userData.role === 'Edit'
+          ? true
+          : false;
+    }
+    if (permission.canBecomeAParent) {
+      permission.canBecomeAParent =
+        permission.canBecomeAParent &&
+        !thisEstablishment.isParent &&
+        !thisEstablishment.parentId &&
+        becomeAParentRequest === null
+          ? true
+          : false;
+    }
+    if (permission.canViewBenchmarks) { // only selected mainservices can view Benchmarks
+      permission.canViewBenchmarks = [24, 25, 20].includes(thisEstablishment.mainService.id) && thisEstablishment.isRegulated;
+    }
+  });
+
+  return res.status(200).json({
+    uid: thisEstablishment.uid,
+    permissions: Object.assign({}, ...permissions)
+  });
+};
+
 module.exports = router;
 module.exports.permissions = permissions;
+module.exports.permissionsCheck = permissionsCheck;
