@@ -69,6 +69,9 @@ const permissions = async (req, res) => {
                 ? true
                 : false;
           }
+          if (permission.canViewBenchmarks) { // only selected mainservices can view Benchmarks
+            permission.canViewBenchmarks = [24,25,20].includes(thisEstablishment.mainService.id) && thisEstablishment.isRegulated ;
+          }
         });
 
         return res.status(200).json({
