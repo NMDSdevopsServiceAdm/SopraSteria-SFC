@@ -339,7 +339,7 @@
     </div>
 
     <div *ngIf="form.type === 'groups'">
-      <table class="govuk-table" *ngIf="results && results.length">
+      <table class="govuk-table" *ngIf="results && results.length" data-testid="group-search-results">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th class="govuk-table__header govuk-!-width-one-third" scope="col">Workplace name</th>
@@ -356,7 +356,7 @@
               </td>
               <td class="govuk-table__cell">{{ item.nmdsId || '-' }}</td>
               <td class="govuk-table__cell">
-                {{ item.employerType.other ? item.employerType.other : item.employerType.value || '-' }}
+                {{ item.employerType?.other ? item.employerType.other : item.employerType?.value || '-' }}
               </td>
               <td class="govuk-table__cell">
                 <a
