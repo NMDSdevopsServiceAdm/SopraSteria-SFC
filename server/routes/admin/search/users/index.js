@@ -39,7 +39,8 @@ router.route('/').post(async function (req, res) {
           "User"."SecurityQuestionValue" AS "UserSecurityQuestion",
           "User"."SecurityQuestionAnswerValue" AS "UserSecurityQuestionAnswer",
           "User"."EmailValue" AS "UserEmail",
-          "User"."PhoneValue" AS "UserPhone"
+          "User"."PhoneValue" AS "UserPhone",
+          "User"."UserUID" AS "UID"
         from cqc."Establishment" e1
           left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
           inner join cqc."User"
@@ -78,7 +79,8 @@ router.route('/').post(async function (req, res) {
           "User"."SecurityQuestionValue" AS "UserSecurityQuestion",
           "User"."SecurityQuestionAnswerValue" AS "UserSecurityQuestionAnswer",
           "User"."EmailValue" AS "UserEmail",
-          "User"."PhoneValue" AS "UserPhone"
+          "User"."PhoneValue" AS "UserPhone",
+          "User"."UserUID" AS "UID"
         from cqc."Establishment" e1
           left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
           inner join cqc."User"
@@ -103,6 +105,7 @@ router.route('/').post(async function (req, res) {
       } : null;
 
       return {
+        uid: thisLogin.UID,
         name: thisLogin.UserFullname,
         username: thisLogin.Username,
         isPrimary: thisLogin.UserIsPrimary,
