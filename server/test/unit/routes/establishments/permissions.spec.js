@@ -47,40 +47,7 @@ describe('permissions route', () => {
     };
     return req;
   }
-  it('should return canBecomeParent permission if no pending requests', async () => {
-    sinon.stub(models.Approvals, 'findOne').callsFake(() => {
-      return null;
-    });
 
-    req = createReq();
-    const res = httpMocks.createResponse();
-
-    await permissions(req, res);
-
-    const permissionData = res._getJSONData();
-
-    expect(res.statusCode).to.deep.equal(200);
-    expect(permissionData.permissions.canBecomeAParent).to.deep.equal(true);
-  });
-
-  it('should not return canBecomeParent permission if pending requests', async () => {
-    sinon.stub(models.Approvals, 'findOne').callsFake(() => {
-      return {
-        id: 123
-      };
-    });
-
-    req = createReq();
-
-    const res = httpMocks.createResponse();
-
-    await permissions(req, res);
-
-    const permissionData = res._getJSONData();
-
-    expect(res.statusCode).to.deep.equal(200);
-    expect(permissionData.permissions.canBecomeAParent).to.deep.equal(false);
-  });
   describe('canViewBenchmarks', () => {
 
     it('should return canViewBenchmarks:true if service is one of the top 3 & regulated ', async () => {
@@ -157,7 +124,7 @@ describe('permissions route', () => {
       const thisEstablishment = establishmentBuilder();
       thisEstablishment.isParent = false;
       thisEstablishment.parentId = null;
-      becomeAParentRequest= null;
+      becomeAParentRequest = null;
 
       const res = httpMocks.createResponse();
 
@@ -172,7 +139,7 @@ describe('permissions route', () => {
       const thisEstablishment = establishmentBuilder();
       thisEstablishment.isParent = true;
       thisEstablishment.parentId = null;
-      becomeAParentRequest= null;
+      becomeAParentRequest = null;
 
       const res = httpMocks.createResponse();
 
@@ -188,7 +155,7 @@ describe('permissions route', () => {
       const thisEstablishment = establishmentBuilder();
       thisEstablishment.isParent = false;
       thisEstablishment.parentId = null;
-      becomeAParentRequest= {status:"pending"};
+      becomeAParentRequest = { status: "pending" };
 
       const res = httpMocks.createResponse();
 
@@ -204,7 +171,7 @@ describe('permissions route', () => {
       const thisEstablishment = establishmentBuilder();
       thisEstablishment.isParent = false;
       thisEstablishment.parentId = 201;
-      becomeAParentRequest= null;
+      becomeAParentRequest = null;
 
       const res = httpMocks.createResponse();
 
@@ -214,6 +181,7 @@ describe('permissions route', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(permissionData.permissions.canLinkToParent).to.deep.equal(false);
     });
+  });
     describe('canRemoveParentAssociation', () => {
       it('should return canRemoveParentAssociation:true if it isnt a parent, does have a parent ID and user had Edit permissions ', async () => {
 
@@ -280,5 +248,5 @@ describe('permissions route', () => {
         expect(permissionData.permissions.canDownloadWdfReport).to.deep.equal(false);
       });
     });
+
   });
-});
