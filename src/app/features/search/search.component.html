@@ -186,7 +186,7 @@
 
 <div class="govuk-grid-row govuk-!-margin-top-4">
   <div class="govuk-grid-column-full">
-    <div *ngIf="form.submitted && !results.length && !form.errors.length">
+    <div *ngIf="form.submitted && !results.length && !form.errors.length" data-testid="no-search-results">
       <div class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
         <strong class="govuk-warning-text__text">
@@ -339,7 +339,7 @@
     </div>
 
     <div *ngIf="form.type === 'groups'">
-      <table class="govuk-table" *ngIf="results && results.length">
+      <table class="govuk-table" *ngIf="results && results.length" data-testid="group-search-results">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th class="govuk-table__header govuk-!-width-one-third" scope="col">Workplace name</th>
@@ -356,7 +356,7 @@
               </td>
               <td class="govuk-table__cell">{{ item.nmdsId || '-' }}</td>
               <td class="govuk-table__cell">
-                {{ item.employerType.other ? item.employerType.other : item.employerType.value || '-' }}
+                {{ item.employerType?.other ? item.employerType.other : item.employerType?.value || '-' }}
               </td>
               <td class="govuk-table__cell">
                 <a
@@ -367,7 +367,7 @@
                 >
               </td>
             </tr>
-            <tr *ngIf="workerDetails[item.uid]" class="govuk-panel--gray">
+            <tr *ngIf="workerDetails[item.uid]" class="govuk-panel--gray" data-testid="groups-workplace-details">
               <td colspan="6">
                 <div class="govuk-!-margin-2">
                   <table class="govuk-table">
@@ -401,7 +401,7 @@
                     </tbody>
                   </table>
                 </div>
-                <div class="govuk-!-margin-2" *ngIf="item.users.length > 0">
+                <div class="govuk-!-margin-2" *ngIf="item.users?.length > 0">
                   <table class="govuk-table">
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
