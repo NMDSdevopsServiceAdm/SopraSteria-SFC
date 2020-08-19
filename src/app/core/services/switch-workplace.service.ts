@@ -23,8 +23,7 @@ export class SwitchWorkplaceService {
     public notificationsService: NotificationsService
   ) {}
 
-  public navigateToWorkplace(id, username, nmdsId, e): void {
-    e.preventDefault();
+  public navigateToWorkplace(id, username, nmdsId): void {
     if (!username && nmdsId) {
       this.getAllNotificationWorkplace(nmdsId).subscribe(data => {
         if (data) {
