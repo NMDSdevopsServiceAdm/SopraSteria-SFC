@@ -35,10 +35,6 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     });
   }
 
-  public formatNumber(data) {
-    return  data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  }
-
   public pluralizeWorkplaces(workplaces){
     return workplaces > 1 ? 'workplaces' : 'workplace'
   }

@@ -16,10 +16,6 @@ export class ComparisonGroupHeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {}
 
-  public formatNumber(data) {
-    return  data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  }
-
   public pluralizeWorkplaces(workplaces){
     return workplaces > 1 ? 'workplaces' : 'workplace'
   }
