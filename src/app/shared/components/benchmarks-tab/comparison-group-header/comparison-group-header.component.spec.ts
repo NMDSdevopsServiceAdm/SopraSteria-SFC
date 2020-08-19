@@ -45,10 +45,6 @@ describe('ComparisonGroupHeaderComponent', () => {
     const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
     expect(componenttext.innerHTML).toContain(`<b>Your comparison group</b> information is not available at the moment.`);
   });
-  it('should format Numbers correctly', () => {
-    const number = component.formatNumber(1000);
-    expect(number).toBe('1,000');
-  });
   it('should pluralize workplaces correctly', () => {
     const number = component.pluralizeWorkplaces(2);
     expect(number).toBe('workplaces');
