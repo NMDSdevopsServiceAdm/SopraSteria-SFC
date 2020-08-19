@@ -3,10 +3,10 @@
     <h1 class="govuk-!-margin-bottom-9">About the data</h1>
     <h2 class="govuk-heading-m">Who uses the data</h2>
     <p>The Department of Health and Social Care (DHSC) use the data collected by this service.</p>
-    <p>The data helps DHSC, the Care Quality Commission and lo-cal authorities make decisions about the adult social care sector.</p>
+    <p>The data helps DHSC, the Care Quality Commission and local authorities make decisions about the adult social care sector.</p>
     <h2 class="govuk-heading-m">Benchmarks</h2>
     <p>The amount and quality of the data you add will make the benchmarks more accurate and useful. </p>
-    <p>Staff records are not included in benchmark calculations whenthere’s missing data. For example, if you have 4 staff records and only 3 contain pay data, only those 3 records would be included in the benchmark for pay.</p>
+    <p>Staff records are not included in benchmark calculations when there’s missing data. For example, if you have 4 staff records and only 3 contain pay data, only those 3 records would be included in the benchmark for pay.</p>
     <div class="govuk-inset-text">
       Note, to view the benchmark for turnover, the number of staff records added must be the same as the total number of staff you have.
     </div>
@@ -15,9 +15,9 @@
       <ul class="govuk-list govuk-list--bullet">
         <li><p>is updated every month</p></li>
         <li><p>has passed extensive quality checks that cross-validate and remove outliers</p></li>
-        <li *ngIf="meta && meta.staff && meta.workplaces"><p>is {{meta.staff | number}} staff from {{meta.workplaces | number}} {{pluralizeWorkplaces(meta.workplaces)}} providing the same main service as you in your local authority.</p></li>
+        <li *ngIf="meta && meta.staff && meta.workplaces"><p>is {{meta.staff | number}} staff from {{meta.workplaces | number}} {{pluralizeWorkplaces(meta.workplaces)}} providing the same main service as you in your local authority</p></li>
       </ul>
-    <p>Skills for Care is committed to protecting your privacy and security.We comply with the General Data Protection Regulation ((EU)2016/679) and the Data Protection Act 2018.</p>
+    <p>Skills for Care is committed to protecting your privacy and security. We comply with the General Data Protection Regulation ((EU) 2016/679) and the Data Protection Act 2018.</p>
      <button type="submit" class="govuk-button" [routerLink]="'/dashboard'" [fragment]="'benchmarks'" >View your benchmarks</button>
   </div>
   <div class="govuk-grid-column-one-thirds">
