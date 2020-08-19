@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BenchmarksService } from '@core/services/benchmarks.service';
@@ -25,11 +25,10 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
       this.benchmarksService.getMeta(this.route.snapshot.params.establishmentID).subscribe(
         (data) => {
           if (data) {
-            console.log(data);
             this.meta = data.meta;
           }
         }
-      ))
+      ));
     this.backService.setBackLink({
       url: ['dashboard'],
       fragment: 'benchmarks',

@@ -10,15 +10,15 @@
     <div class="govuk-inset-text">
       Note, to view the benchmark for turnover, the number of staff records added must be the same as the total number of staff you have.
     </div>
-    <h2 class="govuk-heading-m"> Comparison group</h2>
+    <h2 class="govuk-heading-m">Comparison group</h2>
     <p>Your comparison group data:  </p>
-      <ul>
-        <li class="govuk-list govuk-list--bullet"><p>is updated every month</p></li>
-        <li class="govuk-list govuk-list--bullet"><p>has passed extensive quality checks that cross-validate and remove outliers</p></li>
-        <li class="govuk-list govuk-list--bullet" *ngIf="meta && meta.staff && meta.workplaces"><p>is {{formatNumber(meta.staff)}} staff from {{formatNumber(meta.workplaces)}} {{pluralizeWorkplaces(meta.workplaces)}} providing the same main service as you in your local authority.</p></li>
+      <ul class="govuk-list govuk-list--bullet">
+        <li><p>is updated every month</p></li>
+        <li><p>has passed extensive quality checks that cross-validate and remove outliers</p></li>
+        <li *ngIf="meta && meta.staff && meta.workplaces"><p>is {{meta.staff | number}} staff from {{meta.workplaces | number}} {{pluralizeWorkplaces(meta.workplaces)}} providing the same main service as you in your local authority.</p></li>
       </ul>
     <p>Skills for Care is committed to protecting your privacy and security.We comply with the General Data Protection Regulation ((EU)2016/679) and the Data Protection Act 2018.</p>
-     <button type="submit" class="govuk-button" [routerLink]="'dashboard#benchmarks'" >View your benchmarks</button>
+     <button type="submit" class="govuk-button" [routerLink]="'/dashboard'" [fragment]="'benchmarks'" >View your benchmarks</button>
   </div>
   <div class="govuk-grid-column-one-thirds">
     <div class="department-of-health-logo govuk-!-margin-top-6">
