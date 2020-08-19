@@ -57,9 +57,13 @@ const benchmarksResponseBuilder = build('BenchmarksResponse', {
           }
       }
     },
-    meta: {}
+    meta: {
+      staff: 10000,
+      workplace: 5
+    }
   }
 });
+
 
 const benchmarksData = benchmarksResponseBuilder();
 
@@ -67,6 +71,9 @@ const benchmarksData = benchmarksResponseBuilder();
 export class MockBenchmarksService extends BenchmarksService {
 
   public getAllTiles(establishmentUid): Observable<BenchmarksResponse> {
+    return of(benchmarksData) ;
+  }
+  public getMeta(establishmentUid): Observable<BenchmarksResponse> {
     return of(benchmarksData) ;
   }
 }
