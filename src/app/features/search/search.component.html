@@ -1,4 +1,4 @@
-<div class="govuk-grid-row">
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
   <div class="govuk-tabs govuk-!-padding-top-0">
     <div class="govuk-grid-column-full">
       <ul class="govuk-tabs__list">
@@ -206,7 +206,7 @@
   </div>
 </div>
 
-<div class="govuk-grid-row govuk-!-margin-top-4">
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <div *ngIf="form.submitted && !results.length && !form.errors.length" data-testid="no-search-results">
       <div class="govuk-warning-text">
@@ -217,6 +217,8 @@
         </strong>
       </div>
     </div>
+
+    <p class="govuk-!-font-weight-bold" *ngIf="results && results.length">Your search returned {{ results.length | number }} results.</p>
 
     <div *ngIf="form.type === 'users'">
       <table class="govuk-table" *ngIf="results && results.length">
