@@ -7,6 +7,7 @@ import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-t
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
+import { ActivatedRoute } from '@angular/router';
 
 
 describe('BenchmarksAboutTheDataComponent', () => {
@@ -17,7 +18,20 @@ describe('BenchmarksAboutTheDataComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule,BrowserModule,BenchmarksModule],
       declarations: [],
-      providers:[{ provide: BenchmarksService, useClass: MockBenchmarksService }]
+      providers:[{ provide: BenchmarksService, useClass: MockBenchmarksService},
+        {
+          provide: ActivatedRoute,
+          useValue:
+            {
+              snapshot:
+                {
+                  url: [{ path: 1 }, { path: 2 }],
+                  params: {
+                    establishmentID: 123,
+                  }
+                },
+              }
+            }]
     }).compileComponents();
   }));
 
@@ -25,10 +39,12 @@ describe('BenchmarksAboutTheDataComponent', () => {
     fixture = TestBed.createComponent(BenchmarksAboutTheDataComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
   });
 
   it('should create', () => {
     component.meta = {workplaces: 1, staff:1};
+
     expect(component).toBeTruthy();
   });
   it('should have the right text with only one workplace', async () => {

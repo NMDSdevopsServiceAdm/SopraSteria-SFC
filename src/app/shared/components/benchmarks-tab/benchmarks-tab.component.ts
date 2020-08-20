@@ -3,6 +3,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { Subscription } from 'rxjs';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-benchmarks-tab',
@@ -69,7 +70,8 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     }
   };
   constructor(
-    private benchmarksService: BenchmarksService
+    private benchmarksService: BenchmarksService,
+    private router: Router
   ) {
 
   }

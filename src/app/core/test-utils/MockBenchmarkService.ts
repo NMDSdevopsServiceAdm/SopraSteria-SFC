@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import {  Observable, of } from 'rxjs';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
+import { URLStructure } from '@core/model/url.model';
 
 const { build } = require('@jackfranklin/test-data-bot');
 
@@ -63,12 +64,21 @@ const benchmarksResponseBuilder = build('BenchmarksResponse', {
     }
   }
 });
+const returnToBuilder = build('URLStructure', {
+  fields: {
+    url:['/dashboard'],
+    fragment:'benchmarks'
+  }
+});
 
-
+const returnTo = returnToBuilder();
 const benchmarksData = benchmarksResponseBuilder();
 
 @Injectable()
 export class MockBenchmarksService extends BenchmarksService {
+  public get returnTo(): URLStructure {
+    return returnTo
+  }
 
   public getAllTiles(establishmentUid): Observable<BenchmarksResponse> {
     return of(benchmarksData) ;
@@ -76,4 +86,5 @@ export class MockBenchmarksService extends BenchmarksService {
   public getMeta(establishmentUid): Observable<BenchmarksResponse> {
     return of(benchmarksData) ;
   }
+
 }

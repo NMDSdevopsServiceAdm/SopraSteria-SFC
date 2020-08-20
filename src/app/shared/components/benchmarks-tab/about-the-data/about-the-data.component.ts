@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { Meta } from '@core/model/benchmarks.model';
 import { BackService } from '@core/services/back.service';
+import { URLStructure } from '@core/model/url.model';
 
 @Component({
   selector: 'app-benchmarks-about-the-data',
@@ -12,6 +13,9 @@ import { BackService } from '@core/services/back.service';
 export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public meta: Meta;
+  public returnTo: URLStructure;
+  public url: any[];
+  public fragment: string;
 
   constructor(
     protected router: Router,
@@ -21,6 +25,8 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.url = this.benchmarksService.returnTo?.url;
+    this.fragment = this.benchmarksService.returnTo?.fragment;
     this.subscriptions.add(
       this.benchmarksService.getMeta(this.route.snapshot.params.establishmentID).subscribe(
         (data) => {
@@ -29,10 +35,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
           }
         }
       ));
-    this.backService.setBackLink({
-      url: ['dashboard'],
-      fragment: 'benchmarks',
-    });
+    this.backService.setBackLink(this.benchmarksService.returnTo);
   }
 
   public pluralizeWorkplaces(workplaces){
@@ -40,5 +43,6 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.subscriptions.unsubscribe()
   }
 }
