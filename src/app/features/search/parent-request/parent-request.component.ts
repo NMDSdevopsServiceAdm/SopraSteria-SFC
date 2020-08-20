@@ -57,6 +57,7 @@ export class ParentRequestComponent implements OnInit {
   }
 
   public navigateToWorkplace(id, username, nmdsId, e): void {
+    e.preventDefault();
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   }
 

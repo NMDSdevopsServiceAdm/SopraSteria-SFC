@@ -69,7 +69,7 @@ describe('SearchComponent', () => {
     httpTestingController.verify();
   });
 
-  fdescribe('Users', () => {
+  describe('Users', () => {
     it('should show the Users tab', async () => {
       const { fixture, navigate, getByText } = await getSearchComponent();
 
