@@ -193,6 +193,28 @@ describe('benchmarks', () => {
       };
       expect(json).to.deep.equal(expectedJSON);
     });
+    it('should return no-permtemp are currently no perm or temp workers', async () => {
+      const establishmentId = 123;
+      sinon.stub(models.establishment, 'turnOverData').returns(
+        {id:"2",NumberOfStaffValue:3,LeaversValue:"5"}
+      );
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(0);
+      sinon.stub(models.worker, 'countForEstablishment').returns(3);
+      sinon.stub(models.establishmentJobs, 'leaversForEstablishment').returns(1);
+      const json = await benchmarks.turnover(establishmentId);
+      const expectedJSON = {
+        workplaceValue: {
+          value: 0,
+          hasValue: false,
+          stateMessage:"no-permTemp"
+        },
+        comparisonGroup: {
+          value: 0,
+          hasValue: false
+        }
+      };
+      expect(json).to.deep.equal(expectedJSON);
+    });
     it('should return no-data if  leavers isnt filled out', async () => {
       const establishmentId = 123;
       sinon.stub(models.establishment, 'turnOverData').returns(
