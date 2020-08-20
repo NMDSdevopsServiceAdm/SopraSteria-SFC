@@ -1,4 +1,5 @@
 /* jshint indent: 2 */
+const { Op } = require("sequelize");
 
 module.exports = function(sequelize, DataTypes) {
   const User = sequelize.define('user', {
@@ -245,6 +246,34 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: false
   });
 
+  const sanitise = (rawQuery) => {
+    return rawQuery.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_');
+  }
+
+  const buildUserQuery = (where) => {
+    let userQuery = {};
+    if (where.name) {
+      userQuery = {
+        FullNameValue: {
+          [Op.iLike]: sanitise(where.name)
+        }
+      }
+    }
+    return userQuery;
+  }
+
+  const buildLoginQuery = (where) => {
+    let loginQuery = {};
+    if (where.username) {
+      loginQuery = {
+        username: {
+          [Op.iLike]: sanitise(where.username)
+        }
+      }
+    }
+    return loginQuery;
+  }
+
   User.associate = (models) => {
     User.belongsTo(models.establishment, {
       foreignKey : 'establishmentId',
@@ -292,6 +321,58 @@ module.exports = function(sequelize, DataTypes) {
         }
       });
   };
+  User.searchUsers = async function(where) {
+    const userQuery = buildUserQuery(where);
+    const loginQuery = buildLoginQuery(where);
+
+    return await this.findAll({
+      attributes: [
+        "uid",
+        "FullNameValue",
+        "isPrimary",
+        "SecurityQuestionValue",
+        "SecurityQuestionAnswerValue",
+        "EmailValue",
+        "PhoneValue",
+      ],
+      where: {
+        archived: false,
+        ...userQuery
+      },
+      include: [
+        {
+          model: sequelize.models.login,
+          attributes: [ "username", "isActive", "passwdLastChanged", "invalidAttempt", "lastLogin" ],
+          where: {
+            ...loginQuery
+          },
+          required: true,
+        },
+        {
+          model: sequelize.models.establishment,
+          attributes: ["uid",
+          "locationId",
+          "nmdsId",
+          "postcode",
+          "isRegulated",
+          "address1",
+          "isParent",
+          "NameValue",
+          "updated",
+          "ParentID"],
+          required: true,
+          include: [
+            {
+              model: sequelize.models.establishment,
+              attributes: ['id', 'uid', 'nmdsId', 'postcode', 'NameValue'],
+              as: 'Parent',
+              required: false,
+            }
+          ]
+        }
+      ]
+    })
+  }
 
   return User;
 };
