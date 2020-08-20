@@ -7,7 +7,7 @@ const routes: Routes = [
     path: 'about-the-data/:establishmentID',
     component: BenchmarksAboutTheDataComponent,
     canActivate: [],
-    data: { title: 'View My Workplaces' },
+    data: { title: 'About the data' },
   },
 ];
 
