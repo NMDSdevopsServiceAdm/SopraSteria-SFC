@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   selector: 'app-comparison-group-header',
   templateUrl: './comparison-group-header.component.html'
 })
-export class ComparisonGroupHeaderComponent implements OnInit, OnDestroy {
+export class ComparisonGroupHeaderComponent implements OnInit {
   protected subscriptions: Subscription = new Subscription();
 
   @Input() meta: Meta;
@@ -27,5 +27,4 @@ export class ComparisonGroupHeaderComponent implements OnInit, OnDestroy {
   public pluralizeWorkplaces(workplaces){
     return workplaces > 1 ? 'workplaces' : 'workplace'
   }
-  ngOnDestroy() {}
 }
