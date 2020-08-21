@@ -1,5 +1,6 @@
 /* jshint indent: 2 */
 const { Op } = require("sequelize");
+const { sanitise } = require("../utils/db");
 
 module.exports = function(sequelize, DataTypes) {
   const User = sequelize.define('user', {
@@ -246,10 +247,6 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: false
   });
 
-  const sanitise = (rawQuery) => {
-    return rawQuery.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_');
-  }
-
   const buildUserQuery = (where) => {
     let userQuery = {};
     if (where.name) {
@@ -350,16 +347,18 @@ module.exports = function(sequelize, DataTypes) {
         },
         {
           model: sequelize.models.establishment,
-          attributes: ["uid",
-          "locationId",
-          "nmdsId",
-          "postcode",
-          "isRegulated",
-          "address1",
-          "isParent",
-          "NameValue",
-          "updated",
-          "ParentID"],
+          attributes: [
+            "uid",
+            "locationId",
+            "nmdsId",
+            "postcode",
+            "isRegulated",
+            "address1",
+            "isParent",
+            "NameValue",
+            "updated",
+            "ParentID"
+          ],
           required: true,
           include: [
             {

@@ -16,7 +16,7 @@ const search = async function (req, res) {
 
     return res.status(200).json(results);
   } catch (err) {
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 

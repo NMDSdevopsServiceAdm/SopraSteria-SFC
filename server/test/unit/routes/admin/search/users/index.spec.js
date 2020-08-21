@@ -4,14 +4,11 @@ const sinon = require('sinon');
 const models = require('../../../../../../models/index');
 const adminUsersSearchRoute = require('../../../../../../routes/admin/search/users');
 
-const setup = () => {
+const setup = (body) => {
   const req = httpMocks.createRequest({
     method: 'GET',
     url: `/api/admin/search`,
-    body: {
-      username: 'joebloggs',
-      name: 'Joe Bloggs'
-    },
+    body,
   });
   const res = httpMocks.createResponse();
   return { req, res};
@@ -59,7 +56,7 @@ describe('server/routes/admin/search/users', () => {
   });
 
   it('should search users by username', async () => {
-    const { req, res } = setup();
+    const { req, res } = setup({ username: 'joebloggs' });
 
     await adminUsersSearchRoute.search(req, res);
 
@@ -68,7 +65,7 @@ describe('server/routes/admin/search/users', () => {
   });
 
   it('should search users by name', async () => {
-    const { req, res } = setup();
+    const { req, res } = setup({ name: 'Joe Bloggs' });
 
     await adminUsersSearchRoute.search(req, res);
 
