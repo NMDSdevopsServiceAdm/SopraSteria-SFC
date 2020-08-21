@@ -22,7 +22,10 @@ export class ComparisonGroupHeaderComponent implements OnInit {
 
   ngOnInit() {}
   public setReturn(){
-    this.benchmarksService.setReturnTo({url:[this.router.url.split('#')[0]],fragment:'benchmarks'});
+    this.benchmarksService.setReturnTo({
+      url: [this.router.url.split('#')[0]],
+      fragment: 'benchmarks',
+    });
   }
   public pluralizeWorkplaces(workplaces){
     return workplaces > 1 ? 'workplaces' : 'workplace'
