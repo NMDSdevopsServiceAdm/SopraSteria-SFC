@@ -80,11 +80,9 @@ export class MockBenchmarksService extends BenchmarksService {
     return returnTo
   }
 
-  public getAllTiles(establishmentUid): Observable<BenchmarksResponse> {
+  public getTileData(establishmentUid,requiredTiles): Observable<BenchmarksResponse> {
     return of(benchmarksData) ;
   }
-  public getMeta(establishmentUid): Observable<BenchmarksResponse> {
-    return of(benchmarksData) ;
-  }
+
 
 }

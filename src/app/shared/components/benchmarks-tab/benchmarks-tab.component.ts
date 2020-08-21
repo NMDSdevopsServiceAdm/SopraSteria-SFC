@@ -76,7 +76,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.benchmarksService.getAllTiles(this.workplace.uid).subscribe(
+      this.benchmarksService.getTileData(this.workplace.uid,['sickness','turnover','pay','qualifications']).subscribe(
         (data) => {
           if (data) {
             this.tilesData = data;

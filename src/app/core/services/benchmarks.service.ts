@@ -20,10 +20,11 @@ export class BenchmarksService {
     this.returnToURL = returnTo;
   }
 
-  getAllTiles(establishmentId): Observable<BenchmarksResponse> {
-    return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/?tiles=pay,sickness,qualifications,turnover`);
+  getTileData(establishmentId,tilesNeeded?): Observable<BenchmarksResponse> {
+    let param = "";
+    if (tilesNeeded.length) {
+      param = '=' + tilesNeeded.join(',');
   }
-  getMeta(establishmentId): Observable<BenchmarksResponse> {
-    return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/?tiles`);
+    return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/?tiles${param}`);
   }
 }
