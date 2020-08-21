@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Meta } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
