@@ -19,7 +19,7 @@ describe('benchmarks', () => {
       const json = await benchmarks.pay(establishmentId);
       const expectedJSON = {
         workplaceValue: {
-          value: 0.5,
+          value: 50,
           hasValue: true
         },
         comparisonGroup: {
