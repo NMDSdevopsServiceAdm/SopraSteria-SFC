@@ -1327,16 +1327,21 @@ class Establishment {
         })
       );
     }else if(this._totalPermTemp === totalStaff){
-      console.log("------------------------------2-------");
-      console.log(this._starters);
-      if(this._starters.length >= totalStaff){
+      const starterArray = this._currentLine.STARTERS.split(";");
+      const sumOfStarters= starterArray.reduce(function(a,b){
+        return a + b;
+      }, 0);
+      if(sumOfStarters > totalStaff){
         csvEstablishmentSchemaErrors.unshift(
-          Object.assign(template, {
+          {
+            origin: 'Establishments',
+            lineNumber: this._lineNumber,
+            warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
+            warnType: 'TOTAL_PERM_TEMP_WARNING',
+            source: this._currentLine.TOTALPERMTEMP,
+            name: this._currentLine.LOCALESTID,
             warning: `STARTERS data you have entered does not fall within the expected range please ensure this is correct`,
-            warnCode: Establishment.VACANCIES_WARNING,
-            warnType: 'VACANCIES_WARNING',
-        })
-      );
+        });
       }
     }
 
