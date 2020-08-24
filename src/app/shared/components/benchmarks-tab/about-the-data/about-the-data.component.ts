@@ -28,8 +28,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     this.url = this.benchmarksService.returnTo?.url;
     this.fragment = this.benchmarksService.returnTo?.fragment;
     this.subscriptions.add(
-        this.benchmarksService.getTileData(this.route.snapshot.params.establishmentID,['sickness','turnover','pay','qualifications']).subscribe(
-
+        this.benchmarksService.getTileData(this.route.snapshot.params.establishmentID,[]).subscribe(
           (data) => {
           if (data) {
             this.meta = data.meta;

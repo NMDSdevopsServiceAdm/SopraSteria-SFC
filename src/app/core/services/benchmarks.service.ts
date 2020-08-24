@@ -20,11 +20,11 @@ export class BenchmarksService {
     this.returnToURL = returnTo;
   }
 
-  getTileData(establishmentId,tilesNeeded?): Observable<BenchmarksResponse> {
-    let param = "";
+  getTileData(establishmentId:string,tilesNeeded:string[]): Observable<BenchmarksResponse> {
+    let param = '';
     if (tilesNeeded.length) {
-      param = '=' + tilesNeeded.join(',');
-  }
-    return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/?tiles${param}`);
+      param = '?tiles=' + tilesNeeded.join(',');
+    }
+    return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/${param}`);
   }
 }

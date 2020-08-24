@@ -2,7 +2,6 @@ const models = require('../../../../models');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 const benchmarks = require('../../../../routes/establishments/benchmarks');
-const httpMocks = require('node-mocks-http');
 
 describe('benchmarks', () => {
 
