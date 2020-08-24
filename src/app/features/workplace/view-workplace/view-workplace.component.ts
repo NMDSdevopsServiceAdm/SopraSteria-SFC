@@ -26,6 +26,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public canDeleteEstablishment: boolean;
   public canViewListOfUsers: boolean;
   public canViewListOfWorkers: boolean;
+  public canViewBenchmarks: boolean;
   public totalStaffRecords: number;
   private subscriptions: Subscription = new Subscription();
   public trainingAlert: number;
@@ -46,10 +47,15 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     this.workplace = this.establishmentService.establishment;
 
+    this.canViewBenchmarks = this.permissionsService.can(this.workplace.uid,'canViewBenchmarks');
     this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
-
+    this.subscriptions.add(this.permissionsService.getPermissions(this.workplace.uid).subscribe(
+      permission => {
+        this.canViewBenchmarks = permission.permissions.canViewBenchmarks
+      }
+    ));
     if (this.canViewListOfWorkers) {
       this.subscriptions.add(
         this.workerService.getAllWorkers(this.workplace.uid).subscribe(

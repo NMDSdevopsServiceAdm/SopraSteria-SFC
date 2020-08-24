@@ -47,6 +47,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.workplace = this.establishmentService.primaryWorkplace;
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
+    this.canViewBenchmarks = this.permissionsService.can(workplaceUid,'canViewBenchmarks');
     this.canViewListOfUsers = this.permissionsService.can(workplaceUid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');

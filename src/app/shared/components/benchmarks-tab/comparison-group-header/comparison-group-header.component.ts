@@ -1,27 +1,33 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Meta } from '@core/model/benchmarks.model';
+import { BenchmarksService } from '@core/services/benchmarks.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-comparison-group-header',
   templateUrl: './comparison-group-header.component.html'
 })
-export class ComparisonGroupHeaderComponent implements OnInit, OnDestroy {
+export class ComparisonGroupHeaderComponent implements OnInit {
   protected subscriptions: Subscription = new Subscription();
 
   @Input() meta: Meta;
+  @Input() workplaceID : string;
 
-  constructor() {}
+  constructor(
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected benchmarksService: BenchmarksService,
+  ) {}
 
   ngOnInit() {}
-
-  public formatNumber(data) {
-    return  data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  public setReturn(){
+    this.benchmarksService.setReturnTo({
+      url: [this.router.url.split('#')[0]],
+      fragment: 'benchmarks',
+    });
   }
-
   public pluralizeWorkplaces(workplaces){
     return workplaces > 1 ? 'workplaces' : 'workplace'
-  }
-  ngOnDestroy() {
   }
 }

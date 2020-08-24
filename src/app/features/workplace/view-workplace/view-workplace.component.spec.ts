@@ -14,7 +14,6 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
-import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -83,25 +82,25 @@ describe('view-workplace', () => {
   });
 
   describe('Tabs', () => {
-    it('should display the Benchmarks tab when the workplace is CQC Regulated', async () => {
+    it('should display the Benchmarks tab when the workplace has canViewBenchmarks permissions', async () => {
       const { component } = await setup(true);
 
       const establishment = {
         ...component.fixture.componentInstance.workplace
       };
-      establishment.isRegulated = true;
+      component.fixture.componentInstance.canViewBenchmarks = true;
       component.fixture.componentInstance.workplace = establishment;
       component.fixture.detectChanges();
 
       expect(component.getByText('Benchmarks')).toBeTruthy();
     });
-    it('should not display the Benchmarks tab when the workplace is not CQC Regulated', async () => {
+    it('should not display the Benchmarks tab when the workplace doesnt have canViewBenchmarks permissions', async () => {
       const { component } = await setup(true);
 
       const establishment = {
         ...component.fixture.componentInstance.workplace
       };
-      establishment.isRegulated = false;
+      component.fixture.componentInstance.canViewBenchmarks = false;
       component.fixture.componentInstance.workplace = establishment;
       component.fixture.detectChanges();
 

@@ -4,7 +4,7 @@ const models = require('../../../models');
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
-  const tiles = req.query.tiles.split(',');
+  const tiles = req.query.tiles ? req.query.tiles.split(',') : [];
 
   try {
     let benchmarkComparisonGroup = await models.establishment.getBenchmarkData(establishmentId);
