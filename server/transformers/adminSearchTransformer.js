@@ -41,4 +41,41 @@ const EstablishmentTransformer = async (establishments) => {
   });
 }
 
+const UserTransformer = async (users) => {
+  return users.map(user => {
+    const parent = user.establishment.ParentID ? {
+      nmdsId: user.establishment.Parent.nmdsId,
+      name: user.establishment.Parent.NameValue,
+      postcode: user.establishment.Parent.postcode,
+    } : null;
+
+    return {
+      uid: user.uid,
+      name: user.FullNameValue,
+      username: user.login.username,
+      isPrimary: user.isPrimary,
+      securityQuestion: user.SecurityQuestionValue,
+      securityQuestionAnswer: user.SecurityQuestionAnswerValue,
+      email: user.EmailValue,
+      phone: user.PhoneValue,
+      isLocked: !user.login.isActive,
+      invalidAttempt: user.login.invalidAttempt,
+      passwdLastChanged: user.login.passwdLastChanged,
+      lastLoggedIn: user.login.lastLogin,
+      establishment: {
+        uid: user.establishment.uid,
+        name: user.establishment.NameValue,
+        nmdsId: user.establishment.nmdsId,
+        postcode: user.establishment.postcode,
+        isRegulated: user.establishment.isRegulated,
+        address: user.establishment.address1,
+        isParent: user.establishment.isParent,
+        parent,
+        locationId: user.establishment.locationId,
+      }
+    };
+  });
+}
+
 module.exports.EstablishmentTransformer = EstablishmentTransformer;
+module.exports.UserTransformer = UserTransformer;
