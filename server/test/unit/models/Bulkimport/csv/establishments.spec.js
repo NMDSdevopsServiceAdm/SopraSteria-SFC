@@ -186,5 +186,44 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(csvEstablishmentSchemaErrors[0]).to.be.undefined;
       });
     });
+      it('should validate the total number of staff with the # of staff provided in the Worker CSV when the status is NOCHANGE', async () => {
+        const establishmentRow = buildEstablishmentCSV({
+          overrides: {
+            STATUS: 'NOCHANGE',
+            TOTALPERMTEMP: 2,
+          },
+        });
+
+        const workerRow = buildWorkerCSV({
+          overrides: {
+            LOCALESTID: establishmentRow.LOCALESTID,
+          }
+        });
+
+        await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
+          expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal('TOTALPERMTEMP (Total staff and the number of worker records) does not match');
+        });
+      });
+      it('should show a warning when number of starters >= total workers', async () => {
+        const establishmentRow = buildEstablishmentCSV({
+          overrides: {
+            STATUS: 'UPDATE',
+            TOTALPERMTEMP: 1,
+            STARTERS: '0;0;0',
+          },
+        });
+
+        const workerRow = buildWorkerCSV({
+          overrides: {
+            LOCALESTID: establishmentRow.LOCALESTID,
+          }
+        });
+
+        await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
+          console.log(csvEstablishmentSchemaErrors);
+          expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal('STARTERS data you have entered does not fall within the expected range please ensure this is correct.');
+        });
+      });
+    });
   });
-});
+

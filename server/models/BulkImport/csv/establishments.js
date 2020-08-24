@@ -1326,7 +1326,20 @@ class Establishment {
           warning: `TOTALPERMTEMP (Total staff and the number of worker records) does not match`,
         })
       );
+    }else if(this._totalPermTemp === totalStaff){
+      console.log("------------------------------2-------");
+      console.log(this._starters);
+      if(this._starters.length >= totalStaff){
+        csvEstablishmentSchemaErrors.unshift(
+          Object.assign(template, {
+            warning: `STARTERS data you have entered does not fall within the expected range please ensure this is correct`,
+            warnCode: Establishment.VACANCIES_WARNING,
+            warnType: 'VACANCIES_WARNING',
+        })
+      );
+      }
     }
+
   }
 
   _validateAllJobs () {
