@@ -89,7 +89,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     return Math.round(data * 100) + '%'
   }
   public formatPay(data) {
-    return  '£' + Number(data).toFixed(2);
+    return  '£' + (Number(data)/100).toFixed(2);
   }
 
   ngOnDestroy() {

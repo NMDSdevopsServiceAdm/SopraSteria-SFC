@@ -60,7 +60,7 @@ const pay = async (establishmentId) => {
   let stateMessage = '';
   if (careworkersWithHourlyPayCount > 0) {
     let paidAmount = await models.worker.careworkersTotalHourlyPaySum(establishmentId);
-    averagePaidAmount = paidAmount / careworkersWithHourlyPayCount;
+    averagePaidAmount = (paidAmount*100) / careworkersWithHourlyPayCount;
   } else {
     stateMessage = 'no-workers';
   }
