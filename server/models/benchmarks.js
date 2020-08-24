@@ -21,7 +21,7 @@ module.exports = function(sequelize, DataTypes) {
       field: "Sickness"
     },
     turnover: {
-      type: DataTypes.DECIMAL(3, 2),
+      type: DataTypes.DECIMAL(5, 2),
       allowNull: true,
       field: "Turnover"
     },
