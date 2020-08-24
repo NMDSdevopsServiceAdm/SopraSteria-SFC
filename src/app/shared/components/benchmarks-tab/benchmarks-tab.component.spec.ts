@@ -57,7 +57,7 @@ describe('BenchmarksTabComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should format Pay data correctly', () => {
-    const paydata = component.formatPay(5.12345);
+    const paydata = component.formatPay(512.345);
     expect(paydata).toBe('£5.12');
   });
   it('should format percent data correctly', () => {
