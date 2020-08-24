@@ -4,6 +4,7 @@ const hasProp = (obj, prop) =>
 
 const BUDI = require('../BUDI').BUDI;
 const models = require('../../index');
+const clonedeep = require('lodash.clonedeep');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
@@ -1309,11 +1310,14 @@ class Establishment {
     csvEstablishmentSchemaErrors,
     { employedWorkers = 0, nonEmployedWorkers = 0 }
   ) {
+    const sum = arr => arr.split(';').reduce((a, b) => parseInt(a) + parseInt(b));
+    const vacancies = sum(this._currentLine.VACANCIES);
+    const starters = sum(this._currentLine.STARTERS);
+    const leavers = sum(this._currentLine.LEAVERS);
+
     const template = {
       origin: 'Establishments',
       lineNumber: this._lineNumber,
-      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
-      warnType: 'TOTAL_PERM_TEMP_WARNING',
       source: this._currentLine.TOTALPERMTEMP,
       name: this._currentLine.LOCALESTID,
     };
@@ -1322,29 +1326,41 @@ class Establishment {
 
     if (this._totalPermTemp !== totalStaff) {
       csvEstablishmentSchemaErrors.unshift(
-        Object.assign(template, {
-          warning: `TOTALPERMTEMP (Total staff and the number of worker records) does not match`,
+        Object.assign(clonedeep(template), {
+          warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
+          warnType: 'TOTAL_PERM_TEMP_WARNING',
+          warning: 'TOTALPERMTEMP (Total staff and the number of worker records) does not match',
         })
       );
-    }else if(this._totalPermTemp === totalStaff){
-      const starterArray = this._currentLine.STARTERS.split(";");
-      const sumOfStarters= starterArray.reduce(function(a,b){
-        return a + b;
-      }, 0);
-      if(sumOfStarters > totalStaff){
+    } else if(this._totalPermTemp === totalStaff) {
+      if (starters > totalStaff) {
         csvEstablishmentSchemaErrors.unshift(
-          {
-            origin: 'Establishments',
-            lineNumber: this._lineNumber,
-            warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
-            warnType: 'TOTAL_PERM_TEMP_WARNING',
-            source: this._currentLine.TOTALPERMTEMP,
-            name: this._currentLine.LOCALESTID,
-            warning: `STARTERS data you have entered does not fall within the expected range please ensure this is correct`,
-        });
+          Object.assign(clonedeep(template), {
+            warnCode: Establishment.STARTERS_WARNING,
+            warnType: 'STARTERS_WARNING',
+            warning: 'STARTERS data you have entered does not fall within the expected range please ensure this is correct',
+          })
+        )
+      }
+      if (leavers >= totalStaff) {
+        csvEstablishmentSchemaErrors.unshift(
+          Object.assign(clonedeep(template), {
+            warnCode: Establishment.LEAVERS_WARNING,
+            warnType: 'LEAVERS_WARNING',
+            warning: 'LEAVERS data you have entered does not fall within the expected range please ensure this is correct',
+          })
+        );
+      }
+      if (vacancies >= totalStaff) {
+        csvEstablishmentSchemaErrors.unshift(
+          Object.assign(clonedeep(template), {
+            warnCode: Establishment.VACANCIES_WARNING,
+            warnType: 'VACANCIES_WARNING',
+            warning: 'VACANCIES data you have entered does not fall within the expected range please ensure this is correct',
+          })
+        );
       }
     }
-
   }
 
   _validateAllJobs () {
