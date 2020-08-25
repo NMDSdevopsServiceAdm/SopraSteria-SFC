@@ -5,6 +5,7 @@ const knownHeaders = require('../../../mockdata/establishment').knownHeaders;
 const testUtils = require('../../../../../utils/testUtils');
 const sinon = require('sinon');
 const csv = require('csvtojson');
+const clonedeep = require('lodash.clonedeep');
 const filename = 'server/models/BulkImport/csv/establishments.js';
 
 const ALL_CAPACITIES = null;
@@ -243,6 +244,9 @@ const getUnitInstance = () => {
           },
           '../../index': {
             models
+          },
+          'lodash.clonedeep': {
+            clonedeep
           }
         })
       }
@@ -484,7 +488,8 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
               '../../index': {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata
-              }
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -656,7 +661,8 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
               '../../index': {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata
-              }
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -817,7 +823,8 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
               '../../index': {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata
-              }
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -978,7 +985,8 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
               '../../index': {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata
-              }
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -1149,7 +1157,8 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
               '../../index': {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata
-              }
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -1319,6 +1328,9 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
                 '../../index': {
                   establishment: models.establishment,
                 pcodedata: models.pcodedata
+                },
+                'lodash.clonedeep': {
+                  clonedeep
                 }
               })
             }
@@ -1482,7 +1494,8 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
               '../../index': {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata
-              }
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -1662,6 +1675,9 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             '../../index': {
               establishment: models.establishment,
                 pcodedata: models.pcodedata
+            },
+            'lodash.clonedeep': {
+              clonedeep
             }
           })
         }
@@ -1825,6 +1841,9 @@ describe('/server/models/Bulkimport/csv/establishment.js', () => {
             '../../index': {
               establishment: models.establishment,
                 pcodedata: models.pcodedata
+            },
+            'lodash.clonedeep': {
+              clonedeep
             }
           })
         }
@@ -1987,6 +2006,9 @@ it('should emit an error if postcode cannot be found in the reference data', asy
           '../../index': {
             establishment: models.establishment,
                 pcodedata: models.pcodedata
+          },
+          'lodash.clonedeep': {
+            clonedeep
           }
         })
       }
@@ -2159,6 +2181,9 @@ it('should not emit an error if postcode can be found in the reference data', as
           '../../index': {
             establishment: models.establishment,
                 pcodedata: models.pcodedata
+          },
+          'lodash.clonedeep': {
+            clonedeep
           }
         })
       }
@@ -2321,6 +2346,9 @@ it('should emit an warning if postcode cannot be found in the reference data', a
           '../../index': {
             establishment: models.establishment,
                 pcodedata: models.pcodedata
+          },
+          'lodash.clonedeep': {
+            clonedeep
           }
         })
       }
@@ -2502,6 +2530,9 @@ it('should not emit an error if postcode can be found in the reference data', as
           '../../index': {
             establishment: models.establishment,
                 pcodedata: models.pcodedata
+          },
+          'lodash.clonedeep': {
+            clonedeep
           }
         })
       }
@@ -2676,7 +2707,8 @@ it('should not emit an error if postcode can be found in the reference data', as
               '../../index': {
                 establishment: models.establishment,
                     pcodedata: models.pcodedata
-              }
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -2709,7 +2741,7 @@ it('should not emit an error if postcode can be found in the reference data', as
       ALLJOBROLES: '34;8',
       STARTERS: '0;0',
       LEAVERS: '999;0',
-      VACANCIES: '999;333',
+      VACANCIES: '999;0',
       REASONS: '',
       REASONNOS: ''
         },
@@ -2869,7 +2901,8 @@ it('should not emit an error if postcode can be found in the reference data', as
               '../../index': {
                 establishment: models.establishment,
                     pcodedata: models.pcodedata
-              }
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -2902,7 +2935,7 @@ it('should not emit an error if postcode can be found in the reference data', as
       ALLJOBROLES: '34;8',
       STARTERS: '0;0',
       LEAVERS: '999;0',
-      VACANCIES: '999;333',
+      VACANCIES: '999;0',
       REASONS: '',
       REASONNOS: ''
         },
@@ -3053,7 +3086,8 @@ it('should not emit an error if postcode can be found in the reference data', as
               '../../index': {
                 establishment: models.establishment,
                     pcodedata: models.pcodedata
-              }
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -3086,7 +3120,7 @@ it('should not emit an error if postcode can be found in the reference data', as
       ALLJOBROLES: '34;8',
       STARTERS: '0;0',
       LEAVERS: '999;0',
-      VACANCIES: '999;333',
+      VACANCIES: '999;0',
       REASONS: '',
       REASONNOS: ''
         },
