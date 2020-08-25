@@ -277,5 +277,26 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(warnings).to.include('VACANCIES data you have entered does not fall within the expected range please ensure this is correct');
       });
     });
+
+    it('should not show a warning when starters, leavers or vacancies contains the 999 don\'t know magic string', async () => {
+      const establishmentRow = buildEstablishmentCSV({
+        overrides: {
+          STATUS: 'UPDATE',
+          STARTERS: '999;0;0',
+          LEAVERS: '0;999;0',
+          VACANCIES: '0;0;999'
+        },
+      });
+
+      const workerRow = buildWorkerCSV({
+        overrides: {
+          LOCALESTID: establishmentRow.LOCALESTID,
+        }
+      });
+
+      await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
+        expect(csvEstablishmentSchemaErrors).to.be.empty;
+      });
+    })
   });
 });
