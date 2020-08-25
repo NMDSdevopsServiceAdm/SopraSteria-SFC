@@ -1306,14 +1306,23 @@ class Establishment {
     };
   }
 
+  getTotal(allWorkers) {
+    let total = 0;
+    for (let totalInRole of allWorkers.split(';')) {
+      if (totalInRole !== '999') {
+        total += parseInt(totalInRole);
+      }
+    }
+    return total;
+  }
+
   _crossValidateTotalPermTemp (
     csvEstablishmentSchemaErrors,
     { employedWorkers = 0, nonEmployedWorkers = 0 }
   ) {
-    const sum = arr => arr.split(';').reduce((a, b) => parseInt(a) + parseInt(b));
-    const vacancies = sum(this._currentLine.VACANCIES);
-    const starters = sum(this._currentLine.STARTERS);
-    const leavers = sum(this._currentLine.LEAVERS);
+    const vacancies = this.getTotal(this._currentLine.VACANCIES);
+    const starters = this.getTotal(this._currentLine.STARTERS);
+    const leavers = this.getTotal(this._currentLine.LEAVERS);
 
     const template = {
       origin: 'Establishments',
