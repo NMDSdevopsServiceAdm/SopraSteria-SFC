@@ -24,7 +24,9 @@ jwt:
 db:
     pool:
         min: 100
-        max: 100
+        max: 250
+        acquire: 120000
+        idle: 100000
     ssl: true
     client_ssl:
         status: false
