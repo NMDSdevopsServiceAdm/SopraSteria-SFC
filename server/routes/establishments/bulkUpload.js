@@ -195,20 +195,25 @@ const lockStatusGet = async (req, res) => {
 };
 
 const releaseLock = async (req, res, next, nextState = null) => {
-  const establishmentId = req.query.subEstId || req.establishmentId;
+  try {
+    const establishmentId = req.query.subEstId || req.establishmentId;
 
-  if (Number.isInteger(establishmentId)) {
-    await releaseLockQuery(establishmentId, nextState);
+    if (Number.isInteger(establishmentId)) {
+      await releaseLockQuery(establishmentId, nextState);
 
-    console.log(`Lock released for establishment ${establishmentId}`);
-  }
+      console.log(`Lock released for establishment ${establishmentId}`);
+    }
 
-  if (res !== null) {
-    res
-      .status(200)
-      .send({
-        establishmentId
-      });
+    if (res !== null) {
+      res
+        .status(200)
+        .send({
+          establishmentId
+        });
+    }
+  } catch (error) {
+    console.error(error.name);
+    console.error(error.message);
   }
 };
 
