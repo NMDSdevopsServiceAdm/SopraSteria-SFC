@@ -23,10 +23,10 @@ jwt:
 
 db:
     pool:
-        min: 500
-        max: 500
-        acquire: 120000
-        idle: 100000
+        min: 100
+        max: 400
+        acquire: 240000
+        idle: 200000
     ssl: true
     client_ssl:
         status: false
