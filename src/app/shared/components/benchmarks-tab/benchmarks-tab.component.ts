@@ -1,8 +1,10 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
-import { Subscription } from 'rxjs';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
+import { Establishment } from '@core/model/establishment.model';
+import { BenchmarksService } from '@core/services/benchmarks.service';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-benchmarks-tab',
@@ -70,8 +72,9 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   };
   constructor(
     private benchmarksService: BenchmarksService,
+    private elRef: ElementRef
   ) {
-
+    this.elRef = elRef;
   }
 
   ngOnInit() {
@@ -86,13 +89,26 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   }
 
   public formatPercent(data) {
-    return Math.round(data * 100) + '%'
+    return Math.round(data * 100) + '%';
   }
   public formatPay(data) {
-    return  '£' + (Number(data)/100).toFixed(2);
+    return  '£' + (Number(data) / 100).toFixed(2);
   }
 
   ngOnDestroy() {
-    this.subscriptions.unsubscribe()
+    this.subscriptions.unsubscribe();
+  }
+
+  public downloadAsPDF($event: Event) {
+    $event.preventDefault();
+
+    html2canvas(this.elRef.nativeElement.innerHTML).then(canvas => {
+      console.log(canvas);
+      const contentDataURL = canvas.toDataURL('image/png');
+      const doc = new jsPDF('p', 'cm', 'a4');
+
+      doc.addImage(contentDataURL, 'PNG', 0, 0, 29.7, 21.0);
+      doc.save('download.pdf');
+    });
   }
 }
