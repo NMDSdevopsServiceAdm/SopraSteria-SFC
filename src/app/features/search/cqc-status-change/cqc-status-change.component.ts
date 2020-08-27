@@ -59,7 +59,8 @@ export class CqcStatusChangeComponent implements OnInit {
   }
 
   public navigateToWorkplace(id, username, nmdsId, e): void {
-    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId, e);
+    e.preventDefault();
+    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   }
 
   public onSubmit() {

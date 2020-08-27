@@ -3,11 +3,11 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.3.
 
 ## Development server
-1. The `dist/` folder `MUST` be present in order to run the front end application. The `dist` folder is generated via `ng build`
-2. Run `ng dev` for a dev server. Navigate to `http://localhost:3000/` to view the application
+1. Run `npm run server` for a dev server. This will compile the assets using `npm run build:watch` and also start the Express app using `npm run server`.
+2. Navigate to `http://localhost:8080/` to view the application
 
-#### Note: #### 
-FE code changes require a manual page refresh to reflect in the browser.
+#### Note: ####
+Any FE changes should re-compile the assets and refresh the browser automatically.
 
 ## Code scaffolding
 
@@ -29,19 +29,12 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
-# Backend Server
-Unfortunately, the backend server code is part of the client project & repo. Until refactoring:
-* `npm run build`
-* `node server` or `PORT=<p1> node server` or `nodemon server` or `PORT=<p1> nodemon server`
-
 Database connection parameters can be overridden using environment variables:
 * `DB_HOST` - hostname or IP address
 * `DB_PORT` - port number
 * `DB_NAME` - name of database
 * `DB_USER` - database username
 * `DB_PASS` - database password
-
-This launches the backend up on default port 3000 (or P1 of your designation). Open web browser and try: `http://localhost:<port>/api/postcodes/<your  postcode without spaces>`
 
 # Accessibility
 
