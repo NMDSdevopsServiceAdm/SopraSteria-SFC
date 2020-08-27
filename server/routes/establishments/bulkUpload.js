@@ -178,7 +178,7 @@ const acquireLock = async function (logic, newState, req, res) {
 
 const lockStatusGet = async (req, res) => {
   const { establishmentId } = req;
-  res.setTimeout(1000, function(){
+  res.setTimeout(1000, () => {
       res.status(200).send({
         establishmentId,
         bulkUploadState: buStates.UNKNOWN,
