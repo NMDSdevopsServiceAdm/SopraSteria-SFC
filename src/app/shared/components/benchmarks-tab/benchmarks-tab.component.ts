@@ -3,9 +3,11 @@ import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Subscription } from 'rxjs';
 
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-benchmarks-tab',
   templateUrl: './benchmarks-tab.component.html'
@@ -99,16 +101,19 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public downloadAsPDF($event: Event) {
+  public async downloadAsPDF($event: Event) {
     $event.preventDefault();
-
-    html2canvas(this.elRef.nativeElement.innerHTML).then(canvas => {
+    try {
+      console.log(this.elRef.nativeElement);
+      const canvas = await html2canvas(this.elRef.nativeElement, {
+        width: 990
+      });
+      const image = canvas.toDataURL();
+      console.log(image);
       console.log(canvas);
-      const contentDataURL = canvas.toDataURL('image/png');
-      const doc = new jsPDF('p', 'cm', 'a4');
-
-      doc.addImage(contentDataURL, 'PNG', 0, 0, 29.7, 21.0);
-      doc.save('download.pdf');
-    });
+      document.body.appendChild(canvas);
+    } catch(error) {
+      console.error(error);
+    }
   }
 }
