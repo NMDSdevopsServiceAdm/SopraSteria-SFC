@@ -34,7 +34,8 @@ const buStates = [
   'FAILED',
   'WARNINGS',
   'PASSED',
-  'COMPLETING'
+  'COMPLETING',
+  'UNKNOWN'
 ].reduce((acc, item) => {
   acc[item] = item;
 
@@ -177,6 +178,13 @@ const acquireLock = async function (logic, newState, req, res) {
 
 const lockStatusGet = async (req, res) => {
   const { establishmentId } = req;
+  res.setTimeout(1000, function(){
+      res.status(200).send({
+        establishmentId,
+        bulkUploadState: buStates.UNKNOWN,
+        bulkUploadLockHeld: true
+      });
+  });
 
   const currentLockState = await lockStatus(establishmentId);
 
