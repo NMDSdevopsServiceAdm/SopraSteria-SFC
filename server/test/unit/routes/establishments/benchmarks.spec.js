@@ -236,7 +236,7 @@ describe('benchmarks', () => {
       };
       expect(json).to.deep.equal(expectedJSON);
     });
-    it('should return the no-data when LeaversValue not With Jobs', async () => {
+    it('should return the no-data when LeaversValue Dont know', async () => {
       const establishmentId = 123;
       sinon.stub(models.establishment, 'turnOverData').returns(
         {id:"2",NumberOfStaffValue:3,LeaversValue:"Don't know"}
@@ -250,6 +250,27 @@ describe('benchmarks', () => {
           value: 0,
           hasValue: false,
           stateMessage: 'no-data'
+        },
+        comparisonGroup: {
+          value: 0,
+          hasValue: false
+        }
+      };
+      expect(json).to.deep.equal(expectedJSON);
+    });
+    it('should return 0 when LeaversValue None', async () => {
+      const establishmentId = 123;
+      sinon.stub(models.establishment, 'turnOverData').returns(
+        {id:"2",NumberOfStaffValue:3,LeaversValue:"None"}
+      );
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
+      sinon.stub(models.worker, 'countForEstablishment').returns(3);
+      sinon.stub(models.establishmentJobs, 'leaversForEstablishment').returns(1);
+      const json = await benchmarks.turnover(establishmentId);
+      const expectedJSON = {
+        workplaceValue: {
+          value: 0,
+          hasValue: true,
         },
         comparisonGroup: {
           value: 0,
