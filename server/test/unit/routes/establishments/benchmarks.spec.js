@@ -393,6 +393,52 @@ describe('benchmarks', () => {
 
       expect(json.tiles).to.deep.equal(expectedJson.tiles);
     });
+    it('should return the correct sickness comparison Data', async () => {
+      const benchmarkComparisonGroup = {
+        'CssrID': 0,
+        'MainServiceFK': 0,
+        'pay': 10,
+        'sickness': 0,
+        'turnover': '9.99',
+        'qualifications': '9.99',
+        'workplaces': 5,
+        'staff': 1000
+      };
+
+      const reply = {
+        tiles: {
+          sickness: {
+            workplaceValue: {
+              value: 10,
+              hasValue: true
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: false
+            }
+          }
+        },
+        meta: {}
+      };
+      const expectedJson = {
+        tiles: {
+          sickness: {
+            workplaceValue: {
+              value: 10,
+              hasValue: true
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: true
+            }
+          }
+        },
+        meta: {}
+      };
+      const json = await benchmarks.comparisonGroupData(reply, benchmarkComparisonGroup);
+
+      expect(json.tiles).to.deep.equal(expectedJson.tiles);
+    });
     it('should return the correct comparison Data when passed both pay and sickness', async () => {
       const benchmarkComparisonGroup = {
         'CssrID': 0,

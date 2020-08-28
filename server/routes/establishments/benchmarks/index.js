@@ -45,8 +45,8 @@ const comparisonGroupData = async (reply, benchmarkComparisonGroup) => {
       reply.tiles[key].comparisonGroup.stateMessage = 'no-data';
     } else {
       reply.tiles[key].comparisonGroup.value = benchmarkComparisonGroup[key] ? benchmarkComparisonGroup[key] : 0;
-      reply.tiles[key].comparisonGroup.hasValue = !!benchmarkComparisonGroup[key];
-      if (!benchmarkComparisonGroup[key]) {
+      reply.tiles[key].comparisonGroup.hasValue =  benchmarkComparisonGroup[key] !== null  ;
+      if (!reply.tiles[key].comparisonGroup.hasValue) {
         reply.tiles[key].comparisonGroup.stateMessage = 'no-data';
       }
     }
