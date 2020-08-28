@@ -1594,7 +1594,7 @@ class Establishment {
 
 
   _startersLeaverVacanciesWarnings(dbValues, buValues, savedAt, localValidationErrors, warning) {
-    if (savedAt.isSame(Date.now(), 'day')) {
+    if (!savedAt.isSame(Date.now(), 'day')) {
       let isSame = true;
       for (var i = 0; i < this.allJobs.length; i++) {
 
@@ -1636,7 +1636,7 @@ class Establishment {
       lineNumber: this._lineNumber,
       warnCode: Establishment.VACANCIES_WARNING,
       warnType: 'VACANCIES_WARNING',
-      warning: `VACANCIES in the last 12 months has not changed please check this is correct`,
+      warning: `VACANCIES value has not changed please check this is correct`,
       source: this.vacancies,
       name: this._currentLine.LOCALESTID
     };
