@@ -1,4 +1,4 @@
-import { Component, Directive, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Directive, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
 @Directive({
   selector: 'your-workplace'
@@ -20,6 +20,8 @@ export class BenchmarkTileComponent implements OnInit, OnDestroy {
   @Input() public showYourWorkplace: boolean;
   @Input() public showComparisonGroup: boolean;
 
+  @ViewChild('yourWorkplaceTitle') public yourWorkplaceTitle: ElementRef;
+  @ViewChild('comparisonGroupTitle') public comparisonGroupTitle: ElementRef;
   constructor(
   ) {
   }

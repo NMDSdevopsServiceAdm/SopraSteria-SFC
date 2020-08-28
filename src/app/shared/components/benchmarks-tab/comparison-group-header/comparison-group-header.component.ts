@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-comparison-group-header',
@@ -13,12 +13,14 @@ export class ComparisonGroupHeaderComponent implements OnInit {
 
   @Input() meta: Meta;
   @Input() workplaceID : string;
+  @ViewChild('text') public comparisonGroupText: ElementRef;
 
   constructor(
     protected router: Router,
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksService,
-  ) {}
+  ) {
+  }
 
   ngOnInit() {}
   public setReturn(){
