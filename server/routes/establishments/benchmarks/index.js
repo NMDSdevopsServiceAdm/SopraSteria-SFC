@@ -78,22 +78,26 @@ const pay = async (establishmentId) => {
   return json;
 };
 const turnoverGetData = async (establishmentId) => {
+
   const establishment = await models.establishment.turnOverData(establishmentId);
   const workerCount = await models.worker.countForEstablishment(establishmentId);
   if (!establishment || establishment.NumberOfStaffValue === 0 ||
     workerCount !== establishment.NumberOfStaffValue) {
     return { percentOfPermTemp: 0, stateMessage: 'no-workers' };
   }
+
   if (establishment.LeaversValue === 'Don\'t know' || !establishment.LeaversValue) {
     return { percentOfPermTemp: 0, stateMessage: 'no-data' };
   }
-  if (establishment.LeaversValue === 'None') {
-    return { percentOfPermTemp: 0,stateMessage: '' };
-  }
+
   const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
   const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
+
   if (permTemptCount === 0 ){
     return { percentOfPermTemp: 0 , stateMessage: 'no-permTemp' };
+  }
+  if (establishment.LeaversValue === 'None') {
+    return { percentOfPermTemp: 0,stateMessage: '' };
   }
   const percentOfPermTemp = (leavers / permTemptCount);
   if (percentOfPermTemp > 9.95) {
