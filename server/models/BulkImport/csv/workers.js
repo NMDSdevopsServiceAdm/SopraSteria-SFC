@@ -1275,7 +1275,8 @@ class Worker {
       return;
     }
 
-    if (moment(this._currentWorker._properties.get("DaysSick").changedAt).isBefore(Date.now(), 'day')
+    if (this._currentWorker
+      && moment(this._currentWorker._properties.get("DaysSick").changedAt).isBefore(Date.now(), 'day')
       && this._currentWorker.daysSick.days === parseInt(this._currentLine.DAYSSICK)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
