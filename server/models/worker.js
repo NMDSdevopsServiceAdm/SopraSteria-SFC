@@ -943,6 +943,32 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"RegisteredNurseChangedBy"'
     },
+    FluJabValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', "Don't know"],
+      field: '"FluJabValue"'
+    },
+    FluJabSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"FluJabSavedAt"'
+    },
+    FluJabChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"FluJabChangedAt"'
+    },
+    FluJabSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"FluJabSavedBy"'
+    },
+    FluJabChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"FluJabChangedBy"'
+    },
 
 ///////////////////////////////////////////////////
 
