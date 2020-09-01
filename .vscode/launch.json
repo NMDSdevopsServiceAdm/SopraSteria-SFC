@@ -12,6 +12,12 @@
         },
         {
             "type": "node",
+            "request": "attach",
+            "name": "localhost debug",
+            "port": 9229
+        },
+        {
+            "type": "node",
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/server.js"

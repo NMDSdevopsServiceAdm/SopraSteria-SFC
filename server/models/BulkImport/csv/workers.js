@@ -32,6 +32,7 @@ class Worker {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._allCurrentEstablishments = allCurrentEstablishments;
+    this._currentWorker = null;
 
     this._validationErrors = [];
     this._contractType = null;
@@ -503,8 +504,8 @@ class Worker {
 
         // having found the establishment, find the worker within the establishment
         if (foundEstablishment) {
-          const foundWorker = foundEstablishment.theWorker(workerKey);
-          return !!foundWorker;
+          this._currentWorker = foundEstablishment.theWorker(workerKey);
+          return !!this._currentWorker;
         } else {
           return false;
         }
@@ -1265,6 +1266,27 @@ class Worker {
       }
     } else {
       return true;
+    }
+  }
+
+  _validateDaysSickChanged () {
+    if (this._currentLine.STATUS !== "UPDATE" && this._currentLine.STATUS !== "NOCHANGE")
+    {
+      return;
+    }
+
+    if (this._currentWorker
+      && moment(this._currentWorker._properties.get("DaysSick").changedAt).isBefore(Date.now(), 'day')
+      && this._currentWorker.daysSick.days === parseInt(this._currentLine.DAYSSICK)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.DAYSICK_WARNING,
+        warnType: 'DAYSICK_WARNING',
+        warning: 'DAYSSICK in the last 12 months has not changed please check this is correct',
+        source: this._currentLine.DAYSSICK
+      });
     }
   }
 
@@ -2679,6 +2701,7 @@ class Worker {
     status = !this._validateChangeUniqueWorkerId() ? false : status;
     status = !this._validateDisplayId() ? false : status;
     status = !this._validateStatus() ? false : status;
+    status = !this._validateDaysSickChanged() ? false : status;
 
     // only continue to process validation, if the status is not UNCHECKED, DELETED OR UNCHANGED
     if (!STOP_VALIDATING_ON.includes(this._status)) {
