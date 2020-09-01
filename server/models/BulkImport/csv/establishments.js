@@ -6,8 +6,6 @@ const BUDI = require('../BUDI').BUDI;
 const models = require('../../index');
 const moment = require('moment');
 
-var util = require('util');
-
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
@@ -1597,19 +1595,13 @@ class Establishment {
     if (!savedAt.isSame(Date.now(), 'day')) {
       let isSame = true;
       for (var i = 0; i < this.allJobs.length; i++) {
-
         const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(this.allJobs[i]));
-        console.log( this.allJobs[i] )
-        console.log( mappedRole)
-
         const starterJob = dbValues.find(job => job.jobId === mappedRole);
 
         if (starterJob && starterJob.total !== buValues[i]) {
-          console.log(starterJob.total + '!==' + buValues[i]);
           isSame = false;
           break;
         } else if (!starterJob && buValues[i] > 0) {
-          console.log(buValues[i] + ' > 0 ');
           isSame = false;
           break;
         }
