@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
@@ -13,7 +13,6 @@ export class ComparisonGroupHeaderComponent implements OnInit {
 
   @Input() meta: Meta;
   @Input() workplaceID : string;
-  @ViewChild('text') public comparisonGroupText: ElementRef;
 
   constructor(
     protected router: Router,

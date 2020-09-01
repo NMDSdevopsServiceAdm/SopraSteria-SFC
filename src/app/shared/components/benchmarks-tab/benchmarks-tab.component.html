@@ -1,21 +1,20 @@
-<a href="#" (click)="downloadAsPDF($event)">Download PDF</a>
+<a href="#" data-html2canvas-ignore (click)="downloadAsPDF($event)">Download PDF</a>
 <app-comparison-group-header #comparisonGroupText [meta]=tilesData.meta [workplaceID]=this.workplace.uid></app-comparison-group-header>
 <div class="govuk-grid-row">
   <app-benchmark-tile
-  #payTile
   [title]="'Pay'"
   [description]="'Average hourly pay for a care worker.'"
   [showYourWorkplace]="tilesData.tiles.pay?.workplaceValue.hasValue"
   [showComparisonGroup]="tilesData.tiles.pay?.comparisonGroup.hasValue">
-    <your-workplace #payYourWorkplace>
+    <your-workplace>
       <ng-container *ngIf="tilesData.tiles.pay?.workplaceValue.hasValue else payYourEmpty">
-       {{ formatPay(tilesData.tiles.pay.workplaceValue.value)}}
+      {{ formatPay(tilesData.tiles.pay.workplaceValue.value)}}
       </ng-container>
       <ng-template #payYourEmpty>
         You've not added any data about hourly pay yet.
       </ng-template>
     </your-workplace>
-    <comparison-group #payComparisonGroup>
+    <comparison-group>
       <ng-container *ngIf="tilesData.tiles.pay?.comparisonGroup.hasValue else payCompEmpty">
         {{ formatPay(tilesData.tiles.pay.comparisonGroup.value)}}
       </ng-container>
@@ -25,7 +24,6 @@
     </comparison-group>
   </app-benchmark-tile>
   <app-benchmark-tile
-  #turnoverTile
   [title]="'Turnover'"
   [description]="'Staff (permanent and temps) left in the last 12 months.'"
   [showYourWorkplace]="tilesData.tiles.turnover?.workplaceValue.hasValue"
@@ -36,7 +34,7 @@
       </ng-container>
       <ng-container  [ngSwitch]="tilesData.tiles.turnover?.workplaceValue.stateMessage">
         <ng-container *ngSwitchCase="'no-workers'">
-           For this to show, there must be a staff record for every staff member.
+          For this to show, there must be a staff record for every staff member.
         </ng-container>
         <ng-container *ngSwitchCase="'no-data'">
             You’ve not added any data about leavers yet.
@@ -66,7 +64,7 @@
   [showComparisonGroup]="tilesData.tiles.sickness?.comparisonGroup.hasValue">
     <your-workplace>
       <ng-container *ngIf="tilesData.tiles.sickness?.workplaceValue.hasValue else sicknessYourEmpty">
-       {{tilesData.tiles.sickness.workplaceValue.value}}
+      {{tilesData.tiles.sickness.workplaceValue.value}}
       </ng-container>
       <ng-template #sicknessYourEmpty>
         You've not added any data about sickness yet.

@@ -7,13 +7,13 @@
     <div class="asc-tile-key">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full govuk-grid-column-one-half-from-desktop">
-          <h3 #yourWorkplaceTitle class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-bottom-2 govuk-!-margin-top-4">Your workplace</h3>
+          <h3 class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-bottom-2 govuk-!-margin-top-4">Your workplace</h3>
           <p data-testid="yourworkplace" class="govuk-!-margin-bottom-0 asc-tile-key-text" [ngClass]="{'asc-color-turquoise asc-tile-key-number': showYourWorkplace, 'govuk-body-s': !showYourWorkplace}">
             <ng-content select="your-workplace"></ng-content>
           </p>
         </div>
         <div class="govuk-grid-column-full govuk-grid-column-one-half-from-desktop">
-          <h3 #comparisonGroupTitle class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-bottom-2 govuk-!-margin-top-4">Comparison group</h3>
+          <h3 class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-bottom-2 govuk-!-margin-top-4">Comparison group</h3>
           <p data-testid="comparisongroup" class="govuk-!-margin-bottom-0 asc-tile-key-text" [ngClass]="{'asc-color-turquoise asc-tile-key-number': showComparisonGroup, 'govuk-body-s': !showComparisonGroup}">
             <ng-content select="comparison-group"></ng-content>
           </p>
