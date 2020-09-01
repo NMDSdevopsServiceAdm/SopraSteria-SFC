@@ -6,6 +6,7 @@ const establishmentCsv = require('../../../../../models/BulkImport/csv/establish
 const testUtils = require('../../../../../utils/testUtils');
 const sinon = require('sinon');
 const csv = require('csvtojson');
+const clonedeep = require('lodash.clonedeep');
 const filename = 'server/models/BulkImport/csv/establishments.js';
 const moment = require('moment');
 
@@ -247,6 +248,10 @@ const getUnitInstance = () => {
             models
           },
           'moment' :moment
+          },
+          'lodash.clonedeep': {
+            clonedeep
+          }
         })
       }
     }
@@ -498,6 +503,8 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 pcodedata: models.pcodedata
               },
               'moment' :moment
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -672,6 +679,9 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               },
               'moment' :moment
 
+                pcodedata: models.pcodedata
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -835,6 +845,8 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               },
               'moment' :moment
 
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -997,6 +1009,9 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 pcodedata: models.pcodedata,
               },
               'moment' :moment
+                pcodedata: models.pcodedata
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -1170,6 +1185,8 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               },
               'moment' :moment
 
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -1341,6 +1358,10 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 pcodedata: models.pcodedata
                 },
                 'moment' :moment
+                },
+                'lodash.clonedeep': {
+                  clonedeep
+                }
               })
             }
           }
@@ -1505,6 +1526,8 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 pcodedata: models.pcodedata
               },
               'moment' :moment
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -1686,6 +1709,10 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 pcodedata: models.pcodedata
             },
             'moment' :moment
+            },
+            'lodash.clonedeep': {
+              clonedeep
+            }
           })
         }
       }
@@ -1850,6 +1877,10 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 pcodedata: models.pcodedata
             },
             'moment' :moment
+            },
+            'lodash.clonedeep': {
+              clonedeep
+            }
           })
         }
       }
@@ -2013,6 +2044,10 @@ it('should emit an error if postcode cannot be found in the reference data', asy
                 pcodedata: models.pcodedata
           },
           'moment' :moment
+          },
+          'lodash.clonedeep': {
+            clonedeep
+          }
         })
       }
     }
@@ -2186,6 +2221,10 @@ it('should not emit an error if postcode can be found in the reference data', as
                 pcodedata: models.pcodedata
           },
           'moment' :moment
+          },
+          'lodash.clonedeep': {
+            clonedeep
+          }
         })
       }
     }
@@ -2349,6 +2388,10 @@ it('should emit an warning if postcode cannot be found in the reference data', a
                 pcodedata: models.pcodedata
           },
           'moment' :moment
+          },
+          'lodash.clonedeep': {
+            clonedeep
+          }
         })
       }
     }
@@ -2531,6 +2574,10 @@ it('should not emit an error if postcode can be found in the reference data', as
                 pcodedata: models.pcodedata
           },
           'moment' :moment
+          },
+          'lodash.clonedeep': {
+            clonedeep
+          }
         })
       }
     }
@@ -2706,6 +2753,8 @@ it('should not emit an error if postcode can be found in the reference data', as
                     pcodedata: models.pcodedata
               },
               'moment' :moment
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -2738,7 +2787,7 @@ it('should not emit an error if postcode can be found in the reference data', as
       ALLJOBROLES: '34;8',
       STARTERS: '0;0',
       LEAVERS: '999;0',
-      VACANCIES: '999;333',
+      VACANCIES: '999;0',
       REASONS: '',
       REASONNOS: ''
         },
@@ -2900,6 +2949,8 @@ it('should not emit an error if postcode can be found in the reference data', as
                     pcodedata: models.pcodedata
               },
               'moment' :moment
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -2932,7 +2983,7 @@ it('should not emit an error if postcode can be found in the reference data', as
       ALLJOBROLES: '34;8',
       STARTERS: '0;0',
       LEAVERS: '999;0',
-      VACANCIES: '999;333',
+      VACANCIES: '999;0',
       REASONS: '',
       REASONNOS: ''
         },
@@ -3085,6 +3136,8 @@ it('should not emit an error if postcode can be found in the reference data', as
                     pcodedata: models.pcodedata
               },
               'moment' :moment
+              },
+              'lodash.clonedeep': clonedeep
             })
           }
         }
@@ -3117,7 +3170,7 @@ it('should not emit an error if postcode can be found in the reference data', as
       ALLJOBROLES: '34;8',
       STARTERS: '0;0',
       LEAVERS: '999;0',
-      VACANCIES: '999;333',
+      VACANCIES: '999;0',
       REASONS: '',
       REASONNOS: ''
         },
