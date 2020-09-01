@@ -482,7 +482,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             overrides: {
               _properties: {
                 get() {
-                  return { changedAt: moment().add(-1, 'days') };
+                  return { savedAt: moment().add(-1, 'days') };
                 }
               }
             }
