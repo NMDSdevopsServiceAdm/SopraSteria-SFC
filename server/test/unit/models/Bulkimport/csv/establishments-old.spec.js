@@ -247,11 +247,10 @@ const getUnitInstance = () => {
           '../../index': {
             models
           },
-          'moment' :moment
-          },
+          'moment' :moment,
           'lodash.clonedeep': {
             clonedeep
-          }
+          },
         })
       }
     }
@@ -502,9 +501,8 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata
               },
-              'moment' :moment
-              },
-              'lodash.clonedeep': clonedeep
+              'moment' :moment,
+              'lodash.clonedeep': { clonedeep }
             })
           }
         }
@@ -677,10 +675,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata,
               },
-              'moment' :moment
-
-                pcodedata: models.pcodedata
-              },
+              'moment' :moment,
               'lodash.clonedeep': clonedeep
             })
           }
@@ -843,9 +838,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata
               },
-              'moment' :moment
-
-              },
+              'moment' :moment,
               'lodash.clonedeep': clonedeep
             })
           }
@@ -1008,9 +1001,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata,
               },
-              'moment' :moment
-                pcodedata: models.pcodedata
-              },
+              'moment' :moment,
               'lodash.clonedeep': clonedeep
             })
           }
@@ -1183,9 +1174,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata
               },
-              'moment' :moment
-
-              },
+              'moment' :moment,
               'lodash.clonedeep': clonedeep
             })
           }
@@ -1357,8 +1346,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                   establishment: models.establishment,
                 pcodedata: models.pcodedata
                 },
-                'moment' :moment
-                },
+                'moment' :moment,
                 'lodash.clonedeep': {
                   clonedeep
                 }
@@ -1525,8 +1513,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
                 establishment: models.establishment,
                 pcodedata: models.pcodedata
               },
-              'moment' :moment
-              },
+              'moment' :moment,
               'lodash.clonedeep': clonedeep
             })
           }
@@ -1708,8 +1695,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               establishment: models.establishment,
                 pcodedata: models.pcodedata
             },
-            'moment' :moment
-            },
+            'moment' :moment,
             'lodash.clonedeep': {
               clonedeep
             }
@@ -1876,8 +1862,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               establishment: models.establishment,
                 pcodedata: models.pcodedata
             },
-            'moment' :moment
-            },
+            'moment' :moment,
             'lodash.clonedeep': {
               clonedeep
             }
@@ -2043,8 +2028,7 @@ it('should emit an error if postcode cannot be found in the reference data', asy
             establishment: models.establishment,
                 pcodedata: models.pcodedata
           },
-          'moment' :moment
-          },
+          'moment' :moment,
           'lodash.clonedeep': {
             clonedeep
           }
@@ -2220,8 +2204,7 @@ it('should not emit an error if postcode can be found in the reference data', as
             establishment: models.establishment,
                 pcodedata: models.pcodedata
           },
-          'moment' :moment
-          },
+          'moment' :moment,
           'lodash.clonedeep': {
             clonedeep
           }
@@ -2387,8 +2370,7 @@ it('should emit an warning if postcode cannot be found in the reference data', a
             establishment: models.establishment,
                 pcodedata: models.pcodedata
           },
-          'moment' :moment
-          },
+          'moment' :moment,
           'lodash.clonedeep': {
             clonedeep
           }
@@ -2573,8 +2555,7 @@ it('should not emit an error if postcode can be found in the reference data', as
             establishment: models.establishment,
                 pcodedata: models.pcodedata
           },
-          'moment' :moment
-          },
+          'moment' :moment,
           'lodash.clonedeep': {
             clonedeep
           }
@@ -2752,8 +2733,7 @@ it('should not emit an error if postcode can be found in the reference data', as
                 establishment: models.establishment,
                     pcodedata: models.pcodedata
               },
-              'moment' :moment
-              },
+              'moment' :moment,
               'lodash.clonedeep': clonedeep
             })
           }
@@ -2948,8 +2928,7 @@ it('should not emit an error if postcode can be found in the reference data', as
                 establishment: models.establishment,
                     pcodedata: models.pcodedata
               },
-              'moment' :moment
-              },
+              'moment' :moment,
               'lodash.clonedeep': clonedeep
             })
           }
@@ -3135,8 +3114,7 @@ it('should not emit an error if postcode can be found in the reference data', as
                 establishment: models.establishment,
                     pcodedata: models.pcodedata
               },
-              'moment' :moment
-              },
+              'moment' :moment,
               'lodash.clonedeep': clonedeep
             })
           }
