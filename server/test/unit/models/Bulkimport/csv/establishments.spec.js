@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
 const buildEstablishmentCSV = require('../../../../factories/establishment/csv');
 const buildWorkerCSV = require('../../../../factories/worker/csv');
-const establishmentCsv = require('../../../../../models/BulkImport/csv/establishments');
+const establishmentCsv = require('../../../../../models/BulkImport/csv/establishments').Establishment;
 const workerCsv = require('../../../../../models/BulkImport/csv/workers');
 const models = require('../../../../../models');
 const sandbox = require('sinon').createSandbox();
@@ -15,7 +15,9 @@ const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishm
 };
 
 const generateEstablishmentFromCsv = async (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
-  const establishment = new establishmentCsv.Establishment(currentLine, lineNumber, allCurrentEstablishments);
+
+  const establishment = new establishmentCsv(currentLine, lineNumber, allCurrentEstablishments);
+
   await establishment.validate();
 
   return establishment;
@@ -46,10 +48,13 @@ const crossValidate = async (establishmentRow, workerRow, callback) => {
 describe('Bulk Upload - Establishment CSV', () => {
   beforeEach(() => {
     sandbox.stub(BUDI, 'initialize');
+    sandbox.stub(establishmentCsv.prototype,"_validateNoChange").callsFake((args) => { return true;});
+
     sandbox.stub(models.pcodedata, 'findAll').returns([
       {}
     ]);
     sandbox.stub(models.establishment, 'findAll').returns([]);
+
   });
 
   afterEach(() => {
