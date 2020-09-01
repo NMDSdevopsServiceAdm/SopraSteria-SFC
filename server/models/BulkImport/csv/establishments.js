@@ -5,6 +5,7 @@ const hasProp = (obj, prop) =>
 const BUDI = require('../BUDI').BUDI;
 const models = require('../../index');
 const clonedeep = require('lodash.clonedeep');
+const moment = require('moment');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
@@ -1609,6 +1610,84 @@ class Establishment {
     return true;
   }
 
+  _validateNoChange () {
+    let localValidationErrors= []
+    var thisEstablishment = this._allCurrentEstablishments.find(establishment => establishment.localIdentifier === this._currentLine.LOCALESTID.replace(/\s/g, ''));
+    const startersSavedAt = moment(thisEstablishment._properties.get("Starters").savedAt);
+
+    const starterWarning = this._getStartersNoChangeWarning();
+    localValidationErrors = this._startersLeaverVacanciesWarnings(thisEstablishment.starters, this.starters,startersSavedAt, localValidationErrors, starterWarning);
+
+    const leaversSavedAt = moment(thisEstablishment._properties.get("Leavers").savedAt);
+    const leaverWarning  = this._getLeaversNoChangeWarning();
+    localValidationErrors = this._startersLeaverVacanciesWarnings(thisEstablishment.leavers,this.leavers,leaversSavedAt,localValidationErrors,leaverWarning);
+
+    const vacanciesSavedAt = moment(thisEstablishment._properties.get("Vacancies").savedAt);
+    const vacanciesWarning = this._getVacanciesNoChangeWarning();
+    localValidationErrors = this._startersLeaverVacanciesWarnings(thisEstablishment.vacancies,this.vacancies,vacanciesSavedAt,localValidationErrors,vacanciesWarning);
+
+    if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
+        return false;
+      }
+      return true;
+  }
+
+
+  _startersLeaverVacanciesWarnings(dbValues, buValues, savedAt, localValidationErrors, warning) {
+    if (!savedAt.isSame(Date.now(), 'day')) {
+      let isSame = true;
+      for (var i = 0; i < this.allJobs.length; i++) {
+        const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(this.allJobs[i]));
+        const starterJob = dbValues.find(job => job.jobId === mappedRole);
+
+        if (starterJob && starterJob.total !== buValues[i]) {
+          isSame = false;
+          break;
+        } else if (!starterJob && buValues[i] > 0) {
+          isSame = false;
+          break;
+        }
+      }
+      if (isSame) {
+        localValidationErrors.push(warning);
+      }
+    }
+    return localValidationErrors;
+  }
+
+  _getStartersNoChangeWarning() {
+    return {
+      lineNumber: this._lineNumber,
+      warnCode: Establishment.STARTERS_WARNING,
+      warnType: 'STARTERS_WARNING',
+      warning: `STARTERS in the last 12 months has not changed please check this is correct`,
+      source: this.starters,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+  _getVacanciesNoChangeWarning() {
+    return {
+      lineNumber: this._lineNumber,
+      warnCode: Establishment.VACANCIES_WARNING,
+      warnType: 'VACANCIES_WARNING',
+      warning: `VACANCIES value has not changed please check this is correct`,
+      source: this.vacancies,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+  _getLeaversNoChangeWarning() {
+    return {
+      lineNumber: this._lineNumber,
+      warnCode: Establishment.LEAVERS_WARNING,
+      warnType: 'LEAVERS_WARNING',
+      warning: `LEAVERS in the last 12 months has not changed please check this is correct`,
+      source: this.leavers,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+
+
   _validateReasonsForLeaving () {
     // only if the sum of "LEAVERS" is greater than 0
     const sumOfLeavers = this._leavers && Array.isArray(this._leavers) && this._leavers[0] !== 999 ? this._leavers.reduce((total, thisCount) => total + thisCount) : 0;
@@ -2123,6 +2202,8 @@ class Establishment {
       this._validateJobRoleTotals();
 
       this._validateReasonsForLeaving();
+
+      this._validateNoChange();
     }
 
     return this.validationErrors.length === 0;
