@@ -109,7 +109,8 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       const html = this.elRef.nativeElement;
       const widthHtml = html.offsetWidth * scale;
       const margin = (a4width - widthHtml) / 2;
-
+      console.log(document.getElementsByTagName('header'));
+      await doc.html(document.getElementsByTagName('header').item(0));
       await doc.html(html, {
         x: margin,
         y: 20,
