@@ -1,3 +1,5 @@
+const isCI = require('is-ci');
+
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 module.exports = function (config) {
@@ -26,7 +28,8 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: false,
+    autoWatch: !isCI,
+    singleRun: isCI,
     browsers: ['HeadlessChrome'],
     customLaunchers: {
       HeadlessChrome: {
@@ -36,7 +39,6 @@ module.exports = function (config) {
     },
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 3,
-    singleRun: true,
   	browserNoActivityTimeout: 100000
   });
 };

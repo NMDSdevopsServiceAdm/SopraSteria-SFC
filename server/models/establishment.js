@@ -687,6 +687,12 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Establishment.associate = (models) => {
+    Establishment.belongsTo(models.establishment, {
+      as: 'Parent',
+      foreignKey: 'ParentID',
+      targetKey: 'id'
+    });
+
     Establishment.hasMany(models.user, {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
@@ -867,6 +873,59 @@ module.exports = function(sequelize, DataTypes) {
 
   };
 
+  Establishment.searchEstablishments = async function(where) {
+    return await this.findAll({
+      attributes: [
+        'id',
+        'uid',
+        'NameValue',
+        'nmdsId',
+        'isRegulated',
+        'isParent',
+        'address1',
+        'address2',
+        'town',
+        'county',
+        'postcode',
+        'locationId',
+        'dataOwner',
+        'updated',
+        'EmployerTypeValue',
+        'EmployerTypeOther'
+      ],
+      where: {
+        ustatus: {
+          [sequelize.Op.is]: null,
+        },
+        ...where
+      },
+      order: [['NameValue', 'ASC']],
+      include: [
+        {
+          model: sequelize.models.establishment,
+          attributes: ['id', 'uid', 'nmdsId'],
+          as: 'Parent',
+          required: false,
+        },
+        {
+          model: sequelize.models.user,
+          attributes: ['id', 'uid', 'FullNameValue', 'SecurityQuestionValue', 'SecurityQuestionAnswerValue'],
+          as: 'users',
+          required: false,
+          where: {
+            UserRoleValue: 'Edit',
+            archived: false
+          },
+          include: [
+            {
+              model: sequelize.models.login,
+              attributes: ['username', 'status'],
+            },
+          ],
+        },
+      ],
+    });
+  };
 
   return Establishment;
 };

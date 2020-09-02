@@ -157,6 +157,11 @@ const config = convict({
         doc: 'How long to wait for a connection to become available in the pool',
         format: 'int',
         default: 60000
+      },
+      idle: {
+        doc: 'The maximum time, in milliseconds, that a connection can be idle before being released.',
+        format: 'int',
+        default: 1000
       }
     }
   },

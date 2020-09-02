@@ -54,8 +54,8 @@ export class UserService {
     if (this._agreedUpdatedTermsStatus) {
       return this._agreedUpdatedTermsStatus;
     }
-    //In case of reload page, BehaviorSubject value is getting preserved
-    //so to taking it from localstorage.
+    // In case of reload page, BehaviorSubject value is getting preserved
+    // so to taking it from localstorage.
     const terms = localStorage.getItem('agreedUpdatedTermsStatus');
     if (terms) {
       this._agreedUpdatedTermsStatus = JSON.parse(terms);
@@ -68,14 +68,14 @@ export class UserService {
 
     return this._agreedUpdatedTermsStatus;
   }
-  //set agreedUpdatedTermsStatus after login and and accept terms & conditions
+  // set agreedUpdatedTermsStatus after login and and accept terms & conditions
   public set agreedUpdatedTerms(value: boolean) {
     this._agreedUpdatedTermsStatus = value;
-    //In case of reload page, BehaviorSubject value is getting preserved
+    // In case of reload page, BehaviorSubject value is getting preserved
     // so we need to save in localstorage for further use.
     localStorage.setItem('agreedUpdatedTermsStatus', value.toString());
   }
-  //reset agreedUpdatedTermsStatus to default from logout call
+  // reset agreedUpdatedTermsStatus to default from logout call
   public resetAgreedUpdatedTermsStatus() {
     this._agreedUpdatedTermsStatus = null;
   }

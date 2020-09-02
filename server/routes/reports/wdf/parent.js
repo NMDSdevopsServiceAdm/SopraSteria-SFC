@@ -45,9 +45,6 @@ const buStates = [
   return acc;
 }, Object.create(null));
 
-// XML DOM manipulation helper functions
-const { DOMParser, XMLSerializer } = new (require('jsdom').JSDOM)().window;
-
 const parseXML = fileContent =>
   cheerio.load(fileContent, {
     xml: {
