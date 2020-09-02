@@ -29,6 +29,7 @@ const LinkToParent = require('./linkToParent')
 const DataPermissions = require('./dataPermissions');
 const LocationDetails = require('./locationdetails');
 const MandatoryTraining = require('./mandatoryTraining');
+const FluJab = require('./fluJab');
 
 const Approve = require('./approve');
 const Reject = require('./reject');
@@ -85,6 +86,7 @@ router.use('/:id/linkToParent', LinkToParent);
 router.use('/:id/dataPermissions', DataPermissions);
 router.use('/:id/locationDetails', LocationDetails);
 router.use('/:id/mandatoryTraining', MandatoryTraining);
+router.use('/:id/fluJab', FluJab);
 
 router.route('/:id').post(async (req, res) => {
   if (!req.body.isRegulated) {
