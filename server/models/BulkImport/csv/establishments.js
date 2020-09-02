@@ -1611,8 +1611,8 @@ class Establishment {
   }
 
   _validateNoChange () {
-    let localValidationErrors= []
-    var thisEstablishment = this._allCurrentEstablishments.find(establishment => establishment.localIdentifier === this._currentLine.LOCALESTID.replace(/\s/g, ''));
+    let localValidationErrors= [];
+    var thisEstablishment = this._allCurrentEstablishments.find(establishment => establishment.localIdentifier.replace(/\s/g, '') === this._currentLine.LOCALESTID.replace(/\s/g, ''));
     const startersSavedAt = moment(thisEstablishment._properties.get("Starters").savedAt);
 
     const starterWarning = this._getStartersNoChangeWarning();
