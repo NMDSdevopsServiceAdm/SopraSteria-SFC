@@ -1639,14 +1639,22 @@ class Establishment {
       let isSame = true;
       for (var i = 0; i < this.allJobs.length; i++) {
         const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(this.allJobs[i]));
-        const starterJob = dbValues.find(job => job.jobId === mappedRole);
+        if (dbValues) {
+          const starterJob = dbValues.find(job => job.jobId === mappedRole);
 
-        if (starterJob && starterJob.total !== buValues[i]) {
-          isSame = false;
-          break;
-        } else if (!starterJob && buValues[i] > 0) {
-          isSame = false;
-          break;
+          if (starterJob && starterJob.total !== buValues[i]) {
+            isSame = false;
+            break;
+          } else if (!starterJob && buValues[i] > 0) {
+            isSame = false;
+            break;
+          }
+        } else {
+          if (buValues[i] > 0) {
+            isSame = false;
+          } else {
+            isSame = true;
+          }
         }
       }
       if (isSame) {
