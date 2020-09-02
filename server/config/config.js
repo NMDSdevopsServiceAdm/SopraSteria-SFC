@@ -259,6 +259,9 @@ const config = convict({
           default: 0
       }
   },
+  getAddress: {
+    apikey: 'S0NSVY-SJ0y7-1Hjb2pQyw27971'
+  },
   aws: {
     region: {
       doc: 'AWS region',
