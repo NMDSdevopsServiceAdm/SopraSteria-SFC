@@ -1639,7 +1639,7 @@ class Establishment {
       let isSame = true;
       for (var i = 0; i < this.allJobs.length; i++) {
         const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(this.allJobs[i]));
-        if (dbValues) {
+        if (dbValues && Array.isArray(dbValues) && dbValues.length > 0) {
           const starterJob = dbValues.find(job => job.jobId === mappedRole);
 
           if (starterJob && starterJob.total !== buValues[i]) {
@@ -1652,8 +1652,6 @@ class Establishment {
         } else {
           if (buValues[i] > 0) {
             isSame = false;
-          } else {
-            isSame = true;
           }
         }
       }
