@@ -3,7 +3,6 @@ import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { jsPDF } from 'jspdf';
-import { cloneDeep } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -19,51 +18,51 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     tiles: {
       pay: {
         workplaceValue:
-          {
-            value: 0,
-            hasValue: false
-          },
+        {
+          value: 0,
+          hasValue: false
+        },
         comparisonGroup:
-          {
-            value: 0,
-            hasValue: false
-          }
+        {
+          value: 0,
+          hasValue: false
+        }
       },
       sickness: {
         workplaceValue:
-          {
-            value: 0,
-            hasValue: false
-          },
+        {
+          value: 0,
+          hasValue: false
+        },
         comparisonGroup:
-          {
-            value: 0,
-            hasValue: false
-          }
+        {
+          value: 0,
+          hasValue: false
+        }
       },
       qualifications: {
         workplaceValue:
-          {
-            value: 0,
-            hasValue: false
-          },
+        {
+          value: 0,
+          hasValue: false
+        },
         comparisonGroup:
-          {
-            value: 0,
-            hasValue: false
-          }
+        {
+          value: 0,
+          hasValue: false
+        }
       },
       turnover: {
         workplaceValue:
-          {
-            value: 0,
-            hasValue: false
-          },
+        {
+          value: 0,
+          hasValue: false
+        },
         comparisonGroup:
-          {
-            value: 0,
-            hasValue: false
-          }
+        {
+          value: 0,
+          hasValue: false
+        }
       }
     },
     meta: {
@@ -75,13 +74,13 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   constructor(
     private benchmarksService: BenchmarksService,
     private elRef: ElementRef
-    ) {
+  ) {
     this.elref = elRef;
   }
 
   ngOnInit() {
     this.subscriptions.add(
-      this.benchmarksService.getTileData(this.workplace.uid,['sickness','turnover','pay','qualifications']).subscribe(
+      this.benchmarksService.getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications']).subscribe(
         (data) => {
           if (data) {
             this.tilesData = data;
@@ -94,7 +93,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     return Math.round(data * 100) + '%';
   }
   public formatPay(data) {
-    return  '£' + (Number(data) / 100).toFixed(2);
+    return '£' + (Number(data) / 100).toFixed(2);
   }
 
   ngOnDestroy() {
@@ -107,14 +106,22 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       const doc = new jsPDF('p', 'pt', 'a4');
       const a4width = 595.28;
       const scale = 0.5;
-      const html = cloneDeep(this.elRef.nativeElement);
+      const html = this.elRef.nativeElement;
       const widthHtml = html.offsetWidth * scale;
       const x = (a4width - widthHtml) / 2;
       const html2canvas = {
-        scale
+        scale,
+        width: 1200,
+        windowWidth: 1200,
+        // tslint:disable-next-line: variable-name
+        onclone: (HTMLDoc: HTMLDocument) => {
+          console.log(HTMLDoc);
+          HTMLDoc.getElementById('benchmarks-tiles').prepend(document.getElementsByTagName('header').item(0));
+          console.log(HTMLDoc.getElementById('benchmarks-tiles'));
+          HTMLDoc.getElementById('benchmarks').style.backgroundColor = 'red';
+          console.log(HTMLDoc.getElementById('benchmarks-tiles'));
+        }
       };
-
-      html.prepend(document.getElementsByTagName('header').item(0));
 
       // await doc.html(document.getElementsByTagName('header').item(0), {
       //   x,
@@ -123,22 +130,20 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       // });
       await doc.html(html, {
         x,
-        y: 100,
-        html2canvas,
-        jsPDF: doc
+        y: 20,
+        html2canvas
       });
 
-      const page2 = doc.addPage('a4', 'p');
-      console.log(page2);
-      await page2.html(html, {
-        x,
-        y: 20,
-        html2canvas,
-        jsPDF: page2
-      })
+      // const page2 = doc.addPage('a4', 'p');
+      // // await page2.html(html, {
+      // //   x,
+      // //   y: 20,
+      // //   html2canvas,
+      // //   jsPDF: page2
+      // // })
 
       doc.save('benchmarks.pdf');
-    } catch(error) {
+    } catch (error) {
       console.error(error);
     }
   }
