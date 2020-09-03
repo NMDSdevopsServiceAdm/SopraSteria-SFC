@@ -42,7 +42,6 @@ commands:
             cf set-env "<<parameters.appname>>-dark" CIRCLE_PROJECT_REPONAME "${CIRCLE_PROJECT_REPONAME}"
             cf set-env "<<parameters.appname>>-dark" AWS_ACCESS_KEY_ID "${<<parameters.env_prefix>>_AWS_ACCESS_KEY_ID}"
             cf set-env "<<parameters.appname>>-dark" AWS_SECRET_ACCESS_KEY "${<<parameters.env_prefix>>_AWS_SECRET_ACCESS_KEY}"
-            cf set-env "<<parameters.appname>>-dark" GET_ADDRESS "${GET_ADDRESS_IO}"
             cf set-env "<<parameters.appname>>-dark" NODE_ENV "${<<parameters.env_prefix>>_NODE_ENV}"
 
             if [ -n "${<<parameters.env_prefix>>_DB_HOST}" ]; then
@@ -91,7 +90,6 @@ commands:
             cf api "<<parameters.endpoint>>"
             cf auth "$CF_USERNAME" "$CF_PASSWORD"
             cf target -o "<<parameters.org>>" -s "<<parameters.space>>"
-            cf set-env "<<parameters.appname>>-dark" GET_ADDRESS "${GET_ADDRESS_IO}"
           name: Setup CF CLI
   live_deploy:
     parameters:
