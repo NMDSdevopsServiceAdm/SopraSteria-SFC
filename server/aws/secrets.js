@@ -20,6 +20,7 @@ const initialiseSecrets = async (region, wallet) => {
 
       myLocalSecrets = {
         SLACK_URL: mySecrets.SLACK_URL,
+        GET_ADDRESS: mySecrets.GET_ADDRESS,
         DB_HOST: mySecrets.DB_HOST,
         DB_PASS: mySecrets.DB_PASS,
         Token_Secret: mySecrets.Token_Secret,
@@ -90,6 +91,18 @@ const slackUrl = () => {
     throw new Error('Unknown secrets');
   }
 }
+const getAddressKey = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.GET_ADDRESS) {
+      throw new Error('Unknown getAddress secret');
+    } else {
+      return myLocalSecrets.GET_ADDRESS;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+}
+
 
 const  govNotify = () => {
   if (myLocalSecrets !== null) {
@@ -199,3 +212,4 @@ module.exports.adminUrl = adminUrl;
 module.exports.datadogApiKey = datadogApiKey;
 module.exports.sentryDsn = sentryDsn;
 module.exports.honeycombWriteKey = honeycombWriteKey;
+module.exports.getAddressKey = getAddressKey;
