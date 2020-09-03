@@ -13,6 +13,7 @@ enum Status {
 export class InsetTextComponent {
   @Input() color: Status;
   @Input() closable = false;
+  @Input() additionalClass = false;
   @Output() closed = new EventEmitter();
 
   constructor() {}
