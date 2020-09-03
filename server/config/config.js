@@ -260,7 +260,11 @@ const config = convict({
       }
   },
   getAddress: {
-    apikey: 'S0NSVY-SJ0y7-1Hjb2pQyw27971'
+    apikey: {
+      doc: 'API key for getAddress.io',
+      format: 'String',
+      default: '',
+    }
   },
   aws: {
     region: {
