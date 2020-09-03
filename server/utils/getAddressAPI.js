@@ -1,4 +1,4 @@
-var config = require('../../server/config/config');
+const config = require('../../server/config/config');
 const axios = require('axios');
 
   const getAddressAPI = {
