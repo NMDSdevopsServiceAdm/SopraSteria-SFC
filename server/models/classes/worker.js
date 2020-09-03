@@ -512,6 +512,19 @@ class Worker extends EntityValidator {
     }
   }
 
+  static async saveMany(savedBy, workers) {
+    try {
+      await models.sequelize.transaction(async t => {
+        for (let worker of workers) {
+          await worker.save(savedBy, false, 0, t);
+        }
+      })
+    } catch (err) {
+      console.error('Worker::saveMany error: ', err);
+      throw err;
+    }
+  }
+
   // saves the Worker to DB. Returns true if saved; false is not.
   // Throws "WorkerSaveException" on error
   async save (savedBy, bulkUploaded = false, ttl = 0, externalTransaction = null, associatedEntities = false) {

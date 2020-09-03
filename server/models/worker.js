@@ -1090,7 +1090,7 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
-  Worker.fluJabsByEstablishmentId = async function(establishmentId) {
+  Worker.retrieveEstablishmentFluJabs = async function(establishmentId) {
     return await this.findAll({
       attributes: [
         'id',

@@ -7,7 +7,7 @@ const fluJabRoute = require('../../../../../routes/establishments/fluJab');
 const setup = (establishmentId) => {
   const req = httpMocks.createRequest({
     method: 'GET',
-    url: `/api/admin/flu-jab/workplace`,
+    url: `/api/establishment/98a83eef-e1e1-49f3-89c5-b1287a3cc8dd/fluJab`,
     establishmentId,
   });
   const res = httpMocks.createResponse();
@@ -18,14 +18,14 @@ describe('server/routes/admin/flu-jab', () => {
   describe('workplace', () => {
     it('should find all flu jabs for workplace', async () => {
       const workplaceId = 1;
-      let fluJabsByEstablishmentId = sinon.spy(models.worker, "fluJabsByEstablishmentId");
+      let retrieveEstablishmentFluJabs = sinon.spy(models.worker, "retrieveEstablishmentFluJabs");
 
       const { req, res } = setup(workplaceId);
 
       await fluJabRoute.workplaceFluJabs(req, res);
 
-      expect(fluJabsByEstablishmentId.called).to.deep.equal(true);
-      expect(fluJabsByEstablishmentId.args[0][0]).to.deep.equal(workplaceId);
+      expect(retrieveEstablishmentFluJabs.called).to.deep.equal(true);
+      expect(retrieveEstablishmentFluJabs.args[0][0]).to.deep.equal(workplaceId);
     })
 
     it('should map data from database to model for frontend', async () => {

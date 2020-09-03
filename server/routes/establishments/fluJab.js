@@ -5,7 +5,7 @@ const FluJabTransformer = require('../../transformers/fluJabTransformer').FluJab
 
 const workplaceFluJabs = async function (req, res) {
   try {
-    const workers = await models.worker.fluJabsByEstablishmentId(req.establishmentId);
+    const workers = await models.worker.retrieveEstablishmentFluJabs(req.establishmentId);
     const results = await FluJabTransformer(workers);
 
     return res.status(200).json(results);
