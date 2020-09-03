@@ -1,6 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
+import { BenchmarksService } from '@core/services/benchmarks.service';
 import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
@@ -9,13 +10,20 @@ import { Subscription } from 'rxjs';
   selector: 'app-header',
   templateUrl: './header.component.html',
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('header') public header: ElementRef;
+
   private subscriptions: Subscription = new Subscription();
   public fullname: string;
   public user: UserDetails;
   public showDropdown = false;
 
-  constructor(private authService: AuthService, private idleService: IdleService, private userService: UserService) {}
+  constructor(
+    private authService: AuthService,
+    private idleService: IdleService,
+    private userService: UserService,
+    private benchmarksService: BenchmarksService
+  ) { }
 
   ngOnInit() {
     this.subscriptions.add(
@@ -28,6 +36,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  ngAfterViewInit() {
+    this.benchmarksService.header = this.header;
   }
 
   public isLoggedIn(): boolean {

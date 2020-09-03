@@ -1,14 +1,14 @@
-<div class="govuk-grid-row">
+<div class="govuk-grid-row" #workplaceTitle>
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
-      <span *ngIf="workplace?.isParent" class="govuk-caption-xl govuk-!-margin-bottom-3">Parent</span>
-      <span *ngIf="workplace?.parentUid" class="govuk-caption-xl govuk-!-margin-bottom-3">{{
+      <span data-html2canvas-ignore *ngIf="workplace?.isParent" class="govuk-caption-xl govuk-!-margin-bottom-3">Parent</span>
+      <span data-html2canvas-ignore *ngIf="workplace?.parentUid" class="govuk-caption-xl govuk-!-margin-bottom-3">{{
         workplace?.parentName
       }}</span>
       {{ workplace?.name }}
     </h1>
 
-    <div *ngIf="workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING'">
+    <div data-html2canvas-ignore *ngIf="workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING'">
       <button class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
         (click)="onDeleteWorkplace($event)">
         <img src="/assets/images/bin.svg" alt="" />
@@ -20,13 +20,13 @@
     <p class="govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-0">
       Workplace ID: {{ workplace?.nmdsId }}
     </p>
-    <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16 govuk-!-margin-top-2">
+    <p data-html2canvas-ignore *ngIf="lastLoggedIn" class="govuk-!-font-size-16 govuk-!-margin-top-2">
       Last signed in on {{ lastLoggedIn | date: 'd MMMM y' }}
     </p>
 
   </div>
 
-  <div class="govuk-grid-column-one-third contact-col" [class.contact-col--parent]="workplace?.isParent">
+  <div data-html2canvas-ignore class="govuk-grid-column-one-third contact-col" [class.contact-col--parent]="workplace?.isParent">
     <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
       Contact Skills for Care
     </h2>

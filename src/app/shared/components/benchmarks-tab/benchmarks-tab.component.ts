@@ -1,18 +1,22 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { jsPDF } from 'jspdf';
 import { Subscription } from 'rxjs';
 
+import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
+
 @Component({
   selector: 'app-benchmarks-tab',
-  templateUrl: './benchmarks-tab.component.html'
+  templateUrl: './benchmarks-tab.component.html',
+  styleUrls: ['./benchmarks-tab.component.scss'],
 })
 export class BenchmarksTabComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
 
   @Input() workplace: Establishment;
+  @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
 
   public tilesData: BenchmarksResponse = {
     tiles: {
@@ -73,7 +77,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   private elref: ElementRef<any>;
   constructor(
     private benchmarksService: BenchmarksService,
-    private elRef: ElementRef
+    private elRef: ElementRef,
   ) {
     this.elref = elRef;
   }
@@ -100,48 +104,66 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
+  private createSpacer(width: number, space: number) {
+    const spacer = document.createElement('div');
+    spacer.style.width = `${width}px`;
+    spacer.style.height = `${space}px`;
+    return spacer;
+  }
+
+  private getHeight(element) {
+      element.style.visibility = 'hidden';
+      document.body.appendChild(element);
+      const height = element.offsetHeight + 0;
+      document.body.removeChild(element);
+      element.style.visibility = 'visible';
+      return height;
+  }
+
   public async downloadAsPDF($event: Event) {
     $event.preventDefault();
     try {
       const doc = new jsPDF('p', 'pt', 'a4');
-      const a4width = 595.28;
+      const a4heightpx = doc.internal.pageSize.getHeight() * 1.3333333333;
       const scale = 0.5;
-      const html = this.elRef.nativeElement;
-      const widthHtml = html.offsetWidth * scale;
-      const x = (a4width - widthHtml) / 2;
+      const width = 1000;
+      const spacing = 50;
+      const widthHtml = width * scale;
+      const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
+      const y = 20;
+      const ypx = y * 1.3333333333;
       const html2canvas = {
         scale,
-        width: 1200,
-        windowWidth: 1200,
-        // tslint:disable-next-line: variable-name
-        onclone: (HTMLDoc: HTMLDocument) => {
-          console.log(HTMLDoc);
-          HTMLDoc.getElementById('benchmarks-tiles').prepend(document.getElementsByTagName('header').item(0));
-          console.log(HTMLDoc.getElementById('benchmarks-tiles'));
-          HTMLDoc.getElementById('benchmarks').style.backgroundColor = 'red';
-          console.log(HTMLDoc.getElementById('benchmarks-tiles'));
-        }
+        width,
+        windowWidth: width
       };
+      const html = document.createElement('div');
 
-      // await doc.html(document.getElementsByTagName('header').item(0), {
-      //   x,
-      //   y: 20,
-      //   html2canvas
-      // });
+      html.style.width = `${width}px`;
+      html.style.display = 'block';
+      html.append(this.benchmarksService.header.nativeElement.cloneNode(true));
+      html.append(this.createSpacer(width, spacing));
+      html.append(this.benchmarksService.workplaceTitle.nativeElement.cloneNode(true));
+      html.append(this.createSpacer(width, spacing));
+      const tiles = document.createElement('div');
+      tiles.append(this.elRef.nativeElement.cloneNode(true));
+      const h2 = document.createElement('h2');
+      h2.textContent = 'Benchmarks';
+      tiles.getElementsByClassName('comparison-group-text').item(0).prepend(h2);
+      html.append(tiles);
+      console.log(this.getHeight(html));
+      console.log(a4heightpx, (this.getHeight(html) * scale), ypx);
+      const page1end = a4heightpx - ((this.getHeight(html) * scale) + ypx);
+      console.log(page1end);
+      const page2begin = page1end + ypx;
+      html.append(this.createSpacer(width, page2begin));
+      html.append(this.benchmarksService.header.nativeElement.cloneNode(true));
+      html.append(this.benchmarksService.aboutData.nativeElement.cloneNode(true));
       await doc.html(html, {
         x,
-        y: 20,
+        y,
         html2canvas
       });
-
-      // const page2 = doc.addPage('a4', 'p');
-      // // await page2.html(html, {
-      // //   x,
-      // //   y: 20,
-      // //   html2canvas,
-      // //   jsPDF: page2
-      // // })
-
       doc.save('benchmarks.pdf');
     } catch (error) {
       console.error(error);

@@ -1,24 +1,29 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
+import { AuthService } from '@core/services/auth.service';
+import { BenchmarksService } from '@core/services/benchmarks.service';
+import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { interval, Subscription } from 'rxjs';
-import { DialogService } from '@core/services/dialog.service';
-import { Router } from '@angular/router';
-import { AlertService } from '@core/services/alert.service';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { take } from 'rxjs/operators';
-import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('workplaceTitle') public workplaceTitle: ElementRef;
+
   private subscriptions: Subscription = new Subscription();
   public canDeleteEstablishment: boolean;
   public canViewEstablishment: boolean;
@@ -42,6 +47,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private dialogService: DialogService,
     private router: Router,
+    private benchmarksService: BenchmarksService
   ) { }
 
   ngOnInit() {
@@ -114,6 +120,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       )
     );
+  }
+
+  ngAfterViewInit() {
+    this.benchmarksService.workplaceTitle = this.workplaceTitle;
   }
 
   public onDeleteWorkplace(event: Event): void {
