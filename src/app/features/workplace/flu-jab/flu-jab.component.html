@@ -1,6 +1,38 @@
-<div class="govuk-panel govuk-panel--interruption">
-  <h1 class="govuk-panel__title">Who's had a flu vaccination since 1 September 2020</h1>
-  <div class="govuk-panel__body">
-
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div *ngIf="fluJabs && fluJabs.length">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              Who's had a flu vaccination since 1 September 2020?
+            </h1>
+          </legend>
+          <ng-container *ngFor="let item of fluJabRadioList.controls; let i = index;">
+            <div class="govuk-radios govuk-radios--inline">
+              {{ fluJabs[i].name }}
+              <div *ngFor="let answer of fluJabAnswers; let j = index" class="govuk-radios__item">
+                <input
+                    id="fluJab-{{ i }}-{{ j }}"
+                    name="fluJab-{{ i }}"
+                    class="govuk-radios__input"
+                    type="radio"
+                    (change)="radioChange(i, j)"
+                    [checked]="item.value == answer"
+                    [value]="answer"
+                  />
+                <label class="govuk-label govuk-radios__label" for="fluJab-{{ i }}-{{ j }}">
+                  {{ answer }}
+                </label>
+              </div>
+            </div>
+          </ng-container>
+        </fieldset>
+      </div>
+    </div>
   </div>
-</div>
+
+  <button type="submit" class="govuk-button">
+    Saves
+  </button>
+</form>
