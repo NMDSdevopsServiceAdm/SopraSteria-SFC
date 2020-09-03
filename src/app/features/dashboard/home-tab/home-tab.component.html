@@ -14,6 +14,10 @@
           Add staff records
         </a>
       </app-inset-text>
+      <app-inset-text [color]="'todo'">
+        <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'basic-records-start-screen']"
+        > Who's had a flu vaccination since 1 September 2020?</a>
+      </app-inset-text>
     </ng-container>
     <div *ngIf="workplace">
       <div *ngIf="canAddWorker">
