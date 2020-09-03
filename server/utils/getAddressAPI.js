@@ -14,4 +14,3 @@ const axios = require('axios');
     }
   };
 module.exports.getAddressAPI = getAddressAPI;
-module.exports.getAddressAPI.getPostcodeData = getAddressAPI.getPostcodeData;
