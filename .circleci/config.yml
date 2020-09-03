@@ -91,6 +91,7 @@ commands:
             cf api "<<parameters.endpoint>>"
             cf auth "$CF_USERNAME" "$CF_PASSWORD"
             cf target -o "<<parameters.org>>" -s "<<parameters.space>>"
+            cf set-env "<<parameters.appname>>-dark" GET_ADDRESS "${GET_ADDRESS_IO}"
           name: Setup CF CLI
   live_deploy:
     parameters:
