@@ -1,4 +1,4 @@
-<form (ngSubmit)="onSubmit()" [formGroup]="form">
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div *ngIf="fluJabs && fluJabs.length">
       <div class="govuk-form-group">
@@ -7,6 +7,21 @@
             <h1 class="govuk-fieldset__heading">
               Who's had a flu vaccination since 1 September 2020?
             </h1>
+            <p>
+              You can return and update your information at any time.
+            </p>
+            <p>
+              The link to return to this page is on the <a href="#">home table</a>.
+            </p>
+            <p><a href="#">Why do we want to know?</a></p>
+            <p>
+              DHSC want to know how many workers will be protected from flu this winter.
+              This information could tell us that 60% of care workers in a certain area are
+              vaccinated. This will help identify any extra local demands on the NHS and
+              the care sector. It could also highlight a need for better promotion of the
+              vaccine within the care sector. Your data will not be shared with any other
+              organisation.
+            </p>
           </legend>
           <ng-container *ngFor="let item of fluJabRadioList.controls; let i = index;">
             <div class="govuk-radios govuk-radios--inline">
@@ -33,6 +48,11 @@
   </div>
 
   <button type="submit" class="govuk-button">
-    Saves
+    Save
   </button>
+
+  <a
+    [routerLink]="['/dashboard']"
+    fragment="workplace"
+    class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2">Cancel</a>
 </form>

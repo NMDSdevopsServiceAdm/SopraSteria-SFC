@@ -31,7 +31,6 @@ router.route('/').put(async (req, res) => {
       const workerId = worker.uid;
 
       if (await thisWorker.restore(workerId)) {
-
         // by loading after the restore, only those properties defined in the
         //  PUT body will be updated (peristed)
         const isValidWorker = await thisWorker.load(worker);
@@ -51,10 +50,8 @@ router.route('/').put(async (req, res) => {
 
     await Workers.Worker.saveMany(req.username, workersToSave);
 
-    const exceptionalOverrideHeader = req.headers['x-override-put-return-all'];
-    const showModifiedOnly = exceptionalOverrideHeader ? false : true;
     res.status(200)
-    return res.json(thisWorker.toJSON(false, false, false, showModifiedOnly));
+    return res.send();
 
   } catch (err) {
     if (err instanceof Workers.WorkerExceptions.WorkerSaveException && err.message == 'Duplicate LocalIdentifier') {
