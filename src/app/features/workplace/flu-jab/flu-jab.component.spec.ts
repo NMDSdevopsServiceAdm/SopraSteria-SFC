@@ -28,12 +28,20 @@ const getFluJabComponent = async () => {
 const setup = async (fluJab = null) => {
   const httpTestingController = TestBed.inject(HttpTestingController);
   const req = httpTestingController.expectOne('/api/establishment/98a83eef-e1e1-49f3-89c5-b1287a3cc8dd/fluJab');
-  req.flush([{
-    "id": 11164,
-    "uid": "d96d2681-4653-4709-8dda-88b695c177ea",
-    "name": "Joe Bloggs",
-    "fluJab": fluJab
-  }]);
+  req.flush([
+    {
+      "id": 1,
+      "uid": "d96d2681-4653-4709-8dda-88b695c177ea",
+      "name": "Joe Bloggs",
+      "fluJab": fluJab
+    },
+    {
+      "id": 2,
+      "uid": "e96d2681-4653-4709-8dda-88b695c177ea",
+      "name": "Jane Bloggs",
+      "fluJab": 'No'
+    }
+  ]);
 }
 
 describe('FluJabComponent', () => {
@@ -114,5 +122,55 @@ describe('FluJabComponent', () => {
     expect(yes.checked).toBeFalsy();
     expect(no.checked).toBeFalsy();
     expect(dontKnow.checked).toBeTruthy();
+  })
+
+  it('should only put updated worker flu jabs', async () => {
+    const { fixture, click, getByRole } = await getFluJabComponent();
+
+    await setup();
+
+    fixture.detectChanges();
+
+    const yes = fixture.nativeElement.querySelector('input[id="fluJab-0-0"]');
+    const submit = getByRole('button');
+
+    click(yes);
+    click(submit);
+
+    const httpTestingController = TestBed.inject(HttpTestingController);
+    const req = httpTestingController.expectOne('/api/establishment/98a83eef-e1e1-49f3-89c5-b1287a3cc8dd/workers');
+
+    expect(req.request.body).toEqual([{
+      "id": 1,
+      "uid": "d96d2681-4653-4709-8dda-88b695c177ea",
+      "fluJab": "Yes"
+    }])
+  })
+
+  it('should not only put reverted worker flu jabs', async () => {
+    const { fixture, click, getByRole } = await getFluJabComponent();
+
+    await setup();
+
+    fixture.detectChanges();
+
+    const yes = fixture.nativeElement.querySelector('input[id="fluJab-0-0"]');
+    const yes2 = fixture.nativeElement.querySelector('input[id="fluJab-1-0"]');
+    const no2 = fixture.nativeElement.querySelector('input[id="fluJab-1-1"]');
+    const submit = getByRole('button');
+
+    click(yes);
+    click(yes2);
+    click(no2);
+    click(submit);
+
+    const httpTestingController = TestBed.inject(HttpTestingController);
+    const req = httpTestingController.expectOne('/api/establishment/98a83eef-e1e1-49f3-89c5-b1287a3cc8dd/workers');
+
+    expect(req.request.body).toEqual([{
+      "id": 1,
+      "uid": "d96d2681-4653-4709-8dda-88b695c177ea",
+      "fluJab": "Yes"
+    }])
   })
 });
