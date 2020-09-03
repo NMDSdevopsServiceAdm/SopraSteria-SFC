@@ -1,5 +1,4 @@
 /* jshint indent: 2 */
-
 module.exports = function(sequelize, DataTypes) {
   const Establishment = sequelize.define('establishment', {
     id: {
@@ -835,7 +834,7 @@ module.exports = function(sequelize, DataTypes) {
     if (!postcode){
       return {};
     }
-    const cssr = await sequelize.models.pcodedata.findOne({
+    let cssr = await sequelize.models.pcodedata.findOne({
       attributes: ['uprn',"postcode"],
       include:[{
         model: sequelize.models.cssr,
@@ -846,8 +845,13 @@ module.exports = function(sequelize, DataTypes) {
           postcode: postcode.postcode
         }
     });
-    if (!cssr){
-      return {};
+    if (cssr){
+      cssr = cssr.theAuthority.id;
+    }else{
+      cssr = await sequelize.models.cssr.getIdFromDistrict(postcode.postcode);
+      if (!cssr){
+        return {};
+      }
     }
     return await this.findOne({
       attributes:['id'],
@@ -858,15 +862,13 @@ module.exports = function(sequelize, DataTypes) {
         include:[{
           model: sequelize.models.benchmarks,
           where:{
-            CssrID: cssr.theAuthority.id
+            CssrID: cssr
           },
           as:"benchmarksData"
         }]
       }]
     });
-
   };
-
 
   return Establishment;
 };

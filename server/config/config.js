@@ -259,6 +259,13 @@ const config = convict({
           default: 0
       }
   },
+  getAddress: {
+    apikey: {
+      doc: 'API key for getAddress.io',
+      format: 'String',
+      default: '',
+    }
+  },
   aws: {
     region: {
       doc: 'AWS region',
@@ -525,6 +532,7 @@ if (config.get('aws.secrets.use')) {
     config.set('slack.url', AWSSecrets.slackUrl());
     config.set('notify.key', AWSSecrets.govNotify());
     config.set('admin.url', AWSSecrets.adminUrl());
+    config.set('getAddress.apikey', AWSSecrets.getAddressKey());
   //  config.set('datadog.api_key', AWSSecrets.datadogApiKey()); // Data dog is still work in progress, checking if we really need this
     config.set('sentry.dsn', AWSSecrets.sentryDsn());
     config.set('honeycomb.write_key', AWSSecrets.honeycombWriteKey());
