@@ -146,12 +146,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       html.append(this.createSpacer(width, spacing));
       html.append(this.benchmarksService.workplaceTitle.nativeElement.cloneNode(true));
       html.append(this.createSpacer(width, spacing));
-      const tiles = document.createElement('div');
-      tiles.append(this.elRef.nativeElement.cloneNode(true));
-      const h2 = document.createElement('h2');
-      h2.textContent = 'Benchmarks';
-      tiles.getElementsByClassName('comparison-group-text').item(0).prepend(h2);
-      html.append(tiles);
+      html.append(this.elRef.nativeElement.cloneNode(true));
       const page1end = a4heightpx - (((this.getHeight(html) * scale) + ypx) / ptToPx);
       const page2begin = page1end + ypx;
       html.append(this.createSpacer(width, page2begin));

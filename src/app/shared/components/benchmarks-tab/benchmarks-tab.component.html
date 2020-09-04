@@ -1,5 +1,23 @@
 <div id="benchmarks-tiles">
-  <a href="#" data-html2canvas-ignore (click)="downloadAsPDF($event)">Download PDF</a>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h2 class="govuk-heading-m">Benchmarks</h2>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <a
+      class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+      role="button"
+      draggable="false"
+      href="/benchmarks.pdf"
+      data-html2canvas-ignore
+      (click)="downloadAsPDF($event)"
+    >
+      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+        Download Benchmarks PDF (73KB, 2 pages)
+      </span>
+    </a>
+    </div>
+  </div>
   <app-comparison-group-header #comparisonGroupText [meta]=tilesData.meta [workplaceID]=this.workplace.uid></app-comparison-group-header>
   <div class="govuk-grid-row">
     <app-benchmark-tile
