@@ -18,8 +18,6 @@ const beeline = require('honeycomb-beeline')({
 
 var express = require('express');
 
-const logger = require('./server/utils/logger')
-
 var path = require('path');
 var favicon = require('serve-favicon');
 var morgan = require('morgan');
@@ -165,7 +163,7 @@ app.set('views', path.join(__dirname, '/server/views'));
 app.set('view engine', 'pug');
 
 app.use(favicon(path.join(__dirname, 'dist/favicon.ico')));
-app.use(morgan('short', { stream: {write: (text) => { logger.info(text.replace(/\n$/, '')); } } }));
+app.use(morgan('short', { stream: {write: (text) => { console.log(text); } } }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -263,7 +261,6 @@ const startApp = () => {
       beeline._apiForTesting().honey.writeKey = config.get('honeycomb.write_key');
     }
 
-    logger.start();
     const listenPort = parseInt(config.get('listen.port'), 10);
     app.set('port', listenPort);
     app.listen(app.get('port'));

@@ -1611,8 +1611,8 @@ class Establishment {
   }
 
   _validateNoChange () {
-    let localValidationErrors= []
-    var thisEstablishment = this._allCurrentEstablishments.find(establishment => establishment.localIdentifier === this._currentLine.LOCALESTID.replace(/\s/g, ''));
+    let localValidationErrors= [];
+    var thisEstablishment = this._allCurrentEstablishments.find(establishment => establishment.localIdentifier.replace(/\s/g, '') === this._currentLine.LOCALESTID.replace(/\s/g, ''));
     const startersSavedAt = moment(thisEstablishment._properties.get("Starters").savedAt);
 
     const starterWarning = this._getStartersNoChangeWarning();
@@ -1639,14 +1639,20 @@ class Establishment {
       let isSame = true;
       for (var i = 0; i < this.allJobs.length; i++) {
         const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(this.allJobs[i]));
-        const starterJob = dbValues.find(job => job.jobId === mappedRole);
+        if (dbValues && Array.isArray(dbValues) && dbValues.length > 0) {
+          const starterJob = dbValues.find(job => job.jobId === mappedRole);
 
-        if (starterJob && starterJob.total !== buValues[i]) {
-          isSame = false;
-          break;
-        } else if (!starterJob && buValues[i] > 0) {
-          isSame = false;
-          break;
+          if (starterJob && starterJob.total !== buValues[i]) {
+            isSame = false;
+            break;
+          } else if (!starterJob && buValues[i] > 0) {
+            isSame = false;
+            break;
+          }
+        } else {
+          if (buValues[i] > 0) {
+            isSame = false;
+          }
         }
       }
       if (isSame) {
