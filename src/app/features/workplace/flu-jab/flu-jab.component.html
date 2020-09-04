@@ -9,7 +9,7 @@
             </h1>
             <div class="govuk-inset-text govuk-!-margin-top-4">
               You can return and update your information at any time.<br>
-              The link to return to this page is on the <a href="#">home table</a>.
+              The link to return to this page is on the <a href="#">home tab</a>.
             </div>
             <details class="govuk-details">
               <summary class="govuk-details__summary"><span class="govuk-details__summary-text">Why do we want to know?</span></summary>
@@ -60,8 +60,8 @@
       </button>
 
       <a
-        [routerLink]="['/dashboard']"
-        fragment="workplace"
+        [routerLink]="return.url"
+        [fragment]="return.fragment"
         class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2">Cancel</a>
     </div>
   </div>

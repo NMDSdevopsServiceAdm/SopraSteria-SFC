@@ -5,13 +5,14 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Router } from '@angular/router';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { Establishment } from '@core/model/establishment.model';
 
 @Component({
   selector: 'app-flu-jab',
   templateUrl: './flu-jab.component.html'
 })
 export class FluJabComponent implements OnInit {
-
+  private workplace: Establishment;
   private updatedFluJabs: any = [];
   public fluJabAnswers = [FluJabEnum.YES, FluJabEnum.NO, FluJabEnum.DONT_KNOW];
   public fluJabs: FluJabResponse[];
@@ -33,9 +34,9 @@ export class FluJabComponent implements OnInit {
 
   ngOnInit(): void {
     this.return = this.establishmentService.returnTo;
+    this.workplace = this.establishmentService.establishment;
 
-    const establishmentId = this.establishmentService.establishmentId;
-    this.fluJabService.getFluJabsByWorkplace(establishmentId).subscribe(
+    this.fluJabService.getFluJabsByWorkplace(this.workplace.uid).subscribe(
       response => this.onInitSuccess(response),
       error => this.onInitError(error)
     );
@@ -69,15 +70,18 @@ export class FluJabComponent implements OnInit {
   }
 
   onSubmit() {
-    const establishmentId = this.establishmentService.establishmentId;
-    this.establishmentService.updateWorkers(establishmentId, this.updatedFluJabs).subscribe(
+    this.establishmentService.updateWorkers(this.workplace.uid, this.updatedFluJabs).subscribe(
       response => this.onSubmitSuccess(response),
       error => this.onSubmitError(error)
     );
   }
 
   onSubmitSuccess(data) {
-    this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+    if (this.establishmentService.establishmentId !== this.workplace.uid){
+      this.router.navigate(['/workplace', this.workplace.uid], { fragment: 'staff-records' });
+    } else {
+      this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+    }
   }
 
   onSubmitError(error) {

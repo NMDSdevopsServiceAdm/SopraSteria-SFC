@@ -29,7 +29,7 @@ const getFluJabComponent = async () => {
 
 const setup = async (fluJab = null) => {
   const httpTestingController = TestBed.inject(HttpTestingController);
-  const req = httpTestingController.expectOne('/api/establishment/98a83eef-e1e1-49f3-89c5-b1287a3cc8dd/fluJab');
+  const req = httpTestingController.expectOne('/api/establishment/mocked-uid/fluJab');
   req.flush([
     {
       "id": 1,
@@ -140,7 +140,7 @@ describe('FluJabComponent', () => {
     click(submit);
 
     const httpTestingController = TestBed.inject(HttpTestingController);
-    const req = httpTestingController.expectOne('/api/establishment/98a83eef-e1e1-49f3-89c5-b1287a3cc8dd/workers');
+    const req = httpTestingController.expectOne('/api/establishment/mocked-uid/workers');
 
     expect(req.request.body).toEqual([{
       "id": 1,
@@ -167,7 +167,7 @@ describe('FluJabComponent', () => {
     click(submit);
 
     const httpTestingController = TestBed.inject(HttpTestingController);
-    const req = httpTestingController.expectOne('/api/establishment/98a83eef-e1e1-49f3-89c5-b1287a3cc8dd/workers');
+    const req = httpTestingController.expectOne('/api/establishment/mocked-uid/workers');
 
     expect(req.request.body).toEqual([{
       "id": 1,
