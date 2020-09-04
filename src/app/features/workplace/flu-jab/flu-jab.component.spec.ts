@@ -7,6 +7,7 @@ import { render } from '@testing-library/angular';
 import { FluJabComponent } from './flu-jab.component';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { RouterTestingModule } from '@angular/router/testing';
 
 const getFluJabComponent = async () => {
   return render(FluJabComponent, {
@@ -14,7 +15,8 @@ const getFluJabComponent = async () => {
       FormsModule,
       ReactiveFormsModule,
       HttpClientTestingModule,
-      SharedModule
+      SharedModule,
+      RouterTestingModule
     ],
     providers: [
       {
