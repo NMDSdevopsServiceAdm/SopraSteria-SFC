@@ -77,7 +77,7 @@ export class FluJabComponent implements OnInit {
   }
 
   onSubmitSuccess(data) {
-    this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+    this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
   }
 
   onSubmitError(error) {
