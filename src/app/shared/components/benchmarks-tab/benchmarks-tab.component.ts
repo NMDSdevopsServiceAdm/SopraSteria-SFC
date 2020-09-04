@@ -124,14 +124,15 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     $event.preventDefault();
     try {
       const doc = new jsPDF('p', 'pt', 'a4');
-      const a4heightpx = doc.internal.pageSize.getHeight() * 1.3333333333;
+      const ptToPx = 1.3333333333;
+      const a4heightpx = doc.internal.pageSize.getHeight() * ptToPx;
       const scale = 0.5;
       const width = 1000;
       const spacing = 50;
       const widthHtml = width * scale;
       const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
       const y = 20;
-      const ypx = y * 1.3333333333;
+      const ypx = y * ptToPx;
       const html2canvas = {
         scale,
         width,
@@ -151,14 +152,21 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       h2.textContent = 'Benchmarks';
       tiles.getElementsByClassName('comparison-group-text').item(0).prepend(h2);
       html.append(tiles);
-      console.log(this.getHeight(html));
-      console.log(a4heightpx, (this.getHeight(html) * scale), ypx);
-      const page1end = a4heightpx - ((this.getHeight(html) * scale) + ypx);
-      console.log(page1end);
+      const page1end = a4heightpx - (((this.getHeight(html) * scale) + ypx) / ptToPx);
       const page2begin = page1end + ypx;
       html.append(this.createSpacer(width, page2begin));
       html.append(this.benchmarksService.header.nativeElement.cloneNode(true));
-      html.append(this.benchmarksService.aboutData.nativeElement.cloneNode(true));
+      const aboutDataHtml = this.benchmarksService.aboutData.nativeElement.cloneNode(true);
+      const allUl = aboutDataHtml.getElementsByTagName('ul');
+      for (let ul of allUl) {
+        ul.style.listStyle = 'none';
+        ul.style.paddingLeft = '0';
+      }
+      const allLi = aboutDataHtml.getElementsByTagName('li');
+      for (let li of allLi) {
+        li.textContent = '- ' + li.textContent
+      }
+      html.append(aboutDataHtml);
       await doc.html(html, {
         x,
         y,
