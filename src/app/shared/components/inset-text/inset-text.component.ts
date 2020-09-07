@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-enum Status {
+export enum Status {
   TODO = 'todo',
   SUCCESS = 'success',
   WARNING = 'warning',
@@ -13,7 +13,6 @@ enum Status {
 export class InsetTextComponent {
   @Input() color: Status;
   @Input() closable = false;
-  @Input() additionalClass = false;
   @Output() closed = new EventEmitter();
 
   constructor() {}

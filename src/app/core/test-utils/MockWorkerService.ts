@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 
 const { build, fake, sequence, perBuild, oneOf } = require('@jackfranklin/test-data-bot');
 
-const workerBuilder = build('Worker', {
+export const  workerBuilder = build('Worker', {
   fields: {
     id: sequence(),
     uid: fake((f) => f.random.uuid()),

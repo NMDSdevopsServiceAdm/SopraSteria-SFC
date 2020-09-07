@@ -73,6 +73,19 @@ describe('HomeTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should show flu jab when can add worker', async () => {
+    const { component } = await setup();
+    component.fixture.componentInstance.canEditEstablishment = true;
+    component.fixture.detectChanges()
+
+    expect(component.getByTestId("flu-jab"))
+  });
+  it('should not show flu jab when cant add worker', async () => {
+    const { component } = await setup();
+    component.fixture.componentInstance.canEditEstablishment = false;
+    component.fixture.detectChanges()
+    expect(component.getByTestId("flu-jab")).toBeNull()
+  });
   it('has Add Workplace Information', async () => {
     // Arrange
     const { component } = await setup();

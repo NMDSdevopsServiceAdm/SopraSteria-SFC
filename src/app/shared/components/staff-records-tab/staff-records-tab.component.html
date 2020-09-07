@@ -28,8 +28,8 @@
 <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
   <div  *ngIf="canAddWorker" class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <app-inset-text [color]="'todo'">
-        <a [routerLink]="['/workplace',workplace.uid,'flu-jab']" > Who's had a flu vaccination since 1 September 2020?</a>
+      <app-inset-text [color]="'todo'" >
+        <a data-testid="flu-jab" [routerLink]="['/workplace',workplace.uid,'flu-jab']" > Who's had a flu vaccination since 1 September 2020?</a>
       </app-inset-text>
     </div>
   </div>
@@ -44,14 +44,6 @@
 </ng-container>
 
 <ng-template #noStaffRecords>
-  <div  *ngIf="canAddWorker" class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <app-inset-text [color]="'todo'" [additionalClass]="'govuk-!-margin-bottom-0'">
-        <a [routerLink]="['/workplace',workplace.uid,'flu-jab']">
-          Who's had a flu vaccination since 1 September 2020?</a>
-      </app-inset-text>
-    </div>
-  </div>
   <app-inset-text color="warning">Start to add your staff records.</app-inset-text>
 
   <p>To add a staff record, you need to know that person’s:</p>

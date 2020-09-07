@@ -51,7 +51,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canViewWorkplaces: boolean;
   public canViewReports: boolean;
   public isParent: boolean;
-  public updateStaffRecords: boolean;
+  public updateStaffRecords = true;
   public user: UserDetails;
   public canViewChangeDataOwner: boolean;
   public canViewDataPermissionsLink: boolean;
@@ -64,6 +64,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public parentStatusRequested: boolean;
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
+  public workers: any[];
 
   constructor(
     private bulkUploadService: BulkUploadService,
