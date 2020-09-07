@@ -169,6 +169,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       html.append(footer.cloneNode(true));
       html.append(this.createSpacer(width, ypx * 2));
       html.append(this.benchmarksService.header.nativeElement.cloneNode(true));
+      html.append(this.createSpacer(width, spacing));
       const aboutDataHtml = this.benchmarksService.aboutData.nativeElement.cloneNode(true);
       const allUl = aboutDataHtml.getElementsByTagName('ul');
       for (let ul of allUl) {
