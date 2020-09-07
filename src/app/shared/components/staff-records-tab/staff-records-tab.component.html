@@ -26,10 +26,10 @@
 </app-status>
 
 <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+  <div  *ngIf="canAddWorker" class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
       <app-inset-text [color]="'todo'">
-        <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'basic-records-start-screen']"
+        <a [routerLink]="['/flu-jab']"
         > Who's had a flu vaccination since 1 September 2020?</a>
       </app-inset-text>
     </div>
@@ -45,10 +45,10 @@
 </ng-container>
 
 <ng-template #noStaffRecords>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+  <div  *ngIf="canAddWorker" class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
       <app-inset-text [color]="'todo'" [additionalClass]="'govuk-!-margin-bottom-0'">
-        <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'basic-records-start-screen']"
+        <a [routerLink]="['/flu-jab']"
         > Who's had a flu vaccination since 1 September 2020?</a>
       </app-inset-text>
     </div>
