@@ -8,6 +8,7 @@ import { FluJabComponent } from './flu-jab.component';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { RouterTestingModule } from '@angular/router/testing';
+import { WindowRef } from '@core/services/window.ref';
 
 const getFluJabComponent = async () => {
   return render(FluJabComponent, {
@@ -19,6 +20,10 @@ const getFluJabComponent = async () => {
       RouterTestingModule
     ],
     providers: [
+      {
+        provide: WindowRef,
+        useClass: WindowRef
+      },
       {
         provide: EstablishmentService,
         useClass: MockEstablishmentService
@@ -127,14 +132,14 @@ describe('FluJabComponent', () => {
   })
 
   it('should only put updated worker flu jabs', async () => {
-    const { fixture, click, getByRole } = await getFluJabComponent();
+    const { fixture, click, getAllByRole } = await getFluJabComponent();
 
     await setup();
 
     fixture.detectChanges();
 
     const yes = fixture.nativeElement.querySelector('input[id="fluJab-0-0"]');
-    const submit = getByRole('button');
+    const submit = getAllByRole('button')[0];
 
     click(yes);
     click(submit);
@@ -150,7 +155,7 @@ describe('FluJabComponent', () => {
   })
 
   it('should not only put reverted worker flu jabs', async () => {
-    const { fixture, click, getByRole } = await getFluJabComponent();
+    const { fixture, click, getAllByRole } = await getFluJabComponent();
 
     await setup();
 
@@ -159,7 +164,7 @@ describe('FluJabComponent', () => {
     const yes = fixture.nativeElement.querySelector('input[id="fluJab-0-0"]');
     const yes2 = fixture.nativeElement.querySelector('input[id="fluJab-1-0"]');
     const no2 = fixture.nativeElement.querySelector('input[id="fluJab-1-1"]');
-    const submit = getByRole('button');
+    const submit = getAllByRole('button')[0];
 
     click(yes);
     click(yes2);
