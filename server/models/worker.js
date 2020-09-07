@@ -969,11 +969,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"FluJabChangedBy"'
     },
-
-///////////////////////////////////////////////////
-
-
-
     created: {
       type: DataTypes.DATE,
       allowNull: false,

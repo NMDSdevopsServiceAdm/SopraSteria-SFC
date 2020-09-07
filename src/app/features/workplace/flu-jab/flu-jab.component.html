@@ -1,3 +1,9 @@
+<app-error-summary
+  *ngIf="submitted && serverError"
+  [serverError]="serverError"
+  [form]="form">
+</app-error-summary>
+
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters-from-desktop" *ngIf="fluJabs && fluJabs.length">
@@ -55,14 +61,7 @@
         </fieldset>
       </div>
 
-      <button type="submit" class="govuk-button">
-        Save
-      </button>
-
-      <a
-        [routerLink]="return.url"
-        [fragment]="return.fragment"
-        class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2">Cancel</a>
+      <app-submit-exit-buttons [cta]="'Save'" [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
     </div>
   </div>
 </form>

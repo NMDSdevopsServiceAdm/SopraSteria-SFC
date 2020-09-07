@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { Establishment } from '@core/model/establishment.model';
+import { ErrorDefinition } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
   selector: 'app-flu-jab',
@@ -14,18 +16,22 @@ import { Establishment } from '@core/model/establishment.model';
 export class FluJabComponent implements OnInit {
   private workplace: Establishment;
   private updatedFluJabs: any = [];
+  public submitted: boolean;
   public fluJabAnswers = [FluJabEnum.YES, FluJabEnum.NO, FluJabEnum.DONT_KNOW];
   public fluJabs: FluJabResponse[];
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public return: URLStructure;
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverError: string;
 
   constructor(
     protected formBuilder: FormBuilder,
     protected establishmentService: EstablishmentService,
     protected fluJabService: FluJabService,
     protected router: Router,
-    protected backService: BackService
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService
   ) {
     this.form = this.formBuilder.group({
       fluJabsRadioList: this.formBuilder.array([])
@@ -41,11 +47,30 @@ export class FluJabComponent implements OnInit {
       error => this.onInitError(error)
     );
 
+    this.submitted = false;
     this.setBackLink();
+    this.setupServerErrorsMap();
   }
 
   setBackLink() {
     this.backService.setBackLink(this.return);
+  }
+
+  setupServerErrorsMap() {
+    this.serverErrorsMap = [
+      {
+        name: 400,
+        message: 'There has been a problem saving your workplace\'s flu vaccinations. Please try again.',
+      },
+      {
+        name: 404,
+        message: 'There has been a problem saving your workplace\'s flu vaccinations. Please try again.',
+      },
+      {
+        name: 503,
+        message: 'There has been a problem saving your workplace\'s flu vaccinations. Please try again.',
+      }
+    ];
   }
 
   get fluJabRadioList() {
@@ -70,6 +95,7 @@ export class FluJabComponent implements OnInit {
   }
 
   onSubmit() {
+    this.submitted = true;
     this.establishmentService.updateWorkers(this.workplace.uid, this.updatedFluJabs).subscribe(
       response => this.onSubmitSuccess(response),
       error => this.onSubmitError(error)
@@ -85,6 +111,7 @@ export class FluJabComponent implements OnInit {
   }
 
   onSubmitError(error) {
-
+    this.errorSummaryService.scrollToErrorSummary();
+    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
   }
 }
