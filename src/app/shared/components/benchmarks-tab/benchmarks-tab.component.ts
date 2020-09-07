@@ -180,9 +180,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
         li.textContent = '- ' + li.textContent
       }
       html.append(aboutDataHtml);
-      console.log((a4heightpx * 2),(this.getHeight(html) * scale),((this.getHeight(footer) * scale) + ypx));
       const footerPg2Position = (a4heightpx * 2) - (this.getHeight(html) * scale) - ((this.getHeight(footer) * scale) - (ypx * 2));
-      console.log(footerPg2Position);
       html.append(this.createSpacer(width, footerPg2Position));
       html.append(footer.cloneNode(true));
       await doc.html(html, {
