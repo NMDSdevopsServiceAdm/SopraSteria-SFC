@@ -1,14 +1,14 @@
-import { Establishment } from '../../../../mockdata/establishment';
-
-import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, getTestBed, TestBed } from '@angular/core/testing';
-import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchmarks-tab.component';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchmarks-tab.component';
+
+import { Establishment } from '../../../../mockdata/establishment';
 
 
-describe('BenchmarksTabComponent', () => {
+fdescribe('BenchmarksTabComponent', () => {
   let component: BenchmarksTabComponent;
   let fixture: ComponentFixture<BenchmarksTabComponent>;
 
@@ -63,5 +63,10 @@ describe('BenchmarksTabComponent', () => {
   it('should format percent data correctly', () => {
     const percentData = component.formatPercent(0.357894767643573);
     expect(percentData).toBe('36%');
+  });
+  it('should download a pdf', () => {
+    const event = new Event('click');
+    const pdf = component.downloadAsPDF(event);
+    console.log(pdf);
   });
 });

@@ -132,7 +132,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       const widthHtml = width * scale;
       const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
       const y = 20;
-      const ypx = y * ptToPx;
+      const ypx = (y * ptToPx / scale);
       const html2canvas = {
         scale,
         width,
@@ -147,9 +147,27 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       html.append(this.benchmarksService.workplaceTitle.nativeElement.cloneNode(true));
       html.append(this.createSpacer(width, spacing));
       html.append(this.elRef.nativeElement.cloneNode(true));
-      const page1end = a4heightpx - (((this.getHeight(html) * scale) + ypx) / ptToPx);
-      const page2begin = page1end + ypx;
-      html.append(this.createSpacer(width, page2begin));
+      const footer = this.benchmarksService.footer.nativeElement.cloneNode(true);
+      const govuklogo = document.createElement('div');
+      govuklogo.className = 'department-of-health-logo__crest';
+      govuklogo.style.borderLeft = '2px solid #00ad93';
+      govuklogo.style.paddingLeft = '5px';
+      const govukimage = document.createElement('img');
+      govukimage.src = '/assets/images/govuk-crest.png';
+      govukimage.alt= 'Department of Health & Social Care';
+      govukimage.style.height = '25px';
+      govukimage.style.width = 'auto';
+      govukimage.style.float = 'left';
+      const govuktext = document.createElement('span');
+      govuktext.className = 'department-of-health-logo__name';
+      govuktext.innerHTML = '<br clear="left">Department<br>of Health &<br>Social Care';
+      govuklogo.append(govukimage);
+      govuklogo.append(govuktext);
+      footer.append(govuklogo);
+      const footerPosition = a4heightpx - (this.getHeight(html) * scale) - ((this.getHeight(footer) * scale) + ypx);
+      html.append(this.createSpacer(width, footerPosition));
+      html.append(footer.cloneNode(true));
+      html.append(this.createSpacer(width, ypx * 2));
       html.append(this.benchmarksService.header.nativeElement.cloneNode(true));
       const aboutDataHtml = this.benchmarksService.aboutData.nativeElement.cloneNode(true);
       const allUl = aboutDataHtml.getElementsByTagName('ul');
@@ -162,11 +180,21 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
         li.textContent = '- ' + li.textContent
       }
       html.append(aboutDataHtml);
+      console.log((a4heightpx * 2),(this.getHeight(html) * scale),((this.getHeight(footer) * scale) + ypx));
+      const footerPg2Position = (a4heightpx * 2) - (this.getHeight(html) * scale) - ((this.getHeight(footer) * scale) - (ypx * 2));
+      console.log(footerPg2Position);
+      html.append(this.createSpacer(width, footerPg2Position));
+      html.append(footer.cloneNode(true));
       await doc.html(html, {
         x,
         y,
         html2canvas
       });
+      if (doc.getNumberOfPages() > 2) {
+        for (let i = doc.getNumberOfPages(); i > 2; i--) {
+          doc.deletePage(i);
+        }
+      }
       doc.save('benchmarks.pdf');
     } catch (error) {
       console.error(error);

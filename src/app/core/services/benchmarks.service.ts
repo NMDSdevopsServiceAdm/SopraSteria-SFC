@@ -11,6 +11,7 @@ export class BenchmarksService {
   private returnToURL: URLStructure;
   private workplaceTitleElement: ElementRef;
   private headerElement: ElementRef;
+  private footerElement: ElementRef;
   private aboutDataElement: ElementRef;
 
   constructor(private http: HttpClient) {}
@@ -33,6 +34,14 @@ export class BenchmarksService {
 
   public set header(headerElement: ElementRef) {
     this.headerElement = headerElement;
+  }
+
+  public get footer(): ElementRef {
+    return this.footerElement;
+  }
+
+  public set footer(footerElement: ElementRef) {
+    this.footerElement = footerElement;
   }
 
   public get aboutData(): ElementRef {
