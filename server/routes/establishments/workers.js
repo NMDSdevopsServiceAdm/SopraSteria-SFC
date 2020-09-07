@@ -57,16 +57,14 @@ router.route('/').put(async (req, res) => {
     if (err instanceof Workers.WorkerExceptions.WorkerSaveException && err.message == 'Duplicate LocalIdentifier') {
       console.error("Worker::localidentifier PUT: ", err.message);
       res.status(400)
-      return res.send(err.safe);
     } else if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
       console.error("Worker PUT: ", err.message);
       res.status(400)
-      return res.send(err.safe);
     } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
       console.error("Worker PUT: ", err.message);
       res.status(503)
-      return res.send(err.safe);
     }
+    return res.send();
   }
 })
 
