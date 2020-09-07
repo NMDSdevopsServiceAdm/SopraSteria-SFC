@@ -8,7 +8,7 @@ import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchm
 import { Establishment } from '../../../../mockdata/establishment';
 
 
-fdescribe('BenchmarksTabComponent', () => {
+describe('BenchmarksTabComponent', () => {
   let component: BenchmarksTabComponent;
   let fixture: ComponentFixture<BenchmarksTabComponent>;
 
