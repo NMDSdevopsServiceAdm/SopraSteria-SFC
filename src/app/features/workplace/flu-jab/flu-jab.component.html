@@ -1,0 +1,67 @@
+<app-error-summary
+  *ngIf="submitted && serverError"
+  [serverError]="serverError"
+  [form]="form">
+</app-error-summary>
+
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters-from-desktop" *ngIf="fluJabs && fluJabs.length">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl govuk-!-margin-bottom-4">
+            <h1 class="govuk-fieldset__heading">
+              Who's had a flu vaccination since 1 September 2020?
+            </h1>
+            <p class="govuk-!-margin-top-4">
+              You can return and update your information at any time.<br>
+              The link to return to this page is on the <a href="#">home tab</a>.
+            </p>
+            <details class="govuk-details">
+              <summary class="govuk-details__summary"><span class="govuk-details__summary-text">Why do we want to know?</span></summary>
+              <div class="govuk-details__text">
+                <p>
+                  DHSC want to know how many workers will be protected from flu this winter.
+                  This information could tell us that 60% of care workers in a certain area are
+                  vaccinated. This will help identify any extra local demands on the NHS and
+                  the care sector. It could also highlight a need for better promotion of the
+                  vaccine within the care sector. Your data will not be shared with any other
+                  organisation.
+                </p>
+              </div>
+           </details>
+          </legend>
+          <table class="govuk-table">
+            <tbody class="govuk-table__body">
+              <tr class="govuk-table__row" *ngFor="let item of fluJabRadioList.controls; let i = index;">
+                  <th scope="row" class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third">
+                      {{ fluJabs[i].name }}
+                  </th>
+                  <td class="govuk-table__cell">
+                    <div class="govuk-radios govuk-radios--inline">
+                      <div *ngFor="let answer of fluJabAnswers; let j = index" class="govuk-radios__item govuk-!-margin-left-2 govuk-!-margin-bottom-0">
+                        <input
+                            id="fluJab-{{ i }}-{{ j }}"
+                            name="fluJab-{{ i }}"
+                            class="govuk-radios__input"
+                            type="radio"
+                            (change)="radioChange(i, j)"
+                            [checked]="item.value == answer"
+                            [value]="answer"
+                          />
+                        <label class="govuk-label govuk-radios__label" for="fluJab-{{ i }}-{{ j }}">
+                          {{ answer }}
+                        </label>
+                      </div>
+                    </div>
+                  </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+      </div>
+
+      <app-submit-exit-buttons [cta]="'Save'" [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
+    </div>
+  </div>
+</form>

@@ -27,6 +27,7 @@ import {
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
+import { FluJabComponent } from './flu-jab/flu-jab.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
@@ -275,6 +276,15 @@ const routes: Routes = [
           roles: [Roles.Admin, Roles.Edit],
           title: 'Check Answers',
         },
+      },
+      {
+        path: 'flu-jab',
+        component: FluJabComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Flu Jab'
+        }
       },
       {
         path: 'success',
