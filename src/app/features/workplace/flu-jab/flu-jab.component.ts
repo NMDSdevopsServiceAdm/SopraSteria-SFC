@@ -8,6 +8,7 @@ import { BackService } from '@core/services/back.service';
 import { Establishment } from '@core/model/establishment.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-flu-jab',
@@ -31,7 +32,8 @@ export class FluJabComponent implements OnInit {
     protected fluJabService: FluJabService,
     protected router: Router,
     protected backService: BackService,
-    protected errorSummaryService: ErrorSummaryService
+    protected errorSummaryService: ErrorSummaryService,
+    protected alertService: AlertService
   ) {
     this.form = this.formBuilder.group({
       fluJabsRadioList: this.formBuilder.array([])
@@ -108,6 +110,10 @@ export class FluJabComponent implements OnInit {
     } else {
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
     }
+    this.alertService.addAlert({
+      type: 'success',
+      message: `You've saved who's had a flu vaccination.`,
+    });
   }
 
   onSubmitError(error) {

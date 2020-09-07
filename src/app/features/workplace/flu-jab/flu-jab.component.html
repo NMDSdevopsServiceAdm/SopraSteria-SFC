@@ -13,10 +13,10 @@
             <h1 class="govuk-fieldset__heading">
               Who's had a flu vaccination since 1 September 2020?
             </h1>
-            <div class="govuk-inset-text govuk-!-margin-top-4">
+            <p class="govuk-!-margin-top-4">
               You can return and update your information at any time.<br>
               The link to return to this page is on the <a href="#">home tab</a>.
-            </div>
+            </p>
             <details class="govuk-details">
               <summary class="govuk-details__summary"><span class="govuk-details__summary-text">Why do we want to know?</span></summary>
               <div class="govuk-details__text">
@@ -34,12 +34,12 @@
           <table class="govuk-table">
             <tbody class="govuk-table__body">
               <tr class="govuk-table__row" *ngFor="let item of fluJabRadioList.controls; let i = index;">
-                  <th scope="row" class="govuk-table__header govuk-!-width-one-third">
+                  <th scope="row" class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third">
                       {{ fluJabs[i].name }}
                   </th>
                   <td class="govuk-table__cell">
                     <div class="govuk-radios govuk-radios--inline">
-                      <div *ngFor="let answer of fluJabAnswers; let j = index" class="govuk-radios__item govuk-!-margin-left-2">
+                      <div *ngFor="let answer of fluJabAnswers; let j = index" class="govuk-radios__item govuk-!-margin-left-2 govuk-!-margin-bottom-0">
                         <input
                             id="fluJab-{{ i }}-{{ j }}"
                             name="fluJab-{{ i }}"
