@@ -29,8 +29,7 @@
   <div  *ngIf="canAddWorker" class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <app-inset-text [color]="'todo'">
-        <a [routerLink]="['/flu-jab']"
-        > Who's had a flu vaccination since 1 September 2020?</a>
+        <a [routerLink]="['/workplace',workplace.uid,'flu-jab']" > Who's had a flu vaccination since 1 September 2020?</a>
       </app-inset-text>
     </div>
   </div>
@@ -48,8 +47,8 @@
   <div  *ngIf="canAddWorker" class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <app-inset-text [color]="'todo'" [additionalClass]="'govuk-!-margin-bottom-0'">
-        <a [routerLink]="['/flu-jab']"
-        > Who's had a flu vaccination since 1 September 2020?</a>
+        <a [routerLink]="['/workplace',workplace.uid,'flu-jab']">
+          Who's had a flu vaccination since 1 September 2020?</a>
       </app-inset-text>
     </div>
   </div>
