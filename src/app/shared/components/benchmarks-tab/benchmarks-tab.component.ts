@@ -75,6 +75,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     }
   };
   private elref: ElementRef<any>;
+  public doc: jsPDF;
   constructor(
     private benchmarksService: BenchmarksService,
     private elRef: ElementRef,
@@ -123,14 +124,14 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public async downloadAsPDF($event: Event) {
     $event.preventDefault();
     try {
-      const doc = new jsPDF('p', 'pt', 'a4');
+      this.doc = new jsPDF('p', 'pt', 'a4');
       const ptToPx = 1.3333333333;
-      const a4heightpx = doc.internal.pageSize.getHeight() * ptToPx;
+      const a4heightpx = this.doc.internal.pageSize.getHeight() * ptToPx;
       const scale = 0.5;
       const width = 1000;
       const spacing = 50;
       const widthHtml = width * scale;
-      const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
+      const x = (this.doc.internal.pageSize.getWidth() - widthHtml) / 2;
       const y = 20;
       const ypx = (y * ptToPx / scale);
       const html2canvas = {
@@ -184,17 +185,18 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       const footerPg2Position = (a4heightpx * 2) - (this.getHeight(html) * scale) - ((this.getHeight(footer) * scale) - (ypx * 2));
       html.append(this.createSpacer(width, footerPg2Position));
       html.append(footer.cloneNode(true));
-      await doc.html(html, {
+      await this.doc.html(html, {
         x,
         y,
         html2canvas
       });
-      if (doc.getNumberOfPages() > 2) {
-        for (let i = doc.getNumberOfPages(); i > 2; i--) {
-          doc.deletePage(i);
+      if (this.doc.getNumberOfPages() > 2) {
+        for (let i = this.doc.getNumberOfPages(); i > 2; i--) {
+          this.doc.deletePage(i);
         }
       }
-      doc.save('benchmarks.pdf');
+      this.doc.save('benchmarks.pdf');
+      return this.doc;
     } catch (error) {
       console.error(error);
     }

@@ -12,7 +12,7 @@ export class BenchmarksService {
   private workplaceTitleElement: ElementRef;
   private headerElement: ElementRef;
   private footerElement: ElementRef;
-  private aboutDataElement: ElementRef;
+  public aboutDataElement: ElementRef;
 
   constructor(private http: HttpClient) {}
 

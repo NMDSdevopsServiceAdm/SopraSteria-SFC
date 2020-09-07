@@ -64,9 +64,11 @@ fdescribe('BenchmarksTabComponent', () => {
     const percentData = component.formatPercent(0.357894767643573);
     expect(percentData).toBe('36%');
   });
-  it('should download a pdf', () => {
+  it('should download a pdf', async () => {
     const event = new Event('click');
-    const pdf = component.downloadAsPDF(event);
-    console.log(pdf);
+    const pdfDownload= spyOn(component, 'downloadAsPDF').and.callThrough();
+    const downloadPDF = await component.downloadAsPDF(event);
+    expect(pdfDownload).toHaveBeenCalled();
+    expect(downloadPDF.getNumberOfPages()).toEqual(2);
   });
 });
