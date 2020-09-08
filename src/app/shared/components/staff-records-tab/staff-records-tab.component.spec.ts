@@ -19,7 +19,7 @@ import { StaffRecordsTabComponent } from './staff-records-tab.component';
 
 const { build, fake, sequence, } = require('@jackfranklin/test-data-bot');
 
-fdescribe('StaffRecordsTab', () => {
+describe('StaffRecordsTab', () => {
   const establishmentBuilder = build('Establishment', {
     fields: {
       id: sequence(),
