@@ -22,7 +22,7 @@ import { of } from 'rxjs';
 
 describe('DashboardComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
-    const component =  await render(DashboardComponent, {
+    const component = await render(DashboardComponent, {
       imports: [
         SharedModule,
         RouterModule,
@@ -85,7 +85,7 @@ describe('DashboardComponent', () => {
       component.fixture.componentInstance.canViewBenchmarks = true;
       component.fixture.detectChanges();
 
-      expect(component.getByText('Benchmarks')).toBeTruthy();
+      expect(component.getByTestId('tab_benchmarks')).toBeTruthy();
     });
     it('should not display the Benchmarks tab when canViewBenchmarks is false', async () => {
       const { component } = await setup(true);
@@ -94,7 +94,7 @@ describe('DashboardComponent', () => {
 
       component.fixture.detectChanges();
 
-      expect(component.queryByText('Benchmarks')).toBeNull();
+      expect(component.queryByTestId('tab_benchmarks')).toBeNull();
     });
     it('should display the Users tab', async () => {
       const { component } = await setup(true);

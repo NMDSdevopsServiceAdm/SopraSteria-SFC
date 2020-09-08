@@ -19,7 +19,6 @@ export class BenchmarkTileComponent implements OnInit, OnDestroy {
   @Input() public description: string;
   @Input() public showYourWorkplace: boolean;
   @Input() public showComparisonGroup: boolean;
-
   constructor(
   ) {
   }

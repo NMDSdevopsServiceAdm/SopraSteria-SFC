@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-comparison-group-header',
@@ -18,7 +18,8 @@ export class ComparisonGroupHeaderComponent implements OnInit {
     protected router: Router,
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksService,
-  ) {}
+  ) {
+  }
 
   ngOnInit() {}
   public setReturn(){

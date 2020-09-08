@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import {  Observable, of } from 'rxjs';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { ElementRef, Injectable } from '@angular/core';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { URLStructure } from '@core/model/url.model';
+import { BenchmarksService } from '@core/services/benchmarks.service';
+import { Observable, of } from 'rxjs';
 
 const { build } = require('@jackfranklin/test-data-bot');
 
@@ -76,6 +76,26 @@ const benchmarksData = benchmarksResponseBuilder();
 
 @Injectable()
 export class MockBenchmarksService extends BenchmarksService {
+  public get workplaceTitle(): ElementRef {
+    return this.aboutDataElement;
+  }
+
+  public get header(): ElementRef {
+    return this.aboutDataElement;
+  }
+
+  public get footer(): ElementRef {
+    return this.aboutDataElement;
+  }
+
+  public get aboutData(): ElementRef {
+    return this.aboutDataElement;
+  }
+
+  public set aboutData(aboutDataElement: ElementRef) {
+    this.aboutDataElement = aboutDataElement;
+  }
+
   public get returnTo(): URLStructure {
     return returnTo
   }
