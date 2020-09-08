@@ -1,12 +1,12 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
-    <h2 class="govuk-heading-m">Staff records ({{ workers?.length || 0 }})</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Staff records ({{ workers?.length || 0 }})</h2>
   </div>
   <div *ngIf="canAddWorker" class="govuk-grid-column-one-half govuk-util__align-right">
     <a
       role="button"
       draggable="false"
-      class="govuk-button"
+      class="govuk-button govuk-!-margin-bottom-0"
       [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'create-staff-record']"
     >
       Add a staff record
@@ -16,16 +16,23 @@
 
 <app-status *ngIf="createStaffResponse" [title]="'&#10003; Success.'">
   {{
-    createStaffResponse
-      | i18nPlural
-        : {
-            '=1': '# staff record has been saved.',
-            other: '# staff records have been saved.'
-          }
+  createStaffResponse
+    | i18nPlural
+    : {
+      '=1': '# staff record has been saved.',
+      other: '# staff records have been saved.'
+    }
   }}
 </app-status>
 
 <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
+  <div  *ngIf="canAddWorker" class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <app-inset-text [color]="'todo'" >
+        <a data-testid="flu-jab" [routerLink]="['/workplace',workplace.uid,'flu-jab']" > Who's had a flu vaccination since 1 September 2020?</a>
+      </app-inset-text>
+    </div>
+  </div>
   <app-total-staff-panel
     [workplace]="workplace"
     [totalStaff]="totalStaff"
