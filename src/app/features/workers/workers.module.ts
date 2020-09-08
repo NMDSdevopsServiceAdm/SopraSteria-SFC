@@ -27,6 +27,7 @@ import { DeleteWorkerDialogComponent } from './delete-worker-dialog/delete-worke
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
+import { FluJabComponent } from './flu-jab/flu-jab.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
@@ -85,6 +86,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DisabilityComponent,
     EditWorkerComponent,
     EthnicityComponent,
+    FluJabComponent,
     GenderComponent,
     HomePostcodeComponent,
     MainJobStartDateComponent,
