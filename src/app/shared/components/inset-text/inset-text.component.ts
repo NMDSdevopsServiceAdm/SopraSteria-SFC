@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-enum Status {
+export enum Status {
   TODO = 'todo',
   SUCCESS = 'success',
   WARNING = 'warning',

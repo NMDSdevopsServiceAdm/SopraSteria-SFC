@@ -4,16 +4,29 @@
     <ng-container *ngIf="workplace && canEditEstablishment">
       <p *ngIf="!workplace.employerType || updateStaffRecords">What you need to do first.</p>
       <app-inset-text *ngIf="!workplace.employerType || updateStaffRecords" [color]="'todo'">
-        <a *ngIf="!workplace?.employerType" [routerLink]="['/workplace', workplace?.uid, 'start']" data-testid="add-workplace-info"
-          >Add workplace information</a
-        >
-        <br /><a
-          *ngIf="updateStaffRecords"
-          [routerLink]="['/workplace', workplace.uid, 'staff-record', 'basic-records-start-screen']"
-        >
-          Add staff records
-        </a>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <a *ngIf="!workplace?.employerType" 
+               [routerLink]="['/workplace', workplace?.uid, 'start']" data-testid="add-workplace-info"
+            >Add workplace information</a
+            >
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <a
+              *ngIf="updateStaffRecords"
+              [routerLink]="['/workplace', workplace.uid, 'staff-record', 'basic-records-start-screen']"
+            >Add staff records</a>
+          </div>
+        </div>
       </app-inset-text>
+      <ng-container *ngIf="!updateStaffRecords">
+        <app-inset-text [color]="'todo'">
+          <a [routerLink]="['/workplace',workplace.uid,'flu-jab']" data-testid="flu-jab"
+          > Who's had a flu vaccination since 1 September 2020?</a>
+        </app-inset-text>
+      </ng-container>
     </ng-container>
     <div *ngIf="workplace">
       <div *ngIf="canAddWorker">
