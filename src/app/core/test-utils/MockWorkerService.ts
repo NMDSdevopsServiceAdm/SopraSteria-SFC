@@ -51,6 +51,17 @@ const worker = workerBuilder();
 @Injectable()
 export class MockWorkerService extends WorkerService {
   public worker$ = of(worker as Worker);
+  public workers$ = of([
+    {
+      nameOrId: worker.nameOrId,
+      trainingCount: 1,
+      trainingLastUpdated: '2020-01-01T00:00:00Z',
+      mainJob: {
+        jobId: 8,
+        other: null
+      }
+    }
+  ] as Worker[]);
 
   getAllWorkers(establishmentUid: string): Observable<Worker[]> {
     return of([

@@ -71,7 +71,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private parentRequestsService: ParentRequestsService,
     private userService: UserService,
-    private workerService: WorkerService,
+    public workerService: WorkerService,
     private dialogService: DialogService,
     private alertService: AlertService,
     private router: Router,
