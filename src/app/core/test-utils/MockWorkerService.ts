@@ -55,8 +55,13 @@ export class MockWorkerService extends WorkerService {
   getAllWorkers(establishmentUid: string): Observable<Worker[]> {
     return of([
       {
+        nameOrId: worker.nameOrId,
         trainingCount: 1,
-        trainingLastUpdated: '2020-01-01T00:00:00Z'
+        trainingLastUpdated: '2020-01-01T00:00:00Z',
+        mainJob: {
+          jobId: 8,
+          other: null
+        }
       }
     ] as Worker[]);
   }

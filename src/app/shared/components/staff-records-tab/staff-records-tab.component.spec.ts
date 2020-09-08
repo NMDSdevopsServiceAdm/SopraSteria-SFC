@@ -1,21 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
-import {  Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
-import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { WorkerService } from '@core/services/worker.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
-
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -61,9 +57,9 @@ fdescribe('StaffRecordsTab', () => {
             useClass: MockEstablishmentService
           }
         ],
-      componentProperties: {
-        workplace: establishment
-      },
+        componentProperties: {
+          workplace: establishment
+        },
       })
     ;
     const injector = getTestBed();
@@ -84,18 +80,17 @@ fdescribe('StaffRecordsTab', () => {
   it('should show flu jab when can add worker', async () => {
     const { component } = await setup();
     component.fixture.componentInstance.canAddWorker = true;
-    component.fixture.componentInstance.workers = [workerBuilder]
-    console.log(component.fixture.componentInstance.workers);
+
     component.fixture.detectChanges()
 
-    expect(component.getByTestId("flu-jab"))
+    expect(component.queryByTestId('flu-jab')).toBeTruthy();
   });
-  // it('should not show flu jab when no workers', async () => {
-  //   const { component } = await setup();
-  //   component.fixture.componentInstance.canAddWorker = true;
-  //   component.fixture.componentInstance.workers = []
-  //   component.fixture.detectChanges()
-  //   expect(component.getByTestId("flu-jab")).toBeNull()
-  // });
+  it('should not show flu jab when no workers', async () => {
+    const { component } = await setup();
+    component.fixture.componentInstance.canAddWorker = true;
+    component.fixture.componentInstance.workers = []
+    component.fixture.detectChanges()
+    expect(component.queryByTestId('flu-jab')).toBeFalsy();
+  });
 });
 
