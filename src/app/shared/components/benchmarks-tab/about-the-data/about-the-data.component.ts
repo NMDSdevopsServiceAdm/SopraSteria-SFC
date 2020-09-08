@@ -26,14 +26,14 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy, After
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksService,
     protected backService: BackService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.url = this.benchmarksService.returnTo?.url;
     this.fragment = this.benchmarksService.returnTo?.fragment;
     this.subscriptions.add(
-        this.benchmarksService.getTileData(this.workplace.id ? this.workplace.id : this.route.snapshot.params.establishmentID,[]).subscribe(
-          (data) => {
+      this.benchmarksService.getTileData(this.workplace && this.workplace.id ? this.workplace.id : this.route.snapshot.params.establishmentID, []).subscribe(
+        (data) => {
           if (data) {
             this.meta = data.meta;
           }
@@ -42,7 +42,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy, After
     this.backService.setBackLink(this.benchmarksService.returnTo);
   }
 
-  public pluralizeWorkplaces(workplaces){
+  public pluralizeWorkplaces(workplaces) {
     return workplaces > 1 ? 'workplaces' : 'workplace'
   }
 
