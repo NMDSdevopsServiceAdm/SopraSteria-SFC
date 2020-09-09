@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { URLStructure } from '@core/model/url.model';
 
-const { build, fake, sequence, perBuild, oneOf } = require('@jackfranklin/test-data-bot');
+const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
 
 export const  workerBuilder = build('Worker', {
   fields: {
@@ -50,6 +52,32 @@ const worker = workerBuilder();
 
 @Injectable()
 export class MockWorkerService extends WorkerService {
+  private _worker;
+
+  public static factory(worker) {
+    return (httpClient: HttpClient) => {
+      const service = new MockWorkerService(httpClient);
+      service.worker = worker;
+      service.worker$ = of(worker as Worker);
+      return service;
+    };
+  }
+
+  public get worker() {
+    return this._worker;
+  }
+
+  public set worker(val) {
+    this._worker = val;
+  }
+
+  public get returnTo(): URLStructure {
+    return {
+      url: ['/dashboard'],
+      fragment: 'workplace'
+    };
+  }
+
   public worker$ = of(worker as Worker);
   public workers$ = of([
     {
