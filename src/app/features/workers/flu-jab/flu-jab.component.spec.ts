@@ -14,22 +14,28 @@ import { StaffSummaryComponent } from '@shared/components/staff-summary/staff-su
 
 const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
 
-const workerNoFluJab = build('Worker', {
+const workerBuilder = build('Worker', {
   fields: {
     id: sequence(),
     uid: fake((f) => f.random.uuid()),
     nameOrId: fake((f) => f.name.findName()),
+    // TODO: work out why this breaks the mandatory tests
+    mainJob: {
+      id: sequence(),
+      title: fake((f) => f.lorem.sentence()),
+      other: null
+    },
     fluJab: null
   }
 });
 
-const workerWithFluJab = () => workerNoFluJab({
+const workerWithFluJab = () => workerBuilder({
   overrides: {
     fluJab: oneOf('Yes', 'No', `Don't know`)
   }
 });
 
-const getFluJabComponent = async (overrides = null) => {
+const getFluJabComponent = async (worker) => {
   return render(FluJabComponent, {
     imports: [
       FormsModule,
@@ -43,37 +49,37 @@ const getFluJabComponent = async (overrides = null) => {
     providers: [
       {
         provide: WorkerService,
-        useFactory: MockWorkerService.factory(overrides),
+        useFactory: MockWorkerService.factory(worker),
         deps: [HttpClient]
       },
       {
         provide: ActivatedRoute,
         useValue:
+        {
+          parent:
+          {
+            snapshot:
             {
-              parent:
-              {
-                snapshot:
-                {
-                  data: {
-                    establishment: { uid: 'mocked-uid' },
-                    primaryWorkplace: {}
-                  }
-                }
+              data: {
+                establishment: { uid: 'mocked-uid' },
+                primaryWorkplace: {}
               }
             }
+          }
+        }
       }
     ]
   });
 }
 
-fdescribe('FluJabComponent', () => {
+describe('FluJabComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
   });
 
   it('should not select a radio button when worker has not answered question', async () => {
-    const { getAllByRole } = await getFluJabComponent(workerNoFluJab());
+    const { getAllByRole } = await getFluJabComponent(workerBuilder());
 
     const answers = getAllByRole('radio') as any[];
     const checkedAnswers = answers.map(answer => answer.checked);
@@ -82,7 +88,7 @@ fdescribe('FluJabComponent', () => {
   })
 
   it('should not select a radio button when worker has not answered question', async () => {
-    const worker = workerNoFluJab();
+    const worker = workerBuilder();
     const { click, getAllByRole } = await getFluJabComponent(worker);
 
     const submit = getAllByRole('button')[0];
@@ -103,7 +109,7 @@ fdescribe('FluJabComponent', () => {
   })
 
   it('should put updated worker flu jab', async () => {
-    const worker = workerNoFluJab();
+    const worker = workerBuilder();
     const newFluJab = workerWithFluJab().fluJab;
     const { click, getAllByRole, getByLabelText } = await getFluJabComponent(worker);
 

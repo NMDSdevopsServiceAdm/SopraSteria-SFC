@@ -44,7 +44,8 @@ export const  workerBuilder = build('Worker', {
     expiredTrainingCount: 0,
     expiringTrainingCount: 0,
     missingMandatoryTrainingCount: 0,
-    qualificationCount: 0
+    qualificationCount: 0,
+    fluJab: null
   }
 });
 
@@ -57,8 +58,10 @@ export class MockWorkerService extends WorkerService {
   public static factory(worker) {
     return (httpClient: HttpClient) => {
       const service = new MockWorkerService(httpClient);
-      service.worker = worker;
-      service.worker$ = of(worker as Worker);
+      if (worker) {
+        service.worker = worker;
+        service.worker$ = of(worker as Worker);
+      }
       return service;
     };
   }
