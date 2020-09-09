@@ -15,9 +15,9 @@
           <div class="govuk-radios">
             <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
               <input class="govuk-radios__input" [formControlName]="'fluJab'" id="fluJab-{{ idx }}" name="fluJab"
-                type="radio" [value]="answer" />
+                type="radio" [value]="answer.value" />
               <label class="govuk-label govuk-radios__label" for="fluJab-{{ idx }}">
-                {{ answer }}
+                {{ answer.label }}
               </label>
             </div>
           </div>

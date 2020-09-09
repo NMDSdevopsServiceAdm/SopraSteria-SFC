@@ -12,7 +12,11 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './flu-jab.component.html',
 })
 export class FluJabComponent extends QuestionComponent {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+  public answersAvailable = [
+    { label: 'Yes, they have had a flu vaccination', value: 'Yes' },
+    { label: 'No, they have not had a flu vaccination yet',  value: 'No' },
+    { label: `Don't know`, value: `Don't know` },
+   ];
 
   constructor(
     protected formBuilder: FormBuilder,
