@@ -60,4 +60,8 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
+
+  public setReturnFluJab(): void {
+    this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'staff-records', });
+  }
 }
