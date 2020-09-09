@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const workers = require('../../../mockdata/workers').data;
 const establishmentId = require('../../../mockdata/workers').establishmentId;
-const apprenticeshipTypes = require('../../../mockdata/workers').apprenticeshipTypes;
+const yesNoDontKnow = require('../../../mockdata/workers').yesNoDontKnow;
 const maxquals = require('../../../mockdata/workers').maxquals;
 const knownHeaders = require('../../../mockdata/workers').knownHeaders;
 const moment = require('moment');
@@ -46,6 +46,7 @@ const buildWorkerCsv = build('WorkerCSV', {
     MAINJOBROLE: "4",
     MAINJRDESC: "",
     NATIONALITY: "826",
+    FLUVAC: "",
     NINUMBER: "JA622112A",
     NMCREG: "",
     NONSCQUAL: "2",
@@ -525,7 +526,95 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           expect(bulkUpload.validationErrors.map(err => err.warning)).not.to.include('DAYSSICK in the last 12 months has not changed please check this is correct');
         });
       })
+      describe('flu jab', () => {
+        const codesToTest = ['1', '2', '999'];
+        codesToTest.forEach(code => {
+          it('should not emit an warning if FLUVAC is not ' + code, async () => {
+            const bulkUpload = new (testUtils.sandBox(
+              filename,
+              {
+                locals: {
+                  require: testUtils.wrapRequire({
+                    '../BUDI': {
+                      BUDI
+                    },
+                    'moment': moment
+                  }),
+                },
+              }
+            ).Worker)(
+              buildWorkerCsv({
+                overrides: {
+                  STATUS: 'NEW',
+                  FLUVAC: code
+                }
+              }),
+              2,
+              [
+                buildEstablishmentRecord(),
+                buildSecondEstablishmentRecord()
+              ]);
 
+            expect(bulkUpload).to.have.property('crossValidate');
+
+            // Regular validation has to run first for the establishment to populate the internal properties correctly
+            await bulkUpload.validate();
+
+            const validationErrors = bulkUpload._validationErrors;
+
+            // assert a error was returned
+            expect(validationErrors.length).to.equal(0);
+          });
+        });
+        it('should emit an warning if FLUVAC is not in 1, 2, 999, null', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                FLUVAC: '8'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(1);
+          expect(validationErrors).to.deep.equal([
+            {
+              worker: '3',
+              name: 'MARMA',
+              lineNumber: 2,
+              warnCode: 3055,
+              warnType: 'WORKER_FLUVAC_WARNING',
+              warning:
+              'FLUVAC the code you have selected has not been recognised and will be ignored',
+              source: '8'
+            }
+          ]);
+        });
+      });
 
     const countryCodesToTest = [262, 418, 995];
     countryCodesToTest.forEach(countryCode => {
@@ -594,7 +683,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
     describe('toCSV(establishmentId, entity, MAX_QUALIFICATIONS) with worker ' + index, () => {
       it('should match the header values', async () => {
 
-      let workerCSV = getUnitInstance();
+        let workerCSV = getUnitInstance();
         const columnHeaders = workerCSV.headers(maxquals).split(',');
         workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
         expect(typeof workerCSV).to.equal('string');
@@ -646,6 +735,11 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         expect(mappedCsv.UNIQUEWORKERID).to.equal(worker.localIdentifier);
         expect(mappedCsv.STATUS).to.equal('UNCHECKED');
         expect(mappedCsv.DISPLAYID).to.equal(worker.nameOrId);
+        if (worker.fluJab) {
+          expect(mappedCsv.FLUVAC).to.equal('2');
+        } else {
+          expect(mappedCsv.FLUVAC).to.equal('');
+        }
         if (worker.nationalInsuranceNumber) {
           expect(mappedCsv.NINUMBER).to.equal(worker.nationalInsuranceNumber.replace(/\s+/g, ''));
         } else {
@@ -817,14 +911,14 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         }
       });
     });
-    apprenticeshipTypes.forEach(apprenticeshipType => {
+    yesNoDontKnow.forEach(apprenticeshipType => {
       it('should output the correct apprenticeship figure with apprenticeship value ' + apprenticeshipType.value, async () => {
         worker.apprenticeship = apprenticeshipType.value;
         let workerCSV = getUnitInstance();
         workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
         const output = workerCSV.split(',');
         // 19 column is apprenticeship
-        expect(output[18]).to.deep.equal(apprenticeshipType.code);
+        expect(output[19]).to.deep.equal(apprenticeshipType.code);
       });
     });
   });

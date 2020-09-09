@@ -7,6 +7,7 @@ exports.data = [
       "budi": 16,
       "other": "My other Job"
     },
+    "fluJab": "No",
     "nationalInsuranceNumber": "JA 123 JK 12",
     "postcode": "LS1 1AA",
     "dateOfBirth": "2019-01-01",
@@ -114,7 +115,7 @@ exports.data = [
 
 exports.establishmentId = 'My Establishment';
 exports.maxquals = 3;
-exports.apprenticeshipTypes = [ {
+exports.yesNoDontKnow = [ {
     value: 'No',
     code: '2',
   }, {
@@ -131,6 +132,7 @@ exports.knownHeaders = [
   'UNIQUEWORKERID',
   'STATUS',
   'DISPLAYID',
+  'FLUVAC',
   'NINUMBER',
   'POSTCODE',
   'DOB',

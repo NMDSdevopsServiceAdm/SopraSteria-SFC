@@ -8,6 +8,7 @@ module.exports = build('WorkerCSV', {
     CHGUNIQUEWRKID: '',
     STATUS: 'NEW',
     DISPLAYID: fake(f => f.company.companyName()),
+    FLUVAC: '2',
     NINUMBER: '',
     POSTCODE: fake(f => f.address.zipCode('??# #??')),
     DOB : moment(fake(f => f.date.past())).format('DD/MM/YYYY'),
