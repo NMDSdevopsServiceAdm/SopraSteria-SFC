@@ -922,4 +922,18 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       });
     });
   });
+  describe('isContent()', () => {
+    it('return true when headings match with CHGUNIQUEWRKID', async () => {
+      const header = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI';
+      expect(WorkerCsvValidator.isContent(header)).to.deep.equal(true);
+    });
+    it('return true when headings match without CHGUNIQUEWRKID', async () => {
+      const header = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,';
+      expect(WorkerCsvValidator.isContent(header)).to.deep.equal(true);
+    });
+    it('return false when headings don\'t match', async () => {
+      const header = 'NOTATALLWHATWEEXPECT,HOWCOULDYOUUPLOADTHISFILE,';
+      expect(WorkerCsvValidator.isContent(header)).to.deep.equal(false);
+    });
+  });
 });
