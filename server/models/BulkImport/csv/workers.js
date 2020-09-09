@@ -640,15 +640,15 @@ class Worker {
     const myFluVac = parseInt(this._currentLine.FLUVAC, 10);
     const fluVacValues = [1, 2, 999];
 
-    if (myNINumber.length > 0) {
+    if (this._currentLine.FLUVAC.length > 0) {
       if (isNaN(myFluVac) || !fluVacValues.includes(myFluVac)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.FLUVAC_WARNING,
-          errType: 'WORKER_FLUVAC_WARNING',
-          error: 'FLUVAC the code you have selected has not been recognised and will be ignored',
+          warnCode: Worker.FLUVAC_WARNING,
+          warnType: 'WORKER_FLUVAC_WARNING',
+          warning: 'FLUVAC the code you have selected has not been recognised and will be ignored',
           source: this._currentLine.FLUVAC
         });
         return false;
@@ -2631,7 +2631,7 @@ class Worker {
 
   static isContent (data) {
     const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-    const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMB/;
+    const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,/;
 
     return contentRegex1.test(data.substring(0, 50)) || contentRegex2.test(data.substring(0, 50));
   }
