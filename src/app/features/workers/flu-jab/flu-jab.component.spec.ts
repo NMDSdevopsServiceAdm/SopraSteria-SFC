@@ -72,7 +72,7 @@ const getFluJabComponent = async (worker) => {
   });
 }
 
-fdescribe('FluJabComponent', () => {
+describe('FluJabComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
@@ -101,9 +101,9 @@ fdescribe('FluJabComponent', () => {
 
   it('should pre-select the radio button with worker flu jab', async () => {
     const worker = workerWithFluJab();
-    const { fixture, getByLabelText } = await getFluJabComponent(worker);
+    const { fixture } = await getFluJabComponent(worker);
 
-    const selectedRadioButton = getByLabelText(getRadioLabelText(fixture, worker.fluJab)) as any;
+    const selectedRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="${worker.fluJab}"]`);
 
     expect(selectedRadioButton.checked).toBeTruthy();
   })
@@ -111,9 +111,9 @@ fdescribe('FluJabComponent', () => {
   it('should put updated worker flu jab', async () => {
     const worker = workerBuilder();
     const newFluJab = workerWithFluJab().fluJab;
-    const { fixture, click, getAllByRole, getByLabelText } = await getFluJabComponent(worker);
+    const { fixture, click, getAllByRole } = await getFluJabComponent(worker);
 
-    const selectedRadioButton = getByLabelText(getRadioLabelText(fixture, newFluJab));
+    const selectedRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="${newFluJab}"]`);
     const submit = getAllByRole('button')[0];
 
     click(selectedRadioButton);
@@ -124,8 +124,4 @@ fdescribe('FluJabComponent', () => {
 
     expect(req.request.body).toEqual({ fluJab: newFluJab })
   })
-
-  const getRadioLabelText = (fixture, value) => {
-    return fixture.componentInstance.answersAvailable.filter(e => e.value === value)[0].label;
-  }
 });

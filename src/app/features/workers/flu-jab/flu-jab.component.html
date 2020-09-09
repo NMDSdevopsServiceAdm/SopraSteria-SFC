@@ -13,11 +13,25 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('fluJab').invalid">
         <fieldset class="govuk-fieldset">
           <div class="govuk-radios">
-            <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
-              <input class="govuk-radios__input" [formControlName]="'fluJab'" id="fluJab-{{ idx }}" name="fluJab"
-                type="radio" [value]="answer.value" />
-              <label class="govuk-label govuk-radios__label" for="fluJab-{{ idx }}">
-                {{ answer.label }}
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" [formControlName]="'fluJab'" id="fluJab-yes" name="fluJab"
+                type="radio" [value]="'Yes'" />
+              <label class="govuk-label govuk-radios__label" for="fluJab-yes">
+                Yes, they have had a flu vaccination
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" [formControlName]="'fluJab'" id="fluJab-no" name="fluJab"
+                type="radio" [value]="'No'" />
+              <label class="govuk-label govuk-radios__label" for="fluJab-no">
+                No, they have not had a flu vaccination yet
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" [formControlName]="'fluJab'" id="fluJab-dontKnow" name="fluJab"
+                type="radio" [value]="'Don\'t know'" />
+              <label class="govuk-label govuk-radios__label" for="fluJab-dontKnow">
+                Don't know
               </label>
             </div>
           </div>
