@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { render } from '@testing-library/angular';
+import { render, getByRole } from '@testing-library/angular';
 import { WorkerService } from '../../../core/services/worker.service';
 import { MockWorkerService } from '../../../core/test-utils/MockWorkerService';
 import { FluJabComponent } from './flu-jab.component';
@@ -72,7 +72,7 @@ const getFluJabComponent = async (worker) => {
   });
 }
 
-describe('FluJabComponent', () => {
+fdescribe('FluJabComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
@@ -101,9 +101,9 @@ describe('FluJabComponent', () => {
 
   it('should pre-select the radio button with worker flu jab', async () => {
     const worker = workerWithFluJab();
-    const { getByLabelText } = await getFluJabComponent(worker);
+    const { fixture, getByLabelText } = await getFluJabComponent(worker);
 
-    const selectedRadioButton = getByLabelText(worker.fluJab) as any;
+    const selectedRadioButton = getByLabelText(getRadioLabelText(fixture, worker.fluJab)) as any;
 
     expect(selectedRadioButton.checked).toBeTruthy();
   })
@@ -111,9 +111,9 @@ describe('FluJabComponent', () => {
   it('should put updated worker flu jab', async () => {
     const worker = workerBuilder();
     const newFluJab = workerWithFluJab().fluJab;
-    const { click, getAllByRole, getByLabelText } = await getFluJabComponent(worker);
+    const { fixture, click, getAllByRole, getByLabelText } = await getFluJabComponent(worker);
 
-    const selectedRadioButton = getByLabelText(newFluJab) as any;
+    const selectedRadioButton = getByLabelText(getRadioLabelText(fixture, newFluJab));
     const submit = getAllByRole('button')[0];
 
     click(selectedRadioButton);
@@ -124,4 +124,8 @@ describe('FluJabComponent', () => {
 
     expect(req.request.body).toEqual({ fluJab: newFluJab })
   })
+
+  const getRadioLabelText = (fixture, value) => {
+    return fixture.componentInstance.answersAvailable.filter(e => e.value === value)[0].label;
+  }
 });
