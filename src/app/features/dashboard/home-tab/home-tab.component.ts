@@ -170,6 +170,10 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.bulkUploadService.setReturnTo({ url: ['/dashboard'] });
   }
 
+  public setReturnFluJab(): void {
+    this.establishmentService.setReturnTo({ url: ['/dashboard'] });
+  }
+
   /**
    * Function used to open modal box for link a workplace to parent organisation
    * @param {event} triggred event

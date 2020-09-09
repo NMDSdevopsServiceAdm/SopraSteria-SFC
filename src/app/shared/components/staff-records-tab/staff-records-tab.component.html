@@ -29,7 +29,7 @@
   <div  *ngIf="canAddWorker" class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <app-inset-text [color]="'todo'" >
-        <a data-testid="flu-jab" [routerLink]="['/workplace',workplace.uid,'flu-jab']" > Who's had a flu vaccination since 1 September 2020?</a>
+        <a data-testid="flu-jab" [routerLink]="['/workplace',workplace.uid,'flu-jab']" (click)="setReturnFluJab()"> Who's had a flu vaccination since 1 September 2020?</a>
       </app-inset-text>
     </div>
   </div>

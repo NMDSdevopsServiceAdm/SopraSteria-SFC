@@ -6,7 +6,7 @@
       <app-inset-text *ngIf="!workplace.employerType || updateStaffRecords" [color]="'todo'">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <a *ngIf="!workplace?.employerType" 
+            <a *ngIf="!workplace?.employerType"
                [routerLink]="['/workplace', workplace?.uid, 'start']" data-testid="add-workplace-info"
             >Add workplace information</a
             >
@@ -23,7 +23,7 @@
       </app-inset-text>
       <ng-container *ngIf="!updateStaffRecords">
         <app-inset-text [color]="'todo'">
-          <a [routerLink]="['/workplace',workplace.uid,'flu-jab']" data-testid="flu-jab"
+          <a [routerLink]="['/workplace',workplace.uid,'flu-jab']" data-testid="flu-jab" (click)="setReturnFluJab()"
           > Who's had a flu vaccination since 1 September 2020?</a>
         </app-inset-text>
       </ng-container>
