@@ -3,14 +3,14 @@ const moment = require('moment');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
-const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,NINUMBER,'+
+const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,FLUVAC,NINUMBER,'+
 'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,'+
 'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
 'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
 'OTHERJOBROLE,OTHERJRDESC,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
 'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
 
-const _headers_v1_without_chgUnique = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMBER,' +
+const _headers_v1_without_chgUnique = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,NINUMBER,' +
 'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
 'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
 'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
@@ -45,6 +45,7 @@ class Worker {
     this._key = null;
     this._establishmentKey = null;
 
+    this._fluVac = null;
     this._NINumber = null;
     this._postCode = null;
     this._DOB = null;
@@ -147,6 +148,7 @@ class Worker {
 
   static get UNIQUE_WORKER_ID_WARNING () { return 3020; }
   static get DISPLAY_ID_WARNING () { return 3050; }
+  static get FLUVAC_WARNING () { return 3055; }
   static get NINUMBER_WARNING () { return 3060; }
   static get POSTCODE_WARNING () { return 3070; }
   static get DOB_WARNING () { return 3080; }
@@ -264,6 +266,10 @@ class Worker {
 
   get dislpayID () {
     return this._displayId;
+  }
+
+  get fluVac () {
+    return this._fluVac;
   }
 
   get niNumber () {
@@ -627,6 +633,29 @@ class Worker {
     } else {
       this._displayId = myDisplayId;
       return true;
+    }
+  }
+
+  _validateFluVac () {
+    const myFluVac = parseInt(this._currentLine.FLUVAC, 10);
+    const fluVacValues = [1, 2, 999];
+
+    if (myNINumber.length > 0) {
+      if (isNaN(myFluVac) || !fluVacValues.includes(myFluVac)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.FLUVAC_WARNING,
+          errType: 'WORKER_FLUVAC_WARNING',
+          error: 'FLUVAC the code you have selected has not been recognised and will be ignored',
+          source: this._currentLine.FLUVAC
+        });
+        return false;
+      } else {
+        this._fluVac = myFluVac;
+        return true;
+      }
     }
   }
 
@@ -2706,6 +2735,7 @@ class Worker {
     // only continue to process validation, if the status is not UNCHECKED, DELETED OR UNCHANGED
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateContractType() ? false : status;
+      status = !this._validateFluVac() ? false : status;
       status = !this._validateNINumber() ? false : status;
       status = !this._validatePostCode() ? false : status;
       status = !this._validateDOB() ? false : status;
@@ -2776,6 +2806,7 @@ class Worker {
       uniqueWorkerId: this._uniqueWorkerId,
       changeUniqueWorker: this._changeUniqueWorkerId ? this._changeUniqueWorkerId : undefined,
       displayId: this._displayId,
+      fluJab: this._fluVac ? this.fluVac : undefined,
       niNumber: this._NINumber ? this._NINumber : undefined,
       postcode: this._postCode ? this._postCode : undefined,
       dateOfBirth: this._DOB ? this._DOB.format('DD/MM/YYYY') : undefined,
@@ -2878,6 +2909,20 @@ class Worker {
       approvedMentalHealthWorker: this._amhp ? this._amhp : undefined,
       completed: true // on bulk upload, every Worker record is naturally completed!
     };
+
+    if (this._fluVac) {
+      switch (this._fluVac) {
+        case 1:
+          changeProperties.fluJab = 'Yes';
+          break;
+        case 2:
+          changeProperties.fluJab = 'No';
+          break;
+        case 999:
+          changeProperties.fluJab = 'Don\'t know';
+          break;
+      }
+    }
 
     if (this._startInsect) {
       if (this._startInsect === 999) {
@@ -3266,7 +3311,7 @@ class Worker {
 
   // takes the given Worker entity and writes it out to CSV string (one line)
   static toCSV (establishmentId, entity, MAX_QUALIFICATIONS) {
-    // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
+    // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","FLUVAC","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
     //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     const columns = [];
@@ -3282,6 +3327,23 @@ class Worker {
 
     // "DISPLAYID"
     columns.push(csvQuote(entity.nameOrId));
+
+    // "FLUVAC"
+    let fluvac = '';
+    switch (entity.fluJab) {
+      case 'Yes':
+        fluvac = 1;
+        break;
+
+      case 'No':
+        fluvac = 2;
+        break;
+
+      case 'Don\'t know':
+        fluvac = 999;
+        break;
+    }
+    columns.push(fluvac);
 
     // "NINUMBER"
     columns.push(entity.nationalInsuranceNumber ? entity.nationalInsuranceNumber.replace(/\s+/g, '') : ''); // remove whitespace
