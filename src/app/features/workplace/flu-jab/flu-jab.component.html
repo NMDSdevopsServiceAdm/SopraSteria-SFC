@@ -1,21 +1,22 @@
 <app-error-summary *ngIf="submitted && serverError" [serverError]="serverError" [form]="form">
 </app-error-summary>
 
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters-from-desktop">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">Who's had a flu vaccination since 1 September 2020?</h1>
+    <p>
+      You can return and update your information at any time.<br>
+      The link to return to this page is on the <a href="#">home tab</a>.
+    </p>
+    <app-why-collecting-flu-jab></app-why-collecting-flu-jab>
+  </div>
+</div>
+
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters-from-desktop" *ngIf="fluJabs && fluJabs.length">
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl govuk-!-margin-bottom-4">
-            <h1 class="govuk-fieldset__heading">
-              Who's had a flu vaccination since 1 September 2020?
-            </h1>
-            <p class="govuk-!-margin-top-4">
-              You can return and update your information at any time.<br>
-              The link to return to this page is on the <a href="#">home tab</a>.
-            </p>
-            <app-why-collecting-flu-jab></app-why-collecting-flu-jab>
-          </legend>
           <table class="govuk-table">
             <tbody class="govuk-table__body">
               <tr class="govuk-table__row" *ngFor="let item of fluJabRadioList.controls; let i = index;">
