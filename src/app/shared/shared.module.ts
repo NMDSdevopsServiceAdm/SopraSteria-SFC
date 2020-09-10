@@ -25,7 +25,10 @@ import {
   YourWorkplaceDirective,
 } from './components/benchmark-tile/benchmark-tile.component';
 import { BenchmarksTabComponent } from './components/benchmarks-tab/benchmarks-tab.component';
-import { ComparisonGroupHeaderComponent } from './components/benchmarks-tab/comparison-group-header/comparison-group-header.component';
+import { BenchmarksModule } from './components/benchmarks-tab/benchmarks.module';
+import {
+  ComparisonGroupHeaderComponent,
+} from './components/benchmarks-tab/comparison-group-header/comparison-group-header.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-dialog/change-data-owner-dialog.component';
@@ -96,7 +99,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule, BenchmarksModule],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,

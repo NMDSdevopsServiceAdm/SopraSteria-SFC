@@ -23,7 +23,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 
 describe('view-workplace', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
-    const component =  await render(ViewWorkplaceComponent, {
+    const component = await render(ViewWorkplaceComponent, {
       imports: [
         SharedModule,
         RouterModule,
@@ -92,7 +92,7 @@ describe('view-workplace', () => {
       component.fixture.componentInstance.workplace = establishment;
       component.fixture.detectChanges();
 
-      expect(component.getByText('Benchmarks')).toBeTruthy();
+      expect(component.getByTestId('tab_benchmarks')).toBeTruthy();
     });
     it('should not display the Benchmarks tab when the workplace doesnt have canViewBenchmarks permissions', async () => {
       const { component } = await setup(true);
@@ -104,7 +104,7 @@ describe('view-workplace', () => {
       component.fixture.componentInstance.workplace = establishment;
       component.fixture.detectChanges();
 
-      expect(component.queryByText('Benchmarks')).toBeNull();
+      expect(component.queryByTestId('tab_benchmarks')).toBeNull();
     });
     it('should display the Users tab', async () => {
       const { component } = await setup(true);
