@@ -27,6 +27,7 @@ import { DatePickerComponent } from './components/date-picker/date-picker.compon
 import { DetailsComponent } from './components/details/details.component';
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
+import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component'
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
 import {
   LinkToParentCancelDialogComponent,
@@ -109,6 +110,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     EmploymentComponent,
     ErrorSummaryComponent,
     FileValueAccessorDirective,
+    WhyCollectingFluJabComponent,
     InsetTextComponent,
     MessagesComponent,
     NumericAnswerPipe,
@@ -175,6 +177,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     EmploymentComponent,
     ErrorSummaryComponent,
     FileValueAccessorDirective,
+    WhyCollectingFluJabComponent,
     InsetTextComponent,
     MessagesComponent,
     NumericAnswerPipe,
@@ -227,4 +230,4 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TotalStaffComponent
   ],
 })
-export class SharedModule {}
+export class SharedModule { }
