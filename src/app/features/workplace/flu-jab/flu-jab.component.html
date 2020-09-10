@@ -12,7 +12,8 @@
             </h1>
             <p class="govuk-!-margin-top-4">
               You can return and update your information at any time.<br>
-              The link to return to this page is on the <a href="#">home tab</a>.
+              The link to return to this page is on the <a [routerLink]="return.url"
+                [fragment]="return.fragment">{{ returnLinkText }}</a>.
             </p>
             <app-why-collecting-flu-jab></app-why-collecting-flu-jab>
           </legend>

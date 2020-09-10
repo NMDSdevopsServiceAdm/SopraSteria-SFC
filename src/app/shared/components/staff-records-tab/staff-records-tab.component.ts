@@ -5,6 +5,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { URLStructure } from '@core/model/url.model';
 
 @Component({
   selector: 'app-staff-records-tab',
@@ -25,7 +26,7 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private workerService: WorkerService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.subscriptions.add(
@@ -62,6 +63,7 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
   }
 
   public setReturnFluJab(): void {
-    this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'staff-records', });
+    const returnURL: URLStructure = { url: this.workplace.parentUid ? ['/workplace', this.workplace.uid] : ['/dashboard'], fragment: 'staff-records', };
+    this.establishmentService.setReturnTo(returnURL);
   }
 }
