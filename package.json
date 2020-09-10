@@ -11,7 +11,7 @@
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
-    "api:server": "nodemon server.js",
+    "api:server": "nodemon --inspect server.js",
     "server": "npm-run-all -p -l build:watch api:server",
     "server:test": "mocha server/test/**/*.spec.js",
     "server:test:unit": "mocha --exit 'server/test/unit/**/*.spec.js'",

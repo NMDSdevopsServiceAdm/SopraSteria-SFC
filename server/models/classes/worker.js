@@ -182,6 +182,10 @@ class Worker extends EntityValidator {
     return this._properties.get('Postcode') ? this._properties.get('Postcode').property : null;
   }
 
+  get fluJab () {
+    return this._properties.get('FluJab') ? this._properties.get('FluJab').property : null;
+  }
+
   get nationalInsuranceNumber () {
     return this._properties.get('NationalInsuranceNumber') ? this._properties.get('NationalInsuranceNumber').property : null;
   }
