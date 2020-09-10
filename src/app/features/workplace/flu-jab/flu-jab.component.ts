@@ -23,6 +23,7 @@ export class FluJabComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public return: URLStructure;
+  public returnLinkText: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
 
@@ -49,6 +50,7 @@ export class FluJabComponent implements OnInit {
       error => this.onInitError(error)
     );
 
+    this.returnLinkText = this.return.fragment && this.return.fragment == 'staff-records' ? "staff summary page" : "home tab";
     this.submitted = false;
     this.setBackLink();
     this.setupServerErrorsMap();
@@ -86,13 +88,13 @@ export class FluJabComponent implements OnInit {
     })
   }
 
-  private onInitError(error) {}
+  private onInitError(error) { }
 
   radioChange(i, j) {
     const updatedFluJab = this.fluJabs[i];
     this.updatedFluJabs = this.updatedFluJabs.filter(fluJab => fluJab.id !== updatedFluJab.id);
     if (updatedFluJab.fluJab !== this.fluJabAnswers[j]) {
-      this.updatedFluJabs.push({id: updatedFluJab.id, uid: updatedFluJab.uid, fluJab: this.fluJabAnswers[j]});
+      this.updatedFluJabs.push({ id: updatedFluJab.id, uid: updatedFluJab.uid, fluJab: this.fluJabAnswers[j] });
     }
   }
 
@@ -105,7 +107,7 @@ export class FluJabComponent implements OnInit {
   }
 
   onSubmitSuccess(data) {
-    if (this.establishmentService.establishmentId !== this.workplace.uid){
+    if (this.establishmentService.establishmentId !== this.workplace.uid) {
       this.router.navigate(['/workplace', this.workplace.uid], { fragment: 'staff-records' });
     } else {
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
