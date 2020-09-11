@@ -48,10 +48,6 @@ export class FluJabComponent extends QuestionComponent {
   generateUpdateProps() {
     const { fluJab } = this.form.value;
 
-    return fluJab
-      ? {
-          fluJab,
-        }
-      : null;
+    return { fluJab }
   }
 }

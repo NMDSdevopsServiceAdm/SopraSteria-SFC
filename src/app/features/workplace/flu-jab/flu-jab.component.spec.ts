@@ -10,6 +10,23 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { RouterTestingModule } from '@angular/router/testing';
 import { WindowRef } from '@core/services/window.ref';
 
+const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
+
+const workerBuilder = build('Worker', {
+  fields: {
+    id: sequence(),
+    uid: fake((f) => f.random.uuid()),
+    name: fake((f) => f.name.findName()),
+    fluJab: null
+  }
+});
+
+const workerWithFluJab = () => workerBuilder({
+  overrides: {
+    fluJab: oneOf('Yes', 'No', `Don't know`)
+  }
+});
+
 const getFluJabComponent = async () => {
   return render(FluJabComponent, {
     imports: [
@@ -32,109 +49,66 @@ const getFluJabComponent = async () => {
   });
 }
 
-const setup = async (fluJab = null) => {
+const setup = async (workers) => {
   const httpTestingController = TestBed.inject(HttpTestingController);
   const req = httpTestingController.expectOne('/api/establishment/mocked-uid/fluJab');
-  req.flush([
-    {
-      "id": 1,
-      "uid": "d96d2681-4653-4709-8dda-88b695c177ea",
-      "name": "Joe Bloggs",
-      "fluJab": fluJab
-    },
-    {
-      "id": 2,
-      "uid": "e96d2681-4653-4709-8dda-88b695c177ea",
-      "name": "Jane Bloggs",
-      "fluJab": 'No'
-    }
-  ]);
+  req.flush(workers);
 }
 
-describe('FluJabComponent', () => {
+fdescribe('FluJabComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
   });
 
   it('should show each workplace worker flu jab', async () => {
+    const worker = workerBuilder();
+
     const { fixture, getByText } = await getFluJabComponent();
 
-    await setup();
+    await setup([worker]);
 
     fixture.detectChanges();
 
-    expect(getByText('Joe Bloggs'));
+    expect(getByText(worker.name));
   })
 
-  it('should not select any option when worker flu jab not set', async () => {
+  it('should not select a radio button when worker has not answered question', async () => {
+    const worker = workerBuilder();
+
+    const { fixture, getAllByRole } = await getFluJabComponent();
+
+    await setup([worker]);
+
+    fixture.detectChanges();
+
+    const answers = getAllByRole('radio') as any[];
+    const checkedAnswers = answers.map(answer => answer.checked);
+
+    expect(checkedAnswers).not.toEqual(jasmine.arrayContaining([true]));
+  })
+
+  it('should pre-select the radio buttons with workers flu jabs', async () => {
+    const worker = workerWithFluJab();
+
     const { fixture } = await getFluJabComponent();
 
-    await setup();
+    await setup([worker]);
 
     fixture.detectChanges();
 
-    const yes = fixture.nativeElement.querySelector('input[id="fluJab-0-0"]');
-    const no = fixture.nativeElement.querySelector('input[id="fluJab-0-1"]');
-    const dontKnow = fixture.nativeElement.querySelector('input[id="fluJab-0-2"]');
+    const selectedRadioButton = fixture.nativeElement.querySelector(`input[value="${worker.fluJab}"]`);
 
-    expect(yes.checked).toBeFalsy();
-    expect(no.checked).toBeFalsy();
-    expect(dontKnow.checked).toBeFalsy();
+    expect(selectedRadioButton.checked).toBeTruthy();
   })
 
-  it('should select "Yes" when worker has flu jab', async () => {
-    const { fixture } = await getFluJabComponent();
+  it('should put all worker flu jabs', async () => {
+    const firstWorker = workerBuilder();
+    const secondWorker = workerWithFluJab();
 
-    await setup('Yes');
-
-    fixture.detectChanges();
-
-    const yes = fixture.nativeElement.querySelector('input[id="fluJab-0-0"]');
-    const no = fixture.nativeElement.querySelector('input[id="fluJab-0-1"]');
-    const dontKnow = fixture.nativeElement.querySelector('input[id="fluJab-0-2"]');
-
-    expect(yes.checked).toBeTruthy();
-    expect(no.checked).toBeFalsy();
-    expect(dontKnow.checked).toBeFalsy();
-  })
-
-  it('should select "No" when worker does not have flu jab', async () => {
-    const { fixture } = await getFluJabComponent();
-
-    await setup('No');
-
-    fixture.detectChanges();
-
-    const yes = fixture.nativeElement.querySelector('input[id="fluJab-0-0"]');
-    const no = fixture.nativeElement.querySelector('input[id="fluJab-0-1"]');
-    const dontKnow = fixture.nativeElement.querySelector('input[id="fluJab-0-2"]');
-
-    expect(yes.checked).toBeFalsy();
-    expect(no.checked).toBeTruthy();
-    expect(dontKnow.checked).toBeFalsy();
-  })
-
-  it('should select "Don\'t know" when worker does not know flu jab', async () => {
-    const { fixture } = await getFluJabComponent();
-
-    await setup('Don\'t know');
-
-    fixture.detectChanges();
-
-    const yes = fixture.nativeElement.querySelector('input[id="fluJab-0-0"]');
-    const no = fixture.nativeElement.querySelector('input[id="fluJab-0-1"]');
-    const dontKnow = fixture.nativeElement.querySelector('input[id="fluJab-0-2"]');
-
-    expect(yes.checked).toBeFalsy();
-    expect(no.checked).toBeFalsy();
-    expect(dontKnow.checked).toBeTruthy();
-  })
-
-  it('should only put updated worker flu jabs', async () => {
     const { fixture, click, getAllByRole } = await getFluJabComponent();
 
-    await setup();
+    await setup([firstWorker, secondWorker]);
 
     fixture.detectChanges();
 
@@ -147,37 +121,17 @@ describe('FluJabComponent', () => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     const req = httpTestingController.expectOne('/api/establishment/mocked-uid/workers');
 
-    expect(req.request.body).toEqual([{
-      "id": 1,
-      "uid": "d96d2681-4653-4709-8dda-88b695c177ea",
-      "fluJab": "Yes"
-    }])
-  })
-
-  it('should not only put reverted worker flu jabs', async () => {
-    const { fixture, click, getAllByRole } = await getFluJabComponent();
-
-    await setup();
-
-    fixture.detectChanges();
-
-    const yes = fixture.nativeElement.querySelector('input[id="fluJab-0-0"]');
-    const yes2 = fixture.nativeElement.querySelector('input[id="fluJab-1-0"]');
-    const no2 = fixture.nativeElement.querySelector('input[id="fluJab-1-1"]');
-    const submit = getAllByRole('button')[0];
-
-    click(yes);
-    click(yes2);
-    click(no2);
-    click(submit);
-
-    const httpTestingController = TestBed.inject(HttpTestingController);
-    const req = httpTestingController.expectOne('/api/establishment/mocked-uid/workers');
-
-    expect(req.request.body).toEqual([{
-      "id": 1,
-      "uid": "d96d2681-4653-4709-8dda-88b695c177ea",
-      "fluJab": "Yes"
-    }])
+    expect(req.request.body).toEqual([
+      {
+        "id": firstWorker.id,
+        "uid": firstWorker.uid,
+        "fluJab": "Yes"
+      },
+      {
+        "id": secondWorker.id,
+        "uid": secondWorker.uid,
+        "fluJab": secondWorker.fluJab
+      }
+    ])
   })
 });

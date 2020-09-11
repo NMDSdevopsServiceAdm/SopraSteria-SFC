@@ -72,7 +72,7 @@ const getFluJabComponent = async (worker) => {
   });
 }
 
-describe('FluJabComponent', () => {
+fdescribe('FluJabComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
@@ -85,18 +85,6 @@ describe('FluJabComponent', () => {
     const checkedAnswers = answers.map(answer => answer.checked);
 
     expect(checkedAnswers).not.toEqual(jasmine.arrayContaining([true]));
-  })
-
-  it('should not select a radio button when worker has not answered question', async () => {
-    const worker = workerBuilder();
-    const { click, getAllByRole } = await getFluJabComponent(worker);
-
-    const submit = getAllByRole('button')[0];
-
-    click(submit);
-
-    const httpTestingController = TestBed.inject(HttpTestingController);
-    httpTestingController.expectNone(`/api/establishment/mocked-uid/worker/${worker.uid}`);
   })
 
   it('should pre-select the radio button with worker flu jab', async () => {
@@ -123,5 +111,19 @@ describe('FluJabComponent', () => {
     const req = httpTestingController.expectOne(`/api/establishment/mocked-uid/worker/${worker.uid}`);
 
     expect(req.request.body).toEqual({ fluJab: newFluJab })
+  })
+
+  it('should put flu jab null when question not answered', async () => {
+    const worker = workerBuilder();
+    const { click, getAllByRole } = await getFluJabComponent(worker);
+
+    const submit = getAllByRole('button')[0];
+
+    click(submit);
+
+    const httpTestingController = TestBed.inject(HttpTestingController);
+    const req = httpTestingController.expectOne(`/api/establishment/mocked-uid/worker/${worker.uid}`);
+
+    expect(req.request.body).toEqual({ fluJab: null })
   })
 });
