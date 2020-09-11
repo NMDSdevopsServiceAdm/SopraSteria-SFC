@@ -36,7 +36,7 @@ export class ParentRequestComponent implements OnInit {
   public approveParentRequest(approve: boolean, rejectionReason: string) {
     this.approve = approve;
     this.rejectionReason = rejectionReason;
-    
+
     event.preventDefault();
 
     this.dialogService
@@ -57,7 +57,8 @@ export class ParentRequestComponent implements OnInit {
   }
 
   public navigateToWorkplace(id, username, nmdsId, e): void {
-    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId, e);
+    e.preventDefault();
+    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   }
 
   public onSubmit() {

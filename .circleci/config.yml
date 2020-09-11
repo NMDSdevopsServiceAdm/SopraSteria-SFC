@@ -151,6 +151,8 @@ jobs:
             keys:
                 - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
+          command: sudo apt-get install -yq libxss1
+      - run:
           command: npm run test
   test_backend:
     docker:

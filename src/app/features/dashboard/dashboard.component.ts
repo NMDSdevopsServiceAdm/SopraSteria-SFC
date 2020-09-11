@@ -51,6 +51,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   ) { }
 
   ngOnInit() {
+    this.authService.isOnAdminScreen = false;
     this.workplace = this.establishmentService.primaryWorkplace;
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canViewBenchmarks = this.permissionsService.can(workplaceUid,'canViewBenchmarks');
@@ -105,7 +106,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       fragment: 'user-accounts',
     });
 
-    //get latest notification after every 30 seconds
+    // get latest notification after every 30 seconds
     this.subscriptions.add(
       interval(30000).subscribe(
         () => {

@@ -4,6 +4,7 @@ const Apm = require("@sentry/apm");
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: "sfc",
+  sampleRate: 7,
   express: {
     userContext: ["id"],
     parentIdSource: 'X-Honeycomb-Trace',
@@ -16,8 +17,6 @@ const beeline = require('honeycomb-beeline')({
 });
 
 var express = require('express');
-
-const logger = require('./server/utils/logger')
 
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -85,19 +84,15 @@ if (config.get('sentry.dsn')) {
   Sentry.init({
     dsn: config.get('sentry.dsn'),
     integrations: [
-      // enable HTTP calls tracing
-      new Sentry.Integrations.Http({ tracing: true }),
       // enable Express.js middleware tracing
       new Apm.Integrations.Express({ app })
     ],
     environment: config.get('env'),
-    tracesSampleRate: config.get('sentry.sample_rate'),
   });
 }
 app.use(Sentry.Handlers.requestHandler({
   user: ['id']
 }));
-app.use(Sentry.Handlers.tracingHandler());
 app.use(compression());
 
 /* public/download - proxy interception */
@@ -168,7 +163,7 @@ app.set('views', path.join(__dirname, '/server/views'));
 app.set('view engine', 'pug');
 
 app.use(favicon(path.join(__dirname, 'dist/favicon.ico')));
-app.use(morgan('short', { stream: {write: (text) => { logger.info(text.replace(/\n$/, '')); } } }));
+app.use(morgan('short', { stream: {write: (text) => { console.log(text); } } }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -266,7 +261,6 @@ const startApp = () => {
       beeline._apiForTesting().honey.writeKey = config.get('honeycomb.write_key');
     }
 
-    logger.start();
     const listenPort = parseInt(config.get('listen.port'), 10);
     app.set('port', listenPort);
     app.listen(app.get('port'));

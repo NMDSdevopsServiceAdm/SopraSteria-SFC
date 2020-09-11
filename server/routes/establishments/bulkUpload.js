@@ -1,5 +1,4 @@
 'use strict';
-
 const moment = require('moment');
 const csv = require('csvtojson');
 const uuid = require('uuid');
@@ -7,6 +6,7 @@ const config = require('../../config/config');
 const dbModels = require('../../models');
 const timerLog = require('../../utils/timerLog');
 const slack = require('../../utils/slack/slack-logger');
+const BUDI = require('../../models/BulkImport/BUDI').BUDI;
 
 const s3 = new (require('aws-sdk')).S3({
   region: String(config.get('bulkupload.region'))
@@ -34,7 +34,8 @@ const buStates = [
   'FAILED',
   'WARNINGS',
   'PASSED',
-  'COMPLETING'
+  'COMPLETING',
+  'UNKNOWN'
 ].reduce((acc, item) => {
   acc[item] = item;
 
@@ -177,6 +178,13 @@ const acquireLock = async function (logic, newState, req, res) {
 
 const lockStatusGet = async (req, res) => {
   const { establishmentId } = req;
+  res.setTimeout(1000, () => {
+      res.status(200).send({
+        establishmentId,
+        bulkUploadState: buStates.UNKNOWN,
+        bulkUploadLockHeld: true
+      });
+  });
 
   const currentLockState = await lockStatus(establishmentId);
 
@@ -195,20 +203,25 @@ const lockStatusGet = async (req, res) => {
 };
 
 const releaseLock = async (req, res, next, nextState = null) => {
-  const establishmentId = req.query.subEstId || req.establishmentId;
+  try {
+    const establishmentId = req.query.subEstId || req.establishmentId;
 
-  if (Number.isInteger(establishmentId)) {
-    await releaseLockQuery(establishmentId, nextState);
+    if (Number.isInteger(establishmentId)) {
+      await releaseLockQuery(establishmentId, nextState);
 
-    console.log(`Lock released for establishment ${establishmentId}`);
-  }
+      console.log(`Lock released for establishment ${establishmentId}`);
+    }
 
-  if (res !== null) {
-    res
-      .status(200)
-      .send({
-        establishmentId
-      });
+    if (res !== null) {
+      res
+        .status(200)
+        .send({
+          establishmentId
+        });
+    }
+  } catch (error) {
+    console.error(error.name);
+    console.error(error.message);
   }
 };
 
@@ -1151,6 +1164,9 @@ const validateBulkUploadFiles = async (
   });
 
   myWorkers.forEach(thisWorker => {
+    // check if hours matches others in the same job and same annual pay
+    checkPartTimeSalary(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
+
     // uniquness for a worker is across both the establishment and the worker
     const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
     const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
@@ -1206,7 +1222,7 @@ const validateBulkUploadFiles = async (
         }
       }
     }
-    });
+  });
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no workers records');
   }
@@ -2473,8 +2489,53 @@ const checkDuplicateLocations = async (
       locations[locationId] = thisEstablishment.lineNumber;
     });
 };
+// check if hours matches others in the same job and same annual pay
+const checkPartTimeSalary = (thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors) => {
+  if (thisWorker._currentLine.STATUS === 'UNCHECKED' || thisWorker._currentLine.STATUS === 'DELETE') {
+    return;
+  }
+  if (
+    (thisWorker._currentLine.CONTHOURS !== '' && parseFloat(thisWorker._currentLine.CONTHOURS) < 37) &&
+    (thisWorker._currentLine.SALARY !== '' && thisWorker._currentLine.SALARYINT === '1')
+  ) {
+    let workersToCheckinDB = [];
+    let otherWorkerFTE = myWorkers.some(function(worker) {
+      if (
+        (worker._currentLine.STATUS !== 'DELETE' && worker._currentLine.STATUS !== 'UNCHECKED' && worker._currentLine.STATUS !== 'NOCHANGE') &&
+        (worker._currentLine.SALARYINT === '1') &&
+        (worker._currentLine.SALARY === thisWorker._currentLine.SALARY) &&
+        (worker._currentLine.MAINJOBROLE === thisWorker._currentLine.MAINJOBROLE) &&
+        (parseFloat(worker._currentLine.CONTHOURS) > 36)
+      ) {
+        return true;
+      } else if (worker._currentLine.STATUS === 'UNCHECKED' || worker._currentLine.STATUS === 'NOCHANGE') {
+        workersToCheckinDB.push(worker._currentLine.UNIQUEWORKERID);
+      }
+    });
 
-const checkDuplicateWorkerID = (thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors ) => {
+    if (otherWorkerFTE) {
+      csvWorkerSchemaErrors.push(thisWorker.ftePayCheckHasDifferentHours());
+    } else if (workersToCheckinDB.length) {
+      if (myCurrentEstablishments.some(function(establishment) {
+        return workersToCheckinDB.some(function(localID) {
+          localID = localID.replace(/\s/g, '');
+          if (establishment._workerEntities[localID]) {
+            const worker = establishment._workerEntities[localID];
+            if ((worker.annualHourlyPay && worker.annualHourlyPay.value === 'Annually' && worker.annualHourlyPay.rate == thisWorker._currentLine.SALARY) && worker.mainJob) {
+              const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(thisWorker._currentLine.MAINJOBROLE));
+              if ((worker.mainJob.jobId == mappedRole) && (worker.contractedHours && parseFloat(worker.contractedHours.hours) > 36)) {
+                return true;
+              }
+            }
+          }
+        });
+      })) {
+        csvWorkerSchemaErrors.push(thisWorker.ftePayCheckHasDifferentHours());
+      }
+    }
+  }
+};
+const checkDuplicateWorkerID = (thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors) => {
   // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
   if (changeKeyNoWhitespace && (allWorkersByKey[changeKeyNoWhitespace] || allKeys.includes(changeKeyNoWhitespace))) {
     // this worker is a duplicate
@@ -2522,3 +2583,4 @@ module.exports.validateEstablishmentCsv = validateEstablishmentCsv;
 module.exports.exportToCsv = exportToCsv;
 module.exports.determineMaxQuals = determineMaxQuals;
 module.exports.sendCountToSlack = sendCountToSlack;
+module.exports.checkPartTimeSalary = checkPartTimeSalary;

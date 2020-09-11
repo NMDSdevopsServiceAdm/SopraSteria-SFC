@@ -98,12 +98,5 @@
         </li>
       </ul>
     </ng-container>
-    <ul *ngIf="[adminRole].includes(user.role)" class="govuk-list">
-      <li><a [routerLink]="['/search-users']">Search Users</a></li>
-      <li><a [routerLink]="['/search-establishments']">Search Establishments</a></li>
-      <li><a [routerLink]="['/registrations']">Registrations</a></li>
-      <li><a [routerLink]="['/parent-requests']">Parent Requests</a></li>
-      <li><a [routerLink]="['/cqc-status-changes']">CQC Status Requests</a></li>
-    </ul>
   </div>
 </div>
