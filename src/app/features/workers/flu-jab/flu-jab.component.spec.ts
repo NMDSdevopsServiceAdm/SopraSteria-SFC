@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { render, getByRole } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import { WorkerService } from '../../../core/services/worker.service';
 import { MockWorkerService } from '../../../core/test-utils/MockWorkerService';
 import { FluJabComponent } from './flu-jab.component';
@@ -12,18 +12,13 @@ import { SharedModule } from '@shared/shared.module';
 import { HttpClient } from '@angular/common/http';
 import { StaffSummaryComponent } from '@shared/components/staff-summary/staff-summary.component';
 
-const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
+const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
 
 const workerBuilder = build('Worker', {
   fields: {
-    id: sequence(),
     uid: fake((f) => f.random.uuid()),
-    nameOrId: fake((f) => f.name.findName()),
-    // TODO: work out why this breaks the mandatory tests
     mainJob: {
-      id: sequence(),
-      title: fake((f) => f.lorem.sentence()),
-      other: null
+      id: 1
     },
     fluJab: null
   }
