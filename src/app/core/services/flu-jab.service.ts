@@ -6,13 +6,7 @@ export interface FluJabResponse {
   id: number;
   uid: string;
   name: string;
-  fluJab: FluJabEnum;
-}
-
-export enum FluJabEnum {
-  YES = 'Yes',
-  NO = 'No',
-  DONT_KNOW = 'Don\'t know',
+  fluJab: string;
 }
 
 @Injectable({

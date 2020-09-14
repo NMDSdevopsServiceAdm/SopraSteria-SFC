@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormArray } from '@angular/forms';
-import { FluJabService, FluJabResponse, FluJabEnum } from '@core/services/flu-jab.service';
+import { FluJabService } from '@core/services/flu-jab.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
@@ -13,9 +13,6 @@ import { Question } from '../question/question.component';
   templateUrl: './flu-jab.component.html'
 })
 export class FluJabComponent extends Question {
-  public fluJabAnswers = [FluJabEnum.YES, FluJabEnum.NO, FluJabEnum.DONT_KNOW];
-  public fluJabs: FluJabResponse[];
-
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -28,7 +25,7 @@ export class FluJabComponent extends Question {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
     this.form = this.formBuilder.group({
-      fluJabsRadioList: this.formBuilder.array([])
+      fluJabs: this.formBuilder.array([])
     });
   }
 
@@ -57,29 +54,20 @@ export class FluJabComponent extends Question {
     ];
   }
 
-  get fluJabRadioList() {
-    return this.form.get('fluJabsRadioList') as FormArray;
+  get fluJabsArray() {
+    return this.form.get('fluJabs') as FormArray;
   }
 
-  radioChange(i, j) {
-    this.fluJabRadioList.at(i).patchValue(this.fluJabAnswers[j])
-  }
-
-  private onInitSuccess(data) {
-    this.fluJabs = data;
-    this.fluJabs.forEach((fluJab) => {
-      this.fluJabRadioList.push(this.formBuilder.control(fluJab.fluJab));
+  private onInitSuccess(response) {
+    response.forEach((fluJab) => {
+      this.fluJabsArray.push(this.formBuilder.group(fluJab));
     })
   }
 
   protected generateUpdateProps() {
-    const updatedFluJabs = [];
-    this.fluJabRadioList.controls.forEach((fluJabInput, i) => {
-      if (fluJabInput.value !== this.fluJabs[i].fluJab) {
-        updatedFluJabs.push({id: this.fluJabs[i].id, uid: this.fluJabs[i].uid, fluJab: fluJabInput.value});
-      }
+    return this.fluJabsArray.value.map((item) => {
+      return { uid: item.uid, fluJab: item.fluJab }
     })
-    return updatedFluJabs;
   }
 
   protected updateEstablishment(props) {

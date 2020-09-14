@@ -72,7 +72,7 @@ const getFluJabComponent = async (worker) => {
   });
 }
 
-fdescribe('FluJabComponent', () => {
+describe('FluJabComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();

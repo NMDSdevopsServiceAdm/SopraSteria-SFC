@@ -55,7 +55,7 @@ const setup = async (workers) => {
   req.flush(workers);
 }
 
-fdescribe('FluJabComponent', () => {
+describe('FluJabComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
@@ -112,7 +112,7 @@ fdescribe('FluJabComponent', () => {
 
     fixture.detectChanges();
 
-    const yes = fixture.nativeElement.querySelector('input[id="fluJab-0-0"]');
+    const yes = fixture.nativeElement.querySelector('input[id="fluJab-yes-0"]');
     const submit = getAllByRole('button')[0];
 
     click(yes);
@@ -123,12 +123,10 @@ fdescribe('FluJabComponent', () => {
 
     expect(req.request.body).toEqual([
       {
-        "id": firstWorker.id,
         "uid": firstWorker.uid,
         "fluJab": "Yes"
       },
       {
-        "id": secondWorker.id,
         "uid": secondWorker.uid,
         "fluJab": secondWorker.fluJab
       }
