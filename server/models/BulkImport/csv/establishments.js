@@ -1650,7 +1650,7 @@ class Establishment {
             break;
           }
         } else {
-          if (buValues[i] > 0) {
+          if (buValues && buValues[i] > 0) {
             isSame = false;
           }
         }
