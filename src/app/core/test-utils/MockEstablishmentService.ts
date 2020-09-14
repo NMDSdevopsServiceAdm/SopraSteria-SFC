@@ -70,7 +70,7 @@ export class MockEstablishmentService extends EstablishmentService {
   }
 
   public get establishmentId(): string {
-    return '';
+    return '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
   }
 
   get primaryWorkplace(): Establishment {

@@ -21,9 +21,6 @@ const WorkerExceptions = require('./worker/workerExceptions');
 const Training = require('./training').Training;
 const Qualification = require('./qualification').Qualification;
 
-// notifications
-const AWSKinesis = require('../../aws/kinesis');
-
 // Worker properties
 const WorkerProperties = require('./worker/workerProperties').WorkerPropertyManager;
 const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
@@ -183,6 +180,10 @@ class Worker extends EntityValidator {
 
   get postcode () {
     return this._properties.get('Postcode') ? this._properties.get('Postcode').property : null;
+  }
+
+  get fluJab () {
+    return this._properties.get('FluJab') ? this._properties.get('FluJab').property : null;
   }
 
   get nationalInsuranceNumber () {
@@ -512,6 +513,19 @@ class Worker extends EntityValidator {
     }
   }
 
+  static async saveMany(savedBy, workers) {
+    try {
+      await models.sequelize.transaction(async t => {
+        for (let worker of workers) {
+          await worker.save(savedBy, false, 0, t);
+        }
+      })
+    } catch (err) {
+      console.error('Worker::saveMany error: ', err);
+      throw err;
+    }
+  }
+
   // saves the Worker to DB. Returns true if saved; false is not.
   // Throws "WorkerSaveException" on error
   async save (savedBy, bulkUploaded = false, ttl = 0, externalTransaction = null, associatedEntities = false) {
@@ -612,9 +626,6 @@ class Worker extends EntityValidator {
             allAuditEvents.push(wdfAudit);
           }
           await models.workerAudit.bulkCreate(allAuditEvents, { transaction: thisTransaction });
-
-          // this is an async method - don't wait for it to return
-          AWSKinesis.workerPump(AWSKinesis.CREATED, this.toJSON());
 
           this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
         });
@@ -756,9 +767,6 @@ class Worker extends EntityValidator {
             if (associatedEntities) {
               await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
             }
-
-            // this is an async method - don't wait for it to return
-            AWSKinesis.workerPump(AWSKinesis.UPDATED, this.toJSON());
 
             this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
           } else {
@@ -1032,9 +1040,6 @@ class Worker extends EntityValidator {
         if (this._status === null) {
           await WdfCalculator.calculate(deletedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_DELETE, false);
         }
-
-        // this is an async method - don't wait for it to return
-        AWSKinesis.workerPump(AWSKinesis.DELETED, this.toJSON());
 
         if (t) {
           t.commit();

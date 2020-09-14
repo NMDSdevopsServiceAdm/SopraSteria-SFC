@@ -51,7 +51,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canViewWorkplaces: boolean;
   public canViewReports: boolean;
   public isParent: boolean;
-  public updateStaffRecords: boolean;
+  public updateStaffRecords = true;
   public user: UserDetails;
   public canViewChangeDataOwner: boolean;
   public canViewDataPermissionsLink: boolean;
@@ -64,13 +64,14 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public parentStatusRequested: boolean;
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
+  public workers: any[];
 
   constructor(
     private bulkUploadService: BulkUploadService,
     private permissionsService: PermissionsService,
     private parentRequestsService: ParentRequestsService,
     private userService: UserService,
-    private workerService: WorkerService,
+    public workerService: WorkerService,
     private dialogService: DialogService,
     private alertService: AlertService,
     private router: Router,
@@ -167,6 +168,10 @@ export class HomeTabComponent implements OnInit, OnDestroy {
 
   public setReturn(): void {
     this.bulkUploadService.setReturnTo({ url: ['/dashboard'] });
+  }
+
+  public setReturnFluJab(): void {
+    this.establishmentService.setReturnTo({ url: ['/dashboard'] });
   }
 
   /**

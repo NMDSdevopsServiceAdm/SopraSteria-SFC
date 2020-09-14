@@ -23,9 +23,6 @@ const ValidationMessage = require('./validations/validationMessage').ValidationM
 // associations
 const Worker = require('./worker').Worker;
 
-// notifications
-const AWSKinesis = require('../../aws/kinesis');
-
 // exceptions
 const EstablishmentExceptions = require('./establishment/establishmentExceptions');
 
@@ -844,9 +841,6 @@ class Establishment extends EntityValidator {
             );
           }
 
-          // this is an async method - don't wait for it to return
-          AWSKinesis.establishmentPump(AWSKinesis.CREATED, this.toJSON());
-
           // if requested, propagate the saving of this establishment down to each of the associated entities
           if (associatedEntities) {
             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
@@ -1065,9 +1059,6 @@ class Establishment extends EntityValidator {
             if (associatedEntities) {
               await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
             }
-
-            // this is an async method - don't wait for it to return
-            AWSKinesis.establishmentPump(AWSKinesis.UPDATED, this.toJSON());
 
             this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
           } else {
@@ -1585,9 +1576,6 @@ class Establishment extends EntityValidator {
             false
           );
         }
-
-        // this is an async method - don't wait for it to return
-        AWSKinesis.establishmentPump(AWSKinesis.DELETED, this.toJSON());
 
         if (t) {
           t.commit();
