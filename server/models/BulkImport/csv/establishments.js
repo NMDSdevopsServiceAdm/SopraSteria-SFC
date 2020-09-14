@@ -1648,7 +1648,7 @@ class Establishment {
             break;
           }
         } else {
-          if (buValue> 0) {
+          if (buValue > 0) {
             isSame = false;
             break;
           }
