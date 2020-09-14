@@ -1521,7 +1521,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.VACANCIES_ERROR,
         errType: 'VACANCIES_ERROR',
-        error: 'ALLJOBROLES/STARTERS/LEAVERS/VACANCIES do not have the same number of items (i.e. numbers and/or semi colons).',
+        error: 'ALLJOBROLES and VACANCIES do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.VACANCIES} - ${this._currentLine.ALLJOBROLES}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1531,7 +1531,8 @@ class Establishment {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STARTERS_ERROR,
-        errType: 'ALLJOBROLES/STARTERS/LEAVERS/VACANCIES do not have the same number of items (i.e. numbers and/or semi colons).',
+        errType: 'STARTERS_ERROR',
+        error: 'ALLJOBROLES and STARTERS do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.STARTERS} - ${this._currentLine.ALLJOBROLES}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1542,7 +1543,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.LEAVERS_ERROR,
         errType: 'LEAVERS_ERROR',
-        error: 'ALLJOBROLES/STARTERS/LEAVERS/VACANCIES do not have the same number of items (i.e. numbers and/or semi colons).',
+        error: 'ALLJOBROLES and LEAVERS do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.LEAVERS} - ${this._currentLine.ALLJOBROLES}`,
         name: this._currentLine.LOCALESTID
       });
