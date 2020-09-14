@@ -1642,10 +1642,10 @@ class Establishment {
         if (dbValues && Array.isArray(dbValues) && dbValues.length > 0) {
           const starterJob = dbValues.find(job => job.jobId === mappedRole);
 
-          if (starterJob && starterJob.total !== buValues[i]) {
+          if (starterJob && buValues && starterJob.total !== buValues[i]) {
             isSame = false;
             break;
-          } else if (!starterJob && buValues[i] > 0) {
+          } else if (!starterJob && buValues && buValues[i] > 0) {
             isSame = false;
             break;
           }
