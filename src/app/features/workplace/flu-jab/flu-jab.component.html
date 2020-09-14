@@ -1,41 +1,56 @@
 <app-error-summary *ngIf="submitted && serverError" [serverError]="serverError" [form]="form">
 </app-error-summary>
 
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters-from-desktop">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">Who's had a flu vaccination since 1 September 2020?</h1>
+    <p>
+      You can return and update your information at any time.<br>
+      The link to return to this page is on the <a href="#">home tab</a>.
+    </p>
+    <app-why-collecting-flu-jab></app-why-collecting-flu-jab>
+  </div>
+</div>
+
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-three-quarters-from-desktop" *ngIf="fluJabs && fluJabs.length">
+    <div class="govuk-grid-column-three-quarters-from-desktop">
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl govuk-!-margin-bottom-4">
-            <h1 class="govuk-fieldset__heading">
-              Who's had a flu vaccination since 1 September 2020?
-            </h1>
-            <p class="govuk-!-margin-top-4">
-              You can return and update your information at any time.<br>
-              The link to return to this page is on the <a [routerLink]="return.url"
-                [fragment]="return.fragment">{{ returnLinkText }}</a>.
-            </p>
-            <app-why-collecting-flu-jab></app-why-collecting-flu-jab>
-          </legend>
           <table class="govuk-table">
             <tbody class="govuk-table__body">
-              <tr class="govuk-table__row" *ngFor="let item of fluJabRadioList.controls; let i = index;">
-                <th scope="row" class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third">
-                  {{ fluJabs[i].name }}
-                </th>
-                <td class="govuk-table__cell">
-                  <div class="govuk-radios govuk-radios--inline">
-                    <div *ngFor="let answer of fluJabAnswers; let j = index"
-                      class="govuk-radios__item govuk-!-margin-left-2 govuk-!-margin-bottom-0">
-                      <input id="fluJab-{{ i }}-{{ j }}" name="fluJab-{{ i }}" class="govuk-radios__input" type="radio"
-                        (change)="radioChange(i, j)" [checked]="item.value == answer" [value]="answer" />
-                      <label class="govuk-label govuk-radios__label" for="fluJab-{{ i }}-{{ j }}">
-                        {{ answer }}
-                      </label>
+              <ng-container formArrayName="fluJabs">
+                <tr class="govuk-table__row" *ngFor="let item of fluJabsArray.controls; let i = index;" [formGroupName]="i">
+                  <th scope="row" class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third">
+                    {{ item.value.name }}
+                  </th>
+                  <td class="govuk-table__cell">
+                    <div class="govuk-radios govuk-radios--inline">
+                      <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" formControlName="fluJab" id="fluJab-yes-{{ i }}"
+                          type="radio" value="Yes" />
+                        <label class="govuk-label govuk-radios__label" for="fluJab-yes-{{ i }}">
+                          Yes
+                        </label>
+                      </div>
+                      <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" formControlName="fluJab" id="fluJab-no-{{ i }}"
+                          type="radio" value="No" />
+                        <label class="govuk-label govuk-radios__label" for="fluJab-no-{{ i }}">
+                          No
+                        </label>
+                      </div>
+                      <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" formControlName="fluJab" id="fluJab-dontKnow-{{ i }}"
+                          type="radio" value="Don't know" />
+                        <label class="govuk-label govuk-radios__label" for="fluJab-dontKnow-{{ i }}">
+                          Don't know
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
+                  </td>
+                </tr>
+              </ng-container>
             </tbody>
           </table>
         </fieldset>

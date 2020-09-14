@@ -1,66 +1,43 @@
-import { OnInit, Component, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
-import { FluJabService, FluJabResponse, FluJabEnum } from '@core/services/flu-jab.service';
+import { Component } from '@angular/core';
+import { FormBuilder, FormArray } from '@angular/forms';
+import { FluJabService } from '@core/services/flu-jab.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Router } from '@angular/router';
-import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
-import { Establishment } from '@core/model/establishment.model';
-import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { AlertService } from '@core/services/alert.service';
+import { Question } from '../question/question.component';
 
 @Component({
   selector: 'app-flu-jab',
   templateUrl: './flu-jab.component.html'
 })
-export class FluJabComponent implements OnInit {
-  private workplace: Establishment;
-  private updatedFluJabs: any = [];
-  public submitted: boolean;
-  public fluJabAnswers = [FluJabEnum.YES, FluJabEnum.NO, FluJabEnum.DONT_KNOW];
-  public fluJabs: FluJabResponse[];
-  @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
-  public return: URLStructure;
-  public returnLinkText: string;
-  public serverErrorsMap: Array<ErrorDefinition>;
-  public serverError: string;
-
+export class FluJabComponent extends Question {
   constructor(
     protected formBuilder: FormBuilder,
-    protected establishmentService: EstablishmentService,
-    protected fluJabService: FluJabService,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    protected fluJabService: FluJabService,
     protected alertService: AlertService
   ) {
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+
     this.form = this.formBuilder.group({
-      fluJabsRadioList: this.formBuilder.array([])
+      fluJabs: this.formBuilder.array([])
     });
   }
 
-  ngOnInit(): void {
+  protected init(): void {
     this.return = this.establishmentService.returnTo;
-    this.workplace = this.establishmentService.establishment;
 
-    this.fluJabService.getFluJabsByWorkplace(this.workplace.uid).subscribe(
-      response => this.onInitSuccess(response),
-      error => this.onInitError(error)
+    this.fluJabService.getFluJabsByWorkplace(this.establishment.uid).subscribe(
+      response => this.onInitSuccess(response)
     );
-
-    this.returnLinkText = this.return.fragment && this.return.fragment == 'staff-records' ? "staff summary page" : "home tab";
-    this.submitted = false;
-    this.setBackLink();
-    this.setupServerErrorsMap();
   }
 
-  setBackLink() {
-    this.backService.setBackLink(this.return);
-  }
-
-  setupServerErrorsMap() {
+  protected setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
         name: 400,
@@ -77,49 +54,42 @@ export class FluJabComponent implements OnInit {
     ];
   }
 
-  get fluJabRadioList() {
-    return this.form.get('fluJabsRadioList') as FormArray;
+  get fluJabsArray() {
+    return this.form.get('fluJabs') as FormArray;
   }
 
-  private onInitSuccess(data) {
-    this.fluJabs = data;
-    this.fluJabs.forEach((fluJab) => {
-      this.fluJabRadioList.push(this.formBuilder.control(fluJab.fluJab));
+  private onInitSuccess(response) {
+    response.forEach((fluJab) => {
+      this.fluJabsArray.push(this.formBuilder.group(fluJab));
     })
   }
 
-  private onInitError(error) { }
-
-  radioChange(i, j) {
-    const updatedFluJab = this.fluJabs[i];
-    this.updatedFluJabs = this.updatedFluJabs.filter(fluJab => fluJab.id !== updatedFluJab.id);
-    if (updatedFluJab.fluJab !== this.fluJabAnswers[j]) {
-      this.updatedFluJabs.push({ id: updatedFluJab.id, uid: updatedFluJab.uid, fluJab: this.fluJabAnswers[j] });
-    }
+  protected generateUpdateProps() {
+    return this.fluJabsArray.value.map((item) => {
+      return { uid: item.uid, fluJab: item.fluJab }
+    })
   }
 
-  onSubmit() {
-    this.submitted = true;
-    this.establishmentService.updateWorkers(this.workplace.uid, this.updatedFluJabs).subscribe(
-      response => this.onSubmitSuccess(response),
-      error => this.onSubmitError(error)
+  protected updateEstablishment(props) {
+    this.subscriptions.add(
+      this.establishmentService
+        .updateWorkers(this.establishment.uid, props)
+        .subscribe(
+          data => { this._onSuccess(data); this.addAlert(); },
+          error => this.onError(error)
+        )
     );
   }
 
-  onSubmitSuccess(data) {
-    if (this.establishmentService.establishmentId !== this.workplace.uid) {
-      this.router.navigate(['/workplace', this.workplace.uid], { fragment: 'staff-records' });
-    } else {
-      this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
-    }
+  protected onSuccess() {
+    this.submitAction.action = 'return';
+    this.return.fragment = 'staff-records';
+  }
+
+  private addAlert() {
     this.alertService.addAlert({
       type: 'success',
       message: `You've saved who's had a flu vaccination.`,
     });
-  }
-
-  onSubmitError(error) {
-    this.errorSummaryService.scrollToErrorSummary();
-    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
   }
 }
