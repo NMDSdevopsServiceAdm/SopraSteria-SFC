@@ -1521,7 +1521,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.VACANCIES_ERROR,
         errType: 'VACANCIES_ERROR',
-        error: 'Vacancies (VACANCIES) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values',
+        error: 'ALLJOBROLES and VACANCIES do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.VACANCIES} - ${this._currentLine.ALLJOBROLES}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1532,7 +1532,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.STARTERS_ERROR,
         errType: 'STARTERS_ERROR',
-        error: 'Starters (STARTERS) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values',
+        error: 'ALLJOBROLES and STARTERS do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.STARTERS} - ${this._currentLine.ALLJOBROLES}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1543,7 +1543,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.LEAVERS_ERROR,
         errType: 'LEAVERS_ERROR',
-        error: 'Leavers (LEAVERS) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values',
+        error: 'ALLJOBROLES and LEAVERS do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.LEAVERS} - ${this._currentLine.ALLJOBROLES}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1639,19 +1639,18 @@ class Establishment {
       let isSame = true;
       for (var i = 0; i < this.allJobs.length; i++) {
         const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(this.allJobs[i]));
+        const buValue = buValues && buValues[i] ? buValues[i] : null;
         if (dbValues && Array.isArray(dbValues) && dbValues.length > 0) {
           const starterJob = dbValues.find(job => job.jobId === mappedRole);
 
-          if (starterJob && starterJob.total !== buValues[i]) {
-            isSame = false;
-            break;
-          } else if (!starterJob && buValues[i] > 0) {
+          if ((starterJob && starterJob.total !== buValue) || (!starterJob && buValue > 0)) {
             isSame = false;
             break;
           }
         } else {
-          if (buValues[i] > 0) {
+          if (buValue > 0) {
             isSame = false;
+            break;
           }
         }
       }
