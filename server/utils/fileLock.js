@@ -158,6 +158,13 @@ const fileLock = {
   lockStatusGet: async (reportType, onUser, req, res) => {
     let IDLockOn = null;
     let currentLockState = null;
+    res.setTimeout(1000, () => {
+        res.status(200).send({
+          IDLockOn: req.query.subEstId || req.establishmentId,
+          reportLockHeld: true
+        });
+    });
+
     if (!reportsAvailable.includes(reportType)) {
       console.error('Lock *NOT* acquired.');
       res.status(500).send({
