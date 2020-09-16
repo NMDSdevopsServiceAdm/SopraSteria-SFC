@@ -2210,7 +2210,7 @@ class Establishment {
 
       this._validateReasonsForLeaving();
 
-      this._validateNoChange();
+      // this._validateNoChange(); // Not working, disabled for LA Window
     }
 
     return this.validationErrors.length === 0;
