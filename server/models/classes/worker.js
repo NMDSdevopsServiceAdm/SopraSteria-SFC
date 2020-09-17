@@ -354,6 +354,11 @@ class Worker extends EntityValidator {
         document.weeklyHoursAverage = { value: null, hours: null };
       }
 
+      // Remove sickness if 'Agency' or 'Pool/Bank' contract
+      if (notContract.includes(document.contract)) {
+        document.daysSick = { value: null, days: null }
+      }
+
       // Remove social care qualification if they don't have one
       if (document.qualificationInSocialCare && document.qualificationInSocialCare !== 'Yes') {
         document.socialCareQualification = { qualificationId: null, title: null };
