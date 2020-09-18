@@ -18,29 +18,25 @@ export class MandatoryDetailsComponent extends QuestionComponent {
 
   constructor(
     private alertService: AlertService,
-    protected  route: ActivatedRoute,
+    protected route: ActivatedRoute,
     protected workerService: WorkerService,
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
   }
 
   init() {
-    this.returnHere = {url: [this.router.url]};
+    this.returnHere = { url: [this.router.url] };
     this.next = this.getRoutePath('main-job-start-date');
     this.previous = this.getRoutePath('staff-details');
   }
 
   navigateToDashboard(event: Event) {
     event.preventDefault();
-    const url =
-      this.workplace.uid === this.primaryWorkplace.uid
-        ? ['/dashboard']
-        : ['/workplace', this.workplace.uid];
+    const url = this.workplace.uid === this.primaryWorkplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
     this.router.navigate(url, { fragment: 'staff-records' });
   }
 }

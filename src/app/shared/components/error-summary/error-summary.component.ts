@@ -28,7 +28,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
         this.errorSummaryService.syncFormErrorsEvent.subscribe(() => {
           this.getFormErrors();
           this.setKeyboardFocus();
-        })
+        }),
       );
       this.subscriptions.add(this.form.valueChanges.subscribe(() => this.getFormErrors()));
     }
@@ -46,7 +46,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
               }, 1);
             }
           }
-        })
+        }),
     );
   }
 
@@ -61,7 +61,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   private getFormErrors(): void {
     this.errors = [];
 
-    Object.keys(this.form.controls).forEach(key => {
+    Object.keys(this.form.controls).forEach((key) => {
       const isFormControl: boolean = this.form.get(key) instanceof FormControl;
       const isFormGroup: boolean = this.form.get(key) instanceof FormGroup;
       const isFormArray: boolean = this.form.get(key) instanceof FormArray;
@@ -72,27 +72,27 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
         const formGroup: AbstractControl = this.form.get(key);
 
         if (formGroup.errors) {
-          Object.keys(formGroup.errors).forEach(i => this.collectError(formGroup, key));
+          Object.keys(formGroup.errors).forEach((i) => this.collectError(formGroup, key));
         }
 
-        const formGroupControls: AbstractControl = formGroup[`controls`];
-        Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], `${key}.${i}`));
+        const formGroupControls: AbstractControl = formGroup['controls'];
+        Object.keys(formGroupControls).forEach((i) => this.collectError(formGroupControls[i], `${key}.${i}`));
       } else if (isFormArray) {
         const formArray = this.form.get(key) as FormArray;
 
-        formArray.controls.forEach(formGroup => {
+        formArray.controls.forEach((formGroup) => {
           if (formGroup.errors) {
             Object.keys(formGroup.errors).forEach(() => this.collectError(formGroup, key));
           }
 
-          const formGroupControls: AbstractControl = formGroup[`controls`];
+          const formGroupControls: AbstractControl = formGroup['controls'];
           if (formGroupControls) {
-            Object.keys(formGroupControls).forEach(i => {
+            Object.keys(formGroupControls).forEach((i) => {
               if (formGroupControls[i] instanceof FormArray) {
-                formGroupControls[i].controls.forEach(frmGroup => {
-                  const frmGroupControls: AbstractControl = frmGroup[`controls`];
+                formGroupControls[i].controls.forEach((frmGroup) => {
+                  const frmGroupControls: AbstractControl = frmGroup['controls'];
                   if (frmGroupControls) {
-                    Object.keys(frmGroupControls).forEach(j => {
+                    Object.keys(frmGroupControls).forEach((j) => {
                       this.collectError(frmGroupControls[j], `${i}.${j}`);
                     });
                   }

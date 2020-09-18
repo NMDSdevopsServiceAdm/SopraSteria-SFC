@@ -7,13 +7,13 @@ let kinesis = null;
 const initialise = (region) => {
   kinesis = new AWS.Kinesis({
     apiVersion: '2013-12-02',
-    region
+    region,
   });
 };
 
 const ACTIONS = ['created', 'updated', 'deleted'];
 
-const establishmentPump = async (action, establishment)  => {
+const establishmentPump = async (action, establishment) => {
   if (!kinesis) return;
   if (!ACTIONS.includes(action)) return;
   if (!config.get('aws.kinesis.enabled')) return;
@@ -25,7 +25,7 @@ const establishmentPump = async (action, establishment)  => {
 
   const params = {
     Data: JSON.stringify(pumpData),
-    PartitionKey: establishment.uid,    // establishment's primary key
+    PartitionKey: establishment.uid, // establishment's primary key
     StreamName: config.get('aws.kinesis.establishments'),
     // ExplicitHashKey: 'STRING_VALUE',
     // SequenceNumberForOrdering: 'STRING_VALUE'
@@ -34,14 +34,13 @@ const establishmentPump = async (action, establishment)  => {
   try {
     const status = await kinesis.putRecord(params).promise();
     // console.log("establishmentPump status: ", status)
-
   } catch (err) {
     // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
     console.error('establishmentPump error: ', err);
   }
-}
+};
 
-const workerPump = async (action, worker)  => {
+const workerPump = async (action, worker) => {
   if (!kinesis) return;
   if (!ACTIONS.includes(action)) return;
   if (!config.get('aws.kinesis.enabled')) return;
@@ -60,21 +59,20 @@ const workerPump = async (action, worker)  => {
 
   const params = {
     Data: JSON.stringify(pumpData),
-    PartitionKey: worker.uid,    // workers's primary key
+    PartitionKey: worker.uid, // workers's primary key
     StreamName: config.get('aws.kinesis.workers'),
   };
 
   try {
     const status = await kinesis.putRecord(params).promise();
     // console.log("workerPump status: ", status)
-
   } catch (err) {
     // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
     console.error('workerPump error: ', err);
   }
-}
+};
 
-const userPump = async (action, user)  => {
+const userPump = async (action, user) => {
   if (!kinesis) return;
   if (!ACTIONS.includes(action)) return;
   if (!config.get('aws.kinesis.enabled')) return;
@@ -82,26 +80,25 @@ const userPump = async (action, user)  => {
   const pumpData = {
     action,
     user,
-  }
+  };
 
   // remove sensitive/unnecessary data
   //delete worker.id;    // there is no id on user
   // security question and answer is required by SFC Admins to identify the inbound callers
   const params = {
     Data: JSON.stringify(pumpData),
-    PartitionKey: user.uid,    // user's primary key
+    PartitionKey: user.uid, // user's primary key
     StreamName: config.get('aws.kinesis.users'),
   };
 
   try {
     const status = await kinesis.putRecord(params).promise();
     // console.log("userPump status: ", status)
-
   } catch (err) {
     // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
     console.error('userPump error: ', err);
   }
-}
+};
 
 module.exports.initialise = initialise;
 module.exports.establishmentPump = establishmentPump;

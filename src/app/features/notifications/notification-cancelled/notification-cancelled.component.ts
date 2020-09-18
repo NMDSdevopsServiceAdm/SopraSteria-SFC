@@ -13,20 +13,20 @@ export class NotificationCancelledComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private notificationsService: NotificationsService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit() {
     const notificationUid = this.route.snapshot.params.notificationuid;
     this.subscriptions.add(
-      this.notificationsService.getNotificationDetails(notificationUid).subscribe(details => {
+      this.notificationsService.getNotificationDetails(notificationUid).subscribe((details) => {
         if (details.type === 'LINKTOPARENTREQUEST') {
           this.cancelledMessage = details.typeContent.requestorName + ' cancelled their request to link to you.';
         } else {
           this.cancelledMessage =
             details.typeContent.requestorName + ' cancelled the request to change ownership of the data.';
         }
-      })
+      }),
     );
   }
   ngOnDestroy(): void {

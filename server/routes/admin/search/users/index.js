@@ -5,11 +5,11 @@ const UserTransformer = require('../../../../transformers/adminSearchTransformer
 
 // search for users' establishments using wildcard on username and user's name
 const search = async function (req, res) {
-  try{
+  try {
     const where = {
       name: req.body.name,
-      username: req.body.username
-    }
+      username: req.body.username,
+    };
 
     const users = await models.user.searchUsers(where);
     const results = await UserTransformer(users);

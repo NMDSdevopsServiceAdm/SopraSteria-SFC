@@ -6,8 +6,5 @@ import { EstablishmentService } from '@core/services/establishment.service';
   templateUrl: './select-main-service-cqc-confirm.component.html',
 })
 export class SelectMainServiceCqcConfirmComponent {
-  constructor(
-    public establishmentService: EstablishmentService
-  ) {}
+  constructor(public establishmentService: EstablishmentService) {}
 }
-

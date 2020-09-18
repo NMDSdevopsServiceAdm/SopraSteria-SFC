@@ -33,8 +33,7 @@ export class TrainingComponent implements OnInit {
     private router: Router,
     private dialogService: DialogService,
     private trainingStatusService: TrainingStatusService,
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     this.fetchAllRecords();
@@ -45,9 +44,9 @@ export class TrainingComponent implements OnInit {
     event.preventDefault();
     const dialog = this.dialogService.open(DeleteTrainingDialogComponent, {
       nameOrId: this.worker.nameOrId,
-      trainingRecord
+      trainingRecord,
     });
-    dialog.afterClosed.pipe(take(1)).subscribe(confirm => {
+    dialog.afterClosed.pipe(take(1)).subscribe((confirm) => {
       if (confirm) {
         this.workerService
           .deleteTrainingRecord(this.workplace.uid, this.worker.uid, trainingRecord.uid)
@@ -66,12 +65,15 @@ export class TrainingComponent implements OnInit {
       .getTrainingRecords(this.workplace.uid, this.worker.uid)
       .pipe(take(1))
       .subscribe(
-        training => {
+        (training) => {
           this.lastUpdated = moment(training.lastUpdated);
           this.trainingRecords = training.training;
           this.trainingCount = training.count;
-          this.trainingRecords.map(trainingRecord => {
-            trainingRecord.trainingStatus =  this.trainingStatusService.getTrainingStatus(trainingRecord.expires, trainingRecord.missing);
+          this.trainingRecords.map((trainingRecord) => {
+            trainingRecord.trainingStatus = this.trainingStatusService.getTrainingStatus(
+              trainingRecord.expires,
+              trainingRecord.missing,
+            );
           });
           this.trainingRecords.sort((record1, record2) => {
             if (record1.trainingStatus > record2.trainingStatus) {
@@ -89,13 +91,11 @@ export class TrainingComponent implements OnInit {
             return 0;
           });
         },
-        error => {
+        (error) => {
           console.error(error.error);
-        }
+        },
       );
-
   }
-
 
   /**
    * Function used to hadle toggle for traing details view and change training details lable

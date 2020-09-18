@@ -1,10 +1,9 @@
-import {  ErrorHandler, Injectable } from '@angular/core';
+import { ErrorHandler, Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { environment } from '../environments/environment';
 import * as Sentry from '@sentry/browser';
 import { Integrations as ApmIntegrations } from '@sentry/apm';
-
 
 Sentry.init({
   dsn: 'https://59c078b68dc0429aa404e59920f288fd@o409195.ingest.sentry.io/5281212',
@@ -13,9 +12,9 @@ Sentry.init({
   // Please note that TryCatch configuration requires at least @sentry/browser v5.16.0.
   integrations: [
     new Sentry.Integrations.TryCatch({
-    XMLHttpRequest: false,
-  }),
-    new ApmIntegrations.Tracing()
+      XMLHttpRequest: false,
+    }),
+    new ApmIntegrations.Tracing(),
   ],
   environment: environment.environmentName,
   tracesSampleRate: environment.tracesSampleRate,
@@ -71,6 +70,5 @@ export class SentryErrorHandler implements ErrorHandler {
     if (!environment.production) {
       console.error(extractedError);
     }
-
   }
 }

@@ -15,6 +15,6 @@ export class RecruitmentService {
   constructor(private http: HttpClient) {}
 
   getRecruitedFrom(): Observable<RecruitmentResponse[]> {
-    return this.http.get<any>('/api/recruitedFrom').pipe(map(res => res.recruitedFrom));
+    return this.http.get<any>('/api/recruitedFrom').pipe(map((res) => res.recruitedFrom));
   }
 }

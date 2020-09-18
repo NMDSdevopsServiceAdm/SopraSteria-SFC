@@ -9,7 +9,7 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 export class WdfWorkerConfirmationDialogComponent extends DialogComponent {
   constructor(
     @Inject(DIALOG_DATA) public data: { daysSick: string; pay: string },
-    public dialog: Dialog<WdfWorkerConfirmationDialogComponent>
+    public dialog: Dialog<WdfWorkerConfirmationDialogComponent>,
   ) {
     super(data, dialog);
   }

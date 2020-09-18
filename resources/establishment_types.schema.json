@@ -1,1731 +1,1736 @@
 {
-    "$id" : "establishment_types.schema.json",
-	"description" : "Describes the entities used in Establishments API; in both the requests and responses.",
-	"title" : "ASCWDS Establishment API Schema - Primary Types",
-	"definitions" : {
-        "id" : {
-            "type" : "integer",
-            "minimum" : 0
-        },
-        "uid" : {
-            "type" : "string",
-            "pattern": "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$"
-        },
-        "seq" : {
-            "type" : "integer",
-            "minimum" : 0
-        },
-        "total" : {
-            "type" : "integer",
-            "minimum" : 0
-        },
-        "Username" : {
-            "type" : "string",
-            "minLength": 3,
-            "maxLength": 120
-        },
-        "Password" : {
-            "type" : "string",
-            "minLength": 8,
-            "maxLength": 120
-        },
-        "Fullname" : {
-            "description" : "The fullname of a user",
-            "type" : "string",
-            "minLength" : 3,
-            "maxLength": 120
-        },
-        "Email" : {
-            "description" : "Optional email for the feedback",
-            "type" : "string",
-            "minLength" : 3,
-            "maxLength" : 120,
-            "pattern" : "^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"
-        },
-        "JobTitle" : {
-            "description" : "Job Title",
-            "type" : "string",
-            "minLength" : 3,
-            "maxLength" : 120
-        },
-        "SecurityQuestion" : {
-            "description" : "Security Question",
-            "type" : "string",
-            "minLength" : 3,
-            "maxLength" : 255
-        },
-        "SecurityQuestionAnswer" : {
-            "description" : "Security Question's Answer",
-            "type" : "string",
-            "minLength" : 3,
-            "maxLength" : 255
-        },
-        "Phone" : {
-            "description" : "Optional email for the feedback",
-            "type" : "string",
-            "minLength" : 3,
-            "maxLength" : 120,
-            "pattern" : "^[0-9 x(?=ext 0-9+)]{8,50}$"
-        },
-        "Address" : {
-            "description" : "Concatenated address - excluding postcode",
-            "type" : "string",
-            "minLength" : 3,
-            "maxLength" : 120
-        },
-        "Postcode" : {
-            "description": "A UK postcode",
-            "type": "string",
-            "pattern" : "([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})"
-        },
-        "LocationRef" : {
-            "description" : "A unique reference associated to an Establishment",
-            "type" : "string",
-            "minLength": 8,
-            "maxLength": 12
-        },
-        "DataOwner" : {
-            "description" : "Associated with an Establishment, this represents the entity that owns the establishment - be it the workplace itself or it's parent",
-            "type" : "string",
-            "enum" : ["Workplace", "Parent"]
-        },
-        "ParentPermissions" : {
-            "description" : "Associated with an Establishment, this represents permissions granted to the parent. If Workplace, then only workplace no worker access. If Workplace and Staff, then parent has access to both workplace and staff. If null/not present, parent has no access.",
-            "type" : "string",
-            "enum" : ["Workplace", "Workplace and Staff"]
-        },
-        "EstablishmentName" : {
-            "description": "the name of the Establishment",
-            "type" : "string",
-            "minLength" : 3,
-            "maxLength": 120
-        },
-        "ServiceName" : {
-            "description": "the name of the Service",
-            "type" : "string",
-            "minLength" : 3,
-            "maxLength": 120
-        },
-        "ServiceCategory" : {
-            "description": "the category associated with the Service",
-            "type" : "string",
-            "minLength" : 3,
-            "maxLength": 120
-        },
-		"EmployerType" : {
-			"description" : "The type of employer",
-			"type" : "object",
-			"properties" : {
-				"value" : {
-					"description" : "the textual representation of Employer; enumerated because known values",
-                    "type" : "string",
-                    "enum" : ["Private Sector", "Voluntary or Charity", "Other",  "Local Authority (generic/other)", "Local Authority (adult services)"]
-				},
-				"id" : {
-					"description" : "Optional integer representing the employer type: 1=Private, 2=Voluntary, 3=Other",
-					"$ref" : "#/definitions/ID"
-				}
-			},
-			"required" : ["value"]
-        },
-        "ServiceCapacity" : {
-            "description" : "Optionally associated to a Service, is one or more questions around capacity",
-            "type" : "object",
-            "properties" : {
-                "id": {
-                    "description" : "the unique reference of the service capacity",
-                    "$ref" : "#/definitions/ID"
-                },
-                "sequence" : {
-                    "description" : "if there is more than one capacity question, this sequence defines the order in which they should be prompted",
-                    "type" : "number",
-                    "minimum": 1
-                },
-                "question" : {
-                    "description": "The capacity question context",
-                    "type" : "string",
-                    "minLength" : 3
-                },
-                "answer" : {
-                    "description": "Optional: If a known establishment, the answer to this capacity question",
-                    "type" : "integer",
-                    "minimum": 0
-                }
-            }
-        },
-        "Service" : {
-            "description" : "The Service that can be performed at an Establishment",
-            "properties" : {
-                "id" : {
-                    "description" : "the unique reference of the service type",
-                    "$ref" : "#/definitions/ID"
-                },
-                "name" : {
-                    "description" : "the display name of the service type",
-                    "$ref" : "#/definitions/ServiceName"
-                },
-                "category" : {
-                    "description"  : "the category of this service",
-                    "$ref" : "#/definitions/ServiceCategory"
-                },
-                "isCQC" : {
-                    "description": "if true, this service is defined by CQC",
-                    "type" : "boolean"
-                },
-                "isMyService" : {
-                    "description" : "optional flag that when true identifies this service being one of the services provided by the Establishment (returned by api/myServices)",
-                    "type" : "boolean"
-                },
-                "capacity" : {
-                    "description" : "optional set of capacity questions and, if relevant (associated to a known Establishment), the answers",
-                    "type" : "array",
-                    "items" : {
-                        "$ref" : "#/definitions/ServiceCapacity"
-                    },
-                    "minItems" : 1
-                }
-            },
-            "required" : ["id"]
-        },
-        "ServiceUser" : {
-            "description" : "A User of the Services at an Establishment",
-            "properties" : {
-                "id" : {
-                    "description" : "the unique reference of the service user type",
-                    "$ref" : "#/definitions/ID"
-                },
-                "name" : {
-                    "description" : "the display name of the service user type",
-                    "$ref" : "#/definitions/ServiceName"
-                },
-                "group" : {
-                    "description"  : "the group of this service user",
-                    "$ref" : "#/definitions/ServiceCategory"
-                }
-            },
-            "required" : ["id"]
-        },
-        "ServiceGroup" : {
-            "description" : "A collection of services having the same cateogory",
-            "type" : "object",
-            "properties" : {
-                "category" : {
-                    "$ref" : "#/definitions/ServiceCategory"
-                },
-                "services" : {
-                    "description" : "All the services attributed to this service category",
-                    "type" : "array",
-                    "items" : {
-                        "$ref" : "#/definitions/Service"
-                    },
-                    "minItems": 1
-                }
-            }
-        },
-        "ServiceUsersGroup" : {
-            "description" : "A collection of service users having the same group",
-            "type" : "object",
-            "properties" : {
-                "group" : {
-                    "$ref" : "#/definitions/ServiceCategory"
-                },
-                "services" : {
-                    "description" : "All the service users attributed to this service user group",
-                    "type" : "array",
-                    "items" : {
-                        "$ref" : "#/definitions/ServiceUser"
-                    },
-                    "minItems": 1
-                }
-            }
-        },
-        "Job" : {
-            "description": "An individual job total",
-            "type" : "object",
-            "properties": {
-                "jobId" : {
-                    "description" : "A unique reference to the job title",
-                    "$ref" : "#/definitions/ID"
-                },
-                "title" : {
-                    "description" : "The title of the job of given jobId",
-                    "type" : "string"
-                },
-                "total" : {
-                    "description" : "The number of staff for this specific job (as given by jobId)",
-                    "type" : "integer",
-                    "minimum": 0,
-                    "maximum": 999
-                }
-            },
-            "required" : ["jobId"]
-        },
-        "EstablishmentJobs" : {
-            "description" : "Covers Vacancies, starters and leavers. Each can either be: 1. A set of individual Jobs, 2. A declaration there are no current vacancies, or 3. A declaration of 'I don't know'",
-            "oneOf" : [
-                {
-                    "description" : "A set of Jobs",
-                    "type" : "array",
-                    "items" : [{
-                        "$ref" : "#/definitions/Job"
-                    }]
-                },
-                {
-                    "description" : "A declaration of none or I don't know",
-                    "type" : "string",
-                    "enum" : ["none", "don't know"]
-                }
-            ]
-        },
-        "Jobs" : {
-            "description": "The collective definition of number of vacancies, starters and leavers atytributed to a given establishment. Each is optional, but if given, overwrites all existing jobs of that type",
-            "type" : "object",
-            "properties" : {
-                "Vacancies": {
-                   "$ref" : "#/definitions/EstablishmentJobs"
-                },
-                "starters": {
-                    "$ref" : "#/definitions/EstablishmentJobs"
-                },
-                "leavers": {
-                    "$ref" : "#/definitions/EstablishmentJobs"
-                },
-                "TotalVacancies" : {
-                    "description" : "The total of all Vacancies - 0, if no Vacancies",
-                    "type" : "integer",
-                    "minimum": 0
-                },
-                "TotalStarters" : {
-                    "description" : "The total of all Starters - 0, if no Vacancies",
-                    "type" : "integer",
-                    "minimum": 0
-                },
-                "TotalLeavers" : {
-                    "description" : "The total of all Leavers - 0, if no Vacancies",
-                    "type" : "integer",
-                    "minimum": 0
-                }
-            },
-            "required" : ["TotalVacancies", "TotalStarters", "TotalLeavers"]
-        },
-        "LocalAuthority" : {
-            "description" : "Local Authority reference",
-            "type" : "object",
-            "properties" : {
-                "id" : {
-                    "description" : "This the primary index for a specific Local Authority of a given Establishment",
-                    "$ref" : "#/definitions/ID"
-                },
-                "name" : {
-                    "description": "This is the readable name of the Local Authority",
-                    "type" : "string",
-                    "minLength": 3
-                },
-                "custodianCode" : {
-                    "description" : "A unique reference for a Local Authority",
-                    "$ref" : "#/definitions/ID"
-                },
-                "isPrimaryAuthority" : {
-                    "description": "An optional flag (assumed false if not given) that if true, identifies this as being the Local Authority as known by the physical location of the associated Establishment",
-                    "type" : "boolean"
-                }
-            },
-            "required" : ["id", "name"]
-        },
-        "ShareOptions" : {
-            "description" : "For sharing data with CQC and Local Authorities",
-            "type" : "object",
-            "properties" : {
-                "enabled" : {
-                    "description" : "If false, all sharing is disabled",
-                    "type" : "boolean"
-                },
-                "with" : {
-                    "description" : "If enabled is true, describes which of the share options (CQC/Local Authority) is enabled",
-                    "type" : "object",
-                    "properties": {
-                        "shareWithCQC" : {
-                            "description": "If true, then share with CQC",
-                            "type" : "boolean"
-                        },
-                        "shareWithLA" : {
-                            "description": "If true, then share with Local Authorities"
-                        },
-                        "authorities" : {
-                            "description" : "A list of all the local authorities to which data is shared with; only populated if 'shareWithLA' is true",
-                            "type" : "array",
-                            "items" : [
-                                {
-                                    "$ref" : "#/definitions/LocalAuthority"
-                                }
-                            ]
-                        }
-                    },
-                    "required" : []
-                }
-            },
-            "required" : ["enabled"]
-        },
-        "ChangeHistory" : {
-            "description": "A reverse chronological set of change events. TODO: Add a tighter restriction on required, because before and after are only required when event is changed only, and property only required when event is saved or changed.",
-            "type" : "array",
-            "items" : [
-                {
-                    "properties": {
-                        "when" : {
-                            "description": "The timestamp of the change event",
-                            "type" : "date-time"
-                        },
-                        "event" : {
-                            "description": "The event type",
-                            "type" : "string",
-                            "enum" : ["created", "updated", "saved", "changed"]
-                        },
-                        "by" : {
-                            "description" : "The username of who effected the change event",
-                            "type" : "string"
-                        },
-                        "property" : {
-                            "description": "The name of the property which has been changed; this is optional if this history is embedded within a property",
-                            "type" : "string"
-                        },
-                        "before" : {
-                            "description" : "The value before the change; any JSON type"
-                        },
-                        "after" : {
-                            "description": "The value after the change; any JSON type"
-                        }
-                    },
-                    "required" : ["when", "event", "by"]
-                }
-            ]
-        },
-        "PropertyChangeStatus" : {
-            "description": "Used by extended change properties, that can report on their current changd/saved status",
-            "properties" : {
-                "lastSavedBy" : {
-                    "description": "The username of the person who last saved (with or without change) this property",
-                    "type" : "string"
-                },
-                "lastChangedBy" : {
-                    "description": "The username of the person who last changed (value change) this property",
-                    "type" : "string"
-                },
-                "lastSaved" : {
-                    "description": "The timestamp of when last saved (with or without change) this property",
-                    "type" : "string"
-                },
-                "lastChanged" : {
-                    "description": "The timestamp of when last changed (value change) this property",
-                    "type" : "string"
-                }
-            },
-            "required" : ["lastSavedBy", "lastChangedBy", "lastSaved", "lastChanged", "changeHistory"]
-        },
-        "WorkerGender" : {
-            "description": "The worker's gender",
-            "oneOf": [
-                {
-                    "description": "Simple Gender type",
-                    "type" : "string",
-                    "enum" : ["Female", "Male", "Other", "Don't know"]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Gender with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "enum" : ["Female", "Male", "Other", "Don't know"]
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerNameOrId" : {
-            "description": "The worker's name/id",
-            "oneOf": [
-                {
-                    "description": "Simple name or id (staff number)",
-                    "type"  : "string",
-                    "maxLength": 50
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Name or id with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type"  : "string",
-                                    "maxLength": 50
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerContract" : {
-            "description": "The worker's contract",
-            "oneOf": [
-                {
-                    "description": "Simple contract",
-                    "type" : "string",
-                    "enum" : ["Permanent", "Temporary", "Pool/Bank", "Agency", "Other"]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Contract with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "enum" : ["Permanent", "Temporary", "Pool/Bank", "Agency", "Other"]
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerMainJob" : {
-            "description": "The worker's contract",
-            "oneOf": [
-                {
-                    "description": "Simple main job",
-                    "$ref" : "#/defintions/Job",
-                    "required" : ["jobId", "title"]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Main job with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "$ref" : "#/defintions/Job",
-                                    "required" : ["jobId", "title"]
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerApprovedMentalHealthWorker" : {
-            "description": "The worker's Approval Mental Health Worker status",
-            "oneOf": [
-                {
-                    "description": "Simple Approval Mental Health Worker status",
-                    "type" : "string",
-                    "enum" : ["Yes", "No", "Don't know"]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Approval Mental Health Worker status with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "enum" : ["Yes", "No", "Don't know"]
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerMainJobStartDate" : {
-            "description": "The worker's Main Job Start Date",
-            "oneOf": [
-                {
-                    "description": "Simple Main Job Start Date",
-                    "type" : "string",
-                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Main Job Start Date with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerNationalInsuranceNumber" : {
-            "description": "The worker's NI Number",
-            "oneOf": [
-                {
-                    "description": "Simple NI Number",
-                    "type" : "string",
-                    "pattern" : "[A-Z]{2] [0-9]{2} [0-9]{2} [A-Z]{1}"
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "NI Number with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "pattern" : "[A-Z]{2] [0-9]{2} [0-9]{2} [A-Z]{1}"
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerDateOfBirth" : {
-            "description": "The worker's Date of Birth",
-            "oneOf": [
-                {
-                    "description": "Simple Date of Birth",
-                    "type" : "string",
-                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Date of Birth with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerPostcode" : {
-            "description": "The worker's Date of Birth",
-            "oneOf": [
-                {
-                    "description": "Simple Date of Birth",
-                    "type" : "string",
-                    "maxLength": 8
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Date of Birth with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "maxLength": 8
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerDisability" : {
-            "description": "The worker's Disability",
-            "oneOf": [
-                {
-                    "description": "Simple Disability",
-                    "type" : "string",
-                    "enum" : ["Yes", "No", "Undisclosed", "Don't know"]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Disability with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "enum" : ["Yes", "No", "Undisclosed", "Don't know"]
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "Nationality" : {
-            "description": "A person's nationality",
-            "properties": {
-                "nationalityId" : {
-                    "description": "A unique reference to the Nationality",
-                    "$ref" : "#/definitions/id"
-                },
-                "nationality" : {
-                    "description": "The nationality, e.g. Austrian, Australian"
-                },
-                "seq" : {
-                    "description": "A preferred order in which to present the Nationality if presenting as a list",
-                    "$ref" : "#/definitions/id"
-                }
-            },
-            "required": ["nationalityId"]
-        },
-        "Ethnicity" : {
-            "description": "A person's ethnicity",
-            "properties": {
-                "ethnicityId" : {
-                    "description": "A unique reference to the Ethnicity",
-                    "$ref" : "#/definitions/id"
-                },
-                "ethnicity" : {
-                    "description": "The nationality, e.g. Austrian, Australian",
-                    "type" : "string"
-                },
-                "group" : {
-                    "description": "The ethnic group associated with this ethnicity",
-                    "type" : "string"
-                },
-                "seq" : {
-                    "description": "A preferred order in which to present the Nationality if presenting as a list",
-                    "$ref" : "#/definitions/id"
-                }
-            },
-            "required": ["ethnicityId"]
-        },
-        "Country" : {
-            "description": "A known country within the world",
-            "properties": {
-                "countryId" : {
-                    "description": "A unique reference to the Country",
-                    "$ref" : "#/definitions/id"
-                },
-                "country" : {
-                    "description": "The name of the country, e.g. Austria, Australia",
-                    "type" : "string"
-                },
-                "seq" : {
-                    "description": "A preferred order in which to present the Country if presenting as a list",
-                    "$ref" : "#/definitions/id"
-                }
-            },
-            "required": ["countryId"]
-        },
-        "RecruitedFrom" : {
-            "description": "Recruitment Origins; lookup value",
-            "properties": {
-                "recruitedFromId" : {
-                    "description": "A unique reference to the Recruitment Origin",
-                    "$ref" : "#/definitions/id"
-                },
-                "from" : {
-                    "description": "The origin of recruitment",
-                    "type" : "string"
-                },
-                "seq" : {
-                    "description": "A preferred order in which to present the Recruitment Origins if presenting as a list",
-                    "$ref" : "#/definitions/id"
-                }
-            },
-            "required": ["recruitedFromId"]
-        },
-        "BritishCitizenship" : {
-            "description": "A given citizenship status",
-            "type" : "string",
-            "enum" : ["Yes", "No", "Don't know"]
-        },
-        "YearOfArrival" : {
-            "description": "Year of arrival",
-            "properties": {
-                "value" : {
-                    "description": "Whether they arrived in the UK",
-                    "type" : "string",
-                    "enum" : ["Yes", "No"]
-                },
-                "year" : {
-                    "description": "The year in which they arrived; only relevant if value is 'Yes'",
-                    "type" : "integer"
-                }
-            },
-            "required": ["value"]
-        },
-        "SocialCareStartDate" : {
-            "description": "If relevant, the year in which work started in social care",
-            "properties": {
-                "value" : {
-                    "description": "If known when the started working in social care",
-                    "type" : "string",
-                    "enum" : ["Yes", "No"]
-                },
-                "year" : {
-                    "description": "The year in which they started",
-                    "type" : "integer"
-                }
-            },
-            "required": ["value"]
-        },
-        "DaysSick" : {
-            "description": "If relevant, number of days sick within a given year",
-            "properties": {
-                "value" : {
-                    "description": "If known the number of days sick",
-                    "type" : "string",
-                    "enum" : ["Yes", "No"]
-                },
-                "year" : {
-                    "description": "If value is 'Yes', the number of days sick",
-                    "type" : "number",
-                    "minimum": 0,
-                    "maximum": 366
-                }
-            },
-            "required": ["value"]
-        },
-        "ZeroHoursContract" : {
-            "description": "Whether the given worker is on zero hours contract or not",
-            "type" : "string",
-            "enum" : ["Yes", "No", "Don't know"]
-        },
-        "WorkingHours" : {
-            "description": "The given working hours (average or contracted)",
-            "properties": {
-                "value" : {
-                    "description": "If known the working hours",
-                    "type" : "string",
-                    "enum" : ["Yes", "No"]
-                },
-                "year" : {
-                    "description": "If value is 'Yes', the number of working hours",
-                    "type" : "number",
-                    "minimum": 0,
-                    "maximum": 65
-                }
-            },
-            "required": ["value"]
-        },
-        "HourlyPayRate": {
-            "description": "Hourly pay rate - min and max warrants a separate type from annual pay rate",
-            "type" : "number",
-            "minimum": 2.50,
-            "maximum": 100
-        },
-        "AnnualPayRate": {
-            "description": "Annual pay rate - min and max warrants a separate type from weekly pay rate",
-            "type" : "number",
-            "minimum": 500,
-            "maximum": 200000
-
-        },
-        "PayRate" : {
-            "description" : "Weekly or Annual pay rate",
-            "oneOf" : [
-                {
-                    "$ref" : "#/definitions/HourlyPayRate"
-                },
-                {
-                    "$ref" : "#/definitions/AnnualPayRate"
-                }
-            ]
-        },
-        "WorkingPayRate" : {
-            "description": "Hourly or Annual Pay Rate for a Worker",
-            "properties": {
-                "value" : {
-                    "description": "If pay rate is known",
-                    "type" : "string",
-                    "enum" : ["Hourly", "Annually", "Don't know"]
-                },
-                "pay" : {
-                    "$ref" : "#/definitions/PayRate"
-                }
-            },
-            "required": ["value"]
-        },
-        "OtherJobs" : {
-            "description": "Other Jobs, attributed to a Worker",
-            "type" : "array",
-            "items": [
-                {
-                    "$ref" : "#/definitions/Job"
-                }
-            ]
-        },
-        "WorkerCareCertificate" : {
-            "description": "Whether the worker has a Care Certificate",
-            "oneOf": [
-                {
-                    "description": "Simple Care Certificate",
-                    "type" : "string",
-                    "enum" : ["Yes, completed", "Yes, in progress or partially completed", "No"]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Care Certificate with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "enum" : ["Yes, completed", "Yes, in progress or partially completed", "No"]
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerApprenticeshipTraining" : {
-            "description": "Whether the worker is on apprenticeship",
-            "oneOf": [
-                {
-                    "description": "Simple Apprenticeship Training",
-                    "type" : "string",
-                    "enum" : ["Yes", "No", "Don't know"]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Apprenticeship Training with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "enum" : ["Yes", "No", "Don't know"]
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "WorkerSocialCareQualification" : {
-            "description": "Whether the worker is has any social care specific qualifications",
-            "oneOf": [
-                {
-                    "description": "Simple Social Care Qualification",
-                    "type" : "string",
-                    "enum" : ["Yes", "No", "Don't know"]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Social Care Qualification with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "enum" : ["Yes", "No", "Don't know"]
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "SocialCareQualification" : {
-            "description": "A given qualification",
-            "properties": {
-                "qualificationId" : {
-                    "description": "A unique reference to the Qualification",
-                    "$ref" : "#/definitions/id"
-                },
-                "title" : {
-                    "description": "The qualification title",
-                    "type" : "string"
-                },
-                "seq" : {
-                    "description": "A preferred order in which to present the Qualification if presenting as a list",
-                    "$ref" : "#/definitions/id"
-                }
-            },
-            "required": ["qualificationId"]
-        },
-        "WorkerOtherQualification" : {
-            "description": "Whether the worker is has any other (non social care specific) qualifications",
-            "oneOf": [
-                {
-                    "description": "Simple Other Qualification",
-                    "type" : "string",
-                    "enum" : ["Yes", "No", "Don't know"]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Other Qualification with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "enum" : ["Yes", "No", "Don't know"]
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "HighestQualification" : {
-            "description": "A given qualification",
-            "properties": {
-                "qualificationId" : {
-                    "description": "A unique reference to the Qualification",
-                    "$ref" : "#/definitions/id"
-                },
-                "title" : {
-                    "description": "The qualification title",
-                    "type" : "string"
-                },
-                "seq" : {
-                    "description": "A preferred order in which to present the Qualification if presenting as a list",
-                    "$ref" : "#/definitions/id"
-                }
-            },
-            "required": ["qualificationId"]
-        },
-        "WorkerCompleted" : {
-            "description": "Whether the worker has been nominated as completed or not",
-            "oneOf": [
-                {
-                    "description": "Simple completed",
-                    "type" : "boolean"
-                },
-                {
-                    "description": "Simple completed",
-                    "type" : "string",
-                    "enum" : ["true", "false"]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Apprenticeship Training with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "string",
-                                    "enum" : ["true", "false"]
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                },
-                {
-                    "allOf" : [
-                        {
-                            "description": "Apprenticeship Training with change history",
-                            "type" : "object",
-                            "properties": {
-                                "currentValue" : {
-                                    "type" : "boolean"
-                                }
-                            },
-                            "required" : ["currentValue"]
-                        },
-                        {
-                            "$ref" : "#/definitions/PropertyChangeStatus"
-                        }
-                    ]
-                }
-            ]
-        },
-        "Worker" : {
-            "description" : "A Worker belongs to a single Establishment",
-            "properties" : {
-                "uid" : {
-                    "description" : "A unique identifier for a Worker",
-                    "$ref" : "#/definitions/uid"
-                },
-                "completed" : {
-                    "description" : "The nominated completion status on a Worker record; this is declared by User (but can be reset by consequential activities",
-                    "$ref" : "#/definitions/WWorkerCompleted"
-                },
-                "nameOrId" : {
-                    "description" : "The name or id (staff number) of the worker - unique to the Establishment",
-                    "$ref" : "#/definitions/WorkerNameOrId"
-                },
-                "contract" : {
-                    "description": "The employment contract associated to this worker",
-                    "$ref" : "#/definitions/WorkerContract"
-                },
-                "mainJob" : {
-                    "description": "The main job/activity associated with this worker; can have other job roles too - see 'otherJobs' below",
-                    "$ref" : "#/definitions/WorkerMainJob"
-                },
-                "approvedMentalHealthWorker" : {
-                    "description" : "Only to be used if the main job is or other jobs include, 'social worker'",
-                    "type" : "string",
-                    "$ref" : "#/definitions/WorkerApprovedMentalHealthWorker"
-                },
-                "mainJobStartDate" : {
-                    "description": "The ISO 8601 format start date attributed to the main job role for this worker; this should be updated if the main job role changes. It's date only (YYYY-MM-DD)",
-                    "$ref" : "#/definitions/WorkerMainJobStartDate"
-                },
-                "otherJobs" : {
-                    "description": "The worker's other jobs, in addition to their main job",
-                    "$ref" : "#/definitions/OtherJobs"
-                },
-                "nationalInsuranceNumber" : {
-                    "description": "National insurance number",
-                    "$ref" : "#/definitions/WorkerNationalInsuranceNumber"
-                },
-                "dateOfBirth" : {
-                    "description" : "Date of Birth; YYYY-MM-DD - ISO 8601",
-                    "$ref" : "#/definitions/WorkerDateOfBirth"
-                },
-                "postcode" : {
-                    "description" : "Postcode of home address",
-                    "$ref" : "#/definitions/WorkerPostcode"
-                },
-                "gender" : {
-                    "description": "The worker's gender",
-                    "$ref" : "#/definitions/WorkerGender"
-                },
-                "disability" : {
-                    "description": "The worker's disability",
-                    "$ref" : "#/definitions/WorkerDisability"
-                },
-                "ethnicity" : {
-                    "description": "The worker's ethnicity",
-                    "properties": {
-                        "value" : {
-                            "description": "The given ethnicity",
-                            "$ref" : "#/definitions/Ethnicity"
-                        }
-                    },
-                    "required" : ["value"]
-                },
-                "nationality" : {
-                    "description": "The worker's nationality",
-                    "properties": {
-                        "value" : {
-                            "description": "The given nationality",
-                            "type" : "string",
-                            "enum" : ["British", "Other", "Don't know"]
-                        },
-                        "other" : {
-                            "description": "If other, this is the referenced (looked up) Nationality",
-                            "$ref" : "#/definitions/Nationality"
-                        }
-                    },
-                    "required" : ["value"]
-                },
-                "countryOfBirth" : {
-                    "description": "The worker's country of birth",
-                    "properties": {
-                        "value" : {
-                            "description": "The given country of birth",
-                            "type" : "string",
-                            "enum" : ["United Kingdom", "Other", "Don't know"]
-                        },
-                        "other" : {
-                            "description": "If other, this is the referenced (looked up) Country",
-                            "$ref" : "#/definitions/Country"
-                        }
-                    },
-                    "required" : ["value"]
-                },
-                "recruitedFrom" : {
-                    "description": "Previous position from which the worker was recruited from",
-                    "properties": {
-                        "value" : {
-                            "description": "The given recruited from",
-                            "type" : "string",
-                            "enum" : ["Yes", "No"]
-                        },
-                        "from" : {
-                            "description": "If yes, this is the referenced (looked up) recruitment origin",
-                            "$ref" : "#/definitions/RecruitedFrom"
-                        }
-                    },
-                    "required" : ["value"]
-                },
-                "britishCitizenship" : {
-                    "description": "If relevant, the worker's British Citizenship status",
-                    "properties": {
-                        "value" : {
-                            "description": "The given citizenship status",
-                            "$ref" : "#/definitions/BritishCitizenship"
-                        }
-                    },
-                    "required" : ["value"]
-                },
-                "yearArrived" : {
-                    "description": "If relevant, the year the worker arrived in the UK",
-                    "properties": {
-                        "value" : {
-                            "description": "The given year of arrival",
-                            "$ref" : "#/definitions/YearOfArrival"
-                        }
-                    },
-                    "required" : ["value"]
-                },
-                "socialCareStartDate" : {
-                    "description": "If relevant, the year they started working in social care",
-                    "properties": {
-                        "value" : {
-                            "description": "The given start year",
-                            "$ref" : "#/definitions/SocialCareStartDate"
-                        }
-                    },
-                    "required" : ["value"]
-                },
-                "daysSick" : {
-                    "description" : "The workers current number of days sick, if known",
-                    "$ref" : "#/definitions/DaysSick"
-                },
-                "zeroHoursContract" : {
-                    "description" : "If the work is on a zero hours contract",
-                    "$ref" : "#/definitions/ZeroHoursContract"
-                },
-                "weeklyHoursAverage" : {
-                    "description" : "The average weekly working hours",
-                    "$ref" : "#/definitions/WorkingHours"
-                },
-                "weeklyHoursContracted" : {
-                    "description" : "The contracted weekly working hours",
-                    "$ref" : "#/definitions/WorkingHours"
-                },
-                "annualHourlyPay" : {
-                    "description" : "The weekly/annual pay rate if known",
-                    "$ref" : "#/definitions/WorkingPayRate"
-                },
-                "careCertificate" : {
-                    "description" : "Whether the worker has, or is doing, a Care Certificate",
-                    "$ref" : "#/definitions/WorkerCareCertificate"
-                },
-                "apprenticeshipTraining" : {
-                    "description" : "Whether the worker is on an apprenticeship",
-                    "$ref" : "#/definitions/WorkerApprenticeshipTraining"
-                },
-                "qualificationInSocialCare" : {
-                    "description" : "Whether the worker has a social care specific qualification",
-                    "$ref" : "#/definitions/WorkerSocialCareQualification"
-                },
-                "socialCareQualification" : {
-                    "description": "The highest Level of social care qualification for this Worker",
-                    "properties": {
-                        "value" : {
-                            "description": "The given qualification",
-                            "$ref" : "#/definitions/SocialCareQualification"
-                        }
-                    },
-                    "required" : ["value"]
-                },
-                "otherQualification" : {
-                    "description" : "Whether the worker has any other (non social care specific) qualification",
-                    "$ref" : "#/definitions/WorkingPayRate"
-                },
-                "highestQualification" : {
-                    "description": "The highest Level of non-social care qualification for this Worker",
-                    "properties": {
-                        "value" : {
-                            "description": "The given qualification",
-                            "$ref" : "#/definitions/HighestQualification"
-                        }
-                    },
-                    "required" : ["value"]
-                },
-                "createdAt" : {
-                    "description" : "When the worker record was created",
-                    "type" : "date-time"
-                },
-                "updatedAt" : {
-                    "description": "When the worker record was last updated",
-                    "type" : "date-time"
-                },
-                "updatedBy" : {
-                    "description" : "The username of the last person to update the Worker",
-                    "type" : "string"
-                },
-                "history" : {
-                    "$ref" : "#/definitions/ChangeHistory"
-                }
-            },
-            "required" : ["uid", "nameOrId", "contractType", "mainJob", "createdAt", "updatedAt", "updatedBy"]
-        },
-        "Establishment" : {
-            "description" : "A physical location offering care services; can be commercial or private location",
-            "type" : "object",
-            "properties" : {
-                "id" : {
-                    "description" : "The unique reference for this estasblishment",
-                    "$ref" : "#/definitions/ID"
-                },
-                "uid" : {
-                    "description" : "The unique reference for this estasblishment - to replace (establishment::id)",
-                    "$ref" : "#/definitions/Uid"
-                },
-                "name" : {
-                    "description" : "The given name ofthis establishment",
-                    "$ref" : "#/definitions/EstablishmentName"
-                },
-                "address" : {
-                    "description": "The given (concatenated) address of this establishment",
-                    "$ref" : "#/definitions/Address"
-                },
-                "postcode" : {
-                    "description": "The given postcode of this establishment",
-                    "$ref" : "#/definitions/Postcode"
-                },
-                "locationRef" : {
-                    "description": "An optional reference ",
-                    "$ref" : "#/definitions/LocationRef"
-                },
-                "isRegulated" : {
-                    "description": "True if this establishment is regulated by CQC",
-                    "type": "boolean"
-                },
-                "isParent" : {
-                    "description": "Flag (true/false) indicating whether this Establishment is a parent of others",
-                    "type" : "boolean",
-                    "default" : false
-                },
-                "parentUID" : {
-                    "description": "Optional - if this Establishment (sub) belongs to another, this is the reference (UUID) to that parent Establishment",
-                    "$ref" : "#/definitions/Uid"
-                },
-                "dataOnwer" : {
-                    "$ref" : "#/definitions/DataOwner"
-                },
-                "parentPermissions" : {
-                    "$ref" : "#/definitions/DataOwnerPermissions"
-                },
-                "mainService" : {
-                    "description" : "(Optionally), the primary service associated with this Establishment",
-                    "$ref" : "#/definitions/Service"
-                },
-                "employerType" : {
-                    "description": "The type of the employer",
-                    "$ref" : "#/definitions/EmployerType"
-                },
-                "otherServices" : {
-                    "description": "Optionally, the establishment can be associated with more than just the main service",
-                    "type" : "array",
-                    "items" : {
-                        "$ref" : "#/definitions/Service"
-                    }
-                },
-                "serviceUsers" : {
-                    "description": "Optionally, the establishment can be associated with one or more service user types",
-                    "type" : "array",
-                    "items" : {
-                        "$ref" : "#/definitions/ServiceUser"
-                    }
-                },
-                "capacities" : {
-                    "description" : "TBC"
-                },
-                "allOtherServices" : {
-                    "description": "Optionally, the list of all services available to this Establishment based on CQC (isRegistered), with those services already associated to this Establishment highlighted",
-                    "type" : "array",
-                    "items" : {
-                        "$ref" : "#/definitions/ServiceGroup"
-                    }
-                },
-                "share": {
-                    "description" : "Whether to share, and if so, the share options (LA/CQC)",
-                    "$ref" : "#/definitions/ShareOptions"
-                },
-                "localAuthorities" : {
-                    "description" : "TBC"
-                },
-                "primaryAuthority" : {
-                    "description" : "TBC"
-                },
-                "numberOfStaff" : {
-                    "description" : "The number of staff reported at this Establishment",
-                    "type" : "integer",
-                    "minimum": 0,
-                    "maximum": 999
-                },
-                "TotalVacencies" : {
-                    "description" : "The total number of Vacancies",
-                    "type" : "#/definitions/total"
-                },
-                "Vacancies" : {
-                    "description" : "TBC"
-                },
-                "TotalStarters" : {
-                    "description" : "The total number of Starters",
-                    "type" : "#/definitions/total"
-                },
-                "Starters" : {
-                    "description" : "TBC"
-                },
-                "TotalLeavers" : {
-                    "description" : "The total number of Leavers",
-                    "type" : "#/definitions/total"
-                },
-                "Leavers" : {
-                    "description" : "TBC"
-                },
-                "wdf" : {
-                    "description" : "TBC"
-                },
-                "workers" : {
-                    "description": "An Establishment has zero or more Workers",
-                    "type" : "array",
-                    "items" : [
-                        { "$ref" : "#/definitions/Worker" }
-                    ]
-                },
-                "createdAt" : {
-                    "description" : "When the worker record was created",
-                    "type" : "date-time"
-                },
-                "updatedAt" : {
-                    "description": "When the worker record was last updated",
-                    "type" : "date-time"
-                },
-                "updatedBy" : {
-                    "description" : "The username of the last person to update the Worker",
-                    "type" : "string"
-                },
-                "history" : {
-                    "$ref" : "#/definitions/ChangeHistory"
-                }
-            },
-            "required" : ["id", "name"]
+  "$id": "establishment_types.schema.json",
+  "description": "Describes the entities used in Establishments API; in both the requests and responses.",
+  "title": "ASCWDS Establishment API Schema - Primary Types",
+  "definitions": {
+    "id": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "uid": {
+      "type": "string",
+      "pattern": "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$"
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "Username": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "Password": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "Fullname": {
+      "description": "The fullname of a user",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "Email": {
+      "description": "Optional email for the feedback",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120,
+      "pattern": "^(([^<>()[]\\.,;:s@\"]+(.[^<>()[]\\.,;:s@\"]+)*)|(\".+\"))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$"
+    },
+    "JobTitle": {
+      "description": "Job Title",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "SecurityQuestion": {
+      "description": "Security Question",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 255
+    },
+    "SecurityQuestionAnswer": {
+      "description": "Security Question's Answer",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 255
+    },
+    "Phone": {
+      "description": "Optional email for the feedback",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120,
+      "pattern": "^[0-9 x(?=ext 0-9+)]{8,50}$"
+    },
+    "Address": {
+      "description": "Concatenated address - excluding postcode",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "Postcode": {
+      "description": "A UK postcode",
+      "type": "string",
+      "pattern": "([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))s?[0-9][A-Za-z]{2})"
+    },
+    "LocationRef": {
+      "description": "A unique reference associated to an Establishment",
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 12
+    },
+    "DataOwner": {
+      "description": "Associated with an Establishment, this represents the entity that owns the establishment - be it the workplace itself or it's parent",
+      "type": "string",
+      "enum": ["Workplace", "Parent"]
+    },
+    "ParentPermissions": {
+      "description": "Associated with an Establishment, this represents permissions granted to the parent. If Workplace, then only workplace no worker access. If Workplace and Staff, then parent has access to both workplace and staff. If null/not present, parent has no access.",
+      "type": "string",
+      "enum": ["Workplace", "Workplace and Staff"]
+    },
+    "EstablishmentName": {
+      "description": "the name of the Establishment",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "ServiceName": {
+      "description": "the name of the Service",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "ServiceCategory": {
+      "description": "the category associated with the Service",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "EmployerType": {
+      "description": "The type of employer",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "the textual representation of Employer; enumerated because known values",
+          "type": "string",
+          "enum": [
+            "Private Sector",
+            "Voluntary or Charity",
+            "Other",
+            "Local Authority (generic/other)",
+            "Local Authority (adult services)"
+          ]
+        },
+        "id": {
+          "description": "Optional integer representing the employer type: 1=Private, 2=Voluntary, 3=Other",
+          "$ref": "#/definitions/ID"
         }
+      },
+      "required": ["value"]
     },
-    "UsersType": {
-        "description" : "A users' short definition",
-        "type" : "object",
-        "properties" : {
-            "uid" : {
-                "$ref" : "#/definitions/Uid"
-            },
-            "fullname" : {
-                "$ref" : "#/definitions/Fullname"
-            },
-            "email": {
-                "$ref" : "#/definitions/Email"
-            },
-            "username" : {
-                "$ref" : "#/definitions/Username"
-            },
-            "createdAt" : {
-                "description" : "When the worker record was created",
-                "type" : "date-time"
-            },
-            "updatedAt" : {
-                "description": "When the worker record was last updated",
-                "type" : "date-time"
-            },
-            "updatedBy" : {
-                "description" : "The username of the last person to update the Worker",
-                "type" : "string"
-            }
+    "ServiceCapacity": {
+      "description": "Optionally associated to a Service, is one or more questions around capacity",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "the unique reference of the service capacity",
+          "$ref": "#/definitions/ID"
         },
-        "required": ["uid", "fullname", "email", "username", "created", "updated", "updatedBy"]
-    },
-    "Users" : {
-        "description" : "A list of establishment's users, ordered by updated descending",
-        "type" : "array",
-        "properties" : {
-            "users" : {
-                "type" : "array",
-                "items" : [
-                    {
-                        "$ref" : "#/definitions/UsersType"
-                    }
-                ]
-            }
+        "sequence": {
+          "description": "if there is more than one capacity question, this sequence defines the order in which they should be prompted",
+          "type": "number",
+          "minimum": 1
         },
-        "required" : ["users"]
-    },
-    "UserFullname" : {
-        "description": "The user's fullname",
-        "oneOf": [
-            {
-                "description": "Simple fullname",
-                "$ref" : "#/definitions/Fullname"
-            },
-            {
-                "allOf" : [
-                    {
-                        "description": "Fullname with change history",
-                        "type" : "object",
-                        "properties": {
-                            "currentValue" : {
-                                "$ref" : "#/definitions/Fullname"
-                            }
-                        },
-                        "required" : ["currentValue"]
-                    },
-                    {
-                        "$ref" : "#/definitions/PropertyChangeStatus"
-                    }
-                ]
-            }
-        ]
-    },
-    "UserEmail" : {
-        "description": "The user's email",
-        "oneOf": [
-            {
-                "description": "Simple email",
-                "$ref" : "#/definitions/Email"
-            },
-            {
-                "allOf" : [
-                    {
-                        "description": "Email with change history",
-                        "type" : "object",
-                        "properties": {
-                            "currentValue" : {
-                                "$ref" : "#/definitions/Email"
-                            }
-                        },
-                        "required" : ["currentValue"]
-                    },
-                    {
-                        "$ref" : "#/definitions/PropertyChangeStatus"
-                    }
-                ]
-            }
-        ]
-    },
-    "UserJobTitle" : {
-        "description": "The user's job title",
-        "oneOf": [
-            {
-                "description": "Simple job title",
-                "$ref" : "#/definitions/Fullname"
-            },
-            {
-                "allOf" : [
-                    {
-                        "description": "Job Title with change history",
-                        "type" : "object",
-                        "properties": {
-                            "currentValue" : {
-                                "$ref" : "#/definitions/Fullname"
-                            }
-                        },
-                        "required" : ["currentValue"]
-                    },
-                    {
-                        "$ref" : "#/definitions/PropertyChangeStatus"
-                    }
-                ]
-            }
-        ]
-    },
-    "UserPhone" : {
-        "description": "The user's phone number",
-        "oneOf": [
-            {
-                "description": "Simple phone",
-                "$ref" : "#/definitions/Phone"
-            },
-            {
-                "allOf" : [
-                    {
-                        "description": "Phone with change history",
-                        "type" : "object",
-                        "properties": {
-                            "currentValue" : {
-                                "$ref" : "#/definitions/Phone"
-                            }
-                        },
-                        "required" : ["currentValue"]
-                    },
-                    {
-                        "$ref" : "#/definitions/PropertyChangeStatus"
-                    }
-                ]
-            }
-        ]
-    },
-    "UserSecurityQuestion" : {
-        "description": "The user's secutity question",
-        "oneOf": [
-            {
-                "description": "Simple Security Question",
-                "$ref" : "#/definitions/SecurityQuestion"
-            },
-            {
-                "allOf" : [
-                    {
-                        "description": "Security Question with change history",
-                        "type" : "object",
-                        "properties": {
-                            "currentValue" : {
-                                "$ref" : "#/definitions/SecurityQuestion"
-                            }
-                        },
-                        "required" : ["currentValue"]
-                    },
-                    {
-                        "$ref" : "#/definitions/PropertyChangeStatus"
-                    }
-                ]
-            }
-        ]
-    },
-    "UserSecurityQuestionAnswer" : {
-        "description": "The user's secutity question answer",
-        "oneOf": [
-            {
-                "description": "Simple Security Question Answer",
-                "$ref" : "#/definitions/SecurityQuestionAnswer"
-            },
-            {
-                "allOf" : [
-                    {
-                        "description": "Security Question Answer with change history",
-                        "type" : "object",
-                        "properties": {
-                            "currentValue" : {
-                                "$ref" : "#/definitions/SecurityQuestionAnswer"
-                            }
-                        },
-                        "required" : ["currentValue"]
-                    },
-                    {
-                        "$ref" : "#/definitions/PropertyChangeStatus"
-                    }
-                ]
-            }
-        ]
-    },
-    "User" : {
-        "description" : "A user definition with/without change history",
-        "type" : "object",
-        "properties" : {
-            "uid" : {
-                "$ref" : "#/definitions/Uid"
-            },
-            "username" : {
-                "$ref" : "#/definitions/Username"
-            },
-            "fullname" : {
-                "$ref" : "#/definitions/UserFullname"
-            },
-            "email": {
-                "$ref" : "#/definitions/UserEmail"
-            },
-            "phone": {
-                "$ref" : "#/definitions/UserPhone"
-            },
-            "jobTitle": {
-                "$ref" : "#/definitions/UserJobTitle"
-            },
-            "securityQuestion": {
-                "$ref" : "#/definitions/UserSecurityQuestion"
-            },
-            "securityQuestionAnswer": {
-                "$ref" : "#/definitions/UserSecurityQuestionAnswer"
-            },
-            "createdAt" : {
-                "description" : "When the worker record was created",
-                "type" : "date-time"
-            },
-            "updatedAt" : {
-                "description": "When the worker record was last updated",
-                "type" : "date-time"
-            },
-            "updatedBy" : {
-                "description" : "The username of the last person to update the Worker",
-                "type" : "string"
-            }
+        "question": {
+          "description": "The capacity question context",
+          "type": "string",
+          "minLength": 3
         },
-        "required": ["uid", "fullname", "created", "updated", "updatedBy"]
+        "answer": {
+          "description": "Optional: If a known establishment, the answer to this capacity question",
+          "type": "integer",
+          "minimum": 0
+        }
+      }
     },
-    "Feedback" : {
-        "description" : "For capturing user feedback",
-        "properties" : {
-            "id" : {
-                "description" : "A unique index for this particular feedback; id is optional because this type is used to both create and return feedback",
-                "$ref" : "#/definitions/ID"
-            },
-            "whenDoing" : {
-                "description" : "The feedback as given for 'when doing something in particular'",
-                "type" : "string",
-                "minLength" : 0,
-                "maxLength" : 500
-            },
-            "tellUs" : {
-                "description" : "General 'tell us' feedback",
-                "type" : "string",
-                "minLength" : 0,
-                "maxLength" : 500
-            },
-            "name" : {
-                "$ref" : "#/definitions/Fullname"
-            },
-            "email" : {
-                "$ref" : "#/definitions/Email"
-            }
+    "Service": {
+      "description": "The Service that can be performed at an Establishment",
+      "properties": {
+        "id": {
+          "description": "the unique reference of the service type",
+          "$ref": "#/definitions/ID"
         },
-        "required" : ["whenDoing", "tellUs"]
+        "name": {
+          "description": "the display name of the service type",
+          "$ref": "#/definitions/ServiceName"
+        },
+        "category": {
+          "description": "the category of this service",
+          "$ref": "#/definitions/ServiceCategory"
+        },
+        "isCQC": {
+          "description": "if true, this service is defined by CQC",
+          "type": "boolean"
+        },
+        "isMyService": {
+          "description": "optional flag that when true identifies this service being one of the services provided by the Establishment (returned by api/myServices)",
+          "type": "boolean"
+        },
+        "capacity": {
+          "description": "optional set of capacity questions and, if relevant (associated to a known Establishment), the answers",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ServiceCapacity"
+          },
+          "minItems": 1
+        }
+      },
+      "required": ["id"]
+    },
+    "ServiceUser": {
+      "description": "A User of the Services at an Establishment",
+      "properties": {
+        "id": {
+          "description": "the unique reference of the service user type",
+          "$ref": "#/definitions/ID"
+        },
+        "name": {
+          "description": "the display name of the service user type",
+          "$ref": "#/definitions/ServiceName"
+        },
+        "group": {
+          "description": "the group of this service user",
+          "$ref": "#/definitions/ServiceCategory"
+        }
+      },
+      "required": ["id"]
+    },
+    "ServiceGroup": {
+      "description": "A collection of services having the same cateogory",
+      "type": "object",
+      "properties": {
+        "category": {
+          "$ref": "#/definitions/ServiceCategory"
+        },
+        "services": {
+          "description": "All the services attributed to this service category",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Service"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "ServiceUsersGroup": {
+      "description": "A collection of service users having the same group",
+      "type": "object",
+      "properties": {
+        "group": {
+          "$ref": "#/definitions/ServiceCategory"
+        },
+        "services": {
+          "description": "All the service users attributed to this service user group",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ServiceUser"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "Job": {
+      "description": "An individual job total",
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "description": "A unique reference to the job title",
+          "$ref": "#/definitions/ID"
+        },
+        "title": {
+          "description": "The title of the job of given jobId",
+          "type": "string"
+        },
+        "total": {
+          "description": "The number of staff for this specific job (as given by jobId)",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999
+        }
+      },
+      "required": ["jobId"]
+    },
+    "EstablishmentJobs": {
+      "description": "Covers Vacancies, starters and leavers. Each can either be: 1. A set of individual Jobs, 2. A declaration there are no current vacancies, or 3. A declaration of 'I don't know'",
+      "oneOf": [
+        {
+          "description": "A set of Jobs",
+          "type": "array",
+          "items": [
+            {
+              "$ref": "#/definitions/Job"
+            }
+          ]
+        },
+        {
+          "description": "A declaration of none or I don't know",
+          "type": "string",
+          "enum": ["none", "don't know"]
+        }
+      ]
+    },
+    "Jobs": {
+      "description": "The collective definition of number of vacancies, starters and leavers atytributed to a given establishment. Each is optional, but if given, overwrites all existing jobs of that type",
+      "type": "object",
+      "properties": {
+        "Vacancies": {
+          "$ref": "#/definitions/EstablishmentJobs"
+        },
+        "starters": {
+          "$ref": "#/definitions/EstablishmentJobs"
+        },
+        "leavers": {
+          "$ref": "#/definitions/EstablishmentJobs"
+        },
+        "TotalVacancies": {
+          "description": "The total of all Vacancies - 0, if no Vacancies",
+          "type": "integer",
+          "minimum": 0
+        },
+        "TotalStarters": {
+          "description": "The total of all Starters - 0, if no Vacancies",
+          "type": "integer",
+          "minimum": 0
+        },
+        "TotalLeavers": {
+          "description": "The total of all Leavers - 0, if no Vacancies",
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": ["TotalVacancies", "TotalStarters", "TotalLeavers"]
+    },
+    "LocalAuthority": {
+      "description": "Local Authority reference",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "This the primary index for a specific Local Authority of a given Establishment",
+          "$ref": "#/definitions/ID"
+        },
+        "name": {
+          "description": "This is the readable name of the Local Authority",
+          "type": "string",
+          "minLength": 3
+        },
+        "custodianCode": {
+          "description": "A unique reference for a Local Authority",
+          "$ref": "#/definitions/ID"
+        },
+        "isPrimaryAuthority": {
+          "description": "An optional flag (assumed false if not given) that if true, identifies this as being the Local Authority as known by the physical location of the associated Establishment",
+          "type": "boolean"
+        }
+      },
+      "required": ["id", "name"]
+    },
+    "ShareOptions": {
+      "description": "For sharing data with CQC and Local Authorities",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "If false, all sharing is disabled",
+          "type": "boolean"
+        },
+        "with": {
+          "description": "If enabled is true, describes which of the share options (CQC/Local Authority) is enabled",
+          "type": "object",
+          "properties": {
+            "shareWithCQC": {
+              "description": "If true, then share with CQC",
+              "type": "boolean"
+            },
+            "shareWithLA": {
+              "description": "If true, then share with Local Authorities"
+            },
+            "authorities": {
+              "description": "A list of all the local authorities to which data is shared with; only populated if 'shareWithLA' is true",
+              "type": "array",
+              "items": [
+                {
+                  "$ref": "#/definitions/LocalAuthority"
+                }
+              ]
+            }
+          },
+          "required": []
+        }
+      },
+      "required": ["enabled"]
+    },
+    "ChangeHistory": {
+      "description": "A reverse chronological set of change events. TODO: Add a tighter restriction on required, because before and after are only required when event is changed only, and property only required when event is saved or changed.",
+      "type": "array",
+      "items": [
+        {
+          "properties": {
+            "when": {
+              "description": "The timestamp of the change event",
+              "type": "date-time"
+            },
+            "event": {
+              "description": "The event type",
+              "type": "string",
+              "enum": ["created", "updated", "saved", "changed"]
+            },
+            "by": {
+              "description": "The username of who effected the change event",
+              "type": "string"
+            },
+            "property": {
+              "description": "The name of the property which has been changed; this is optional if this history is embedded within a property",
+              "type": "string"
+            },
+            "before": {
+              "description": "The value before the change; any JSON type"
+            },
+            "after": {
+              "description": "The value after the change; any JSON type"
+            }
+          },
+          "required": ["when", "event", "by"]
+        }
+      ]
+    },
+    "PropertyChangeStatus": {
+      "description": "Used by extended change properties, that can report on their current changd/saved status",
+      "properties": {
+        "lastSavedBy": {
+          "description": "The username of the person who last saved (with or without change) this property",
+          "type": "string"
+        },
+        "lastChangedBy": {
+          "description": "The username of the person who last changed (value change) this property",
+          "type": "string"
+        },
+        "lastSaved": {
+          "description": "The timestamp of when last saved (with or without change) this property",
+          "type": "string"
+        },
+        "lastChanged": {
+          "description": "The timestamp of when last changed (value change) this property",
+          "type": "string"
+        }
+      },
+      "required": ["lastSavedBy", "lastChangedBy", "lastSaved", "lastChanged", "changeHistory"]
+    },
+    "WorkerGender": {
+      "description": "The worker's gender",
+      "oneOf": [
+        {
+          "description": "Simple Gender type",
+          "type": "string",
+          "enum": ["Female", "Male", "Other", "Don't know"]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Gender with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "enum": ["Female", "Male", "Other", "Don't know"]
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerNameOrId": {
+      "description": "The worker's name/id",
+      "oneOf": [
+        {
+          "description": "Simple name or id (staff number)",
+          "type": "string",
+          "maxLength": 50
+        },
+        {
+          "allOf": [
+            {
+              "description": "Name or id with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "maxLength": 50
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerContract": {
+      "description": "The worker's contract",
+      "oneOf": [
+        {
+          "description": "Simple contract",
+          "type": "string",
+          "enum": ["Permanent", "Temporary", "Pool/Bank", "Agency", "Other"]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Contract with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "enum": ["Permanent", "Temporary", "Pool/Bank", "Agency", "Other"]
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerMainJob": {
+      "description": "The worker's contract",
+      "oneOf": [
+        {
+          "description": "Simple main job",
+          "$ref": "#/defintions/Job",
+          "required": ["jobId", "title"]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Main job with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "$ref": "#/defintions/Job",
+                  "required": ["jobId", "title"]
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerApprovedMentalHealthWorker": {
+      "description": "The worker's Approval Mental Health Worker status",
+      "oneOf": [
+        {
+          "description": "Simple Approval Mental Health Worker status",
+          "type": "string",
+          "enum": ["Yes", "No", "Don't know"]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Approval Mental Health Worker status with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "enum": ["Yes", "No", "Don't know"]
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerMainJobStartDate": {
+      "description": "The worker's Main Job Start Date",
+      "oneOf": [
+        {
+          "description": "Simple Main Job Start Date",
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        {
+          "allOf": [
+            {
+              "description": "Main Job Start Date with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerNationalInsuranceNumber": {
+      "description": "The worker's NI Number",
+      "oneOf": [
+        {
+          "description": "Simple NI Number",
+          "type": "string",
+          "pattern": "[A-Z]{2] [0-9]{2} [0-9]{2} [A-Z]{1}"
+        },
+        {
+          "allOf": [
+            {
+              "description": "NI Number with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "pattern": "[A-Z]{2] [0-9]{2} [0-9]{2} [A-Z]{1}"
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerDateOfBirth": {
+      "description": "The worker's Date of Birth",
+      "oneOf": [
+        {
+          "description": "Simple Date of Birth",
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        {
+          "allOf": [
+            {
+              "description": "Date of Birth with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerPostcode": {
+      "description": "The worker's Date of Birth",
+      "oneOf": [
+        {
+          "description": "Simple Date of Birth",
+          "type": "string",
+          "maxLength": 8
+        },
+        {
+          "allOf": [
+            {
+              "description": "Date of Birth with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "maxLength": 8
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerDisability": {
+      "description": "The worker's Disability",
+      "oneOf": [
+        {
+          "description": "Simple Disability",
+          "type": "string",
+          "enum": ["Yes", "No", "Undisclosed", "Don't know"]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Disability with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "enum": ["Yes", "No", "Undisclosed", "Don't know"]
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "Nationality": {
+      "description": "A person's nationality",
+      "properties": {
+        "nationalityId": {
+          "description": "A unique reference to the Nationality",
+          "$ref": "#/definitions/id"
+        },
+        "nationality": {
+          "description": "The nationality, e.g. Austrian, Australian"
+        },
+        "seq": {
+          "description": "A preferred order in which to present the Nationality if presenting as a list",
+          "$ref": "#/definitions/id"
+        }
+      },
+      "required": ["nationalityId"]
+    },
+    "Ethnicity": {
+      "description": "A person's ethnicity",
+      "properties": {
+        "ethnicityId": {
+          "description": "A unique reference to the Ethnicity",
+          "$ref": "#/definitions/id"
+        },
+        "ethnicity": {
+          "description": "The nationality, e.g. Austrian, Australian",
+          "type": "string"
+        },
+        "group": {
+          "description": "The ethnic group associated with this ethnicity",
+          "type": "string"
+        },
+        "seq": {
+          "description": "A preferred order in which to present the Nationality if presenting as a list",
+          "$ref": "#/definitions/id"
+        }
+      },
+      "required": ["ethnicityId"]
+    },
+    "Country": {
+      "description": "A known country within the world",
+      "properties": {
+        "countryId": {
+          "description": "A unique reference to the Country",
+          "$ref": "#/definitions/id"
+        },
+        "country": {
+          "description": "The name of the country, e.g. Austria, Australia",
+          "type": "string"
+        },
+        "seq": {
+          "description": "A preferred order in which to present the Country if presenting as a list",
+          "$ref": "#/definitions/id"
+        }
+      },
+      "required": ["countryId"]
+    },
+    "RecruitedFrom": {
+      "description": "Recruitment Origins; lookup value",
+      "properties": {
+        "recruitedFromId": {
+          "description": "A unique reference to the Recruitment Origin",
+          "$ref": "#/definitions/id"
+        },
+        "from": {
+          "description": "The origin of recruitment",
+          "type": "string"
+        },
+        "seq": {
+          "description": "A preferred order in which to present the Recruitment Origins if presenting as a list",
+          "$ref": "#/definitions/id"
+        }
+      },
+      "required": ["recruitedFromId"]
+    },
+    "BritishCitizenship": {
+      "description": "A given citizenship status",
+      "type": "string",
+      "enum": ["Yes", "No", "Don't know"]
+    },
+    "YearOfArrival": {
+      "description": "Year of arrival",
+      "properties": {
+        "value": {
+          "description": "Whether they arrived in the UK",
+          "type": "string",
+          "enum": ["Yes", "No"]
+        },
+        "year": {
+          "description": "The year in which they arrived; only relevant if value is 'Yes'",
+          "type": "integer"
+        }
+      },
+      "required": ["value"]
+    },
+    "SocialCareStartDate": {
+      "description": "If relevant, the year in which work started in social care",
+      "properties": {
+        "value": {
+          "description": "If known when the started working in social care",
+          "type": "string",
+          "enum": ["Yes", "No"]
+        },
+        "year": {
+          "description": "The year in which they started",
+          "type": "integer"
+        }
+      },
+      "required": ["value"]
+    },
+    "DaysSick": {
+      "description": "If relevant, number of days sick within a given year",
+      "properties": {
+        "value": {
+          "description": "If known the number of days sick",
+          "type": "string",
+          "enum": ["Yes", "No"]
+        },
+        "year": {
+          "description": "If value is 'Yes', the number of days sick",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 366
+        }
+      },
+      "required": ["value"]
+    },
+    "ZeroHoursContract": {
+      "description": "Whether the given worker is on zero hours contract or not",
+      "type": "string",
+      "enum": ["Yes", "No", "Don't know"]
+    },
+    "WorkingHours": {
+      "description": "The given working hours (average or contracted)",
+      "properties": {
+        "value": {
+          "description": "If known the working hours",
+          "type": "string",
+          "enum": ["Yes", "No"]
+        },
+        "year": {
+          "description": "If value is 'Yes', the number of working hours",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 65
+        }
+      },
+      "required": ["value"]
+    },
+    "HourlyPayRate": {
+      "description": "Hourly pay rate - min and max warrants a separate type from annual pay rate",
+      "type": "number",
+      "minimum": 2.5,
+      "maximum": 100
+    },
+    "AnnualPayRate": {
+      "description": "Annual pay rate - min and max warrants a separate type from weekly pay rate",
+      "type": "number",
+      "minimum": 500,
+      "maximum": 200000
+    },
+    "PayRate": {
+      "description": "Weekly or Annual pay rate",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/HourlyPayRate"
+        },
+        {
+          "$ref": "#/definitions/AnnualPayRate"
+        }
+      ]
+    },
+    "WorkingPayRate": {
+      "description": "Hourly or Annual Pay Rate for a Worker",
+      "properties": {
+        "value": {
+          "description": "If pay rate is known",
+          "type": "string",
+          "enum": ["Hourly", "Annually", "Don't know"]
+        },
+        "pay": {
+          "$ref": "#/definitions/PayRate"
+        }
+      },
+      "required": ["value"]
+    },
+    "OtherJobs": {
+      "description": "Other Jobs, attributed to a Worker",
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/Job"
+        }
+      ]
+    },
+    "WorkerCareCertificate": {
+      "description": "Whether the worker has a Care Certificate",
+      "oneOf": [
+        {
+          "description": "Simple Care Certificate",
+          "type": "string",
+          "enum": ["Yes, completed", "Yes, in progress or partially completed", "No"]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Care Certificate with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "enum": ["Yes, completed", "Yes, in progress or partially completed", "No"]
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerApprenticeshipTraining": {
+      "description": "Whether the worker is on apprenticeship",
+      "oneOf": [
+        {
+          "description": "Simple Apprenticeship Training",
+          "type": "string",
+          "enum": ["Yes", "No", "Don't know"]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Apprenticeship Training with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "enum": ["Yes", "No", "Don't know"]
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "WorkerSocialCareQualification": {
+      "description": "Whether the worker is has any social care specific qualifications",
+      "oneOf": [
+        {
+          "description": "Simple Social Care Qualification",
+          "type": "string",
+          "enum": ["Yes", "No", "Don't know"]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Social Care Qualification with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "enum": ["Yes", "No", "Don't know"]
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "SocialCareQualification": {
+      "description": "A given qualification",
+      "properties": {
+        "qualificationId": {
+          "description": "A unique reference to the Qualification",
+          "$ref": "#/definitions/id"
+        },
+        "title": {
+          "description": "The qualification title",
+          "type": "string"
+        },
+        "seq": {
+          "description": "A preferred order in which to present the Qualification if presenting as a list",
+          "$ref": "#/definitions/id"
+        }
+      },
+      "required": ["qualificationId"]
+    },
+    "WorkerOtherQualification": {
+      "description": "Whether the worker is has any other (non social care specific) qualifications",
+      "oneOf": [
+        {
+          "description": "Simple Other Qualification",
+          "type": "string",
+          "enum": ["Yes", "No", "Don't know"]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Other Qualification with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "enum": ["Yes", "No", "Don't know"]
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "HighestQualification": {
+      "description": "A given qualification",
+      "properties": {
+        "qualificationId": {
+          "description": "A unique reference to the Qualification",
+          "$ref": "#/definitions/id"
+        },
+        "title": {
+          "description": "The qualification title",
+          "type": "string"
+        },
+        "seq": {
+          "description": "A preferred order in which to present the Qualification if presenting as a list",
+          "$ref": "#/definitions/id"
+        }
+      },
+      "required": ["qualificationId"]
+    },
+    "WorkerCompleted": {
+      "description": "Whether the worker has been nominated as completed or not",
+      "oneOf": [
+        {
+          "description": "Simple completed",
+          "type": "boolean"
+        },
+        {
+          "description": "Simple completed",
+          "type": "string",
+          "enum": ["true", "false"]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Apprenticeship Training with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "string",
+                  "enum": ["true", "false"]
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "description": "Apprenticeship Training with change history",
+              "type": "object",
+              "properties": {
+                "currentValue": {
+                  "type": "boolean"
+                }
+              },
+              "required": ["currentValue"]
+            },
+            {
+              "$ref": "#/definitions/PropertyChangeStatus"
+            }
+          ]
+        }
+      ]
+    },
+    "Worker": {
+      "description": "A Worker belongs to a single Establishment",
+      "properties": {
+        "uid": {
+          "description": "A unique identifier for a Worker",
+          "$ref": "#/definitions/uid"
+        },
+        "completed": {
+          "description": "The nominated completion status on a Worker record; this is declared by User (but can be reset by consequential activities",
+          "$ref": "#/definitions/WWorkerCompleted"
+        },
+        "nameOrId": {
+          "description": "The name or id (staff number) of the worker - unique to the Establishment",
+          "$ref": "#/definitions/WorkerNameOrId"
+        },
+        "contract": {
+          "description": "The employment contract associated to this worker",
+          "$ref": "#/definitions/WorkerContract"
+        },
+        "mainJob": {
+          "description": "The main job/activity associated with this worker; can have other job roles too - see 'otherJobs' below",
+          "$ref": "#/definitions/WorkerMainJob"
+        },
+        "approvedMentalHealthWorker": {
+          "description": "Only to be used if the main job is or other jobs include, 'social worker'",
+          "type": "string",
+          "$ref": "#/definitions/WorkerApprovedMentalHealthWorker"
+        },
+        "mainJobStartDate": {
+          "description": "The ISO 8601 format start date attributed to the main job role for this worker; this should be updated if the main job role changes. It's date only (YYYY-MM-DD)",
+          "$ref": "#/definitions/WorkerMainJobStartDate"
+        },
+        "otherJobs": {
+          "description": "The worker's other jobs, in addition to their main job",
+          "$ref": "#/definitions/OtherJobs"
+        },
+        "nationalInsuranceNumber": {
+          "description": "National insurance number",
+          "$ref": "#/definitions/WorkerNationalInsuranceNumber"
+        },
+        "dateOfBirth": {
+          "description": "Date of Birth; YYYY-MM-DD - ISO 8601",
+          "$ref": "#/definitions/WorkerDateOfBirth"
+        },
+        "postcode": {
+          "description": "Postcode of home address",
+          "$ref": "#/definitions/WorkerPostcode"
+        },
+        "gender": {
+          "description": "The worker's gender",
+          "$ref": "#/definitions/WorkerGender"
+        },
+        "disability": {
+          "description": "The worker's disability",
+          "$ref": "#/definitions/WorkerDisability"
+        },
+        "ethnicity": {
+          "description": "The worker's ethnicity",
+          "properties": {
+            "value": {
+              "description": "The given ethnicity",
+              "$ref": "#/definitions/Ethnicity"
+            }
+          },
+          "required": ["value"]
+        },
+        "nationality": {
+          "description": "The worker's nationality",
+          "properties": {
+            "value": {
+              "description": "The given nationality",
+              "type": "string",
+              "enum": ["British", "Other", "Don't know"]
+            },
+            "other": {
+              "description": "If other, this is the referenced (looked up) Nationality",
+              "$ref": "#/definitions/Nationality"
+            }
+          },
+          "required": ["value"]
+        },
+        "countryOfBirth": {
+          "description": "The worker's country of birth",
+          "properties": {
+            "value": {
+              "description": "The given country of birth",
+              "type": "string",
+              "enum": ["United Kingdom", "Other", "Don't know"]
+            },
+            "other": {
+              "description": "If other, this is the referenced (looked up) Country",
+              "$ref": "#/definitions/Country"
+            }
+          },
+          "required": ["value"]
+        },
+        "recruitedFrom": {
+          "description": "Previous position from which the worker was recruited from",
+          "properties": {
+            "value": {
+              "description": "The given recruited from",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "from": {
+              "description": "If yes, this is the referenced (looked up) recruitment origin",
+              "$ref": "#/definitions/RecruitedFrom"
+            }
+          },
+          "required": ["value"]
+        },
+        "britishCitizenship": {
+          "description": "If relevant, the worker's British Citizenship status",
+          "properties": {
+            "value": {
+              "description": "The given citizenship status",
+              "$ref": "#/definitions/BritishCitizenship"
+            }
+          },
+          "required": ["value"]
+        },
+        "yearArrived": {
+          "description": "If relevant, the year the worker arrived in the UK",
+          "properties": {
+            "value": {
+              "description": "The given year of arrival",
+              "$ref": "#/definitions/YearOfArrival"
+            }
+          },
+          "required": ["value"]
+        },
+        "socialCareStartDate": {
+          "description": "If relevant, the year they started working in social care",
+          "properties": {
+            "value": {
+              "description": "The given start year",
+              "$ref": "#/definitions/SocialCareStartDate"
+            }
+          },
+          "required": ["value"]
+        },
+        "daysSick": {
+          "description": "The workers current number of days sick, if known",
+          "$ref": "#/definitions/DaysSick"
+        },
+        "zeroHoursContract": {
+          "description": "If the work is on a zero hours contract",
+          "$ref": "#/definitions/ZeroHoursContract"
+        },
+        "weeklyHoursAverage": {
+          "description": "The average weekly working hours",
+          "$ref": "#/definitions/WorkingHours"
+        },
+        "weeklyHoursContracted": {
+          "description": "The contracted weekly working hours",
+          "$ref": "#/definitions/WorkingHours"
+        },
+        "annualHourlyPay": {
+          "description": "The weekly/annual pay rate if known",
+          "$ref": "#/definitions/WorkingPayRate"
+        },
+        "careCertificate": {
+          "description": "Whether the worker has, or is doing, a Care Certificate",
+          "$ref": "#/definitions/WorkerCareCertificate"
+        },
+        "apprenticeshipTraining": {
+          "description": "Whether the worker is on an apprenticeship",
+          "$ref": "#/definitions/WorkerApprenticeshipTraining"
+        },
+        "qualificationInSocialCare": {
+          "description": "Whether the worker has a social care specific qualification",
+          "$ref": "#/definitions/WorkerSocialCareQualification"
+        },
+        "socialCareQualification": {
+          "description": "The highest Level of social care qualification for this Worker",
+          "properties": {
+            "value": {
+              "description": "The given qualification",
+              "$ref": "#/definitions/SocialCareQualification"
+            }
+          },
+          "required": ["value"]
+        },
+        "otherQualification": {
+          "description": "Whether the worker has any other (non social care specific) qualification",
+          "$ref": "#/definitions/WorkingPayRate"
+        },
+        "highestQualification": {
+          "description": "The highest Level of non-social care qualification for this Worker",
+          "properties": {
+            "value": {
+              "description": "The given qualification",
+              "$ref": "#/definitions/HighestQualification"
+            }
+          },
+          "required": ["value"]
+        },
+        "createdAt": {
+          "description": "When the worker record was created",
+          "type": "date-time"
+        },
+        "updatedAt": {
+          "description": "When the worker record was last updated",
+          "type": "date-time"
+        },
+        "updatedBy": {
+          "description": "The username of the last person to update the Worker",
+          "type": "string"
+        },
+        "history": {
+          "$ref": "#/definitions/ChangeHistory"
+        }
+      },
+      "required": ["uid", "nameOrId", "contractType", "mainJob", "createdAt", "updatedAt", "updatedBy"]
+    },
+    "Establishment": {
+      "description": "A physical location offering care services; can be commercial or private location",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The unique reference for this estasblishment",
+          "$ref": "#/definitions/ID"
+        },
+        "uid": {
+          "description": "The unique reference for this estasblishment - to replace (establishment::id)",
+          "$ref": "#/definitions/Uid"
+        },
+        "name": {
+          "description": "The given name ofthis establishment",
+          "$ref": "#/definitions/EstablishmentName"
+        },
+        "address": {
+          "description": "The given (concatenated) address of this establishment",
+          "$ref": "#/definitions/Address"
+        },
+        "postcode": {
+          "description": "The given postcode of this establishment",
+          "$ref": "#/definitions/Postcode"
+        },
+        "locationRef": {
+          "description": "An optional reference ",
+          "$ref": "#/definitions/LocationRef"
+        },
+        "isRegulated": {
+          "description": "True if this establishment is regulated by CQC",
+          "type": "boolean"
+        },
+        "isParent": {
+          "description": "Flag (true/false) indicating whether this Establishment is a parent of others",
+          "type": "boolean",
+          "default": false
+        },
+        "parentUID": {
+          "description": "Optional - if this Establishment (sub) belongs to another, this is the reference (UUID) to that parent Establishment",
+          "$ref": "#/definitions/Uid"
+        },
+        "dataOnwer": {
+          "$ref": "#/definitions/DataOwner"
+        },
+        "parentPermissions": {
+          "$ref": "#/definitions/DataOwnerPermissions"
+        },
+        "mainService": {
+          "description": "(Optionally), the primary service associated with this Establishment",
+          "$ref": "#/definitions/Service"
+        },
+        "employerType": {
+          "description": "The type of the employer",
+          "$ref": "#/definitions/EmployerType"
+        },
+        "otherServices": {
+          "description": "Optionally, the establishment can be associated with more than just the main service",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Service"
+          }
+        },
+        "serviceUsers": {
+          "description": "Optionally, the establishment can be associated with one or more service user types",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ServiceUser"
+          }
+        },
+        "capacities": {
+          "description": "TBC"
+        },
+        "allOtherServices": {
+          "description": "Optionally, the list of all services available to this Establishment based on CQC (isRegistered), with those services already associated to this Establishment highlighted",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ServiceGroup"
+          }
+        },
+        "share": {
+          "description": "Whether to share, and if so, the share options (LA/CQC)",
+          "$ref": "#/definitions/ShareOptions"
+        },
+        "localAuthorities": {
+          "description": "TBC"
+        },
+        "primaryAuthority": {
+          "description": "TBC"
+        },
+        "numberOfStaff": {
+          "description": "The number of staff reported at this Establishment",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999
+        },
+        "TotalVacencies": {
+          "description": "The total number of Vacancies",
+          "type": "#/definitions/total"
+        },
+        "Vacancies": {
+          "description": "TBC"
+        },
+        "TotalStarters": {
+          "description": "The total number of Starters",
+          "type": "#/definitions/total"
+        },
+        "Starters": {
+          "description": "TBC"
+        },
+        "TotalLeavers": {
+          "description": "The total number of Leavers",
+          "type": "#/definitions/total"
+        },
+        "Leavers": {
+          "description": "TBC"
+        },
+        "wdf": {
+          "description": "TBC"
+        },
+        "workers": {
+          "description": "An Establishment has zero or more Workers",
+          "type": "array",
+          "items": [{ "$ref": "#/definitions/Worker" }]
+        },
+        "createdAt": {
+          "description": "When the worker record was created",
+          "type": "date-time"
+        },
+        "updatedAt": {
+          "description": "When the worker record was last updated",
+          "type": "date-time"
+        },
+        "updatedBy": {
+          "description": "The username of the last person to update the Worker",
+          "type": "string"
+        },
+        "history": {
+          "$ref": "#/definitions/ChangeHistory"
+        }
+      },
+      "required": ["id", "name"]
     }
+  },
+  "UsersType": {
+    "description": "A users' short definition",
+    "type": "object",
+    "properties": {
+      "uid": {
+        "$ref": "#/definitions/Uid"
+      },
+      "fullname": {
+        "$ref": "#/definitions/Fullname"
+      },
+      "email": {
+        "$ref": "#/definitions/Email"
+      },
+      "username": {
+        "$ref": "#/definitions/Username"
+      },
+      "createdAt": {
+        "description": "When the worker record was created",
+        "type": "date-time"
+      },
+      "updatedAt": {
+        "description": "When the worker record was last updated",
+        "type": "date-time"
+      },
+      "updatedBy": {
+        "description": "The username of the last person to update the Worker",
+        "type": "string"
+      }
+    },
+    "required": ["uid", "fullname", "email", "username", "created", "updated", "updatedBy"]
+  },
+  "Users": {
+    "description": "A list of establishment's users, ordered by updated descending",
+    "type": "array",
+    "properties": {
+      "users": {
+        "type": "array",
+        "items": [
+          {
+            "$ref": "#/definitions/UsersType"
+          }
+        ]
+      }
+    },
+    "required": ["users"]
+  },
+  "UserFullname": {
+    "description": "The user's fullname",
+    "oneOf": [
+      {
+        "description": "Simple fullname",
+        "$ref": "#/definitions/Fullname"
+      },
+      {
+        "allOf": [
+          {
+            "description": "Fullname with change history",
+            "type": "object",
+            "properties": {
+              "currentValue": {
+                "$ref": "#/definitions/Fullname"
+              }
+            },
+            "required": ["currentValue"]
+          },
+          {
+            "$ref": "#/definitions/PropertyChangeStatus"
+          }
+        ]
+      }
+    ]
+  },
+  "UserEmail": {
+    "description": "The user's email",
+    "oneOf": [
+      {
+        "description": "Simple email",
+        "$ref": "#/definitions/Email"
+      },
+      {
+        "allOf": [
+          {
+            "description": "Email with change history",
+            "type": "object",
+            "properties": {
+              "currentValue": {
+                "$ref": "#/definitions/Email"
+              }
+            },
+            "required": ["currentValue"]
+          },
+          {
+            "$ref": "#/definitions/PropertyChangeStatus"
+          }
+        ]
+      }
+    ]
+  },
+  "UserJobTitle": {
+    "description": "The user's job title",
+    "oneOf": [
+      {
+        "description": "Simple job title",
+        "$ref": "#/definitions/Fullname"
+      },
+      {
+        "allOf": [
+          {
+            "description": "Job Title with change history",
+            "type": "object",
+            "properties": {
+              "currentValue": {
+                "$ref": "#/definitions/Fullname"
+              }
+            },
+            "required": ["currentValue"]
+          },
+          {
+            "$ref": "#/definitions/PropertyChangeStatus"
+          }
+        ]
+      }
+    ]
+  },
+  "UserPhone": {
+    "description": "The user's phone number",
+    "oneOf": [
+      {
+        "description": "Simple phone",
+        "$ref": "#/definitions/Phone"
+      },
+      {
+        "allOf": [
+          {
+            "description": "Phone with change history",
+            "type": "object",
+            "properties": {
+              "currentValue": {
+                "$ref": "#/definitions/Phone"
+              }
+            },
+            "required": ["currentValue"]
+          },
+          {
+            "$ref": "#/definitions/PropertyChangeStatus"
+          }
+        ]
+      }
+    ]
+  },
+  "UserSecurityQuestion": {
+    "description": "The user's secutity question",
+    "oneOf": [
+      {
+        "description": "Simple Security Question",
+        "$ref": "#/definitions/SecurityQuestion"
+      },
+      {
+        "allOf": [
+          {
+            "description": "Security Question with change history",
+            "type": "object",
+            "properties": {
+              "currentValue": {
+                "$ref": "#/definitions/SecurityQuestion"
+              }
+            },
+            "required": ["currentValue"]
+          },
+          {
+            "$ref": "#/definitions/PropertyChangeStatus"
+          }
+        ]
+      }
+    ]
+  },
+  "UserSecurityQuestionAnswer": {
+    "description": "The user's secutity question answer",
+    "oneOf": [
+      {
+        "description": "Simple Security Question Answer",
+        "$ref": "#/definitions/SecurityQuestionAnswer"
+      },
+      {
+        "allOf": [
+          {
+            "description": "Security Question Answer with change history",
+            "type": "object",
+            "properties": {
+              "currentValue": {
+                "$ref": "#/definitions/SecurityQuestionAnswer"
+              }
+            },
+            "required": ["currentValue"]
+          },
+          {
+            "$ref": "#/definitions/PropertyChangeStatus"
+          }
+        ]
+      }
+    ]
+  },
+  "User": {
+    "description": "A user definition with/without change history",
+    "type": "object",
+    "properties": {
+      "uid": {
+        "$ref": "#/definitions/Uid"
+      },
+      "username": {
+        "$ref": "#/definitions/Username"
+      },
+      "fullname": {
+        "$ref": "#/definitions/UserFullname"
+      },
+      "email": {
+        "$ref": "#/definitions/UserEmail"
+      },
+      "phone": {
+        "$ref": "#/definitions/UserPhone"
+      },
+      "jobTitle": {
+        "$ref": "#/definitions/UserJobTitle"
+      },
+      "securityQuestion": {
+        "$ref": "#/definitions/UserSecurityQuestion"
+      },
+      "securityQuestionAnswer": {
+        "$ref": "#/definitions/UserSecurityQuestionAnswer"
+      },
+      "createdAt": {
+        "description": "When the worker record was created",
+        "type": "date-time"
+      },
+      "updatedAt": {
+        "description": "When the worker record was last updated",
+        "type": "date-time"
+      },
+      "updatedBy": {
+        "description": "The username of the last person to update the Worker",
+        "type": "string"
+      }
+    },
+    "required": ["uid", "fullname", "created", "updated", "updatedBy"]
+  },
+  "Feedback": {
+    "description": "For capturing user feedback",
+    "properties": {
+      "id": {
+        "description": "A unique index for this particular feedback; id is optional because this type is used to both create and return feedback",
+        "$ref": "#/definitions/ID"
+      },
+      "whenDoing": {
+        "description": "The feedback as given for 'when doing something in particular'",
+        "type": "string",
+        "minLength": 0,
+        "maxLength": 500
+      },
+      "tellUs": {
+        "description": "General 'tell us' feedback",
+        "type": "string",
+        "minLength": 0,
+        "maxLength": 500
+      },
+      "name": {
+        "$ref": "#/definitions/Fullname"
+      },
+      "email": {
+        "$ref": "#/definitions/Email"
+      }
+    },
+    "required": ["whenDoing", "tellUs"]
+  }
 }

@@ -10,6 +10,6 @@ import { isNull } from 'lodash';
 })
 export class ClosedEndedAnswerPipe implements PipeTransform {
   transform(value: string): any {
-    return !isNull(value) ? (value === `Don't know` ? 'Not known' : value) : '-';
+    return !isNull(value) ? (value === 'Don\'t know' ? 'Not known' : value) : '-';
   }
 }

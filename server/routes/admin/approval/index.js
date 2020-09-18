@@ -27,7 +27,7 @@ const _approveOrRejectNewUser = async (req, res) => {
     const login = await _findLoginMatchingUsername(username);
 
     // Make sure we have the matching user
-    if ((login && login.id) && (username === login.username)) {
+    if (login && login.id && username === login.username) {
       const workplace = await _findWorkplace(login.user.establishment.id);
       const user = await _findUser(login.user.id);
 
@@ -74,13 +74,13 @@ const _workplaceIsUnique = async (establishmentId, nmdsId) => {
   const workplaceWithDuplicateId = await models.establishment.findOne({
     where: {
       id: {
-        [Sequelize.Op.ne]: establishmentId
+        [Sequelize.Op.ne]: establishmentId,
       },
       nmdsId: nmdsId,
     },
-    attributes: ['id']
+    attributes: ['id'],
   });
-  return (workplaceWithDuplicateId === null);
+  return workplaceWithDuplicateId === null;
 };
 
 const _parseEscapedInputAndSanitizeUsername = (username) => {
@@ -91,8 +91,8 @@ const _findLoginMatchingUsername = async (username) => {
   return await models.login.findOne({
     where: {
       username: {
-        [models.Sequelize.Op.iLike]: username
-      }
+        [models.Sequelize.Op.iLike]: username,
+      },
     },
     attributes: ['id', 'username'],
     include: [
@@ -102,29 +102,29 @@ const _findLoginMatchingUsername = async (username) => {
         include: [
           {
             model: models.establishment,
-            attributes: ['id']
-          }
-        ]
-      }
-    ]
+            attributes: ['id'],
+          },
+        ],
+      },
+    ],
   });
 };
 
 const _findWorkplace = async (establishmentId) => {
   return await models.establishment.findOne({
     where: {
-      id: establishmentId
+      id: establishmentId,
     },
-    attributes: ['id']
+    attributes: ['id'],
   });
 };
 
 const _findUser = async (loginId) => {
   return await models.user.findOne({
     where: {
-      id: loginId
+      id: loginId,
     },
-    attributes: ['id']
+    attributes: ['id'],
   });
 };
 
@@ -134,14 +134,14 @@ const _approveNewUser = async (login, workplace, nmdsId, res) => {
   try {
     const updatedLogin = await login.update({
       isActive: true,
-      status: null
+      status: null,
     });
     const updatedworkplace = await workplace.update({
       nmdsId: nmdsId,
-      ustatus: null
+      ustatus: null,
     });
     if (updatedLogin && updatedworkplace) {
-      return res.status(200).json({ status: '0', message: userApprovalConfirmation })
+      return res.status(200).json({ status: '0', message: userApprovalConfirmation });
     } else {
       return res.status(503).send();
     }
@@ -176,10 +176,10 @@ const _approveNewWorkplace = async (workplace, nmdsId, res) => {
   try {
     const updatedworkplace = await workplace.update({
       nmdsId: nmdsId,
-      ustatus: null
+      ustatus: null,
     });
     if (updatedworkplace) {
-      return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation })
+      return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation });
     } else {
       return res.status(503).send();
     }

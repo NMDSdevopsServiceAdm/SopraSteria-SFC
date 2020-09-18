@@ -92,13 +92,13 @@ export class SetDataPermissionDialogComponent extends DialogComponent implements
     };
     this.subscriptions.add(
       this.establishmentService.setDataPermission(this.workplace.uid, setPermission).subscribe(
-        data => {
+        (data) => {
           if (data) {
             this.workplace.dataPermissions = data.dataPermissions;
             this.close(event, true);
           }
         },
-        error => {
+        (error) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         },
       ),

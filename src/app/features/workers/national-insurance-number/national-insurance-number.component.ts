@@ -19,7 +19,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -60,7 +60,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
       ? {
           nationalInsuranceNumber: nationalInsuranceNumber.value.toUpperCase(),
         }
-      : {nationalInsuranceNumber: null};
+      : { nationalInsuranceNumber: null };
   }
 
   ninValidator(control: AbstractControl) {

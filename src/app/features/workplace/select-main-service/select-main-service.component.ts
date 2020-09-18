@@ -21,7 +21,7 @@ export class SelectMainServiceComponent extends SelectMainService {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected workplaceService: WorkplaceService
+    protected workplaceService: WorkplaceService,
   ) {
     super(backService, errorSummaryService, formBuilder, router, workplaceService);
   }
@@ -47,9 +47,9 @@ export class SelectMainServiceComponent extends SelectMainService {
       },
     };
     this.subscriptions.add(
-      this.establishmentService.updateMainService(this.workplace.uid, request).subscribe(data => {
+      this.establishmentService.updateMainService(this.workplace.uid, request).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
-        if(this.establishmentService.mainServiceCQC && !this.workplace.isRegulated) {
+        if (this.establishmentService.mainServiceCQC && !this.workplace.isRegulated) {
           this.router.navigate(['/workplace', this.workplace.uid, 'main-service-cqc-confirm']);
         } else {
           this.router.navigate(this.establishmentService.returnTo.url, {
@@ -57,7 +57,7 @@ export class SelectMainServiceComponent extends SelectMainService {
           });
           this.establishmentService.setReturnTo(null);
         }
-      })
+      }),
     );
   }
 

@@ -17,41 +17,39 @@ describe('ParentRequestsComponent', () => {
 
   it('can get parent requests', () => {
     inject([HttpClientTestingModule], async () => {
-      const parentRequests = [ {
-        establishmentId: 1111,
-        workplaceId: 'I1234567',
-        userName: 'Magnificent Maisie',
-        orgName: 'Marvellous Mansions',
-        requested: '2019-08-27 16:04:35.914'
-      },{
-        establishmentId: 3333,
-        workplaceId: 'B9999999',
-        userName: 'Everso Stupid',
-        orgName: 'Everly Towers',
-        requested: '2020-05-20 16:04:35.914'
-      }];
+      const parentRequests = [
+        {
+          establishmentId: 1111,
+          workplaceId: 'I1234567',
+          userName: 'Magnificent Maisie',
+          orgName: 'Marvellous Mansions',
+          requested: '2019-08-27 16:04:35.914',
+        },
+        {
+          establishmentId: 3333,
+          workplaceId: 'B9999999',
+          userName: 'Everso Stupid',
+          orgName: 'Everly Towers',
+          requested: '2020-05-20 16:04:35.914',
+        },
+      ];
 
       const parentRequestsService = TestBed.get(ParentRequestsService);
-      spyOn(parentRequestsService, 'getParentRequests').and.returnValue(
-        of(parentRequests)
-      );
+      spyOn(parentRequestsService, 'getParentRequests').and.returnValue(of(parentRequests));
 
       const { fixture } = await render(ParentRequestsComponent, {
-        imports: [
-          ReactiveFormsModule,
-          HttpClientTestingModule,
-          SharedModule,
-          RouterTestingModule],
+        imports: [ReactiveFormsModule, HttpClientTestingModule, SharedModule, RouterTestingModule],
         declarations: [ParentRequestComponent],
         providers: [
           {
             provide: WindowRef,
-            useClass: WindowRef
+            useClass: WindowRef,
           },
           {
             provide: ParentRequestsService,
-            useClass: parentRequestsService
-          }],
+            useClass: parentRequestsService,
+          },
+        ],
       });
 
       const { componentInstance } = fixture;
@@ -61,34 +59,34 @@ describe('ParentRequestsComponent', () => {
   });
 
   it('should remove parent requests', async () => {
-    const parentRequests = [ {
-      establishmentId: 1111,
-      workplaceId: 'I1234567',
-      userName: 'Magnificent Maisie',
-      orgName: 'Marvellous Mansions',
-      requested: '2019-08-27 16:04:35.914'
-    },{
-      establishmentId: 3333,
-      workplaceId: 'B9999999',
-      userName: 'Everso Stupid',
-      orgName: 'Everly Towers',
-      requested: '2020-05-20 16:04:35.914'
-    }];
+    const parentRequests = [
+      {
+        establishmentId: 1111,
+        workplaceId: 'I1234567',
+        userName: 'Magnificent Maisie',
+        orgName: 'Marvellous Mansions',
+        requested: '2019-08-27 16:04:35.914',
+      },
+      {
+        establishmentId: 3333,
+        workplaceId: 'B9999999',
+        userName: 'Everso Stupid',
+        orgName: 'Everly Towers',
+        requested: '2020-05-20 16:04:35.914',
+      },
+    ];
 
     const { fixture } = await render(ParentRequestsComponent, {
-      imports: [
-        ReactiveFormsModule,
-        HttpClientTestingModule,
-        SharedModule,
-        RouterTestingModule],
+      imports: [ReactiveFormsModule, HttpClientTestingModule, SharedModule, RouterTestingModule],
       declarations: [ParentRequestComponent],
       providers: [
         {
           provide: WindowRef,
-          useClass: WindowRef
-        }],
+          useClass: WindowRef,
+        },
+      ],
       componentProperties: {
-        parentRequests
+        parentRequests,
       },
     });
 
@@ -101,4 +99,3 @@ describe('ParentRequestsComponent', () => {
     expect(componentInstance.parentRequests.length).toBe(1);
   });
 });
-

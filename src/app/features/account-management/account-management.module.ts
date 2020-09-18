@@ -19,6 +19,6 @@ import { ChangeYourDetailsComponent } from './change-your-details/change-your-de
     ChangeUserSecurityComponent,
     YourAccountComponent,
     ChangeYourDetailsComponent,
-  ]
+  ],
 })
 export class AccountManagementModule {}

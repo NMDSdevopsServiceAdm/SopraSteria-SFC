@@ -9,7 +9,15 @@ const Establishment = require('../../models/classes/establishment');
 const { correctCapacities } = require('../../utils/correctCapacities');
 const { correctServices } = require('../../utils/correctServices');
 
-const filteredProperties = ['Name', 'MainServiceFK', 'OtherServices', 'CapacityServices', 'ShareData', 'IsRegulated', 'LocationId'];
+const filteredProperties = [
+  'Name',
+  'MainServiceFK',
+  'OtherServices',
+  'CapacityServices',
+  'ShareData',
+  'IsRegulated',
+  'LocationId',
+];
 
 // gets current employer type for the known establishment
 router.route('/').get(async (req, res) => {

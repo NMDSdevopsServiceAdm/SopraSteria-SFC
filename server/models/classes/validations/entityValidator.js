@@ -14,23 +14,22 @@ const ValidationMessage = require('./validationMessage').ValidationMessage;
 
 class EntityValidator {
   constructor() {
-      this._validations = [];    
+    this._validations = [];
   }
 
   // the encapsulated property
   get validations() {
-      return this._validations;
+    return this._validations;
   }
 
   // returns only the validation errors
   get errors() {
-    return this._validations.filter(thisValidationMsg => thisValidationMsg.type === ValidationMessage.ERROR);
+    return this._validations.filter((thisValidationMsg) => thisValidationMsg.type === ValidationMessage.ERROR);
   }
   // returns only the validation warnings
   get warnings() {
-    return this._validations.filter(thisValidationMsg => thisValidationMsg.type === ValidationMessage.WARNING);
+    return this._validations.filter((thisValidationMsg) => thisValidationMsg.type === ValidationMessage.WARNING);
   }
-
 
   // resets the current set of validations
   resetValidations() {
@@ -57,6 +56,6 @@ class EntityValidator {
 
     return isMandatoryValid && arePropertiesValid;
   }
-};
+}
 
 module.exports.EntityValidator = EntityValidator;

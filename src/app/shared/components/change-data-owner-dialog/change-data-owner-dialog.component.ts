@@ -133,12 +133,12 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
       };
       this.subscriptions.add(
         this.establishmentService.changeOwnership(this.workplace.uid, requestedPermission).subscribe(
-          data => {
+          (data) => {
             if (data) {
               this.close(event, true);
             }
           },
-          error => {
+          (error) => {
             this.isOwnershipError = true;
             if (error.error.message) {
               this.serverError = error.error.message;

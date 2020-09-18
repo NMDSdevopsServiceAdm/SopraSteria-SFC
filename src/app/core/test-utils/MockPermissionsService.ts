@@ -17,7 +17,7 @@ export class MockPermissionsService extends PermissionsService {
 
   permissions(workplaceUid: string): PermissionsList {
     const perms = {};
-    this._permissions.forEach((p) => perms[p] = true);
+    this._permissions.forEach((p) => (perms[p] = true));
     return perms;
   }
 }

@@ -17,7 +17,7 @@ export class StaffReferencesResolver implements Resolve<any> {
         catchError(() => {
           this.router.navigate(['/bulk-upload']);
           return of(null);
-        })
+        }),
       );
     }
   }

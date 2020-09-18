@@ -7,7 +7,6 @@ const Login = require('../models').login;
 const crypto = require('crypto');
 const bcrypt = require('bcrypt-nodejs');
 
-
 const generateJWT = require('../utils/security/generateJWT');
 const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
 const uuid = require('uuid');
@@ -19,7 +18,7 @@ const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
-  hash.update(`${password}${salt}`, 'ucs2');     // .NET C# Unicode encoding defaults to UTF-16
+  hash.update(`${password}${salt}`, 'ucs2'); // .NET C# Unicode encoding defaults to UTF-16
 
   const calculatedHash = hash.digest('base64');
 
@@ -33,58 +32,136 @@ const tribalHashCompare = (password, salt, expectedHash) => {
 router.post('/', async (req, res) => {
   const givenUsername = req.body.username.toLowerCase();
   const givenPassword = req.body.password;
-  const givenEstablishmentUid = req.body.establishment && req.body.establishment.uid ? req.body.establishment.uid : null;
+  const givenEstablishmentUid =
+    req.body.establishment && req.body.establishment.uid ? req.body.establishment.uid : null;
 
   try {
-    let establishmentUser = givenEstablishmentUid === null ? await models.login.findOne({
-      where: {
-        username: givenUsername
-      },
-      attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt', 'agreedUpdatedTerms', 'status'],
-      include: [ {
-        model: models.user,
-        attributes: ['id', 'uid', 'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
-        include: [{
-          model: models.establishment,
-          attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId', 'lastBulkUploaded'],
-          include: [{
-            model: models.services,
-            as: 'mainService',
-            attributes: ['id', 'name']
-          }]
-        }]
-      }]
-    }) : null;
+    let establishmentUser =
+      givenEstablishmentUid === null
+        ? await models.login.findOne({
+            where: {
+              username: givenUsername,
+            },
+            attributes: [
+              'id',
+              'username',
+              'isActive',
+              'invalidAttempt',
+              'registrationId',
+              'firstLogin',
+              'Hash',
+              'lastLogin',
+              'tribalHash',
+              'tribalSalt',
+              'agreedUpdatedTerms',
+              'status',
+            ],
+            include: [
+              {
+                model: models.user,
+                attributes: [
+                  'id',
+                  'uid',
+                  'FullNameValue',
+                  'EmailValue',
+                  'isPrimary',
+                  'establishmentId',
+                  'UserRoleValue',
+                  'tribalId',
+                ],
+                include: [
+                  {
+                    model: models.establishment,
+                    attributes: [
+                      'id',
+                      'uid',
+                      'NameValue',
+                      'isRegulated',
+                      'nmdsId',
+                      'isParent',
+                      'parentUid',
+                      'parentId',
+                      'lastBulkUploaded',
+                    ],
+                    include: [
+                      {
+                        model: models.services,
+                        as: 'mainService',
+                        attributes: ['id', 'name'],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          })
+        : null;
 
     if (!establishmentUser || !establishmentUser.user) {
       // before returning error, check to see if this is a superadmin user with a given establishment UID, to be assumed as their "logged in session" primary establishment
       establishmentUser = await models.login.findOne({
         where: {
-          username: givenUsername
+          username: givenUsername,
         },
-        attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt', 'agreedUpdatedTerms', 'status'],
-        include: [ {
-          model: models.user,
-          attributes: ['id', 'uid',  'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
-          where: {
-            UserRoleValue: 'Admin',
-          }
-        }]
+        attributes: [
+          'id',
+          'username',
+          'isActive',
+          'invalidAttempt',
+          'registrationId',
+          'firstLogin',
+          'Hash',
+          'lastLogin',
+          'tribalHash',
+          'tribalSalt',
+          'agreedUpdatedTerms',
+          'status',
+        ],
+        include: [
+          {
+            model: models.user,
+            attributes: [
+              'id',
+              'uid',
+              'FullNameValue',
+              'EmailValue',
+              'isPrimary',
+              'establishmentId',
+              'UserRoleValue',
+              'tribalId',
+            ],
+            where: {
+              UserRoleValue: 'Admin',
+            },
+          },
+        ],
       });
 
       if (establishmentUser && establishmentUser.user && establishmentUser.user.id) {
         if (givenEstablishmentUid) {
           // this is an admin user, find the given establishment
           establishmentUser.user.establishment = await models.establishment.findOne({
-            attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId', 'lastBulkUploaded'],
-            include: [{
-              model: models.services,
-              as: 'mainService',
-              attributes: ['id', 'name']
-            }],
+            attributes: [
+              'id',
+              'uid',
+              'NameValue',
+              'isRegulated',
+              'nmdsId',
+              'isParent',
+              'parentUid',
+              'parentId',
+              'lastBulkUploaded',
+            ],
+            include: [
+              {
+                model: models.services,
+                as: 'mainService',
+                attributes: ['id', 'name'],
+              },
+            ],
             where: {
-              uid: givenEstablishmentUid
-            }
+              uid: givenEstablishmentUid,
+            },
           });
 
           if (establishmentUser.user.establishment && establishmentUser.user.establishment.id) {
@@ -96,9 +173,8 @@ router.post('/', async (req, res) => {
             });
           }
         } else {
-          establishmentUser.user.establishment = null;    // this admin user has no primary (home) establishment
+          establishmentUser.user.establishment = null; // this admin user has no primary (home) establishment
         }
-
       } else {
         console.error(`Failed to find user account`);
         return res.status(401).send({
@@ -108,14 +184,14 @@ router.post('/', async (req, res) => {
     }
 
     //check weather posted user is locked or pending
-    if(establishmentUser){
-      if(!establishmentUser.isActive && establishmentUser.status === 'Locked'){
+    if (establishmentUser) {
+      if (!establishmentUser.isActive && establishmentUser.status === 'Locked') {
         //check for locked status, if locked then return with 409 error
         console.error(`POST .../login failed: User status is locked`);
         return res.status(409).send({
           message: 'Authentication failed.',
         });
-      } else if(!establishmentUser.isActive && establishmentUser.status === 'PENDING'){
+      } else if (!establishmentUser.isActive && establishmentUser.status === 'PENDING') {
         //check for Pending status, if Pending then return with 403 error
         console.error(`POST .../login failed: User status is pending`);
         return res.status(405).send({
@@ -130,164 +206,180 @@ router.post('/', async (req, res) => {
     let tribalHashValidated = false;
     if (establishmentUser.user.tribalId !== null && establishmentUser.Hash === null) {
       tribalHashValidated = true;
-      const tribalHashCompareReset = tribalHashCompare(givenPassword, establishmentUser.tribalSalt, establishmentUser.tribalHash);
+      const tribalHashCompareReset = tribalHashCompare(
+        givenPassword,
+        establishmentUser.tribalSalt,
+        establishmentUser.tribalHash,
+      );
 
       if (tribalHashCompareReset === false) {
         tribalErr = 'Failed to authenticate using tribal hash';
       }
     }
 
-    establishmentUser.comparePassword(escape(givenPassword), tribalErr, tribalHashValidated, async (err, isMatch, rehashTribal) => {
-      if (isMatch && !err) {
-        const loginTokenTTL = config.get('jwt.ttl.login');
+    establishmentUser.comparePassword(
+      escape(givenPassword),
+      tribalErr,
+      tribalHashValidated,
+      async (err, isMatch, rehashTribal) => {
+        if (isMatch && !err) {
+          const loginTokenTTL = config.get('jwt.ttl.login');
 
-        const token = generateJWT.loginJWT(loginTokenTTL,
-                                           establishmentUser.user.establishment ? establishmentUser.user.establishment.id : null,
-                                           establishmentUser.user.establishment ? establishmentUser.user.establishment.uid : null,
-                                           establishmentUser.user.establishment ? establishmentUser.user.establishment.isParent : null,
-                                           givenUsername,
-                                           establishmentUser.user.UserRoleValue,
-                                           establishmentUser.user.uid);
-        var date = new Date().getTime();
-        date += (loginTokenTTL * 60  * 1000);
+          const token = generateJWT.loginJWT(
+            loginTokenTTL,
+            establishmentUser.user.establishment ? establishmentUser.user.establishment.id : null,
+            establishmentUser.user.establishment ? establishmentUser.user.establishment.uid : null,
+            establishmentUser.user.establishment ? establishmentUser.user.establishment.isParent : null,
+            givenUsername,
+            establishmentUser.user.UserRoleValue,
+            establishmentUser.user.uid,
+          );
+          var date = new Date().getTime();
+          date += loginTokenTTL * 60 * 1000;
 
+          // dereference the parent establishment's name
+          if (establishmentUser.user.establishment && Number.isInteger(establishmentUser.user.establishment.parentId)) {
+            const parentEstablishment = await models.establishment.findOne({
+              attributes: ['NameValue'],
+              where: {
+                id: establishmentUser.user.establishment.parentId,
+              },
+            });
 
-        // dereference the parent establishment's name
-        if (establishmentUser.user.establishment && Number.isInteger(establishmentUser.user.establishment.parentId)) {
-          const parentEstablishment = await models.establishment.findOne({
-            attributes: ['NameValue'],
-            where: {
-              id: establishmentUser.user.establishment.parentId
+            if (parentEstablishment.NameValue) {
+              establishmentUser.user.establishment.parentName = parentEstablishment.NameValue;
             }
+          }
+
+          // migrated user info
+          const migratedUserFirstLogon =
+            establishmentUser.user.tribalId !== null && establishmentUser.lastLogin === null ? true : false;
+          const migratedUser = establishmentUser.user._tribalId !== null ? true : false;
+
+          const response = formatSuccessulLoginResponse(
+            establishmentUser.user.uid,
+            establishmentUser.user.FullNameValue,
+            establishmentUser.user.isPrimary,
+            establishmentUser.lastLogin,
+            establishmentUser.user.UserRoleValue,
+            establishmentUser.user.establishment,
+            givenUsername,
+            new Date(date).toISOString(),
+            establishmentUser.agreedUpdatedTerms,
+            {
+              migratedUserFirstLogon,
+              migratedUser,
+            },
+          );
+
+          await models.sequelize.transaction(async (t) => {
+            // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
+            // reset the number of failed attempts on any successful login
+            const loginUpdate = {
+              invalidAttempt: 0,
+              lastLogin: new Date(),
+            };
+
+            // if this is a migrated tribal user's first login, and consequently, the compare is successful
+            //   but they still have no "Hash", we need to create a hash and store it.
+            if (rehashTribal) {
+              loginUpdate.Hash = await bcrypt.hashSync(givenPassword, bcrypt.genSaltSync(10), null);
+            }
+
+            if (!establishmentUser.firstLogin) {
+              loginUpdate.firstLogin = new Date();
+            }
+            establishmentUser.update(loginUpdate, { transaction: t });
+
+            // add an audit record
+            const auditEvent = {
+              userFk: establishmentUser.user.id,
+              username: establishmentUser.username,
+              type: 'loginSuccess',
+              property: 'password',
+              event: {},
+            };
+            await models.userAudit.create(auditEvent, { transaction: t });
           });
 
-          if (parentEstablishment.NameValue) {
-            establishmentUser.user.establishment.parentName = parentEstablishment.NameValue;
-          }
-        }
+          // TODO: ultimately remove "Bearer" from the response; this should be added by client
+          return res
+            .set({ Authorization: 'Bearer ' + token })
+            .status(200)
+            .json(response);
+        } else {
+          await models.sequelize.transaction(async (t) => {
+            const maxNumberOfFailedAttempts = 10;
 
-        // migrated user info
-        const migratedUserFirstLogon = establishmentUser.user.tribalId !== null && establishmentUser.lastLogin === null ? true : false;
-        const migratedUser = establishmentUser.user._tribalId !== null ? true : false;
-
-        const response = formatSuccessulLoginResponse(
-          establishmentUser.user.uid,
-          establishmentUser.user.FullNameValue,
-          establishmentUser.user.isPrimary,
-          establishmentUser.lastLogin,
-          establishmentUser.user.UserRoleValue,
-          establishmentUser.user.establishment,
-          givenUsername,
-          new Date(date).toISOString(),
-          establishmentUser.agreedUpdatedTerms,
-          {
-            migratedUserFirstLogon,
-            migratedUser
-          }
-        );
-
-        await models.sequelize.transaction(async t => {
-          // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
-          // reset the number of failed attempts on any successful login
-          const loginUpdate = {
-            invalidAttempt: 0,
-            lastLogin: new Date(),
-          };
-
-          // if this is a migrated tribal user's first login, and consequently, the compare is successful
-          //   but they still have no "Hash", we need to create a hash and store it.
-          if (rehashTribal) {
-            loginUpdate.Hash =  await bcrypt.hashSync(givenPassword, bcrypt.genSaltSync(10), null)
-          }
-
-
-          if (!establishmentUser.firstLogin) {
-            loginUpdate.firstLogin = new Date();
-          }
-          establishmentUser.update(loginUpdate, {transaction: t});
-
-          // add an audit record
-          const auditEvent = {
-            userFk: establishmentUser.user.id,
-            username: establishmentUser.username,
-            type: 'loginSuccess',
-            property: 'password',
-            event: {}
-          };
-          await models.userAudit.create(auditEvent, {transaction: t});
-        });
-
-        // TODO: ultimately remove "Bearer" from the response; this should be added by client
-        return res.set({'Authorization': 'Bearer ' + token}).status(200).json(response);
-
-      } else {
-        await models.sequelize.transaction(async t => {
-          const maxNumberOfFailedAttempts = 10;
-
-          // increment the number of failed attempts by one
-          const loginUpdate = {
-            invalidAttempt: establishmentUser.invalidAttempt + 1
-          };
-          await establishmentUser.update(loginUpdate, {transaction: t});
-
-          if (establishmentUser.invalidAttempt === (maxNumberOfFailedAttempts+1)) {
-            // lock the account
+            // increment the number of failed attempts by one
             const loginUpdate = {
-              isActive: false,
-              status: 'Locked'
+              invalidAttempt: establishmentUser.invalidAttempt + 1,
             };
-            await establishmentUser.update(loginUpdate, {transaction: t});
+            await establishmentUser.update(loginUpdate, { transaction: t });
 
-            // send reset password email
-            const expiresTTLms = 60*24*1000; // 24 hours
+            if (establishmentUser.invalidAttempt === maxNumberOfFailedAttempts + 1) {
+              // lock the account
+              const loginUpdate = {
+                isActive: false,
+                status: 'Locked',
+              };
+              await establishmentUser.update(loginUpdate, { transaction: t });
 
-            const requestUuid = uuid.v4();
-            const now = new Date();
-            const expiresIn = new Date(now.getTime() + expiresTTLms);
+              // send reset password email
+              const expiresTTLms = 60 * 24 * 1000; // 24 hours
 
-            await models.passwordTracking.create({
-              userFk: establishmentUser.user.id,
-              created: now.toISOString(),
-              expires: expiresIn.toISOString(),
-              uuid: requestUuid
-            }, {transaction: t});
+              const requestUuid = uuid.v4();
+              const now = new Date();
+              const expiresIn = new Date(now.getTime() + expiresTTLms);
 
-            const resetLink = `${req.protocol}://${req.get('host')}/api/registration/validateResetPassword?reset=${requestUuid}`;
+              await models.passwordTracking.create(
+                {
+                  userFk: establishmentUser.user.id,
+                  created: now.toISOString(),
+                  expires: expiresIn.toISOString(),
+                  uuid: requestUuid,
+                },
+                { transaction: t },
+              );
 
-            // send email to recipient with the reset UUID if user is not locked
-            try {
-              if(establishmentUser.isActive && establishmentUser.status !== 'Locked'){
-                await sendMail(establishmentUser.user.EmailValue, establishmentUser.user.FullNameValue, requestUuid);
+              const resetLink = `${req.protocol}://${req.get(
+                'host',
+              )}/api/registration/validateResetPassword?reset=${requestUuid}`;
+
+              // send email to recipient with the reset UUID if user is not locked
+              try {
+                if (establishmentUser.isActive && establishmentUser.status !== 'Locked') {
+                  await sendMail(establishmentUser.user.EmailValue, establishmentUser.user.FullNameValue, requestUuid);
+                }
+              } catch (err) {
+                console.error(err);
               }
-            } catch (err) {
-              console.error(err);
             }
-          }
 
-          // TODO - could implement both https://www.npmjs.com/package/request-ip & https://www.npmjs.com/package/iplocation
-          //        to resolve the client's IP address on login failure, thus being able to audit the source of where the failed
-          //        login came from
+            // TODO - could implement both https://www.npmjs.com/package/request-ip & https://www.npmjs.com/package/iplocation
+            //        to resolve the client's IP address on login failure, thus being able to audit the source of where the failed
+            //        login came from
 
-          // add an audit record
-          const auditEvent = {
-            userFk: establishmentUser.user.id,
-            username: establishmentUser.username,
-            type: establishmentUser.invalidAttempt >= (maxNumberOfFailedAttempts+1) ? 'loginWhileLocked' : 'loginFailed',
-            property: 'password',
-            event: {}
-          };
-          await models.userAudit.create(auditEvent, {transaction: t});
-        });
+            // add an audit record
+            const auditEvent = {
+              userFk: establishmentUser.user.id,
+              username: establishmentUser.username,
+              type:
+                establishmentUser.invalidAttempt >= maxNumberOfFailedAttempts + 1 ? 'loginWhileLocked' : 'loginFailed',
+              property: 'password',
+              event: {},
+            };
+            await models.userAudit.create(auditEvent, { transaction: t });
+          });
 
-        return res.status(401).send({
-          message: 'Authentication failed.',
-        });
-      }
-    });
-
-
+          return res.status(401).send({
+            message: 'Authentication failed.',
+          });
+        }
+      },
+    );
   } catch (err) {
-    console.error("POST .../login failed: ", err);
+    console.error('POST .../login failed: ', err);
     return res.status(503).send({});
   }
 });
@@ -295,20 +387,22 @@ router.post('/', async (req, res) => {
 // renews a given bearer token; this token must exist and must be valid
 //  it must be a Logged In "Bearer" token
 router.use('/refresh', isAuthorised);
-router.get('/refresh', async function(req, res) {
+router.get('/refresh', async function (req, res) {
   // this assumes no re-authentication; this assumes no checking of origin; this assumes no validation against last logged in or timeout against last login
 
   // gets here the given token is still valid
   const loginTokenTTL = config.get('jwt.ttl.login');
   const token = generateJWT.regenerateLoginToken(loginTokenTTL, req);
   var expiryDate = new Date().getTime();
-  expiryDate += (loginTokenTTL * 60  * 1000);    // TTL is in minutes
+  expiryDate += loginTokenTTL * 60 * 1000; // TTL is in minutes
 
   // TODO: ultimately remove "Bearer" from the response; this should be added by client
-  return res.set({'Authorization': 'Bearer ' + token}).status(200).json({
-    expiryDate: new Date(expiryDate).toISOString()
-  });
-
+  return res
+    .set({ Authorization: 'Bearer ' + token })
+    .status(200)
+    .json({
+      expiryDate: new Date(expiryDate).toISOString(),
+    });
 });
 
 module.exports = router;

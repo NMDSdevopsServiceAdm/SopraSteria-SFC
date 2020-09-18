@@ -16,8 +16,7 @@ describe('Admin/Approval', () => {
   let nonCqcServices = null;
   let nonCQCSite = null;
 
-  before(async() => {
-
+  before(async () => {
     // Find a valid service (eg "Carers Support")
     const nonCqcServicesResults = await apiEndpoint
       .get('/services/byCategory?cqc=false')
@@ -37,15 +36,11 @@ describe('Admin/Approval', () => {
 
     // Login as an admin user to access approvals (would normally be accessed via "Registrations").
     if (registration) {
-      adminLogin = await apiEndpoint
-        .post('/login')
-        .send(admin)
-        .expect('Content-Type', /json/)
-        .expect(200);
+      adminLogin = await apiEndpoint.post('/login').send(admin).expect('Content-Type', /json/).expect(200);
     }
   });
 
-  beforeEach(async() => {});
+  beforeEach(async () => {});
 
   describe('/admin/approval', () => {
     it('should return a confirmation message and status 200 when a new user is approved', async () => {
@@ -90,6 +85,6 @@ describe('Admin/Approval', () => {
           .expect(200);
         expect(result.body.message).to.equal(approval.userRejectionConfirmation);
       }
-    })
-  })
+    });
+  });
 });

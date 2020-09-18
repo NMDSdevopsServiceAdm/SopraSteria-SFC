@@ -12,7 +12,7 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './disability.component.html',
 })
 export class DisabilityComponent extends QuestionComponent {
-  public answersAvailable = ['Yes', 'No', 'Undisclosed', `Don't know`];
+  public answersAvailable = ['Yes', 'No', 'Undisclosed', 'Don\'t know'];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -20,7 +20,7 @@ export class DisabilityComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 

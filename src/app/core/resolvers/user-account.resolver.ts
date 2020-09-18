@@ -16,7 +16,7 @@ export class UserAccountResolver implements Resolve<any> {
       catchError(() => {
         this.router.navigate(['/workplace', establishmentUid], { fragment: 'user-accounts' });
         return of(null);
-      })
+      }),
     );
   }
 }

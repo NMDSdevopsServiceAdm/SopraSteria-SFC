@@ -26,7 +26,7 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
   ) {}
 
   ngOnInit() {
@@ -34,9 +34,9 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.notificationUid = this.route.snapshot.params.notificationuid;
     this.subscriptions.add(
-      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
+      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe((details) => {
         this.notification = details;
-      })
+      }),
     );
     this.setNotificationViewed(this.notificationUid);
   }
@@ -44,7 +44,7 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
   private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
-        resp => {
+        (resp) => {
           if (resp) {
             this.notificationsService.notifications.forEach((notification, i) => {
               if (notification.notificationUid === resp.notificationUid) {
@@ -54,8 +54,8 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
             this.notificationsService.notifications$.next(this.notificationsService.notifications);
           }
         },
-        error => console.log('Could not update notification.')
-      )
+        (error) => console.log('Could not update notification.'),
+      ),
     );
   }
 

@@ -37,22 +37,20 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
     }
 
     this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe(data => {
+      this.establishmentService.establishment$.subscribe((data) => {
         if (data && data.id !== undefined) {
           this.establishmentUid = data.uid;
           this.subscriptions.add(
-            this.workerService.getAllWorkers(data.uid).subscribe(
-              workers => {
-                workers.forEach((worker: Worker) => {
-                  if (worker.trainingCount > 0) {
-                    if (this.lastUpdated === undefined || this.lastUpdated < worker.trainingLastUpdated) {
-                      this.lastUpdated = worker.trainingLastUpdated;
-                    }
+            this.workerService.getAllWorkers(data.uid).subscribe((workers) => {
+              workers.forEach((worker: Worker) => {
+                if (worker.trainingCount > 0) {
+                  if (this.lastUpdated === undefined || this.lastUpdated < worker.trainingLastUpdated) {
+                    this.lastUpdated = worker.trainingLastUpdated;
                   }
-                });
-              }
-            ),
-          )
+                }
+              });
+            }),
+          );
         }
       }),
     );
@@ -63,7 +61,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.subscriptions.add(
       this.reportService.getTrainingReport(this.establishmentUid).subscribe(
-        response => this.saveFile(response),
+        (response) => this.saveFile(response),
         () => {},
       ),
     );

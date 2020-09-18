@@ -12,7 +12,7 @@ export class RegisterGuard implements CanActivate {
 
   canActivate() {
     this.registrationService.registrationInProgress$.subscribe(
-      (registrationInProgress: boolean) => (this.registrationInProgress = registrationInProgress)
+      (registrationInProgress: boolean) => (this.registrationInProgress = registrationInProgress),
     );
 
     // check if registration process has started

@@ -18,17 +18,18 @@ const workerBuilder = build('Worker', {
   fields: {
     uid: fake((f) => f.random.uuid()),
     mainJob: {
-      id: 1
+      id: 1,
     },
-    fluJab: null
-  }
+    fluJab: null,
+  },
 });
 
-const workerWithFluJab = () => workerBuilder({
-  overrides: {
-    fluJab: oneOf('Yes', 'No', `Don't know`)
-  }
-});
+const workerWithFluJab = () =>
+  workerBuilder({
+    overrides: {
+      fluJab: oneOf('Yes', 'No', 'Don\'t know'),
+    },
+  });
 
 const getFluJabComponent = async (worker) => {
   return render(FluJabComponent, {
@@ -37,35 +38,30 @@ const getFluJabComponent = async (worker) => {
       ReactiveFormsModule,
       HttpClientTestingModule,
       SharedModule,
-      RouterTestingModule.withRoutes([
-        { path: 'dashboard', component: StaffSummaryComponent }
-      ]),
+      RouterTestingModule.withRoutes([{ path: 'dashboard', component: StaffSummaryComponent }]),
     ],
     providers: [
       {
         provide: WorkerService,
         useFactory: MockWorkerService.factory(worker),
-        deps: [HttpClient]
+        deps: [HttpClient],
       },
       {
         provide: ActivatedRoute,
-        useValue:
-        {
-          parent:
-          {
-            snapshot:
-            {
+        useValue: {
+          parent: {
+            snapshot: {
               data: {
                 establishment: { uid: 'mocked-uid' },
-                primaryWorkplace: {}
-              }
-            }
-          }
-        }
-      }
-    ]
+                primaryWorkplace: {},
+              },
+            },
+          },
+        },
+      },
+    ],
   });
-}
+};
 
 describe('FluJabComponent', () => {
   afterEach(() => {
@@ -77,10 +73,10 @@ describe('FluJabComponent', () => {
     const { getAllByRole } = await getFluJabComponent(workerBuilder());
 
     const answers = getAllByRole('radio') as any[];
-    const checkedAnswers = answers.map(answer => answer.checked);
+    const checkedAnswers = answers.map((answer) => answer.checked);
 
     expect(checkedAnswers).not.toEqual(jasmine.arrayContaining([true]));
-  })
+  });
 
   it('should pre-select the radio button with worker flu jab', async () => {
     const worker = workerWithFluJab();
@@ -89,7 +85,7 @@ describe('FluJabComponent', () => {
     const selectedRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="${worker.fluJab}"]`);
 
     expect(selectedRadioButton.checked).toBeTruthy();
-  })
+  });
 
   it('should put updated worker flu jab', async () => {
     const worker = workerBuilder();
@@ -105,8 +101,8 @@ describe('FluJabComponent', () => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     const req = httpTestingController.expectOne(`/api/establishment/mocked-uid/worker/${worker.uid}`);
 
-    expect(req.request.body).toEqual({ fluJab: newFluJab })
-  })
+    expect(req.request.body).toEqual({ fluJab: newFluJab });
+  });
 
   it('should put flu jab null when question not answered', async () => {
     const worker = workerBuilder();
@@ -119,6 +115,6 @@ describe('FluJabComponent', () => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     const req = httpTestingController.expectOne(`/api/establishment/mocked-uid/worker/${worker.uid}`);
 
-    expect(req.request.body).toEqual({ fluJab: null })
-  })
+    expect(req.request.body).toEqual({ fluJab: null });
+  });
 });

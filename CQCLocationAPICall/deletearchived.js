@@ -12,18 +12,20 @@ axiosRetry(axios, { retries: 3 });
 // Exponential back-off retry delay between requests
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
 // Custom retry delay
-axiosRetry(axios, { retryDelay: (retryCount) => {
-  return retryCount * 1000;
-}});
+axiosRetry(axios, {
+  retryDelay: (retryCount) => {
+    return retryCount * 1000;
+  },
+});
 let changes = 0;
 const api = axios.create({
   baseURL: url,
-  rejectUnauthorized: false
+  rejectUnauthorized: false,
 });
 const MAX_CONCURRENT_REQUESTS = 10;
 const manager = ConcurrencyManager(api, MAX_CONCURRENT_REQUESTS);
 
-async function getLocation (location) {
+async function getLocation(location) {
   try {
     const individualLocation = await api.get('/locations/' + location.locationid);
     changes++;
@@ -35,8 +37,8 @@ async function getLocation (location) {
         console.log(`${location.locationid} is no longer active, deleting from database.`);
         await models.location.destroy({
           where: {
-            locationid: location.locationid
-          }
+            locationid: location.locationid,
+          },
         });
       } catch (error) {
         console.error(error);
@@ -48,12 +50,14 @@ async function getLocation (location) {
 }
 module.exports.handler = async () => {
   const locations = await models.location.findAll({
-    attributes: ['locationid']
+    attributes: ['locationid'],
   });
   if (locations) {
-    await Promise.all(locations.map(async location => {
-      await getLocation(location);
-      manager.detach();
-    }));
+    await Promise.all(
+      locations.map(async (location) => {
+        await getLocation(location);
+        manager.detach();
+      }),
+    );
   }
 };

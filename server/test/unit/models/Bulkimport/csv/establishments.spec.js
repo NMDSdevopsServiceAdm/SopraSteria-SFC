@@ -15,7 +15,6 @@ const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishm
 };
 
 const generateEstablishmentFromCsv = async (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
-
   const establishment = new establishmentCsv(currentLine, lineNumber, allCurrentEstablishments);
 
   await establishment.validate();
@@ -26,9 +25,7 @@ const generateEstablishmentFromCsv = async (currentLine, lineNumber = 1, allCurr
 const crossValidate = async (establishmentRow, workerRow, callback) => {
   const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
-  const myWorkers = [
-    generateWorkerFromCsv(workerRow),
-  ];
+  const myWorkers = [generateWorkerFromCsv(workerRow)];
 
   const csvEstablishmentSchemaErrors = [];
 
@@ -43,18 +40,17 @@ const crossValidate = async (establishmentRow, workerRow, callback) => {
   });
 
   callback(csvEstablishmentSchemaErrors);
-}
+};
 
 describe('Bulk Upload - Establishment CSV', () => {
   beforeEach(() => {
     sandbox.stub(BUDI, 'initialize');
-    sandbox.stub(establishmentCsv.prototype,"_validateNoChange").callsFake((args) => { return true;});
+    sandbox.stub(establishmentCsv.prototype, '_validateNoChange').callsFake((args) => {
+      return true;
+    });
 
-    sandbox.stub(models.pcodedata, 'findAll').returns([
-      {}
-    ]);
+    sandbox.stub(models.pcodedata, 'findAll').returns([{}]);
     sandbox.stub(models.establishment, 'findAll').returns([]);
-
   });
 
   afterEach(() => {
@@ -79,8 +75,8 @@ describe('Bulk Upload - Establishment CSV', () => {
           errType: 'ALL_JOBS_ERROR',
           error: 'ALLJOBROLES cannot be blank as you have STARTERS, LEAVERS, VACANCIES greater than zero',
           source: '',
-          name: establishmentRow.LOCALESTID
-        }
+          name: establishmentRow.LOCALESTID,
+        },
       ]);
     });
 
@@ -108,11 +104,13 @@ describe('Bulk Upload - Establishment CSV', () => {
       const workerRow = buildWorkerCSV({
         overrides: {
           LOCALESTID: establishmentRow.LOCALESTID,
-        }
+        },
       });
 
       crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
-        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal('TOTALPERMTEMP (Total staff and the number of worker records) does not match');
+        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal(
+          'TOTALPERMTEMP (Total staff and the number of worker records) does not match',
+        );
       });
     });
 
@@ -127,11 +125,13 @@ describe('Bulk Upload - Establishment CSV', () => {
       const workerRow = buildWorkerCSV({
         overrides: {
           LOCALESTID: establishmentRow.LOCALESTID,
-        }
+        },
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
-        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal('TOTALPERMTEMP (Total staff and the number of worker records) does not match');
+        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal(
+          'TOTALPERMTEMP (Total staff and the number of worker records) does not match',
+        );
       });
     });
 
@@ -146,11 +146,13 @@ describe('Bulk Upload - Establishment CSV', () => {
       const workerRow = buildWorkerCSV({
         overrides: {
           LOCALESTID: establishmentRow.LOCALESTID,
-        }
+        },
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
-        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal('TOTALPERMTEMP (Total staff and the number of worker records) does not match');
+        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal(
+          'TOTALPERMTEMP (Total staff and the number of worker records) does not match',
+        );
       });
     });
 
@@ -165,7 +167,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       const workerRow = buildWorkerCSV({
         overrides: {
           LOCALESTID: establishmentRow.LOCALESTID,
-        }
+        },
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
@@ -184,7 +186,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       const workerRow = buildWorkerCSV({
         overrides: {
           LOCALESTID: establishmentRow.LOCALESTID,
-        }
+        },
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
@@ -203,11 +205,13 @@ describe('Bulk Upload - Establishment CSV', () => {
       const workerRow = buildWorkerCSV({
         overrides: {
           LOCALESTID: establishmentRow.LOCALESTID,
-        }
+        },
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
-        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal('TOTALPERMTEMP (Total staff and the number of worker records) does not match');
+        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal(
+          'TOTALPERMTEMP (Total staff and the number of worker records) does not match',
+        );
       });
     });
 
@@ -215,14 +219,14 @@ describe('Bulk Upload - Establishment CSV', () => {
       const establishmentRow = buildEstablishmentCSV({
         overrides: {
           STATUS: 'UPDATE',
-          STARTERS: '1;1;1'
+          STARTERS: '1;1;1',
         },
       });
 
       const workerRow = buildWorkerCSV({
         overrides: {
           LOCALESTID: establishmentRow.LOCALESTID,
-        }
+        },
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
@@ -231,7 +235,9 @@ describe('Bulk Upload - Establishment CSV', () => {
           warnings.push(error.warning);
         }
 
-        expect(warnings).to.include('STARTERS data you have entered does not fall within the expected range please ensure this is correct');
+        expect(warnings).to.include(
+          'STARTERS data you have entered does not fall within the expected range please ensure this is correct',
+        );
       });
     });
 
@@ -239,14 +245,14 @@ describe('Bulk Upload - Establishment CSV', () => {
       const establishmentRow = buildEstablishmentCSV({
         overrides: {
           STATUS: 'UPDATE',
-          LEAVERS: '1;1;1'
+          LEAVERS: '1;1;1',
         },
       });
 
       const workerRow = buildWorkerCSV({
         overrides: {
           LOCALESTID: establishmentRow.LOCALESTID,
-        }
+        },
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
@@ -255,7 +261,9 @@ describe('Bulk Upload - Establishment CSV', () => {
           warnings.push(error.warning);
         }
 
-        expect(warnings).to.include('LEAVERS data you have entered does not fall within the expected range please ensure this is correct');
+        expect(warnings).to.include(
+          'LEAVERS data you have entered does not fall within the expected range please ensure this is correct',
+        );
       });
     });
 
@@ -263,14 +271,14 @@ describe('Bulk Upload - Establishment CSV', () => {
       const establishmentRow = buildEstablishmentCSV({
         overrides: {
           STATUS: 'UPDATE',
-          VACANCIES: '1;1;1'
+          VACANCIES: '1;1;1',
         },
       });
 
       const workerRow = buildWorkerCSV({
         overrides: {
           LOCALESTID: establishmentRow.LOCALESTID,
-        }
+        },
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
@@ -279,29 +287,31 @@ describe('Bulk Upload - Establishment CSV', () => {
           warnings.push(error.warning);
         }
 
-        expect(warnings).to.include('VACANCIES data you have entered does not fall within the expected range please ensure this is correct');
+        expect(warnings).to.include(
+          'VACANCIES data you have entered does not fall within the expected range please ensure this is correct',
+        );
       });
     });
 
-    it('should not show a warning when starters, leavers or vacancies contains the 999 don\'t know magic string', async () => {
+    it("should not show a warning when starters, leavers or vacancies contains the 999 don't know magic string", async () => {
       const establishmentRow = buildEstablishmentCSV({
         overrides: {
           STATUS: 'UPDATE',
           STARTERS: '999;0;0',
           LEAVERS: '0;999;0',
-          VACANCIES: '0;0;999'
+          VACANCIES: '0;0;999',
         },
       });
 
       const workerRow = buildWorkerCSV({
         overrides: {
           LOCALESTID: establishmentRow.LOCALESTID,
-        }
+        },
       });
 
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
         expect(csvEstablishmentSchemaErrors).to.be.empty;
       });
-    })
+    });
   });
 });

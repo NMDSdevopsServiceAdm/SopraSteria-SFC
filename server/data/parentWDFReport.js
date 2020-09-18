@@ -4,8 +4,7 @@ const db = require('../utils/datastore');
 
 const effectiveDate = require('../models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
 
-const getEstablishmentDataQuery =
-`
+const getEstablishmentDataQuery = `
 SELECT
   "Establishment"."EstablishmentID",
   "NmdsID",
@@ -142,8 +141,7 @@ ORDER BY
   "EstablishmentID";
 `;
 
-const getCapicityOrUtilisationDataQuery =
-`SELECT
+const getCapicityOrUtilisationDataQuery = `SELECT
     b."Answer"
   FROM
     cqc."ServicesCapacity" AS a
@@ -156,12 +154,11 @@ const getCapicityOrUtilisationDataQuery =
     "ServiceID" = :mainServiceId AND
     a."Type" = :type`;
 
-const getServiceCapacityDetailsQuery =
-  `SELECT "ServiceCapacityID", "Type"
+const getServiceCapacityDetailsQuery = `SELECT "ServiceCapacityID", "Type"
    FROM cqc."ServicesCapacity"
    WHERE "ServiceID" = :mainServiceId`;
 
-exports.getEstablishmentData = async establishmentId =>
+exports.getEstablishmentData = async (establishmentId) =>
   db.query(getEstablishmentDataQuery, {
     replacements: {
       zero: 0,
@@ -173,15 +170,15 @@ exports.getEstablishmentData = async establishmentId =>
       Vacancies: 'Vacancies',
       Starters: 'Starters',
       Leavers: 'Leavers',
-      Dont: 'Don\'t know',
+      Dont: "Don't know",
       Other: 'Other',
       No: 'No',
       emptyValue: '',
       WorkplaceStaff: 'Workplace and Staff',
       Parent: 'Parent',
-      British: 'British'
+      British: 'British',
     },
-    type: db.QueryTypes.SELECT
+    type: db.QueryTypes.SELECT,
   });
 
 exports.getCapicityData = async (establishmentId, mainServiceId) =>
@@ -189,9 +186,9 @@ exports.getCapicityData = async (establishmentId, mainServiceId) =>
     replacements: {
       establishmentId,
       mainServiceId,
-      type: 'Capacity'
+      type: 'Capacity',
     },
-    type: db.QueryTypes.SELECT
+    type: db.QueryTypes.SELECT,
   });
 
 exports.getUtilisationData = async (establishmentId, mainServiceId) =>
@@ -199,21 +196,20 @@ exports.getUtilisationData = async (establishmentId, mainServiceId) =>
     replacements: {
       establishmentId,
       mainServiceId,
-      type: 'Utilisation'
+      type: 'Utilisation',
     },
-    type: db.QueryTypes.SELECT
+    type: db.QueryTypes.SELECT,
   });
 
 exports.getServiceCapacityDetails = async (mainServiceId) =>
   db.query(getServiceCapacityDetailsQuery, {
     replacements: {
-      mainServiceId
+      mainServiceId,
     },
-    type: db.QueryTypes.SELECT
+    type: db.QueryTypes.SELECT,
   });
 
-const getWorkerDataQuery =
-`
+const getWorkerDataQuery = `
 SELECT
   "Worker"."NameOrIdValue",
   "Establishment"."NameValue",
@@ -275,13 +271,13 @@ WHERE
   "Worker"."Archived" = :falseValue;
 `;
 
-exports.getWorkerData = async establishmentId =>
+exports.getWorkerData = async (establishmentId) =>
   db.query(getWorkerDataQuery, {
     replacements: {
       establishmentId,
       separator: ', ',
       falseValue: false,
-      timeFormat: 'DD/MM/YYYY'
+      timeFormat: 'DD/MM/YYYY',
     },
-    type: db.QueryTypes.SELECT
+    type: db.QueryTypes.SELECT,
   });

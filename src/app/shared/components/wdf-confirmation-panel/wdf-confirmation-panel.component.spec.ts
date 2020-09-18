@@ -17,7 +17,7 @@ describe('WdfConfirmationPanelComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WdfConfirmationPanelComponent);
     component = fixture.componentInstance;
-    component.exitUrl = { url: ['/dashboard'], fragment: 'dashboard' }
+    component.exitUrl = { url: ['/dashboard'], fragment: 'dashboard' };
     fixture.detectChanges();
   });
 

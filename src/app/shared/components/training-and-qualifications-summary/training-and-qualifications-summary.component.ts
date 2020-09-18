@@ -20,9 +20,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public canViewWorker: boolean;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
-  constructor(
-    private permissionsService: PermissionsService,
-  ) {}
+  constructor(private permissionsService: PermissionsService) {}
   public getWorkerTrainingAndQualificationsPath(worker: Worker) {
     const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
     return this.wdfView ? [...path, ...['wdf-summary']] : path;
@@ -45,17 +43,9 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     }
 
     if (dropdownValue === 'worker') {
-      this.workers = orderBy(
-      this.workers,
-      [ worker => worker.nameOrId.toLowerCase()],
-      [ 'desc'],
-    );
+      this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['desc']);
     } else {
-      this.workers = orderBy(
-        this.workers,
-        [sortValue,  worker => worker.nameOrId.toLowerCase()],
-        ['desc', 'asc'],
-      );
+      this.workers = orderBy(this.workers, [sortValue, (worker) => worker.nameOrId.toLowerCase()], ['desc', 'asc']);
     }
   }
 }

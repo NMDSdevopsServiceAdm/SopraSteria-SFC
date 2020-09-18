@@ -6,21 +6,21 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       success: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
       },
       message: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       createdat: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('cqclog');
-  }
+  },
 };

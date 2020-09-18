@@ -13,9 +13,11 @@ class DBEmitter extends EventEmitter {
   constructor() {
     super();
     this._ready = false;
-  };
+  }
 
-  get READY_EVENT() { return 'Ready'};
+  get READY_EVENT() {
+    return 'Ready';
+  }
 
   get ready() {
     return this._ready;
@@ -24,7 +26,7 @@ class DBEmitter extends EventEmitter {
   set ready(status) {
     this._ready = status;
   }
-};
+}
 db.status = new DBEmitter();
 
 let sequelize;
@@ -33,9 +35,9 @@ const config = {
     max: 10000,
     min: 0,
     idle: 200000,
-    acquire: 200000
+    acquire: 200000,
   },
-  retry: { max: 3 }
+  retry: { max: 3 },
 };
 
 // allow override of any config value from environment variable
@@ -46,7 +48,7 @@ config.username = appConfig.get('db.username');
 config.password = appConfig.get('db.password');
 config.dialect = appConfig.get('db.dialect');
 config.dialectOptions = {
-  ssl: appConfig.get('db.ssl')
+  ssl: appConfig.get('db.ssl'),
 };
 config.logging = appConfig.get('log.sequelize');
 
@@ -54,27 +56,26 @@ if (appConfig.get('db.client_ssl.status')) {
   // when initialising SSL direct from config, can only use files.
   if (appConfig.get('db.client_ssl.usingFiles')) {
     config.dialectOptions.ssl = {
-      rejectUnauthorized : false,
-      ca   : fs.readFileSync(appConfig.get('db.client_ssl.files.ca')).toString(),
-      key  : fs.readFileSync(appConfig.get('db.client_ssl.files.key')).toString(),
-      cert : fs.readFileSync(appConfig.get('db.client_ssl.files.certificate')).toString(),
+      rejectUnauthorized: false,
+      ca: fs.readFileSync(appConfig.get('db.client_ssl.files.ca')).toString(),
+      key: fs.readFileSync(appConfig.get('db.client_ssl.files.key')).toString(),
+      cert: fs.readFileSync(appConfig.get('db.client_ssl.files.certificate')).toString(),
     };
   }
 }
 
 sequelize = new Sequelize(config.database, config.username, config.password, config);
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
+fs.readdirSync(__dirname)
+  .filter((file) => {
+    return file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js';
   })
-  .forEach(file => {
+  .forEach((file) => {
     const model = sequelize['import'](path.join(__dirname, file));
     db[model.name] = model;
   });
 
-Object.keys(db).forEach(modelName => {
+Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
@@ -97,16 +98,18 @@ if (AppConfig.ready) {
     sequelize.connectionManager.config.username = appConfig.get('db.username');
     sequelize.connectionManager.config.user = appConfig.get('db.username');
     sequelize.connectionManager.config.password = appConfig.get('db.password');
-    console.log(`Connecting to the database at ${sequelize.connectionManager.config.host}/${sequelize.connectionManager.config.database} as ${sequelize.connectionManager.config.username}`);
+    console.log(
+      `Connecting to the database at ${sequelize.connectionManager.config.host}/${sequelize.connectionManager.config.database} as ${sequelize.connectionManager.config.username}`,
+    );
 
     // when initialising on config "ready" can only use SSL data
     if (appConfig.get('db.client_ssl.status')) {
       if (!appConfig.get('db.client_ssl.usingFiles')) {
         sequelize.connectionManager.config.dialectOptions.ssl = {
-          rejectUnauthorized : false,
-          ca   : appConfig.get('db.client_ssl.data.ca'),
-          key  : appConfig.get('db.client_ssl.data.key'),
-          cert : appConfig.get('db.client_ssl.data.certificate'),
+          rejectUnauthorized: false,
+          ca: appConfig.get('db.client_ssl.data.ca'),
+          key: appConfig.get('db.client_ssl.data.key'),
+          cert: appConfig.get('db.client_ssl.data.certificate'),
         };
       }
     }
@@ -117,7 +120,6 @@ if (AppConfig.ready) {
     db.status.ready = true;
     db.status.emit(db.status.READY_EVENT);
   });
-
 }
 
 module.exports = db;

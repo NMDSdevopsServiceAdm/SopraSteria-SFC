@@ -20,21 +20,21 @@ const getSearchComponent = async () => {
       SharedModule,
       RouterTestingModule.withRoutes([
         { path: 'search-users', component: SearchComponent },
-        { path: 'search-groups', component: SearchComponent }
+        { path: 'search-groups', component: SearchComponent },
       ]),
     ],
     providers: [
       {
         provide: WindowRef,
-        useClass: WindowRef
+        useClass: WindowRef,
       },
       {
         provide: SwitchWorkplaceService,
-        useClass: MockSwitchWorkplaceService
-      }
+        useClass: MockSwitchWorkplaceService,
+      },
     ],
   });
-}
+};
 
 const setup = async (fixture, navigate, click, getByText, isLocked = false) => {
   const httpTestingController = TestBed.inject(HttpTestingController);
@@ -46,22 +46,24 @@ const setup = async (fixture, navigate, click, getByText, isLocked = false) => {
   click(getByText('Search users'));
 
   const req = httpTestingController.expectOne('/api/admin/search/users');
-  req.flush([{
-    uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-    name: 'John Doe',
-    username: 'Username',
-    securityQuestion: 'Question',
-    securityQuestionAnswer: 'Answer',
-    isLocked,
-    establishment: {
+  req.flush([
+    {
       uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-      name: 'My workplace',
-      nmdsId: 'G1001376',
-      }
-  }]);
+      name: 'John Doe',
+      username: 'Username',
+      securityQuestion: 'Question',
+      securityQuestionAnswer: 'Answer',
+      isLocked,
+      establishment: {
+        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+        name: 'My workplace',
+        nmdsId: 'G1001376',
+      },
+    },
+  ]);
 
   fixture.detectChanges();
-}
+};
 
 describe('SearchComponent', () => {
   afterEach(() => {
@@ -145,7 +147,7 @@ describe('SearchComponent', () => {
 
       expect(adminUnlockModal).toBeTruthy();
     });
-  })
+  });
 
   describe('Groups', () => {
     it('should show the Groups tab', async () => {
@@ -170,10 +172,12 @@ describe('SearchComponent', () => {
       click(getByText('Search groups'));
 
       const req = httpTestingController.expectOne('/api/admin/search/groups');
-      req.flush([{
-        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-        name: 'Workplace Name',
-      }]);
+      req.flush([
+        {
+          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+          name: 'Workplace Name',
+        },
+      ]);
 
       fixture.detectChanges();
 
@@ -192,15 +196,17 @@ describe('SearchComponent', () => {
       click(getByText('Search groups'));
 
       const req = httpTestingController.expectOne('/api/admin/search/groups');
-      req.flush([{
-        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-        name: 'Workplace Name',
-        address1: '44',
-        address2: 'Grace St',
-        town: 'Leeds',
-        county: 'West Yorkshire',
-        postcode: 'WF14 9TS',
-      }]);
+      req.flush([
+        {
+          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+          name: 'Workplace Name',
+          address1: '44',
+          address2: 'Grace St',
+          town: 'Leeds',
+          county: 'West Yorkshire',
+          postcode: 'WF14 9TS',
+        },
+      ]);
 
       fixture.detectChanges();
 
@@ -222,15 +228,17 @@ describe('SearchComponent', () => {
       click(getByText('Search groups'));
 
       const req = httpTestingController.expectOne('/api/admin/search/groups');
-      req.flush([{
-        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-        name: 'Workplace Name',
-        address1: '44',
-        address2: 'Grace St',
-        town: 'Leeds',
-        county: 'West Yorkshire',
-        postcode: 'WF14 9TS',
-      }]);
+      req.flush([
+        {
+          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+          name: 'Workplace Name',
+          address1: '44',
+          address2: 'Grace St',
+          town: 'Leeds',
+          county: 'West Yorkshire',
+          postcode: 'WF14 9TS',
+        },
+      ]);
 
       fixture.detectChanges();
 

@@ -20,7 +20,7 @@ export class NursingSpecialismComponent extends QuestionComponent {
     'Community Care',
     'Others',
     'Not applicable',
-    `Don't know`,
+    'Don\'t know',
   ];
 
   constructor(
@@ -29,7 +29,7 @@ export class NursingSpecialismComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 

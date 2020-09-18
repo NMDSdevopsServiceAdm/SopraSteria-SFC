@@ -9,11 +9,10 @@ import { concatMap, filter, map, startWith, take } from 'rxjs/operators';
 import { EstablishmentService } from './establishment.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReportService {
-  constructor(private http: HttpClient, private establishmentService: EstablishmentService) {
-  }
+  constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
   getWDFReport(establishmentId: string, updatedEffectiveFrom?: string): Observable<WDFReport> {
     let params: HttpParams;
@@ -23,14 +22,14 @@ export class ReportService {
     }
 
     return this.http.get<WDFReport>(`/api/reports/wdf/establishment/${establishmentId}`, {
-      params
+      params,
     });
   }
 
   public getWdfSummaryReport(): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/reports/wdfSummary`, {
+    return this.http.get<Blob>('/api/reports/wdfSummary', {
       observe: 'response',
-      responseType: 'blob' as 'json'
+      responseType: 'blob' as 'json',
     });
   }
 
@@ -38,22 +37,22 @@ export class ReportService {
     return this.checkLockStatus(
       {
         observe: 'response',
-        responseType: 'blob' as 'json'
+        responseType: 'blob' as 'json',
       },
       workplaceUid,
-      'la'
+      'la',
     );
   }
 
   public getLocalAuthorityAdminReport(): Observable<HttpResponse<Blob>> {
-      return this.checkLockStatus(
-        {
-          observe: 'response',
-          responseType: 'blob' as 'json'
-        },
-        null,
-        'adminla'
-      );
+    return this.checkLockStatus(
+      {
+        observe: 'response',
+        responseType: 'blob' as 'json',
+      },
+      null,
+      'adminla',
+    );
   }
 
   public getParentWDFReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
@@ -61,8 +60,8 @@ export class ReportService {
       () => this.http.get<Blob>(`/api/reports/wdf/establishment/${workplaceUid}/parent/report`),
       {
         observe: 'response',
-        responseType: 'blob' as 'json'
-      }
+        responseType: 'blob' as 'json',
+      },
     );
   }
 
@@ -71,13 +70,12 @@ export class ReportService {
     return this.checkLockStatus(
       {
         observe: 'response',
-        responseType: 'blob' as 'json'
+        responseType: 'blob' as 'json',
       },
       workplaceUid,
-      'training'
+      'training',
     );
   }
-
 
   // Function to check for the lock status
   private checkLockStatus(httpOptions, workplaceUid, report): Observable<any> {
@@ -85,7 +83,7 @@ export class ReportService {
     const reportData = {
       training: `/api/reports/training/establishment/${workplaceUid}/training`,
       la: `/api/reports/localAuthority/establishment/${workplaceUid}/user`,
-      adminla: '/api/reports/localauthority/admin'
+      adminla: '/api/reports/localauthority/admin',
     };
     const apiPath = reportData[report];
     // Run function every second until lock aquired
@@ -93,51 +91,26 @@ export class ReportService {
       interval(1000)
         // Start he function straight away rather than waiting for the first second
         .pipe(startWith(0))
-        .pipe(
-          concatMap(() =>
-            from(
-              this.http.get<LockStatus>(
-                apiPath + '/report'
-              )
-            )
-          )
-        )
+        .pipe(concatMap(() => from(this.http.get<LockStatus>(apiPath + '/report'))))
         // Don't go any further unless there's a request ID
         .pipe(filter((request: any) => typeof request.requestId === 'string'))
         .pipe(take(1))
         .pipe(
           map((request: any) => {
             requestId = request.requestId;
-          })
+          }),
         )
         .pipe(
           // Run separate function to get the current lock status
           concatMap(() =>
             interval(1000)
               .pipe(startWith(0))
-              .pipe(
-                concatMap(() =>
-                  from(
-                    this.http.get<LockStatus>(
-                      apiPath + '/lockstatus'
-                    )
-                  )
-                )
-              )
-          )
+              .pipe(concatMap(() => from(this.http.get<LockStatus>(apiPath + '/lockstatus')))),
+          ),
         )
-        .pipe(filter(state => state.reportLockHeld === false))
+        .pipe(filter((state) => state.reportLockHeld === false))
         .pipe(take(1))
-        .pipe(
-          concatMap(() =>
-            from(
-              this.http.get<any>(
-                apiPath + `/response/${requestId}`,
-                httpOptions
-              )
-            )
-          )
-        )
+        .pipe(concatMap(() => from(this.http.get<any>(apiPath + `/response/${requestId}`, httpOptions))))
     );
   }
 
@@ -157,7 +130,7 @@ export class ReportService {
         .pipe(
           map((request: any) => {
             requestId = request.requestId;
-          })
+          }),
         )
         .pipe(
           // Run serperate function to get the current lock status
@@ -167,23 +140,25 @@ export class ReportService {
               .pipe(
                 concatMap(() =>
                   from(
-                    this.http.get<WDFLockStatus>(`/api/reports/wdf/establishment/${establishmentUid}/parent/lockstatus`)
-                  )
-                )
-              )
-          )
+                    this.http.get<WDFLockStatus>(
+                      `/api/reports/wdf/establishment/${establishmentUid}/parent/lockstatus`,
+                    ),
+                  ),
+                ),
+              ),
+          ),
         )
-        .pipe(filter(state => state.WdfReportLockHeld === false))
+        .pipe(filter((state) => state.WdfReportLockHeld === false))
         .pipe(take(1))
         .pipe(
           concatMap(() =>
             from(
               this.http.get<any>(
                 `/api/reports/wdf/establishment/${establishmentUid}/parent/response/${requestId}`,
-                httpOptions
-              )
-            )
-          )
+                httpOptions,
+              ),
+            ),
+          ),
         )
     );
   }

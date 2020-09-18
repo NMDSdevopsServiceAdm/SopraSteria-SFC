@@ -28,7 +28,7 @@ export class CharacterCountComponent implements OnInit, OnDestroy {
         } else {
           this.remaining = this.max;
         }
-      })
+      }),
     );
   }
 

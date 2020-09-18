@@ -25,7 +25,7 @@ export class UserAccountEditDetailsComponent extends AccountDetails {
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
-    protected userService: UserService
+    protected userService: UserService,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
@@ -46,8 +46,8 @@ export class UserAccountEditDetailsComponent extends AccountDetails {
         .updateUserDetails(this.userDetails.establishmentUid, this.userDetails.uid, userDetails)
         .subscribe(
           () => this.router.navigate(['/workplace', this.userDetails.establishmentUid, 'user', this.userDetails.uid]),
-          (error: HttpErrorResponse) => this.onError(error)
-        )
+          (error: HttpErrorResponse) => this.onError(error),
+        ),
     );
   }
 }

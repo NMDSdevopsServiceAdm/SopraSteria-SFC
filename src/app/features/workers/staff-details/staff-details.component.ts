@@ -33,7 +33,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
-    private jobService: JobService
+    private jobService: JobService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -49,17 +49,17 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.contractsAvailable = Object.values(Contracts);
 
     this.subscriptions.add(
-      this.jobService.getJobs().subscribe(jobs => {
+      this.jobService.getJobs().subscribe((jobs) => {
         if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
           this.worker.otherJobs.jobs.map((otherjob) => {
-            jobs = jobs.filter(j => j.id !== otherjob.jobId);
+            jobs = jobs.filter((j) => j.id !== otherjob.jobId);
           });
         }
         this.jobsAvailable = jobs;
         if (this.worker) {
           this.renderInEditMode();
         }
-      })
+      }),
     );
 
     this.previous =
@@ -79,7 +79,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.selectedJobRole(this.worker.mainJob.jobId);
 
     if (this.workerService.returnTo === null) {
-      const mandatoryDetailsURL = {url: this.getRoutePath('mandatory-details')};
+      const mandatoryDetailsURL = { url: this.getRoutePath('mandatory-details') };
       this.workerService.setReturnTo(mandatoryDetailsURL);
       this.return = mandatoryDetailsURL;
     }
@@ -96,7 +96,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Enter their name or ID number`,
+            message: 'Enter their name or ID number',
           },
         ],
       },
@@ -105,7 +105,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Select their main job role`,
+            message: 'Select their main job role',
           },
         ],
       },
@@ -123,7 +123,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Select the type of contract they have`,
+            message: 'Select the type of contract they have',
           },
         ],
       },
@@ -154,7 +154,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   selectedJobRole(id: number) {
     this.showInputTextforOtherRole = false;
-    const otherJob = this.jobsAvailable.find(job => job.id === +id);
+    const otherJob = this.jobsAvailable.find((job) => job.id === +id);
     if (otherJob && otherJob.other) {
       this.showInputTextforOtherRole = true;
     }
@@ -166,7 +166,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       if (currentUrl.endsWith('create-staff-record')) {
         this.alertService.addAlert({
           type: 'success',
-          message: 'Staff record saved.'
+          message: 'Staff record saved.',
         });
       }
     });
@@ -175,5 +175,4 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   onSuccess() {
     this.next = this.getRoutePath('mandatory-details');
   }
-
 }

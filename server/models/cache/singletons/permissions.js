@@ -13,7 +13,7 @@ let ALL_PERMISSIONS = [
     code: 'canAddEstablishment',
     description: 'add establishment - PARENT CAN ADD A SUB AT ANY TIME OWNERSHIP AUTOMATIC',
     role: ['Edit'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
     subOwnedByParentAccessBySub: [],
     isAdmin: false,
   },
@@ -38,15 +38,15 @@ let ALL_PERMISSIONS = [
     description: 'change permissions for subsidiary views',
     role: ['Edit'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
-    subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
     isAdmin: false,
   },
   {
     code: 'canChangeDataOwner',
     description: 'change data owner',
     role: ['Edit'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
-    subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
     isAdmin: false,
   },
   {
@@ -101,16 +101,16 @@ let ALL_PERMISSIONS = [
     code: 'canViewEstablishment',
     description: 'view establishment',
     role: ['Edit', 'Read'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
-    subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
     isAdmin: false,
   },
   {
     code: 'canViewWdfReport',
     description: 'WDF report',
     role: ['Edit', 'Read'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
-    subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
     isAdmin: false,
   },
   {
@@ -125,24 +125,26 @@ let ALL_PERMISSIONS = [
     code: 'canCountWorkers',
     description: 'For WDF report, ability to show the staff count (grey bar)',
     role: ['Edit', 'Read'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
-    subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
     isAdmin: false,
   },
   {
     code: 'canViewVisuals',
-    description: 'NEW yet to be built - Data Visualisation and key facts (total staff, total leavers, total starters/total establishment/staff turnover rate)',
+    description:
+      'NEW yet to be built - Data Visualisation and key facts (total staff, total leavers, total starters/total establishment/staff turnover rate)',
     role: ['Edit', 'Read'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
-    subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
     isAdmin: false,
   },
   {
     code: 'canViewLastUpdateTime',
-    description: 'NEW yet to be built - Data Visualisation and key facts (total staff, total leavers, total starters/total establishment/staff turnover rate)',
+    description:
+      'NEW yet to be built - Data Visualisation and key facts (total staff, total leavers, total starters/total establishment/staff turnover rate)',
     role: ['Edit', 'Read'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
-    subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
     isAdmin: false,
   },
   {
@@ -157,7 +159,7 @@ let ALL_PERMISSIONS = [
     code: 'canSortEstablishments',
     description: 'NEW yet to be built - order establishment (alphabetical/size etc)',
     role: ['Edit'],
-    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace'],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
     subOwnedByParentAccessBySub: [],
     isAdmin: false,
   },
@@ -196,7 +198,7 @@ let ALL_PERMISSIONS = [
   {
     code: 'canViewUser',
     description: 'View user',
-    role: ['Edit','Read'],
+    role: ['Edit', 'Read'],
     subOwnedByWorkplaceAccessByParent: ['Workplace and Staff', 'Workplace'],
     subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace'],
     isAdmin: false,
@@ -249,7 +251,7 @@ let ALL_PERMISSIONS = [
     subOwnedByParentAccessBySub: [],
     isAdmin: true,
   },
- {
+  {
     code: 'canLinkToParent',
     description: 'Link to any parent',
     role: ['Edit'],
@@ -276,150 +278,167 @@ let ALL_PERMISSIONS = [
   {
     code: 'canDownloadWdfReport',
     description: 'download wdf report',
-    role: ['Edit','Read'],
+    role: ['Edit', 'Read'],
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
     isAdmin: false,
-  }
+  },
 ];
 
 class PermissionCache {
   constructor() {}
 
-  static async initialize() {
-
-  }
+  static async initialize() {}
 
   static myPermissions(requestData) {
-
     const estabType = this.getEstablishmentType(requestData.establishment);
     let permissions = [];
     const isLoggedInAsParent = requestData.isParent;
     if (requestData.role === 'Admin') {
       // console.log("0")
       permissions = this.filterForAdminRole();
-    } else if (estabType === "Standalone") {
+    } else if (estabType === 'Standalone') {
       // console.log("1")
       permissions = this.filterByRole(this.getRoleEnum(requestData.role));
-    } else if (!isLoggedInAsParent && estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) === 'Workplace') {
+    } else if (
+      !isLoggedInAsParent &&
+      estabType == 'Subsidiary' &&
+      this.getParentOwnerStatus(requestData.parentIsOwner) === 'Workplace'
+    ) {
       // console.log("2")
       permissions = this.filterByRole(this.getRoleEnum(requestData.role));
-    } else if (!isLoggedInAsParent && estabType == "Subsidiary" && this.getParentOwnerStatus(requestData.parentIsOwner) === 'Parent') {
+    } else if (
+      !isLoggedInAsParent &&
+      estabType == 'Subsidiary' &&
+      this.getParentOwnerStatus(requestData.parentIsOwner) === 'Parent'
+    ) {
       // console.log("3")
-      if (requestData.dataPermissions !== 'None' && requestData.role === 'Read'){
+      if (requestData.dataPermissions !== 'None' && requestData.role === 'Read') {
         permissions = this.filterByRole(this.getRoleEnum(requestData.role));
-      } else{
+      } else {
         permissions = this.filterBySubOwnedByParent(requestData.dataPermissions);
       }
-    } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Primary') {
+    } else if (
+      isLoggedInAsParent &&
+      this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Primary'
+    ) {
       // console.log("4")
       permissions = this.filterByRole(this.getRoleEnum(requestData.role));
-    } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Subsidiary' && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Parent') {
+    } else if (
+      isLoggedInAsParent &&
+      this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Subsidiary' &&
+      this.getParentOwnerStatus(requestData.parentIsOwner) == 'Parent'
+    ) {
       // console.log("5")
       permissions = this.filterByRole(this.getRoleEnum(requestData.role));
-    } else if (isLoggedInAsParent && this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Subsidiary' && this.getParentOwnerStatus(requestData.parentIsOwner) == 'Workplace') {
+    } else if (
+      isLoggedInAsParent &&
+      this.getEstablishmentStatus(requestData.establishment, requestData.establishmentId) === 'Subsidiary' &&
+      this.getParentOwnerStatus(requestData.parentIsOwner) == 'Workplace'
+    ) {
       // console.log("6")
-      if (requestData.dataPermissions !== 'None' && requestData.role === 'Read'){
+      if (requestData.dataPermissions !== 'None' && requestData.role === 'Read') {
         permissions = this.filterByRole(this.getRoleEnum(requestData.role));
-      } else{
+      } else {
         permissions = this.filterBysubOwnedByWorkplace(requestData.dataPermissions);
       }
     }
 
-    if(estabType !== 'Subsidiary') {
-      permissions = permissions.filter(perm => perm.code !== 'canDeleteEstablishment');
+    if (estabType !== 'Subsidiary') {
+      permissions = permissions.filter((perm) => perm.code !== 'canDeleteEstablishment');
     }
 
-    const theirPermissions = permissions.map(thisPerm => {
-            return {
-                code: thisPerm.code,
-                description: thisPerm.description,
-                role: thisPerm.role
-        };
+    const theirPermissions = permissions.map((thisPerm) => {
+      return {
+        code: thisPerm.code,
+        description: thisPerm.description,
+        role: thisPerm.role,
+      };
     });
 
     if (requestData.role === 'Admin') {
       const adminPermissions = this.filterByAdminOnly();
-      adminPermissions.forEach(thisPerm => {
+      adminPermissions.forEach((thisPerm) => {
         theirPermissions.push({
           code: thisPerm.code,
           description: thisPerm.description,
-          role: thisPerm.role
-        })
+          role: thisPerm.role,
+        });
       });
     }
 
     return theirPermissions;
   }
 
-  static filterForAdminRole(){
+  static filterForAdminRole() {
     return ALL_PERMISSIONS;
   }
 
-  static filterByRole(role){
-    return ALL_PERMISSIONS
-    .filter(x => x.isAdmin === false && (
-        (role == "Edit" && x.role.includes("Edit") || x.role.includes("Read")) ||
-        x.role.includes(role))
+  static filterByRole(role) {
+    return ALL_PERMISSIONS.filter(
+      (x) =>
+        x.isAdmin === false &&
+        ((role == 'Edit' && x.role.includes('Edit')) || x.role.includes('Read') || x.role.includes(role)),
     );
   }
 
-  static filterBysubOwnedByWorkplace(dataPermissions){
-    return ALL_PERMISSIONS
-    .filter(x => x.isAdmin === false && x.subOwnedByWorkplaceAccessByParent.includes(dataPermissions));
+  static filterBysubOwnedByWorkplace(dataPermissions) {
+    return ALL_PERMISSIONS.filter(
+      (x) => x.isAdmin === false && x.subOwnedByWorkplaceAccessByParent.includes(dataPermissions),
+    );
   }
 
-  static filterBySubOwnedByParent(dataPermissions){
-    return ALL_PERMISSIONS
-    .filter(x => x.isAdmin === false && x.subOwnedByParentAccessBySub.includes(dataPermissions));
+  static filterBySubOwnedByParent(dataPermissions) {
+    return ALL_PERMISSIONS.filter(
+      (x) => x.isAdmin === false && x.subOwnedByParentAccessBySub.includes(dataPermissions),
+    );
   }
 
-  static filterByAdminOnly(){
-    return ALL_PERMISSIONS
-    .filter(x => x.isAdmin === true);
+  static filterByAdminOnly() {
+    return ALL_PERMISSIONS.filter((x) => x.isAdmin === true);
   }
 
-  static getRoleEnum(role){
-    return (role == 'Edit' || role == 'Admin') ? "Edit" : "Read";
+  static getRoleEnum(role) {
+    return role == 'Edit' || role == 'Admin' ? 'Edit' : 'Read';
   }
 
-  static getEstablishmentStatus(establishment, id){
-     return (id !== establishment.id) ? "Subsidiary" : "Primary";
+  static getEstablishmentStatus(establishment, id) {
+    return id !== establishment.id ? 'Subsidiary' : 'Primary';
   }
 
-  static getDataPermissions(dataPermissions){
+  static getDataPermissions(dataPermissions) {
     return dataPermissions;
   }
 
-  static getParentOwnerStatus(parentIsOwner){
-    return parentIsOwner ? "Parent" : "Workplace";
+  static getParentOwnerStatus(parentIsOwner) {
+    return parentIsOwner ? 'Parent' : 'Workplace';
   }
 
-  static getEstablishmentType(establishment){
-    if(establishment.isSubsidiary){
-      return "Subsidiary";
-    }else if(establishment.isParent){
-      return "Parent";
-    }else if(!establishment.isSubsidiary && !establishment.isParent){
-      return "Standalone";
+  static getEstablishmentType(establishment) {
+    if (establishment.isSubsidiary) {
+      return 'Subsidiary';
+    } else if (establishment.isParent) {
+      return 'Parent';
+    } else if (!establishment.isSubsidiary && !establishment.isParent) {
+      return 'Standalone';
     }
   }
 }
 
 if (AppConfig.ready) {
-    PermissionCache.initialize()
+  PermissionCache.initialize()
     .then()
-    .catch(err => {
-      console.error("Failed to initialise PermissionCache: ", err);
+    .catch((err) => {
+      console.error('Failed to initialise PermissionCache: ', err);
     });
 } else {
-    AppConfig.on(AppConfig.READY_EVENT, () => {
-        PermissionCache.initialize()
-        .then()
-        .catch(err => {
-          console.error("Failed to initialise PermissionCache: ", err);
-        });
-    });
+  AppConfig.on(AppConfig.READY_EVENT, () => {
+    PermissionCache.initialize()
+      .then()
+      .catch((err) => {
+        console.error('Failed to initialise PermissionCache: ', err);
+      });
+  });
 }
 
 exports.PermissionCache = PermissionCache;

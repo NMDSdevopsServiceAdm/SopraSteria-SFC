@@ -9,8 +9,12 @@
  */
 
 class ValidationMessage {
-  static get ERROR() { return 'Error' };
-  static get WARNING() { return 'Warning' };
+  static get ERROR() {
+    return 'Error';
+  }
+  static get WARNING() {
+    return 'Warning';
+  }
 
   constructor(type, code, message, properties) {
     this._type = type;
@@ -20,7 +24,7 @@ class ValidationMessage {
   }
 
   get type() {
-      return this._type;
+    return this._type;
   }
 
   get isError() {
@@ -39,6 +43,6 @@ class ValidationMessage {
   get properties() {
     return this._properties;
   }
-};
+}
 
 module.exports.ValidationMessage = ValidationMessage;

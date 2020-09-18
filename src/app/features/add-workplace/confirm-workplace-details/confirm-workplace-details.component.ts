@@ -7,9 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  ConfirmWorkplaceDetails,
-} from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
+import { ConfirmWorkplaceDetails } from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
 import { combineLatest } from 'rxjs';
 
 @Component({
@@ -25,7 +23,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     private establishmentService: EstablishmentService,
     private router: Router,
     private workplaceService: WorkplaceService,
-    protected backService: BackService
+    protected backService: BackService,
   ) {
     super(backService);
   }
@@ -43,20 +41,20 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
       ]).subscribe(([locationAddress, workplace]) => {
         this.locationAddress = locationAddress;
         this.workplace = workplace;
-      })
+      }),
     );
   }
 
   public continue(): void {
-     this.addWorkplace();
-   }
+    this.addWorkplace();
+  }
 
   private addWorkplace(): void {
     this.subscriptions.add(
       this.workplaceService
         .addWorkplace(
           this.establishmentService.primaryWorkplace.uid,
-          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace)
+          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace),
         )
         .subscribe(
           (response: AddWorkplaceResponse) => {
@@ -67,8 +65,8 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
           (response: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
             this.errorSummaryService.scrollToErrorSummary();
-          }
-        )
+          },
+        ),
     );
   }
 }

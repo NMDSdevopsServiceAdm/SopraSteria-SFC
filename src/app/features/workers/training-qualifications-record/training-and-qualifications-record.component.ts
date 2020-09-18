@@ -43,12 +43,12 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     this.breadcrumbService.show(journey);
     this.setTrainingAndQualifications();
     this.subscriptions.add(
-      this.workerService.alert$.subscribe(alert => {
+      this.workerService.alert$.subscribe((alert) => {
         if (alert) {
           this.alertService.addAlert(alert);
           this.workerService.alert = null;
         }
-      })
+      }),
     );
 
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
@@ -59,38 +59,38 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
   public setTrainingAndQualifications() {
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe(
-        worker => {
+        (worker) => {
           this.worker = worker;
           this.qualificationsCount = 0;
           this.trainingCount = 0;
           this.trainingAndQualsCount = 0;
           // get qualification count
           this.workerService.getQualifications(this.workplace.uid, this.worker.uid).subscribe(
-            qual => {
+            (qual) => {
               this.qualificationsCount = qual.qualifications.length;
             },
-            error => {
+            (error) => {
               console.error(error.error);
-            }
+            },
           );
           // get training count and flag
           this.workerService
             .getTrainingRecords(this.workplace.uid, this.worker.uid)
             .pipe(take(1))
             .subscribe(
-              training => {
+              (training) => {
                 this.trainingCount = training.count;
                 this.trainingAlert = this.trainingStatusService.getAggregatedStatus(training.training);
               },
-              error => {
+              (error) => {
                 console.error(error.error);
-              }
+              },
             );
-          },
-        error => {
+        },
+        (error) => {
           console.error(error.error);
-        }
-      )
+        },
+      ),
     );
   }
 

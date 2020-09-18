@@ -45,22 +45,22 @@ function cqcStatusChangeGenerator(otherCurrentService = false, otherRequestedSer
       },
       requestedService: {
         ID: 2,
-        name: 'Service Name'
-      }
-    } as CqcChangeData
+        name: 'Service Name',
+      },
+    } as CqcChangeData,
   } as ApprovalRequest<CqcChangeData>;
   if (otherCurrentService) {
     payload.data.currentService = {
       ID: 5,
       name: 'Other Service',
-      other: 'Other Service Name'
+      other: 'Other Service Name',
     };
   }
   if (otherRequestedService) {
     payload.data.requestedService = {
       ID: 6,
       name: 'Other Service',
-      other: 'Other Service Name'
+      other: 'Other Service Name',
     };
     if (usernameNull) {
       payload.userName = null;
@@ -70,19 +70,17 @@ function cqcStatusChangeGenerator(otherCurrentService = false, otherRequestedSer
 }
 
 describe('CqcStatusChangeComponent', () => {
-
-  async function getCqcStatusChangeComponent(otherCurrentService = false, otherRequestedService= false, usernameNull = false) {
+  async function getCqcStatusChangeComponent(
+    otherCurrentService = false,
+    otherRequestedService = false,
+    usernameNull = false,
+  ) {
     return render(CqcStatusChangeComponent, {
-      imports: [
-        ReactiveFormsModule,
-        HttpClientTestingModule,
-        SharedModule,
-        RouterTestingModule
-      ],
+      imports: [ReactiveFormsModule, HttpClientTestingModule, SharedModule, RouterTestingModule],
       providers: [
         {
           provide: WindowRef,
-          useClass: WindowRef
+          useClass: WindowRef,
         },
       ],
       componentProperties: {
@@ -116,19 +114,17 @@ describe('CqcStatusChangeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show up requested service name if requested service has an \'other\' type ', async () => {
+  it("should show up requested service name if requested service has an 'other' type ", async () => {
     const otherCurrentService = false;
     const otherRequestedService = true;
-    const component = await getCqcStatusChangeComponent(otherCurrentService , otherRequestedService);
+    const component = await getCqcStatusChangeComponent(otherCurrentService, otherRequestedService);
     const otherServiceTitle = await within(document.body).findByTestId('cqc-requested-service-other-title');
     const otherServiceValue = await within(document.body).findByTestId('cqc-requested-service-other-value');
-    const cqcStatusChange = cqcStatusChangeGenerator(otherCurrentService , otherRequestedService);
-    expect(otherServiceTitle.innerHTML).toContain(`Requested service name`);
+    const cqcStatusChange = cqcStatusChangeGenerator(otherCurrentService, otherRequestedService);
+    expect(otherServiceTitle.innerHTML).toContain('Requested service name');
     expect(otherServiceValue.innerHTML).toContain(cqcStatusChange.data.requestedService.other);
-
   });
-  it('shouldn\'t show up current service name if current service doesnt an \'other\' type ', async () => {
-
+  it("shouldn't show up current service name if current service doesnt an 'other' type ", async () => {
     const component = await getCqcStatusChangeComponent();
 
     const currentServiceTitle = await within(document.body).queryByTestId('cqc-current-service-other-title');
@@ -136,12 +132,14 @@ describe('CqcStatusChangeComponent', () => {
 
     expect(currentServiceTitle).toBeNull();
     expect(currentServiceValue).toBeNull();
-
   });
   it('should be able to approve a CQC Status Change request', async () => {
     // Arrange
     const { component, modalConfirmationDialog } = await clickFirstApproveButton();
-    const cqcStatusChangeApproval = spyOn(component.fixture.componentInstance.cqcStatusChangeService, 'CqcStatusChangeApproval').and.callThrough();
+    const cqcStatusChangeApproval = spyOn(
+      component.fixture.componentInstance.cqcStatusChangeService,
+      'CqcStatusChangeApproval',
+    ).and.callThrough();
 
     // Act
     within(modalConfirmationDialog).getByText(modalApproveText).click();
@@ -159,7 +157,10 @@ describe('CqcStatusChangeComponent', () => {
   it('should be able to reject a CQC Status Change request', async () => {
     // Arrange
     const { component, modalConfirmationDialog } = await clickFirstRejectButton();
-    const cqcSatusChangeApproval = spyOn(component.fixture.componentInstance.cqcStatusChangeService, 'CqcStatusChangeApproval').and.callThrough();
+    const cqcSatusChangeApproval = spyOn(
+      component.fixture.componentInstance.cqcStatusChangeService,
+      'CqcStatusChangeApproval',
+    ).and.callThrough();
 
     // Act
     within(modalConfirmationDialog).getByText(modalRejectText).click();
@@ -200,7 +201,9 @@ describe('CqcStatusChangeComponent', () => {
     within(modalConfirmationDialog).getByText(modalApproveText).click();
 
     // Assert
-    expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will be flagged as CQC regulated and their new main service will be ${cqcStatusChange.data.requestedService.name}.`);
+    expect(paragraph.innerHTML).toContain(
+      `If you do this, ${testOrgname} will be flagged as CQC regulated and their new main service will be ${cqcStatusChange.data.requestedService.name}.`,
+    );
   });
 
   it('confirmation modal should display org name when rejecting a request', async () => {
@@ -213,7 +216,9 @@ describe('CqcStatusChangeComponent', () => {
     within(modalConfirmationDialog).getByText(modalRejectText).click();
 
     // Assert
-    expect(paragraph.innerHTML).toContain(`If you do this, ${testOrgname} will not be flagged as CQC regulated and their main service will still be ${cqcStatusChange.data.currentService.name}.`);
+    expect(paragraph.innerHTML).toContain(
+      `If you do this, ${testOrgname} will not be flagged as CQC regulated and their main service will still be ${cqcStatusChange.data.currentService.name}.`,
+    );
   });
 
   it('confirmation modal should show approval message when approving a request', async () => {
@@ -226,7 +231,7 @@ describe('CqcStatusChangeComponent', () => {
     within(modalConfirmationDialog).getByText(modalApproveText).click();
 
     // Assert
-    expect(approveHeading.innerHTML).toContain('You\'re about to approve this request.');
+    expect(approveHeading.innerHTML).toContain("You're about to approve this request.");
     expect(submitButton).toBeTruthy();
   });
 
@@ -240,7 +245,7 @@ describe('CqcStatusChangeComponent', () => {
     within(modalConfirmationDialog).getByText(modalRejectText).click();
 
     // Assert
-    expect(rejectHeading.innerHTML).toContain('You\'re about to reject this request.');
+    expect(rejectHeading.innerHTML).toContain("You're about to reject this request.");
     expect(submitButton).toBeTruthy();
   });
 
@@ -248,7 +253,9 @@ describe('CqcStatusChangeComponent', () => {
     // Arrange
     const { component, modalConfirmationDialog } = await clickFirstApproveButton();
     const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
-    spyOn(component.fixture.componentInstance.cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(of({}));
+    spyOn(component.fixture.componentInstance.cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(
+      of({}),
+    );
 
     // Act
     within(modalConfirmationDialog).getByText(modalApproveText).click();
@@ -257,7 +264,7 @@ describe('CqcStatusChangeComponent', () => {
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
       type: 'success',
-      message: `You\'ve approved the main service change for ${testOrgname}.`
+      message: `You\'ve approved the main service change for ${testOrgname}.`,
     });
   });
 
@@ -265,7 +272,9 @@ describe('CqcStatusChangeComponent', () => {
     // Arrange
     const { component, modalConfirmationDialog } = await clickFirstRejectButton();
     const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
-    spyOn(component.fixture.componentInstance.cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(of({}));
+    spyOn(component.fixture.componentInstance.cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(
+      of({}),
+    );
 
     // Act
     within(modalConfirmationDialog).getByText(modalRejectText).click();
@@ -277,6 +286,4 @@ describe('CqcStatusChangeComponent', () => {
       message: `You\'ve rejected the main service change for ${testOrgname}.`,
     });
   });
-
 });
-

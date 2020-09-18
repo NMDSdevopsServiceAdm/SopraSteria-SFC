@@ -14,11 +14,11 @@ export class RoleGuard implements CanActivate {
     const allowedRoles = route.data.roles as Array<string>;
 
     return this.userService.loggedInUser$.pipe(
-      map(user => allowedRoles.includes(user.role)),
+      map((user) => allowedRoles.includes(user.role)),
       catchError(() => {
         this.router.navigate(['/dashboard']);
         return of(false);
-      })
+      }),
     );
   }
 }

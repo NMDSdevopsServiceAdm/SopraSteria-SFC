@@ -12,9 +12,7 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import {
-  UserAccountDeleteDialogComponent,
-} from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
+import { UserAccountDeleteDialogComponent } from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
 import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
@@ -65,7 +63,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.add(
-      this.userService.returnUrl$.pipe(take(1)).subscribe(returnUrl => {
+      this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
         this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid] };
       }),
     );
@@ -99,7 +97,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   public onDeleteUser(event: Event) {
     event.preventDefault();
     const dialog = this.dialogService.open(UserAccountDeleteDialogComponent, { user: this.user });
-    dialog.afterClosed.subscribe(deleteConfirmed => {
+    dialog.afterClosed.subscribe((deleteConfirmed) => {
       if (deleteConfirmed) {
         this.deleteUser();
       }
@@ -114,7 +112,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
             ...this.loggedInUser,
             ...{ isPrimary: true },
           })
-          .subscribe(data => (this.userService.loggedInUser = data)),
+          .subscribe((data) => (this.userService.loggedInUser = data)),
       );
     }
 
@@ -166,7 +164,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   private setPermissions(users: Array<UserDetails>, loggedInUser: UserDetails) {
     const canEditUser = this.permissionsService.can(this.establishment.uid, 'canEditUser');
     const isPending = this.user.username === null;
-    const editUsersList = users.filter(user => user.role === Roles.Edit);
+    const editUsersList = users.filter((user) => user.role === Roles.Edit);
 
     this.canDeleteUser =
       this.permissionsService.can(this.establishment.uid, 'canDeleteUser') &&

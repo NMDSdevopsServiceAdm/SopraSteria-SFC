@@ -1,13 +1,14 @@
 const expect = require('chai').expect;
 
-const address3PropertyClass = require('../../../../../../models/classes/establishment/properties/address3Property').Address3Property;
+const address3PropertyClass = require('../../../../../../models/classes/establishment/properties/address3Property')
+  .Address3Property;
 
 describe('address3Property Property', () => {
   describe('restoreFromJson()', () => {
-    it('should return JSON', async() => {
+    it('should return JSON', async () => {
       const address3Property = new address3PropertyClass();
       const document = {
-        address3: '123 Fake Street'
+        address3: '123 Fake Street',
       };
       await address3Property.restoreFromJson(document);
       expect(address3Property.property).to.deep.equal(document.address3);
@@ -17,7 +18,7 @@ describe('address3Property Property', () => {
     it('should restore in correct format as if from database', () => {
       const address3Property = new address3PropertyClass();
       const document = {
-        address3: '123 Fake Street'
+        address3: '123 Fake Street',
       };
       const restored = address3Property.restorePropertyFromSequelize(document);
       expect(restored).to.deep.equal(document.address3);

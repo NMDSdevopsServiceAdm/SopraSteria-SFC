@@ -23,21 +23,20 @@ const getApprovalRequest = async (req, res) => {
 };
 
 const _mapResults = async (approvalResults) => {
-  return approvalResults.map(approval => {
-      return {
-        requestId: approval.ID,
-        requestUUID: approval.UUID,
-        establishmentId: approval.EstablishmentID,
-        establishmentUid: approval.Establishment.uid,
-        userId: approval.UserID,
-        workplaceId: approval.Establishment.nmdsId,
-        userName: approval.User.FullNameValue,
-        orgName: approval.Establishment.NameValue,
-        requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
-        data: approval.Data
-      };
-    }
-  );
+  return approvalResults.map((approval) => {
+    return {
+      requestId: approval.ID,
+      requestUUID: approval.UUID,
+      establishmentId: approval.EstablishmentID,
+      establishmentUid: approval.Establishment.uid,
+      userId: approval.UserID,
+      workplaceId: approval.Establishment.nmdsId,
+      userName: approval.User.FullNameValue,
+      orgName: approval.Establishment.NameValue,
+      requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
+      data: approval.Data,
+    };
+  });
 };
 
 const becomeAParent = require('./becomeAParent');
@@ -48,4 +47,3 @@ router.route('/establishment/:establishmentId').get(getApprovalRequest);
 
 module.exports = router;
 module.exports.getApprovalRequest = getApprovalRequest;
-

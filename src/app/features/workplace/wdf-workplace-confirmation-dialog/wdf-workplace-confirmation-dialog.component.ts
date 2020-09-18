@@ -10,7 +10,7 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 export class WdfWorkplaceConfirmationDialogComponent extends DialogComponent {
   constructor(
     @Inject(DIALOG_DATA) public data: { workplace: Establishment },
-    public dialog: Dialog<WdfWorkplaceConfirmationDialogComponent>
+    public dialog: Dialog<WdfWorkplaceConfirmationDialogComponent>,
   ) {
     super(data, dialog);
   }

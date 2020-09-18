@@ -20,7 +20,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, router);
   }
@@ -39,12 +39,11 @@ export class SecurityQuestionComponent extends SecurityQuestion {
 
   protected setupSubscription(): void {
     this.subscriptions.add(
-      this.createAccountService.securityDetails$
-        .subscribe((securityDetails: SecurityDetails) => {
-          if (securityDetails) {
-            this.preFillForm(securityDetails);
-          }
-        })
+      this.createAccountService.securityDetails$.subscribe((securityDetails: SecurityDetails) => {
+        if (securityDetails) {
+          this.preFillForm(securityDetails);
+        }
+      }),
     );
   }
 

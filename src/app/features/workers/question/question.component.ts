@@ -37,7 +37,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {}
 
   ngOnInit() {
@@ -46,7 +46,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
 
     this.subscriptions.add(
-      this.workerService.worker$.subscribe(worker => {
+      this.workerService.worker$.subscribe((worker) => {
         this.worker = worker;
 
         if (!this.initiated) {
@@ -60,7 +60,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
               };
           this.backService.setBackLink(this.back);
         }
-      })
+      }),
     );
 
     this.setupFormErrorsMap();
@@ -144,16 +144,16 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.worker) {
       this.subscriptions.add(
         this.workerService.createWorker(this.workplace.uid, props).subscribe(
-          data => this._onSuccess(data, payload.action),
-          error => this.onError(error)
-        )
+          (data) => this._onSuccess(data, payload.action),
+          (error) => this.onError(error),
+        ),
       );
     } else {
       this.subscriptions.add(
         this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
-          data => this._onSuccess(data, payload.action),
-          error => this.onError(error)
-        )
+          (data) => this._onSuccess(data, payload.action),
+          (error) => this.onError(error),
+        ),
       );
     }
   }

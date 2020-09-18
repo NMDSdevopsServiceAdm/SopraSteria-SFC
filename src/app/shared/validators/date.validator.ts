@@ -26,7 +26,7 @@ export abstract class DateValidator {
         return null;
       }
 
-      if ([day.value, month.value, year.value].some(v => !v)) {
+      if ([day.value, month.value, year.value].some((v) => !v)) {
         return { dateValid: true };
       }
 

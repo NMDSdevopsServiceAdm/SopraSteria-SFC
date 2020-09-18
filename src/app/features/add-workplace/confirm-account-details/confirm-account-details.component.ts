@@ -29,7 +29,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     private router: Router,
     private workplaceService: WorkplaceService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder
+    protected formBuilder: FormBuilder,
   ) {
     super(errorSummaryService, formBuilder);
   }
@@ -50,7 +50,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
         this.locationAddress = locationAddress;
         this.service = workplaceService;
         this.setAccountDetails();
-      })
+      }),
     );
   }
 
@@ -85,12 +85,12 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       this.workplaceService
         .addWorkplace(
           this.establishmentService.primaryWorkplace.uid,
-          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.service)
+          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.service),
         )
         .subscribe(
           (response: CreateAccountResponse) => this.createAccount(response.establishmentUid),
-          (error: HttpErrorResponse) => this.onError(error)
-        )
+          (error: HttpErrorResponse) => this.onError(error),
+        ),
     );
   }
 
@@ -114,7 +114,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
           this.workplaceService.addWorkplaceFlow$.next(AddWorkplaceFlow.CQC_WITH_USER);
           this.router.navigate([`${this.flow}/complete`]);
         },
-        (error: HttpErrorResponse) => this.onError(error)
+        (error: HttpErrorResponse) => this.onError(error),
       );
   }
 

@@ -5,7 +5,6 @@ import { CqcChangeData } from '@core/model/cqc-change-data.model';
 import { ApprovalRequest } from '@core/model/approval-request.model';
 import { Observable } from 'rxjs';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -22,6 +21,7 @@ export class CqcStatusChangeService {
 
   public getCqcRequestByEstablishmentId(establishmentId: number): Observable<ApprovalRequest<CqcChangeData>> {
     return this.http.get<ApprovalRequest<CqcChangeData>>(
-      `/api/approvals/establishment/${establishmentId}?type=CqcStatusChange&status=Pending`);
+      `/api/approvals/establishment/${establishmentId}?type=CqcStatusChange&status=Pending`,
+    );
   }
 }

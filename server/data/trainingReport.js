@@ -2,8 +2,7 @@
 
 const db = require('../utils/datastore');
 
-const getTrainingDataQuery =
-`
+const getTrainingDataQuery = `
 SELECT
   a."NameOrIdValue", a."ID", c."Category", c."ID" AS "CategoryID", b."Title", to_char(b."Completed", :timeFormat) as "Completed",
   to_char(b."Expires", :timeFormat) as "ExpiredOn", b."Accredited", b."Expires", a."MainJobFKValue"
@@ -22,26 +21,24 @@ WHERE
   a."Archived" = :falseValue;
 `;
 
-const getMndatoryTrainingDetailsQuery =
-`SELECT count(:zero)
+const getMndatoryTrainingDetailsQuery = `SELECT count(:zero)
 FROM cqc."MandatoryTraining"
 WHERE "EstablishmentFK" = :establishmentId
 AND "TrainingCategoryFK" = :categoryId
-AND "JobFK" = :jobId`
+AND "JobFK" = :jobId`;
 
-const getJobNameQuery =
-`
+const getJobNameQuery = `
 select "JobName" from cqc."Job" where "JobID" = :jobId
 `;
 
-exports.getTrainingData = async establishmentId =>
+exports.getTrainingData = async (establishmentId) =>
   db.query(getTrainingDataQuery, {
     replacements: {
       establishmentId,
       falseValue: false,
-      timeFormat: 'DD/MM/YYYY'
+      timeFormat: 'DD/MM/YYYY',
     },
-    type: db.QueryTypes.SELECT
+    type: db.QueryTypes.SELECT,
   });
 
 exports.getMndatoryTrainingDetails = async (trainingData, establishmentId) =>
@@ -50,15 +47,15 @@ exports.getMndatoryTrainingDetails = async (trainingData, establishmentId) =>
       establishmentId,
       jobId: trainingData.MainJobFKValue,
       categoryId: trainingData.CategoryID,
-      zero: 0
+      zero: 0,
     },
-    type: db.QueryTypes.SELECT
+    type: db.QueryTypes.SELECT,
   });
 
-exports.getJobName = async jobId =>
+exports.getJobName = async (jobId) =>
   db.query(getJobNameQuery, {
     replacements: {
       jobId,
     },
-    type: db.QueryTypes.SELECT
+    type: db.QueryTypes.SELECT,
   });

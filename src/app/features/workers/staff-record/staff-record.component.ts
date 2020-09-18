@@ -37,8 +37,8 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    private workerService: WorkerService
-  ) { }
+    private workerService: WorkerService,
+  ) {}
 
   ngOnInit() {
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
@@ -47,21 +47,21 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(journey);
 
     this.subscriptions.add(
-      this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;
         this.returnToRecord = {
           url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
           fragment: 'staff-record',
         };
-      })
+      }),
     );
 
     this.subscriptions.add(
-      this.workerService.alert$.subscribe(alert => {
+      this.workerService.alert$.subscribe((alert) => {
         if (alert) {
           this.alertService.addAlert(alert);
         }
-      })
+      }),
     );
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');

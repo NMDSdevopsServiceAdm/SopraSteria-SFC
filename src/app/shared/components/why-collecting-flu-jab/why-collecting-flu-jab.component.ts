@@ -5,5 +5,5 @@ import { Component } from '@angular/core';
   templateUrl: './why-collecting-flu-jab.component.html',
 })
 export class WhyCollectingFluJabComponent {
-  constructor() { }
+  constructor() {}
 }

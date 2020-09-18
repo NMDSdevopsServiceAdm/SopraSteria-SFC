@@ -1,9 +1,9 @@
 // this Capacity API model takes DB model type for Capacity and returns various different objects
 //  properly structured to returning in responses
 
-const localformatCapacity = (thisCapacity, thisQuestion, showQuestionDetail=false) => {
+const localformatCapacity = (thisCapacity, thisQuestion, showQuestionDetail = false) => {
   const myCapacity = {
-    question: thisQuestion.question    
+    question: thisQuestion.question,
   };
   if (showQuestionDetail) {
     myCapacity.questionId = thisQuestion.id;
@@ -25,7 +25,7 @@ exports.singleCapacity = localformatCapacity;
 exports.capacitiesJSON = (givenCapacities) => {
   const capacities = [];
   if (givenCapacities && Array.isArray(givenCapacities)) {
-    givenCapacities.forEach(thisCapacity => {
+    givenCapacities.forEach((thisCapacity) => {
       capacities.push(localformatCapacity(thisCapacity, thisCapacity.reference, true));
     });
   }
@@ -36,7 +36,7 @@ exports.capacitiesJSON = (givenCapacities) => {
 exports.serviceCapacitiesJSON = (givenServiceCapacities) => {
   const capacities = [];
   if (givenServiceCapacities && Array.isArray(givenServiceCapacities)) {
-    givenServiceCapacities.forEach(thisService => {
+    givenServiceCapacities.forEach((thisService) => {
       capacities.push(localformatCapacity(undefined, thisService));
     });
   }
@@ -44,12 +44,11 @@ exports.serviceCapacitiesJSON = (givenServiceCapacities) => {
   return capacities;
 };
 
-
 exports.serviceCapacitiesByCategoryJSON = (givenServiceCapacities) => {
   let serviceGroupsMap = new Map();
 
   if (givenServiceCapacities && Array.isArray(givenServiceCapacities)) {
-    givenServiceCapacities.forEach(thisService => {
+    givenServiceCapacities.forEach((thisService) => {
       const mapKey = `${thisService.service.category} - ${thisService.service.name}`;
 
       let thisCategoryGroup = serviceGroupsMap.get(mapKey);
@@ -66,10 +65,10 @@ exports.serviceCapacitiesByCategoryJSON = (givenServiceCapacities) => {
 
   // now iterate over the map (group by category) and construct the target Javascript object
   const serviceGroups = [];
-  serviceGroupsMap.forEach((key,value) => {
+  serviceGroupsMap.forEach((key, value) => {
     serviceGroups.push({
       service: value,
-      questions: key
+      questions: key,
     });
   });
 

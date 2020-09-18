@@ -1,13 +1,14 @@
 const expect = require('chai').expect;
 
-const countyPropertyClass = require('../../../../../../models/classes/establishment/properties/countyProperty').CountyProperty;
+const countyPropertyClass = require('../../../../../../models/classes/establishment/properties/countyProperty')
+  .CountyProperty;
 
 describe('countyProperty Property', () => {
   describe('restoreFromJson()', () => {
-    it('should return JSON', async() => {
+    it('should return JSON', async () => {
       const countyProperty = new countyPropertyClass();
       const document = {
-        county: 'Fakelees'
+        county: 'Fakelees',
       };
       await countyProperty.restoreFromJson(document);
       expect(countyProperty.property).to.deep.equal(document.county);
@@ -17,7 +18,7 @@ describe('countyProperty Property', () => {
     it('should restore in correct format as if from database', () => {
       const countyProperty = new countyPropertyClass();
       const document = {
-        county: 'Fakelees'
+        county: 'Fakelees',
       };
       const restored = countyProperty.restorePropertyFromSequelize(document);
       expect(restored).to.deep.equal(document.county);

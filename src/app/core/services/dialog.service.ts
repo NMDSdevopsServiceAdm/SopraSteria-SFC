@@ -16,14 +16,10 @@ export class Dialog<T, R = any> {
     private overlay: Overlay,
     private injector: Injector,
     private focusTrapFactory: FocusTrapFactory,
-    private data: any
+    private data: any,
   ) {
     const config = new OverlayConfig({
-      positionStrategy: this.overlay
-        .position()
-        .global()
-        .centerHorizontally()
-        .centerVertically(),
+      positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically(),
       hasBackdrop: true,
       scrollStrategy: this.overlay.scrollStrategies.block(),
       disposeOnNavigation: true,

@@ -1,34 +1,35 @@
 const expect = require('chai').expect;
 
-const isRegulatedPropertyClass = require('../../../../../../models/classes/establishment/properties/isRegulatedProperty').IsRegulatedProperty;
+const isRegulatedPropertyClass = require('../../../../../../models/classes/establishment/properties/isRegulatedProperty')
+  .IsRegulatedProperty;
 
 describe('isRegulatedProperty Property', () => {
   describe('restoreFromJson()', () => {
-    it('should return JSON when true', async() => {
+    it('should return JSON when true', async () => {
       const isRegulatedProperty = new isRegulatedPropertyClass();
       const document = {
-        isRegulated: true
+        isRegulated: true,
       };
       await isRegulatedProperty.restoreFromJson(document);
       expect(isRegulatedProperty.property).to.deep.equal(document.isRegulated);
     });
-    it('should return JSON when false', async() => {
+    it('should return JSON when false', async () => {
       const isRegulatedProperty = new isRegulatedPropertyClass();
       const document = {
-        isRegulated: false
+        isRegulated: false,
       };
       await isRegulatedProperty.restoreFromJson(document);
       expect(isRegulatedProperty.property).to.deep.equal(document.isRegulated);
     });
-    it('should not return JSON when null', async() => {
+    it('should not return JSON when null', async () => {
       const isRegulatedProperty = new isRegulatedPropertyClass();
       const document = {
-        isRegulated: null
+        isRegulated: null,
       };
       await isRegulatedProperty.restoreFromJson(document);
       expect(isRegulatedProperty.property).to.deep.equal(null);
     });
-    it('should not return JSON when undefined', async() => {
+    it('should not return JSON when undefined', async () => {
       const isRegulatedProperty = new isRegulatedPropertyClass();
       const document = {};
       await isRegulatedProperty.restoreFromJson(document);
@@ -39,7 +40,7 @@ describe('isRegulatedProperty Property', () => {
     it('should restore in correct format as if from database', () => {
       const isRegulatedProperty = new isRegulatedPropertyClass();
       const document = {
-        isRegulated: true
+        isRegulated: true,
       };
       const restored = isRegulatedProperty.restorePropertyFromSequelize(document);
       expect(restored).to.deep.equal(document.isRegulated);

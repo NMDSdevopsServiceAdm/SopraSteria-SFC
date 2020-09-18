@@ -1,5 +1,11 @@
 <div [formGroup]="formGroup" class="govuk-auto-suggest">
-  <input class="govuk-input" [formControlName]="formControlName" [attr.id]="formControlName" [attr.name]="formControlName" type="text" />
+  <input
+    class="govuk-input"
+    [formControlName]="formControlName"
+    [attr.id]="formControlName"
+    [attr.name]="formControlName"
+    type="text"
+  />
   <ul *ngIf="dataProvider().length > 0">
     <li *ngFor="let item of dataProvider()" (click)="onClick(item)">
       {{ item }}

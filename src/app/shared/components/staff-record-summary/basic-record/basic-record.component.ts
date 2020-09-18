@@ -8,5 +8,5 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 })
 export class BasicRecordComponent extends StaffRecordSummaryComponent {
   @Input() public wdfView = false;
-  @Input() public basicTitle: string = 'Mandatory details';
+  @Input() public basicTitle = 'Mandatory details';
 }

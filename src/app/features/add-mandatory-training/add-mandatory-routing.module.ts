@@ -9,7 +9,6 @@ const routes: Routes = [
     component: AddMandatoryTrainingComponent,
     data: { title: 'Add Mandatory Training' },
   },
-
 ];
 
 @NgModule({

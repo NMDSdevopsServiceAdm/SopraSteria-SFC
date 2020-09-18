@@ -32,7 +32,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private reportsService: ReportService,
     private userService: UserService,
-    private permissionsService: PermissionsService
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit() {
@@ -40,7 +40,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.isAdmin = [Roles.Admin].includes(this.userService.loggedInUser.role);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(workplace => {
+      this.establishmentService.establishment$.pipe(take(1)).subscribe((workplace) => {
         this.workplace = workplace;
         this.isParent = this.primaryWorkplace ? this.primaryWorkplace.isParent : workplace.isParent;
         this.workplaceUid = this.primaryWorkplace ? this.primaryWorkplace.uid : workplace.uid;
@@ -49,30 +49,37 @@ export class ReportsComponent implements OnInit, OnDestroy {
           this.isParent &&
           this.isLocalAuthority &&
           this.permissionsService.can(this.workplaceUid, 'canRunLocalAuthorityReport');
-      })
+      }),
     );
   }
 
   public downloadWdfSummaryReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(
-      this.reportsService.getWdfSummaryReport().subscribe(response => this.saveFile(response), () => {})
+      this.reportsService.getWdfSummaryReport().subscribe(
+        (response) => this.saveFile(response),
+        () => {},
+      ),
     );
   }
 
   public downloadLocalAuthorityReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(
-      this.reportsService
-        .getLocalAuthorityReport(this.workplace.uid)
-        .subscribe(response => this.saveFile(response), () => {})
+      this.reportsService.getLocalAuthorityReport(this.workplace.uid).subscribe(
+        (response) => this.saveFile(response),
+        () => {},
+      ),
     );
   }
 
   public downloadLocalAuthorityAdminReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(
-      this.reportsService.getLocalAuthorityAdminReport().subscribe(response => this.saveFile(response), () => {})
+      this.reportsService.getLocalAuthorityAdminReport().subscribe(
+        (response) => this.saveFile(response),
+        () => {},
+      ),
     );
   }
 

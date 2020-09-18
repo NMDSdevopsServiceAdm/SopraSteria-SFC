@@ -1,97 +1,97 @@
 {
-    "$id" : "establishment_api.schema.json",
-	"description" : "Describes the Establishment APIs; the requests and responses based on primary types",
-	"title" : "ASCWDS Establishment API Schema",
-	"definitions" : {
-        "loginRequest" : {
-            "description" : "the login API request (POST)",
-            "type" : "object",
-            "properties": {
-                "username" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/Username"
-                },
-                "password" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/Password"
-                }
-            },
-            "required": ["username", "password"]
+  "$id": "establishment_api.schema.json",
+  "description": "Describes the Establishment APIs; the requests and responses based on primary types",
+  "title": "ASCWDS Establishment API Schema",
+  "definitions": {
+    "loginRequest": {
+      "description": "the login API request (POST)",
+      "type": "object",
+      "properties": {
+        "username": {
+          "$ref": "establishment_types.schema.json#/definitions/Username"
         },
-        "loginResponse" : {
-            "description" : "the login API response (on success); TODO - enforce the child attributes of establishment and mainService",
-            "type" : "object",
-            "properties" : {
-                "fullname" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/Fullname"
-                },
-                "establishment" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/Establishment"
-                },
-                "mainService" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/Service"
-                },
-                "isFirstLogin" : {
-                    "description" : "true if this is the first time user has logged in",
-                    "type" : "boolean",
-                    "default" : false
-                }
-            },
-            "required" : ["fullname", "establishmentName", "mainServiceName", "isFirstLogin"]
-        },
-        "employerTypeGetResponse" : {
-            "description" : "Response to GET on Employer Type to an establishment (id assumed)",
-            "type" : "object",
-            "$ref" : "establishment_types.schema.json#/definitions/Establishment",
-            "required": ["id", "name", "employerType"]
-        },
-        "employerTypePostRequest" : {
-            "description" : "Request to assign an Employer Type to an establishment (id assumed)",
-            "type" : "object",
-            "properties" : {
-                "employerType" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/EmployerType"
-                }
-            }
-        },
-        "employerTypePostResponse" : {
-            "description" : "Response to assign an Employer Type to an establishment (id assumed)",
-            "type" : "object",
-            "$ref" : "establishment_types.schema.json#/definitions/Establishment",
-            "required": ["id", "name", "employerType"]
-        },
-        "servicesGetRequest" : {
-            "description": "intentionally empty"
-        },
-        "serviceGetResponse" : {
-            "description" : "the Get Services API response; can be empty. TODO: need to be able to mandate Service::name and Service::isCQC attributes on get",
-            "$ref" : "establishment_types.schema.json#/definitions/Establishment"
-        },
-        "servicePostRequest" : {
-            "description" : "The Post Services API request; cannot be empty because it is the list of services for assumed (known) Establishment",
-            "type" : "object",
-            "properties" : {
-                "services" : {
-                    "description" : "A list of the services to be set against this known (authorised) establishment (note, only Service::id is mandatory)",
-                    "type" : "array",
-                    "items" : {
-                        "$ref" : "establishment_types.schema.json#/definitions/Service"
-                    }
-                }
-            }
-        },
-        "servicePostResponse" : {
-            "description" : "the POST Services API response",
-            "$ref" : "establishment_types.schema.json#/definitions/Establishment"
-        },
-        "serviceCapacityGetRequest" : {
-            "description": "intentionally empty"
-        },
-        "serviceCapacityGetReponse" : {
-            "desctiption" : "The Get Service Capacity repsonse, being a list of service capacities by Service associated to the assumed (known) Establishment",
-            "type" : "array",
-            "items" : {
-                "description" : "The set of services (main and other) known to the Establishment. TODO: enforce isMainService, category and capacity attributes",
-                "$ref" : "establishment_types.schema.json#/definitions/Service"
-            }
+        "password": {
+          "$ref": "establishment_types.schema.json#/definitions/Password"
         }
+      },
+      "required": ["username", "password"]
+    },
+    "loginResponse": {
+      "description": "the login API response (on success); TODO - enforce the child attributes of establishment and mainService",
+      "type": "object",
+      "properties": {
+        "fullname": {
+          "$ref": "establishment_types.schema.json#/definitions/Fullname"
+        },
+        "establishment": {
+          "$ref": "establishment_types.schema.json#/definitions/Establishment"
+        },
+        "mainService": {
+          "$ref": "establishment_types.schema.json#/definitions/Service"
+        },
+        "isFirstLogin": {
+          "description": "true if this is the first time user has logged in",
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": ["fullname", "establishmentName", "mainServiceName", "isFirstLogin"]
+    },
+    "employerTypeGetResponse": {
+      "description": "Response to GET on Employer Type to an establishment (id assumed)",
+      "type": "object",
+      "$ref": "establishment_types.schema.json#/definitions/Establishment",
+      "required": ["id", "name", "employerType"]
+    },
+    "employerTypePostRequest": {
+      "description": "Request to assign an Employer Type to an establishment (id assumed)",
+      "type": "object",
+      "properties": {
+        "employerType": {
+          "$ref": "establishment_types.schema.json#/definitions/EmployerType"
+        }
+      }
+    },
+    "employerTypePostResponse": {
+      "description": "Response to assign an Employer Type to an establishment (id assumed)",
+      "type": "object",
+      "$ref": "establishment_types.schema.json#/definitions/Establishment",
+      "required": ["id", "name", "employerType"]
+    },
+    "servicesGetRequest": {
+      "description": "intentionally empty"
+    },
+    "serviceGetResponse": {
+      "description": "the Get Services API response; can be empty. TODO: need to be able to mandate Service::name and Service::isCQC attributes on get",
+      "$ref": "establishment_types.schema.json#/definitions/Establishment"
+    },
+    "servicePostRequest": {
+      "description": "The Post Services API request; cannot be empty because it is the list of services for assumed (known) Establishment",
+      "type": "object",
+      "properties": {
+        "services": {
+          "description": "A list of the services to be set against this known (authorised) establishment (note, only Service::id is mandatory)",
+          "type": "array",
+          "items": {
+            "$ref": "establishment_types.schema.json#/definitions/Service"
+          }
+        }
+      }
+    },
+    "servicePostResponse": {
+      "description": "the POST Services API response",
+      "$ref": "establishment_types.schema.json#/definitions/Establishment"
+    },
+    "serviceCapacityGetRequest": {
+      "description": "intentionally empty"
+    },
+    "serviceCapacityGetReponse": {
+      "desctiption": "The Get Service Capacity repsonse, being a list of service capacities by Service associated to the assumed (known) Establishment",
+      "type": "array",
+      "items": {
+        "description": "The set of services (main and other) known to the Establishment. TODO: enforce isMainService, category and capacity attributes",
+        "$ref": "establishment_types.schema.json#/definitions/Service"
+      }
     }
+  }
 }

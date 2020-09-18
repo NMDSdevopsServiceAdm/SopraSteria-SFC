@@ -6,30 +6,30 @@ provider:
   memorySize: 512
   stage: ${opt:stage, 'dev'}
   iamRoleStatements:
-    - Effect: "Allow"
+    - Effect: 'Allow'
       Action:
-        - "s3:PutObject"
-        - "s3:GetObject"
+        - 's3:PutObject'
+        - 's3:GetObject'
       Resource:
         Fn::Join:
-          - ""
+          - ''
           - - arn:aws:s3:::*
 
-    - Effect: "Allow"
+    - Effect: 'Allow'
       Action:
-        - "sqs:sendMessage"
-        - "sqs:recieveMessage"
-        - "sqs:deleteMessage"
+        - 'sqs:sendMessage'
+        - 'sqs:recieveMessage'
+        - 'sqs:deleteMessage'
       Resource:
         Fn::Join:
-          - ""
+          - ''
           - - ${self:custom.sqsQueueArn.${self:provider.stage}}
-    - Effect: "Allow"
+    - Effect: 'Allow'
       Action:
-        - "secretsmanager:getSecretValue"
+        - 'secretsmanager:getSecretValue'
       Resource:
         Fn::Join:
-          - ""
+          - ''
           - - arn:aws:secretsmanager:*:*:*
   region: eu-west-1
   environment:

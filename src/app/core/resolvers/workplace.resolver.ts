@@ -13,7 +13,7 @@ export class WorkplaceResolver implements Resolve<any> {
       catchError(() => {
         this.router.navigate(['/dashboard'], { fragment: 'workplace' });
         return of(null);
-      })
+      }),
     );
   }
 }

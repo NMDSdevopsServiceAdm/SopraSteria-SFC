@@ -23,7 +23,7 @@ export class NationalityComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private nationalityService: NationalityService
+    private nationalityService: NationalityService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -40,11 +40,11 @@ export class NationalityComponent extends QuestionComponent {
     this.subscriptions.add(
       this.nationalityService
         .getNationalities()
-        .subscribe(nationalities => (this.availableNationalities = nationalities))
+        .subscribe((nationalities) => (this.availableNationalities = nationalities)),
     );
 
     this.subscriptions.add(
-      this.form.get('nationalityKnown').valueChanges.subscribe(value => {
+      this.form.get('nationalityKnown').valueChanges.subscribe((value) => {
         this.form.get('nationalityName').clearValidators();
 
         if (value === 'Other') {
@@ -52,7 +52,7 @@ export class NationalityComponent extends QuestionComponent {
         }
 
         this.form.get('nationalityName').updateValueAndValidity();
-      })
+      }),
     );
 
     if (this.worker.nationality) {
@@ -116,7 +116,7 @@ export class NationalityComponent extends QuestionComponent {
       if (nationalityKnown.value === 'Other') {
         if (nationalityName.value) {
           const nationalityNameLowerCase = nationalityName.value.toLowerCase();
-          return this.availableNationalities.some(n => n.nationality.toLowerCase() === nationalityNameLowerCase)
+          return this.availableNationalities.some((n) => n.nationality.toLowerCase() === nationalityNameLowerCase)
             ? null
             : { validNationality: true };
         }
@@ -132,9 +132,9 @@ export class NationalityComponent extends QuestionComponent {
     if (this.availableNationalities && nationalityName && nationalityName.length) {
       const nationalityNameLowerCase = nationalityName.toLowerCase();
       return this.availableNationalities
-        .filter(n => n.nationality.toLowerCase().startsWith(nationalityNameLowerCase))
-        .filter(n => n.nationality.toLowerCase() !== nationalityNameLowerCase)
-        .map(n => n.nationality);
+        .filter((n) => n.nationality.toLowerCase().startsWith(nationalityNameLowerCase))
+        .filter((n) => n.nationality.toLowerCase() !== nationalityNameLowerCase)
+        .map((n) => n.nationality);
     }
 
     return [];

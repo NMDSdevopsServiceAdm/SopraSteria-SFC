@@ -25,22 +25,18 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 
 describe('TrainingLinkPanelComponent', () => {
   async function setup() {
-    const component =  await render(TrainingLinkPanelComponent, {
-      imports: [
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule
-      ],
+    const component = await render(TrainingLinkPanelComponent, {
+      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService
+          useClass: MockEstablishmentService,
         },
         {
           provide: WorkerService,
-          useClass: MockWorkerService
-        }
-      ]
+          useClass: MockWorkerService,
+        },
+      ],
     });
 
     return component;
@@ -57,4 +53,3 @@ describe('TrainingLinkPanelComponent', () => {
     component.getByText('Updated 1 January 2020');
   });
 });
-

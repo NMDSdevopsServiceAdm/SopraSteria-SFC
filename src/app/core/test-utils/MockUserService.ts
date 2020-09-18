@@ -21,18 +21,21 @@ export class MockUserService extends UserService {
 
   public get loggedInUser(): UserDetails {
     return {
-      email: '', fullname: '', jobTitle: '', phone: '', role: this.isAdmin ? 'Admin' as Roles : undefined
+      email: '',
+      fullname: '',
+      jobTitle: '',
+      phone: '',
+      role: this.isAdmin ? ('Admin' as Roles) : undefined,
     };
   }
 
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     return of({
-      primary: {
-      },
+      primary: {},
       subsidaries: {
         count: this.subsidiaries,
-        establishments: []
-      }
+        establishments: [],
+      },
     } as GetWorkplacesResponse);
   }
 }

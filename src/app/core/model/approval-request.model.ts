@@ -1,4 +1,3 @@
-
 export interface ApprovalRequest<T> {
   requestId: number;
   requestUUID: string;

@@ -2,29 +2,30 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 
 const models = require('../../../../../../models/index');
-const otherJobsPropertyClass = require('../../../../../../models/classes/worker/properties/otherJobsProperty').WorkerOtherJobsProperty;
+const otherJobsPropertyClass = require('../../../../../../models/classes/worker/properties/otherJobsProperty')
+  .WorkerOtherJobsProperty;
 
 const titles = ['', 'Activities worker or co-ordinator', 'Administrative / office staff not care-providing'];
 sinon.stub(models.job, 'findOne').callsFake((args) => {
   return {
     id: args.where.id,
     title: titles[args.where.id],
-    other: false
+    other: false,
   };
 });
 
 describe('otherJobsProperty Property', () => {
   describe('restoreFromJson()', () => {
-    it('should return JSON with jobs', async() => {
+    it('should return JSON with jobs', async () => {
       const otherJobsProperty = new otherJobsPropertyClass();
       const document = {
         otherJobs: {
           value: 'Yes',
           jobs: [
-            {jobId: 1, title: "Activities worker or co-ordinator"},
-            {jobId: 2, title: "Administrative / office staff not care-providing"}
-          ]
-        }
+            { jobId: 1, title: 'Activities worker or co-ordinator' },
+            { jobId: 2, title: 'Administrative / office staff not care-providing' },
+          ],
+        },
       };
       await otherJobsProperty.restoreFromJson(document);
       expect(otherJobsProperty.property.value).to.deep.equal(document.otherJobs.value);
@@ -34,23 +35,23 @@ describe('otherJobsProperty Property', () => {
       expect(otherJobsProperty.property.jobs[0].title).to.deep.equal(document.otherJobs.jobs[0].title);
       expect(otherJobsProperty.property.jobs[1].title).to.deep.equal(document.otherJobs.jobs[1].title);
     });
-    it('should return JSON without jobs', async() => {
+    it('should return JSON without jobs', async () => {
       const otherJobsProperty = new otherJobsPropertyClass();
       const document = {
         otherJobs: {
           value: 'No',
-          jobs: []
-        }
+          jobs: [],
+        },
       };
       await otherJobsProperty.restoreFromJson(document);
       expect(otherJobsProperty.property.value).to.deep.equal(document.otherJobs.value);
     });
-    it('should return null without a value', async() => {
+    it('should return null without a value', async () => {
       const otherJobsProperty = new otherJobsPropertyClass();
       const document = {
         otherJobs: {
-          value: ''
-        }
+          value: '',
+        },
       };
       await otherJobsProperty.restoreFromJson(document);
       expect(otherJobsProperty.property).to.deep.equal(null);
@@ -62,9 +63,9 @@ describe('otherJobsProperty Property', () => {
       const document = {
         OtherJobsValue: 'Yes',
         otherJobs: [
-          { workerJobs: { jobFk: 1 }, title: "Activities worker or co-ordinator"},
-          { workerJobs: { jobFk: 2 }, title: "Administrative / office staff not care-providing"}
-        ]
+          { workerJobs: { jobFk: 1 }, title: 'Activities worker or co-ordinator' },
+          { workerJobs: { jobFk: 2 }, title: 'Administrative / office staff not care-providing' },
+        ],
       };
       const restored = otherJobsProperty.restorePropertyFromSequelize(document);
       expect(restored.value).to.deep.equal(document.OtherJobsValue);
@@ -83,9 +84,9 @@ describe('otherJobsProperty Property', () => {
       const otherJobs = {
         value: 'Yes',
         jobs: [
-          {jobId: 1, title: "Activities worker or co-ordinator"},
-          {jobId: 2, title: "Administrative / office staff not care-providing"}
-        ]
+          { jobId: 1, title: 'Activities worker or co-ordinator' },
+          { jobId: 2, title: 'Administrative / office staff not care-providing' },
+        ],
       };
       otherJobsProperty.property = otherJobs;
       const saved = otherJobsProperty.savePropertyToSequelize();
@@ -99,7 +100,7 @@ describe('otherJobsProperty Property', () => {
     it('should save in correct format as if saving into database if value No', () => {
       const otherJobsProperty = new otherJobsPropertyClass();
       const otherJobs = {
-        value: 'No'
+        value: 'No',
       };
       otherJobsProperty.property = otherJobs;
       const saved = otherJobsProperty.savePropertyToSequelize();
@@ -112,10 +113,10 @@ describe('otherJobsProperty Property', () => {
     it('should return true if the values are equal', () => {
       const otherJobsProperty = new otherJobsPropertyClass();
       const currentValue = {
-        value: 'Yes'
+        value: 'Yes',
       };
       const newValue = {
-        value: 'Yes'
+        value: 'Yes',
       };
       const equal = otherJobsProperty.isEqual(currentValue, newValue);
       expect(equal).to.deep.equal(true);
@@ -125,16 +126,16 @@ describe('otherJobsProperty Property', () => {
       const currentValue = {
         value: 'Yes',
         jobs: [
-          {jobId: 1, title: "Activities worker or co-ordinator"},
-          {jobId: 2, title: "Administrative / office staff not care-providing"}
-        ]
+          { jobId: 1, title: 'Activities worker or co-ordinator' },
+          { jobId: 2, title: 'Administrative / office staff not care-providing' },
+        ],
       };
       const newValue = {
         value: 'Yes',
         jobs: [
-          {jobId: 1, title: "Activities worker or co-ordinator"},
-          {jobId: 2, title: "Administrative / office staff not care-providing"}
-        ]
+          { jobId: 1, title: 'Activities worker or co-ordinator' },
+          { jobId: 2, title: 'Administrative / office staff not care-providing' },
+        ],
       };
       const equal = otherJobsProperty.isEqual(currentValue, newValue);
       expect(equal).to.deep.equal(true);
@@ -142,10 +143,10 @@ describe('otherJobsProperty Property', () => {
     it('should return false if the values are not equal', () => {
       const otherJobsProperty = new otherJobsPropertyClass();
       const currentValue = {
-        value: 'Yes'
+        value: 'Yes',
       };
       const newValue = {
-        value: 'No'
+        value: 'No',
       };
       const equal = otherJobsProperty.isEqual(currentValue, newValue);
       expect(equal).to.deep.equal(false);
@@ -155,15 +156,13 @@ describe('otherJobsProperty Property', () => {
       const currentValue = {
         value: 'Yes',
         jobs: [
-          {jobId: 1, title: "Activities worker or co-ordinator"},
-          {jobId: 2, title: "Administrative / office staff not care-providing"}
-        ]
+          { jobId: 1, title: 'Activities worker or co-ordinator' },
+          { jobId: 2, title: 'Administrative / office staff not care-providing' },
+        ],
       };
       const newValue = {
         value: 'Yes',
-        jobs: [
-          {jobId: 1, title: "Activities worker or co-ordinator"}
-        ]
+        jobs: [{ jobId: 1, title: 'Activities worker or co-ordinator' }],
       };
       const equal = otherJobsProperty.isEqual(currentValue, newValue);
       expect(equal).to.deep.equal(false);
@@ -175,9 +174,9 @@ describe('otherJobsProperty Property', () => {
       const otherJobs = {
         value: 'Yes',
         jobs: [
-          {jobId: 1, title: "Activities worker or co-ordinator"},
-          {jobId: 2, title: "Administrative / office staff not care-providing"}
-        ]
+          { jobId: 1, title: 'Activities worker or co-ordinator' },
+          { jobId: 2, title: 'Administrative / office staff not care-providing' },
+        ],
       };
       otherJobsProperty.property = otherJobs;
       const json = otherJobsProperty.toJSON();
@@ -197,17 +196,17 @@ describe('otherJobsProperty Property', () => {
     });
     it('should return false if there no jobId or title', () => {
       const otherJobsProperty = new otherJobsPropertyClass();
-      const valid = otherJobsProperty._valid({test:'Activities worker or co-ordinator'});
+      const valid = otherJobsProperty._valid({ test: 'Activities worker or co-ordinator' });
       expect(valid).to.deep.equal(false);
     });
     it('should return false if the jobId is not a number', () => {
       const otherJobsProperty = new otherJobsPropertyClass();
-      const valid = otherJobsProperty._valid({jobId: '1', title:'Activities worker or co-ordinator'});
+      const valid = otherJobsProperty._valid({ jobId: '1', title: 'Activities worker or co-ordinator' });
       expect(valid).to.deep.equal(false);
     });
     it('should return true if the jobId and title correct', () => {
       const otherJobsProperty = new otherJobsPropertyClass();
-      const valid = otherJobsProperty._valid({jobId: 1, title:'Activities worker or co-ordinator'});
+      const valid = otherJobsProperty._valid({ jobId: 1, title: 'Activities worker or co-ordinator' });
       expect(valid).to.deep.equal(true);
     });
   });

@@ -13,7 +13,7 @@ router.use('/admin', [isAdmin, adminReport]);
 router.use('/establishment/:id/user', [isAuthorisedEstablishment, userReport]);
 
 router.route('/').get(async (req, res) => {
-    return res.status(501).send();
+  return res.status(501).send();
 });
 
 module.exports = router;

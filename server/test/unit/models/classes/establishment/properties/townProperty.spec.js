@@ -1,13 +1,14 @@
 const expect = require('chai').expect;
 
-const townPropertyClass = require('../../../../../../models/classes/establishment/properties/townProperty').TownProperty;
+const townPropertyClass = require('../../../../../../models/classes/establishment/properties/townProperty')
+  .TownProperty;
 
 describe('townProperty Property', () => {
   describe('restoreFromJson()', () => {
-    it('should return JSON', async() => {
+    it('should return JSON', async () => {
       const townProperty = new townPropertyClass();
       const document = {
-        town: 'Faketon'
+        town: 'Faketon',
       };
       await townProperty.restoreFromJson(document);
       expect(townProperty.property).to.deep.equal(document.town);
@@ -17,7 +18,7 @@ describe('townProperty Property', () => {
     it('should restore in correct format as if from database', () => {
       const townProperty = new townPropertyClass();
       const document = {
-        town: 'Faketon'
+        town: 'Faketon',
       };
       const restored = townProperty.restorePropertyFromSequelize(document);
       expect(restored).to.deep.equal(document.town);

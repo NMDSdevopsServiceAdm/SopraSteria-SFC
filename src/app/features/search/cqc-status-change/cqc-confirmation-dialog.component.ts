@@ -8,8 +8,8 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 })
 export class CqcConfirmationDialogComponent extends DialogComponent {
   constructor(
-    @Inject(DIALOG_DATA) public data: { headingText: string, paragraphText: string, buttonText: string },
-    public dialog: Dialog<CqcConfirmationDialogComponent>
+    @Inject(DIALOG_DATA) public data: { headingText: string; paragraphText: string; buttonText: string },
+    public dialog: Dialog<CqcConfirmationDialogComponent>,
   ) {
     super(data, dialog);
   }

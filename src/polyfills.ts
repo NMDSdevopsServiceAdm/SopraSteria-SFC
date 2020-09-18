@@ -30,7 +30,6 @@ import 'core-js/es6/weak-map';
 import 'details-element-polyfill/dist/details-element-polyfill';
 import 'zone.js/dist/zone';
 
-
 /***************************************************************************************************
  * BROWSER POLYFILLS
  */

@@ -4,19 +4,23 @@ let myLocalSecrets = null;
 
 const initialiseSecrets = async (region, wallet) => {
   const secrets = new AWS.SecretsManager({
-    region
+    region,
   });
-console.log('Initialising AWS Secret');
+  console.log('Initialising AWS Secret');
   try {
     console.log(wallet);
     if (!wallet) throw new Error('wallet must be defined');
-    const mySecretsValue = await secrets.getSecretValue({SecretId: wallet}).promise().then((mySecretsValue) => {
-      console.log('Got secrets from AWS');
-      return mySecretsValue;
-    }).catch(error => {
-      console.error(error);
-      throw error;
-    });
+    const mySecretsValue = await secrets
+      .getSecretValue({ SecretId: wallet })
+      .promise()
+      .then((mySecretsValue) => {
+        console.log('Got secrets from AWS');
+        return mySecretsValue;
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
 
     console.log('Checking Secret');
     console.log(mySecretsValue);
@@ -37,10 +41,9 @@ console.log('Initialising AWS Secret');
         DB_HOST: mySecrets.DB_HOST,
         DB_ROOT_CRT: mySecrets.DB_ROOT_CRT,
         DB_APP_USER_KEY: mySecrets.DB_APP_USER_KEY,
-        DB_APP_USER_CERT: mySecrets.DB_APP_USER_CERT
+        DB_APP_USER_CERT: mySecrets.DB_APP_USER_CERT,
       };
     }
-
   } catch (err) {
     console.error('Failed to load AWS secrets: ', err);
   }
@@ -60,7 +63,7 @@ const dbHost = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const dbName = () => {
   if (myLocalSecrets !== null) {
@@ -72,7 +75,7 @@ const dbName = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const dbPass = () => {
   if (myLocalSecrets !== null) {
@@ -84,7 +87,7 @@ const dbPass = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const dbUser = () => {
   if (myLocalSecrets !== null) {
@@ -96,7 +99,7 @@ const dbUser = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const dbAppUserKey = () => {
   if (myLocalSecrets !== null) {
@@ -132,7 +135,6 @@ const dbAppRootCertificate = () => {
   }
 };
 
-
 module.exports = {
   initialiseSecrets,
   dbHost,
@@ -141,5 +143,5 @@ module.exports = {
   dbUser,
   dbAppUserKey,
   dbAppUserCertificate,
-  dbAppRootCertificate
+  dbAppRootCertificate,
 };

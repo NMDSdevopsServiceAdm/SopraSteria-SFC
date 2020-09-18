@@ -14,10 +14,10 @@ exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, isParent, use
     userUid,
     sub: username,
     aud: config.get('jwt.aud.login'),
-    iss: config.get('jwt.iss')
+    iss: config.get('jwt.iss'),
   };
 
-  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});
+  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, { expiresIn: `${ttlMinutes}m` });
 };
 
 // this re-generates the login JWT
@@ -32,10 +32,10 @@ exports.regenerateLoginToken = (ttlMinutes, req) => {
     userUid: req.userUid,
     sub: req.username,
     aud: config.get('jwt.aud.login'),
-    iss: config.get('jwt.iss')
+    iss: config.get('jwt.iss'),
   };
 
-  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});
+  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, { expiresIn: `${ttlMinutes}m` });
 };
 
 // this generates the password reset JWT
@@ -48,10 +48,10 @@ exports.passwordResetJWT = (ttlMinutes, username, name, resetUUID) => {
     iss: config.get('jwt.iss'),
     name,
     resetUUID,
-  }
+  };
 
-  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});
-}
+  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, { expiresIn: `${ttlMinutes}m` });
+};
 
 // this generates the add User JWT
 exports.addUserJWT = (ttlMinutes, userUID, name, addUserUUID) => {
@@ -63,7 +63,7 @@ exports.addUserJWT = (ttlMinutes, userUID, name, addUserUUID) => {
     iss: config.get('jwt.iss'),
     name,
     addUserUUID,
-  }
+  };
 
-  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});
-}
+  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, { expiresIn: `${ttlMinutes}m` });
+};

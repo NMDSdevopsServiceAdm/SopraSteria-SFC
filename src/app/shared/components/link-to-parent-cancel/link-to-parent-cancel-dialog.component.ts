@@ -28,7 +28,7 @@ export class LinkToParentCancelDialogComponent extends DialogComponent implement
     private errorSummaryService: ErrorSummaryService,
     public dialog: Dialog<LinkToParentCancelDialogComponent>,
     private alertService: AlertService,
-    private router: Router
+    private router: Router,
   ) {
     super(data, dialog);
   }
@@ -75,7 +75,7 @@ export class LinkToParentCancelDialogComponent extends DialogComponent implement
       this.establishmentService
         .cancelRequestToParentForLink(this.workplace.uid, { approvalStatus: 'CANCELLED' })
         .subscribe(
-          data => {
+          (data) => {
             if (data) {
               const parentName = data[0].requstedParentName;
               this.router.navigate(['/dashboard']);
@@ -86,10 +86,10 @@ export class LinkToParentCancelDialogComponent extends DialogComponent implement
               this.closeDialogWindow(true);
             }
           },
-          error => {
+          (error) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          }
-        )
+          },
+        ),
     );
   }
 

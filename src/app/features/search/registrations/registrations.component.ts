@@ -8,9 +8,7 @@ import { RegistrationsService } from '@core/services/registrations.service';
 export class RegistrationsComponent implements OnInit {
   public registrations = [];
 
-  constructor(
-    public registrationsService: RegistrationsService,
-  ) {}
+  constructor(public registrationsService: RegistrationsService) {}
 
   ngOnInit() {
     this.getRegistrations();
@@ -18,10 +16,10 @@ export class RegistrationsComponent implements OnInit {
 
   public getRegistrations() {
     this.registrationsService.getRegistrations().subscribe(
-      data => {
+      (data) => {
         this.registrations = data;
       },
-      error => this.onError(error)
+      (error) => this.onError(error),
     );
   }
 

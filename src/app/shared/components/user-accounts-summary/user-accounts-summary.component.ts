@@ -23,11 +23,11 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermissions => {
+      this.permissionsService.getPermissions(this.workplace.uid).subscribe((hasPermissions) => {
         if (hasPermissions && hasPermissions.permissions) {
           this.permissionsService.setPermissions(this.workplace.uid, hasPermissions.permissions);
           this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
-          this.userService.getAllUsersForEstablishment(this.workplace.uid).subscribe(users => {
+          this.userService.getAllUsersForEstablishment(this.workplace.uid).subscribe((users) => {
             this.users = orderBy(
               users,
               ['status', 'isPrimary', 'role', (user: UserDetails) => user.fullname.toLowerCase()],
@@ -55,8 +55,8 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
 
   private userSlotsAvailable(users: Array<UserDetails>) {
     const readOnlyLimit = this.workplace.isParent ? 20 : 3;
-    const editUsers = users.filter(user => user.role === Roles.Edit);
-    const readOnlyUsers = users.filter(user => user.role === Roles.Read);
+    const editUsers = users.filter((user) => user.role === Roles.Edit);
+    const readOnlyUsers = users.filter((user) => user.role === Roles.Read);
     return editUsers.length < 3 || readOnlyUsers.length < readOnlyLimit;
   }
 }

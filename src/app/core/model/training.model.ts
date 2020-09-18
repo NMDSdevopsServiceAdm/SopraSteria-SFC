@@ -42,4 +42,3 @@ export interface TrainingRecord {
   trainingStatus?: number;
   missing?: boolean;
 }
-

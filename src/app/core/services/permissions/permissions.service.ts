@@ -63,11 +63,11 @@ export class PermissionsService {
     }
 
     return this.getPermissions(workplaceUid)
-      .pipe(tap(response => this.setPermissions(workplaceUid, response.permissions)))
+      .pipe(tap((response) => this.setPermissions(workplaceUid, response.permissions)))
       .pipe(
         catchError(() => {
           return of(null);
-        })
+        }),
       )
       .pipe(map(() => true));
   }
@@ -77,6 +77,6 @@ export class PermissionsService {
       return false;
     }
     const userPermissions: string[] = Object.keys(permissionsList);
-    return requiredPermissions.every(item => userPermissions.includes(item));
+    return requiredPermissions.every((item) => userPermissions.includes(item));
   }
 }

@@ -3,7 +3,5 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 
 @Injectable()
 export class MockSwitchWorkplaceService extends SwitchWorkplaceService {
-
-  public navigateToWorkplace(id, username, nmdsId): void {
-  }
+  public navigateToWorkplace(id, username, nmdsId): void {}
 }

@@ -8,7 +8,7 @@ const { establishmentBuilder } = require('../../../../../factories/models');
 describe('server/routes/admin/search/groups', () => {
   let searchEstablishments;
   beforeEach(() => {
-    searchEstablishments = sinon.spy(models.establishment, "searchEstablishments");
+    searchEstablishments = sinon.spy(models.establishment, 'searchEstablishments');
 
     sinon.stub(models.establishment, 'findAll').returns([
       {
@@ -40,14 +40,14 @@ describe('server/routes/admin/search/groups', () => {
             login: {
               username: 'thisperson9',
               status: 'Locked',
-            }
-          }
+            },
+          },
         ],
         updated: '2019-10-07T08:49:30.625Z',
       },
     ]);
   });
-  afterEach(()=> {
+  afterEach(() => {
     sinon.restore();
   });
 
@@ -58,7 +58,7 @@ describe('server/routes/admin/search/groups', () => {
       method: 'GET',
       url: `/api/admin/search`,
       body: {
-        employerType: 'Local Authority (generic/other)'
+        employerType: 'Local Authority (generic/other)',
       },
     });
 
@@ -74,39 +74,41 @@ describe('server/routes/admin/search/groups', () => {
     const response = res._getJSONData();
 
     expect(searchEstablishments.called).to.deep.equal(true);
-    expect(response).to.deep.equal([{
-      uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-      name: '123444',
-      nmdsId: 'J1002343',
-      locationId: '1-23456789',
-      address1: '44',
-      address2: 'Grace St',
-      town: 'Leeds',
-      county: 'West Yorkshire',
-      postcode: 'WF14 9TS',
-      employerType: {
-        value: 'Local Authority (generic/other)',
-        other: null
-      },
-      isParent: false,
-      isRegulated: false,
-      dataOwner: 'Workplace',
-      parent: {
-        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
-        nmdsId: 'W-1234567',
-      },
-      users: [
-        {
-          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-          username: 'thisperson9',
-          name: 'Test Name',
-          securityQuestion: 'Test Security Question',
-          securityAnswer: 'Test Security Question Answer',
-          isLocked: true,
+    expect(response).to.deep.equal([
+      {
+        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+        name: '123444',
+        nmdsId: 'J1002343',
+        locationId: '1-23456789',
+        address1: '44',
+        address2: 'Grace St',
+        town: 'Leeds',
+        county: 'West Yorkshire',
+        postcode: 'WF14 9TS',
+        employerType: {
+          value: 'Local Authority (generic/other)',
+          other: null,
         },
-      ],
-      lastUpdated: '2019-10-07T08:49:30.625Z'
-    }]);
+        isParent: false,
+        isRegulated: false,
+        dataOwner: 'Workplace',
+        parent: {
+          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
+          nmdsId: 'W-1234567',
+        },
+        users: [
+          {
+            uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+            username: 'thisperson9',
+            name: 'Test Name',
+            securityQuestion: 'Test Security Question',
+            securityAnswer: 'Test Security Question Answer',
+            isLocked: true,
+          },
+        ],
+        lastUpdated: '2019-10-07T08:49:30.625Z',
+      },
+    ]);
   });
   it('should search establishments by employer type and isParent', async () => {
     const establishment = establishmentBuilder();
@@ -116,7 +118,7 @@ describe('server/routes/admin/search/groups', () => {
       url: `/api/admin/search`,
       body: {
         employerType: 'Local Authority (generic/other)',
-        parent: true
+        parent: true,
       },
     });
 
@@ -133,38 +135,40 @@ describe('server/routes/admin/search/groups', () => {
 
     expect(searchEstablishments.called).to.deep.equal(true);
     expect(searchEstablishments.args[0][0].isParent).to.deep.equal(true);
-    expect(response).to.deep.equal([{
-      uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-      name: '123444',
-      nmdsId: 'J1002343',
-      locationId: '1-23456789',
-      address1: '44',
-      address2: 'Grace St',
-      town: 'Leeds',
-      county: 'West Yorkshire',
-      postcode: 'WF14 9TS',
-      employerType: {
-        value: 'Local Authority (generic/other)',
-        other: null
-      },
-      isParent: false,
-      isRegulated: false,
-      dataOwner: 'Workplace',
-      parent: {
-        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
-        nmdsId: 'W-1234567',
-      },
-      users: [
-        {
-          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-          username: 'thisperson9',
-          name: 'Test Name',
-          securityQuestion: 'Test Security Question',
-          securityAnswer: 'Test Security Question Answer',
-          isLocked: true,
+    expect(response).to.deep.equal([
+      {
+        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+        name: '123444',
+        nmdsId: 'J1002343',
+        locationId: '1-23456789',
+        address1: '44',
+        address2: 'Grace St',
+        town: 'Leeds',
+        county: 'West Yorkshire',
+        postcode: 'WF14 9TS',
+        employerType: {
+          value: 'Local Authority (generic/other)',
+          other: null,
         },
-      ],
-      lastUpdated: '2019-10-07T08:49:30.625Z'
-    }]);
+        isParent: false,
+        isRegulated: false,
+        dataOwner: 'Workplace',
+        parent: {
+          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
+          nmdsId: 'W-1234567',
+        },
+        users: [
+          {
+            uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+            username: 'thisperson9',
+            name: 'Test Name',
+            securityQuestion: 'Test Security Question',
+            securityAnswer: 'Test Security Question Answer',
+            isLocked: true,
+          },
+        ],
+        lastUpdated: '2019-10-07T08:49:30.625Z',
+      },
+    ]);
   });
 });

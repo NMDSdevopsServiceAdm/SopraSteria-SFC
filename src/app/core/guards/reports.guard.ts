@@ -11,7 +11,7 @@ export class ReportsGuard implements CanActivate {
   constructor(
     private permissionsService: PermissionsService,
     private establishmentService: EstablishmentService,
-    private router: Router
+    private router: Router,
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {

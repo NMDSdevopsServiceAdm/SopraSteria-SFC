@@ -11,12 +11,14 @@
         <td *ngIf="registration.username" class="govuk-table__cell">
           {{ registration.username }}
         </td>
-        <th *ngIf="registration.establishment.parentEstablishmentId" class="govuk-table__cell">Parent Establishment ID</th>
+        <th *ngIf="registration.establishment.parentEstablishmentId" class="govuk-table__cell">
+          Parent Establishment ID
+        </th>
         <td *ngIf="registration.establishment.parentEstablishmentId" class="govuk-table__cell">
           {{ registration.establishment.parentEstablishmentId }}
         </td>
       </tr>
-      <tr *ngIf="registration.name"class="govuk-table__row">
+      <tr *ngIf="registration.name" class="govuk-table__row">
         <th class="govuk-table__cell">Name</th>
         <td class="govuk-table__cell" colspan="3">
           {{ registration.name }}
@@ -66,19 +68,19 @@
 
           <span *ngIf="nmdsid.invalid && (nmdsid.dirty || nmdsid.touched)" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
-            <span *ngIf="nmdsid.errors | getFirstError:nmdsid.errors?.required">
+            <span *ngIf="nmdsid.errors | getFirstError: nmdsid.errors?.required">
               Enter a workplace ID.
             </span>
-            <span *ngIf="nmdsid.errors | getFirstError:nmdsid.errors?.minlength">
+            <span *ngIf="nmdsid.errors | getFirstError: nmdsid.errors?.minlength">
               Workplace ID must be between 1 and 8 characters.
             </span>
-            <span *ngIf="nmdsid.errors | getFirstError:nmdsid.errors?.maxlength">
+            <span *ngIf="nmdsid.errors | getFirstError: nmdsid.errors?.maxlength">
               Workplace ID must be between 1 and 8 characters.
             </span>
-            <span *ngIf="nmdsid.errors | getFirstError:nmdsid.errors?.pattern">
+            <span *ngIf="nmdsid.errors | getFirstError: nmdsid.errors?.pattern">
               Workplace ID must start with an uppercase letter.
             </span>
-            <span *ngIf="nmdsid.errors | getFirstError:nmdsid.errors?.serverError">
+            <span *ngIf="nmdsid.errors | getFirstError: nmdsid.errors?.serverError">
               {{ nmdsid.errors?.serverError }}
             </span>
           </span>
@@ -119,7 +121,12 @@
             >
               Reject
             </button>
-            <button class="govuk-button" type="submit" name="approve" (click)="approveRegistration(registration.username, true)">
+            <button
+              class="govuk-button"
+              type="submit"
+              name="approve"
+              (click)="approveRegistration(registration.username, true)"
+            >
               Approve
             </button>
           </div>
@@ -131,7 +138,11 @@
             >
               Reject
             </button>
-            <button class="govuk-button" type="submit" (click)="approveRegistration(registration.establishment.id, true)">
+            <button
+              class="govuk-button"
+              type="submit"
+              (click)="approveRegistration(registration.establishment.id, true)"
+            >
               Approve
             </button>
           </div>

@@ -13,7 +13,7 @@ export class HasPermissionsGuard implements CanActivate {
   constructor(
     private permissionsService: PermissionsService,
     private establishmentService: EstablishmentService,
-    private userService: UserService
+    private userService: UserService,
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {

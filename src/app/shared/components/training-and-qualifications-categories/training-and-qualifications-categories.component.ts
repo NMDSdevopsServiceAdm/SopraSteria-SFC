@@ -27,7 +27,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     private permissionsService: PermissionsService,
     protected trainingStatusService: TrainingStatusService,
     private workerService: WorkerService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -52,13 +52,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
       sortValue = this.trainingStatusService.EXPIRING;
     }
     if (dropdownValue === 'category') {
-      this.trainingCategories = orderBy(
-        this.trainingCategories,
-        [
-          (tc) => tc.category.toLowerCase(),
-        ],
-        ['asc'],
-      );
+      this.trainingCategories = orderBy(this.trainingCategories, [(tc) => tc.category.toLowerCase()], ['asc']);
     } else {
       this.trainingCategories = orderBy(
         this.trainingCategories,
@@ -96,7 +90,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     );
   }
 
-  public trainingStatus = (training) => this.trainingStatusService.trainingStatusForRecord(training)
+  public trainingStatus = (training) => this.trainingStatusService.trainingStatusForRecord(training);
 
   public updateTrainingRecord(event, training) {
     event.preventDefault();
@@ -108,7 +102,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
       'training-and-qualifications-record',
       training.worker.uid,
       'training',
-      training.uid
+      training.uid,
     ]);
   }
 }

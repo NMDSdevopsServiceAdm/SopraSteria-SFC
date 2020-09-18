@@ -10,9 +10,9 @@ describe('Establishment Class', () => {
       const share = {
         share: {
           enabled: false,
-          with: ['Local Authorities']
+          with: ['Local Authorities'],
         },
-        localAuthorities: [{ id: 860, custodianCode: 211, name: 'Kirklees', isPrimaryAuthority: true }]
+        localAuthorities: [{ id: 860, custodianCode: 211, name: 'Kirklees', isPrimaryAuthority: true }],
       };
       const shareEst = await establishment.load(share);
       expect(Array.isArray(share.localAuthorities)).to.deep.equal(true);
@@ -23,9 +23,9 @@ describe('Establishment Class', () => {
       const share = {
         share: {
           enabled: true,
-          with: ['Local Authority']
+          with: ['Local Authority'],
         },
-        localAuthorities: [{ id: 860, custodianCode: 211, name: 'Kirklees', isPrimaryAuthority: true }]
+        localAuthorities: [{ id: 860, custodianCode: 211, name: 'Kirklees', isPrimaryAuthority: true }],
       };
       const shareEst = await establishment.load(share);
       expect(Array.isArray(share.localAuthorities)).to.deep.equal(true);

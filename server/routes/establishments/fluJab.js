@@ -12,7 +12,7 @@ const workplaceFluJabs = async function (req, res) {
   } catch (err) {
     return res.status(500).send();
   }
-}
+};
 
 router.route('/').get(workplaceFluJabs);
 

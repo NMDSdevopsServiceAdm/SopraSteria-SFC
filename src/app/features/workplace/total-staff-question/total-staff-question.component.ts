@@ -57,9 +57,9 @@ export class TotalStaffQuestionComponent extends Question implements OnInit, OnD
   protected updateEstablishment(props): void {
     this.subscriptions.add(
       this.establishmentService.postStaff(this.establishment.uid, props.totalStaff).subscribe(
-        data => this._onSuccess(data),
-        error => this.onError(error)
-      )
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
   }
 }

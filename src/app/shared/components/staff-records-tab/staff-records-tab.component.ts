@@ -25,36 +25,36 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
   constructor(
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private workerService: WorkerService
-  ) { }
+    private workerService: WorkerService,
+  ) {}
 
   ngOnInit() {
     this.subscriptions.add(
       this.workerService.getAllWorkers(this.workplace.uid).subscribe(
-        workers => {
+        (workers) => {
           this.workers = workers;
-          this.incomplete = this.workers.filter(worker => !worker.completed).length;
+          this.incomplete = this.workers.filter((worker) => !worker.completed).length;
         },
-        error => {
+        (error) => {
           console.error(error.error);
-        }
-      )
+        },
+      ),
     );
 
     this.subscriptions.add(
-      this.establishmentService.getStaff(this.workplace.uid).subscribe(totalStaff => {
+      this.establishmentService.getStaff(this.workplace.uid).subscribe((totalStaff) => {
         this.totalStaff = totalStaff || 0;
-      })
+      }),
     );
 
     this.createStaffResponse = this.workerService.getCreateStaffResponse();
     this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermissions => {
+      this.permissionsService.getPermissions(this.workplace.uid).subscribe((hasPermissions) => {
         if (hasPermissions && hasPermissions.permissions) {
           this.permissionsService.setPermissions(this.workplace.uid, hasPermissions.permissions);
           this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
         }
-      })
+      }),
     );
   }
 
@@ -63,7 +63,10 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
   }
 
   public setReturnFluJab(): void {
-    const returnURL: URLStructure = { url: this.workplace.parentUid ? ['/workplace', this.workplace.uid] : ['/dashboard'], fragment: 'staff-records', };
+    const returnURL: URLStructure = {
+      url: this.workplace.parentUid ? ['/workplace', this.workplace.uid] : ['/dashboard'],
+      fragment: 'staff-records',
+    };
     this.establishmentService.setReturnTo(returnURL);
   }
 }

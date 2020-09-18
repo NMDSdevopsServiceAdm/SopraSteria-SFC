@@ -21,27 +21,16 @@ const getLocations = async (req, res, matching) => {
 
   // If the user is an Admin and the Location was not found, we want them to be able to use the location ID that they searched for.
   if (locationData.length === 0 && req.role === 'Admin') {
-    const establishment = await models.establishment.findByPk(
-      req.establishment.id,
-      {
-        attributes: [
-          'NameValue',
-          'address1',
-          'address2',
-          'town',
-          'county',
-          'postcode',
-          'isRegulated',
-        ],
-        include: [
-          {
-            model: models.services,
-            as: 'mainService',
-            attributes: ['name'],
-          },
-        ],
-      }
-    );
+    const establishment = await models.establishment.findByPk(req.establishment.id, {
+      attributes: ['NameValue', 'address1', 'address2', 'town', 'county', 'postcode', 'isRegulated'],
+      include: [
+        {
+          model: models.services,
+          as: 'mainService',
+          attributes: ['name'],
+        },
+      ],
+    });
 
     const data = {
       locationid: req.params.locationId,
@@ -52,7 +41,7 @@ const getLocations = async (req, res, matching) => {
       county: establishment.county,
       postalcode: establishment.postcode,
       isRegulated: establishment.isRegulated,
-      ...(establishment.mainService) && { mainservice: establishment.mainService.name }
+      ...(establishment.mainService && { mainservice: establishment.mainService.name }),
     };
 
     locationData.push(createLocationDetailsObject(data));
@@ -84,7 +73,7 @@ const getLocations = async (req, res, matching) => {
       locationdata: locationData,
     });
   }
-}
+};
 
 const getLocationsByPostcode = async (req, res, matching) => {
   let locationData = [];
@@ -117,7 +106,7 @@ const getLocationsByPostcode = async (req, res, matching) => {
       });
       if (currentEstablishments.length > 0) {
         locationData.map((location, index) => {
-          currentEstablishments.map(establishment => {
+          currentEstablishments.map((establishment) => {
             if (location.locationId === establishment.locationId) {
               locationData.splice(index, 1);
             }
@@ -147,30 +136,26 @@ const getLocationsByPostcode = async (req, res, matching) => {
       locationdata: locationData,
     });
   }
-}
+};
 // GET Location API by locationId
-router
-  .route('/lid/:locationId')
-  .get(async function(req, res) {
-    await getLocations(req, res, false);
-  });
+router.route('/lid/:locationId').get(async function (req, res) {
+  await getLocations(req, res, false);
+});
 
 router.get('/lid/matching/:locationId', Authorization.isAuthorised);
 // GET Location API by locationId
-router
-  .route('/lid/matching/:locationId')
-  .get(async function(req, res) {
-    await getLocations(req, res, true);
-  });
+router.route('/lid/matching/:locationId').get(async function (req, res) {
+  await getLocations(req, res, true);
+});
 
 // // GET Location API by postalCode
-router.route('/pc/:postcode').get(async function(req, res) {
+router.route('/pc/:postcode').get(async function (req, res) {
   await getLocationsByPostcode(req, res, false);
 });
 
 router.get('/pc/matching/:postcode', Authorization.isAuthorised);
 // // GET Location API by postalCode
-router.route('/pc/matching/:postcode').get(async function(req, res) {
+router.route('/pc/matching/:postcode').get(async function (req, res) {
   await getLocationsByPostcode(req, res, true);
 });
 
@@ -185,7 +170,7 @@ function createLocationDetailsObject(data) {
     county: data.county,
     postalCode: data.postalcode,
     mainService: data.mainservice,
-    isRegulated: data.isRegulated
+    isRegulated: data.isRegulated,
   };
 }
 

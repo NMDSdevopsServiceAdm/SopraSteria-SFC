@@ -18,13 +18,13 @@ export class NotificationListComponent implements OnInit {
   constructor(
     private establishmentService: EstablishmentService,
     private notificationService: NotificationsService,
-    private breadcrumbService: BreadcrumbService
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.notifications = orderBy(this.notificationService.notifications, notification => notification.created, [
+    this.notifications = orderBy(this.notificationService.notifications, (notification) => notification.created, [
       'desc',
     ]);
   }

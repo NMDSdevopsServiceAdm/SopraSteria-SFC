@@ -17,8 +17,11 @@ router.route('/').post(async (req, res) => {
 
     const thisEstablishment = new Establishment.Establishment(req.username);
     if (await thisEstablishment.restore(req.establishmentId, false)) {
-      let establishmentResponse = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(thisEstablishment.id, params);
-      if(establishmentResponse){
+      let establishmentResponse = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(
+        thisEstablishment.id,
+        params,
+      );
+      if (establishmentResponse) {
         return res.status(201).send(establishmentResponse);
       }
     } else {

@@ -40,14 +40,14 @@ export class AddEditTrainingComponent implements OnInit {
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private trainingService: TrainingService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
   ) {}
 
   ngOnInit() {
     this.worker = this.workerService.worker;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
-    this.workerService.getRoute$.subscribe(route => {
+    this.workerService.getRoute$.subscribe((route) => {
       if (route) {
         this.previousUrl = route;
       } else {
@@ -56,16 +56,13 @@ export class AddEditTrainingComponent implements OnInit {
     });
     const parsed = this.router.parseUrl(this.previousUrl);
     this.backService.setBackLink({
-      url: [parsed.root.children.primary.segments.map(seg => seg.path).join('/')],
+      url: [parsed.root.children.primary.segments.map((seg) => seg.path).join('/')],
       fragment: parsed.fragment,
-      queryParams: parsed.queryParams
+      queryParams: parsed.queryParams,
     });
 
     this.form = this.formBuilder.group({
-      title: [
-        null,
-        [Validators.maxLength(this.titleMaxLength)],
-      ],
+      title: [null, [Validators.maxLength(this.titleMaxLength)]],
       category: [null, Validators.required],
       accredited: null,
       completed: this.formBuilder.group({
@@ -90,21 +87,21 @@ export class AddEditTrainingComponent implements OnInit {
 
     this.subscriptions.add(
       this.trainingService.getCategories().subscribe(
-        categories => {
+        (categories) => {
           if (categories) {
             this.categories = categories;
           }
         },
-        error => {
+        (error) => {
           console.error(error.error);
-        }
-      )
+        },
+      ),
     );
 
     if (this.trainingRecordId) {
       this.subscriptions.add(
         this.workerService.getTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId).subscribe(
-          trainingRecord => {
+          (trainingRecord) => {
             if (trainingRecord) {
               this.trainingRecord = trainingRecord;
 
@@ -137,10 +134,10 @@ export class AddEditTrainingComponent implements OnInit {
               });
             }
           },
-          error => {
+          (error) => {
             console.error(error.error);
-          }
-        )
+          },
+        ),
       );
     }
 
@@ -262,15 +259,15 @@ export class AddEditTrainingComponent implements OnInit {
           .updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
           .subscribe(
             () => this.onSuccess(),
-            error => this.onError(error)
-          )
+            (error) => this.onError(error),
+          ),
       );
     } else {
       this.subscriptions.add(
         this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record).subscribe(
           () => this.onSuccess(),
-          error => this.onError(error)
-        )
+          (error) => this.onError(error),
+        ),
       );
     }
   }
@@ -282,15 +279,13 @@ export class AddEditTrainingComponent implements OnInit {
     } else {
       url = `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
     }
-    this.router
-      .navigateByUrl(url)
-      .then(() => {
-        if (this.trainingRecordId) {
-          this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
-        } else {
-          this.workerService.alert = { type: 'success', message: 'Training has been added.' };
-        }
-      });
+    this.router.navigateByUrl(url).then(() => {
+      if (this.trainingRecordId) {
+        this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
+      } else {
+        this.workerService.alert = { type: 'success', message: 'Training has been added.' };
+      }
+    });
   }
 
   private onError(error) {

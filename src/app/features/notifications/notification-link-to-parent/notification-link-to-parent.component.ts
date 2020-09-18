@@ -39,7 +39,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private alertService: AlertService,
     private notificationsService: NotificationsService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
   ) {}
 
   ngOnInit() {
@@ -47,7 +47,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.notificationUid = this.route.snapshot.params.notificationuid;
     this.subscriptions.add(
-      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
+      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe((details) => {
         this.notification = details;
         this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
         this.notificationRequestedFrom = details.typeContent.subEstablishmentName;
@@ -56,7 +56,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
         this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
         this.displayActionButtons =
           details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
-      })
+      }),
     );
     this.setNotificationViewed(this.notificationUid);
   }
@@ -84,12 +84,12 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
         this.notificationsService
           .setNotificationRequestLinkToParent(this.establishmentService.establishmentId, requestParameter)
           .subscribe(
-            request => {
+            (request) => {
               if (request) {
-                this.establishmentService.getEstablishment(this.workplace.uid).subscribe(workplace => {
+                this.establishmentService.getEstablishment(this.workplace.uid).subscribe((workplace) => {
                   if (workplace) {
                     //get permission and reset
-                    this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermission => {
+                    this.permissionsService.getPermissions(this.workplace.uid).subscribe((hasPermission) => {
                       if (hasPermission) {
                         this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
                         this.establishmentService.setState(workplace);
@@ -104,15 +104,15 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
                   }
                 });
                 //get all notification and update with latest
-                this.notificationsService.getAllNotifications().subscribe(notify => {
+                this.notificationsService.getAllNotifications().subscribe((notify) => {
                   this.notificationsService.notifications$.next(notify);
                 });
               }
             },
-            error => {
+            (error) => {
               console.error(error.error.message);
-            }
-          )
+            },
+          ),
       );
     }
   }
@@ -124,7 +124,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
   private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
-        resp => {
+        (resp) => {
           if (resp) {
             this.notificationsService.notifications.forEach((notification, i) => {
               if (notification.notificationUid === resp.notificationUid) {
@@ -134,8 +134,8 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
             this.notificationsService.notifications$.next(this.notificationsService.notifications);
           }
         },
-        error => console.log('Could not update notification.')
-      )
+        (error) => console.log('Could not update notification.'),
+      ),
     );
   }
   /**
@@ -152,12 +152,12 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       }
       const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
       dialog.afterClosed.subscribe(
-        requestRejected => {
+        (requestRejected) => {
           if (requestRejected) {
             this.rejectLinkToParentRequest(requestRejected);
           }
         },
-        error => console.log('Could not update notification.')
+        (error) => console.log('Could not update notification.'),
       );
     }
   }
@@ -180,10 +180,10 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       this.notificationsService
         .setNotificationRequestLinkToParent(this.establishmentService.establishmentId, requestParameter)
         .subscribe(
-          request => {
+          (request) => {
             if (request) {
               //get all notification and update with latest status
-              this.notificationsService.getAllNotifications().subscribe(notify => {
+              this.notificationsService.getAllNotifications().subscribe((notify) => {
                 this.notificationsService.notifications$.next(notify);
               });
               this.router.navigate(['/dashboard']);
@@ -193,10 +193,10 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
               });
             }
           },
-          error => {
+          (error) => {
             console.log('Could not update notification.');
-          }
-        )
+          },
+        ),
     );
   }
 

@@ -1,90 +1,91 @@
 {
-    "establishments" : [
-        {
-            "id" : 18,
-            "role" : "read",
-            "status" : "active",
-            "workers" : {
-                "role" : "none"
-            }
-            ,
-            "when": "2018-03-12T08:32:15.432Z"
-        },
-        {
-            "id" : 18,
-            "role" : "edit",
-            "status" : "applied",
-            "workers" : {
-                "role" : "read"
-            },
-            "when": "2017-11-12T23:02:32.076Z"
-        },
-        {
-            "id" : 21,
-            "role" : "read",
-            "status" : "applied",
-            "workers" : {
-                "role" : "read"
-            },
-            "when": "2019-02-28T15:03:07.973Z"
-        },
-        {
-            "id" : 32,
-            "role" : "edit",
-            "status" : "active",
-            "workers" : {
-                "role" : "edit"
-            },
-            "when": "2018-03-12T08:32:15.432Z"
-        },
-        {
-            "id" : 16,
-            "role" : "edit",
-            "status" : "active",
-            "workers" : {
-                "role" : "read"
-            },
-            "when": "2018-03-12T08:32:15.432Z"
-        },
-        {
-            "id" : 9,
-            "role" : "edit",
-            "status" : "rejected",
-            "workers" : {
-                "role" : "none"
-            },
-            "when": "2017-08-02T02:08:17.217Z",
-        },
-        {
-            "id" : 6,
-            "role" : "owner",
-            "status" : "active",
-            "workers" : {
-                "role" : "owner"
-            },
-            "when": "2016-03-03T03:03:03.303Z"
-        },
-        {
-            "id" : 8,
-            "role" : "owner",
-            "status" : "revoked",
-            "workers" : {
-                "role" : "owner"
-            },
-            "when": "2016-03-03T03:03:03.303Z"
-        },
-        {
-            "id" : 32,
-            "role" : "bulkUpload",          // is bulk upload a role or permission?
-            "status" : "active`",
-            "when": "2018-12-29T08:08:08.808Z"
-        },
-        {
-            "id" : 16, "role" : "edit", "status" : "presented",
-            "workers" : {
-                "role" : "edit"
-            },
-            "when": "2010-01-10T10:10:10.101Z"
-        }
-    ]
+  "establishments": [
+    {
+      "id": 18,
+      "role": "read",
+      "status": "active",
+      "workers": {
+        "role": "none"
+      },
+      "when": "2018-03-12T08:32:15.432Z"
+    },
+    {
+      "id": 18,
+      "role": "edit",
+      "status": "applied",
+      "workers": {
+        "role": "read"
+      },
+      "when": "2017-11-12T23:02:32.076Z"
+    },
+    {
+      "id": 21,
+      "role": "read",
+      "status": "applied",
+      "workers": {
+        "role": "read"
+      },
+      "when": "2019-02-28T15:03:07.973Z"
+    },
+    {
+      "id": 32,
+      "role": "edit",
+      "status": "active",
+      "workers": {
+        "role": "edit"
+      },
+      "when": "2018-03-12T08:32:15.432Z"
+    },
+    {
+      "id": 16,
+      "role": "edit",
+      "status": "active",
+      "workers": {
+        "role": "read"
+      },
+      "when": "2018-03-12T08:32:15.432Z"
+    },
+    {
+      "id": 9,
+      "role": "edit",
+      "status": "rejected",
+      "workers": {
+        "role": "none"
+      },
+      "when": "2017-08-02T02:08:17.217Z"
+    },
+    {
+      "id": 6,
+      "role": "owner",
+      "status": "active",
+      "workers": {
+        "role": "owner"
+      },
+      "when": "2016-03-03T03:03:03.303Z"
+    },
+    {
+      "id": 8,
+      "role": "owner",
+      "status": "revoked",
+      "workers": {
+        "role": "owner"
+      },
+      "when": "2016-03-03T03:03:03.303Z"
+    },
+    {
+      "id": 32,
+      "role": "bulkUpload", // is bulk upload a role or permission?
+      "status": "active`",
+      "when": "2018-12-29T08:08:08.808Z"
+    },
+    {
+      "id": 16,
+      "role": "edit",
+      "status": "presented",
+      "workers": {
+        "role": "edit"
+      },
+      "when": "2010-01-10T10:10:10.101Z"
+    }
+  ]
 }

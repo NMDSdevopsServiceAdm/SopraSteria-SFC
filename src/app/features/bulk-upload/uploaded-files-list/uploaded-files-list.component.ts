@@ -39,7 +39,6 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     other: 'There were # errors in the file',
   };
 
-
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
@@ -61,7 +60,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
         if (uploadedFiles) {
           this.uploadedFiles = uploadedFiles;
         }
-      })
+      }),
     );
   }
 
@@ -71,7 +70,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
         if (preValidateFiles) {
           this.preValidateFiles();
         }
-      })
+      }),
     );
   }
 
@@ -87,13 +86,13 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
             this.checkForInvalidFiles(response);
             this.uploadedFiles = response;
           },
-          (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message)
-        )
+          (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
+        ),
     );
   }
 
   private checkForMandatoryFiles(response: ValidatedFile[]): void {
-    const files: string[] = response.map(data => this.bulkUploadFileTypeEnum[data.fileType]);
+    const files: string[] = response.map((data) => this.bulkUploadFileTypeEnum[data.fileType]);
 
     if (
       !files.includes(this.bulkUploadFileTypeEnum.Establishment) ||
@@ -108,7 +107,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   }
 
   private checkForInvalidFiles(response: ValidatedFile[]) {
-    response.forEach(file => {
+    response.forEach((file) => {
       if (!file.fileType || file.fileType === null) {
         file.errors = 1;
         this.validationErrors.push({
@@ -122,7 +121,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   }
 
   public getErrorMessage(file: ValidatedFile) {
-    const errorDefinition = this.validationErrors.find(validatedFile => validatedFile.name === this.getFileId(file));
+    const errorDefinition = this.validationErrors.find((validatedFile) => validatedFile.name === this.getFileId(file));
     return errorDefinition ? errorDefinition.message : this.i18nPluralPipe.transform(file.errors, this.pluralMap);
   }
 
@@ -144,14 +143,14 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
             return;
           }
           this.onValidateError(response);
-        }
-      )
+        },
+      ),
     );
   }
 
   public beginCompleteUpload(): void {
-    const establishmentsFile = this.uploadedFiles.find(file => file.fileType === 'Establishment');
-    const workersFile = this.uploadedFiles.find(file => file.fileType === 'Worker');
+    const establishmentsFile = this.uploadedFiles.find((file) => file.fileType === 'Establishment');
+    const workersFile = this.uploadedFiles.find((file) => file.fileType === 'Worker');
 
     if ((establishmentsFile && establishmentsFile.deleted > 0) || (workersFile && workersFile.deleted > 0)) {
       const dialog = this.dialogService.open(UploadWarningDialogComponent, {
@@ -159,7 +158,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
         workersFile,
       });
 
-      dialog.afterClosed.subscribe(continueUpload => {
+      dialog.afterClosed.subscribe((continueUpload) => {
         if (continueUpload) {
           this.completeUpload();
         }
@@ -175,20 +174,18 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(
         (response: any) => {
-          const hasProp = (obj, prop) =>
-            Object.prototype.hasOwnProperty.bind(obj)(prop);
+          const hasProp = (obj, prop) => Object.prototype.hasOwnProperty.bind(obj)(prop);
 
           if (hasProp(response, 'message')) {
             this.bulkUploadService.serverError$.next(response.message);
-          }
-          else {
+          } else {
             this.router.navigate(['/dashboard']);
             this.alertService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
           }
         },
-        response => {
+        (response) => {
           this.onValidateError(response);
-        }
+        },
       );
   }
 
@@ -208,7 +205,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
     this.bulkUploadService
       .getUploadedFileSignedURL(this.establishmentService.primaryWorkplace.uid, key)
-      .subscribe(signedURL => {
+      .subscribe((signedURL) => {
         window.open(signedURL);
       });
   }
@@ -270,14 +267,18 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
    */
   private onValidateError(response: HttpErrorResponse): void {
     const error: ValidatedFilesResponse = response.error;
-     //handle 503 with custom message to prevent service unavailable redirection
+    //handle 503 with custom message to prevent service unavailable redirection
     if (response.status === 503) {
-      const customeMessage = [{
-        name: response.status,
-        message: `Bulk upload is unable to continue processing your data due to an issue with your files.
+      const customeMessage = [
+        {
+          name: response.status,
+          message: `Bulk upload is unable to continue processing your data due to an issue with your files.
           Please check and try again or contact Support on 0113 2410969.`,
-      }];
-      this.bulkUploadService.serverError$.next(this.errorSummaryService.getServerErrorMessage(response.status, customeMessage));
+        },
+      ];
+      this.bulkUploadService.serverError$.next(
+        this.errorSummaryService.getServerErrorMessage(response.status, customeMessage),
+      );
     } else {
       console.log(error);
     }

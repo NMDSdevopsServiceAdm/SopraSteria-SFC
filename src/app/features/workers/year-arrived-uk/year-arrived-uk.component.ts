@@ -22,7 +22,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -40,23 +40,21 @@ export class YearArrivedUkComponent extends QuestionComponent {
     }
 
     this.subscriptions.add(
-      this.form.get('yearKnown').valueChanges.subscribe(value => {
+      this.form.get('yearKnown').valueChanges.subscribe((value) => {
         this.form.get('year').clearValidators();
 
         if (value === 'Yes') {
-          this.form.get('year').setValidators([
-            Validators.required,
-            Validators.min(
-              moment()
-                .subtract(100, 'years')
-                .year()
-            ),
-            Validators.max(moment().year()),
-          ]);
+          this.form
+            .get('year')
+            .setValidators([
+              Validators.required,
+              Validators.min(moment().subtract(100, 'years').year()),
+              Validators.max(moment().year()),
+            ]);
         }
 
         this.form.get('year').updateValueAndValidity();
-      })
+      }),
     );
 
     if (this.worker.yearArrived) {
@@ -81,11 +79,11 @@ export class YearArrivedUkComponent extends QuestionComponent {
           },
           {
             name: 'min',
-            message: `Year can't be earlier than 100 years ago.`,
+            message: 'Year can\'t be earlier than 100 years ago.',
           },
           {
             name: 'max',
-            message: `Year can't be in future.`,
+            message: 'Year can\'t be in future.',
           },
         ],
       },

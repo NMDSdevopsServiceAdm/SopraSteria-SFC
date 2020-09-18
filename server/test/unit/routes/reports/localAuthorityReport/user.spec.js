@@ -10,27 +10,25 @@ const la = {
   theAuthority: {
     id: 123,
     name: 'Kirklees',
-    nmdsIdLetter: 'J'
-  }
+    nmdsIdLetter: 'J',
+  },
 };
 const la2 = {
   CssrID: 123,
-  CssR: 'Leeds'
+  CssR: 'Leeds',
 };
 
 describe('/server/routes/reports/localAuthorityReport/user', () => {
   describe('identifyLocalAuthority()', () => {
     beforeEach(() => {
       sinon.stub(models.pcodedata, 'findOne').callsFake(async (args) => {
-        return args.where.postcode === 'HD1 1DA' ?
-        {postcode: args.where.postcode, ...la} : null;
+        return args.where.postcode === 'HD1 1DA' ? { postcode: args.where.postcode, ...la } : null;
       });
       sinon.stub(models.sequelize, 'query').callsFake(async (args) => {
-        return args.indexOf('LS1') > -1 ?
-        [la2] : [];
+        return args.indexOf('LS1') > -1 ? [la2] : [];
       });
     });
-    afterEach(()=> {
+    afterEach(() => {
       sinon.restore();
     });
     it('should return a la if one is found in postcodedata table', async () => {

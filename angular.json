@@ -25,7 +25,9 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
               {
                 "glob": "**/*",
                 "input": "./node_modules/govuk-frontend/assets/",
@@ -113,9 +115,7 @@
           "options": {
             "eslintConfig": ".eslintrc.js",
             "lintFilePatterns": ["src/**/*.ts"],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }

@@ -8,9 +8,8 @@ describe('EligibilityIconComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EligibilityIconComponent ]
-    })
-    .compileComponents();
+      declarations: [EligibilityIconComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -6,32 +6,32 @@ module.exports = {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
       },
       locationname: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
       },
       postalcod: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
       },
       createdat: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
       },
       updatedat: {
         type: DataTypes.DATE,
-        allowNull: true
+        allowNull: true,
       },
       locationid: {
         type: DataTypes.TEXT,
         allowNull: true,
-        unique: true
-      }
+        unique: true,
+      },
     });
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('cqc.location');
-  }
+  },
 };

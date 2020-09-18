@@ -6,31 +6,29 @@ const models = require('../models/index');
 router.route('/').get(async function (req, res) {
   try {
     let results = await models.qualification.findAll({
-        order: [
-          ["seq", "ASC"]
-        ]
-      });
+      order: [['seq', 'ASC']],
+    });
 
     res.send({
-      qualifications: qualificationJSON(results)
+      qualifications: qualificationJSON(results),
     });
   } catch (err) {
     console.error(err);
     return res.status(503).send();
-  }    
+  }
 });
 
-function qualificationJSON(givenQualifications){
-  let qualifications=[];
+function qualificationJSON(givenQualifications) {
+  let qualifications = [];
 
-  givenQualifications.forEach(thisQualification => {
+  givenQualifications.forEach((thisQualification) => {
     qualifications.push({
       id: thisQualification.id,
-      level: thisQualification.level
+      level: thisQualification.level,
     });
   });
 
   return qualifications;
-};
+}
 
 module.exports = router;

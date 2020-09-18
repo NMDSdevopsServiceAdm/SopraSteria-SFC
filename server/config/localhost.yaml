@@ -1,43 +1,43 @@
 aws:
-    region: eu-west-1
-    secrets:
-        use: false
-        wallet: dev/api
-    kinesis:
-      enabled: true
-      establishments: establishments.dev
-      workers: workers.dev
-      users: users.dev
-    sns:
-      enabled: true
-      registrations: arn:aws:sns:eu-west-1:364648107127:registrations-dev
-      feedback: 	arn:aws:sns:eu-west-1:364648107127:feedback-dev
+  region: eu-west-1
+  secrets:
+    use: false
+    wallet: dev/api
+  kinesis:
+    enabled: true
+    establishments: establishments.dev
+    workers: workers.dev
+    users: users.dev
+  sns:
+    enabled: true
+    registrations: arn:aws:sns:eu-west-1:364648107127:registrations-dev
+    feedback: arn:aws:sns:eu-west-1:364648107127:feedback-dev
 
 slack:
-    level: 0    # disables Slack notifications
+  level: 0 # disables Slack notifications
 jwt:
-    iss: 'localhost'
-    ttl:
-        login: 60
+  iss: 'localhost'
+  ttl:
+    login: 60
 db:
-    pool:
-        min: 15
-        max: 15
-    ssl: false
-    username: sfcadmin
-    client_ssl:
-        status: false
-        usingFiles: false
+  pool:
+    min: 15
+    max: 15
+  ssl: false
+  username: sfcadmin
+  client_ssl:
+    status: false
+    usingFiles: false
 log:
-    sequelize: false
+  sequelize: false
 
 bulkupload:
-    region: eu-west-2
-    bucketname: sfcbulkuploadfiles
-    validation:
-        timeout: 600
-        storeIntermediaries: true
-    completion:
-        timeout: 600
+  region: eu-west-2
+  bucketname: sfcbulkuploadfiles
+  validation:
+    timeout: 600
+    storeIntermediaries: true
+  completion:
+    timeout: 600
 sentry:
   sample_rate: 0.0

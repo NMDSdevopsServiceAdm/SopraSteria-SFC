@@ -22,7 +22,7 @@ describe('WorkplaceSummaryComponent', () => {
         InsetTextComponent,
         SummaryRecordValueComponent,
         NumericAnswerPipe,
-        EligibilityIconComponent
+        EligibilityIconComponent,
       ],
     }).compileComponents();
   }));
@@ -31,7 +31,7 @@ describe('WorkplaceSummaryComponent', () => {
     fixture = TestBed.createComponent(WorkplaceSummaryComponent);
     component = fixture.componentInstance;
     component.workplace = Establishment;
-    component.requestedServiceName = "Requested service name";
+    component.requestedServiceName = 'Requested service name';
     component.canEditEstablishment = true;
     fixture.detectChanges();
   });
@@ -45,7 +45,7 @@ describe('WorkplaceSummaryComponent', () => {
     fixture.detectChanges();
 
     const mainServiceChangeOrPending = await within(document.body).findByTestId('main-service-change-or-pending');
-    expect(mainServiceChangeOrPending.innerHTML).toContain("Pending");
+    expect(mainServiceChangeOrPending.innerHTML).toContain('Pending');
   });
 
   it('should show Change on main service when non-CQC to CQC main service change has NOT been requested', async () => {
@@ -53,7 +53,7 @@ describe('WorkplaceSummaryComponent', () => {
     fixture.detectChanges();
 
     const mainServiceChangeOrPending = await within(document.body).findByTestId('main-service-change-or-pending');
-    expect(mainServiceChangeOrPending.innerHTML).toContain("Change");
+    expect(mainServiceChangeOrPending.innerHTML).toContain('Change');
   });
 
   it('should show requested service name when non-CQC to CQC main service change has been requested', async () => {

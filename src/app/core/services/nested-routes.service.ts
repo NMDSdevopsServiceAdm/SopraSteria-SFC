@@ -20,10 +20,10 @@ export class NestedRoutesService {
   constructor(private router: Router, private activatedRoute: ActivatedRoute) {
     this.router.events
       .pipe(
-        filter(event => event instanceof NavigationEnd),
-        map(() => this.activatedRoute)
+        filter((event) => event instanceof NavigationEnd),
+        map(() => this.activatedRoute),
       )
-      .subscribe(route => {
+      .subscribe((route) => {
         const routes = this.getNestedRoutes(route);
         this._routes$.next(routes);
       });
@@ -46,7 +46,7 @@ export class NestedRoutesService {
         return this.getNestedRoutes(child, url, routes);
       }
 
-      const routeURL = child.snapshot.url.map(segment => segment.path).join('/');
+      const routeURL = child.snapshot.url.map((segment) => segment.path).join('/');
 
       url += `/${routeURL}`;
 

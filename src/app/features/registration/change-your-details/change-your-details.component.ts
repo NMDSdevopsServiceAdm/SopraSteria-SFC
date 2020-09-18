@@ -20,7 +20,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
@@ -36,7 +36,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
         if (userDetails) {
           this.prefillForm(userDetails);
         }
-      })
+      }),
     );
   }
 

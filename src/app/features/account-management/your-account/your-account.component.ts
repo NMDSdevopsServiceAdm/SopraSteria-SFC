@@ -24,12 +24,12 @@ export class YourAccountComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.ACCOUNT);
 
     this.subscriptions.add(
-      this.userService.loggedInUser$.subscribe(user => {
+      this.userService.loggedInUser$.subscribe((user) => {
         if (user) {
           this.user = user;
           this.setAccountDetails();
         }
-      })
+      }),
     );
   }
 

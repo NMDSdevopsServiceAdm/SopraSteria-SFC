@@ -6,13 +6,11 @@ const models = require('../models/index');
 router.route('/').get(async function (req, res) {
   try {
     let results = await models.country.findAll({
-      order: [
-        ["seq", "ASC"]
-      ]
+      order: [['seq', 'ASC']],
     });
 
     res.send({
-      countries: countryJSON(results)
+      countries: countryJSON(results),
     });
   } catch (err) {
     // unexpected fetch on data
@@ -21,17 +19,17 @@ router.route('/').get(async function (req, res) {
   }
 });
 
-function countryJSON(givenCountries){
-  let countries=[];
+function countryJSON(givenCountries) {
+  let countries = [];
 
-  givenCountries.forEach(thisCountry => {
+  givenCountries.forEach((thisCountry) => {
     countries.push({
       id: thisCountry.id,
-      country: thisCountry.country
+      country: thisCountry.country,
     });
   });
 
   return countries;
-};
+}
 
 module.exports = router;

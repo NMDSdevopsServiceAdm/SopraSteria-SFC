@@ -12,7 +12,7 @@
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list">
       <ng-container *ngIf="errors">
-        <ng-container *ngIf="getCurrentRoute(); let currentRoute;">
+        <ng-container *ngIf="getCurrentRoute(); let currentRoute">
           <li *ngFor="let i of errors">
             <a
               (click)="focusOnField(i.item)"

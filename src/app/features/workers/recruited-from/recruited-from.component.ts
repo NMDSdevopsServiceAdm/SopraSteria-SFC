@@ -22,7 +22,7 @@ export class RecruitedFromComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private recruitmentService: RecruitmentService
+    private recruitmentService: RecruitmentService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -34,7 +34,7 @@ export class RecruitedFromComponent extends QuestionComponent {
 
   init() {
     this.subscriptions.add(
-      this.form.get('recruitmentKnown').valueChanges.subscribe(val => {
+      this.form.get('recruitmentKnown').valueChanges.subscribe((val) => {
         this.form.get('recruitedFromId').clearValidators();
 
         if (val === 'Yes') {
@@ -42,11 +42,11 @@ export class RecruitedFromComponent extends QuestionComponent {
         }
 
         this.form.get('recruitedFromId').updateValueAndValidity();
-      })
+      }),
     );
 
     this.subscriptions.add(
-      this.recruitmentService.getRecruitedFrom().subscribe(res => (this.availableRecruitments = res))
+      this.recruitmentService.getRecruitedFrom().subscribe((res) => (this.availableRecruitments = res)),
     );
 
     if (this.worker.recruitedFrom) {

@@ -1,14 +1,15 @@
 <div>
   <ng-container *ngIf="!return; else summary">
-    <button type="submit" class="govuk-button" (click)="onClick($event, 'continue', true)">{{callToAction}}</button>
-    <a *ngIf = "recordSummary"
+    <button type="submit" class="govuk-button" (click)="onClick($event, 'continue', true)">{{ callToAction }}</button>
+    <a
+      *ngIf="recordSummary"
       href="#"
       class="govuk-list govuk-list--inline govuk-!-margin-left-8 govuk-!-margin-top-2"
       (click)="onClick($event, 'summary', false)"
       >View record summary</a
     >
-    <ng-container *ngIf = "this.canExit">
-      <span  class="govuk-visually-hidden">or</span>
+    <ng-container *ngIf="this.canExit">
+      <span class="govuk-visually-hidden">or</span>
       <a
         href="#"
         class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"

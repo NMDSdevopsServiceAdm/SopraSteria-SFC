@@ -40,7 +40,7 @@ export class CreateUserAccountComponent extends AccountDetails {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
@@ -69,9 +69,10 @@ export class CreateUserAccountComponent extends AccountDetails {
 
   protected save() {
     this.subscriptions.add(
-      this.createAccountService
-        .createAccount(this.establishmentUid, this.form.value)
-        .subscribe(() => this.navigateToNextRoute(), (error: HttpErrorResponse) => this.onError(error))
+      this.createAccountService.createAccount(this.establishmentUid, this.form.value).subscribe(
+        () => this.navigateToNextRoute(),
+        (error: HttpErrorResponse) => this.onError(error),
+      ),
     );
   }
 

@@ -21,15 +21,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.userService.loggedInUser$.subscribe(user => {
+      this.userService.loggedInUser$.subscribe((user) => {
         this.user = user;
         this.fullname = user && user.fullname ? user.fullname.split(' ')[0] : null;
-      })
+      }),
     );
     this.subscriptions.add(
-      this.authService.isOnAdminScreen$.subscribe(isOnAdminScreen => {
+      this.authService.isOnAdminScreen$.subscribe((isOnAdminScreen) => {
         this._isOnAdminScreen = isOnAdminScreen;
-      })
+      }),
     );
   }
 
@@ -42,9 +42,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public isAdminUser(): boolean {
-    return this.userService.loggedInUser ?
-      this.userService.loggedInUser.role === Roles.Admin
-      : false;
+    return this.userService.loggedInUser ? this.userService.loggedInUser.role === Roles.Admin : false;
   }
 
   public isOnAdminScreen(): boolean {

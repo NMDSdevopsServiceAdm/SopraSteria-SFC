@@ -13,50 +13,86 @@ router.route('/').get(async (req, res) => {
     const loginResults = await models.login.findAll({
       attributes: ['id', 'username'],
       where: {
-          isActive: false,
-          status: 'PENDING'
+        isActive: false,
+        status: 'PENDING',
       },
-      order: [
-        ['id', 'DESC']
-      ],
+      order: [['id', 'DESC']],
       include: [
         {
           model: models.user,
-          attributes: ['EmailValue', 'PhoneValue', 'FullNameValue', 'SecurityQuestionValue', 'SecurityQuestionAnswerValue', 'created'],
+          attributes: [
+            'EmailValue',
+            'PhoneValue',
+            'FullNameValue',
+            'SecurityQuestionValue',
+            'SecurityQuestionAnswerValue',
+            'created',
+          ],
           include: [
             {
               model: models.establishment,
-              attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID'],
-              include: [{
-                model: models.services,
-                as: 'mainService',
-                attributes: ['id', 'name']
-              }]
-            }
-          ]
-        }
-      ]
+              attributes: [
+                'NameValue',
+                'IsRegulated',
+                'LocationID',
+                'ProvID',
+                'Address1',
+                'Address2',
+                'Address3',
+                'Town',
+                'County',
+                'PostCode',
+                'NmdsID',
+                'EstablishmentID',
+              ],
+              include: [
+                {
+                  model: models.services,
+                  as: 'mainService',
+                  attributes: ['id', 'name'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
     });
     // Get the pending workplace records
     const workplaceResults = await models.establishment.findAll({
-      attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID', 'ParentID', 'created', 'updatedBy'],
-      where: {
-          ustatus: 'PENDING'
-      },
-      order: [
-        ['id', 'DESC']
+      attributes: [
+        'NameValue',
+        'IsRegulated',
+        'LocationID',
+        'ProvID',
+        'Address1',
+        'Address2',
+        'Address3',
+        'Town',
+        'County',
+        'PostCode',
+        'NmdsID',
+        'EstablishmentID',
+        'ParentID',
+        'created',
+        'updatedBy',
       ],
-      include: [{
-        model: models.services,
-        as: 'mainService',
-        attributes: ['id', 'name']
-      }]
+      where: {
+        ustatus: 'PENDING',
+      },
+      order: [['id', 'DESC']],
+      include: [
+        {
+          model: models.services,
+          as: 'mainService',
+          attributes: ['id', 'name'],
+        },
+      ],
     });
 
     let arrToReturn, loginReturnArr, workplaceReturnArr;
-    if (loginResults){
+    if (loginResults) {
       // Reply with mapped results
-      loginReturnArr = loginResults.map(registration => {
+      loginReturnArr = loginResults.map((registration) => {
         registration = registration.toJSON();
         return {
           name: registration.user.FullNameValue,
@@ -79,13 +115,13 @@ router.route('/').get(async (req, res) => {
             county: registration.user.establishment.County,
             locationId: registration.user.establishment.LocationID,
             provid: registration.user.establishment.ProvID,
-            mainService: registration.user.establishment.mainService.name
-          }
+            mainService: registration.user.establishment.mainService.name,
+          },
         };
       });
     }
-    if(workplaceResults){
-      workplaceReturnArr = workplaceResults.map(registration => {
+    if (workplaceResults) {
+      workplaceReturnArr = workplaceResults.map((registration) => {
         registration = registration.toJSON();
         return {
           created: registration.created,
@@ -104,51 +140,54 @@ router.route('/').get(async (req, res) => {
             locationId: registration.LocationID,
             provid: registration.ProvID,
             mainService: registration.mainService.name,
-            parentId: registration.ParentID
-          }
+            parentId: registration.ParentID,
+          },
         };
       });
     }
-    if(loginResults && workplaceResults){
-      let loginWorkplaceIds = new Set(loginReturnArr.map(d => d.establishment.id));
-      arrToReturn = [...loginReturnArr, ...workplaceReturnArr.filter(d => !loginWorkplaceIds.has(d.establishment.id))];
+    if (loginResults && workplaceResults) {
+      let loginWorkplaceIds = new Set(loginReturnArr.map((d) => d.establishment.id));
+      arrToReturn = [
+        ...loginReturnArr,
+        ...workplaceReturnArr.filter((d) => !loginWorkplaceIds.has(d.establishment.id)),
+      ];
 
-      arrToReturn.sort(function(a,b){
+      arrToReturn.sort(function (a, b) {
         var dateA = new Date(a.created).getTime();
         var dateB = new Date(b.created).getTime();
         return dateB > dateA ? 1 : -1;
       });
 
-      for(let i = 0; i < arrToReturn.length; i++){
+      for (let i = 0; i < arrToReturn.length; i++) {
         arrToReturn[i].created = moment.utc(arrToReturn[i].created).tz(config.get('timezone')).format('D/M/YYYY h:mma');
         //get parent establishment details
-        if(!arrToReturn[i].email){
+        if (!arrToReturn[i].email) {
           let fetchQuery = {
             where: {
               id: arrToReturn[i].establishment.parentId,
             },
           };
           let parentEstablishment = await models.establishment.findOne(fetchQuery);
-          if(parentEstablishment){
+          if (parentEstablishment) {
             arrToReturn[i].establishment.parentEstablishmentId = parentEstablishment.nmdsId;
           }
         }
       }
       res.status(200).send(arrToReturn);
-    }else if(loginReturnArr && !workplaceReturnArr){
-      loginReturnArr.map(registration => {
+    } else if (loginReturnArr && !workplaceReturnArr) {
+      loginReturnArr.map((registration) => {
         registration.created = moment.utc(registration.created).tz(config.get('timezone')).format('D/M/YYYY h:mma');
       });
       res.status(200).send(loginReturnArr);
-    }else if(!loginReturnArr && workplaceReturnArr){
-      workplaceReturnArr.map(registration => {
+    } else if (!loginReturnArr && workplaceReturnArr) {
+      workplaceReturnArr.map((registration) => {
         registration.created = moment.utc(registration.created).tz(config.get('timezone')).format('D/M/YYYY h:mma');
       });
       res.status(200).send(workplaceReturnArr);
-    }else{
+    } else {
       res.status(200);
     }
-  } catch(error) {
+  } catch (error) {
     res.status(503);
   }
 });

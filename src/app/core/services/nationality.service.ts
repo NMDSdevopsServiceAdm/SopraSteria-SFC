@@ -11,6 +11,6 @@ export class NationalityService {
   constructor(private http: HttpClient) {}
 
   getNationalities(): Observable<Nationality[]> {
-    return this.http.get<NationalityResponse>('/api/nationality').pipe(map(res => res.nationalities));
+    return this.http.get<NationalityResponse>('/api/nationality').pipe(map((res) => res.nationalities));
   }
 }

@@ -7,8 +7,8 @@ html {
 }
 
 body {
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
-    Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',
+    sans-serif;
   font-weight: 300;
 }
 
@@ -72,7 +72,7 @@ p {
 }
 
 .icon-link:before {
-  content: "";
+  content: '';
   display: inline-block;
   margin-right: 5px;
   vertical-align: text-bottom;
@@ -121,7 +121,7 @@ h2,
   margin-top: 3rem;
 }
 
-a[role="button"] {
+a[role='button'] {
   text-decoration: none;
   line-height: 40px;
 }

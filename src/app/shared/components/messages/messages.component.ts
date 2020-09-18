@@ -15,14 +15,14 @@ export class MessagesComponent implements OnInit, OnDestroy {
   constructor(private messageService: MessageService) {}
 
   ngOnInit() {
-    this.subscriptions.push(this.messageService.success$.subscribe(success => (this.success = success)));
-    this.subscriptions.push(this.messageService.info$.subscribe(info => (this.info = info)));
-    this.subscriptions.push(this.messageService.warning$.subscribe(warning => (this.warning = warning)));
-    this.subscriptions.push(this.messageService.error$.subscribe(error => (this.error = error)));
+    this.subscriptions.push(this.messageService.success$.subscribe((success) => (this.success = success)));
+    this.subscriptions.push(this.messageService.info$.subscribe((info) => (this.info = info)));
+    this.subscriptions.push(this.messageService.warning$.subscribe((warning) => (this.warning = warning)));
+    this.subscriptions.push(this.messageService.error$.subscribe((error) => (this.error = error)));
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
     this.messageService.clearAll();
   }
 }

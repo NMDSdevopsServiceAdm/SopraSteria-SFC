@@ -37,7 +37,10 @@ const getTrainingByCategory = async (req, res) => {
     const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
 
     res.json({
-      trainingCategories: transformTrainingCategoriesWithMandatoryTraining(establishmentWithWorkersAndTraining, trainingCategories),
+      trainingCategories: transformTrainingCategoriesWithMandatoryTraining(
+        establishmentWithWorkersAndTraining,
+        trainingCategories,
+      ),
     });
   } catch (err) {
     console.error(err);

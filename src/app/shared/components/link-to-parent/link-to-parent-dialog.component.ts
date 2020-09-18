@@ -55,10 +55,10 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   private getAvailableParentWorkPlaces() {
     this.subscriptions.add(
       this.establishmentService.getAllParentWithPostCode().subscribe(
-        parentsWithPostCode => {
+        (parentsWithPostCode) => {
           this.availableParentWorkPlaces = parentsWithPostCode;
         },
-        error => {
+        (error) => {
           if (error.error.message) {
             this.serverError = error.error.message;
           }
@@ -179,7 +179,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
       };
       this.subscriptions.add(
         this.establishmentService.setRequestToParentForLink(this.workplace.uid, setLinkAndPermission).subscribe(
-          data => {
+          (data) => {
             if (data) {
               const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
               this.router.navigate(['/dashboard']);
@@ -190,7 +190,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
               this.closeDialogWindow(event, true);
             }
           },
-          error => {
+          (error) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           },
         ),
@@ -210,7 +210,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
       if (parentNameOrPostCode.value !== null) {
         const parentNameOrPostCodeLowerCase = parentNameOrPostCode.value.toLowerCase();
         return this.availableParentWorkPlaces.some(
-          wp => wp.parentNameAndPostalcode.toLowerCase() === parentNameOrPostCodeLowerCase,
+          (wp) => wp.parentNameAndPostalcode.toLowerCase() === parentNameOrPostCodeLowerCase,
         )
           ? null
           : { validNameOrPostCode: true };
@@ -231,13 +231,13 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
       const parentNameOrPostCodeLowerCase = parentNameOrPostCode.toLowerCase();
       return this.availableParentWorkPlaces
         .filter(
-          wp =>
+          (wp) =>
             wp.parentName.toLowerCase().startsWith(parentNameOrPostCodeLowerCase) ||
             wp.postcode.toLowerCase().startsWith(parentNameOrPostCodeLowerCase) ||
             wp.parentNameAndPostalcode.toLowerCase().startsWith(parentNameOrPostCodeLowerCase),
         )
-        .filter(wp => wp.parentNameAndPostalcode.toLowerCase() !== parentNameOrPostCodeLowerCase)
-        .map(wp => wp.parentNameAndPostalcode);
+        .filter((wp) => wp.parentNameAndPostalcode.toLowerCase() !== parentNameOrPostCodeLowerCase)
+        .map((wp) => wp.parentNameAndPostalcode);
     }
 
     return [];
@@ -251,7 +251,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   public getParentUidOrName(nameAndPostCode: string, nameOrUid: string) {
     if (nameAndPostCode) {
       const filterArray = this.availableParentWorkPlaces.filter(
-        wp => wp.parentNameAndPostalcode.toLowerCase() === nameAndPostCode.toLowerCase(),
+        (wp) => wp.parentNameAndPostalcode.toLowerCase() === nameAndPostCode.toLowerCase(),
       );
       if (nameOrUid === 'uid') {
         return filterArray[0].uid;

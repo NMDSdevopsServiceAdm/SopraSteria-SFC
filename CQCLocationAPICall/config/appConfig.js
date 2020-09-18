@@ -7,11 +7,11 @@ class ConfigEmitter extends EventEmitter {
   constructor() {
     super();
     this._ready = false;
-  };
+  }
 
   get READY_EVENT() {
     return 'Ready';
-  };
+  }
 
   get ready() {
     return this._ready;
@@ -20,7 +20,7 @@ class ConfigEmitter extends EventEmitter {
   set ready(status) {
     this._ready = status;
   }
-};
+}
 const AppConfig = new ConfigEmitter();
 
 module.exports = AppConfig;

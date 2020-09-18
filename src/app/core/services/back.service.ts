@@ -16,11 +16,11 @@ export class BackService {
   constructor(private router: Router, private location: Location) {
     this.router.events
       .pipe(
-        filter(event => event instanceof NavigationEnd),
+        filter((event) => event instanceof NavigationEnd),
         map(() => parse(this.router.url).pathname),
         distinctUntilChanged(),
         map(() => this._back$.value),
-        filter(val => !!val)
+        filter((val) => !!val),
       )
       .subscribe(() => {
         this._back$.next(null);

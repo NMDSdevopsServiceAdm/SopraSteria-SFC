@@ -33,36 +33,36 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
     private route: ActivatedRoute,
 
     protected establishmentService: EstablishmentService,
-    protected trainingCategoryService: TrainingCategoryService
+    protected trainingCategoryService: TrainingCategoryService,
   ) {}
 
   ngOnInit() {
     this.establishmentService.isMandatoryTrainingView.next(false);
 
-    this.route.queryParams
-      .subscribe(params => {
-        if(params.view === "categories") {
-          this.viewTrainingByCategory = true
-        }
-      })
+    this.route.queryParams.subscribe((params) => {
+      if (params.view === 'categories') {
+        this.viewTrainingByCategory = true;
+      }
+    });
     this.getAllWorkers();
     this.getAllTrainingByCategory();
   }
 
   getAllTrainingByCategory() {
     this.subscriptions.add(
-      this.trainingCategoryService.getCategoriesWithTraining(this.workplace.id)
+      this.trainingCategoryService
+        .getCategoriesWithTraining(this.workplace.id)
         .pipe(take(1))
         .subscribe((trainingCategories) => {
-        this.trainingCategories = trainingCategories;
-      }),
+          this.trainingCategories = trainingCategories;
+        }),
     );
   }
 
   getAllWorkers() {
     this.subscriptions.add(
       this.workerService.getAllWorkers(this.workplace.uid).subscribe(
-        workers => {
+        (workers) => {
           this.workers = workers;
           this.totalRecords = 0;
           this.totalExpiredTraining = 0;
@@ -76,7 +76,7 @@ export class TrainingAndQualificationsTabComponent implements OnInit, OnDestroy 
             this.missingMandatoryTraining += worker.missingMandatoryTrainingCount;
           });
         },
-        error => {
+        (error) => {
           console.error(error.error);
         },
       ),

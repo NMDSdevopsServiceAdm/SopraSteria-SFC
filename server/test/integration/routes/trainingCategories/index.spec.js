@@ -15,7 +15,7 @@ describe('Training Categories API', () => {
   let nonCqcServices = null;
   let nonCQCSite = null;
 
-  before(async() => {
+  before(async () => {
     // Find a valid service (eg "Carers Support")
     const nonCqcServicesResults = await apiEndpoint
       .get('/services/byCategory?cqc=false')
@@ -35,11 +35,7 @@ describe('Training Categories API', () => {
 
     // Login as an admin user to access approvals (would normally be accessed via "Registrations").
     if (registration) {
-      adminLogin = await apiEndpoint
-        .post('/login')
-        .send(admin)
-        .expect('Content-Type', /json/)
-        .expect(200);
+      adminLogin = await apiEndpoint.post('/login').send(admin).expect('Content-Type', /json/).expect(200);
     }
   });
 
@@ -51,17 +47,17 @@ describe('Training Categories API', () => {
       if (adminLogin.headers.authorization) {
         const response = await apiEndpoint
 
-        // Act
-        .get(`/trainingCategories/${establishmentId}/with-training`)
-        .set({ Authorization: adminLogin.headers.authorization })
+          // Act
+          .get(`/trainingCategories/${establishmentId}/with-training`)
+          .set({ Authorization: adminLogin.headers.authorization })
 
-        // Assert
-        .expect(404);
+          // Assert
+          .expect(404);
 
         expect(response.body).to.deep.equal({
           message: 'Establishment was not found.',
         });
       }
     });
-  })
+  });
 });

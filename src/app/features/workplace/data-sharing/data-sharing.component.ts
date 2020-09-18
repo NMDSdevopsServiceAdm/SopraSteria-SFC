@@ -18,7 +18,7 @@ export class DataSharingComponent extends Question {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -77,9 +77,10 @@ export class DataSharingComponent extends Question {
 
   protected updateEstablishment(props) {
     this.subscriptions.add(
-      this.establishmentService
-        .updateDataSharing(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateDataSharing(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
   }
 

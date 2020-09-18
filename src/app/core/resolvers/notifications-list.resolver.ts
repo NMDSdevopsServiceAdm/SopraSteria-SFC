@@ -11,10 +11,10 @@ export class NotificationsListResolver implements Resolve<any> {
 
   resolve() {
     return this.notificationsService.getAllNotifications().pipe(
-      tap(notifications => (this.notificationsService.notifications = notifications)),
+      tap((notifications) => (this.notificationsService.notifications = notifications)),
       catchError(() => {
         return of([]);
-      })
+      }),
     );
   }
 }

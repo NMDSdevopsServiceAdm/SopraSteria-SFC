@@ -42,25 +42,25 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
       this.workerService
         .getAvailableQualifcations(this.workplace.uid, this.worker.uid, this.type.value as QualificationType)
         .subscribe(
-          qualifications => {
+          (qualifications) => {
             if (qualifications) {
               this.qualifications = qualifications;
             }
           },
-          error => {
+          (error) => {
             console.error(error.error);
-          }
-        )
+          },
+        ),
     );
 
-    this.group.get('qualification').valueChanges.subscribe(value => {
+    this.group.get('qualification').valueChanges.subscribe((value) => {
       const year = this.group.get('year');
       const validators: ValidatorFn[] = [];
       year.clearValidators();
 
       if (value) {
         const selectedQualification = this.qualifications.find(
-          qualification => qualification.id === parseInt(value, 10)
+          (qualification) => qualification.id === parseInt(value, 10),
         );
 
         if (selectedQualification && selectedQualification.from) {

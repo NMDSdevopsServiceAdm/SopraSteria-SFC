@@ -15,8 +15,12 @@ const _initialiseTestWorkplace = () => {
   testWorkplace.id = 4321;
   testWorkplace.nmdsId = 'W1234567';
   testWorkplace.ustatus = 'PENDING';
-  testWorkplace.update = (args) => { return true; };
-  testWorkplace.destroy = () => {return true;}
+  testWorkplace.update = (args) => {
+    return true;
+  };
+  testWorkplace.destroy = () => {
+    return true;
+  };
   foundWorkplace = testWorkplace;
 };
 
@@ -25,7 +29,9 @@ var foundUser = {};
 const _initialiseTestUser = () => {
   testUser.id = 1234;
   testUser.establishment = testWorkplace;
-  testUser.destroy = () => { return true; };
+  testUser.destroy = () => {
+    return true;
+  };
   foundUser = testUser;
 };
 
@@ -36,7 +42,9 @@ const _initialiseTestLogin = () => {
   testLogin.isActive = false;
   testLogin.status = 'PENDING';
   testLogin.user = testUser;
-  testLogin.update = (args) => { return true; };
+  testLogin.update = (args) => {
+    return true;
+  };
 };
 
 var testRequestBody = {};
@@ -49,15 +57,16 @@ const _initialiseTestRequestBody = () => {
 
 var returnedJson = null;
 var returnedStatus = null;
-const approvalJson = (json) => { returnedJson = json; };
+const approvalJson = (json) => {
+  returnedJson = json;
+};
 const approvalStatus = (status) => {
   returnedStatus = status;
-  return {json: approvalJson, send: () => {} };
+  return { json: approvalJson, send: () => {} };
 };
 
 describe.skip('admin/Approval route', () => {
-
-  beforeEach(async() => {
+  beforeEach(async () => {
     workplaceWithDuplicateId = null;
     establishmentIdUsedToCheckForDuplicate = false;
     _initialiseTestWorkplace();
@@ -88,8 +97,7 @@ describe.skip('admin/Approval route', () => {
       } else if (args.where.id[Sequelize.Op.ne] === boobyTrappedEstablishmentId) {
         establishmentIdUsedToCheckForDuplicate = true;
         return null;
-      } else if ((args.where.id[Sequelize.Op.ne] === testWorkplace.id)
-                && (args.where.nmdsId === testWorkplace.nmdsId)) {
+      } else if (args.where.id[Sequelize.Op.ne] === testWorkplace.id && args.where.nmdsId === testWorkplace.nmdsId) {
         return workplaceWithDuplicateId;
       } else {
         return null;
@@ -102,19 +110,22 @@ describe.skip('admin/Approval route', () => {
   });
 
   describe('approving a new user', () => {
-    beforeEach(async() => {
+    beforeEach(async () => {
       // For new user registrations, establishmentId is set to null. See onSubmit in registration.component.ts
       testRequestBody.establishmentId = null;
       testRequestBody.approve = true;
     });
 
-    it('should return a confirmation message and status 200 when the user is approved', async() => {
+    it('should return a confirmation message and status 200 when the user is approved', async () => {
       // Arrange (see beforeEach)
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
@@ -128,12 +139,15 @@ describe.skip('admin/Approval route', () => {
       testLogin.update = (args) => {
         loginIsActive = args.isActive;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(loginIsActive).to.deep.equal(true, 'login should have isActive set to true');
@@ -142,15 +156,18 @@ describe.skip('admin/Approval route', () => {
     it('should remove the pending status from the login when approving a new user', async () => {
       // Arrange
       var loginStatus = 'PENDING';
-      testLogin.update =  (args) => {
+      testLogin.update = (args) => {
         loginStatus = args.status;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(loginStatus).to.deep.equal(null, "login should have status set to null (instead of 'PENDING')");
@@ -161,9 +178,12 @@ describe.skip('admin/Approval route', () => {
       testRequestBody.username = 'no matching login available';
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(400);
@@ -173,15 +193,18 @@ describe.skip('admin/Approval route', () => {
       // Arrange
       testRequestBody.nmdsId = testWorkplace.nmdsId.concat('X');
       var workplaceId = testWorkplace.nmdsId;
-      testWorkplace.update =  (args) => {
+      testWorkplace.update = (args) => {
         workplaceId = args.nmdsId;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(workplaceId).to.deep.equal(testRequestBody.nmdsId);
@@ -192,12 +215,18 @@ describe.skip('admin/Approval route', () => {
       testRequestBody.establishmentId = boobyTrappedEstablishmentId;
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
-      expect(establishmentIdUsedToCheckForDuplicate).to.deep.equal(false, 'should not use establishment id to check for duplicate');
+      expect(establishmentIdUsedToCheckForDuplicate).to.deep.equal(
+        false,
+        'should not use establishment id to check for duplicate',
+      );
     });
 
     it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
@@ -205,13 +234,18 @@ describe.skip('admin/Approval route', () => {
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedJson.nmdsId).to.not.equal(undefined, 'returned json should have an nmdsId value');
-      expect(returnedJson.nmdsId).to.deep.equal(`This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`);
+      expect(returnedJson.nmdsId).to.deep.equal(
+        `This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
+      );
       expect(returnedStatus).to.deep.equal(400);
     });
 
@@ -219,46 +253,57 @@ describe.skip('admin/Approval route', () => {
       // Arrange
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
       var loginUpdated = false;
-      testLogin.update =  (args) => {
+      testLogin.update = (args) => {
         loginUpdated = true;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
-      expect(loginUpdated).to.equal(false, "login should not have been updated");
+      expect(loginUpdated).to.equal(false, 'login should not have been updated');
     });
 
     it('should NOT remove the pending status from the workplace when approving a new user with duplicate workplace Id', async () => {
       // Arrange
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
       var workplaceUpdated = false;
-      testWorkplace.update =  (args) => {
+      testWorkplace.update = (args) => {
         workplaceUpdated = true;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
-      expect(workplaceUpdated).to.equal(false, "workplace should not have been updated");
+      expect(workplaceUpdated).to.equal(false, 'workplace should not have been updated');
     });
 
     it('should return status 503 if login update returns false when approving a new user', async () => {
       // Arrange
-      testLogin.update = () => { return false; }
+      testLogin.update = () => {
+        return false;
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(503);
@@ -266,12 +311,17 @@ describe.skip('admin/Approval route', () => {
 
     it('should return status 503 if workplace update returns false when approving a new user', async () => {
       // Arrange
-      testWorkplace.update = () => { return false; }
+      testWorkplace.update = () => {
+        return false;
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(503);
@@ -279,12 +329,17 @@ describe.skip('admin/Approval route', () => {
 
     it('should return status 503 if login update throws exception when approving a new user', async () => {
       // Arrange
-      testLogin.update = () => { throw "Error"; }
+      testLogin.update = () => {
+        throw 'Error';
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(503);
@@ -292,12 +347,17 @@ describe.skip('admin/Approval route', () => {
 
     it('should return status 503 if workplace update throws exception when approving a new user', async () => {
       // Arrange
-      testWorkplace.update = () => { throw "Error"; }
+      testWorkplace.update = () => {
+        throw 'Error';
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(503);
@@ -305,7 +365,7 @@ describe.skip('admin/Approval route', () => {
   });
 
   describe('rejecting a new user', () => {
-    beforeEach(async() => {
+    beforeEach(async () => {
       // For new user registrations, establishmentId is set to null. See onSubmit in registration.component.ts
       testRequestBody.establishmentId = null;
       testRequestBody.approve = false;
@@ -315,9 +375,12 @@ describe.skip('admin/Approval route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
@@ -328,81 +391,98 @@ describe.skip('admin/Approval route', () => {
     it('should delete the user when rejecting a new user', async () => {
       // Arrange
       var userDestroyed = false;
-      testUser.destroy =  (args) => {
+      testUser.destroy = (args) => {
         userDestroyed = true;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
-      expect(userDestroyed).to.deep.equal(true, "user should have been destroyed");
+      expect(userDestroyed).to.deep.equal(true, 'user should have been destroyed');
     });
 
     it('should delete the workplace when rejecting a new user', async () => {
       // Arrange
       var workplaceDestroyed = false;
-      testWorkplace.destroy =  (args) => {
+      testWorkplace.destroy = (args) => {
         workplaceDestroyed = true;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
-      expect(workplaceDestroyed).to.deep.equal(true, "workplace should have been destroyed");
+      expect(workplaceDestroyed).to.deep.equal(true, 'workplace should have been destroyed');
     });
 
     it('should not reject a new login that does not have an associated user', async () => {
       // Arrange
       foundUser = null;
       var workplaceDestroyed = false;
-      testWorkplace.destroy =  (args) => {
+      testWorkplace.destroy = (args) => {
         workplaceDestroyed = true;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
-      expect(workplaceDestroyed).to.equal(false, "workplace should not have been destroyed");
+      expect(workplaceDestroyed).to.equal(false, 'workplace should not have been destroyed');
     });
 
     it('should not reject a new user that does not have an associated workplace', async () => {
       // Arrange
       foundWorkplace = null;
       var userDestroyed = false;
-      testUser.destroy =  (args) => {
+      testUser.destroy = (args) => {
         userDestroyed = true;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
-      expect(userDestroyed).to.equal(false, "user should not have been destroyed");
+      expect(userDestroyed).to.equal(false, 'user should not have been destroyed');
     });
 
     it('should return status 503 if it is not possible to delete a user when rejecting a new user', async () => {
       // Arrange
-      testUser.destroy = () => { return false; }
+      testUser.destroy = () => {
+        return false;
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(503);
@@ -410,12 +490,17 @@ describe.skip('admin/Approval route', () => {
 
     it('should return status 503 if it is not possible to delete a workplace when rejecting a new user', async () => {
       // Arrange
-      testWorkplace.destroy = () => { return false; }
+      testWorkplace.destroy = () => {
+        return false;
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(503);
@@ -423,7 +508,7 @@ describe.skip('admin/Approval route', () => {
   });
 
   describe('approving a new workplace', () => {
-    beforeEach(async() => {
+    beforeEach(async () => {
       // For new workplace registrations, username is set to null. See onSubmit in registration.component.ts
       testRequestBody.username = null;
       testRequestBody.approve = true;
@@ -433,9 +518,12 @@ describe.skip('admin/Approval route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
@@ -446,15 +534,18 @@ describe.skip('admin/Approval route', () => {
     it('should remove the pending status from the workplace when approving a new workplace', async () => {
       // Arrange
       var workplaceStatus = 'PENDING';
-      testWorkplace.update =  (args) => {
+      testWorkplace.update = (args) => {
         workplaceStatus = args.ustatus;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(workplaceStatus).to.deep.equal(null, "workplace should have status set to null (instead of 'PENDING')");
@@ -464,15 +555,18 @@ describe.skip('admin/Approval route', () => {
       // Arrange
       testRequestBody.nmdsId = testWorkplace.nmdsId.concat('X');
       var workplaceId = testWorkplace.nmdsId;
-      testWorkplace.update =  (args) => {
+      testWorkplace.update = (args) => {
         workplaceId = args.nmdsId;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(workplaceId).to.deep.equal(testRequestBody.nmdsId);
@@ -483,13 +577,18 @@ describe.skip('admin/Approval route', () => {
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedJson.nmdsId).to.not.equal(undefined, 'returned json should have an nmdsId value');
-      expect(returnedJson.nmdsId).to.deep.equal(`This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`);
+      expect(returnedJson.nmdsId).to.deep.equal(
+        `This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
+      );
       expect(returnedStatus).to.deep.equal(400);
     });
 
@@ -497,28 +596,36 @@ describe.skip('admin/Approval route', () => {
       // Arrange
       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
       var workplaceUpdated = false;
-      testWorkplace.update =  (args) => {
+      testWorkplace.update = (args) => {
         workplaceUpdated = true;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
-      expect(workplaceUpdated).to.equal(false, "workplace should not have been updated");
+      expect(workplaceUpdated).to.equal(false, 'workplace should not have been updated');
     });
 
     it('should return status 503 if workplace update returns false when approving a new workplace', async () => {
       // Arrange
-      testWorkplace.update = () => { return false; }
+      testWorkplace.update = () => {
+        return false;
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(503);
@@ -526,12 +633,17 @@ describe.skip('admin/Approval route', () => {
 
     it('should return status 503 if workplace update throws exception when approving a new workplace', async () => {
       // Arrange
-      testWorkplace.update = () => { throw "Error"; }
+      testWorkplace.update = () => {
+        throw 'Error';
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(503);
@@ -539,7 +651,7 @@ describe.skip('admin/Approval route', () => {
   });
 
   describe('rejecting a new workplace', () => {
-    beforeEach(async() => {
+    beforeEach(async () => {
       // For new workplace registrations, username is set to null. See onSubmit in registration.component.ts
       testRequestBody.username = null;
       testRequestBody.approve = false;
@@ -549,9 +661,12 @@ describe.skip('admin/Approval route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
@@ -562,28 +677,36 @@ describe.skip('admin/Approval route', () => {
     it('should delete the workplace when rejecting a new workplace', async () => {
       // Arrange
       var workplaceDestroyed = false;
-      testWorkplace.destroy =  (args) => {
+      testWorkplace.destroy = (args) => {
         workplaceDestroyed = true;
         return true;
-      }
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
-      expect(workplaceDestroyed).to.deep.equal(true, "workplace should have been destroyed");
+      expect(workplaceDestroyed).to.deep.equal(true, 'workplace should have been destroyed');
     });
 
     it('should return status 503 if it is not possible to delete a workplace when rejecting a new workplace', async () => {
       // Arrange
-      testWorkplace.destroy = () => { return false; }
+      testWorkplace.destroy = () => {
+        return false;
+      };
 
       // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(
+        {
+          body: testRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(503);

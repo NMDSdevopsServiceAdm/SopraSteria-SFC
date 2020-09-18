@@ -6,13 +6,11 @@ let sns = null;
 const initialise = (region) => {
   sns = new AWS.SNS({
     apiVersion: '2010-03-31',
-    region
+    region,
   });
-
 };
 
-
-const postToRegistrations = async (registration)  => {
+const postToRegistrations = async (registration) => {
   if (!sns) return;
   if (!config.get('aws.sns.enabled')) return;
 
@@ -26,14 +24,13 @@ const postToRegistrations = async (registration)  => {
   try {
     const status = await sns.publish(params).promise();
     // console.log("postToRegistrations status: ", status)
-
   } catch (err) {
     // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
     console.error('postToRegistrations error: ', err);
   }
-}
+};
 
-const postToFeedback = async (feedback)  => {
+const postToFeedback = async (feedback) => {
   if (!sns) return;
   if (!config.get('aws.sns.enabled')) return;
 
@@ -47,12 +44,11 @@ const postToFeedback = async (feedback)  => {
   try {
     const status = await sns.publish(params).promise();
     // console.log("postToFeedback status: ", status)
-
   } catch (err) {
     // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
     console.error('postToFeedback error: ', err);
   }
-}
+};
 
 module.exports.initialise = initialise;
 module.exports.postToRegistrations = postToRegistrations;

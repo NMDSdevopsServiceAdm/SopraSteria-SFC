@@ -23,11 +23,11 @@ export class BreadcrumbService {
   constructor(private router: Router, private location: Location) {
     this.router.events
       .pipe(
-        filter(event => event instanceof NavigationEnd),
+        filter((event) => event instanceof NavigationEnd),
         map(() => parse(this.router.url).pathname),
         distinctUntilChanged(),
         map(() => this._routes$.value),
-        filter(val => !!val)
+        filter((val) => !!val),
       )
       .subscribe(() => {
         this._routes$.next(null);
@@ -120,7 +120,7 @@ export class BreadcrumbService {
   }
 
   private getParts(url: string) {
-    return url.split('/').filter(part => part !== '');
+    return url.split('/').filter((part) => part !== '');
   }
 
   private isParameter(part: string) {

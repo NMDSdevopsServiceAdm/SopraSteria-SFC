@@ -11,6 +11,8 @@ export class TrainingService {
   constructor(private http: HttpClient) {}
 
   getCategories(): Observable<TrainingCategory[]> {
-    return this.http.get<TrainingCategoryResponse>('/api/trainingCategories').pipe(map(res => res.trainingCategories));
+    return this.http
+      .get<TrainingCategoryResponse>('/api/trainingCategories')
+      .pipe(map((res) => res.trainingCategories));
   }
 }

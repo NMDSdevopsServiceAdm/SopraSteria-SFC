@@ -5,13 +5,11 @@ const models = require('../models/index');
 router.route('/').get(async function (req, res) {
   try {
     let results = await models.workerNurseSpecialism.findAll({
-      order: [
-        ["seq", "ASC"]
-      ]
+      order: [['seq', 'ASC']],
     });
 
     res.send({
-      workerNurseSpecialisms: nurseSpecialismsJSON(results)
+      workerNurseSpecialisms: nurseSpecialismsJSON(results),
     });
   } catch (err) {
     console.error(err);
@@ -19,10 +17,10 @@ router.route('/').get(async function (req, res) {
   }
 });
 
-function nurseSpecialismsJSON(givenSpecialisms){
+function nurseSpecialismsJSON(givenSpecialisms) {
   let specialisms = [];
 
-  givenSpecialisms.forEach(thisSpecialism => {
+  givenSpecialisms.forEach((thisSpecialism) => {
     specialisms.push({
       id: thisSpecialism.id,
       seq: thisSpecialism.seq,
@@ -31,6 +29,6 @@ function nurseSpecialismsJSON(givenSpecialisms){
   });
 
   return specialisms;
-};
+}
 
 module.exports = router;

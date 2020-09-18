@@ -13,7 +13,7 @@ export class AlertService {
   public alert$: BehaviorSubject<Alert> = new BehaviorSubject(null);
 
   constructor(private router: Router, private windowRef: WindowRef) {
-    this.router.events.pipe(filter(event => event instanceof NavigationStart)).subscribe(() => {
+    this.router.events.pipe(filter((event) => event instanceof NavigationStart)).subscribe(() => {
       this.removeAlert();
     });
   }

@@ -25,8 +25,8 @@ export class MockNotificationsService extends NotificationsService {
       created: '2020-01-01',
       type: 'BECOMEAPARENT',
       typeContent: {
-        status: this.approved ? 'Approved' : 'Rejected'
-      }
+        status: this.approved ? 'Approved' : 'Rejected',
+      },
     });
   }
 }

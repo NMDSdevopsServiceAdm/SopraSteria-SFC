@@ -10,8 +10,6 @@ export class WdfUpdateWarningComponent {
   @Input() report: WDFReport;
 
   get effectiveFromDateNextYear() {
-    return moment(this.report.effectiveFrom)
-      .add(1, 'years')
-      .format('YYYY');
+    return moment(this.report.effectiveFrom).add(1, 'years').format('YYYY');
   }
 }

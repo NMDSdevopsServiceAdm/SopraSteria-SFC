@@ -36,16 +36,9 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     private router: Router,
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
   ) {
-    this.yearValidators = [
-      Validators.max(moment().year()),
-      Validators.min(
-        moment()
-          .subtract(100, 'years')
-          .year()
-      ),
-    ];
+    this.yearValidators = [Validators.max(moment().year()), Validators.min(moment().subtract(100, 'years').year())];
   }
 
   ngOnInit() {
@@ -57,7 +50,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.qualificationId = this.route.snapshot.params.qualificationId;
 
-    this.workerService.getRoute$.subscribe(route => {
+    this.workerService.getRoute$.subscribe((route) => {
       if (route) {
         this.previousUrl = route;
       }
@@ -66,7 +59,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       url: [this.previousUrl],
     });
 
-    Object.keys(QualificationType).forEach(key => {
+    Object.keys(QualificationType).forEach((key) => {
       this.qualificationTypes[key] = QualificationType[key];
       this.form.addControl(key, this.createQualificationGroup());
     });
@@ -75,25 +68,25 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       this.workerService
         .getAvailableQualifcations(this.workplace.uid, this.worker.uid, QualificationType.Award)
         .subscribe(
-          qualifications => {
+          (qualifications) => {
             if (qualifications) {
               this.qualifications = qualifications;
             }
           },
-          error => {
+          (error) => {
             console.error(error.error);
-          }
-        )
+          },
+        ),
     );
 
     if (this.qualificationId) {
       this.subscriptions.add(
         this.workerService.getQualification(this.workplace.uid, this.worker.uid, this.qualificationId).subscribe(
-          record => {
+          (record) => {
             if (record) {
               this.record = record;
               const typeKey = Object.keys(this.qualificationTypes).find(
-                key => this.qualificationTypes[key] === this.record.qualification.group
+                (key) => this.qualificationTypes[key] === this.record.qualification.group,
               );
 
               this.form.patchValue({
@@ -107,16 +100,16 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
               });
             }
           },
-          error => {
+          (error) => {
             console.error(error.error);
-          }
-        )
+          },
+        ),
       );
     }
 
-    this.form.get('type').valueChanges.subscribe(value => {
+    this.form.get('type').valueChanges.subscribe((value) => {
       this.submitted = false;
-      Object.keys(QualificationType).forEach(key => {
+      Object.keys(QualificationType).forEach((key) => {
         const group = this.form.get(key) as FormGroup;
         const { qualification, year, notes } = group.controls;
 
@@ -156,7 +149,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       },
     ];
 
-    Object.keys(QualificationType).forEach(key => {
+    Object.keys(QualificationType).forEach((key) => {
       this.formErrorsMap.push(
         ...[
           {
@@ -190,7 +183,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
               },
             ],
           },
-        ]
+        ],
       );
     });
   }
@@ -218,7 +211,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     }
 
     const { type } = this.form.value;
-    const typeKey = Object.keys(this.qualificationTypes).find(key => this.qualificationTypes[key] === type);
+    const typeKey = Object.keys(this.qualificationTypes).find((key) => this.qualificationTypes[key] === type);
     const group = this.form.get(typeKey) as FormGroup;
     const { qualification, year, notes } = group.value;
 
@@ -237,15 +230,15 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
           .updateQualification(this.workplace.uid, this.worker.uid, this.qualificationId, record)
           .subscribe(
             () => this.onSuccess(),
-            error => this.onError(error)
-          )
+            (error) => this.onError(error),
+          ),
       );
     } else {
       this.subscriptions.add(
         this.workerService.createQualification(this.workplace.uid, this.worker.uid, record).subscribe(
           () => this.onSuccess(),
-          error => this.onError(error)
-        )
+          (error) => this.onError(error),
+        ),
       );
     }
   }

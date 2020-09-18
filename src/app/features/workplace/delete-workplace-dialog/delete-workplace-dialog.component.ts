@@ -9,7 +9,7 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 export class DeleteWorkplaceDialogComponent extends DialogComponent {
   constructor(
     @Inject(DIALOG_DATA) public data: { workplaceName: string },
-    public dialog: Dialog<DeleteWorkplaceDialogComponent>
+    public dialog: Dialog<DeleteWorkplaceDialogComponent>,
   ) {
     super(data, dialog);
   }

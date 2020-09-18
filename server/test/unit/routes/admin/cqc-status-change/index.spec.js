@@ -39,23 +39,25 @@ var fakeApproval = {
   Establishment: {
     uid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
     nmdsId: testWorkplace.nmdsId,
-    NameValue: testWorkplace.NameValue
+    NameValue: testWorkplace.NameValue,
   },
   User: {
-    FullNameValue: faker.name.findName()
+    FullNameValue: faker.name.findName(),
   },
   Data: {
     requestedService: {
-      id: 1, name: 'Carers support'
+      id: 1,
+      name: 'Carers support',
     },
     currentService: {
       id: 14,
       name: 'Any childrens / young peoples services',
-      other: 'Other Name'
-    }
-  }, save: () => {
+      other: 'Other Name',
+    },
+  },
+  save: () => {
     approvalObjectWasSaved = true;
-  }
+  },
 };
 
 var approvalRequestBody = {};
@@ -74,17 +76,15 @@ const approvalJson = (json) => {
 const approvalStatus = (status) => {
   returnedStatus = status;
   return {
-    json: approvalJson, send: () => {
-    }
+    json: approvalJson,
+    send: () => {},
   };
 };
 var changeMainService;
 var throwErrorWhenFetchingAllRequests = false;
 var throwErrorWhenFetchingSingleRequest = false;
 
-
 describe.skip('admin/cqc-status-change route', () => {
-
   afterEach(() => {
     sb.restore();
   });
@@ -135,7 +135,6 @@ describe.skip('admin/cqc-status-change route', () => {
     noMatchingRequestByEstablishmentId = false;
   });
 
-
   describe('fetching CQC Status Approval', () => {
     it('should return an array of cqc status approvals', async () => {
       // Arrange (see beforeEach)
@@ -145,29 +144,31 @@ describe.skip('admin/cqc-status-change route', () => {
 
       // Assert
       expect(returnedStatus).to.deep.equal(200);
-      expect(returnedJson).to.deep.equal([{
-        requestId: fakeApproval.ID,
-        requestUUID: fakeApproval.UUID,
-        establishmentId: fakeApproval.EstablishmentID,
-        establishmentUid: fakeApproval.Establishment.uid,
-        userId: fakeApproval.UserID,
-        workplaceId: fakeApproval.Establishment.nmdsId,
-        username: fakeApproval.User.FullNameValue,
-        orgName: fakeApproval.Establishment.NameValue,
-        requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
-        data: {
-          currentService: {
-            ID: fakeApproval.Data.currentService.id,
-            name: fakeApproval.Data.currentService.name,
-            other: fakeApproval.Data.currentService.other
+      expect(returnedJson).to.deep.equal([
+        {
+          requestId: fakeApproval.ID,
+          requestUUID: fakeApproval.UUID,
+          establishmentId: fakeApproval.EstablishmentID,
+          establishmentUid: fakeApproval.Establishment.uid,
+          userId: fakeApproval.UserID,
+          workplaceId: fakeApproval.Establishment.nmdsId,
+          username: fakeApproval.User.FullNameValue,
+          orgName: fakeApproval.Establishment.NameValue,
+          requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
+          data: {
+            currentService: {
+              ID: fakeApproval.Data.currentService.id,
+              name: fakeApproval.Data.currentService.name,
+              other: fakeApproval.Data.currentService.other,
+            },
+            requestedService: {
+              ID: fakeApproval.Data.requestedService.id,
+              name: fakeApproval.Data.requestedService.name,
+              other: null,
+            },
           },
-          requestedService: {
-            ID: fakeApproval.Data.requestedService.id,
-            name: fakeApproval.Data.requestedService.name,
-            other: null
-          }
-        }
-      }]);
+        },
+      ]);
     });
 
     it('should return 400 on error', async () => {
@@ -182,7 +183,6 @@ describe.skip('admin/cqc-status-change route', () => {
     });
   });
 
-
   describe('approving a new cqcStatusRequest', () => {
     beforeEach(async () => {
       approvalRequestBody.approve = true;
@@ -192,9 +192,12 @@ describe.skip('admin/cqc-status-change route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
@@ -207,9 +210,12 @@ describe.skip('admin/cqc-status-change route', () => {
       fakeApproval.Status = 'Pending';
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(fakeApproval.Status).to.equal('Approved');
@@ -220,9 +226,12 @@ describe.skip('admin/cqc-status-change route', () => {
       approvalObjectWasSaved = false;
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
@@ -232,9 +241,12 @@ describe.skip('admin/cqc-status-change route', () => {
       // Arrange
       throwErrorWhenFetchingSingleRequest = true;
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(400);
@@ -250,9 +262,12 @@ describe.skip('admin/cqc-status-change route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
@@ -265,9 +280,12 @@ describe.skip('admin/cqc-status-change route', () => {
       fakeApproval.Status = 'Pending';
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(fakeApproval.Status).to.equal('Rejected');
@@ -278,9 +296,12 @@ describe.skip('admin/cqc-status-change route', () => {
       approvalObjectWasSaved = false;
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
@@ -291,9 +312,12 @@ describe.skip('admin/cqc-status-change route', () => {
       workplaceObjectWasSaved = false;
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(workplaceObjectWasSaved).to.equal(false);

@@ -46,7 +46,7 @@ export class UserService {
   }
 
   public getLoggedInUser(): Observable<UserDetails> {
-    return this.http.get<UserDetails>(`/api/user/me`).pipe(tap(user => (this.loggedInUser = user)));
+    return this.http.get<UserDetails>('/api/user/me').pipe(tap((user) => (this.loggedInUser = user)));
   }
 
   // get agreedUpdatedTermsStatus
@@ -129,7 +129,7 @@ export class UserService {
    */
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
-    return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`, { params });
+    return this.http.get<GetWorkplacesResponse>('/api/user/my/establishments', { params });
   }
 
   /*
@@ -138,6 +138,6 @@ export class UserService {
   public getAllUsersForEstablishment(workplaceUid: string): Observable<Array<UserDetails>> {
     return this.http
       .get<GetAllUsersResponse>(`/api/user/establishment/${workplaceUid}`)
-      .pipe(map(response => response.users));
+      .pipe(map((response) => response.users));
   }
 }

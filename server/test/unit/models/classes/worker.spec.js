@@ -10,8 +10,8 @@ describe('Worker Class', () => {
     it('should remove nurse specialism and registered nurse when not a registered nurse', async () => {
       const notRegisteredNurse = {
         mainJob: {
-          jobId: 27
-        }
+          jobId: 27,
+        },
       };
       const nonRegisteredNurseWorker = await worker.load(notRegisteredNurse);
       expect(notRegisteredNurse.nurseSpecialism.id).to.deep.equal(null);
@@ -22,13 +22,13 @@ describe('Worker Class', () => {
     it('should not remove nurse specialism and registered nurse when a registered nurse', async () => {
       const registeredNurse = {
         mainJob: {
-          jobId: 23
+          jobId: 23,
         },
         nurseSpecialism: {
           id: 2,
-          specialism: 'Adults'
+          specialism: 'Adults',
         },
-        registeredNurse: 'Adult Nurse'
+        registeredNurse: 'Adult Nurse',
       };
       const registeredNurseWorker = await worker.load(registeredNurse);
       expect(registeredNurse.nurseSpecialism.id).to.deep.equal(2);
@@ -39,8 +39,8 @@ describe('Worker Class', () => {
     it('should remove AMHP when not a social worker', async () => {
       const nonSocialWorker = {
         mainJob: {
-          jobId: 23
-        }
+          jobId: 23,
+        },
       };
       const nonSocialWorkerWorker = await worker.load(nonSocialWorker);
       expect(nonSocialWorker.approvedMentalHealthWorker).to.deep.equal(null);
@@ -49,9 +49,9 @@ describe('Worker Class', () => {
     it('should not remove AMHP when a social worker', async () => {
       const nonSocialWorker = {
         mainJob: {
-          jobId: 27
+          jobId: 27,
         },
-        approvedMentalHealthWorker: 'Yes'
+        approvedMentalHealthWorker: 'Yes',
       };
       const nonSocialWorkerWorker = await worker.load(nonSocialWorker);
       expect(nonSocialWorker.approvedMentalHealthWorker).to.deep.equal('Yes');
@@ -61,8 +61,8 @@ describe('Worker Class', () => {
       const british = {
         nationality: {
           value: 'British',
-          other: {}
-        }
+          other: {},
+        },
       };
       const britishWorker = await worker.load(british);
       expect(british.britishCitizenship).to.deep.equal(null);
@@ -75,10 +75,10 @@ describe('Worker Class', () => {
           value: 'Other',
           other: {
             nationalityId: 56,
-            nationality: 'Danish'
-          }
+            nationality: 'Danish',
+          },
         },
-        britishCitizenship: 'Yes'
+        britishCitizenship: 'Yes',
       };
       const nonBritishWorker = await worker.load(nonbritish);
       expect(nonbritish.britishCitizenship).to.deep.equal('Yes');
@@ -87,8 +87,8 @@ describe('Worker Class', () => {
     it('should remove year arrived when born in the UK', async () => {
       const bornUk = {
         countryOfBirth: {
-          value: 'United Kingdom'
-        }
+          value: 'United Kingdom',
+        },
       };
       const bornUkWorker = await worker.load(bornUk);
       expect(bornUk.yearArrived.value).to.deep.equal(null);
@@ -101,12 +101,13 @@ describe('Worker Class', () => {
           value: 'Other',
           other: {
             countryId: 59,
-            country: 'Denmark'          }
+            country: 'Denmark',
+          },
         },
         yearArrived: {
           value: 'Yes',
-          year: 2009
-        }
+          year: 2009,
+        },
       };
       const notBornUkWorker = await worker.load(notBornUk);
       expect(notBornUk.yearArrived.value).to.deep.equal('Yes');
@@ -115,7 +116,7 @@ describe('Worker Class', () => {
     });
     it('should remove contracted hours when on a zero hour contract', async () => {
       const zeroHours = {
-        zeroHoursContract: 'Yes'
+        zeroHoursContract: 'Yes',
       };
       const zeroHoursWorker = await worker.load(zeroHours);
       expect(zeroHours.weeklyHoursContracted.value).to.deep.equal(null);
@@ -124,7 +125,7 @@ describe('Worker Class', () => {
     });
     it('should remove contracted hours when from an agency', async () => {
       const agency = {
-        contract: 'Agency'
+        contract: 'Agency',
       };
       const agencyWorker = await worker.load(agency);
       expect(agency.weeklyHoursContracted.value).to.deep.equal(null);
@@ -136,8 +137,8 @@ describe('Worker Class', () => {
         zeroHoursContract: 'No',
         weeklyHoursContracted: {
           value: 'Yes',
-          hours: 37
-        }
+          hours: 37,
+        },
       };
       const notZeroHoursWorker = await worker.load(notZeroHours);
       expect(notZeroHours.weeklyHoursContracted.value).to.deep.equal('Yes');
@@ -149,8 +150,8 @@ describe('Worker Class', () => {
         contract: 'Permanent',
         weeklyHoursContracted: {
           value: 'Yes',
-          hours: 37
-        }
+          hours: 37,
+        },
       };
       const notZeroHoursWorker = await worker.load(notZeroHours);
       expect(notZeroHours.weeklyHoursContracted.value).to.deep.equal('Yes');
@@ -159,7 +160,7 @@ describe('Worker Class', () => {
     });
     it('should remove average hours when not on a zero hour contract', async () => {
       const notZeroHours = {
-        zeroHoursContract: 'No'
+        zeroHoursContract: 'No',
       };
       const notZeroHoursWorker = await worker.load(notZeroHours);
       expect(notZeroHours.weeklyHoursAverage.value).to.deep.equal(null);
@@ -171,8 +172,8 @@ describe('Worker Class', () => {
         zeroHoursContract: 'Yes',
         weeklyHoursAverage: {
           value: 'Yes',
-          hours: 37
-        }
+          hours: 37,
+        },
       };
       const zeroHoursWorker = await worker.load(zeroHours);
       expect(zeroHours.weeklyHoursAverage.value).to.deep.equal('Yes');
@@ -183,18 +184,18 @@ describe('Worker Class', () => {
       const agencyBuilder = build({
         fields: {
           contract: oneOf('Agency', 'Pool/Bank'),
-          daysSick: { value: 'Yes', days: fake(f => f.random.number({ min: 1, max: 10 })) }
-        }
-      })
+          daysSick: { value: 'Yes', days: fake((f) => f.random.number({ min: 1, max: 10 })) },
+        },
+      });
       const agency = agencyBuilder();
       const agencyWorker = await worker.load(agency);
       expect(agency.daysSick.value).to.deep.equal(null);
       expect(agency.daysSick.days).to.deep.equal(null);
       expect(agencyWorker).to.deep.equal(true);
-    })
+    });
     it('should remove highest social care qualification when they do not have one', async () => {
       const nonSocialQual = {
-        qualificationInSocialCare: 'No'
+        qualificationInSocialCare: 'No',
       };
       const nonSocialQualWorker = await worker.load(nonSocialQual);
       expect(nonSocialQual.socialCareQualification.qualificationId).to.deep.equal(null);
@@ -206,8 +207,8 @@ describe('Worker Class', () => {
         qualificationInSocialCare: 'Yes',
         socialCareQualification: {
           qualificationId: 8,
-          title: 'Level 7'
-        }
+          title: 'Level 7',
+        },
       };
       const socialQualWorker = await worker.load(socialQual);
       expect(socialQual.socialCareQualification.qualificationId).to.deep.equal(8);
@@ -216,7 +217,7 @@ describe('Worker Class', () => {
     });
     it('should remove highest non-social care qualification when they do not have one', async () => {
       const nonQual = {
-        otherQualification: 'No'
+        otherQualification: 'No',
       };
       const nonQualWorker = await worker.load(nonQual);
       expect(nonQual.highestQualification.qualificationId).to.deep.equal(null);
@@ -228,8 +229,8 @@ describe('Worker Class', () => {
         otherQualification: 'Yes',
         highestQualification: {
           qualificationId: 8,
-          title: 'Level 7'
-        }
+          title: 'Level 7',
+        },
       };
       const qualWorker = await worker.load(qual);
       expect(qual.highestQualification.qualificationId).to.deep.equal(8);

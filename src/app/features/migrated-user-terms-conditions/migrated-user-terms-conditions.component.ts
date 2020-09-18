@@ -26,7 +26,7 @@ export class MigratedUserTermsConditionsComponent implements OnInit {
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: FormBuilder,
     private userService: UserService,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit() {
@@ -89,15 +89,15 @@ export class MigratedUserTermsConditionsComponent implements OnInit {
       .updateUserDetails(
         this.establishmentService.primaryWorkplace.uid,
         this.userService.loggedInUser.uid,
-        this.userService.loggedInUser
+        this.userService.loggedInUser,
       )
       .subscribe(
-        data => {
+        (data) => {
           this.router.navigate(['/dashboard']);
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
+        },
       );
   }
 }

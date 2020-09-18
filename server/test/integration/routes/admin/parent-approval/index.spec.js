@@ -18,8 +18,7 @@ describe('Admin/Parent Approval', () => {
   let login = null;
   let approvalRequest = null;
 
-  before(async() => {
-
+  before(async () => {
     // Find a valid service (eg "Carers Support")
     const nonCqcServicesResults = await apiEndpoint
       .get('/services/byCategory?cqc=false')
@@ -39,97 +38,93 @@ describe('Admin/Parent Approval', () => {
 
     // Login as an admin user to access parent approvals (would normally be accessed via "Parent requests").
     if (registration) {
-      adminLogin = await apiEndpoint
-        .post('/login')
-        .send(admin)
-        .expect('Content-Type', /json/)
-        .expect(200);
+      adminLogin = await apiEndpoint.post('/login').send(admin).expect('Content-Type', /json/).expect(200);
     }
 
     // Create a become-a-parent request.
     login = await models.login.findOne({
       where: { username: admin.username },
       attributes: ['username'],
-      include: [{
+      include: [
+        {
           model: models.user,
           attributes: ['id'],
-          include: [{
+          include: [
+            {
               model: models.establishment,
-              attributes: ['id']
-            }]
-      }]
+              attributes: ['id'],
+            },
+          ],
+        },
+      ],
     });
     approvalRequest = await models.Approvals.create({
       EstablishmentID: login.user.establishment.id,
       UserID: login.user.id,
       Status: 'Pending',
-      ApprovalType: 'BecomeAParent'
+      ApprovalType: 'BecomeAParent',
     });
   });
 
-  beforeEach(async() => {});
+  beforeEach(async () => {});
 
-  describe('/admin/parent-approval',
-    () => {
-      it('should return an array when fetching become-a-parent requests',
-        async () => {
-          // Arrange
-          const approve = true;
-          if (adminLogin.headers.authorization) {
-            const result = await apiEndpoint
+  describe('/admin/parent-approval', () => {
+    it('should return an array when fetching become-a-parent requests', async () => {
+      // Arrange
+      const approve = true;
+      if (adminLogin.headers.authorization) {
+        const result = await apiEndpoint
 
-              // Act
-              .get('/admin/parent-approval')
-              .set({ Authorization: adminLogin.headers.authorization })
+          // Act
+          .get('/admin/parent-approval')
+          .set({ Authorization: adminLogin.headers.authorization })
 
-              // Assert
-              .expect('Content-Type', /json/)
-              .expect(200);
-            expect(result.body).to.not.equal(undefined);
-            expect(Array.isArray(result.body));
-          }
-        });
-
-      it('should return a confirmation message and status 200 when an org is granted parent status',
-        async () => {
-          // Arrange
-          if (adminLogin.headers.authorization) {
-            const result = await apiEndpoint
-
-              // Act
-              .post('/admin/parent-approval')
-              .set({ Authorization: adminLogin.headers.authorization })
-              .send({
-                approve: false,
-                parentRequestId: approvalRequest.ID,
-                establishmentId: login.user.establishment.id
-              })
-
-              // Assert
-              .expect('Content-Type', /json/)
-              .expect(200);
-            expect(result.body.message).to.equal(parentApproval.parentRejectionConfirmation);
-          }
-        });
-
-      it('should return status 400 when passed bad data',
-        async () => {
-          // Arrange
-          if (adminLogin.headers.authorization) {
-            const result = await apiEndpoint
-
-            // Act
-            .post('/admin/parent-approval')
-            .set({ Authorization: adminLogin.headers.authorization })
-            .send({
-              approve: true,
-              parentRequestId: 99999999,
-              establishmentId: 9999
-            })
-
-            // Assert
-            .expect(400);
-          }
-        });
+          // Assert
+          .expect('Content-Type', /json/)
+          .expect(200);
+        expect(result.body).to.not.equal(undefined);
+        expect(Array.isArray(result.body));
+      }
     });
+
+    it('should return a confirmation message and status 200 when an org is granted parent status', async () => {
+      // Arrange
+      if (adminLogin.headers.authorization) {
+        const result = await apiEndpoint
+
+          // Act
+          .post('/admin/parent-approval')
+          .set({ Authorization: adminLogin.headers.authorization })
+          .send({
+            approve: false,
+            parentRequestId: approvalRequest.ID,
+            establishmentId: login.user.establishment.id,
+          })
+
+          // Assert
+          .expect('Content-Type', /json/)
+          .expect(200);
+        expect(result.body.message).to.equal(parentApproval.parentRejectionConfirmation);
+      }
+    });
+
+    it('should return status 400 when passed bad data', async () => {
+      // Arrange
+      if (adminLogin.headers.authorization) {
+        const result = await apiEndpoint
+
+          // Act
+          .post('/admin/parent-approval')
+          .set({ Authorization: adminLogin.headers.authorization })
+          .send({
+            approve: true,
+            parentRequestId: 99999999,
+            establishmentId: 9999,
+          })
+
+          // Assert
+          .expect(400);
+      }
+    });
+  });
 });

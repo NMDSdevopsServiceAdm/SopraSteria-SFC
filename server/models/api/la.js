@@ -1,6 +1,5 @@
 const localformatLA = (thisLA) => {
-  const thisJson = {
-  };
+  const thisJson = {};
 
   if (thisLA.id) {
     thisJson.id = thisLA.id;
@@ -21,7 +20,7 @@ exports.listOfLAsJSON = (givenLAs, primaryAuthorityCssrId) => {
   let laList = [];
 
   if (givenLAs && Array.isArray(givenLAs)) {
-    givenLAs.forEach(thisLA => {
+    givenLAs.forEach((thisLA) => {
       const localLa = localformatLA(thisLA);
 
       // if the primary Authority custodian code is given,

@@ -19,7 +19,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.ACCOUNT);
     this.submitted = false;
-    this.subscriptions.add(this.userService.loggedInUser$.subscribe(user => (this.userDetails = user)));
+    this.subscriptions.add(this.userService.loggedInUser$.subscribe((user) => (this.userDetails = user)));
   }
 
   public onResetPasswordSuccess(): void {

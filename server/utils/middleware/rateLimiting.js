@@ -1,5 +1,5 @@
 const models = require('../../models/');
-const {RateLimiterPostgres} = require('rate-limiter-flexible');
+const { RateLimiterPostgres } = require('rate-limiter-flexible');
 const appConfig = require('../../config/config');
 
 const opts = {
@@ -7,7 +7,7 @@ const opts = {
   duration: appConfig.get('rateLimiting.duration'),
   storeClient: models.sequelize,
   tableName: appConfig.get('rateLimiting.table'),
-  keyPrefix: 'UsernameLookup'
+  keyPrefix: 'UsernameLookup',
 };
 
 const ready = (err) => {
@@ -21,13 +21,14 @@ const ready = (err) => {
 const rateLimiter = new RateLimiterPostgres(opts, ready);
 
 exports.rateLimiting = (req, res, next) => {
-  rateLimiter.consume(req.ip, 1)
+  rateLimiter
+    .consume(req.ip, 1)
     .then((rateLimiterRes) => {
       const headers = {
-        "Retry-After": rateLimiterRes.msBeforeNext / 1000,
-        "X-RateLimit-Limit": opts.points,
-        "X-RateLimit-Remaining": rateLimiterRes.remainingPoints,
-        "X-RateLimit-Reset": new Date(Date.now() + rateLimiterRes.msBeforeNext)
+        'Retry-After': rateLimiterRes.msBeforeNext / 1000,
+        'X-RateLimit-Limit': opts.points,
+        'X-RateLimit-Remaining': rateLimiterRes.remainingPoints,
+        'X-RateLimit-Reset': new Date(Date.now() + rateLimiterRes.msBeforeNext),
       };
       res.set(headers);
       next();

@@ -19,7 +19,7 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, locationService, router);
   }

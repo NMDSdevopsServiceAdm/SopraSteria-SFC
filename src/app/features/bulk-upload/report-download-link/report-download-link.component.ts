@@ -20,7 +20,7 @@ export class ReportDownloadLinkComponent {
       .getReport(this.establishmentService.primaryWorkplace.uid, this.reportType)
       .pipe(take(1))
       .subscribe(
-        response => {
+        (response) => {
           // TODO: Possibly extract this out into a helper function
           //       to get the filename from a response header
           const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
@@ -30,7 +30,7 @@ export class ReportDownloadLinkComponent {
           const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
           saveAs(blob, filename);
         },
-        () => {}
+        () => {},
       );
   }
 

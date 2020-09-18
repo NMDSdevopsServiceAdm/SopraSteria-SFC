@@ -28,7 +28,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private bulkUploadService: BulkUploadService,
     private errorSummaryService: ErrorSummaryService,
-    private breadcrumbService: BreadcrumbService
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit() {
@@ -58,7 +58,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
         if (this.showErrorSummary) {
           this.errorSummaryService.scrollToErrorSummary();
         }
-      })
+      }),
     );
   }
 
@@ -70,7 +70,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
           this.showErrorSummary = form.invalid;
           this.errorSummaryService.syncFormErrorsEvent.next(true);
         }
-      })
+      }),
     );
   }
 

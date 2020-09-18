@@ -30,7 +30,7 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, router);
   }
@@ -46,13 +46,13 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
 
   protected setupSubscription(): void {
     this.subscriptions.add(
-      this.userService.loggedInUser$.subscribe(user => {
+      this.userService.loggedInUser$.subscribe((user) => {
         this.userDetails = user;
         this.preFillForm({
           securityQuestion: user.securityQuestion,
           securityQuestionAnswer: user.securityQuestionAnswer,
         });
-      })
+      }),
     );
   }
 
@@ -68,15 +68,15 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.primaryWorkplace.uid, this.userDetails.uid, userDetails).subscribe(
-        data => {
+        (data) => {
           this.userService.loggedInUser = { ...this.userDetails, ...data };
           this.router.navigate(['/account-management']);
         },
         (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
-      )
+        },
+      ),
     );
   }
 

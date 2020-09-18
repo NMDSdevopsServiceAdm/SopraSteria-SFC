@@ -23,7 +23,7 @@ router.use('/cqc-status-change', cqcStatusChange);
 router.use('/unlock-account', unlockAccount);
 
 router.route('/').post(async function (req, res) {
-  return res.status(200).send({success: "from admin"});
+  return res.status(200).send({ success: 'from admin' });
 });
 
 module.exports = router;

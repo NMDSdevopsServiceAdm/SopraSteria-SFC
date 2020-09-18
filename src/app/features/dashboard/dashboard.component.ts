@@ -30,7 +30,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public trainingAlert: number;
   public subsidiaryCount: number;
 
-
   constructor(
     private alertService: AlertService,
     private authService: AuthService,
@@ -41,7 +40,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private dialogService: DialogService,
     private router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.authService.isOnAdminScreen = false;
@@ -55,35 +54,35 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.workplace) {
       this.subscriptions.add(
         this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
-          total => {
+          (total) => {
             if (total) {
               this.totalStaffRecords = total;
             }
           },
-          error => {
+          (error) => {
             console.error(error.error);
-          }
-        )
+          },
+        ),
       );
       this.subscriptions.add(
         this.workerService.getAllWorkers(this.workplace.uid).subscribe(
-          workers => {
+          (workers) => {
             this.workerService.setWorkers(workers);
             if (workers.length > 0) {
               this.trainingAlert = workers[0].trainingAlert;
             }
           },
-          error => {
+          (error) => {
             console.error(error.error);
-          }
-        )
+          },
+        ),
       );
 
       this.subscriptions.add(
-        this.userService.getEstablishments().subscribe(res => {
+        this.userService.getEstablishments().subscribe((res) => {
           this.subsidiaryCount = res.subsidaries ? res.subsidaries.count : 0;
-        })
-      )
+        }),
+      );
     }
     const lastLoggedIn = this.userService.loggedInUser.lastLoggedIn;
     this.lastLoggedIn = lastLoggedIn ? lastLoggedIn : null;
@@ -95,18 +94,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // get latest notification after every 30 seconds
     this.subscriptions.add(
-      interval(30000).subscribe(
-        () => {
-          this.notificationsService.getAllNotifications().subscribe(
-            notifications => {
-              this.notificationsService.notifications$.next(notifications);
-            },
-            error => {
-              console.error(error.error);
-            }
-          );
-        }
-      )
+      interval(30000).subscribe(() => {
+        this.notificationsService.getAllNotifications().subscribe(
+          (notifications) => {
+            this.notificationsService.notifications$.next(notifications);
+          },
+          (error) => {
+            console.error(error.error);
+          },
+        );
+      }),
     );
   }
 
@@ -119,11 +116,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.dialogService
       .open(DeleteWorkplaceDialogComponent, { workplaceName: this.workplace.name })
-      .afterClosed.subscribe(deleteConfirmed => {
-      if (deleteConfirmed) {
-        this.deleteWorkplace();
-      }
-    });
+      .afterClosed.subscribe((deleteConfirmed) => {
+        if (deleteConfirmed) {
+          this.deleteWorkplace();
+        }
+      });
   }
 
   private deleteWorkplace(): void {
@@ -137,22 +134,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.permissionsService.clearPermissions();
           this.authService.restorePreviousToken();
 
-          if(this.authService.getPreviousToken().EstablishmentUID) {
+          if (this.authService.getPreviousToken().EstablishmentUID) {
             this.establishmentService
               .getEstablishment(this.authService.getPreviousToken().EstablishmentUID)
               .pipe(take(1))
-              .subscribe(
-                workplace => {
-                  this.establishmentService.setState(workplace);
-                  this.establishmentService.setPrimaryWorkplace(workplace);
-                  this.establishmentService.establishmentId = workplace.uid;
-                  this.router.navigate(['/search-establishments']).then(() => {
-                    this.alertService.addAlert({
-                      type: 'success',
-                      message: `${this.workplace.name} has been permanently deleted.`,
-                    });
+              .subscribe((workplace) => {
+                this.establishmentService.setState(workplace);
+                this.establishmentService.setPrimaryWorkplace(workplace);
+                this.establishmentService.establishmentId = workplace.uid;
+                this.router.navigate(['/search-establishments']).then(() => {
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `${this.workplace.name} has been permanently deleted.`,
                   });
                 });
+              });
           } else {
             this.router.navigate(['/search-establishments']).then(() => {
               this.alertService.addAlert({
@@ -162,20 +158,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
             });
           }
         },
-        e => {
-          console.error(e)
+        (e) => {
+          console.error(e);
           this.alertService.addAlert({
             type: 'warning',
             message: 'There was an error deleting the workplace.',
           });
-        }
-      )
+        },
+      ),
     );
   }
 
-
- get numberOfNewNotifications() {
-    const newNotifications = this.notificationsService.notifications.filter(notification => !notification.isViewed);
+  get numberOfNewNotifications() {
+    const newNotifications = this.notificationsService.notifications.filter((notification) => !notification.isViewed);
     return newNotifications.length;
   }
 

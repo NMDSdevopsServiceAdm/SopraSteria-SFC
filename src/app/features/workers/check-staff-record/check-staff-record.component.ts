@@ -20,12 +20,12 @@ export class CheckStaffRecordComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    private workerService: WorkerService
+    private workerService: WorkerService,
   ) {}
 
   ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+    this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
       this.worker = worker;
     });
   }
@@ -37,14 +37,14 @@ export class CheckStaffRecordComponent implements OnInit {
 
     this.subscriptions.add(
       this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
-        data => {
+        (data) => {
           this.workerService.setState({ ...this.worker, ...data });
           this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'save-success']);
         },
-        error => {
+        (error) => {
           console.log(error);
-        }
-      )
+        },
+      ),
     );
   }
 

@@ -3,7 +3,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-m govuk-!-margin-bottom-6">Workforce Development Fund</h2>
-    <ul class="govuk-list govuk-list--inline govuk-!-margin-bottom-6 ">
+    <ul class="govuk-list govuk-list--inline govuk-!-margin-bottom-6">
       <li *ngIf="isAdmin" class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
         <a
           href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-summary-report.csv"
@@ -25,7 +25,11 @@
     <div class="govuk-grid-row govuk-!-margin-bottom-8">
       <div class="govuk-grid-column-two-thirds-from-desktop">
         <p class="govuk-!-margin-bottom-0">
-          <a class="govuk-body-m" href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx">View more information about the Workforce Development Fund</a>
+          <a
+            class="govuk-body-m"
+            href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx"
+            >View more information about the Workforce Development Fund</a
+          >
         </p>
       </div>
     </div>

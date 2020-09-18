@@ -22,7 +22,7 @@ export class CreateUsernameComponent extends CreateUsername {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, registrationService, router);
   }
@@ -47,7 +47,7 @@ export class CreateUsernameComponent extends CreateUsername {
         if (loginCredentials) {
           this.preFillForm(loginCredentials);
         }
-      })
+      }),
     );
   }
 

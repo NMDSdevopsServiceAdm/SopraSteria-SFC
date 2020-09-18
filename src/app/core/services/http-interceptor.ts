@@ -14,10 +14,7 @@ export class HttpInterceptor implements HttpInterceptor {
     if (API_PATTERN.test(request.url)) {
       const cloned = request.clone({ headers: request.headers.set('Content-Type', 'application/json') });
 
-      return next.handle(cloned).pipe(
-        debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError)
-      );
+      return next.handle(cloned).pipe(debounceTime(500), catchError(this.httpErrorHandler.handleHttpError));
     }
 
     return next.handle(request);

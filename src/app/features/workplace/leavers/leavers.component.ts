@@ -24,7 +24,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
       value: jobOptionsEnum.NONE,
     },
     {
-      label: `I don't know how many new leavers there have been.`,
+      label: 'I don\'t know how many new leavers there have been.',
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
@@ -62,7 +62,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
     this.prefill();
 
     this.subscriptions.add(
-      this.form.get('leaversKnown').valueChanges.subscribe(value => {
+      this.form.get('leaversKnown').valueChanges.subscribe((value) => {
         while (this.leavers.length > 1) {
           this.leavers.removeAt(1);
         }
@@ -102,13 +102,13 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
       this.jobService
         .getJobs()
         .pipe(take(1))
-        .subscribe(jobs => (this.jobs = jobs)),
+        .subscribe((jobs) => (this.jobs = jobs)),
     );
   }
 
   private prefill(): void {
     if (Array.isArray(this.establishment.leavers) && this.establishment.leavers.length) {
-      this.establishment.leavers.forEach(leaver =>
+      this.establishment.leavers.forEach((leaver) =>
         this.leavers.push(this.createLeaverControl(leaver.jobId, leaver.total)),
       );
     } else {
@@ -156,9 +156,9 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
 
   public selectableJobs(index): Job[] {
     return this.jobs.filter(
-      job =>
+      (job) =>
         !this.leavers.controls.some(
-          leaver => leaver !== this.leavers.controls[index] && parseInt(leaver.get('jobRole').value, 10) === job.id,
+          (leaver) => leaver !== this.leavers.controls[index] && parseInt(leaver.get('jobRole').value, 10) === job.id,
         ),
     );
   }
@@ -188,7 +188,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
 
     if (this.leavers.length) {
       return {
-        leavers: this.leavers.value.map(leaver => ({
+        leavers: this.leavers.value.map((leaver) => ({
           jobId: parseInt(leaver.jobRole, 10),
           total: leaver.total,
         })),
@@ -201,8 +201,8 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
       this.establishmentService.updateJobs(this.establishment.uid, props).subscribe(
-        data => this._onSuccess(data),
-        error => this.onError(error),
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
       ),
     );
   }

@@ -17,7 +17,7 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, router);
   }
@@ -30,8 +30,8 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
   protected setupSubscription(): void {
     this.subscriptions.add(
       this.workplaceService.locationAddresses$.subscribe(
-        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses)
-      )
+        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
+      ),
     );
   }
 

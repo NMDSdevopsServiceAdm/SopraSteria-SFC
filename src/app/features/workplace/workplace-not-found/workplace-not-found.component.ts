@@ -23,7 +23,7 @@ export class WorkplaceNotFoundComponent extends WorkplaceNotFound {
     protected locationService: LocationService,
     protected router: Router,
     protected backService: BackService,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
   ) {
     super(formBuilder, backService, errorSummaryService, locationService, router);
   }

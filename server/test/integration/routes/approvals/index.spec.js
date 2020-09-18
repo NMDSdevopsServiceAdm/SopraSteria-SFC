@@ -17,8 +17,7 @@ describe('Approvals', () => {
   let login = null;
   let approvalRequest = null;
 
-  before(async() => {
-
+  before(async () => {
     // Find a valid service (eg "Carers Support")
     const nonCqcServicesResults = await apiEndpoint
       .get('/services/byCategory?cqc=false')
@@ -38,73 +37,70 @@ describe('Approvals', () => {
 
     // Login as an admin user to access parent approvals (would normally be accessed via "Parent requests").
     if (registration) {
-      adminLogin = await apiEndpoint
-        .post('/login')
-        .send(admin)
-        .expect('Content-Type', /json/)
-        .expect(200);
+      adminLogin = await apiEndpoint.post('/login').send(admin).expect('Content-Type', /json/).expect(200);
     }
 
     // Create a become-a-parent request.
     login = await models.login.findOne({
       where: { username: admin.username },
       attributes: ['username'],
-      include: [{
+      include: [
+        {
           model: models.user,
           attributes: ['id'],
-          include: [{
+          include: [
+            {
               model: models.establishment,
-              attributes: ['id']
-            }]
-      }]
+              attributes: ['id'],
+            },
+          ],
+        },
+      ],
     });
     approvalRequest = await models.Approvals.create({
       EstablishmentID: login.user.establishment.id,
       UserID: login.user.id,
       Status: 'Pending',
-      ApprovalType: 'BecomeAParent'
+      ApprovalType: 'BecomeAParent',
     });
   });
 
-  beforeEach(async() => {});
+  beforeEach(async () => {});
 
-  describe('/approvals/establishment',
-    () => {
-      it('should return an object when fetching approval request by establishment id',
-        async () => {
-          // Arrange
-          const approve = true;
-          if (adminLogin.headers.authorization) {
-            const result = await apiEndpoint
+  describe('/approvals/establishment', () => {
+    it('should return an object when fetching approval request by establishment id', async () => {
+      // Arrange
+      const approve = true;
+      if (adminLogin.headers.authorization) {
+        const result = await apiEndpoint
 
-              // Act
-              .get(`/approvals/establishment/${login.user.establishment.id}?type=BecomeAParent&status=Pending`)
-              .set({ Authorization: adminLogin.headers.authorization })
+          // Act
+          .get(`/approvals/establishment/${login.user.establishment.id}?type=BecomeAParent&status=Pending`)
+          .set({ Authorization: adminLogin.headers.authorization })
 
-              // Assert
-              .expect('Content-Type', /json/)
-              .expect(200);
-            expect(result.body).to.not.equal(undefined);
-            expect(result.body.establishmentId).to.equal(login.user.establishment.id);
-          }
-        });
-
-      it('should return null when no approval request exists for specified establishment id',
-        async () => {
-          // Arrange
-          const approve = true;
-          if (adminLogin.headers.authorization) {
-            const result = await apiEndpoint
-
-              // Act
-              .get('/approvals/establishment/999999?type=BecomeAParent&status=Pending')
-              .set({ Authorization: adminLogin.headers.authorization })
-
-              // Assert
-              .expect('Content-Type', /json/)
-              .expect(200);
-            expect(result.body).to.equal(null);
-          }
-        });
+          // Assert
+          .expect('Content-Type', /json/)
+          .expect(200);
+        expect(result.body).to.not.equal(undefined);
+        expect(result.body.establishmentId).to.equal(login.user.establishment.id);
+      }
     });
+
+    it('should return null when no approval request exists for specified establishment id', async () => {
+      // Arrange
+      const approve = true;
+      if (adminLogin.headers.authorization) {
+        const result = await apiEndpoint
+
+          // Act
+          .get('/approvals/establishment/999999?type=BecomeAParent&status=Pending')
+          .set({ Authorization: adminLogin.headers.authorization })
+
+          // Assert
+          .expect('Content-Type', /json/)
+          .expect(200);
+        expect(result.body).to.equal(null);
+      }
+    });
+  });
 });

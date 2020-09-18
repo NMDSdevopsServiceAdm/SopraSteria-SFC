@@ -25,7 +25,7 @@ describe('/server/models/Bulkimport/csv/training.js', () => {
         DATECOMPLETED: '',
         EXPIRYDATE: '',
         ACCREDITED: '',
-        NOTES: ''
+        NOTES: '',
       });
 
       // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -48,7 +48,7 @@ describe('/server/models/Bulkimport/csv/training.js', () => {
         DATECOMPLETED: '',
         EXPIRYDATE: '',
         ACCREDITED: '1',
-        NOTES: ''
+        NOTES: '',
       });
 
       // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -60,20 +60,23 @@ describe('/server/models/Bulkimport/csv/training.js', () => {
       // assert a error was returned
       expect(validator._validationErrors).to.deep.equal([]);
       expect(validator._validationErrors.length).to.equal(0);
-      expect(validator.accredited).to.equal('Yes')
+      expect(validator.accredited).to.equal('Yes');
     });
 
     it('should fail validation if invalid ACCREDITED is provided', async () => {
-      const validator = new TrainingCsvValidator({
-        LOCALESTID: 'foo',
-        UNIQUEWORKERID: 'bar',
-        CATEGORY: 1,
-        DESCRIPTION: 'training',
-        DATECOMPLETED: '',
-        EXPIRYDATE: '',
-        ACCREDITED: '3',
-        NOTES: ''
-      }, 1);
+      const validator = new TrainingCsvValidator(
+        {
+          LOCALESTID: 'foo',
+          UNIQUEWORKERID: 'bar',
+          CATEGORY: 1,
+          DESCRIPTION: 'training',
+          DATECOMPLETED: '',
+          EXPIRYDATE: '',
+          ACCREDITED: '3',
+          NOTES: '',
+        },
+        1,
+      );
 
       // Regular validation has to run first for the establishment to populate the internal properties correctly
       await validator.validate();
@@ -82,19 +85,17 @@ describe('/server/models/Bulkimport/csv/training.js', () => {
       await validator.transform();
 
       // assert a error was returned
-      expect(validator._validationErrors).to.deep.equal(
-        [
-          {
-            'errCode': 1060,
-            'errType': 'ACCREDITED_ERROR',
-            'error': 'ACCREDITED is invalid',
-            'lineNumber': 1,
-            'name': 'foo',
-            'source': '3',
-            'worker': 'bar'
-          }
-        ]
-      );
+      expect(validator._validationErrors).to.deep.equal([
+        {
+          errCode: 1060,
+          errType: 'ACCREDITED_ERROR',
+          error: 'ACCREDITED is invalid',
+          lineNumber: 1,
+          name: 'foo',
+          source: '3',
+          worker: 'bar',
+        },
+      ]);
       expect(validator._validationErrors.length).to.equal(1);
     });
   });

@@ -39,7 +39,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
         if (userDetails) {
           this.prefillForm(userDetails);
         }
-      })
+      }),
     );
   }
 

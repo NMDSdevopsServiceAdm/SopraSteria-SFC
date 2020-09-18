@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 const Establishment = require('../../models/classes/establishment');
 
@@ -12,10 +12,9 @@ router.route('/').get(async (req, res) => {
   try {
     // must restore the establishment - to assert security and availability
     if (await thisEstablishment.restore(establishmentId, false)) {
-
       const missingLocalIds = await thisEstablishment.missingLocalIdentifiers();
       return res.status(200).json({
-        establishments: missingLocalIds
+        establishments: missingLocalIds,
       });
     } else {
       return res.status(404).send('Not Found');
@@ -27,7 +26,8 @@ router.route('/').get(async (req, res) => {
       null,
       err,
       null,
-      `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
+      `Failed to retrieve Establishment with id/uid: ${establishmentId}`,
+    );
 
     console.error('establishment::localIdentifier GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);

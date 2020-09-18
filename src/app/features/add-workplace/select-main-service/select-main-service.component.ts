@@ -17,7 +17,7 @@ export class SelectMainServiceComponent extends SelectMainService {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected workplaceService: WorkplaceService
+    protected workplaceService: WorkplaceService,
   ) {
     super(backService, errorSummaryService, formBuilder, router, workplaceService);
   }
@@ -37,7 +37,7 @@ export class SelectMainServiceComponent extends SelectMainService {
         if (service) {
           this.selectedMainService = service;
         }
-      })
+      }),
     );
   }
 

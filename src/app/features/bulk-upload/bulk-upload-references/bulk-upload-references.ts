@@ -63,7 +63,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy, AfterViewInit {
   protected setupForm(): void {
     this.submitted = false;
     this.form = this.formBuilder.group({});
-    this.references = this.references.filter(item => item.ustatus !== 'PENDING');
+    this.references = this.references.filter((item) => item.ustatus !== 'PENDING');
     this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
         `reference-${reference.uid}`,
@@ -95,7 +95,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy, AfterViewInit {
 
   private checkFormForDuplicates(): void {
     this.subscriptions.add(
-      this.form.valueChanges.subscribe(changes => {
+      this.form.valueChanges.subscribe((changes) => {
         Object.keys(changes).forEach((key: string) => {
           const control = this.form.get(key);
 
@@ -141,7 +141,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy, AfterViewInit {
 
   private getDuplicates(): string[] {
     let formValues: string[] = Object.values(this.form.value);
-    formValues = formValues.map(value => value.toLowerCase());
+    formValues = formValues.map((value) => value.toLowerCase());
 
     return formValues.filter((value: string) => {
       return formValues.indexOf(value) !== formValues.lastIndexOf(value);
@@ -155,7 +155,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy, AfterViewInit {
 
   protected generateRequest(): LocalIdentifiersRequest {
     return {
-      localIdentifiers: Object.keys(this.form.value).map(key => ({
+      localIdentifiers: Object.keys(this.form.value).map((key) => ({
         uid: key.replace('reference-', ''),
         value: this.form.value[key],
       })),

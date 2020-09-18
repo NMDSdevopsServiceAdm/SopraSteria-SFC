@@ -40,7 +40,7 @@ export class ErrorSummaryService {
    */
   public getFormErrorMessage(item: string, errorType: string, formErrorsMap: Array<ErrorDetails>): string {
     const getFormControl: object = filter(formErrorsMap, ['item', item])[0];
-    return filter(getFormControl[`type`], ['name', errorType])[0].message;
+    return filter(getFormControl['type'], ['name', errorType])[0].message;
   }
 
   /**

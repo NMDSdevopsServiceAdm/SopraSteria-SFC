@@ -1,21 +1,23 @@
 const expect = require('chai').expect;
 
-const locationIdPropertyClass = require('../../../../../../models/classes/establishment/properties/locationIdProperty').LocationIdProperty;
+const locationIdPropertyClass = require('../../../../../../models/classes/establishment/properties/locationIdProperty')
+  .LocationIdProperty;
 
 describe('locationIdProperty Property', () => {
   describe('restoreFromJson()', () => {
-    it('should return JSON', async() => {
+    it('should return JSON', async () => {
       const locationIdProperty = new locationIdPropertyClass();
       const document = {
-        locationId: '1-12345678'
+        locationId: '1-12345678',
       };
       await locationIdProperty.restoreFromJson(document);
       expect(locationIdProperty.property).to.deep.equal(document.locationId);
     });
-    it('should return null if over character limit', async() => {
+    it('should return null if over character limit', async () => {
       const locationIdProperty = new locationIdPropertyClass();
       const document = {
-        locationId: '1-1234567896469869846498648964647896987986986363986389639863896398368936398639836893768936389639863986389638963986398836983689363896'
+        locationId:
+          '1-1234567896469869846498648964647896987986986363986389639863896398368936398639836893768936389639863986389638963986398836983689363896',
       };
       await locationIdProperty.restoreFromJson(document);
       expect(locationIdProperty.property).to.deep.equal(null);
@@ -25,7 +27,7 @@ describe('locationIdProperty Property', () => {
     it('should restore in correct format as if from database', () => {
       const locationIdProperty = new locationIdPropertyClass();
       const document = {
-        locationId: '1-12345678'
+        locationId: '1-12345678',
       };
       const restored = locationIdProperty.restorePropertyFromSequelize(document);
       expect(restored).to.deep.equal(document.locationId);

@@ -5,10 +5,9 @@
     border: none;
     height: 30px;
 
-
     &::-webkit-progress-bar {
       background: transparent;
-      border: 2px solid govuk-colour("grey-1");
+      border: 2px solid govuk-colour('grey-1');
     }
 
     /* IE10 */

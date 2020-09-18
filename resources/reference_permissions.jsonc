@@ -1,73 +1,58 @@
 {
-    "permissions" : {
-        "VIEW_ESTABLISHMENT" : {
-            "title" : "View Establishment"
-        },
-        "VIEW_WORKER" : {
-            "title" : "View Worker"
-        },
-        "ADD_WORKER" : {
-            "title" : "Add Worker"
-        },
-        "EDIT_WORKER" : {
-            "title" : "Edit Worker"
-        },
-        "DELETE_WORKER" : {
-            "title" : "Delete Worker"
-        },
-        "EDIT_ESTABLISHMENT" : {
-            "title" : "Edit Establishment",
-            "status" : "Not in spreadsheet"
-        }
-        // now - let's add Worker Status and Bulk Upload
+  "permissions": {
+    "VIEW_ESTABLISHMENT": {
+      "title": "View Establishment"
     },
-    "roles" : {
-        "establishment" : {
-            "owner" : {
-                "role" : "owner",
-                "permissions" : [
-                    "VIEW_ESTABLISHMENT",
-                    "EDIT_ESTABLISHMENT",
-                    "ADD__ESTABLISHMENT"        // oops, this is not in set of permissions
-                ]
-            },
-            "edit" : {
-                "role" : "edit",
-                "permissions" : [
-                    "VIEW_ESTABLISHMENT",
-                    "EDIT_ESTABLISHMENT"
-                ]
-            },
-            "read" : {
-                "role" : "edit",
-                "permissions" : [
-                    "VIEW_ESTABLISHMENT"
-                ]
-            },
-            "worker" : {
-                "owner" : {
-                    "role" : "owner",
-                    "permissions" : [
-                        "VIEW_WORKER",
-                        "ADD_WORKER",
-                        "DELETE_WORKER",
-                        "EDIT_WORKER"
-                    ]
-                },
-                "edit" : {
-                    "role" : "owner",
-                    "permissions" : [
-                        "VIEW_WORKER",
-                        "EDIT_WORKER"
-                    ]
-                },
-                "read" : {
-                    "role" : "owner",
-                    "permissions" : [
-                        "VIEW_WORKER"
-                    ]
-                }
-            }
-        }
+    "VIEW_WORKER": {
+      "title": "View Worker"
+    },
+    "ADD_WORKER": {
+      "title": "Add Worker"
+    },
+    "EDIT_WORKER": {
+      "title": "Edit Worker"
+    },
+    "DELETE_WORKER": {
+      "title": "Delete Worker"
+    },
+    "EDIT_ESTABLISHMENT": {
+      "title": "Edit Establishment",
+      "status": "Not in spreadsheet"
     }
+    // now - let's add Worker Status and Bulk Upload
+  },
+  "roles": {
+    "establishment": {
+      "owner": {
+        "role": "owner",
+        "permissions": [
+          "VIEW_ESTABLISHMENT",
+          "EDIT_ESTABLISHMENT",
+          "ADD__ESTABLISHMENT" // oops, this is not in set of permissions
+        ]
+      },
+      "edit": {
+        "role": "edit",
+        "permissions": ["VIEW_ESTABLISHMENT", "EDIT_ESTABLISHMENT"]
+      },
+      "read": {
+        "role": "edit",
+        "permissions": ["VIEW_ESTABLISHMENT"]
+      },
+      "worker": {
+        "owner": {
+          "role": "owner",
+          "permissions": ["VIEW_WORKER", "ADD_WORKER", "DELETE_WORKER", "EDIT_WORKER"]
+        },
+        "edit": {
+          "role": "owner",
+          "permissions": ["VIEW_WORKER", "EDIT_WORKER"]
+        },
+        "read": {
+          "role": "owner",
+          "permissions": ["VIEW_WORKER"]
+        }
+      }
+    }
+  }
 }

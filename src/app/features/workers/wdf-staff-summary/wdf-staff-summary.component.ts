@@ -13,9 +13,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { isObject, pick, pickBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
-import {
-  WdfWorkerConfirmationDialogComponent,
-} from '../wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
+import { WdfWorkerConfirmationDialogComponent } from '../wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
 
 @Component({
   selector: 'app-wdf-staff-summary',
@@ -36,7 +34,7 @@ export class WdfStaffSummaryComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private dialogService: DialogService,
     private alertService: AlertService,
-    private breadcrumbService: BreadcrumbService
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit() {
@@ -51,7 +49,7 @@ export class WdfStaffSummaryComponent implements OnInit {
 
     this.workerService
       .getWorker(this.route.snapshot.params.establishmentuid, this.route.snapshot.params.id, true)
-      .subscribe(worker => {
+      .subscribe((worker) => {
         this.worker = worker;
         this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
         this.exitUrl = { url: ['/reports', 'workplace', this.workplace.uid, 'wdf'], fragment: 'staff-records' };
@@ -71,7 +69,7 @@ export class WdfStaffSummaryComponent implements OnInit {
         daysSick: daysSickConfirm ? this.worker.daysSick : null,
         pay: annualHourlyPayConfirm ? this.worker.annualHourlyPay : null,
       });
-      dialog.afterClosed.subscribe(confirmed => {
+      dialog.afterClosed.subscribe((confirmed) => {
         if (confirmed) {
           this.confirmAndSubmit();
         }
@@ -89,7 +87,7 @@ export class WdfStaffSummaryComponent implements OnInit {
           return wdfProperty.isEligible === Eligibility.YES && !wdfProperty.updatedSinceEffectiveDate;
         }
         return false;
-      })
+      }),
     );
     const props = pick(this.worker, keys);
 
@@ -97,7 +95,7 @@ export class WdfStaffSummaryComponent implements OnInit {
       this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {
         this.router.navigate(this.exitUrl.url, { fragment: this.exitUrl.fragment });
         this.alertService.addAlert({ type: 'success', message: 'The staff record has been saved and confirmed.' });
-      })
+      }),
     );
   }
 

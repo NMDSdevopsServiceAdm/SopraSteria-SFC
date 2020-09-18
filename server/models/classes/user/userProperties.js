@@ -7,25 +7,26 @@ const jobTitleProperty = require('./properties/jobTitleProperty').UserJobTitlePr
 const emailProperty = require('./properties/emailProperty').UserEmailProperty;
 const phoneProperty = require('./properties/phoneProperty').UserPhoneProperty;
 const securityQuestionProperty = require('./properties/securityQuestionProperty').UserSecurityQuestionProperty;
-const securityQuestionAnswerProperty = require('./properties/securityQuestionAnswerProperty').UserSecurityQuestionAnswerProperty;
+const securityQuestionAnswerProperty = require('./properties/securityQuestionAnswerProperty')
+  .UserSecurityQuestionAnswerProperty;
 const roleProperty = require('./properties/roleProperty').UserRoleProperty;
 
 class UserPropertyManager {
-    constructor() {
-        this._thisManager = new Manager.PropertyManager();
+  constructor() {
+    this._thisManager = new Manager.PropertyManager();
 
-        this._thisManager.registerProperty(fullnameProperty);
-        this._thisManager.registerProperty(jobTitleProperty);
-        this._thisManager.registerProperty(emailProperty);
-        this._thisManager.registerProperty(phoneProperty);
-        this._thisManager.registerProperty(roleProperty);
-        this._thisManager.registerProperty(securityQuestionProperty);
-        this._thisManager.registerProperty(securityQuestionAnswerProperty);
-    }
+    this._thisManager.registerProperty(fullnameProperty);
+    this._thisManager.registerProperty(jobTitleProperty);
+    this._thisManager.registerProperty(emailProperty);
+    this._thisManager.registerProperty(phoneProperty);
+    this._thisManager.registerProperty(roleProperty);
+    this._thisManager.registerProperty(securityQuestionProperty);
+    this._thisManager.registerProperty(securityQuestionAnswerProperty);
+  }
 
-    get manager() {
-        return this._thisManager;
-    }
+  get manager() {
+    return this._thisManager;
+  }
 }
 
 exports.UserPropertyManager = UserPropertyManager;

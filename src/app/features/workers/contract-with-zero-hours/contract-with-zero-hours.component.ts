@@ -13,7 +13,7 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './contract-with-zero-hours.component.html',
 })
 export class ContractWithZeroHoursComponent extends QuestionComponent {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+  public answersAvailable = ['Yes', 'No', 'Don\'t know'];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -21,7 +21,7 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 

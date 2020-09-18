@@ -25,7 +25,7 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.submitted = false;
 
-    this._passwordResetService.resetPasswordUUID$.subscribe(uuid => (this.uuid = uuid));
+    this._passwordResetService.resetPasswordUUID$.subscribe((uuid) => (this.uuid = uuid));
     this.setupServerErrorsMap();
   }
 
@@ -39,13 +39,13 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
 
       this.subscriptions.add(
         this._passwordResetService.requestPasswordReset(this.usernameOrEmail).subscribe(
-          data => {
+          (data) => {
             this.displayConfirmation(data);
           },
           (error: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          }
-        )
+          },
+        ),
       );
     }
   }

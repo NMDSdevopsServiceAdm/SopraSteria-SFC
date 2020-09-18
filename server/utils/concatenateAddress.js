@@ -1,5 +1,4 @@
 exports.concatenateAddress = function (addressLine1, addressLine2, townAndCity, county) {
-
   //Remove whitespaces and any non alphanumeric characters and then cast to upper case.
   let concatAddress = '';
 

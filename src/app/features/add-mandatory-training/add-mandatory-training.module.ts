@@ -9,9 +9,6 @@ import { AddMandatoryTrainingComponent } from './add-mandatory-training.componen
 
 @NgModule({
   imports: [CommonModule, AddMandatoryTrainingRoutingModule, ReactiveFormsModule, SharedModule],
-  declarations: [
-    AddMandatoryTrainingComponent,
-    RemoveAllSelectionsDialogComponent
-  ],
+  declarations: [AddMandatoryTrainingComponent, RemoveAllSelectionsDialogComponent],
 })
 export class AddMandatoryTrainingModule {}

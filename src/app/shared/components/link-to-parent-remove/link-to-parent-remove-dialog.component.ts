@@ -67,10 +67,10 @@ export class LinkToParentRemoveDialogComponent extends DialogComponent implement
       this.establishmentService
         .removeParentAssociation(this.workplace.uid, { parentWorkplaceUId: this.workplace.parentUid })
         .subscribe(
-          data => {
+          (data) => {
             this.close(event, { closeFrom: 'remove-link' });
           },
-          error => {
+          (error) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           },
         ),

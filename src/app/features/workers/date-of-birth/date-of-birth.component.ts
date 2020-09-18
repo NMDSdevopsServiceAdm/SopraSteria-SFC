@@ -17,9 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 export class DateOfBirthComponent extends QuestionComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
-  private minDate = moment()
-    .subtract(100, 'years')
-    .add(1, 'days');
+  private minDate = moment().subtract(100, 'years').add(1, 'days');
   private maxDate = moment().subtract(14, 'years');
 
   constructor(
@@ -28,7 +26,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -72,7 +70,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
           {
             name: 'dateBetween',
             message: `The date has to be between ${this.minDate.format(DATE_DISPLAY_DEFAULT)} and ${this.maxDate.format(
-              DATE_DISPLAY_DEFAULT
+              DATE_DISPLAY_DEFAULT,
             )}.`,
           },
         ],
@@ -90,6 +88,6 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
       };
     }
 
-    return {dateOfBirth: null};
+    return { dateOfBirth: null };
   }
 }

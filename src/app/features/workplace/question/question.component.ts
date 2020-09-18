@@ -35,14 +35,14 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    protected establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit() {
     this.return = this.establishmentService.returnTo;
 
     this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe(establishment => {
+      this.establishmentService.establishment$.subscribe((establishment) => {
         this.establishment = establishment;
         this.primaryWorkplace = this.establishmentService.primaryWorkplace;
 
@@ -51,7 +51,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
           this.setBackLink();
         }
-      })
+      }),
     );
 
     this.setupFormErrorsMap();

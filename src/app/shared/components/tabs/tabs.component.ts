@@ -1,5 +1,13 @@
 import { Location } from '@angular/common';
-import { AfterContentInit, Component, ContentChildren, ElementRef, OnDestroy, QueryList, ViewChild } from '@angular/core';
+import {
+  AfterContentInit,
+  Component,
+  ContentChildren,
+  ElementRef,
+  OnDestroy,
+  QueryList,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -18,29 +26,29 @@ export class TabsComponent implements AfterContentInit, OnDestroy {
   @ViewChild('tablist') tablist: ElementRef;
 
   constructor(private location: Location, private route: ActivatedRoute, private workerService: WorkerService) {
-
     //handle tab changes home page link
     this.subscriptions.add(
       this.workerService.tabChanged.subscribe((displayStaffTab: boolean) => {
         let activeTabs: any[] = [];
         if (this.tabs) {
-          activeTabs = this.tabs.filter(tab => tab.active)
+          activeTabs = this.tabs.filter((tab) => tab.active);
         }
         if (displayStaffTab && activeTabs.length !== 0) {
           this.selectTab(null, 2); //2 for staff tab;
         }
-      }));
+      }),
+    );
   }
 
   ngAfterContentInit() {
     const hash = this.route.snapshot.fragment;
     if (hash) {
-      const activeTab = this.tabs.toArray().findIndex(tab => tab.slug === hash);
+      const activeTab = this.tabs.toArray().findIndex((tab) => tab.slug === hash);
       if (activeTab) {
         this.selectTab(null, activeTab, false);
       }
     }
-    const activeTabs = this.tabs.filter(tab => tab.active);
+    const activeTabs = this.tabs.filter((tab) => tab.active);
 
     if (activeTabs.length === 0) {
       this.selectTab(null, 0, false);
@@ -99,11 +107,10 @@ export class TabsComponent implements AfterContentInit, OnDestroy {
   }
 
   private unselectTabs() {
-    this.tabs.toArray().forEach(t => (t.active = false));
+    this.tabs.toArray().forEach((t) => (t.active = false));
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
-
 }

@@ -6,10 +6,8 @@ const models = require('../models/index');
 router.route('/').get(async function (req, res) {
   try {
     let results = await models.serviceUsers.findAll({
-        order: [
-          ["seq", "ASC"]
-        ]
-      });
+      order: [['seq', 'ASC']],
+    });
 
     res.send(serviceUsersByGroupJSON(results));
   } catch (err) {
@@ -22,17 +20,17 @@ function localFormat(givenService) {
   const theService = {
     id: givenService.id,
     service: givenService.service,
-    other: givenService.other ? true : undefined
+    other: givenService.other ? true : undefined,
   };
 
   return theService;
 }
 
-function serviceUsersByGroupJSON(givenServices){
+function serviceUsersByGroupJSON(givenServices) {
   let serviceUsersGroupsMap = new Map();
-  
+
   if (givenServices && Array.isArray(givenServices)) {
-    givenServices.forEach(thisServiceUser => {
+    givenServices.forEach((thisServiceUser) => {
       const mapKey = thisServiceUser.group;
       let thisServiceUserGroup = serviceUsersGroupsMap.get(mapKey);
       if (!thisServiceUserGroup) {
@@ -48,15 +46,15 @@ function serviceUsersByGroupJSON(givenServices){
 
   // now iterate over the map (group by job type) and construct the target Javascript object
   const serviceUserGroups = [];
-  serviceUsersGroupsMap.forEach((key,value) => {
+  serviceUsersGroupsMap.forEach((key, value) => {
     serviceUserGroups[value] = key;
     serviceUserGroups.push({
       group: value,
-      services: key
+      services: key,
     });
   });
 
   return serviceUserGroups;
-};
+}
 
 module.exports = router;

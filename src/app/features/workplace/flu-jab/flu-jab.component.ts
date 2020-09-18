@@ -10,7 +10,7 @@ import { Question } from '../question/question.component';
 
 @Component({
   selector: 'app-flu-jab',
-  templateUrl: './flu-jab.component.html'
+  templateUrl: './flu-jab.component.html',
 })
 export class FluJabComponent extends Question {
   constructor(
@@ -20,37 +20,37 @@ export class FluJabComponent extends Question {
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected fluJabService: FluJabService,
-    protected alertService: AlertService
+    protected alertService: AlertService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
     this.form = this.formBuilder.group({
-      fluJabs: this.formBuilder.array([])
+      fluJabs: this.formBuilder.array([]),
     });
   }
 
   protected init(): void {
     this.return = this.establishmentService.returnTo;
 
-    this.fluJabService.getFluJabsByWorkplace(this.establishment.uid).subscribe(
-      response => this.onInitSuccess(response)
-    );
+    this.fluJabService
+      .getFluJabsByWorkplace(this.establishment.uid)
+      .subscribe((response) => this.onInitSuccess(response));
   }
 
   protected setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
         name: 400,
-        message: 'There has been a problem saving your workplace\'s flu vaccinations. Please try again.',
+        message: "There has been a problem saving your workplace's flu vaccinations. Please try again.",
       },
       {
         name: 404,
-        message: 'There has been a problem saving your workplace\'s flu vaccinations. Please try again.',
+        message: "There has been a problem saving your workplace's flu vaccinations. Please try again.",
       },
       {
         name: 503,
-        message: 'There has been a problem saving your workplace\'s flu vaccinations. Please try again.',
-      }
+        message: "There has been a problem saving your workplace's flu vaccinations. Please try again.",
+      },
     ];
   }
 
@@ -61,23 +61,24 @@ export class FluJabComponent extends Question {
   private onInitSuccess(response) {
     response.forEach((fluJab) => {
       this.fluJabsArray.push(this.formBuilder.group(fluJab));
-    })
+    });
   }
 
   protected generateUpdateProps() {
     return this.fluJabsArray.value.map((item) => {
-      return { uid: item.uid, fluJab: item.fluJab }
-    })
+      return { uid: item.uid, fluJab: item.fluJab };
+    });
   }
 
   protected updateEstablishment(props) {
     this.subscriptions.add(
-      this.establishmentService
-        .updateWorkers(this.establishment.uid, props)
-        .subscribe(
-          data => { this._onSuccess(data); this.addAlert(); },
-          error => this.onError(error)
-        )
+      this.establishmentService.updateWorkers(this.establishment.uid, props).subscribe(
+        (data) => {
+          this._onSuccess(data);
+          this.addAlert();
+        },
+        (error) => this.onError(error),
+      ),
     );
   }
 
@@ -89,7 +90,7 @@ export class FluJabComponent extends Question {
   private addAlert() {
     this.alertService.addAlert({
       type: 'success',
-      message: `You've saved who's had a flu vaccination.`,
+      message: 'You\'ve saved who\'s had a flu vaccination.',
     });
   }
 }

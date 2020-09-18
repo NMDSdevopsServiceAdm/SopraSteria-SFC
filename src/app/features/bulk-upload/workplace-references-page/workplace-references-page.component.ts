@@ -33,7 +33,7 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(establishmentService, bulkUploadService, router, formBuilder, errorSummaryService);
   }
@@ -45,7 +45,7 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     }
 
     this.backService.setBackLink({ url: this.exit });
-    this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, reference => {
+    this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, (reference) => {
       if (this.primaryWorkplace.isParent) {
         return reference.dataOwner === WorkplaceDataOwner.Parent || reference.uid === this.primaryWorkplace.uid;
       } else {
@@ -61,8 +61,8 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
         .updateLocalIdentifiers(this.generateRequest())
         .pipe(take(1))
         .subscribe(
-          data => {
-            const updatedReferences = this.references.map(workplace => {
+          (data) => {
+            const updatedReferences = this.references.map((workplace) => {
               const updated = find(data.localIdentifiers, ['uid', workplace.uid]);
               return {
                 ...workplace,
@@ -76,8 +76,8 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
               this.router.navigate(this.exit);
             }
           },
-          (error: HttpErrorResponse) => this.onError(error)
-        )
+          (error: HttpErrorResponse) => this.onError(error),
+        ),
     );
   }
 

@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 // all worker functionality is encapsulated
 const Workers = require('../../models/classes/worker');
@@ -10,15 +10,14 @@ router.route('/').put(async (req, res) => {
   const establishmentId = req.establishmentId;
   const workers = req.body;
 
-  if (!workers || !Array.isArray(workers))
-  {
-    res.status(400)
+  if (!workers || !Array.isArray(workers)) {
+    res.status(400);
     return res.send('Unexpected Input.');
   }
 
-  workers.forEach(worker => {
+  workers.forEach((worker) => {
     if (!uuidRegex.test(worker.uid.toUpperCase())) {
-      res.status(400)
+      res.status(400);
       return res.send('Unexpected worker id');
     }
   });
@@ -36,36 +35,35 @@ router.route('/').put(async (req, res) => {
         const isValidWorker = await thisWorker.load(worker);
         // this is an update to an existing Worker, so no mandatory properties!
         if (isValidWorker) {
-            workersToSave.push(thisWorker);
+          workersToSave.push(thisWorker);
         } else {
-            res.status(400)
-            return res.send('Unexpected Input.');
+          res.status(400);
+          return res.send('Unexpected Input.');
         }
       } else {
-          // not found worker
-          res.status(404)
-          return res.send('Not Found');
+        // not found worker
+        res.status(404);
+        return res.send('Not Found');
       }
     }
 
     await Workers.Worker.saveMany(req.username, workersToSave);
 
-    res.status(200)
+    res.status(200);
     return res.send();
-
   } catch (err) {
     if (err instanceof Workers.WorkerExceptions.WorkerSaveException && err.message == 'Duplicate LocalIdentifier') {
-      console.error("Worker::localidentifier PUT: ", err.message);
-      res.status(400)
+      console.error('Worker::localidentifier PUT: ', err.message);
+      res.status(400);
     } else if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
-      console.error("Worker PUT: ", err.message);
-      res.status(400)
+      console.error('Worker PUT: ', err.message);
+      res.status(400);
     } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
-      console.error("Worker PUT: ", err.message);
-      res.status(503)
+      console.error('Worker PUT: ', err.message);
+      res.status(503);
     }
     return res.send();
   }
-})
+});
 
 module.exports = router;

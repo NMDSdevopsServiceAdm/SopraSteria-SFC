@@ -1,13 +1,14 @@
 const express = require('express');
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['CapacityServices', 'Name'];
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
-  
-  const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+
+  const showHistory =
+    req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
   const showHistoryTime = req.query.history === 'timeline' ? true : false;
   const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
 
@@ -17,12 +18,22 @@ router.route('/').get(async (req, res) => {
     if (await thisEstablishment.restore(establishmentId, showHistory)) {
       // show only brief info on Establishment
 
-      return res.status(200).json(thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, filteredProperties));
+      return res
+        .status(200)
+        .json(
+          thisEstablishment.toJSON(
+            showHistory,
+            showPropertyHistoryOnly,
+            showHistoryTime,
+            false,
+            false,
+            filteredProperties,
+          ),
+        );
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
-
   } catch (err) {
     const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
       thisEstablishment.id,
@@ -30,7 +41,8 @@ router.route('/').get(async (req, res) => {
       null,
       err,
       null,
-      `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
+      `Failed to retrieve Establishment with id/uid: ${establishmentId}`,
+    );
 
     console.error('establishment::capacity GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
@@ -55,7 +67,7 @@ router.route('/').post(async (req, res) => {
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in capacities
       const isValidEstablishment = await thisEstablishment.load({
-        capacities: req.body.capacities
+        capacities: req.body.capacities,
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
@@ -70,21 +82,19 @@ router.route('/').post(async (req, res) => {
       } else {
         return res.status(400).send('Unexpected Input.');
       }
-        
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error("Establishment::services POST: ", err.message);
+      console.error('Establishment::services POST: ', err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error("Establishment::services POST: ", err.message);
+      console.error('Establishment::services POST: ', err.message);
       return res.status(503).send(err.safe);
     } else {
-      console.error("Unexpected exception: ", err);
+      console.error('Unexpected exception: ', err);
     }
   }
 });

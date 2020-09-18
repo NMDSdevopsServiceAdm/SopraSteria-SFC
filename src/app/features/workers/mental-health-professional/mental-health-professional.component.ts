@@ -12,7 +12,7 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './mental-health-professional.component.html',
 })
 export class MentalHealthProfessionalComponent extends QuestionComponent implements OnInit, OnDestroy {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+  public answersAvailable = ['Yes', 'No', 'Don\'t know'];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -20,7 +20,7 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 

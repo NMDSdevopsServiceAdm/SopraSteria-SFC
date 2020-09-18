@@ -9,13 +9,11 @@ export class LoggedInUserResolver implements Resolve<any> {
   constructor(private router: Router, private userService: UserService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.userService
-      .getLoggedInUser()
-      .pipe(
-        catchError(() => {
-          this.router.navigate(['/logged-out']);
-          return of(null);
-        })
-      );
+    return this.userService.getLoggedInUser().pipe(
+      catchError(() => {
+        this.router.navigate(['/logged-out']);
+        return of(null);
+      }),
+    );
   }
 }

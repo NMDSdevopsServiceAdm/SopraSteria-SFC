@@ -6,10 +6,10 @@ const models = require('../../models');
 
 exports.getTokenSecret = () => {
   return config.get('jwt.secret');
-}
+};
 
 // this util middleware will block if the given request is not authorised
-exports.isAuthorised = (req, res , next) => {
+exports.isAuthorised = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
@@ -23,13 +23,13 @@ exports.isAuthorised = (req, res , next) => {
         req.username = claim.sub;
         req.userUid = claim.userUid;
         req.user = {
-          id: claim.userUid
-        }
+          id: claim.userUid,
+        };
         req.role = claim.role;
         req.isParent = claim.isParent;
         req.establishment = {
           id: claim.EstblishmentId,
-          uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null
+          uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null,
         };
         next();
       }
@@ -54,10 +54,9 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
       if (claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
         return res.status(403).send({
           sucess: false,
-          message: 'token is invalid'
+          message: 'token is invalid',
         });
       } else {
-
         // must provide the establishment ID/UID
         if (!claim.EstblishmentId || isNaN(parseInt(claim.EstblishmentId))) {
           console.error('hasAuthorisedEstablishment - missing establishment id parameter');
@@ -76,7 +75,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
           // establishment id in params is a UUID - tests against UID in claim
           establishmentIdIsUID = true;
           if (claim.EstablishmentUID === req.params.id) {
-            req.establishmentId=claim.EstablishmentUID;
+            req.establishmentId = claim.EstablishmentUID;
             isAuthorised = true;
           }
         } else {
@@ -93,7 +92,6 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
         //  including that of the given establishment (only known by it's UID)
 
         if (isAuthorised === false && claim.isParent) {
-
           try {
             let findEstablishmentWhereClause = {
               parentId: claim.EstblishmentId,
@@ -107,33 +105,38 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
 
             const referencedEstablishment = await models.establishment.findOne({
               attributes: ['id', 'dataPermissions', 'dataOwner', 'parentId'],
-              where: findEstablishmentWhereClause
+              where: findEstablishmentWhereClause,
             });
             // this is a known subsidairy of this given parent establishment
 
             // but, to be able to access the subsidary, then the permissions must not be null
             if (claim.role != 'Admin' && referencedEstablishment.dataOwner === 'Workplace') {
               if (referencedEstablishment.dataPermissions === null) {
-                console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);
+                console.error(
+                  `Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`,
+                );
                 // failed to find establishment by UUID - being a subsidairy of this known parent
-                return res.status(403).send({message: `Parent not permitted to access Establishment with id: ${req.params.id}`});
+                return res
+                  .status(403)
+                  .send({ message: `Parent not permitted to access Establishment with id: ${req.params.id}` });
               }
 
               // parent permissions must be either null (no access), "Workplace" or "Workplace and staff" - if not null, then have access to the establishment
               // but only read access (GET)
               if (req.method !== 'GET' && !(req.path.split('/')[1] === 'ownershipChange')) {
-
-                return res.status(403).send({message: `Parent not permitted to update Establishment with id: ${req.params.id}`});
+                return res
+                  .status(403)
+                  .send({ message: `Parent not permitted to update Establishment with id: ${req.params.id}` });
               }
             }
 
-            if(roleCheck && (req.method !== 'GET' && claim.role == 'Read')){
-              return res.status(403).send({message: `Not permitted`});
+            if (roleCheck && req.method !== 'GET' && claim.role == 'Read') {
+              return res.status(403).send({ message: `Not permitted` });
             }
 
             req.establishmentId = referencedEstablishment.id;
             req.parentIsOwner = referencedEstablishment.dataOwner === 'Parent' ? true : false;
-            req.dataPermissions = referencedEstablishment.dataPermissions;    // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
+            req.dataPermissions = referencedEstablishment.dataPermissions; // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
 
             // we now know the
             establishmentIdIsUID = false;
@@ -142,7 +145,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             req.username = claim.sub;
             req.userUid = claim.userUid;
             req.user = {
-              id: claim.userUid
+              id: claim.userUid,
             };
             req.isParent = claim.isParent;
             req.role = claim.role;
@@ -150,39 +153,41 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
               id: claim.EstblishmentId,
               uid: claim.EstablishmentUID,
               isSubsidiary: false,
-              isParent: false
+              isParent: false,
             };
 
-            if(referencedEstablishment.parentId !== null ){
+            if (referencedEstablishment.parentId !== null) {
               // Its a sub
               req.establishment.isSubsidiary = true;
-            } else if(referencedEstablishment.parentId == null && referencedEstablishment.isParent){
+            } else if (referencedEstablishment.parentId == null && referencedEstablishment.isParent) {
               // It's a parent
               req.establishment.isParent = true;
             }
 
             return next();
-
           } catch (err) {
             // failed to find establishment by UUID - being a subsidairy of this known parent
-            console.error(`Failed to find subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID})`);
+            console.error(
+              `Failed to find subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID})`,
+            );
             return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
           }
-
         } else if (isAuthorised === false) {
-          console.error(`hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstblishmentId}/${claim.EstablishmentUID})`);
+          console.error(
+            `hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstblishmentId}/${claim.EstablishmentUID})`,
+          );
           return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
         } else {
           // gets here and all is authorised
 
-          if(roleCheck && (req.method !== 'GET' && claim.role == 'Read')){
-            return res.status(403).send({message: `Not permitted`});
+          if (roleCheck && req.method !== 'GET' && claim.role == 'Read') {
+            return res.status(403).send({ message: `Not permitted` });
           }
 
           req.username = claim.sub;
           req.userUid = claim.userUid;
           req.user = {
-            id: claim.userUid
+            id: claim.userUid,
           };
           req.isParent = claim.isParent;
           req.role = claim.role;
@@ -190,10 +195,10 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             id: claim.EstblishmentId,
             uid: claim.EstablishmentUID,
             isSubsidiary: false,
-            isParent: false
+            isParent: false,
           };
 
-          let lookupClause = {}
+          let lookupClause = {};
           if (establishmentIdIsUID) {
             lookupClause.uid = req.params.id;
           } else {
@@ -201,8 +206,8 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
           }
 
           const foundEstablishment = await models.establishment.findOne({
-            attributes: ['id','parentId','dataPermissions', 'dataOwner'],
-            where: lookupClause
+            attributes: ['id', 'parentId', 'dataPermissions', 'dataOwner'],
+            where: lookupClause,
           });
 
           if (foundEstablishment && foundEstablishment.id) {
@@ -211,11 +216,10 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             req.dataPermissions = foundEstablishment.dataPermissions;
             req.parentIsOwner = foundEstablishment.dataOwner === 'Parent' ? true : false;
 
-
-            if(foundEstablishment.parentId !== null ){
+            if (foundEstablishment.parentId !== null) {
               // Its a sub
               req.establishment.isSubsidiary = true;
-            } else if(foundEstablishment.parentId == null && foundEstablishment.isParent){
+            } else if (foundEstablishment.parentId == null && foundEstablishment.isParent) {
               // It's a parent
               req.establishment.isParent = true;
             }
@@ -228,35 +232,32 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
       // not authenticated
       res.status(401).send('Requires authorisation');
     }
-
   } catch (err) {
     if (err.name && err.name === 'TokenExpiredError') {
       return res.status(403).send({
         sucess: false,
-        message: 'token expired'
+        message: 'token expired',
       });
     } else {
-      console.error("hasAuthorisedEstablishment: caught err: ", err.name, err);
+      console.error('hasAuthorisedEstablishment: caught err: ', err.name, err);
       return res.status(403).send({
         sucess: false,
-        message: 'token is invalid'
+        message: 'token is invalid',
       });
     }
   }
-}
+};
 
 exports.hasAuthorisedEstablishmentAllowAllRoles = async (req, res, next) => {
   authorisedEstablishmentPermissionCheck(req, res, next, false);
-}
+};
 
 exports.hasAuthorisedEstablishment = async (req, res, next) => {
   authorisedEstablishmentPermissionCheck(req, res, next, true);
-}
-
+};
 
 getToken = function (headers) {
   if (headers) {
-
     let token = headers;
 
     if (token.startsWith('Bearer')) {
@@ -273,20 +274,18 @@ exports.isAuthorisedPasswdReset = (req, res, next) => {
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
-
       // can be either a password reset token or a logged in token
 
       if (err || claim.aud !== config.get('jwt.aud.passwordReset') || claim.iss !== thisIss) {
         console.error('Password reset token is invalid');
         return res.status(403).send('Invalid token');
-
       } else {
         // extract token claims and add to the request for subsequent use
         req.resetUuid = claim.resetUUID;
         req.username = claim.sub;
         req.fullname = claim.name;
         req.user = {
-          id: claim.userUid
+          id: claim.userUid,
         };
         next();
       }
@@ -295,7 +294,7 @@ exports.isAuthorisedPasswdReset = (req, res, next) => {
     // not authenticated
     res.status(401).send('Requires authorisation');
   }
-}
+};
 
 exports.isAuthorisedAddUser = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
@@ -303,13 +302,11 @@ exports.isAuthorisedAddUser = (req, res, next) => {
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
-
       // can be either a password reset token or a logged in token
 
       if (err || claim.aud !== config.get('jwt.aud.addUser') || claim.iss !== thisIss) {
         console.error('Add User token is invalid');
         return res.status(403).send('Invalid token');
-
       } else {
         // extract token claims and add to the request for subsequent use
         req.addUserUUID = claim.addUserUUID;
@@ -322,7 +319,7 @@ exports.isAuthorisedAddUser = (req, res, next) => {
     // not authenticated
     res.status(401).send('Requires authorisation');
   }
-}
+};
 
 exports.isAuthorisedInternalAdminApp = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
@@ -330,7 +327,6 @@ exports.isAuthorisedInternalAdminApp = (req, res, next) => {
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
-
       if (err || claim.aud !== config.get('jwt.aud.internalAdminApp') || claim.iss !== thisIss) {
         console.error('Internal Admin App token is invalid');
         return res.status(403).send('Invalid token');
@@ -342,9 +338,9 @@ exports.isAuthorisedInternalAdminApp = (req, res, next) => {
     // not authenticated
     res.status(401).send('Requires authorisation');
   }
-}
+};
 
-exports.isAdmin = (req, res , next) => {
+exports.isAdmin = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
@@ -356,12 +352,12 @@ exports.isAdmin = (req, res , next) => {
         return res.status(403).send('Invalid Token');
       } else {
         if (claim.role !== 'Admin') {
-          return res.status(403).send('You\'re not admin');
+          return res.status(403).send("You're not admin");
         } else {
           req.username = claim.sub;
           req.userUid = claim.userUid;
           req.user = {
-            id: claim.userUid
+            id: claim.userUid,
           };
           next();
         }
@@ -379,27 +375,31 @@ exports.isAuthorisedRegistrationApproval = (req, res, next) => {
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
-    if (err || claim.aud !== config.get('jwt.aud.internalAdminApp') || claim.iss !== thisIss) {
-      console.error('Internal Admin App token is invalid');
-      return res.status(403).send('Invalid token');
-    } else {
-      next();
-    }
+      if (err || claim.aud !== config.get('jwt.aud.internalAdminApp') || claim.iss !== thisIss) {
+        console.error('Internal Admin App token is invalid');
+        return res.status(403).send('Invalid token');
+      } else {
+        next();
+      }
     });
   } else {
     // not authenticated
     res.status(401).send('Requires authorisation');
   }
-}
+};
 
-exports.isAdminOrOnDemandReporting = (req, res , next) => {
+exports.isAdminOrOnDemandReporting = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
-      const isAdmin = !err ? claim.aud === config.get('jwt.aud.login') && claim.role === 'Admin' ? true : false : false;
-      const isOnDemandReport = !err ? claim.aud === 'ADS-WDS-on-demand-reporting' ? true : false : false;
+      const isAdmin = !err
+        ? claim.aud === config.get('jwt.aud.login') && claim.role === 'Admin'
+          ? true
+          : false
+        : false;
+      const isOnDemandReport = !err ? (claim.aud === 'ADS-WDS-on-demand-reporting' ? true : false) : false;
 
       if (err || !(isAdmin || isOnDemandReport) || claim.iss !== thisIss) {
         return res.status(403).send('Invalid Token');
@@ -407,7 +407,7 @@ exports.isAdminOrOnDemandReporting = (req, res , next) => {
         req.username = claim.sub;
         req.userUid = claim.userUid;
         req.user = {
-          id: claim.userUid
+          id: claim.userUid,
         };
         next();
       }

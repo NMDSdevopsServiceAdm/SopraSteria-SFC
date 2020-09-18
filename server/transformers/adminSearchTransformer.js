@@ -1,8 +1,6 @@
 const EstablishmentTransformer = async (establishments) => {
-  return establishments.map(establishment => {
-    const parent = establishment.Parent
-      ? { uid: establishment.Parent.uid, nmdsId: establishment.Parent.nmdsId }
-      : {};
+  return establishments.map((establishment) => {
+    const parent = establishment.Parent ? { uid: establishment.Parent.uid, nmdsId: establishment.Parent.nmdsId } : {};
 
     const users = establishment.users
       ? establishment.users.map((user) => {
@@ -33,21 +31,23 @@ const EstablishmentTransformer = async (establishments) => {
       lastUpdated: establishment.updated,
       employerType: {
         value: establishment.EmployerTypeValue,
-        other: establishment.EmployerTypeOther
+        other: establishment.EmployerTypeOther,
       },
       parent,
       users,
     };
   });
-}
+};
 
 const UserTransformer = async (users) => {
-  return users.map(user => {
-    const parent = user.establishment.ParentID ? {
-      nmdsId: user.establishment.Parent.nmdsId,
-      name: user.establishment.Parent.NameValue,
-      postcode: user.establishment.Parent.postcode,
-    } : null;
+  return users.map((user) => {
+    const parent = user.establishment.ParentID
+      ? {
+          nmdsId: user.establishment.Parent.nmdsId,
+          name: user.establishment.Parent.NameValue,
+          postcode: user.establishment.Parent.postcode,
+        }
+      : null;
 
     return {
       uid: user.uid,
@@ -72,10 +72,10 @@ const UserTransformer = async (users) => {
         isParent: user.establishment.isParent,
         parent,
         locationId: user.establishment.locationId,
-      }
+      },
     };
   });
-}
+};
 
 module.exports.EstablishmentTransformer = EstablishmentTransformer;
 module.exports.UserTransformer = UserTransformer;

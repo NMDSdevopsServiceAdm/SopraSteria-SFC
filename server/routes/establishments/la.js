@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 const models = require('../../models');
 const LaFormatters = require('../../models/api/la');
 
@@ -10,7 +10,8 @@ const filteredProperties = ['Name', 'ShareWithLA'];
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
-  const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+  const showHistory =
+    req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
   const showHistoryTime = req.query.history === 'timeline' ? true : false;
   const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
 
@@ -19,12 +20,22 @@ router.route('/').get(async (req, res) => {
   try {
     if (await thisEstablishment.restore(establishmentId, showHistory)) {
       // show only brief info on Establishment
-      return res.status(200).json(thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, filteredProperties));
+      return res
+        .status(200)
+        .json(
+          thisEstablishment.toJSON(
+            showHistory,
+            showPropertyHistoryOnly,
+            showHistoryTime,
+            false,
+            false,
+            filteredProperties,
+          ),
+        );
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
-
   } catch (err) {
     const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
       thisEstablishment.id,
@@ -32,7 +43,8 @@ router.route('/').get(async (req, res) => {
       null,
       err,
       null,
-      `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
+      `Failed to retrieve Establishment with id/uid: ${establishmentId}`,
+    );
 
     console.error('establishment::share GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
@@ -45,16 +57,16 @@ router.route('/alt').get(async (req, res) => {
   try {
     let results = await models.establishment.findOne({
       where: {
-        id: establishmentId
+        id: establishmentId,
       },
-      attributes: ['id', 'name', "postcode"],
+      attributes: ['id', 'name', 'postcode'],
       include: [
         {
           model: models.establishmentLocalAuthority,
           as: 'localAuthorities',
           attributes: ['id', 'cssrId', 'cssr'],
-        }
-      ]
+        },
+      ],
     });
 
     // need to identify which, if any, of the shared authorities is attributed to the
@@ -68,43 +80,49 @@ router.route('/alt').get(async (req, res) => {
         where: {
           postcode: results.postcode,
         },
-        include: [{
-          model: models.cssr,
-          as: 'theAuthority',
-          attributes: ['id', 'name', 'nmdsIdLetter']
-        }]
+        include: [
+          {
+            model: models.cssr,
+            as: 'theAuthority',
+            attributes: ['id', 'name', 'nmdsIdLetter'],
+          },
+        ],
       });
-      
-      if (cssrResults && cssrResults.postcode === results.postcode &&
-          cssrResults.theAuthority && cssrResults.theAuthority.id &&
-          Number.isInteger(cssrResults.theAuthority.id)) {
-        
+
+      if (
+        cssrResults &&
+        cssrResults.postcode === results.postcode &&
+        cssrResults.theAuthority &&
+        cssrResults.theAuthority.id &&
+        Number.isInteger(cssrResults.theAuthority.id)
+      ) {
         primaryAuthorityCssr = {
           id: cssrResults.theAuthority.id,
-          name: cssrResults.theAuthority.name
+          name: cssrResults.theAuthority.name,
         };
-
       } else {
         //  using just the first half of the postcode
-        const [firstHalfOfPostcode] = results.postcode.split(' '); 
-        
+        const [firstHalfOfPostcode] = results.postcode.split(' ');
+
         // must escape the string to prevent SQL injection
         const fuzzyCssrIdMatch = await models.sequelize.query(
-          `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
+          `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(
+            firstHalfOfPostcode,
+          )}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
           {
-            type: models.sequelize.QueryTypes.SELECT
-          }
+            type: models.sequelize.QueryTypes.SELECT,
+          },
         );
         if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
           primaryAuthorityCssr = {
             id: fuzzyCssrIdMatch[0].CssrID,
-            name: fuzzyCssrIdMatch[0].CssR
-          }
+            name: fuzzyCssrIdMatch[0].CssR,
+          };
         }
       }
     }
 
-    if (results && results.id && (establishmentId === results.id)) {
+    if (results && results.id && establishmentId === results.id) {
       res.status(200);
       return res.json(formatLAResponse(results, primaryAuthorityCssr));
     }
@@ -117,9 +135,8 @@ router.route('/alt').get(async (req, res) => {
 
 // updates the set of Local Authorities to share with for the known establishment
 router.route('/').post(async (req, res) => {
-  const establishmentId = req.establishmentId;  
+  const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
-
 
   try {
     // before updating an Establishment, we need to be sure the Establishment is
@@ -134,7 +151,7 @@ router.route('/').post(async (req, res) => {
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in local authorities
       const isValidEstablishment = await thisEstablishment.load({
-        localAuthorities: req.body.localAuthorities
+        localAuthorities: req.body.localAuthorities,
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
@@ -145,21 +162,19 @@ router.route('/').post(async (req, res) => {
       } else {
         return res.status(400).send('Unexpected Input.');
       }
-        
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error("Establishment::share POST: ", err.message);
+      console.error('Establishment::share POST: ', err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error("Establishment::share POST: ", err.message);
+      console.error('Establishment::share POST: ', err.message);
       return res.status(503).send(err.safe);
     } else {
-      console.error("Unexpected exception: ", err);
+      console.error('Unexpected exception: ', err);
     }
   }
 });
@@ -177,51 +192,52 @@ router.route('/alt').post(async (req, res) => {
   try {
     let results = await models.establishment.findOne({
       where: {
-        id: establishmentId
+        id: establishmentId,
       },
-      attributes: ['id', 'name']
+      attributes: ['id', 'name'],
     });
 
-    if (results && results.id && (establishmentId === results.id)) {
+    if (results && results.id && establishmentId === results.id) {
       // when processing the local authorities, we need to ensure they are one of the known local authorities (CSSRs)
-      const allLAResult =  await models.cssr.findAll({
+      const allLAResult = await models.cssr.findAll({
         attributes: ['id', 'name'],
         group: ['id', 'name'],
-        order: [
-          ['name', 'ASC']
-        ]
+        order: [['name', 'ASC']],
       });
       if (!allLAResult) {
         console.error('establishment::la POST - unable to retrieve all known local authorities');
         return res.status(503).send('Unable to retrieve all Local Authorities');
       }
       const allLAs = [];
-      allLAResult.forEach(thisRes => allLAs.push(thisRes.id));
+      allLAResult.forEach((thisRes) => allLAs.push(thisRes.id));
 
-      await models.sequelize.transaction(async t => {
+      await models.sequelize.transaction(async (t) => {
         await models.establishmentLocalAuthority.destroy(
           {
             where: {
-              establishmentId
-            }
+              establishmentId,
+            },
           },
-          {transaction: t}
+          { transaction: t },
         );
 
         // now iterate through the given set of LAs
         const laRecords = [];
-        givenLocalAuthorities.forEach(thisLA => {
+        givenLocalAuthorities.forEach((thisLA) => {
           if (isValidLAEntry(thisLA, allLAs)) {
-            const associatedCssr = allLAResult.find(thisCssr => {
-              return thisCssr.id == thisLA.custodianCode
+            const associatedCssr = allLAResult.find((thisCssr) => {
+              return thisCssr.id == thisLA.custodianCode;
             });
 
             laRecords.push(
-              models.establishmentLocalAuthority.create({
-                cssrId: thisLA.custodianCode,
-                cssr: associatedCssr.name,
-                establishmentId
-              }, {transaction: t})
+              models.establishmentLocalAuthority.create(
+                {
+                  cssrId: thisLA.custodianCode,
+                  cssr: associatedCssr.name,
+                  establishmentId,
+                },
+                { transaction: t },
+              ),
             );
           }
         });
@@ -231,30 +247,32 @@ router.route('/alt').post(async (req, res) => {
       // now need to refetch the associated local authorities to return the confirmation
       let reFetchResults = await models.establishment.findOne({
         where: {
-          id: establishmentId
+          id: establishmentId,
         },
-        attributes: ['id', 'name', "postcode"],
+        attributes: ['id', 'name', 'postcode'],
         include: [
           {
             model: models.establishmentLocalAuthority,
             as: 'localAuthorities',
             attributes: ['id', 'cssrId', 'cssr'],
-          }
-        ]
+          },
+        ],
       });
-  
-      if (reFetchResults && reFetchResults.id && (establishmentId === reFetchResults.id)) {
+
+      if (reFetchResults && reFetchResults.id && establishmentId === reFetchResults.id) {
         res.status(200);
         return res.json(formatLAResponse(reFetchResults));
       } else {
-        console.error('establishment::la POST - Not found establishment having id: ${establishmentId} after having updated the establishment', err);
+        console.error(
+          'establishment::la POST - Not found establishment having id: ${establishmentId} after having updated the establishment',
+          err,
+        );
         return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
       }
     } else {
       console.error('establishment::la POST - Not found establishment having id: ${establishmentId}', err);
       return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
     }
-
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::la POST - failed', err);
@@ -262,44 +280,40 @@ router.route('/alt').post(async (req, res) => {
   }
 });
 
-
 // TODO - ensure the jobId is valid
 const isValidLAEntry = (entry, allKnownLAs) => {
-  if (entry && 
-      entry.custodianCode &&
-      parseInt(entry.custodianCode) === entry.custodianCode) {
-
-      // now check the LA custodianCode is within range
-      if (allKnownLAs &&
-          Array.isArray(allKnownLAs) &&
-          allKnownLAs.includes(entry.custodianCode)) {
-        return true;
-      } else {
-        return false;
-      }
+  if (entry && entry.custodianCode && parseInt(entry.custodianCode) === entry.custodianCode) {
+    // now check the LA custodianCode is within range
+    if (allKnownLAs && Array.isArray(allKnownLAs) && allKnownLAs.includes(entry.custodianCode)) {
+      return true;
+    } else {
+      return false;
+    }
   } else {
     return false;
   }
 };
 
-const formatLAResponse = (establishment, primaryAuthority=null) => {
+const formatLAResponse = (establishment, primaryAuthority = null) => {
   // WARNING - do not be tempted to copy the database model as the API response; the API may chose to rename/contain
   //           some attributes
   const response = {
     id: establishment.id,
     name: establishment.name,
-    localAuthorities: LaFormatters.listOfLAsJSON(establishment.localAuthorities,
-                                                 primaryAuthority && primaryAuthority.id ? primaryAuthority.id : null)
+    localAuthorities: LaFormatters.listOfLAsJSON(
+      establishment.localAuthorities,
+      primaryAuthority && primaryAuthority.id ? primaryAuthority.id : null,
+    ),
   };
 
   if (primaryAuthority) {
     response.primaryAuthority = {
       custodianCode: parseInt(primaryAuthority.id),
-      name: primaryAuthority.name
-    }
+      name: primaryAuthority.name,
+    };
   }
 
   return response;
-}
+};
 
 module.exports = router;

@@ -22,7 +22,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
     protected locationService: LocationService,
     protected route: ActivatedRoute,
     protected router: Router,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
   ) {
     super(backService, errorSummaryService, formBuilder, locationService, route, router);
   }

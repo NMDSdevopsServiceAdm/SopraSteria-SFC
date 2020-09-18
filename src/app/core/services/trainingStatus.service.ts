@@ -10,19 +10,18 @@ export class TrainingStatusService {
   readonly EXPIRING = 1;
   readonly ACTIVE = 0;
 
-
   public getAggregatedStatus(trainingRecords) {
     let expired = false;
     let expiring = false;
     let missing = false;
     let trainingStatus = 0;
 
-    trainingRecords.forEach(training => {
+    trainingRecords.forEach((training) => {
       trainingStatus = this.getTrainingStatus(training.expires, training.missing);
       switch (trainingStatus) {
         case this.MISSING: {
-         missing = true;
-         break;
+          missing = true;
+          break;
         }
         case this.EXPIRING: {
           expiring = true;

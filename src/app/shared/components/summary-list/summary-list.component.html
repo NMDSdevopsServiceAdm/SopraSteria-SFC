@@ -13,7 +13,7 @@
       {{ item.data }}
     </dd>
     <ng-container *ngIf="item.route">
-      <dd *ngIf="canNavigate === undefined ? true: canNavigate" class="govuk-summary-list__actions">
+      <dd *ngIf="canNavigate === undefined ? true : canNavigate" class="govuk-summary-list__actions">
         <a [routerLink]="item.route.url" (click)="emitSetReturn()">
           Change
           <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>

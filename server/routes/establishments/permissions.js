@@ -3,7 +3,7 @@ const router = express.Router({ mergeParams: true });
 const Establishment = require('../../models/classes/establishment');
 const User = require('../../models/classes/user');
 const PermissionCache = require('../../models/cache/singletons/permissions').PermissionCache;
-const models = require('../../models')
+const models = require('../../models');
 
 router.route('/').get(async (req, res) => {
   return await permissions(req, res);
@@ -16,56 +16,50 @@ const permissions = async (req, res) => {
     where: {
       EstablishmentID: establishmentId,
       Status: 'Pending',
-      ApprovalType: 'BecomeAParent'
+      ApprovalType: 'BecomeAParent',
     },
-    order: [
-      ['createdAt', 'DESC']
-    ]
+    order: [['createdAt', 'DESC']],
   });
   try {
     if (await thisEstablishment.restore(establishmentId)) {
       if (await thisUser.restore(null, thisEstablishment.username, null)) {
         let userData = thisUser.toJSON();
-        const permissions = await PermissionCache.myPermissions(req).map(item => {
+        const permissions = await PermissionCache.myPermissions(req).map((item) => {
           if (item.code === 'canChangeDataOwner' && thisEstablishment.dataOwnershipRequested !== null) {
             return { [item.code]: false };
           } else {
             return { [item.code]: true };
           }
         });
-        permissions.forEach(permission => {
+        permissions.forEach((permission) => {
           if (permission.canLinkToParent) {
             permission.canLinkToParent =
               permission.canLinkToParent &&
-                !thisEstablishment.isParent &&
-                !thisEstablishment.parentId &&
-                becomeAParentRequest === null
+              !thisEstablishment.isParent &&
+              !thisEstablishment.parentId &&
+              becomeAParentRequest === null
                 ? true
                 : false;
           }
           if (permission.canRemoveParentAssociation) {
             permission.canRemoveParentAssociation =
               permission.canRemoveParentAssociation &&
-                !thisEstablishment.isParent &&
-                thisEstablishment.parentId &&
-                userData.role !== 'Read'
+              !thisEstablishment.isParent &&
+              thisEstablishment.parentId &&
+              userData.role !== 'Read'
                 ? true
                 : false;
           }
           if (permission.canDownloadWdfReport) {
             permission.canDownloadWdfReport =
-              permission.canDownloadWdfReport &&
-                thisEstablishment.isParent &&
-                userData.role === 'Edit'
-                ? true
-                : false;
+              permission.canDownloadWdfReport && thisEstablishment.isParent && userData.role === 'Edit' ? true : false;
           }
           if (permission.canBecomeAParent) {
             permission.canBecomeAParent =
               permission.canBecomeAParent &&
-                !thisEstablishment.isParent &&
-                !thisEstablishment.parentId &&
-                becomeAParentRequest === null
+              !thisEstablishment.isParent &&
+              !thisEstablishment.parentId &&
+              becomeAParentRequest === null
                 ? true
                 : false;
           }
@@ -86,7 +80,8 @@ const permissions = async (req, res) => {
       null,
       err,
       null,
-      `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
+      `Failed to retrieve Establishment with id/uid: ${establishmentId}`,
+    );
 
     console.error('establishment::permissions GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);

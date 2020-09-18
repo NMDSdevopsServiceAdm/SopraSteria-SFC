@@ -28,7 +28,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
-    protected userService: UserService
+    protected userService: UserService,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
@@ -43,10 +43,10 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   private setupSubscriptions(): void {
     this.subscriptions.add(
-      this.userService.loggedInUser$.subscribe(user => {
+      this.userService.loggedInUser$.subscribe((user) => {
         this.userDetails = user;
         this.prefillForm(user);
-      })
+      }),
     );
   }
 
@@ -59,12 +59,12 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.primaryWorkplace.uid, this.userDetails.uid, userDetails).subscribe(
-        data => {
+        (data) => {
           this.userService.loggedInUser = { ...this.userDetails, ...data };
           this.router.navigate(['/account-management']);
         },
-        (error: HttpErrorResponse) => this.onError(error)
-      )
+        (error: HttpErrorResponse) => this.onError(error),
+      ),
     );
   }
 }

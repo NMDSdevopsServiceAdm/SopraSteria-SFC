@@ -26,7 +26,7 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
     public dialog: Dialog<UserAccountChangePrimaryDialogComponent>,
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
-    private userService: UserService
+    private userService: UserService,
   ) {
     super(data, dialog);
 
@@ -37,9 +37,9 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
 
   ngOnInit() {
     this.subscriptions.add(
-      this.userService.getAllUsersForEstablishment(this.data.workplaceUid).subscribe(users => {
-        this.users = filter(users, user => user.role === Roles.Edit && user.uid !== this.data.currentUserUid);
-      })
+      this.userService.getAllUsersForEstablishment(this.data.workplaceUid).subscribe((users) => {
+        this.users = filter(users, (user) => user.role === Roles.Edit && user.uid !== this.data.currentUserUid);
+      }),
     );
 
     this.setupFormErrorsMap();
@@ -75,11 +75,11 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
       this.userService
         .updateUserDetails(this.data.workplaceUid, selectedUser.uid, { ...selectedUser, ...props })
         .subscribe(
-          data => {
+          (data) => {
             this.close(selectedUser.fullname);
           },
-          error => console.log(error)
-        )
+          (error) => console.log(error),
+        ),
     );
   }
 

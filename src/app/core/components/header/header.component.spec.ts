@@ -14,27 +14,22 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 describe('HeaderComponent', () => {
-
-  async function setup(
-      isAdmin = false,
-      subsidiaries = 0,
-      isLoggedIn: boolean = false) {
-    const component =  await render(HeaderComponent, {
-      imports: [
-        RouterTestingModule,
-        HttpClientTestingModule],
+  async function setup(isAdmin = false, subsidiaries = 0, isLoggedIn: boolean = false) {
+    const component = await render(HeaderComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [HeaderComponent],
       providers: [
         {
           provide: UserService,
           useFactory: MockUserService.factory(subsidiaries, isAdmin),
-          deps: [HttpClient]
+          deps: [HttpClient],
         },
         {
           provide: AuthService,
           useFactory: MockAuthService.factory(isLoggedIn),
-          deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService]
-        }]
+          deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
+        },
+      ],
     });
 
     const injector = getTestBed();
@@ -42,7 +37,7 @@ describe('HeaderComponent', () => {
 
     return {
       component,
-      router
+      router,
     };
   }
 

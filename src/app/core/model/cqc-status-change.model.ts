@@ -1,4 +1,3 @@
-
 export interface CqcStatusChange {
   requestId: number;
   requestUUID: string;

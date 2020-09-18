@@ -1,14 +1,12 @@
 [
-    {
-        "path" : "/",
-        "methods" : {
-            "GET" : {
-                "parameters" : [],
-                "description" : "returns a static confirmation the server app is available",
-                "todo" : [
-                    "Remove the unnecessary dependency on ico requiring the angular app to have been built"
-                ]
-            }
-        }
+  {
+    "path": "/",
+    "methods": {
+      "GET": {
+        "parameters": [],
+        "description": "returns a static confirmation the server app is available",
+        "todo": ["Remove the unnecessary dependency on ico requiring the angular app to have been built"]
+      }
     }
+  }
 ]

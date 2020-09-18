@@ -21,7 +21,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC implements AfterView
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
     protected route: ActivatedRoute,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, locationService, route, router);
   }

@@ -3,14 +3,12 @@ import { ParentRequestsService } from '@core/services/parent-requests.service';
 
 @Component({
   selector: 'app-parent-requests',
-  templateUrl: './parent-requests.component.html'
+  templateUrl: './parent-requests.component.html',
 })
 export class ParentRequestsComponent implements OnInit {
   public parentRequests = [];
 
-  constructor(
-    public parentRequestsService: ParentRequestsService,
-  ) {}
+  constructor(public parentRequestsService: ParentRequestsService) {}
 
   ngOnInit() {
     this.getParentRequests();
@@ -18,10 +16,10 @@ export class ParentRequestsComponent implements OnInit {
 
   public getParentRequests() {
     this.parentRequestsService.getParentRequests().subscribe(
-      data => {
+      (data) => {
         this.parentRequests = data;
       },
-      error => this.onError(error)
+      (error) => this.onError(error),
     );
   }
 

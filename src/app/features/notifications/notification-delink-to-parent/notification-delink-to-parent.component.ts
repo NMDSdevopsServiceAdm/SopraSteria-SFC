@@ -22,19 +22,19 @@ export class NotificationDeLinkToParentComponent implements OnInit, OnDestroy {
   constructor(
     private breadcrumbService: BreadcrumbService,
     private route: ActivatedRoute,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.notificationUid = this.route.snapshot.params.notificationuid;
     this.subscriptions.add(
-      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe(details => {
+      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe((details) => {
         this.notification = details;
         this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
         this.notificationRequestedFrom = details.typeContent.requestorName;
         this.requestorName = details.typeContent.requestorName;
-      })
+      }),
     );
     this.setNotificationViewed(this.notificationUid);
   }
@@ -47,7 +47,7 @@ export class NotificationDeLinkToParentComponent implements OnInit, OnDestroy {
   private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
-        resp => {
+        (resp) => {
           if (resp) {
             this.notificationsService.notifications.forEach((notification, i) => {
               if (notification.notificationUid === resp.notificationUid) {
@@ -57,8 +57,8 @@ export class NotificationDeLinkToParentComponent implements OnInit, OnDestroy {
             this.notificationsService.notifications$.next(this.notificationsService.notifications);
           }
         },
-        error => console.log('Could not update notification.')
-      )
+        (error) => console.log('Could not update notification.'),
+      ),
     );
   }
 

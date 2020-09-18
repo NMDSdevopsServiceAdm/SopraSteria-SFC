@@ -18,7 +18,7 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, route, router);
   }
@@ -34,7 +34,7 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
         if (selectedLocation) {
           this.preFillForm(selectedLocation);
         }
-      })
+      }),
     );
   }
 

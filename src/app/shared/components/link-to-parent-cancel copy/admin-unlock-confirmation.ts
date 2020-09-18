@@ -23,7 +23,7 @@ export class AdminUnlockConfirmationDialogComponent extends DialogComponent impl
     private errorSummaryService: ErrorSummaryService,
     private registrationsService: RegistrationsService,
     public dialog: Dialog<AdminUnlockConfirmationDialogComponent>,
-    private alertService: AlertService
+    private alertService: AlertService,
   ) {
     super(data, dialog);
   }
@@ -66,23 +66,24 @@ export class AdminUnlockConfirmationDialogComponent extends DialogComponent impl
    * @return {void}
    */
   public unlockUser(data: any) {
-    this.registrationsService.unlockAccount({
-      username: data.username
-    }).subscribe(
-      result => {
-        data.removeUnlock();
-        this.alertService.addAlert({
-          type: 'success',
-          message: `User account has been unlocked.`,
-        });
-        this.closeDialogWindow(true);
-      },
-      error => {
-        this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-      }
-    );
+    this.registrationsService
+      .unlockAccount({
+        username: data.username,
+      })
+      .subscribe(
+        (result) => {
+          data.removeUnlock();
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'User account has been unlocked.',
+          });
+          this.closeDialogWindow(true);
+        },
+        (error) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        },
+      );
   }
-
 
   public ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

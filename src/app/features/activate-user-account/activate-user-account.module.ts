@@ -2,9 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivateUserAccountRoutingModule } from '@features/activate-user-account/activate-user-account-routing.module';
-import {
-  ExpiredActivationLinkComponent,
-} from '@features/activate-user-account/expired-activation-link/expired-activation-link.component';
+import { ExpiredActivationLinkComponent } from '@features/activate-user-account/expired-activation-link/expired-activation-link.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { ActivationCompleteComponent } from './activation-complete/activation-complete.component';

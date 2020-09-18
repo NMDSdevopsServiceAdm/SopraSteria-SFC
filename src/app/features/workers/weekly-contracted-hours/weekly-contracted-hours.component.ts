@@ -23,7 +23,7 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -44,7 +44,7 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
     }
 
     this.subscriptions.add(
-      this.form.get('hoursKnown').valueChanges.subscribe(value => {
+      this.form.get('hoursKnown').valueChanges.subscribe((value) => {
         this.form.get('hours').clearValidators();
 
         if (value === 'Yes') {
@@ -54,7 +54,7 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
         }
 
         this.form.get('hours').updateValueAndValidity();
-      })
+      }),
     );
 
     if (this.worker.weeklyHoursContracted) {

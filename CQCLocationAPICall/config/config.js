@@ -1,4 +1,3 @@
-
 const convict = require('convict');
 const fs = require('fs');
 const yaml = require('js-yaml');
@@ -13,86 +12,87 @@ const config = convict({
     doc: 'The application environment',
     format: ['production', 'preproduction', 'development', 'test', 'accessibility', 'localhost'],
     default: 'localhost',
-    env: 'NODE_ENV'
+    env: 'NODE_ENV',
   },
   log: {
     sequelize: {
       doc: 'Whether to log sequelize SQL statements',
       format: 'Boolean',
-      default: false
-    }
+      default: false,
+    },
   },
   db: {
     host: {
       doc: 'Database host name/IP',
       format: String,
       default: 'localhost',
-      env: 'DB_HOST'
+      env: 'DB_HOST',
     },
     database: {
       doc: 'Database name',
       format: String,
       default: 'sfcdevdb',
-      env: 'DB_NAME'
+      env: 'DB_NAME',
     },
     username: {
       doc: 'Database username',
       format: String,
       default: 'sfcadmin',
-      env: 'DB_USER'
+      env: 'DB_USER',
     },
     password: {
       doc: 'Database username',
       format: '*',
       default: 'unknown',
-      env: 'DB_PASS'
+      env: 'DB_PASS',
     },
     port: {
       doc: 'Database port',
       format: 'port',
       default: 5432,
-      env: 'DB_PORT'
+      env: 'DB_PORT',
     },
     dialect: {
       doc: 'Database dialect (sequelize)',
       format: String,
-      default: 'postgres'
+      default: 'postgres',
     },
     ssl: {
       doc: 'Use SSL?',
       format: 'Boolean',
-      default: false
+      default: false,
     },
     client_ssl: {
       status: {
         doc: 'Client SSL enabled or not',
         format: 'Boolean',
-        default: false
+        default: false,
       },
       usingFiles: {
-        doc: 'If true, retrieves client certificate, client key and root certificate from file; if false, using data values',
+        doc:
+          'If true, retrieves client certificate, client key and root certificate from file; if false, using data values',
         format: 'Boolean',
-        default: false
+        default: false,
       },
       files: {
         certificate: {
           doc: 'The full path location of the client certificate file',
           format: String,
           default: 'TBC',
-          env: 'DB_ROOT_CRT'
+          env: 'DB_ROOT_CRT',
         },
         key: {
           doc: 'The full path location of the client key file',
           format: String,
           default: 'TBC',
-          env: 'DB_APP_USER_KEY'
+          env: 'DB_APP_USER_KEY',
         },
         ca: {
           doc: 'The full path location of the server certificate (authority - ca) file',
           format: String,
           default: 'TBC',
-          env: 'DB_APP_USER_CERT'
-        }
+          env: 'DB_APP_USER_CERT',
+        },
       },
       data: {
         certificate: {
@@ -109,43 +109,43 @@ const config = convict({
           doc: 'The server certificate (authority - ca)',
           format: String,
           default: 'TBC',
-        }
-      }
-    }
+        },
+      },
+    },
   },
   aws: {
     region: {
       doc: 'AWS region',
       format: '*',
-      default: 'eu-west-1'
+      default: 'eu-west-1',
     },
     bucketname: {
       doc: 'Bucket used to upload all CQC changes',
       format: '*',
       default: 'cqcchanges',
-      env: 'CQC_BUCKET'
+      env: 'CQC_BUCKET',
     },
     sqsqueue: {
       doc: 'SQS queue to send location changes',
       format: '*',
       default: 'https://sqs.eu-west-1.amazonaws.com/624216394565/cqctest',
-      env: 'CQC_SQS_QUEUE'
+      env: 'CQC_SQS_QUEUE',
     },
     secrets: {
       use: {
-        doc: 'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
+        doc:
+          'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
         format: 'Boolean',
-        default: true
+        default: true,
       },
       wallet: {
         doc: 'The name of the AWS Secrets Manager wallet to recall from',
         format: String,
         default: 'bob',
-        env: 'CQC_WALLET_ID'
-
-      }
-    }
-  }
+        env: 'CQC_WALLET_ID',
+      },
+    },
+  },
 });
 
 // Load environment dependent configuration
@@ -157,26 +157,21 @@ const envConfigfile = yaml.safeLoad(fs.readFileSync(__dirname + '/' + env + '.ya
 config.load(envConfigfile);
 
 // Perform validation
-config.validate(
-    {allowed: 'strict'}
-);
+config.validate({ allowed: 'strict' });
 
 // now, if defined, load secrets from AWS Secret Manager
 if (config.get('aws.secrets.use')) {
   console.log('Using AWS Secrets');
-  AWSSecrets.initialiseSecrets(
-    config.get('aws.region'),
-    config.get('aws.secrets.wallet')
-  ).then(ret => {
+  AWSSecrets.initialiseSecrets(config.get('aws.region'), config.get('aws.secrets.wallet')).then((ret) => {
     // DB rebind
     console.log('Setting AWS details');
     config.set('db.host', AWSSecrets.dbHost());
     config.set('db.database', AWSSecrets.dbName());
     config.set('db.password', AWSSecrets.dbPass());
     config.set('db.username', AWSSecrets.dbUser());
-    config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
-    config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
-    config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
+    config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, '\n'));
+    config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, '\n'));
+    config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, '\n'));
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);
   });

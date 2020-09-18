@@ -6,9 +6,7 @@ import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  DeleteQualificationDialogComponent,
-} from '@features/workers/delete-qualification-dialog/delete-qualification-dialog.component';
+import { DeleteQualificationDialogComponent } from '@features/workers/delete-qualification-dialog/delete-qualification-dialog.component';
 import * as moment from 'moment';
 import { take } from 'rxjs/operators';
 
@@ -30,7 +28,7 @@ export class QualificationsComponent implements OnInit {
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
     private router: Router,
-    private dialogService: DialogService
+    private dialogService: DialogService,
   ) {}
 
   ngOnInit() {
@@ -45,7 +43,7 @@ export class QualificationsComponent implements OnInit {
       nameOrId: this.worker.nameOrId,
       record,
     });
-    dialog.afterClosed.pipe(take(1)).subscribe(confirm => {
+    dialog.afterClosed.pipe(take(1)).subscribe((confirm) => {
       if (confirm) {
         this.workerService.deleteQualification(this.workplace.uid, this.worker.uid, record.uid).subscribe(() => {
           this.workerService.alert = { type: 'success', message: 'Qualification has been deleted.' };
@@ -57,7 +55,7 @@ export class QualificationsComponent implements OnInit {
   }
 
   fetchAllRecords() {
-    this.workerService.getQualifications(this.workplace.uid, this.worker.uid).subscribe(data => {
+    this.workerService.getQualifications(this.workplace.uid, this.worker.uid).subscribe((data) => {
       this.lastUpdated = moment(data.lastUpdated);
       this.qualifications = data.qualifications;
     });

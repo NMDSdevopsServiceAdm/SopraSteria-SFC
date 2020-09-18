@@ -1,13 +1,14 @@
 const expect = require('chai').expect;
 
-const postcodePropertyClass = require('../../../../../../models/classes/establishment/properties/postcodeProperty').PostcodeProperty;
+const postcodePropertyClass = require('../../../../../../models/classes/establishment/properties/postcodeProperty')
+  .PostcodeProperty;
 
 describe('postcodeProperty Property', () => {
   describe('restoreFromJson()', () => {
-    it('should return JSON', async() => {
+    it('should return JSON', async () => {
       const postcodeProperty = new postcodePropertyClass();
       const document = {
-        postcode: 'LS1 1AA'
+        postcode: 'LS1 1AA',
       };
       await postcodeProperty.restoreFromJson(document);
       expect(postcodeProperty.property).to.deep.equal(document.postcode);
@@ -17,7 +18,7 @@ describe('postcodeProperty Property', () => {
     it('should restore in correct format as if from database', () => {
       const postcodeProperty = new postcodePropertyClass();
       const document = {
-        postcode: 'LS1 1AA'
+        postcode: 'LS1 1AA',
       };
       const restored = postcodeProperty.restorePropertyFromSequelize(document);
       expect(restored).to.deep.equal(document.postcode);

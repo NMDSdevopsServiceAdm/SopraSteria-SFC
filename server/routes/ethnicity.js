@@ -6,16 +6,14 @@ const models = require('../models/index');
 router.route('/').get(async function (req, res) {
   try {
     let results = await models.ethnicity.findAll({
-        order: [
-          ["seq", "ASC"]
-        ]
-      });
+      order: [['seq', 'ASC']],
+    });
 
     res.send({
       ethnicities: {
         list: ethnicityJSON(results),
-        byGroup: ethnicityByGroupJSON(results)
-      }
+        byGroup: ethnicityByGroupJSON(results),
+      },
     });
   } catch (err) {
     console.error(err);
@@ -23,10 +21,10 @@ router.route('/').get(async function (req, res) {
   }
 });
 
-function localFormat(givenEthncity, withGroup=true) {
+function localFormat(givenEthncity, withGroup = true) {
   const ethnicityJson = {
     id: givenEthncity.id,
-    ethnicity: givenEthncity.ethnicity
+    ethnicity: givenEthncity.ethnicity,
   };
 
   if (withGroup) {
@@ -36,22 +34,22 @@ function localFormat(givenEthncity, withGroup=true) {
   return ethnicityJson;
 }
 
-function ethnicityJSON(givenEthnicities){
-  let ethnicities=[];
+function ethnicityJSON(givenEthnicities) {
+  let ethnicities = [];
 
   //Go through any results found from DB and map to JSON
-  givenEthnicities.forEach(thisEthnicity => {
+  givenEthnicities.forEach((thisEthnicity) => {
     ethnicities.push(localFormat(thisEthnicity));
   });
 
   return ethnicities;
-};
+}
 
-function ethnicityByGroupJSON(givenEthnicities){
+function ethnicityByGroupJSON(givenEthnicities) {
   let ethnicityGroupsMap = new Map();
-  
+
   if (givenEthnicities && Array.isArray(givenEthnicities)) {
-    givenEthnicities.forEach(thisEthnicity => {
+    givenEthnicities.forEach((thisEthnicity) => {
       const mapKey = thisEthnicity.group;
       let thisEthnicityGroup = ethnicityGroupsMap.get(mapKey);
       if (!thisEthnicityGroup) {
@@ -65,14 +63,13 @@ function ethnicityByGroupJSON(givenEthnicities){
     });
   }
 
-    // now iterate over the map (group by job type) and construct the target Javascript object
-    const ethnicityGroups = {};
-    ethnicityGroupsMap.forEach((key,value) => {
-      ethnicityGroups[value] = key;
-    });
+  // now iterate over the map (group by job type) and construct the target Javascript object
+  const ethnicityGroups = {};
+  ethnicityGroupsMap.forEach((key, value) => {
+    ethnicityGroups[value] = key;
+  });
 
   return ethnicityGroups;
-};
-
+}
 
 module.exports = router;

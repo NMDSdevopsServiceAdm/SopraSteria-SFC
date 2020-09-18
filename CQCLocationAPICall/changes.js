@@ -13,16 +13,17 @@ axiosRetry(axios, { retries: 3 });
 // Get a list of all the CQC Location ID's that jhave changed between 2 timestamps
 async function getChangedIds(startTimestamp, endTimestamp) {
   let changes = [];
-  let nextPage='/changes/location?page=1&perPage=1000&startTimestamp=' + startTimestamp + '&endTimestamp=' + endTimestamp;
+  let nextPage =
+    '/changes/location?page=1&perPage=1000&startTimestamp=' + startTimestamp + '&endTimestamp=' + endTimestamp;
   console.log('Getting the changes');
   do {
     let changeUrl = url + nextPage;
     let response = await axios.get(changeUrl);
     nextPage = response.data.nextPageUri;
-    for (let i=0, len=response.data.changes.length; i<len; i++) {
+    for (let i = 0, len = response.data.changes.length; i < len; i++) {
       changes.push({
-        "locationId": response.data.changes[i],
-        "status": ""
+        locationId: response.data.changes[i],
+        status: '',
       });
     }
   } while (nextPage != null);
@@ -33,22 +34,24 @@ async function getChangedIds(startTimestamp, endTimestamp) {
 // Upload a list of all the changed location ID's along with timings to S3
 async function uploadToS3(locationIds, startdate, enddate) {
   const s3 = new AWS.S3({
-    region: appConfig.get('aws.region').toString()
+    region: appConfig.get('aws.region').toString(),
   });
-  const locations ={
-    "changes": locationIds,
-    "startDate": startdate,
-    "endDate": enddate
+  const locations = {
+    changes: locationIds,
+    startDate: startdate,
+    endDate: enddate,
   };
   console.log('Putting the JSON onto S3');
   try {
-    await s3.putObject({
-      Bucket: appConfig.get('aws.bucketname').toString(),
-      Key: `cqcChanges-${startdate}`,
-      Body: JSON.stringify(locations),
-      ContentType: 'application/json; charset=utf-8'
-    }).promise();
-  } catch(error) {
+    await s3
+      .putObject({
+        Bucket: appConfig.get('aws.bucketname').toString(),
+        Key: `cqcChanges-${startdate}`,
+        Body: JSON.stringify(locations),
+        ContentType: 'application/json; charset=utf-8',
+      })
+      .promise();
+  } catch (error) {
     console.error(error);
   }
 }
@@ -56,37 +59,41 @@ async function uploadToS3(locationIds, startdate, enddate) {
 // Send each of the location ID's to SQS for them to run a SQS
 async function sendMessages(locationIds, startdate, enddate) {
   const sqs = new AWS.SQS({
-    region: appConfig.get('aws.region').toString()
+    region: appConfig.get('aws.region').toString(),
   });
   console.log('Adding messages to SQS');
-  await Promise.all(locationIds.map(async (locationId, index) => {
-    const location = {
-      ...locationId,
-      "startDate": startdate,
-      "endDate": enddate
-    };
-    try {
-      const sqsReq = await sqs.sendMessage({
-        MessageBody: JSON.stringify(location),
-        QueueUrl
-      }).promise();
-      if (index % 1000 === 0) console.log(`Added ${index} to the SQS Queue`);
-    } catch(error) {
-      console.error(error);
-    }
-  }));
+  await Promise.all(
+    locationIds.map(async (locationId, index) => {
+      const location = {
+        ...locationId,
+        startDate: startdate,
+        endDate: enddate,
+      };
+      try {
+        const sqsReq = await sqs
+          .sendMessage({
+            MessageBody: JSON.stringify(location),
+            QueueUrl,
+          })
+          .promise();
+        if (index % 1000 === 0) console.log(`Added ${index} to the SQS Queue`);
+      } catch (error) {
+        console.error(error);
+      }
+    }),
+  );
 }
 
-async function changes () {
-  const endDate=new Date().toISOString().split('.')[0]+"Z";
+async function changes() {
+  const endDate = new Date().toISOString().split('.')[0] + 'Z';
   let startDate = null;
   console.log('Looking for latest run');
   const log = await models.cqclog.findAll({
     limit: 1,
     where: {
-      success:true
+      success: true,
     },
-    order: [ [ 'createdat', 'DESC' ]]
+    order: [['createdat', 'DESC']],
   });
   if (log) {
     startDate = log[0].dataValues.lastUpdatedAt;
@@ -99,14 +106,14 @@ async function changes () {
 
   return {
     status: 200,
-    body: "Call Successful"
+    body: 'Call Successful',
   };
 }
 
-module.exports.handler =  async (event, context) => {
+module.exports.handler = async (event, context) => {
   try {
-      return await changes();
+    return await changes();
   } catch (error) {
-    return  error.message;
+    return error.message;
   }
 };

@@ -7,10 +7,7 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
   templateUrl: './remove-all-selections-dialog.component.html',
 })
 export class RemoveAllSelectionsDialogComponent extends DialogComponent {
-  constructor(
-    @Inject(DIALOG_DATA) public data: { },
-    public dialog: Dialog<RemoveAllSelectionsDialogComponent>
-  ) {
+  constructor(@Inject(DIALOG_DATA) public data: {}, public dialog: Dialog<RemoveAllSelectionsDialogComponent>) {
     super(data, dialog);
   }
 

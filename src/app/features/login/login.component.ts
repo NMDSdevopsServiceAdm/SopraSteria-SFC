@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     private establishmentService: EstablishmentService,
     private router: Router,
     private formBuilder: FormBuilder,
-    private errorSummaryService: ErrorSummaryService
+    private errorSummaryService: ErrorSummaryService,
   ) {}
 
   ngOnInit() {
@@ -78,8 +78,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.serverErrorsMap = [
       {
         name: 401,
-        message:
-          'Your username/password is incorrect',
+        message: 'Your username/password is incorrect',
       },
       {
         name: 404,
@@ -96,7 +95,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
       {
         name: 405,
         message: 'Your registration request is awaiting approval, please contact support on 0113 241 0969',
-      }
+      },
     ];
   }
 
@@ -120,7 +119,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     localStorage.setItem('test', 'test');
     this.subscriptions.add(
       this.authService.authenticate(username, password).subscribe(
-        response => {
+        (response) => {
           if (response.body.establishment && response.body.establishment.uid) {
             // update the establishment service state with the given establishment id
             this.establishmentService.establishmentId = response.body.establishment.uid;
@@ -143,8 +142,8 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
-      )
+        },
+      ),
     );
   }
 }

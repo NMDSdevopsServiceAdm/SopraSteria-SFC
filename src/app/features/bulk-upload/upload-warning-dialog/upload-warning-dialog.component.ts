@@ -10,7 +10,7 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 export class UploadWarningDialogComponent extends DialogComponent {
   constructor(
     @Inject(DIALOG_DATA) public data: { establishmentsFile: ValidatedFile; workersFile: ValidatedFile },
-    public dialog: Dialog<UploadWarningDialogComponent>
+    public dialog: Dialog<UploadWarningDialogComponent>,
   ) {
     super(data, dialog);
   }

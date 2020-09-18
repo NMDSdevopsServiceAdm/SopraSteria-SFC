@@ -45,7 +45,7 @@ interface EmployerTypeRequest {
 }
 
 interface MainServiceRequest {
-  cqc: boolean,
+  cqc: boolean;
   mainService: {
     id: number;
     name: string;
@@ -98,7 +98,7 @@ export class EstablishmentService {
       return this._establishment$.asObservable();
     }
     return this.getEstablishment(this.establishmentId.toString()).pipe(
-      tap(establishment => {
+      tap((establishment) => {
         this.setState(establishment);
       }),
     );
@@ -146,7 +146,7 @@ export class EstablishmentService {
     const params = new HttpParams().set('all', 'true');
     return this.http
       .get<AllServicesResponse>(`/api/establishment/${establishmentId}/services`, { params })
-      .pipe(map(res => res.allOtherServices));
+      .pipe(map((res) => res.allOtherServices));
   }
 
   public get returnTo(): URLStructure {
@@ -176,7 +176,7 @@ export class EstablishmentService {
   }
 
   getStaff(establishmentuid: string) {
-    return this.http.get<any>(`/api/establishment/${establishmentuid}/staff`).pipe(map(res => res.numberOfStaff));
+    return this.http.get<any>(`/api/establishment/${establishmentuid}/staff`).pipe(map((res) => res.numberOfStaff));
   }
 
   postStaff(workplaceUid: string, numberOfStaff: number) {
@@ -265,7 +265,7 @@ export class EstablishmentService {
   }
   //get all parent with Post code
   public getAllParentWithPostCode(): Observable<any> {
-    return this.http.get<any>(`/api/parentLinkingDetails/parents`);
+    return this.http.get<any>('/api/parentLinkingDetails/parents');
   }
 
   //Send data for link to parent

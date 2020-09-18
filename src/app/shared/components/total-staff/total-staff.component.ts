@@ -18,16 +18,13 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    protected establishmentService: EstablishmentService,
-  ) {
-  }
+  constructor(protected establishmentService: EstablishmentService) {}
 
   ngOnInit() {
     this.subscriptions.add(
-      this.establishmentService.getStaff(this.establishmentUid).subscribe(staff => {
+      this.establishmentService.getStaff(this.establishmentUid).subscribe((staff) => {
         this.form.patchValue({ totalStaff: staff });
-      })
+      }),
     );
   }
 

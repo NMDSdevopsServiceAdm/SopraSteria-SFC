@@ -8,9 +8,7 @@ import { ReportsHeaderComponent } from '@features/reports/components/reports-hea
 import { WdfEligibilityComponent } from '@features/reports/components/wdf-eligibility/wdf-eligibility.component';
 import { WdfUpdateWarningComponent } from '@features/reports/components/wdf-update-warning/wdf-update-warning.component';
 import { WdfComponent } from '@features/reports/pages/wdf/wdf.component';
-import {
-  WdfWorkplaceConfirmationDialogComponent,
-} from '@features/workplace/wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
+import { WdfWorkplaceConfirmationDialogComponent } from '@features/workplace/wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { ReportsComponent } from './pages/reports/reports.component';

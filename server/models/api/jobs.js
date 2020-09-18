@@ -7,6 +7,6 @@ exports.combineAllJobsJSON = (establishment) => {
       TotalVacencies: establishment.TotalVacencies,
       TotalStarters: establishment.TotalStarters,
       TotalLeavers: establishment.TotalLeavers,
-    }
-  }
+    },
+  };
 };

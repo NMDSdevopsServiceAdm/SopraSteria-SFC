@@ -21,7 +21,7 @@ export class SelectRecordTypeComponent implements OnInit {
     protected route: ActivatedRoute,
     private workerService: WorkerService,
     protected router: Router,
-    private location: Location
+    private location: Location,
   ) {}
   public formErrorsMap: ErrorDetails[];
   public form: FormGroup;
@@ -34,7 +34,7 @@ export class SelectRecordTypeComponent implements OnInit {
   public navigateUrl: string;
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       if (params) {
         this.establishmentuid = params.establishmentuid;
         this.id = params.id;

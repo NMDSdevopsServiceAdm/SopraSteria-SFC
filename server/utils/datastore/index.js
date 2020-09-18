@@ -5,11 +5,10 @@
 // complexity introduced by Sequelize.
 
 // Used to easily validate the parameters to the query
-const ajv = (new (require('ajv'))());
+const ajv = new (require('ajv'))();
 
 // Shorthand for hasOwnProperty that also works with bare objects
-const hasProp = (obj, prop) =>
-  Object.prototype.hasOwnProperty.bind(obj)(prop);
+const hasProp = (obj, prop) => Object.prototype.hasOwnProperty.bind(obj)(prop);
 
 // A nice succinct way to validate the query parameters
 const schema = {
@@ -18,12 +17,12 @@ const schema = {
   additionalProperties: false,
   properties: {
     replacements: {
-      type: 'object'
+      type: 'object',
     },
     type: {
-      type: 'string'
-    }
-  }
+      type: 'string',
+    },
+  },
 };
 
 const invalidQueryParameters = 'Invalid query parameters';
@@ -41,7 +40,7 @@ let subscribers = []; // Pub/sub FTW!
 db.status.on(db.status.READY_EVENT, () => {
   console.log('Resolving queued queries:', subscribers.length);
 
-  subscribers.forEach(elem => elem());
+  subscribers.forEach((elem) => elem());
 
   subscribers = [];
 });
@@ -78,15 +77,14 @@ exports.query = async (query, params) => {
 
     // Everything's ok to run, but the connection pool hasn't been initialised yet.
     // Return a promise in the meantime
-    if (!(db.status.ready)) {
-      return (new Promise(resolve => {
+    if (!db.status.ready) {
+      return new Promise((resolve) => {
         subscribers.push(resolve);
-      }))
-        .then(() => db.sequelize.query(query, params));
+      }).then(() => db.sequelize.query(query, params));
     }
 
     return db.sequelize.query(query, params);
-  } catch(e) {
+  } catch (e) {
     return Promise.reject(e);
   }
 };

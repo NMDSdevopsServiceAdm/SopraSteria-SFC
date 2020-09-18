@@ -24,11 +24,11 @@ export class IdleService {
       fromEvent(window, 'mousemove'),
       fromEvent(document, 'keydown'),
       fromEvent(document, 'touchstart'),
-      fromEvent(document, 'touchend')
+      fromEvent(document, 'touchend'),
     ).pipe(
       bufferTime(1000),
-      filter(arr => !!arr.length),
-      tap(() => (this.lastActivity = Date.now()))
+      filter((arr) => !!arr.length),
+      tap(() => (this.lastActivity = Date.now())),
     );
   }
 
@@ -50,9 +50,9 @@ export class IdleService {
 
   onTimeout(): Observable<boolean> {
     return this.timeout$.pipe(
-      filter(timeout => !!timeout),
+      filter((timeout) => !!timeout),
       tap(() => (this.isTimeout = true)),
-      map(() => true)
+      map(() => true),
     );
   }
 
@@ -77,7 +77,7 @@ export class IdleService {
         if (timeleft - now < 0) {
           this.timeout$.next(true);
         }
-      })
+      }),
     );
   }
 

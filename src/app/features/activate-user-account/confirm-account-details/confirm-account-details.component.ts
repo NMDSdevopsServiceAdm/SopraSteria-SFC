@@ -23,7 +23,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     private createAccountService: CreateAccountService,
     private router: Router,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder
+    protected formBuilder: FormBuilder,
   ) {
     super(errorSummaryService, formBuilder);
   }
@@ -45,7 +45,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
         this.loginCredentials = loginCredentials;
         this.securityDetails = securityDetails;
         this.setAccountDetails();
-      })
+      }),
     );
   }
 
@@ -115,12 +115,10 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
 
   protected save(): void {
     this.subscriptions.add(
-      this.createAccountService
-        .activateAccount(this.generatePayload())
-        .subscribe(
-          () => this.router.navigate(['/activate-account', this.activationToken, 'complete']),
-          (error: HttpErrorResponse) => this._onError(error)
-        )
+      this.createAccountService.activateAccount(this.generatePayload()).subscribe(
+        () => this.router.navigate(['/activate-account', this.activationToken, 'complete']),
+        (error: HttpErrorResponse) => this._onError(error),
+      ),
     );
   }
 

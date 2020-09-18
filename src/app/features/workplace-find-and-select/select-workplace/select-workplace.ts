@@ -23,7 +23,7 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   ngOnInit() {

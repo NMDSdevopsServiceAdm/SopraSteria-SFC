@@ -8,7 +8,6 @@ const faker = require('faker');
 const moment = require('moment-timezone');
 const config = require('../../../../config/config');
 
-
 var testWorkplace = {};
 var workplaceObjectWasSaved = false;
 const _initialiseTestWorkplace = () => {
@@ -37,26 +36,26 @@ var fakeApproval = {
   Establishment: {
     uid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
     nmdsId: testWorkplace.nmdsId,
-    NameValue: testWorkplace.NameValue
+    NameValue: testWorkplace.NameValue,
   },
   User: {
-    FullNameValue: faker.name.findName()
+    FullNameValue: faker.name.findName(),
   },
   Data: {
     requestedService: {
       id: 1,
       name: 'Carers support',
-      other: 'Other requested service Name'
+      other: 'Other requested service Name',
     },
     currentService: {
       id: 14,
       name: 'Any childrens / young peoples services',
-      other: 'Other Name'
-    }
+      other: 'Other Name',
+    },
   },
   save: () => {
     approvalObjectWasSaved = true;
-  }
+  },
 };
 
 var returnedJson = null;
@@ -67,8 +66,8 @@ const parentRequestJson = (json) => {
 const parentRequestStatus = (status) => {
   returnedStatus = status;
   return {
-    json: parentRequestJson, send: () => {
-    }
+    json: parentRequestJson,
+    send: () => {},
   };
 };
 
@@ -100,15 +99,18 @@ describe('test fetching approval requests by establishment id', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await getApprovalRequest({
-        params: {
-          establishmentId: fakeApproval.EstablishmentID
+      await getApprovalRequest(
+        {
+          params: {
+            establishmentId: fakeApproval.EstablishmentID,
+          },
+          query: {
+            type: 'BecomeAParent',
+            status: 'Pending',
+          },
         },
-        query: {
-          type: 'BecomeAParent',
-          status: 'Pending'
-        }
-      }, { status: parentRequestStatus });
+        { status: parentRequestStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(200);
@@ -122,7 +124,7 @@ describe('test fetching approval requests by establishment id', () => {
         userName: fakeApproval.User.FullNameValue,
         orgName: fakeApproval.Establishment.NameValue,
         requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
-        data: fakeApproval.Data
+        data: fakeApproval.Data,
       });
     });
 
@@ -131,15 +133,18 @@ describe('test fetching approval requests by establishment id', () => {
       noMatchingRequestByEstablishmentId = true;
 
       // Act
-      await getApprovalRequest({
-        params: {
-          establishmentId: fakeApproval.EstablishmentID
+      await getApprovalRequest(
+        {
+          params: {
+            establishmentId: fakeApproval.EstablishmentID,
+          },
+          query: {
+            type: 'BecomeAParent',
+            status: 'Pending',
+          },
         },
-        query: {
-          type: 'BecomeAParent',
-          status: 'Pending'
-        }
-      }, { status: parentRequestStatus });
+        { status: parentRequestStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(200);

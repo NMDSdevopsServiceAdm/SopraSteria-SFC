@@ -33,7 +33,7 @@ describe('changes.js', () => {
       callback(null, 'successfully received message');
     });
     AWS.mock('S3', 'getObject', (params, callback) => {
-      callback(null, { Body: Buffer.from(fs.readFileSync('test/mockdata/s3.json'))});
+      callback(null, { Body: Buffer.from(fs.readFileSync('test/mockdata/s3.json')) });
     });
     AWS.mock('S3', 'putObject', (params, callback) => {
       expect(params).to.have.property('Bucket', appConfig.get('aws.bucketname').toString());
@@ -50,7 +50,7 @@ describe('changes.js', () => {
       });
     });
   });
-  it('should return a status of 200',async () => {
+  it('should return a status of 200', async () => {
     const changesTest = await changes.handler(null, null);
     expect(changesTest.status).to.equal(200);
     expect(changesTest.body).to.equal('Call Successful');

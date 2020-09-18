@@ -28,7 +28,7 @@ const parentRequest = {
   workplaceId: testWorkplaceId,
   username: testUsername,
   orgName: testOrgname,
-  requested: testRequestedDate
+  requested: testRequestedDate,
 };
 
 const approveButtonText = 'Approve';
@@ -37,21 +37,25 @@ const modalApproveText = 'Approve request';
 const modalRejectText = 'Reject request';
 
 describe('ParentRequestComponent', () => {
-
   async function setupForSwitchWorkplace() {
     const component = await getParentRequestComponent();
     const authToken = 'This is an auth token';
     const swappedEstablishmentData = {
       headers: {
-        get: (header) => { return header === 'authorization' ? authToken : null; }
+        get: (header) => {
+          return header === 'authorization' ? authToken : null;
+        },
       },
       body: {
         establishment: {
-          uid: testEstablishmentUid
+          uid: testEstablishmentUid,
         },
-      }
+      },
     };
-    const getNewEstablishmentId = spyOn(component.fixture.componentInstance.switchWorkplaceService, 'getNewEstablishmentId').and.returnValue(of(swappedEstablishmentData));
+    const getNewEstablishmentId = spyOn(
+      component.fixture.componentInstance.switchWorkplaceService,
+      'getNewEstablishmentId',
+    ).and.returnValue(of(swappedEstablishmentData));
     const workplace = { uid: testEstablishmentUid };
     parentRequest.username = testUsername;
 
@@ -59,21 +63,17 @@ describe('ParentRequestComponent', () => {
       component,
       authToken,
       workplace,
-      getNewEstablishmentId
+      getNewEstablishmentId,
     };
   }
 
   async function getParentRequestComponent() {
     return render(ParentRequestComponent, {
-      imports: [
-        ReactiveFormsModule,
-        HttpClientTestingModule,
-        SharedModule,
-        RouterTestingModule],
+      imports: [ReactiveFormsModule, HttpClientTestingModule, SharedModule, RouterTestingModule],
       providers: [
         {
           provide: WindowRef,
-          useClass: WindowRef
+          useClass: WindowRef,
         },
       ],
       componentProperties: {
@@ -100,7 +100,7 @@ describe('ParentRequestComponent', () => {
     return { component, modalConfirmationDialog };
   }
 
-  it('should create', async() => {
+  it('should create', async () => {
     // Act
     const component = await getParentRequestComponent();
 
@@ -111,7 +111,10 @@ describe('ParentRequestComponent', () => {
   it('should be able to approve a become-a-parent request', async () => {
     // Arrange
     const { component, modalConfirmationDialog } = await clickFirstApproveButton();
-    const parentRequestApproval = spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.callThrough();
+    const parentRequestApproval = spyOn(
+      component.fixture.componentInstance.parentRequestsService,
+      'parentApproval',
+    ).and.callThrough();
 
     // Act
     within(modalConfirmationDialog).getByText(modalApproveText).click();
@@ -129,7 +132,10 @@ describe('ParentRequestComponent', () => {
   it('should be able to reject a become-a-parent request', async () => {
     // Arrange
     const { component, modalConfirmationDialog } = await clickFirstRejectButton();
-    const parentRequestApproval = spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.callThrough();
+    const parentRequestApproval = spyOn(
+      component.fixture.componentInstance.parentRequestsService,
+      'parentApproval',
+    ).and.callThrough();
 
     // Act
     within(modalConfirmationDialog).getByText(modalRejectText).click();
@@ -163,7 +169,7 @@ describe('ParentRequestComponent', () => {
   it('confirmation modal should display org name when approving a request', async () => {
     // Act
     const { modalConfirmationDialog } = await clickFirstApproveButton();
-    const paragraph = within(modalConfirmationDialog).getByTestId("parent-confirm-para");
+    const paragraph = within(modalConfirmationDialog).getByTestId('parent-confirm-para');
 
     // Teardown
     within(modalConfirmationDialog).getByText(modalApproveText).click();
@@ -175,7 +181,7 @@ describe('ParentRequestComponent', () => {
   it('confirmation modal should display org name when rejecting a request', async () => {
     // Act
     const { modalConfirmationDialog } = await clickFirstRejectButton();
-    const paragraph = within(modalConfirmationDialog).getByTestId("parent-confirm-para");
+    const paragraph = within(modalConfirmationDialog).getByTestId('parent-confirm-para');
 
     // Teardown
     within(modalConfirmationDialog).getByText(modalRejectText).click();
@@ -187,7 +193,7 @@ describe('ParentRequestComponent', () => {
   it('confirmation modal should show "Approve request" when approving a request', async () => {
     // Act
     const { modalConfirmationDialog } = await clickFirstApproveButton();
-    const approveHeading = within(modalConfirmationDialog).getByTestId("parent-confirm-heading");
+    const approveHeading = within(modalConfirmationDialog).getByTestId('parent-confirm-heading');
     const submitButton = within(modalConfirmationDialog).getByText(modalApproveText);
 
     // Teardown
@@ -201,7 +207,7 @@ describe('ParentRequestComponent', () => {
   it('confirmation modal should show "Reject request" when rejecting a request', async () => {
     // Act
     const { modalConfirmationDialog } = await clickFirstRejectButton();
-    const rejectHeading = within(modalConfirmationDialog).getByTestId("parent-confirm-heading");
+    const rejectHeading = within(modalConfirmationDialog).getByTestId('parent-confirm-heading');
     const submitButton = within(modalConfirmationDialog).getByText(modalRejectText);
 
     // Teardown
@@ -217,11 +223,11 @@ describe('ParentRequestComponent', () => {
     const { component, modalConfirmationDialog } = await clickFirstApproveButton();
     const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
     spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.returnValue(of({}));
-    
+
     // Act
     within(modalConfirmationDialog).getByText(modalApproveText).click();
-    component.fixture.detectChanges(); 
-    
+    component.fixture.detectChanges();
+
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
       type: 'success',
@@ -234,11 +240,11 @@ describe('ParentRequestComponent', () => {
     const { component, modalConfirmationDialog } = await clickFirstRejectButton();
     const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
     spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.returnValue(of({}));
-    
+
     // Act
     within(modalConfirmationDialog).getByText(modalRejectText).click();
-    component.fixture.detectChanges(); 
-    
+    component.fixture.detectChanges();
+
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
       type: 'success',
@@ -251,7 +257,10 @@ describe('ParentRequestComponent', () => {
     const { component } = await setupForSwitchWorkplace();
     parentRequest.username = null;
     const notificationData = { dummyNotification: 'I am a notification' };
-    const getAllNotificationWorkplace = spyOn(component.fixture.componentInstance.switchWorkplaceService, 'getAllNotificationWorkplace').and.returnValue(of(notificationData));
+    const getAllNotificationWorkplace = spyOn(
+      component.fixture.componentInstance.switchWorkplaceService,
+      'getAllNotificationWorkplace',
+    ).and.returnValue(of(notificationData));
 
     // Act
     component.getByText(testOrgname).click();
@@ -263,8 +272,11 @@ describe('ParentRequestComponent', () => {
 
   it('should clear permissions when switching to new workplace', async () => {
     const { component } = await setupForSwitchWorkplace();
-    const clearPermissions = spyOn(component.fixture.componentInstance.switchWorkplaceService.permissionsService, 'clearPermissions').and.callThrough();
-    
+    const clearPermissions = spyOn(
+      component.fixture.componentInstance.switchWorkplaceService.permissionsService,
+      'clearPermissions',
+    ).and.callThrough();
+
     // Act
     component.getByText(testOrgname).click();
     component.fixture.detectChanges();
@@ -275,8 +287,11 @@ describe('ParentRequestComponent', () => {
 
   it('should change auth tokens when switching to new workplace', async () => {
     const { component, authToken } = await setupForSwitchWorkplace();
-    const setPreviousToken = spyOn(component.fixture.componentInstance.switchWorkplaceService.authService, 'setPreviousToken').and.callThrough();
-    
+    const setPreviousToken = spyOn(
+      component.fixture.componentInstance.switchWorkplaceService.authService,
+      'setPreviousToken',
+    ).and.callThrough();
+
     // Act
     component.getByText(testOrgname).click();
     component.fixture.detectChanges();
@@ -288,7 +303,7 @@ describe('ParentRequestComponent', () => {
 
   it('should swap establishments when switching to new workplace', async () => {
     const { component, getNewEstablishmentId } = await setupForSwitchWorkplace();
-    
+
     // Act
     component.getByText(testOrgname).click();
     component.fixture.detectChanges();
@@ -297,4 +312,3 @@ describe('ParentRequestComponent', () => {
     expect(getNewEstablishmentId).toHaveBeenCalled();
   });
 });
-

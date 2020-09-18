@@ -25,7 +25,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -43,7 +43,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
     }
 
     this.subscriptions.add(
-      this.form.get('daysKnown').valueChanges.subscribe(value => {
+      this.form.get('daysKnown').valueChanges.subscribe((value) => {
         this.form.get('days').clearValidators();
 
         if (value === 'Yes') {
@@ -57,7 +57,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
         }
 
         this.form.get('days').updateValueAndValidity();
-      })
+      }),
     );
 
     if (this.worker.daysSick) {

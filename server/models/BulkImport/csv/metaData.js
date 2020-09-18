@@ -8,7 +8,7 @@ class MetaData {
     this._errors = null;
     this._records = null;
     this._deleted = null;
-  };
+  }
 
   get userName() {
     return this._username;
@@ -44,29 +44,29 @@ class MetaData {
   }
 
   set fileType(fileType) {
-  this._fileType = fileType;
+    this._fileType = fileType;
   }
 
   set filename(filename) {
-    return this._filename = filename;
+    return (this._filename = filename);
   }
 
   set warnings(warnings) {
-    return this._warnings = warnings;
+    return (this._warnings = warnings);
   }
 
   set errors(errors) {
-    return this._errors = errors;
+    return (this._errors = errors);
   }
 
   set records(records) {
-    return this._records = records;
+    return (this._records = records);
   }
 
   set deleted(deleted) {
-    return this._deleted = deleted;
+    return (this._deleted = deleted);
   }
-  
+
   toJSON() {
     return {
       username: this._username ? this._username : null,
@@ -76,8 +76,8 @@ class MetaData {
       errors: this._errors ? this._errors : 0,
       warnings: this._warnings ? this._warnings : 0,
       deleted: this._deleted !== null ? this._deleted : undefined,
-    }
+    };
   }
-};
+}
 
 module.exports.MetaData = MetaData;

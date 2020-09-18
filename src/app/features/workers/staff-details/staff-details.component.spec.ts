@@ -23,7 +23,7 @@ import { render } from '@testing-library/angular';
 
 import { StaffDetailsComponent } from './staff-details.component';
 
-const { build, fake, sequence, } = require('@jackfranklin/test-data-bot');
+const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
 describe('StaffDetailsComponent', () => {
   const establishmentBuilder = build('Establishment', {
@@ -37,69 +37,60 @@ describe('StaffDetailsComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
     const establishment = establishmentBuilder() as Establishment;
     const component = await render(StaffDetailsComponent, {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-        ],
-        declarations: [],
-        schemas: [ NO_ERRORS_SCHEMA ],
-        providers: [
-          FormBuilder,
-          {
-            provide: WindowRef,
-            useValue: WindowRef
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      declarations: [],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        FormBuilder,
+        {
+          provide: WindowRef,
+          useValue: WindowRef,
+        },
+        {
+          provide: Contracts,
+          useValue: Contracts,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(subsidiaries, isAdmin),
+          deps: [HttpClient],
+        },
+        {
+          provide: EstablishmentService,
+          useValue: MockEstablishmentService,
+        },
+        {
+          provide: JobService,
+          useClass: MockJobService,
+        },
+        {
+          provide: AuthService,
+          useValue: MockAuthService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              url: [{ path: 1 }, { path: 2 }],
+            },
+            parent: {
+              snapshot: {
+                url: [{ path: 'staff-record' }],
+                data: {
+                  establishment,
+                  primaryWorkplace: establishment,
+                },
+              },
+            },
           },
-          {
-            provide: Contracts,
-            useValue: Contracts
-          },
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(),
-            deps: [HttpClient, Router, UserService]
-          },
-          {
-            provide: UserService,
-            useFactory: MockUserService.factory(subsidiaries, isAdmin),
-            deps: [HttpClient]
-          },
-          {
-            provide: EstablishmentService,
-            useValue: MockEstablishmentService
-          },
-          {
-            provide: JobService,
-            useClass: MockJobService
-          },
-          {
-            provide: AuthService,
-            useValue: MockAuthService
-          },
-          {
-            provide: ActivatedRoute,
-            useValue:
-              {
-                snapshot:
-                  {
-                    url: [{ path: 1 }, { path: 2 }]
-                  },
-                parent: {
-                  snapshot: {
-                    url: [{ path: 'staff-record' }],
-                    data: {
-                      establishment,
-                      primaryWorkplace: establishment
-                    }
-                  }
-
-                }
-              }
-          }
-        ]
-      })
-    ;
+        },
+      ],
+    });
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
@@ -107,7 +98,7 @@ describe('StaffDetailsComponent', () => {
     return {
       component,
       establishmentService,
-      router
+      router,
     };
   }
 
@@ -169,6 +160,4 @@ describe('StaffDetailsComponent', () => {
     component.fixture.detectChanges();
     expect(component.fixture.nativeElement.querySelector('.govuk-select__conditional--hidden')).toBeTruthy();
   });
-
 });
-

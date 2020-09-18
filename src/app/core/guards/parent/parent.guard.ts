@@ -20,8 +20,8 @@ export class ParentGuard implements CanActivate {
     const workplaceUid = this.establishmentService.establishmentId;
     if (workplaceUid) {
       return this.establishmentService.getEstablishment(workplaceUid).pipe(
-        tap(workplace => this.establishmentService.setPrimaryWorkplace(workplace)),
-        map(workplace => this.check(workplace.isParent))
+        tap((workplace) => this.establishmentService.setPrimaryWorkplace(workplace)),
+        map((workplace) => this.check(workplace.isParent)),
       );
     }
 

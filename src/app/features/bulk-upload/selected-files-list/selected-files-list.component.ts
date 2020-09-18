@@ -39,7 +39,7 @@ export class SelectedFilesListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkUploadService.selectedFiles$
         .pipe(distinctUntilChanged())
-        .subscribe((selectedFiles: File[]) => (this.selectedFiles = selectedFiles))
+        .subscribe((selectedFiles: File[]) => (this.selectedFiles = selectedFiles)),
     );
   }
 

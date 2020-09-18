@@ -9,6 +9,6 @@ export class QualificationService {
   constructor(private http: HttpClient) {}
 
   getQualifications() {
-    return this.http.get<any>('/api/qualification').pipe(map(res => res.qualifications));
+    return this.http.get<any>('/api/qualification').pipe(map((res) => res.qualifications));
   }
 }

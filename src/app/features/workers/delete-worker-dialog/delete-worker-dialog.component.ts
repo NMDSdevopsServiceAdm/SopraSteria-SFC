@@ -42,7 +42,7 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
 
   ngOnInit() {
     this.subscriptions.add(
-      this.workerService.getLeaveReasons().subscribe(reasons => {
+      this.workerService.getLeaveReasons().subscribe((reasons) => {
         this.reasons = reasons;
       }),
     );
@@ -87,7 +87,7 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
     this.subscriptions.add(
       this.workerService.deleteWorker(this.data.workplace.uid, this.data.worker.uid, deleteReason).subscribe(
         () => this.onSuccess(),
-        error => this.onError(error),
+        (error) => this.onError(error),
       ),
     );
   }

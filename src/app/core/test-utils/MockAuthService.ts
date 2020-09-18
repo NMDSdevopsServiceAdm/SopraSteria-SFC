@@ -12,11 +12,13 @@ export class MockAuthService extends AuthService {
   private _isAuthenticated = false;
 
   public static factory(isAuthenticated = false) {
-    return (httpClient: HttpClient,
-            router: Router,
-            establishmentService: EstablishmentService,
-            userService: UserService,
-            permissionsService: PermissionsService) => {
+    return (
+      httpClient: HttpClient,
+      router: Router,
+      establishmentService: EstablishmentService,
+      userService: UserService,
+      permissionsService: PermissionsService,
+    ) => {
       const service = new MockAuthService(httpClient, router, establishmentService, userService, permissionsService);
       service._isAuthenticated = isAuthenticated;
       return service;

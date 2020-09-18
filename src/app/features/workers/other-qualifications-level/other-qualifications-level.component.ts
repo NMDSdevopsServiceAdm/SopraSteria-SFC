@@ -23,7 +23,7 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private qualificationService: QualificationService
+    private qualificationService: QualificationService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -38,9 +38,9 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     }
 
     this.subscriptions.add(
-      this.qualificationService.getQualifications().subscribe(qualifications => {
+      this.qualificationService.getQualifications().subscribe((qualifications) => {
         this.qualifications = qualifications;
-      })
+      }),
     );
 
     if (this.worker.highestQualification) {

@@ -22,7 +22,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private countryService: CountryService
+    private countryService: CountryService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -36,10 +36,10 @@ export class CountryOfBirthComponent extends QuestionComponent {
   }
 
   init() {
-    this.subscriptions.add(this.countryService.getCountries().subscribe(res => (this.availableCountries = res)));
+    this.subscriptions.add(this.countryService.getCountries().subscribe((res) => (this.availableCountries = res)));
 
     this.subscriptions.add(
-      this.form.get('countryOfBirthKnown').valueChanges.subscribe(value => {
+      this.form.get('countryOfBirthKnown').valueChanges.subscribe((value) => {
         this.form.get('countryOfBirthName').clearValidators();
 
         if (value === 'Other') {
@@ -47,7 +47,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
         }
 
         this.form.get('countryOfBirthName').updateValueAndValidity();
-      })
+      }),
     );
 
     if (this.worker.countryOfBirth) {
@@ -110,7 +110,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
       if (countryOfBirthKnown.value === 'Other') {
         if (countryOfBirthName.value) {
           const countryOfBirthNameLowerCase = countryOfBirthName.value.toLowerCase();
-          return this.availableCountries.some(c => c.country.toLowerCase() === countryOfBirthNameLowerCase)
+          return this.availableCountries.some((c) => c.country.toLowerCase() === countryOfBirthNameLowerCase)
             ? null
             : { validCountryOfBirth: true };
         }
@@ -126,9 +126,9 @@ export class CountryOfBirthComponent extends QuestionComponent {
     if (this.availableCountries && countryOfBirthName.value && countryOfBirthName.value.length) {
       const countryOfBirthNameLowerCase = countryOfBirthName.value.toLowerCase();
       return this.availableCountries
-        .filter(c => c.country.toLowerCase().startsWith(countryOfBirthNameLowerCase))
-        .filter(c => c.country.toLowerCase() !== countryOfBirthNameLowerCase)
-        .map(c => c.country);
+        .filter((c) => c.country.toLowerCase().startsWith(countryOfBirthNameLowerCase))
+        .filter((c) => c.country.toLowerCase() !== countryOfBirthNameLowerCase)
+        .map((c) => c.country);
     }
 
     return [];

@@ -1,12 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CreateUserGuard } from '@core/guards/create-user/create-user.guard';
-import {
-  ActivationCompleteComponent,
-} from '@features/activate-user-account/activation-complete/activation-complete.component';
-import {
-  ConfirmAccountDetailsComponent,
-} from '@features/activate-user-account/confirm-account-details/confirm-account-details.component';
+import { ActivationCompleteComponent } from '@features/activate-user-account/activation-complete/activation-complete.component';
+import { ConfirmAccountDetailsComponent } from '@features/activate-user-account/confirm-account-details/confirm-account-details.component';
 import { CreateUsernameComponent } from '@features/activate-user-account/create-username/create-username.component';
 import { SecurityQuestionComponent } from '@features/activate-user-account/security-question/security-question.component';
 import { ExpiredActivationLinkComponent } from '@features/activate-user-account/expired-activation-link/expired-activation-link.component';

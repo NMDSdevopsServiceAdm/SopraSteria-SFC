@@ -13,25 +13,13 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import {
-  CancelDataOwnerDialogComponent,
-} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import {
-  ChangeDataOwnerDialogComponent,
-} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import {
-  LinkToParentCancelDialogComponent,
-} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
-import {
-  LinkToParentRemoveDialogComponent,
-} from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
-import {
-  OwnershipChangeMessageDialogComponent,
-} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-import {
-  SetDataPermissionDialogComponent,
-} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -75,7 +63,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private alertService: AlertService,
     private router: Router,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit() {
@@ -86,17 +74,17 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.workplace) {
       if (this.canEditEstablishment) {
         this.subscriptions.add(
-          this.workerService.workers$.pipe(filter(workers => workers !== null)).subscribe(workers => {
+          this.workerService.workers$.pipe(filter((workers) => workers !== null)).subscribe((workers) => {
             this.updateStaffRecords = !(workers.length > 0);
-          })
+          }),
         );
       }
 
       this.subscriptions.add(
-        this.parentRequestsService.parentStatusRequested(this.workplace.id).subscribe(parentStatusRequested => {
+        this.parentRequestsService.parentStatusRequested(this.workplace.id).subscribe((parentStatusRequested) => {
           this.parentStatusRequested = parentStatusRequested;
           this.setPermissionLinks();
-        })
+        }),
       );
     }
   }
@@ -104,7 +92,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public onChangeDataOwner($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(ChangeDataOwnerDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe(changeDataOwnerConfirmed => {
+    dialog.afterClosed.subscribe((changeDataOwnerConfirmed) => {
       if (changeDataOwnerConfirmed) {
         this.changeDataOwnerLink();
         this.router.navigate(['/dashboard']);
@@ -121,14 +109,14 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.ownershipChangeRequestId = [];
     this.subscriptions.add(
       this.establishmentService.changeOwnershipDetails(this.workplace.uid).subscribe(
-        data => {
+        (data) => {
           if (data && data.length > 0) {
-            data.forEach(element => {
+            data.forEach((element) => {
               this.ownershipChangeRequestId.push(element.ownerChangeRequestUID);
             });
             this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
             const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
-            dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
+            dialog.afterClosed.subscribe((cancelDataOwnerConfirmed) => {
               if (cancelDataOwnerConfirmed) {
                 this.changeDataOwnerLink();
                 this.router.navigate(['/dashboard']);
@@ -140,17 +128,17 @@ export class HomeTabComponent implements OnInit, OnDestroy {
             });
           }
         },
-        error => {
+        (error) => {
           console.error(error.error.message);
-        }
-      )
+        },
+      ),
     );
   }
 
   public setDataPermissions($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(SetDataPermissionDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe(setPermissionConfirmed => {
+    dialog.afterClosed.subscribe((setPermissionConfirmed) => {
       if (setPermissionConfirmed) {
         this.changeDataOwnerLink();
         this.router.navigate(['/dashboard']);
@@ -182,7 +170,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public linkToParent($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(LinkToParentDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe(confirmToClose => {
+    dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.linkToParentRequestedStatus = true;
       }
@@ -197,7 +185,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public cancelLinkToParent($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(LinkToParentCancelDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe(confirmToClose => {
+    dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.linkToParentRequestedStatus = false;
       }
@@ -221,14 +209,14 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     } else {
       dialog = this.dialogService.open(LinkToParentRemoveDialogComponent, this.workplace);
     }
-    dialog.afterClosed.subscribe(returnToClose => {
+    dialog.afterClosed.subscribe((returnToClose) => {
       if (returnToClose) {
         //if return  from LinkToParentRemoveDialogComponent then proceed to delink request
         if (returnToClose.closeFrom === 'remove-link') {
-          this.establishmentService.getEstablishment(this.workplace.uid).subscribe(workplace => {
+          this.establishmentService.getEstablishment(this.workplace.uid).subscribe((workplace) => {
             if (workplace) {
               //get permission and reset latest value
-              this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermission => {
+              this.permissionsService.getPermissions(this.workplace.uid).subscribe((hasPermission) => {
                 if (hasPermission) {
                   this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
                   this.establishmentService.setState(workplace);
@@ -238,7 +226,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
                   this.router.navigate(['/dashboard']);
                   this.alertService.addAlert({
                     type: 'success',
-                    message: `You are no longer linked to your parent organisation.`,
+                    message: 'You are no longer linked to your parent organisation.',
                   });
                 }
               });
@@ -261,7 +249,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public becomeAParent($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(BecomeAParentDialogComponent, null);
-    dialog.afterClosed.subscribe(confirmToClose => {
+    dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.canLinkToParent = false;
         this.canBecomeAParent = false;
@@ -281,9 +269,15 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =
-      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner !== 'Workplace' && this.user.role!= 'Read';
+      this.workplace &&
+      this.workplace.parentUid != null &&
+      this.workplace.dataOwner !== 'Workplace' &&
+      this.user.role != 'Read';
     this.canViewDataPermissionsLink =
-      this.workplace && this.workplace.parentUid != null && this.workplace.dataOwner === 'Workplace' && this.user.role!= 'Read';
+      this.workplace &&
+      this.workplace.parentUid != null &&
+      this.workplace.dataOwner === 'Workplace' &&
+      this.user.role != 'Read';
     this.canViewReports =
       this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
       this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
@@ -296,13 +290,17 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.canLinkToParent = this.workplace && this.workplace.parentUid === null && !this.parentStatusRequested;
       this.canRemoveParentAssociation = this.workplace && this.workplace.parentUid !== null;
     } else {
-      this.canLinkToParent = this.permissionsService.can(workplaceUid, 'canLinkToParent') && !this.parentStatusRequested;
+      this.canLinkToParent =
+        this.permissionsService.can(workplaceUid, 'canLinkToParent') && !this.parentStatusRequested;
       this.canRemoveParentAssociation = this.permissionsService.can(workplaceUid, 'canRemoveParentAssociation');
     }
     if (this.canLinkToParent && this.workplace.linkToParentRequested) {
       this.linkToParentRequestedStatus = true;
     }
-    this.canBecomeAParent = this.permissionsService.can(workplaceUid, 'canBecomeAParent') && !this.parentStatusRequested && !this.linkToParentRequestedStatus;
+    this.canBecomeAParent =
+      this.permissionsService.can(workplaceUid, 'canBecomeAParent') &&
+      !this.parentStatusRequested &&
+      !this.linkToParentRequestedStatus;
   }
   //open Staff Tab
   public selectStaffTab(event: Event) {

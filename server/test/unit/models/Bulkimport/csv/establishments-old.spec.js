@@ -14,13 +14,17 @@ const ALL_CAPACITIES = null;
 const ALL_UTILISATIONS = null;
 const BUDI_TO_ASC = 100;
 
-const establishment = [{
-  locationId: '1-123456780',
-  id: 123
-}];
-const postcode = [{
-  postcode: 'AB13 4NJ'
-}];
+const establishment = [
+  {
+    locationId: '1-123456780',
+    id: 123,
+  },
+];
+const postcode = [
+  {
+    postcode: 'AB13 4NJ',
+  },
+];
 
 const models = {
   establishment: {
@@ -30,7 +34,7 @@ const models = {
       } else {
         return [];
       }
-    }
+    },
   },
   pcodedata: {
     async findAll(args) {
@@ -39,29 +43,29 @@ const models = {
       } else {
         return postcode;
       }
-    }
-  }
+    },
+  },
 };
 
 const BUDI = {
-  contractType (direction, originalCode) {
+  contractType(direction, originalCode) {
     const fixedMapping = [
       { ASC: 'Permanent', BUDI: 1 },
       { ASC: 'Temporary', BUDI: 2 },
       { ASC: 'Pool/Bank', BUDI: 3 },
       { ASC: 'Agency', BUDI: 4 },
-      { ASC: 'Other', BUDI: 7 } // multiple values mapping to Other; 7 needs to be first in list for the export
+      { ASC: 'Other', BUDI: 7 }, // multiple values mapping to Other; 7 needs to be first in list for the export
     ];
 
     if (direction === BUDI_TO_ASC) {
-      const found = fixedMapping.find(thisType => thisType.BUDI === originalCode);
+      const found = fixedMapping.find((thisType) => thisType.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisType => thisType.ASC === originalCode);
+    const found = fixedMapping.find((thisType) => thisType.ASC === originalCode);
     return found ? found.BUDI : null;
   },
-  services (direction, originalCode) {
+  services(direction, originalCode) {
     const fixedMapping = [
       { ASC: 24, BUDI: 1 },
       { ASC: 25, BUDI: 2 },
@@ -98,20 +102,20 @@ const BUDI = {
       { ASC: 15, BUDI: 52 },
       { ASC: 16, BUDI: 72 },
       { ASC: 36, BUDI: 60 },
-      { ASC: 14, BUDI: 75 }
+      { ASC: 14, BUDI: 75 },
     ];
 
     if (direction === BUDI_TO_ASC) {
-      const found = fixedMapping.find(thisService => thisService.BUDI === originalCode);
+      const found = fixedMapping.find((thisService) => thisService.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisService => thisService.ASC === originalCode);
+    const found = fixedMapping.find((thisService) => thisService.ASC === originalCode);
     return found ? found.BUDI : null;
   },
-  serviceFromCapacityId (serviceCapacityId) {
+  serviceFromCapacityId(serviceCapacityId) {
     if (Array.isArray(ALL_CAPACITIES)) {
-      const foundCapacity = ALL_CAPACITIES.find(thisCapacity => thisCapacity.serviceCapacityId === serviceCapacityId);
+      const foundCapacity = ALL_CAPACITIES.find((thisCapacity) => thisCapacity.serviceCapacityId === serviceCapacityId);
 
       // foundCapacity will be undefined if not found
       if (typeof foundCapacity !== 'undefined') {
@@ -121,9 +125,11 @@ const BUDI = {
 
     return null;
   },
-  serviceFromUtilisationId (serviceCapacityId) {
+  serviceFromUtilisationId(serviceCapacityId) {
     if (Array.isArray(ALL_UTILISATIONS)) {
-      const foundCapacity = ALL_UTILISATIONS.find(thisCapacity => thisCapacity.serviceCapacityId === serviceCapacityId);
+      const foundCapacity = ALL_UTILISATIONS.find(
+        (thisCapacity) => thisCapacity.serviceCapacityId === serviceCapacityId,
+      );
 
       // foundCapacity will be undefined if not found
       if (typeof foundCapacity !== 'undefined') {
@@ -133,24 +139,24 @@ const BUDI = {
 
     return null;
   },
-  establishmentType (direction, originalCode) {
+  establishmentType(direction, originalCode) {
     const fixedMapping = [
       { ASC: 'Local Authority (adult services)', BUDI: 1 },
       { ASC: 'Local Authority (generic/other)', BUDI: 3 },
       { ASC: 'Private Sector', BUDI: 6 },
       { ASC: 'Voluntary / Charity', BUDI: 7 },
-      { ASC: 'Other', BUDI: 8 }
+      { ASC: 'Other', BUDI: 8 },
     ];
 
     if (direction === BUDI_TO_ASC) {
-      const found = fixedMapping.find(thisTrainingCategory => thisTrainingCategory.BUDI === originalCode);
+      const found = fixedMapping.find((thisTrainingCategory) => thisTrainingCategory.BUDI === originalCode);
       return found ? { type: found.ASC } : null;
     }
 
-    const found = fixedMapping.find(thisType => thisType.ASC === originalCode);
+    const found = fixedMapping.find((thisType) => thisType.ASC === originalCode);
     return found ? found.BUDI : 8;
   },
-  serviceUsers (direction, originalCode) {
+  serviceUsers(direction, originalCode) {
     const fixedMapping = [
       { ASC: 1, BUDI: 1 },
       { ASC: 2, BUDI: 2 },
@@ -174,18 +180,18 @@ const BUDI = {
       { ASC: 20, BUDI: 18 },
       { ASC: 21, BUDI: 19 },
       { ASC: 22, BUDI: 20 },
-      { ASC: 23, BUDI: 21 }
+      { ASC: 23, BUDI: 21 },
     ];
 
     if (direction === BUDI_TO_ASC) {
-      const found = fixedMapping.find(thisService => thisService.BUDI === originalCode);
+      const found = fixedMapping.find((thisService) => thisService.BUDI === originalCode);
       return found ? found.ASC : null;
     } else {
-      const found = fixedMapping.find(thisService => thisService.ASC === originalCode);
+      const found = fixedMapping.find((thisService) => thisService.ASC === originalCode);
       return found ? found.BUDI : null;
     }
   },
-  jobRoles (direction, originalCode) {
+  jobRoles(direction, originalCode) {
     const fixedMapping = [
       { ASC: 26, BUDI: 1 },
       { ASC: 15, BUDI: 2 },
@@ -215,17 +221,17 @@ const BUDI = {
       { ASC: 7, BUDI: 39 },
       { ASC: 8, BUDI: 40 },
       { ASC: 9, BUDI: 41 },
-      { ASC: 6, BUDI: 42 }
+      { ASC: 6, BUDI: 42 },
     ];
 
     if (direction === BUDI_TO_ASC) {
-      const found = fixedMapping.find(thisJob => thisJob.BUDI === originalCode);
+      const found = fixedMapping.find((thisJob) => thisJob.BUDI === originalCode);
       return found ? found.ASC : null;
     } else {
-      const found = fixedMapping.find(thisJob => thisJob.ASC === originalCode);
+      const found = fixedMapping.find((thisJob) => thisJob.ASC === originalCode);
       return found ? found.BUDI : null;
     }
-  }
+  },
 };
 
 const mapCsvToEstablishment = (establishment, headers) =>
@@ -235,26 +241,22 @@ const mapCsvToEstablishment = (establishment, headers) =>
     return mapped;
   }, {});
 const getUnitInstance = () => {
-
-  const bulkUpload = testUtils.sandBox(
-    filename,
-    {
-      locals: {
-        require: testUtils.wrapRequire({
-          '../BUDI': {
-            BUDI
-          },
-          '../../index': {
-            models
-          },
-          'moment' :moment,
-          'lodash.clonedeep': {
-            clonedeep
-          },
-        })
-      }
-    }
-  );
+  const bulkUpload = testUtils.sandBox(filename, {
+    locals: {
+      require: testUtils.wrapRequire({
+        '../BUDI': {
+          BUDI,
+        },
+        '../../index': {
+          models,
+        },
+        moment: moment,
+        'lodash.clonedeep': {
+          clonedeep,
+        },
+      }),
+    },
+  });
 
   expect(bulkUpload).to.have.property('Establishment');
 
@@ -264,12 +266,12 @@ const getUnitInstance = () => {
 
   expect(models.establishment.findAll).to.be.a('function');
 
-  return new (bulkUpload.Establishment)();
+  return new bulkUpload.Establishment();
 };
 
 describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
   beforeEach(() => {
-    sinon.stub(establishmentCsv.prototype, "_validateNoChange").callsFake((args) => {
+    sinon.stub(establishmentCsv.prototype, '_validateNoChange').callsFake((args) => {
       return true;
     });
   });
@@ -317,17 +319,19 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
 
         expect(establishmentCSV).to.be.a('string');
 
-        const foundValues = (await csv({
-          noheader: true,
-          output: 'csv'
-        }).fromString(establishmentCSV))[0];
+        const foundValues = (
+          await csv({
+            noheader: true,
+            output: 'csv',
+          }).fromString(establishmentCSV)
+        )[0];
 
         expect(foundValues.length).to.equal(knownHeaders.length);
 
         if (Array.isArray(establishment.otherServices)) {
           establishment.otherServices.forEach((service, index) => {
             otherservices += service.budi;
-            index < (establishment.otherServices.length - 1) ? otherservices += ';' : otherservices += '';
+            index < establishment.otherServices.length - 1 ? (otherservices += ';') : (otherservices += '');
           });
         } else {
           expect(establishment.otherServices).to.equal(null);
@@ -336,7 +340,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
         if (Array.isArray(establishment.shareWithLA)) {
           establishment.shareWithLA.forEach((la, index) => {
             localauthorities += la.cssrId;
-            index < (establishment.shareWithLA.length - 1) ? localauthorities += ';' : localauthorities += '';
+            index < establishment.shareWithLA.length - 1 ? (localauthorities += ';') : (localauthorities += '');
           });
         } else {
           expect(establishment.shareWithLA).to.equal(null);
@@ -347,7 +351,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
             if (capacity.reference.other) {
               serviceDesc += capacity.reference.other;
             }
-            if (index < (establishment.capacities.length - 1)) {
+            if (index < establishment.capacities.length - 1) {
               capacities += ';';
               serviceDesc += ';';
             } else {
@@ -365,7 +369,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               otherServiceUsers += sUser.other;
             }
             serviceUsers += sUser.budi;
-            if (index < (establishment.serviceUsers.length - 1)) {
+            if (index < establishment.serviceUsers.length - 1) {
               serviceUsers += ';';
               otherServiceUsers += ';';
             } else {
@@ -378,7 +382,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
         }
 
         if (Array.isArray(establishment.starters)) {
-          establishment.starters.forEach(job => {
+          establishment.starters.forEach((job) => {
             if (!jobs.includes(job.budi)) {
               jobs.push(job.budi);
             }
@@ -388,7 +392,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
         }
 
         if (Array.isArray(establishment.leavers)) {
-          establishment.leavers.forEach(job => {
+          establishment.leavers.forEach((job) => {
             if (!jobs.includes(job.budi)) {
               jobs.push(job.budi);
             }
@@ -398,7 +402,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
         }
 
         if (Array.isArray(establishment.vacancies)) {
-          establishment.vacancies.forEach(job => {
+          establishment.vacancies.forEach((job) => {
             if (!jobs.includes(job.budi)) {
               jobs.push(job.budi);
             }
@@ -410,11 +414,11 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
         jobs.forEach((job, index) => {
           alljobs += job;
 
-          allStarters += (establishment.starters.findIndex(starters => job === starters.budi) !== -1 ? '' : '0');
-          allLeavers += (establishment.leavers.findIndex(leavers => job === leavers.budi) !== -1 ? '' : '0');
-          allVacancies += (establishment.vacancies.findIndex(vacancies => job === vacancies.budi) !== -1 ? '' : '0');
+          allStarters += establishment.starters.findIndex((starters) => job === starters.budi) !== -1 ? '' : '0';
+          allLeavers += establishment.leavers.findIndex((leavers) => job === leavers.budi) !== -1 ? '' : '0';
+          allVacancies += establishment.vacancies.findIndex((vacancies) => job === vacancies.budi) !== -1 ? '' : '0';
 
-          if (index < (jobs.length - 1)) {
+          if (index < jobs.length - 1) {
             alljobs += ';';
             allStarters += ';';
             allLeavers += ';';
@@ -435,7 +439,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
             reasons += reasonarray[0];
             reasonCount += reasonarray[1];
 
-            if (index < (reasonsForLeaving.length - 1)) {
+            if (index < reasonsForLeaving.length - 1) {
               reasons += ';';
               reasonCount += ';';
             } else {
@@ -463,8 +467,12 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
           expect(mappedCsv.OTHERTYPE).to.equal('');
         }
 
-        expect(mappedCsv.PERMCQC).to.equal(establishment.shareWith.enabled && establishment.shareWith.with.indexOf('CQC') > -1 ? '1' : '');
-        expect(mappedCsv.PERMLA).to.equal(establishment.shareWith.enabled && establishment.shareWith.with.indexOf('Local Authority') > -1 ? '1' : '');
+        expect(mappedCsv.PERMCQC).to.equal(
+          establishment.shareWith.enabled && establishment.shareWith.with.indexOf('CQC') > -1 ? '1' : '',
+        );
+        expect(mappedCsv.PERMLA).to.equal(
+          establishment.shareWith.enabled && establishment.shareWith.with.indexOf('Local Authority') > -1 ? '1' : '',
+        );
         expect(mappedCsv.SHARELA).to.equal(localauthorities);
         expect(mappedCsv.REGTYPE).to.equal(establishment.isRegulated ? '2' : '0');
         expect(mappedCsv.PROVNUM).to.equal(establishment.provId);
@@ -489,24 +497,21 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
 
   describe('validations', () => {
     it('should emit an error if REGTYPE is 2 (CQC) but no CQC regulated services have been specified', async () => {
-      const bulkUpload = new (testUtils.sandBox(
-        filename,
-        {
-          locals: {
-            require: testUtils.wrapRequire({
-              '../BUDI': {
-                BUDI
-              },
-              '../../index': {
-                establishment: models.establishment,
-                pcodedata: models.pcodedata
-              },
-              'moment' :moment,
-              'lodash.clonedeep': { clonedeep }
-            })
-          }
-        }
-      ).Establishment)(
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': { clonedeep },
+          }),
+        },
+      }).Establishment)(
         {
           LOCALESTID: 'omar3',
           STATUS: 'NEW',
@@ -537,7 +542,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
           LEAVERS: '999;0;0',
           VACANCIES: '999;333;1',
           REASONS: '',
-          REASONNOS: ''
+          REASONNOS: '',
         },
         2,
         [
@@ -581,14 +586,13 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
-            _workerEntities: {
-            },
+            _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'NEW',
-            _logLevel: 300
+            _logLevel: 300,
           },
           {
             _validations: [],
@@ -630,15 +634,16 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
             _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'COMPLETE',
-            _logLevel: 300
-          }
-        ]);
+            _logLevel: 300,
+          },
+        ],
+      );
 
       expect(bulkUpload).to.have.property('validate');
 
@@ -655,32 +660,30 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
           lineNumber: 2,
           errCode: 1100,
           errType: 'REGTYPE_ERROR',
-          error: 'REGTYPE is 2 (CQC) but no CQC regulated services have been specified. Please change either REGTYPE or MAINSERVICE',
+          error:
+            'REGTYPE is 2 (CQC) but no CQC regulated services have been specified. Please change either REGTYPE or MAINSERVICE',
           source: '2',
-          name: 'omar3'
-        }
+          name: 'omar3',
+        },
       ]);
     });
 
     it('should not emit an error if REGTYPE is 2 (CQC) but a CQC regulated main service has been specified', async () => {
-      const bulkUpload = new (testUtils.sandBox(
-        filename,
-        {
-          locals: {
-            require: testUtils.wrapRequire({
-              '../BUDI': {
-                BUDI
-              },
-              '../../index': {
-                establishment: models.establishment,
-                pcodedata: models.pcodedata,
-              },
-              'moment' :moment,
-              'lodash.clonedeep': clonedeep
-            })
-          }
-        }
-      ).Establishment)(
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': clonedeep,
+          }),
+        },
+      }).Establishment)(
         {
           LOCALESTID: 'omar3',
           STATUS: 'NEW',
@@ -711,7 +714,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
           LEAVERS: '999;0;0',
           VACANCIES: '999;333;1',
           REASONS: '',
-          REASONNOS: ''
+          REASONNOS: '',
         },
         2,
         [
@@ -755,14 +758,13 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
-            _workerEntities: {
-            },
+            _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'NEW',
-            _logLevel: 300
+            _logLevel: 300,
           },
           {
             _validations: [],
@@ -804,15 +806,16 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
             _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'COMPLETE',
-            _logLevel: 300
-          }
-        ]);
+            _logLevel: 300,
+          },
+        ],
+      );
 
       expect(bulkUpload).to.have.property('validate');
 
@@ -826,24 +829,21 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
       expect(validationErrors).to.deep.equal([]);
     });
     it('should not emit an error if REGTYPE is 2 (CQC) but a CQC regulated main service has been specified', async () => {
-      const bulkUpload = new (testUtils.sandBox(
-        filename,
-        {
-          locals: {
-            require: testUtils.wrapRequire({
-              '../BUDI': {
-                BUDI
-              },
-              '../../index': {
-                establishment: models.establishment,
-                pcodedata: models.pcodedata
-              },
-              'moment' :moment,
-              'lodash.clonedeep': clonedeep
-            })
-          }
-        }
-      ).Establishment)(
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': clonedeep,
+          }),
+        },
+      }).Establishment)(
         {
           LOCALESTID: 'omar3',
           STATUS: 'NEW',
@@ -874,7 +874,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
           LEAVERS: '999',
           VACANCIES: '999;333',
           REASONS: '',
-          REASONNOS: ''
+          REASONNOS: '',
         },
         2,
         [
@@ -918,14 +918,13 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
-            _workerEntities: {
-            },
+            _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'NEW',
-            _logLevel: 300
+            _logLevel: 300,
           },
           {
             _validations: [],
@@ -967,15 +966,16 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
             _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'COMPLETE',
-            _logLevel: 300
-          }
-        ]);
+            _logLevel: 300,
+          },
+        ],
+      );
 
       expect(bulkUpload).to.have.property('validate');
 
@@ -989,24 +989,21 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
       expect(validationErrors).to.deep.equal([]);
     });
     it('should emit an error if REGTYPE is not 2 (CQC) but a registered manager vacancy has been specified', async () => {
-      const bulkUpload = new (testUtils.sandBox(
-        filename,
-        {
-          locals: {
-            require: testUtils.wrapRequire({
-              '../BUDI': {
-                BUDI
-              },
-              '../../index': {
-                establishment: models.establishment,
-                pcodedata: models.pcodedata,
-              },
-              'moment' :moment,
-              'lodash.clonedeep': clonedeep
-            })
-          }
-        }
-      ).Establishment)(
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': clonedeep,
+          }),
+        },
+      }).Establishment)(
         {
           LOCALESTID: 'omar3',
           STATUS: 'NEW',
@@ -1037,7 +1034,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
           LEAVERS: '999;0;0',
           VACANCIES: '999;333;1',
           REASONS: '',
-          REASONNOS: ''
+          REASONNOS: '',
         },
         2,
         [
@@ -1081,14 +1078,13 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
-            _workerEntities: {
-            },
+            _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'NEW',
-            _logLevel: 300
+            _logLevel: 300,
           },
           {
             _validations: [],
@@ -1130,15 +1126,16 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
             _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'COMPLETE',
-            _logLevel: 300
-          }
-        ]);
+            _logLevel: 300,
+          },
+        ],
+      );
 
       expect(bulkUpload).to.have.property('validate');
 
@@ -1157,29 +1154,26 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
           warnType: 'ALL_JOBS_WARNING',
           warning: 'Vacancy for Registered Manager should not be included for this service and will be ignored',
           source: '34;8;4',
-          name: 'omar3'
-        }
+          name: 'omar3',
+        },
       ]);
     });
     it('should emit an error if MainService has not been given', async () => {
-      const bulkUpload = new (testUtils.sandBox(
-        filename,
-        {
-          locals: {
-            require: testUtils.wrapRequire({
-              '../BUDI': {
-                BUDI
-              },
-              '../../index': {
-                establishment: models.establishment,
-                pcodedata: models.pcodedata
-              },
-              'moment' :moment,
-              'lodash.clonedeep': clonedeep
-            })
-          }
-        }
-      ).Establishment)(
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': clonedeep,
+          }),
+        },
+      }).Establishment)(
         {
           LOCALESTID: 'omar3',
           STATUS: 'NEW',
@@ -1210,7 +1204,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
           LEAVERS: '999;0;0',
           VACANCIES: '999;333;1',
           REASONS: '',
-          REASONNOS: ''
+          REASONNOS: '',
         },
         2,
         [
@@ -1254,14 +1248,13 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
-            _workerEntities: {
-            },
+            _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'NEW',
-            _logLevel: 300
+            _logLevel: 300,
           },
           {
             _validations: [],
@@ -1303,15 +1296,16 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
             _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'COMPLETE',
-            _logLevel: 300
-          }
-        ]);
+            _logLevel: 300,
+          },
+        ],
+      );
 
       expect(bulkUpload).to.have.property('validate');
 
@@ -1321,207 +1315,37 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
       const validationErrors = bulkUpload.validationErrors;
 
       // assert a warning was returned
-      expect(validationErrors[0]).to.deep.equal(
-        {
-          "errCode": 1000,
-          "errType": "MAIN_SERVICE_ERROR",
-          "error": "MAINSERVICE has not been supplied",
-          "lineNumber": 2,
-          "name": "omar3",
-          "origin": "Establishments",
-          "source": ""
-        },
-      );
+      expect(validationErrors[0]).to.deep.equal({
+        errCode: 1000,
+        errType: 'MAIN_SERVICE_ERROR',
+        error: 'MAINSERVICE has not been supplied',
+        lineNumber: 2,
+        name: 'omar3',
+        origin: 'Establishments',
+        source: '',
+      });
     });
-      it('should not emit an error if REGTYPE is 2 (CQC) but a registered manager vacancy has been specified', async () => {
-        const bulkUpload = new (testUtils.sandBox(
-          filename,
-          {
-            locals: {
-              require: testUtils.wrapRequire({
-                '../BUDI': {
-                  BUDI
-                },
-                '../../index': {
-                  establishment: models.establishment,
-                pcodedata: models.pcodedata
-                },
-                'moment' :moment,
-                'lodash.clonedeep': {
-                  clonedeep
-                }
-              })
-            }
-          }
-        ).Establishment)(
-          {
-            LOCALESTID: 'omar3',
-            STATUS: 'NEW',
-            ESTNAME: 'WOZiTech, with even more care',
-            ADDRESS1: 'First Line',
-            ADDRESS2: 'Second Line',
-            ADDRESS3: '',
-            POSTTOWN: 'My Town',
-            POSTCODE: 'LN11 9JG',
-            ESTTYPE: '6',
-            OTHERTYPE: '',
-            PERMCQC: '1',
-            PERMLA: '1',
-            SHARELA: '708;721;720',
-            REGTYPE: '2',
-            PROVNUM: '1-12345678',
-            LOCATIONID: '1-12345678',
-            MAINSERVICE: '8',
-          ALLSERVICES: '12;13',
-            CAPACITY: '0;0',
-            UTILISATION: '0;0',
-            SERVICEDESC: '1;1',
-            SERVICEUSERS: '',
-            OTHERUSERDESC: '',
-            TOTALPERMTEMP: '1',
-            ALLJOBROLES: '34;8;4',
-            STARTERS: '0;0;0',
-            LEAVERS: '999;0;0',
-            VACANCIES: '999;333;1',
-            REASONS: '',
-            REASONNOS: ''
-          },
-          2,
-          [
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 479,
-              _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _ustatus: null,
-              _created: '2019-03-15T09:54:10.562Z',
-              _updated: '2019-10-04T15:46:16.158Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech, with even more care',
-              _address1: 'First Line',
-              _address2: 'Second Line',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: null,
-              _provId: null,
-              _postcode: 'LN11 9JG',
-              _isRegulated: false,
-              _mainService: { id: 16, name: 'Head office services' },
-              _nmdsId: 'G1001114',
-              _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-              _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-              _establishmentWdfEligibility: null,
-              _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-              _isParent: true,
-              _parentUid: null,
-              _parentId: null,
-              _parentName: null,
-              _dataOwner: 'Workplace',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {
-              },
-              _readyForDeletionWorkers: null,
-              _status: 'NEW',
-              _logLevel: 300
+    it('should not emit an error if REGTYPE is 2 (CQC) but a registered manager vacancy has been specified', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
             },
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 1446,
-              _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-              _ustatus: null,
-              _created: '2019-07-31T15:09:57.405Z',
-              _updated: '2019-10-04T15:46:16.797Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech Cares Sub 100',
-              _address1: 'Number 1',
-              _address2: 'My street',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: '1-888777666',
-              _provId: '1-999888777',
-              _postcode: 'LN11 9JG',
-              _isRegulated: true,
-              _mainService: { id: 1, name: 'Carers support' },
-              _nmdsId: 'G1002110',
-              _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-              _overallWdfEligibility: null,
-              _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-              _staffWdfEligibility: null,
-              _isParent: false,
-              _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _parentId: 479,
-              _parentName: null,
-              _dataOwner: 'Parent',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {},
-              _readyForDeletionWorkers: null,
-              _status: 'COMPLETE',
-              _logLevel: 300
-            }
-          ]);
-
-        expect(bulkUpload).to.have.property('validate');
-
-        // call the validation to ensure the proper error is shown
-        await bulkUpload.validate();
-
-        const validationErrors = bulkUpload.validationErrors;
-
-        // assert a warning was returned
-
-        expect(validationErrors).to.deep.equal([
-
-        ]);
-    });
-    it('should emit an error if locationId has already been used in the database and not this establishment', async () => {
-      const bulkUpload = new (testUtils.sandBox(
-        filename,
-        {
-          locals: {
-            require: testUtils.wrapRequire({
-              '../BUDI': {
-                BUDI
-              },
-              '../../index': {
-                establishment: models.establishment,
-                pcodedata: models.pcodedata
-              },
-              'moment' :moment,
-              'lodash.clonedeep': clonedeep
-            })
-          }
-        }
-      ).Establishment)(
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': {
+              clonedeep,
+            },
+          }),
+        },
+      }).Establishment)(
         {
           LOCALESTID: 'omar3',
-          STATUS: 'UPDATE',
+          STATUS: 'NEW',
           ESTNAME: 'WOZiTech, with even more care',
           ADDRESS1: 'First Line',
           ADDRESS2: 'Second Line',
@@ -1534,8 +1358,8 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
           PERMLA: '1',
           SHARELA: '708;721;720',
           REGTYPE: '2',
-          PROVNUM: '1-123456780',
-          LOCATIONID: '1-123456780',
+          PROVNUM: '1-12345678',
+          LOCATIONID: '1-12345678',
           MAINSERVICE: '8',
           ALLSERVICES: '12;13',
           CAPACITY: '0;0',
@@ -1549,7 +1373,7 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
           LEAVERS: '999;0;0',
           VACANCIES: '999;333;1',
           REASONS: '',
-          REASONNOS: ''
+          REASONNOS: '',
         },
         2,
         [
@@ -1593,14 +1417,13 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
-            _workerEntities: {
-            },
+            _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'NEW',
-            _logLevel: 300
+            _logLevel: 300,
           },
           {
             _validations: [],
@@ -1642,15 +1465,176 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
             _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'COMPLETE',
-            _logLevel: 300
-          }
-        ]);
+            _logLevel: 300,
+          },
+        ],
+      );
+
+      expect(bulkUpload).to.have.property('validate');
+
+      // call the validation to ensure the proper error is shown
+      await bulkUpload.validate();
+
+      const validationErrors = bulkUpload.validationErrors;
+
+      // assert a warning was returned
+
+      expect(validationErrors).to.deep.equal([]);
+    });
+    it('should emit an error if locationId has already been used in the database and not this establishment', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': clonedeep,
+          }),
+        },
+      }).Establishment)(
+        {
+          LOCALESTID: 'omar3',
+          STATUS: 'UPDATE',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'LN11 9JG',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456780',
+          LOCATIONID: '1-123456780',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
+          REASONS: '',
+          REASONNOS: '',
+        },
+        2,
+        [
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 479,
+            _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _ustatus: null,
+            _created: '2019-03-15T09:54:10.562Z',
+            _updated: '2019-10-04T15:46:16.158Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech, with even more care',
+            _address1: 'First Line',
+            _address2: 'Second Line',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: null,
+            _provId: null,
+            _postcode: 'LN11 9JG',
+            _isRegulated: false,
+            _mainService: { id: 16, name: 'Head office services' },
+            _nmdsId: 'G1001114',
+            _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+            _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+            _establishmentWdfEligibility: null,
+            _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+            _isParent: true,
+            _parentUid: null,
+            _parentId: null,
+            _parentName: null,
+            _dataOwner: 'Workplace',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'NEW',
+            _logLevel: 300,
+          },
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 1446,
+            _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+            _ustatus: null,
+            _created: '2019-07-31T15:09:57.405Z',
+            _updated: '2019-10-04T15:46:16.797Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech Cares Sub 100',
+            _address1: 'Number 1',
+            _address2: 'My street',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: '1-888777666',
+            _provId: '1-999888777',
+            _postcode: 'LN11 9JG',
+            _isRegulated: true,
+            _mainService: { id: 1, name: 'Carers support' },
+            _nmdsId: 'G1002110',
+            _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+            _overallWdfEligibility: null,
+            _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+            _staffWdfEligibility: null,
+            _isParent: false,
+            _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _parentId: 479,
+            _parentName: null,
+            _dataOwner: 'Parent',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'COMPLETE',
+            _logLevel: 300,
+          },
+        ],
+      );
 
       expect(bulkUpload).to.have.property('validate');
 
@@ -1663,1113 +1647,1092 @@ describe.skip('/server/models/Bulkimport/csv/establishment-old.js', () => {
 
       expect(validationErrors).to.deep.equal([
         {
-          "errCode": 1020,
-          "errType": "STATUS_ERROR",
-          "error": "Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it",
-          "lineNumber": 2,
-          "name": "omar3",
-          "origin": "Establishments",
-          "source": "UPDATE"
+          errCode: 1020,
+          errType: 'STATUS_ERROR',
+          error: 'Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it',
+          lineNumber: 2,
+          name: 'omar3',
+          origin: 'Establishments',
+          source: 'UPDATE',
         },
         {
-          "errCode": 1110,
-          "errType": "LOCATION_ID_ERROR",
-          "error": "LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969",
-          "lineNumber": 2,
-          "name": "omar3",
-          "origin": "Establishments",
-          "source": "1-123456780"
-        }
+          errCode: 1110,
+          errType: 'LOCATION_ID_ERROR',
+          error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
+          lineNumber: 2,
+          name: 'omar3',
+          origin: 'Establishments',
+          source: '1-123456780',
+        },
       ]);
-  });
-  it('should not emit an error if locationId has already been used in the database and is this establishment', async () => {
-    const bulkUpload = new (testUtils.sandBox(
-      filename,
-      {
+    });
+    it('should not emit an error if locationId has already been used in the database and is this establishment', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
         locals: {
           require: testUtils.wrapRequire({
             '../BUDI': {
-              BUDI
+              BUDI,
             },
             '../../index': {
               establishment: models.establishment,
-                pcodedata: models.pcodedata
+              pcodedata: models.pcodedata,
             },
-            'moment' :moment,
+            moment: moment,
             'lodash.clonedeep': {
-              clonedeep
-            }
-          })
-        }
-      }
-    ).Establishment)(
-      {
-        LOCALESTID: '123',
-        STATUS: 'UPDATE',
-        ESTNAME: 'WOZiTech, with even more care',
-        ADDRESS1: 'First Line',
-        ADDRESS2: 'Second Line',
-        ADDRESS3: '',
-        POSTTOWN: 'My Town',
-        POSTCODE: 'LN11 9JG',
-        ESTTYPE: '6',
-        OTHERTYPE: '',
-        PERMCQC: '1',
-        PERMLA: '1',
-        SHARELA: '708;721;720',
-        REGTYPE: '2',
-        PROVNUM: '1-123456780',
-        LOCATIONID: '1-123456780',
-        MAINSERVICE: '8',
-        ALLSERVICES: '12;13',
-        CAPACITY: '0;0',
-        UTILISATION: '0;0',
-        SERVICEDESC: '1;1',
-        SERVICEUSERS: '',
-        OTHERUSERDESC: '',
-        TOTALPERMTEMP: '1',
-        ALLJOBROLES: '34;8;4',
-        STARTERS: '0;0;0',
-        LEAVERS: '999;0;0',
-        VACANCIES: '999;333;1',
-        REASONS: '',
-        REASONNOS: ''
-      },
-      2,
-      [
-        {
-          _validations: [],
-          _username: 'aylingw',
-          _id: 123,
-          _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-          _ustatus: null,
-          _created: '2019-03-15T09:54:10.562Z',
-          _updated: '2019-10-04T15:46:16.158Z',
-          _updatedBy: 'aylingw',
-          _auditEvents: null,
-          _name: 'WOZiTech, with even more care',
-          _address1: 'First Line',
-          _address2: 'Second Line',
-          _address3: '',
-          _town: 'My Town',
-          _county: '',
-          _locationId: null,
-          _provId: null,
-          _postcode: 'LN11 9JG',
-          _isRegulated: false,
-          _mainService: { id: 16, name: 'Head office services' },
-          _nmdsId: 'G1001114',
-          _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-          _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-          _establishmentWdfEligibility: null,
-          _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-          _isParent: true,
-          _parentUid: null,
-          _parentId: null,
-          _parentName: null,
-          _dataOwner: 'Workplace',
-          _dataPermissions: 'None',
-          _archived: false,
-          _dataOwnershipRequested: null,
-          _reasonsForLeaving: '',
-          _properties: {
-            _properties: [Object],
-            _propertyTypes: [Array],
-            _auditEvents: null,
-            _modifiedProperties: [],
-            _additionalModels: null
-          },
-          _isNew: false,
-          _workerEntities: {
-          },
-          _readyForDeletionWorkers: null,
-          _status: 'NEW',
-          _logLevel: 300,
-          key: '123'
+              clonedeep,
+            },
+          }),
         },
+      }).Establishment)(
         {
-          _validations: [],
-          _username: 'aylingw',
-          _id: 1446,
-          _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-          _ustatus: null,
-          _created: '2019-07-31T15:09:57.405Z',
-          _updated: '2019-10-04T15:46:16.797Z',
-          _updatedBy: 'aylingw',
-          _auditEvents: null,
-          _name: 'WOZiTech Cares Sub 100',
-          _address1: 'Number 1',
-          _address2: 'My street',
-          _address3: '',
-          _town: 'My Town',
-          _county: '',
-          _locationId: '1-888777666',
-          _provId: '1-999888777',
-          _postcode: 'LN11 9JG',
-          _isRegulated: true,
-          _mainService: { id: 1, name: 'Carers support' },
-          _nmdsId: 'G1002110',
-          _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-          _overallWdfEligibility: null,
-          _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-          _staffWdfEligibility: null,
-          _isParent: false,
-          _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-          _parentId: 479,
-          _parentName: null,
-          _dataOwner: 'Parent',
-          _dataPermissions: 'None',
-          _archived: false,
-          _dataOwnershipRequested: null,
-          _reasonsForLeaving: '',
-          _properties: {
-            _properties: [Object],
-            _propertyTypes: [Array],
+          LOCALESTID: '123',
+          STATUS: 'UPDATE',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'LN11 9JG',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456780',
+          LOCATIONID: '1-123456780',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
+          REASONS: '',
+          REASONNOS: '',
+        },
+        2,
+        [
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 123,
+            _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _ustatus: null,
+            _created: '2019-03-15T09:54:10.562Z',
+            _updated: '2019-10-04T15:46:16.158Z',
+            _updatedBy: 'aylingw',
             _auditEvents: null,
-            _modifiedProperties: [],
-            _additionalModels: null
+            _name: 'WOZiTech, with even more care',
+            _address1: 'First Line',
+            _address2: 'Second Line',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: null,
+            _provId: null,
+            _postcode: 'LN11 9JG',
+            _isRegulated: false,
+            _mainService: { id: 16, name: 'Head office services' },
+            _nmdsId: 'G1001114',
+            _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+            _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+            _establishmentWdfEligibility: null,
+            _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+            _isParent: true,
+            _parentUid: null,
+            _parentId: null,
+            _parentName: null,
+            _dataOwner: 'Workplace',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'NEW',
+            _logLevel: 300,
+            key: '123',
           },
-          _isNew: false,
-          _workerEntities: {},
-          _readyForDeletionWorkers: null,
-          _status: 'COMPLETE',
-          _logLevel: 300
-        }
-      ]);
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 1446,
+            _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+            _ustatus: null,
+            _created: '2019-07-31T15:09:57.405Z',
+            _updated: '2019-10-04T15:46:16.797Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech Cares Sub 100',
+            _address1: 'Number 1',
+            _address2: 'My street',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: '1-888777666',
+            _provId: '1-999888777',
+            _postcode: 'LN11 9JG',
+            _isRegulated: true,
+            _mainService: { id: 1, name: 'Carers support' },
+            _nmdsId: 'G1002110',
+            _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+            _overallWdfEligibility: null,
+            _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+            _staffWdfEligibility: null,
+            _isParent: false,
+            _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _parentId: 479,
+            _parentName: null,
+            _dataOwner: 'Parent',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'COMPLETE',
+            _logLevel: 300,
+          },
+        ],
+      );
 
-    expect(bulkUpload).to.have.property('validate');
+      expect(bulkUpload).to.have.property('validate');
 
-    // call the validation to ensure the proper error is shown
-    await bulkUpload.validate();
+      // call the validation to ensure the proper error is shown
+      await bulkUpload.validate();
 
-    const validationErrors = bulkUpload.validationErrors;
+      const validationErrors = bulkUpload.validationErrors;
 
-    // assert a warning was returned
+      // assert a warning was returned
 
-    expect(validationErrors).to.deep.equal([]);
-});
+      expect(validationErrors).to.deep.equal([]);
+    });
 
-  it('should not emit an error if locationId has not already been used in the database', async () => {
-    const bulkUpload = new (testUtils.sandBox(
-      filename,
-      {
+    it('should not emit an error if locationId has not already been used in the database', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
         locals: {
           require: testUtils.wrapRequire({
             '../BUDI': {
-              BUDI
+              BUDI,
             },
             '../../index': {
               establishment: models.establishment,
-                pcodedata: models.pcodedata
+              pcodedata: models.pcodedata,
             },
-            'moment' :moment,
+            moment: moment,
             'lodash.clonedeep': {
-              clonedeep
-            }
-          })
-        }
-      }
-    ).Establishment)(
-      {
-        LOCALESTID: 'omar3',
-        STATUS: 'NEW',
-        ESTNAME: 'WOZiTech, with even more care',
-        ADDRESS1: 'First Line',
-        ADDRESS2: 'Second Line',
-        ADDRESS3: '',
-        POSTTOWN: 'My Town',
-        POSTCODE: 'LN11 9JG',
-        ESTTYPE: '6',
-        OTHERTYPE: '',
-        PERMCQC: '1',
-        PERMLA: '1',
-        SHARELA: '708;721;720',
-        REGTYPE: '2',
-        PROVNUM: '1-123456781',
-        LOCATIONID: '1-123456781',
-        MAINSERVICE: '8',
-      ALLSERVICES: '12;13',
-        CAPACITY: '0;0',
-        UTILISATION: '0;0',
-        SERVICEDESC: '1;1',
-        SERVICEUSERS: '',
-        OTHERUSERDESC: '',
-        TOTALPERMTEMP: '1',
-        ALLJOBROLES: '34;8;4',
-        STARTERS: '0;0;0',
-        LEAVERS: '999;0;0',
-        VACANCIES: '999;333;1',
-        REASONS: '',
-        REASONNOS: ''
-      },
-      2,
-      [
-        {
-          _validations: [],
-          _username: 'aylingw',
-          _id: 479,
-          _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-          _ustatus: null,
-          _created: '2019-03-15T09:54:10.562Z',
-          _updated: '2019-10-04T15:46:16.158Z',
-          _updatedBy: 'aylingw',
-          _auditEvents: null,
-          _name: 'WOZiTech, with even more care',
-          _address1: 'First Line',
-          _address2: 'Second Line',
-          _address3: '',
-          _town: 'My Town',
-          _county: '',
-          _locationId: null,
-          _provId: null,
-          _postcode: 'LN11 9JG',
-          _isRegulated: false,
-          _mainService: { id: 16, name: 'Head office services' },
-          _nmdsId: 'G1001114',
-          _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-          _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-          _establishmentWdfEligibility: null,
-          _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-          _isParent: true,
-          _parentUid: null,
-          _parentId: null,
-          _parentName: null,
-          _dataOwner: 'Workplace',
-          _dataPermissions: 'None',
-          _archived: false,
-          _dataOwnershipRequested: null,
-          _reasonsForLeaving: '',
-          _properties: {
-            _properties: [Object],
-            _propertyTypes: [Array],
-            _auditEvents: null,
-            _modifiedProperties: [],
-            _additionalModels: null
-          },
-          _isNew: false,
-          _workerEntities: {
-          },
-          _readyForDeletionWorkers: null,
-          _status: 'NEW',
-          _logLevel: 300
+              clonedeep,
+            },
+          }),
         },
+      }).Establishment)(
         {
-          _validations: [],
-          _username: 'aylingw',
-          _id: 1446,
-          _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-          _ustatus: null,
-          _created: '2019-07-31T15:09:57.405Z',
-          _updated: '2019-10-04T15:46:16.797Z',
-          _updatedBy: 'aylingw',
-          _auditEvents: null,
-          _name: 'WOZiTech Cares Sub 100',
-          _address1: 'Number 1',
-          _address2: 'My street',
-          _address3: '',
-          _town: 'My Town',
-          _county: '',
-          _locationId: '1-888777666',
-          _provId: '1-999888777',
-          _postcode: 'LN11 9JG',
-          _isRegulated: true,
-          _mainService: { id: 1, name: 'Carers support' },
-          _nmdsId: 'G1002110',
-          _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-          _overallWdfEligibility: null,
-          _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-          _staffWdfEligibility: null,
-          _isParent: false,
-          _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-          _parentId: 479,
-          _parentName: null,
-          _dataOwner: 'Parent',
-          _dataPermissions: 'None',
-          _archived: false,
-          _dataOwnershipRequested: null,
-          _reasonsForLeaving: '',
-          _properties: {
-            _properties: [Object],
-            _propertyTypes: [Array],
+          LOCALESTID: 'omar3',
+          STATUS: 'NEW',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'LN11 9JG',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456781',
+          LOCATIONID: '1-123456781',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
+          REASONS: '',
+          REASONNOS: '',
+        },
+        2,
+        [
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 479,
+            _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _ustatus: null,
+            _created: '2019-03-15T09:54:10.562Z',
+            _updated: '2019-10-04T15:46:16.158Z',
+            _updatedBy: 'aylingw',
             _auditEvents: null,
-            _modifiedProperties: [],
-            _additionalModels: null
+            _name: 'WOZiTech, with even more care',
+            _address1: 'First Line',
+            _address2: 'Second Line',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: null,
+            _provId: null,
+            _postcode: 'LN11 9JG',
+            _isRegulated: false,
+            _mainService: { id: 16, name: 'Head office services' },
+            _nmdsId: 'G1001114',
+            _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+            _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+            _establishmentWdfEligibility: null,
+            _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+            _isParent: true,
+            _parentUid: null,
+            _parentId: null,
+            _parentName: null,
+            _dataOwner: 'Workplace',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'NEW',
+            _logLevel: 300,
           },
-          _isNew: false,
-          _workerEntities: {},
-          _readyForDeletionWorkers: null,
-          _status: 'COMPLETE',
-          _logLevel: 300
-        }
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 1446,
+            _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+            _ustatus: null,
+            _created: '2019-07-31T15:09:57.405Z',
+            _updated: '2019-10-04T15:46:16.797Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech Cares Sub 100',
+            _address1: 'Number 1',
+            _address2: 'My street',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: '1-888777666',
+            _provId: '1-999888777',
+            _postcode: 'LN11 9JG',
+            _isRegulated: true,
+            _mainService: { id: 1, name: 'Carers support' },
+            _nmdsId: 'G1002110',
+            _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+            _overallWdfEligibility: null,
+            _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+            _staffWdfEligibility: null,
+            _isParent: false,
+            _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _parentId: 479,
+            _parentName: null,
+            _dataOwner: 'Parent',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'COMPLETE',
+            _logLevel: 300,
+          },
+        ],
+      );
+
+      expect(bulkUpload).to.have.property('validate');
+
+      // call the validation to ensure the proper error is shown
+      await bulkUpload.validate();
+
+      const validationErrors = bulkUpload.validationErrors;
+
+      // assert a warning was returned
+
+      expect(validationErrors).to.deep.equal([]);
+    });
+
+    it('should emit an error if postcode cannot be found in the reference data', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': {
+              clonedeep,
+            },
+          }),
+        },
+      }).Establishment)(
+        {
+          LOCALESTID: 'omar3',
+          STATUS: 'NEW',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'AB13 4NJ',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456781',
+          LOCATIONID: '1-123456781',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
+          REASONS: '',
+          REASONNOS: '',
+        },
+        2,
+        [
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 479,
+            _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _ustatus: null,
+            _created: '2019-03-15T09:54:10.562Z',
+            _updated: '2019-10-04T15:46:16.158Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech, with even more care',
+            _address1: 'First Line',
+            _address2: 'Second Line',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: null,
+            _provId: null,
+            _postcode: 'LN11 9JG',
+            _isRegulated: false,
+            _mainService: { id: 16, name: 'Head office services' },
+            _nmdsId: 'G1001114',
+            _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+            _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+            _establishmentWdfEligibility: null,
+            _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+            _isParent: true,
+            _parentUid: null,
+            _parentId: null,
+            _parentName: null,
+            _dataOwner: 'Workplace',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'NEW',
+            _logLevel: 300,
+          },
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 1446,
+            _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+            _ustatus: null,
+            _created: '2019-07-31T15:09:57.405Z',
+            _updated: '2019-10-04T15:46:16.797Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech Cares Sub 100',
+            _address1: 'Number 1',
+            _address2: 'My street',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: '1-888777666',
+            _provId: '1-999888777',
+            _postcode: 'LN11 9JG',
+            _isRegulated: true,
+            _mainService: { id: 1, name: 'Carers support' },
+            _nmdsId: 'G1002110',
+            _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+            _overallWdfEligibility: null,
+            _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+            _staffWdfEligibility: null,
+            _isParent: false,
+            _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _parentId: 479,
+            _parentName: null,
+            _dataOwner: 'Parent',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'COMPLETE',
+            _logLevel: 300,
+          },
+        ],
+      );
+
+      expect(bulkUpload).to.have.property('validate');
+
+      // call the validation to ensure the proper error is shown
+      await bulkUpload.validate();
+
+      const validationErrors = bulkUpload.validationErrors;
+
+      // assert a warning was returned
+
+      expect(validationErrors).to.deep.equal([
+        {
+          lineNumber: 2,
+          name: 'omar3',
+          origin: 'Establishments',
+          source: 'AB13 4NJ',
+          errCode: 1040,
+          errType: 'ADDRESS_ERROR',
+          error: 'The Postcode for this workplace cannot be found in our database and must be registered manually.',
+        },
       ]);
+    });
 
-    expect(bulkUpload).to.have.property('validate');
-
-    // call the validation to ensure the proper error is shown
-    await bulkUpload.validate();
-
-    const validationErrors = bulkUpload.validationErrors;
-
-    // assert a warning was returned
-
-    expect(validationErrors).to.deep.equal([]);
-});
-
-it('should emit an error if postcode cannot be found in the reference data', async () => {
-  const bulkUpload = new (testUtils.sandBox(
-    filename,
-    {
-      locals: {
-        require: testUtils.wrapRequire({
-          '../BUDI': {
-            BUDI
+    it('should not emit an error if postcode can be found in the reference data', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': {
+              clonedeep,
+            },
+          }),
+        },
+      }).Establishment)(
+        {
+          LOCALESTID: 'omar3',
+          STATUS: 'NEW',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'AB13 4MJ',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456781',
+          LOCATIONID: '1-123456781',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
+          REASONS: '',
+          REASONNOS: '',
+        },
+        2,
+        [
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 479,
+            _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _ustatus: null,
+            _created: '2019-03-15T09:54:10.562Z',
+            _updated: '2019-10-04T15:46:16.158Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech, with even more care',
+            _address1: 'First Line',
+            _address2: 'Second Line',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: null,
+            _provId: null,
+            _postcode: 'LN11 9JG',
+            _isRegulated: false,
+            _mainService: { id: 16, name: 'Head office services' },
+            _nmdsId: 'G1001114',
+            _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+            _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+            _establishmentWdfEligibility: null,
+            _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+            _isParent: true,
+            _parentUid: null,
+            _parentId: null,
+            _parentName: null,
+            _dataOwner: 'Workplace',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'NEW',
+            _logLevel: 300,
           },
-          '../../index': {
-            establishment: models.establishment,
-                pcodedata: models.pcodedata
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 1446,
+            _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+            _ustatus: null,
+            _created: '2019-07-31T15:09:57.405Z',
+            _updated: '2019-10-04T15:46:16.797Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech Cares Sub 100',
+            _address1: 'Number 1',
+            _address2: 'My street',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: '1-888777666',
+            _provId: '1-999888777',
+            _postcode: 'LN11 9JG',
+            _isRegulated: true,
+            _mainService: { id: 1, name: 'Carers support' },
+            _nmdsId: 'G1002110',
+            _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+            _overallWdfEligibility: null,
+            _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+            _staffWdfEligibility: null,
+            _isParent: false,
+            _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _parentId: 479,
+            _parentName: null,
+            _dataOwner: 'Parent',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'COMPLETE',
+            _logLevel: 300,
           },
-          'moment' :moment,
-          'lodash.clonedeep': {
-            clonedeep
-          }
-        })
-      }
-    }
-  ).Establishment)(
-    {
-      LOCALESTID: 'omar3',
-      STATUS: 'NEW',
-      ESTNAME: 'WOZiTech, with even more care',
-      ADDRESS1: 'First Line',
-      ADDRESS2: 'Second Line',
-      ADDRESS3: '',
-      POSTTOWN: 'My Town',
-      POSTCODE: 'AB13 4NJ',
-      ESTTYPE: '6',
-      OTHERTYPE: '',
-      PERMCQC: '1',
-      PERMLA: '1',
-      SHARELA: '708;721;720',
-      REGTYPE: '2',
-      PROVNUM: '1-123456781',
-      LOCATIONID: '1-123456781',
-      MAINSERVICE: '8',
-    ALLSERVICES: '12;13',
-      CAPACITY: '0;0',
-      UTILISATION: '0;0',
-      SERVICEDESC: '1;1',
-      SERVICEUSERS: '',
-      OTHERUSERDESC: '',
-      TOTALPERMTEMP: '1',
-      ALLJOBROLES: '34;8;4',
-      STARTERS: '0;0;0',
-      LEAVERS: '999;0;0',
-      VACANCIES: '999;333;1',
-      REASONS: '',
-      REASONNOS: ''
-    },
-    2,
-    [
-      {
-        _validations: [],
-        _username: 'aylingw',
-        _id: 479,
-        _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-        _ustatus: null,
-        _created: '2019-03-15T09:54:10.562Z',
-        _updated: '2019-10-04T15:46:16.158Z',
-        _updatedBy: 'aylingw',
-        _auditEvents: null,
-        _name: 'WOZiTech, with even more care',
-        _address1: 'First Line',
-        _address2: 'Second Line',
-        _address3: '',
-        _town: 'My Town',
-        _county: '',
-        _locationId: null,
-        _provId: null,
-        _postcode: 'LN11 9JG',
-        _isRegulated: false,
-        _mainService: { id: 16, name: 'Head office services' },
-        _nmdsId: 'G1001114',
-        _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-        _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-        _establishmentWdfEligibility: null,
-        _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-        _isParent: true,
-        _parentUid: null,
-        _parentId: null,
-        _parentName: null,
-        _dataOwner: 'Workplace',
-        _dataPermissions: 'None',
-        _archived: false,
-        _dataOwnershipRequested: null,
-        _reasonsForLeaving: '',
-        _properties: {
-          _properties: [Object],
-          _propertyTypes: [Array],
-          _auditEvents: null,
-          _modifiedProperties: [],
-          _additionalModels: null
+        ],
+      );
+
+      expect(bulkUpload).to.have.property('validate');
+
+      // call the validation to ensure the proper error is shown
+      await bulkUpload.validate();
+
+      const validationErrors = bulkUpload.validationErrors;
+
+      // assert a warning was returned
+
+      expect(validationErrors).to.deep.equal([]);
+    });
+
+    it('should emit an warning if postcode cannot be found in the reference data', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': {
+              clonedeep,
+            },
+          }),
         },
-        _isNew: false,
-        _workerEntities: {
+      }).Establishment)(
+        {
+          LOCALESTID: 'omar3',
+          STATUS: 'UPDATE',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'AB13 4NJ',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456781',
+          LOCATIONID: '1-123456781',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
+          REASONS: '',
+          REASONNOS: '',
         },
-        _readyForDeletionWorkers: null,
-        _status: 'NEW',
-        _logLevel: 300
-      },
-      {
-        _validations: [],
-        _username: 'aylingw',
-        _id: 1446,
-        _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-        _ustatus: null,
-        _created: '2019-07-31T15:09:57.405Z',
-        _updated: '2019-10-04T15:46:16.797Z',
-        _updatedBy: 'aylingw',
-        _auditEvents: null,
-        _name: 'WOZiTech Cares Sub 100',
-        _address1: 'Number 1',
-        _address2: 'My street',
-        _address3: '',
-        _town: 'My Town',
-        _county: '',
-        _locationId: '1-888777666',
-        _provId: '1-999888777',
-        _postcode: 'LN11 9JG',
-        _isRegulated: true,
-        _mainService: { id: 1, name: 'Carers support' },
-        _nmdsId: 'G1002110',
-        _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-        _overallWdfEligibility: null,
-        _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-        _staffWdfEligibility: null,
-        _isParent: false,
-        _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-        _parentId: 479,
-        _parentName: null,
-        _dataOwner: 'Parent',
-        _dataPermissions: 'None',
-        _archived: false,
-        _dataOwnershipRequested: null,
-        _reasonsForLeaving: '',
-        _properties: {
-          _properties: [Object],
-          _propertyTypes: [Array],
-          _auditEvents: null,
-          _modifiedProperties: [],
-          _additionalModels: null
-        },
-        _isNew: false,
-        _workerEntities: {},
-        _readyForDeletionWorkers: null,
-        _status: 'COMPLETE',
-        _logLevel: 300
-      }
-    ]);
-
-  expect(bulkUpload).to.have.property('validate');
-
-  // call the validation to ensure the proper error is shown
-  await bulkUpload.validate();
-
-  const validationErrors = bulkUpload.validationErrors;
-
-  // assert a warning was returned
-
-  expect(validationErrors).to.deep.equal([
-    {
-      "lineNumber": 2,
-      "name": "omar3",
-      "origin": "Establishments",
-      "source": "AB13 4NJ",
-      "errCode": 1040,
-      "errType": "ADDRESS_ERROR",
-      "error": "The Postcode for this workplace cannot be found in our database and must be registered manually."
-    }
-  ]);
-});
-
-it('should not emit an error if postcode can be found in the reference data', async () => {
-  const bulkUpload = new (testUtils.sandBox(
-    filename,
-    {
-      locals: {
-        require: testUtils.wrapRequire({
-          '../BUDI': {
-            BUDI
+        2,
+        [
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 479,
+            _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _ustatus: null,
+            _created: '2019-03-15T09:54:10.562Z',
+            _updated: '2019-10-04T15:46:16.158Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech, with even more care',
+            _address1: 'First Line',
+            _address2: 'Second Line',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: null,
+            _provId: null,
+            _postcode: 'LN11 9JG',
+            _isRegulated: false,
+            _mainService: { id: 16, name: 'Head office services' },
+            _nmdsId: 'G1001114',
+            _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+            _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+            _establishmentWdfEligibility: null,
+            _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+            _isParent: true,
+            _parentUid: null,
+            _parentId: null,
+            _parentName: null,
+            _dataOwner: 'Workplace',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'NEW',
+            _logLevel: 300,
           },
-          '../../index': {
-            establishment: models.establishment,
-                pcodedata: models.pcodedata
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 1446,
+            _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+            _ustatus: null,
+            _created: '2019-07-31T15:09:57.405Z',
+            _updated: '2019-10-04T15:46:16.797Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech Cares Sub 100',
+            _address1: 'Number 1',
+            _address2: 'My street',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: '1-888777666',
+            _provId: '1-999888777',
+            _postcode: 'AB13 4NJ',
+            _isRegulated: true,
+            _mainService: { id: 1, name: 'Carers support' },
+            _nmdsId: 'G1002110',
+            _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+            _overallWdfEligibility: null,
+            _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+            _staffWdfEligibility: null,
+            _isParent: false,
+            _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _parentId: 479,
+            _parentName: null,
+            _dataOwner: 'Parent',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'COMPLETE',
+            _logLevel: 300,
           },
-          'moment' :moment,
-          'lodash.clonedeep': {
-            clonedeep
-          }
-        })
-      }
-    }
-  ).Establishment)(
-    {
-      LOCALESTID: 'omar3',
-      STATUS: 'NEW',
-      ESTNAME: 'WOZiTech, with even more care',
-      ADDRESS1: 'First Line',
-      ADDRESS2: 'Second Line',
-      ADDRESS3: '',
-      POSTTOWN: 'My Town',
-      POSTCODE: 'AB13 4MJ',
-      ESTTYPE: '6',
-      OTHERTYPE: '',
-      PERMCQC: '1',
-      PERMLA: '1',
-      SHARELA: '708;721;720',
-      REGTYPE: '2',
-      PROVNUM: '1-123456781',
-      LOCATIONID: '1-123456781',
-      MAINSERVICE: '8',
-    ALLSERVICES: '12;13',
-      CAPACITY: '0;0',
-      UTILISATION: '0;0',
-      SERVICEDESC: '1;1',
-      SERVICEUSERS: '',
-      OTHERUSERDESC: '',
-      TOTALPERMTEMP: '1',
-      ALLJOBROLES: '34;8;4',
-      STARTERS: '0;0;0',
-      LEAVERS: '999;0;0',
-      VACANCIES: '999;333;1',
-      REASONS: '',
-      REASONNOS: ''
-    },
-    2,
-    [
-      {
-        _validations: [],
-        _username: 'aylingw',
-        _id: 479,
-        _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-        _ustatus: null,
-        _created: '2019-03-15T09:54:10.562Z',
-        _updated: '2019-10-04T15:46:16.158Z',
-        _updatedBy: 'aylingw',
-        _auditEvents: null,
-        _name: 'WOZiTech, with even more care',
-        _address1: 'First Line',
-        _address2: 'Second Line',
-        _address3: '',
-        _town: 'My Town',
-        _county: '',
-        _locationId: null,
-        _provId: null,
-        _postcode: 'LN11 9JG',
-        _isRegulated: false,
-        _mainService: { id: 16, name: 'Head office services' },
-        _nmdsId: 'G1001114',
-        _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-        _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-        _establishmentWdfEligibility: null,
-        _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-        _isParent: true,
-        _parentUid: null,
-        _parentId: null,
-        _parentName: null,
-        _dataOwner: 'Workplace',
-        _dataPermissions: 'None',
-        _archived: false,
-        _dataOwnershipRequested: null,
-        _reasonsForLeaving: '',
-        _properties: {
-          _properties: [Object],
-          _propertyTypes: [Array],
-          _auditEvents: null,
-          _modifiedProperties: [],
-          _additionalModels: null
+        ],
+      );
+
+      expect(bulkUpload).to.have.property('validate');
+
+      // call the validation to ensure the proper error is shown
+      await bulkUpload.validate();
+
+      const validationErrors = bulkUpload.validationErrors;
+
+      // assert a warning was returned
+
+      expect(validationErrors).to.deep.equal([
+        {
+          errCode: 1020,
+          errType: 'STATUS_ERROR',
+          error: 'Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it',
+          lineNumber: 2,
+          name: 'omar3',
+          origin: 'Establishments',
+          source: 'UPDATE',
         },
-        _isNew: false,
-        _workerEntities: {
+        {
+          lineNumber: 2,
+          name: 'omar3',
+          origin: 'Establishments',
+          source: 'AB13 4NJ',
+          warnCode: 1040,
+          warnType: 'ADDRESS_ERROR',
+          warning: 'The POSTCODE cannot be found in our database and will be ignored.',
         },
-        _readyForDeletionWorkers: null,
-        _status: 'NEW',
-        _logLevel: 300
-      },
-      {
-        _validations: [],
-        _username: 'aylingw',
-        _id: 1446,
-        _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-        _ustatus: null,
-        _created: '2019-07-31T15:09:57.405Z',
-        _updated: '2019-10-04T15:46:16.797Z',
-        _updatedBy: 'aylingw',
-        _auditEvents: null,
-        _name: 'WOZiTech Cares Sub 100',
-        _address1: 'Number 1',
-        _address2: 'My street',
-        _address3: '',
-        _town: 'My Town',
-        _county: '',
-        _locationId: '1-888777666',
-        _provId: '1-999888777',
-        _postcode: 'LN11 9JG',
-        _isRegulated: true,
-        _mainService: { id: 1, name: 'Carers support' },
-        _nmdsId: 'G1002110',
-        _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-        _overallWdfEligibility: null,
-        _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-        _staffWdfEligibility: null,
-        _isParent: false,
-        _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-        _parentId: 479,
-        _parentName: null,
-        _dataOwner: 'Parent',
-        _dataPermissions: 'None',
-        _archived: false,
-        _dataOwnershipRequested: null,
-        _reasonsForLeaving: '',
-        _properties: {
-          _properties: [Object],
-          _propertyTypes: [Array],
-          _auditEvents: null,
-          _modifiedProperties: [],
-          _additionalModels: null
+      ]);
+    });
+
+    it('should not emit an error if postcode can be found in the reference data', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': {
+              clonedeep,
+            },
+          }),
         },
-        _isNew: false,
-        _workerEntities: {},
-        _readyForDeletionWorkers: null,
-        _status: 'COMPLETE',
-        _logLevel: 300
-      }
-    ]);
-
-  expect(bulkUpload).to.have.property('validate');
-
-  // call the validation to ensure the proper error is shown
-  await bulkUpload.validate();
-
-  const validationErrors = bulkUpload.validationErrors;
-
-  // assert a warning was returned
-
-  expect(validationErrors).to.deep.equal([]);
-});
-
-it('should emit an warning if postcode cannot be found in the reference data', async () => {
-  const bulkUpload = new (testUtils.sandBox(
-    filename,
-    {
-      locals: {
-        require: testUtils.wrapRequire({
-          '../BUDI': {
-            BUDI
+      }).Establishment)(
+        {
+          LOCALESTID: 'omar3',
+          STATUS: 'UPDATE',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'AB13 4MJ',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456781',
+          LOCATIONID: '1-123456781',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8;4',
+          STARTERS: '0;0;0',
+          LEAVERS: '999;0;0',
+          VACANCIES: '999;333;1',
+          REASONS: '',
+          REASONNOS: '',
+        },
+        2,
+        [
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 479,
+            _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _ustatus: null,
+            _created: '2019-03-15T09:54:10.562Z',
+            _updated: '2019-10-04T15:46:16.158Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech, with even more care',
+            _address1: 'First Line',
+            _address2: 'Second Line',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: null,
+            _provId: null,
+            _postcode: 'LN11 9JG',
+            _isRegulated: false,
+            _mainService: { id: 16, name: 'Head office services' },
+            _nmdsId: 'G1001114',
+            _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+            _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+            _establishmentWdfEligibility: null,
+            _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+            _isParent: true,
+            _parentUid: null,
+            _parentId: null,
+            _parentName: null,
+            _dataOwner: 'Workplace',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'NEW',
+            _logLevel: 300,
           },
-          '../../index': {
-            establishment: models.establishment,
-                pcodedata: models.pcodedata
+          {
+            _validations: [],
+            _username: 'aylingw',
+            _id: 1446,
+            _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+            _ustatus: null,
+            _created: '2019-07-31T15:09:57.405Z',
+            _updated: '2019-10-04T15:46:16.797Z',
+            _updatedBy: 'aylingw',
+            _auditEvents: null,
+            _name: 'WOZiTech Cares Sub 100',
+            _address1: 'Number 1',
+            _address2: 'My street',
+            _address3: '',
+            _town: 'My Town',
+            _county: '',
+            _locationId: '1-888777666',
+            _provId: '1-999888777',
+            _postcode: 'LN11 9JG',
+            _isRegulated: true,
+            _mainService: { id: 1, name: 'Carers support' },
+            _nmdsId: 'G1002110',
+            _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
+            _overallWdfEligibility: null,
+            _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
+            _staffWdfEligibility: null,
+            _isParent: false,
+            _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            _parentId: 479,
+            _parentName: null,
+            _dataOwner: 'Parent',
+            _dataPermissions: 'None',
+            _archived: false,
+            _dataOwnershipRequested: null,
+            _reasonsForLeaving: '',
+            _properties: {
+              _properties: [Object],
+              _propertyTypes: [Array],
+              _auditEvents: null,
+              _modifiedProperties: [],
+              _additionalModels: null,
+            },
+            _isNew: false,
+            _workerEntities: {},
+            _readyForDeletionWorkers: null,
+            _status: 'COMPLETE',
+            _logLevel: 300,
           },
-          'moment' :moment,
-          'lodash.clonedeep': {
-            clonedeep
-          }
-        })
-      }
-    }
-  ).Establishment)(
-    {
-      LOCALESTID: 'omar3',
-      STATUS: 'UPDATE',
-      ESTNAME: 'WOZiTech, with even more care',
-      ADDRESS1: 'First Line',
-      ADDRESS2: 'Second Line',
-      ADDRESS3: '',
-      POSTTOWN: 'My Town',
-      POSTCODE: 'AB13 4NJ',
-      ESTTYPE: '6',
-      OTHERTYPE: '',
-      PERMCQC: '1',
-      PERMLA: '1',
-      SHARELA: '708;721;720',
-      REGTYPE: '2',
-      PROVNUM: '1-123456781',
-      LOCATIONID: '1-123456781',
-      MAINSERVICE: '8',
-    ALLSERVICES: '12;13',
-      CAPACITY: '0;0',
-      UTILISATION: '0;0',
-      SERVICEDESC: '1;1',
-      SERVICEUSERS: '',
-      OTHERUSERDESC: '',
-      TOTALPERMTEMP: '1',
-      ALLJOBROLES: '34;8;4',
-      STARTERS: '0;0;0',
-      LEAVERS: '999;0;0',
-      VACANCIES: '999;333;1',
-      REASONS: '',
-      REASONNOS: ''
-    },
-    2,
-    [
-      {
-        _validations: [],
-        _username: 'aylingw',
-        _id: 479,
-        _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-        _ustatus: null,
-        _created: '2019-03-15T09:54:10.562Z',
-        _updated: '2019-10-04T15:46:16.158Z',
-        _updatedBy: 'aylingw',
-        _auditEvents: null,
-        _name: 'WOZiTech, with even more care',
-        _address1: 'First Line',
-        _address2: 'Second Line',
-        _address3: '',
-        _town: 'My Town',
-        _county: '',
-        _locationId: null,
-        _provId: null,
-        _postcode: 'LN11 9JG',
-        _isRegulated: false,
-        _mainService: { id: 16, name: 'Head office services' },
-        _nmdsId: 'G1001114',
-        _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-        _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-        _establishmentWdfEligibility: null,
-        _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-        _isParent: true,
-        _parentUid: null,
-        _parentId: null,
-        _parentName: null,
-        _dataOwner: 'Workplace',
-        _dataPermissions: 'None',
-        _archived: false,
-        _dataOwnershipRequested: null,
-        _reasonsForLeaving: '',
-        _properties: {
-          _properties: [Object],
-          _propertyTypes: [Array],
-          _auditEvents: null,
-          _modifiedProperties: [],
-          _additionalModels: null
+        ],
+      );
+
+      expect(bulkUpload).to.have.property('validate');
+
+      // call the validation to ensure the proper error is shown
+      await bulkUpload.validate();
+
+      const validationErrors = bulkUpload.validationErrors;
+
+      // assert a warning was returned
+
+      expect(validationErrors).to.deep.equal([
+        {
+          errCode: 1020,
+          errType: 'STATUS_ERROR',
+          error: 'Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it',
+          lineNumber: 2,
+          name: 'omar3',
+          origin: 'Establishments',
+          source: 'UPDATE',
         },
-        _isNew: false,
-        _workerEntities: {
-        },
-        _readyForDeletionWorkers: null,
-        _status: 'NEW',
-        _logLevel: 300
-      },
-      {
-        _validations: [],
-        _username: 'aylingw',
-        _id: 1446,
-        _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-        _ustatus: null,
-        _created: '2019-07-31T15:09:57.405Z',
-        _updated: '2019-10-04T15:46:16.797Z',
-        _updatedBy: 'aylingw',
-        _auditEvents: null,
-        _name: 'WOZiTech Cares Sub 100',
-        _address1: 'Number 1',
-        _address2: 'My street',
-        _address3: '',
-        _town: 'My Town',
-        _county: '',
-        _locationId: '1-888777666',
-        _provId: '1-999888777',
-        _postcode: 'AB13 4NJ',
-        _isRegulated: true,
-        _mainService: { id: 1, name: 'Carers support' },
-        _nmdsId: 'G1002110',
-        _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-        _overallWdfEligibility: null,
-        _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-        _staffWdfEligibility: null,
-        _isParent: false,
-        _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-        _parentId: 479,
-        _parentName: null,
-        _dataOwner: 'Parent',
-        _dataPermissions: 'None',
-        _archived: false,
-        _dataOwnershipRequested: null,
-        _reasonsForLeaving: '',
-        _properties: {
-          _properties: [Object],
-          _propertyTypes: [Array],
-          _auditEvents: null,
-          _modifiedProperties: [],
-          _additionalModels: null
-        },
-        _isNew: false,
-        _workerEntities: {},
-        _readyForDeletionWorkers: null,
-        _status: 'COMPLETE',
-        _logLevel: 300
-      }
-    ]);
-
-  expect(bulkUpload).to.have.property('validate');
-
-  // call the validation to ensure the proper error is shown
-  await bulkUpload.validate();
-
-  const validationErrors = bulkUpload.validationErrors;
-
-  // assert a warning was returned
-
-  expect(validationErrors).to.deep.equal([
-    {
-      "errCode": 1020,
-      "errType": "STATUS_ERROR",
-      "error": "Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it",
-      "lineNumber": 2,
-      "name": "omar3",
-      "origin": "Establishments",
-      "source": "UPDATE"
-    },
-    {
-      "lineNumber": 2,
-      "name": "omar3",
-      "origin": "Establishments",
-      "source": "AB13 4NJ",
-      "warnCode": 1040,
-      "warnType": "ADDRESS_ERROR",
-      "warning": "The POSTCODE cannot be found in our database and will be ignored."
-    }
-  ]);
-});
-
-it('should not emit an error if postcode can be found in the reference data', async () => {
-  const bulkUpload = new (testUtils.sandBox(
-    filename,
-    {
-      locals: {
-        require: testUtils.wrapRequire({
-          '../BUDI': {
-            BUDI
-          },
-          '../../index': {
-            establishment: models.establishment,
-                pcodedata: models.pcodedata
-          },
-          'moment' :moment,
-          'lodash.clonedeep': {
-            clonedeep
-          }
-        })
-      }
-    }
-  ).Establishment)(
-    {
-      LOCALESTID: 'omar3',
-      STATUS: 'UPDATE',
-      ESTNAME: 'WOZiTech, with even more care',
-      ADDRESS1: 'First Line',
-      ADDRESS2: 'Second Line',
-      ADDRESS3: '',
-      POSTTOWN: 'My Town',
-      POSTCODE: 'AB13 4MJ',
-      ESTTYPE: '6',
-      OTHERTYPE: '',
-      PERMCQC: '1',
-      PERMLA: '1',
-      SHARELA: '708;721;720',
-      REGTYPE: '2',
-      PROVNUM: '1-123456781',
-      LOCATIONID: '1-123456781',
-      MAINSERVICE: '8',
-    ALLSERVICES: '12;13',
-      CAPACITY: '0;0',
-      UTILISATION: '0;0',
-      SERVICEDESC: '1;1',
-      SERVICEUSERS: '',
-      OTHERUSERDESC: '',
-      TOTALPERMTEMP: '1',
-      ALLJOBROLES: '34;8;4',
-      STARTERS: '0;0;0',
-      LEAVERS: '999;0;0',
-      VACANCIES: '999;333;1',
-      REASONS: '',
-      REASONNOS: ''
-    },
-    2,
-    [
-      {
-        _validations: [],
-        _username: 'aylingw',
-        _id: 479,
-        _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-        _ustatus: null,
-        _created: '2019-03-15T09:54:10.562Z',
-        _updated: '2019-10-04T15:46:16.158Z',
-        _updatedBy: 'aylingw',
-        _auditEvents: null,
-        _name: 'WOZiTech, with even more care',
-        _address1: 'First Line',
-        _address2: 'Second Line',
-        _address3: '',
-        _town: 'My Town',
-        _county: '',
-        _locationId: null,
-        _provId: null,
-        _postcode: 'LN11 9JG',
-        _isRegulated: false,
-        _mainService: { id: 16, name: 'Head office services' },
-        _nmdsId: 'G1001114',
-        _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-        _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-        _establishmentWdfEligibility: null,
-        _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-        _isParent: true,
-        _parentUid: null,
-        _parentId: null,
-        _parentName: null,
-        _dataOwner: 'Workplace',
-        _dataPermissions: 'None',
-        _archived: false,
-        _dataOwnershipRequested: null,
-        _reasonsForLeaving: '',
-        _properties: {
-          _properties: [Object],
-          _propertyTypes: [Array],
-          _auditEvents: null,
-          _modifiedProperties: [],
-          _additionalModels: null
-        },
-        _isNew: false,
-        _workerEntities: {
-        },
-        _readyForDeletionWorkers: null,
-        _status: 'NEW',
-        _logLevel: 300
-      },
-      {
-        _validations: [],
-        _username: 'aylingw',
-        _id: 1446,
-        _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-        _ustatus: null,
-        _created: '2019-07-31T15:09:57.405Z',
-        _updated: '2019-10-04T15:46:16.797Z',
-        _updatedBy: 'aylingw',
-        _auditEvents: null,
-        _name: 'WOZiTech Cares Sub 100',
-        _address1: 'Number 1',
-        _address2: 'My street',
-        _address3: '',
-        _town: 'My Town',
-        _county: '',
-        _locationId: '1-888777666',
-        _provId: '1-999888777',
-        _postcode: 'LN11 9JG',
-        _isRegulated: true,
-        _mainService: { id: 1, name: 'Carers support' },
-        _nmdsId: 'G1002110',
-        _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-        _overallWdfEligibility: null,
-        _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-        _staffWdfEligibility: null,
-        _isParent: false,
-        _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-        _parentId: 479,
-        _parentName: null,
-        _dataOwner: 'Parent',
-        _dataPermissions: 'None',
-        _archived: false,
-        _dataOwnershipRequested: null,
-        _reasonsForLeaving: '',
-        _properties: {
-          _properties: [Object],
-          _propertyTypes: [Array],
-          _auditEvents: null,
-          _modifiedProperties: [],
-          _additionalModels: null
-        },
-        _isNew: false,
-        _workerEntities: {},
-        _readyForDeletionWorkers: null,
-        _status: 'COMPLETE',
-        _logLevel: 300
-      }
-    ]);
-
-  expect(bulkUpload).to.have.property('validate');
-
-  // call the validation to ensure the proper error is shown
-  await bulkUpload.validate();
-
-  const validationErrors = bulkUpload.validationErrors;
-
-  // assert a warning was returned
-
-  expect(validationErrors).to.deep.equal([
-    {
-      "errCode": 1020,
-      "errType": "STATUS_ERROR",
-      "error": "Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it",
-      "lineNumber": 2,
-      "name": "omar3",
-      "origin": "Establishments",
-      "source": "UPDATE"
-    }
-  ]);
-});
+      ]);
+    });
   });
 
   describe('cross entity validations', () => {
     it('should an error if cqc registered and have no registered manager vacancy or registered manager staff member', async () => {
-      const bulkUpload = new (testUtils.sandBox(
-        filename,
-        {
-          locals: {
-            require: testUtils.wrapRequire({
-              '../BUDI': {
-                BUDI
-              },
-              '../../index': {
-                establishment: models.establishment,
-                    pcodedata: models.pcodedata
-              },
-              'moment' :moment,
-              'lodash.clonedeep': clonedeep
-            })
-          }
-        }
-      ).Establishment)(
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': clonedeep,
+          }),
+        },
+      }).Establishment)(
         {
           LOCALESTID: 'omar3',
-      STATUS: 'UPDATE',
-      ESTNAME: 'WOZiTech, with even more care',
-      ADDRESS1: 'First Line',
-      ADDRESS2: 'Second Line',
-      ADDRESS3: '',
-      POSTTOWN: 'My Town',
-      POSTCODE: 'AB13 4NJ',
-      ESTTYPE: '6',
-      OTHERTYPE: '',
-      PERMCQC: '1',
-      PERMLA: '1',
-      SHARELA: '708;721;720',
-      REGTYPE: '2',
-      PROVNUM: '1-123456781',
-      LOCATIONID: '1-123456781',
-      MAINSERVICE: '8',
-      ALLSERVICES: '12;13',
-      CAPACITY: '0;0',
-      UTILISATION: '0;0',
-      SERVICEDESC: '1;1',
-      SERVICEUSERS: '',
-      OTHERUSERDESC: '',
-      TOTALPERMTEMP: '1',
-      ALLJOBROLES: '34;8',
-      STARTERS: '0;0',
-      LEAVERS: '999;0',
-      VACANCIES: '999;0',
-      REASONS: '',
-      REASONNOS: ''
+          STATUS: 'UPDATE',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'AB13 4NJ',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456781',
+          LOCATIONID: '1-123456781',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8',
+          STARTERS: '0;0',
+          LEAVERS: '999;0',
+          VACANCIES: '999;0',
+          REASONS: '',
+          REASONNOS: '',
         },
         2,
         [
@@ -2813,14 +2776,13 @@ it('should not emit an error if postcode can be found in the reference data', as
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
-            _workerEntities: {
-            },
+            _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'NEW',
-            _logLevel: 300
+            _logLevel: 300,
           },
           {
             _validations: [],
@@ -2862,26 +2824,29 @@ it('should not emit an error if postcode can be found in the reference data', as
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
             _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'COMPLETE',
-            _logLevel: 300
-          }
-        ]);
+            _logLevel: 300,
+          },
+        ],
+      );
 
       expect(bulkUpload).to.have.property('crossValidate');
 
       const csvEstablishmentSchemaErrors = [];
 
-      const myWorkers = [{
-        status: 'UPDATE',
-        establishmentKey: 'omar3',
-        mainJobRoleId: 3,
-        otherJobIds: [6]
-      }];
+      const myWorkers = [
+        {
+          status: 'UPDATE',
+          establishmentKey: 'omar3',
+          mainJobRoleId: 3,
+          otherJobIds: [6],
+        },
+      ];
 
       // the real version of this code is in the api Establishment business object and runs a sql query.
       // We just return a 'fake result set'
@@ -2896,7 +2861,7 @@ it('should not emit an error if postcode can be found in the reference data', as
       await bulkUpload.crossValidate({
         csvEstablishmentSchemaErrors,
         myWorkers,
-        fetchMyEstablishmentsWorkers
+        fetchMyEstablishmentsWorkers,
       });
 
       // assert the fetchMyEstalishmentsWorkers function was called
@@ -2912,59 +2877,56 @@ it('should not emit an error if postcode can be found in the reference data', as
         source: '34;8',
         errCode: 1280,
         errType: 'ALL_JOBS_ERROR',
-        error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one'
+        error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
       });
     });
     it('should not an error if cqc registered and have registered manager vacancy or registered manager staff member (as main)', async () => {
-      const bulkUpload = new (testUtils.sandBox(
-        filename,
-        {
-          locals: {
-            require: testUtils.wrapRequire({
-              '../BUDI': {
-                BUDI
-              },
-              '../../index': {
-                establishment: models.establishment,
-                    pcodedata: models.pcodedata
-              },
-              'moment' :moment,
-              'lodash.clonedeep': clonedeep
-            })
-          }
-        }
-      ).Establishment)(
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': clonedeep,
+          }),
+        },
+      }).Establishment)(
         {
           LOCALESTID: 'omar3',
-      STATUS: 'UPDATE',
-      ESTNAME: 'WOZiTech, with even more care',
-      ADDRESS1: 'First Line',
-      ADDRESS2: 'Second Line',
-      ADDRESS3: '',
-      POSTTOWN: 'My Town',
-      POSTCODE: 'AB13 4NJ',
-      ESTTYPE: '6',
-      OTHERTYPE: '',
-      PERMCQC: '1',
-      PERMLA: '1',
-      SHARELA: '708;721;720',
-      REGTYPE: '2',
-      PROVNUM: '1-123456781',
-      LOCATIONID: '1-123456781',
-      MAINSERVICE: '8',
-      ALLSERVICES: '12;13',
-      CAPACITY: '0;0',
-      UTILISATION: '0;0',
-      SERVICEDESC: '1;1',
-      SERVICEUSERS: '',
-      OTHERUSERDESC: '',
-      TOTALPERMTEMP: '1',
-      ALLJOBROLES: '34;8',
-      STARTERS: '0;0',
-      LEAVERS: '999;0',
-      VACANCIES: '999;0',
-      REASONS: '',
-      REASONNOS: ''
+          STATUS: 'UPDATE',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'AB13 4NJ',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456781',
+          LOCATIONID: '1-123456781',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8',
+          STARTERS: '0;0',
+          LEAVERS: '999;0',
+          VACANCIES: '999;0',
+          REASONS: '',
+          REASONNOS: '',
         },
         2,
         [
@@ -3008,14 +2970,13 @@ it('should not emit an error if postcode can be found in the reference data', as
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
-            _workerEntities: {
-            },
+            _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'NEW',
-            _logLevel: 300
+            _logLevel: 300,
           },
           {
             _validations: [],
@@ -3057,26 +3018,29 @@ it('should not emit an error if postcode can be found in the reference data', as
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
             _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'COMPLETE',
-            _logLevel: 300
-          }
-        ]);
+            _logLevel: 300,
+          },
+        ],
+      );
 
       expect(bulkUpload).to.have.property('crossValidate');
 
       const csvEstablishmentSchemaErrors = [];
 
-      const myWorkers = [{
-        status: 'UPDATE',
-        establishmentKey: 'omar3',
-        mainJobRoleId: 4,
-        otherJobIds: []
-      }];
+      const myWorkers = [
+        {
+          status: 'UPDATE',
+          establishmentKey: 'omar3',
+          mainJobRoleId: 4,
+          otherJobIds: [],
+        },
+      ];
 
       // the real version of this code is in the api Establishment business object and runs a sql query.
       // We just return a 'fake result set'
@@ -3091,7 +3055,7 @@ it('should not emit an error if postcode can be found in the reference data', as
       await bulkUpload.crossValidate({
         csvEstablishmentSchemaErrors,
         myWorkers,
-        fetchMyEstablishmentsWorkers
+        fetchMyEstablishmentsWorkers,
       });
 
       // assert the fetchMyEstalishmentsWorkers function was called
@@ -3102,55 +3066,52 @@ it('should not emit an error if postcode can be found in the reference data', as
       expect(csvEstablishmentSchemaErrors[0]).to.deep.equal();
     });
     it('should not an error if cqc registered and have registered manager vacancy or registered manager staff member (as other)', async () => {
-      const bulkUpload = new (testUtils.sandBox(
-        filename,
-        {
-          locals: {
-            require: testUtils.wrapRequire({
-              '../BUDI': {
-                BUDI
-              },
-              '../../index': {
-                establishment: models.establishment,
-                    pcodedata: models.pcodedata
-              },
-              'moment' :moment,
-              'lodash.clonedeep': clonedeep
-            })
-          }
-        }
-      ).Establishment)(
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            '../../index': {
+              establishment: models.establishment,
+              pcodedata: models.pcodedata,
+            },
+            moment: moment,
+            'lodash.clonedeep': clonedeep,
+          }),
+        },
+      }).Establishment)(
         {
           LOCALESTID: 'omar3',
-      STATUS: 'UPDATE',
-      ESTNAME: 'WOZiTech, with even more care',
-      ADDRESS1: 'First Line',
-      ADDRESS2: 'Second Line',
-      ADDRESS3: '',
-      POSTTOWN: 'My Town',
-      POSTCODE: 'AB13 4NJ',
-      ESTTYPE: '6',
-      OTHERTYPE: '',
-      PERMCQC: '1',
-      PERMLA: '1',
-      SHARELA: '708;721;720',
-      REGTYPE: '2',
-      PROVNUM: '1-123456781',
-      LOCATIONID: '1-123456781',
-      MAINSERVICE: '8',
-      ALLSERVICES: '12;13',
-      CAPACITY: '0;0',
-      UTILISATION: '0;0',
-      SERVICEDESC: '1;1',
-      SERVICEUSERS: '',
-      OTHERUSERDESC: '',
-      TOTALPERMTEMP: '1',
-      ALLJOBROLES: '34;8',
-      STARTERS: '0;0',
-      LEAVERS: '999;0',
-      VACANCIES: '999;0',
-      REASONS: '',
-      REASONNOS: ''
+          STATUS: 'UPDATE',
+          ESTNAME: 'WOZiTech, with even more care',
+          ADDRESS1: 'First Line',
+          ADDRESS2: 'Second Line',
+          ADDRESS3: '',
+          POSTTOWN: 'My Town',
+          POSTCODE: 'AB13 4NJ',
+          ESTTYPE: '6',
+          OTHERTYPE: '',
+          PERMCQC: '1',
+          PERMLA: '1',
+          SHARELA: '708;721;720',
+          REGTYPE: '2',
+          PROVNUM: '1-123456781',
+          LOCATIONID: '1-123456781',
+          MAINSERVICE: '8',
+          ALLSERVICES: '12;13',
+          CAPACITY: '0;0',
+          UTILISATION: '0;0',
+          SERVICEDESC: '1;1',
+          SERVICEUSERS: '',
+          OTHERUSERDESC: '',
+          TOTALPERMTEMP: '1',
+          ALLJOBROLES: '34;8',
+          STARTERS: '0;0',
+          LEAVERS: '999;0',
+          VACANCIES: '999;0',
+          REASONS: '',
+          REASONNOS: '',
         },
         2,
         [
@@ -3194,14 +3155,13 @@ it('should not emit an error if postcode can be found in the reference data', as
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
-            _workerEntities: {
-            },
+            _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'NEW',
-            _logLevel: 300
+            _logLevel: 300,
           },
           {
             _validations: [],
@@ -3243,26 +3203,29 @@ it('should not emit an error if postcode can be found in the reference data', as
               _propertyTypes: [Array],
               _auditEvents: null,
               _modifiedProperties: [],
-              _additionalModels: null
+              _additionalModels: null,
             },
             _isNew: false,
             _workerEntities: {},
             _readyForDeletionWorkers: null,
             _status: 'COMPLETE',
-            _logLevel: 300
-          }
-        ]);
+            _logLevel: 300,
+          },
+        ],
+      );
 
       expect(bulkUpload).to.have.property('crossValidate');
 
       const csvEstablishmentSchemaErrors = [];
 
-      const myWorkers = [{
-        status: 'UPDATE',
-        establishmentKey: 'omar3',
-        mainJobRoleId: 3,
-        otherJobIds: [4]
-      }];
+      const myWorkers = [
+        {
+          status: 'UPDATE',
+          establishmentKey: 'omar3',
+          mainJobRoleId: 3,
+          otherJobIds: [4],
+        },
+      ];
 
       // the real version of this code is in the api Establishment business object and runs a sql query.
       // We just return a 'fake result set'
@@ -3277,7 +3240,7 @@ it('should not emit an error if postcode can be found in the reference data', as
       await bulkUpload.crossValidate({
         csvEstablishmentSchemaErrors,
         myWorkers,
-        fetchMyEstablishmentsWorkers
+        fetchMyEstablishmentsWorkers,
       });
 
       // assert the fetchMyEstalishmentsWorkers function was called

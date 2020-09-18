@@ -35,7 +35,7 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
     private backService: BackService,
     private establishmentService: EstablishmentService,
     private workerService: WorkerService,
-    private totalStaffFormService: TotalStaffFormService
+    private totalStaffFormService: TotalStaffFormService,
   ) {
     this.form = totalStaffFormService.createForm(formBuilder);
   }
@@ -98,9 +98,9 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
 
     this.subscriptions.add(
       this.establishmentService.postStaff(this.workplace.uid, totalStaff).subscribe(
-        data => this.onSuccess(data.numberOfStaff),
-        error => this.onError(error)
-      )
+        (data) => this.onSuccess(data.numberOfStaff),
+        (error) => this.onError(error),
+      ),
     );
   }
 

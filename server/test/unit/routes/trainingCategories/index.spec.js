@@ -2,7 +2,12 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 const models = require('../../../../models/index');
-const { workerBuilder, categoryBuilder, trainingBuilder, mandatoryTrainingBuilder } = require('../../../factories/models');
+const {
+  workerBuilder,
+  categoryBuilder,
+  trainingBuilder,
+  mandatoryTrainingBuilder,
+} = require('../../../factories/models');
 const workerTrainingCategoriesRoute = require('../../../../routes/workerTrainingCategories');
 
 describe('test training categories endpoint functions', () => {

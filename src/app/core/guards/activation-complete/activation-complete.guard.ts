@@ -6,10 +6,7 @@ import { CreateAccountService } from '@core/services/create-account/create-accou
   providedIn: 'root',
 })
 export class ActivationCompleteGuard implements CanActivateChild {
-  constructor(
-    private createAccountService: CreateAccountService,
-    private router: Router
-  ) {}
+  constructor(private createAccountService: CreateAccountService, private router: Router) {}
 
   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (!this.createAccountService.activationComplete$.value) {

@@ -24,14 +24,14 @@ describe('RegistrationComponent', () => {
       username: null,
       establishment: {
         id: testWorkplaceId,
-        nmdsId: testNmdsId
+        nmdsId: testNmdsId,
       },
     };
 
     if (registrationType === newUserAccount) {
       registration.username = testUsername;
       registration.email = testEmail;
-    };
+    }
 
     return await render(RegistrationComponent, {
       imports: [ReactiveFormsModule, HttpClientTestingModule],
@@ -47,7 +47,7 @@ describe('RegistrationComponent', () => {
     });
   }
 
-  it('should create', async() => {
+  it('should create', async () => {
     const component = await getRegistrationComponent(registrationTypeIrrelevant);
 
     expect(component).toBeTruthy();
@@ -224,12 +224,10 @@ describe('RegistrationComponent', () => {
         statusText: 'Bad Request',
         error: {
           nmdsId: 'This workplace ID (W1234567) belongs to another workplace. Enter a different workplace ID.',
-        }
+        },
       });
 
-      spyOn(component.registrationsService, 'registrationApproval').and.returnValue(
-        throwError(mockErrorResponse)
-      );
+      spyOn(component.registrationsService, 'registrationApproval').and.returnValue(throwError(mockErrorResponse));
 
       const nmdsIdInput = container.querySelector('input[name=nmdsid]') as HTMLElement;
       nmdsIdInput.nodeValue = '';
@@ -237,7 +235,9 @@ describe('RegistrationComponent', () => {
       type(nmdsIdInput, testNmdsId);
       click(getByText('Approve'));
 
-      expect(getByText(`This workplace ID (${ testNmdsId }) belongs to another workplace. Enter a different workplace ID.`));
+      expect(
+        getByText(`This workplace ID (${testNmdsId}) belongs to another workplace. Enter a different workplace ID.`),
+      );
     });
   });
 });

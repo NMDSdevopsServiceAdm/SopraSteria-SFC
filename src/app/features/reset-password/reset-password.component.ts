@@ -20,11 +20,11 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.submitted = false;
 
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.resetUuidfromUrl = params.reset;
     });
 
-    this._passwordResetService.resetPasswordUUID$.subscribe(resetLinkResponse => {
+    this._passwordResetService.resetPasswordUUID$.subscribe((resetLinkResponse) => {
       this.resetLinkResponse = resetLinkResponse;
     });
 
@@ -39,11 +39,11 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
 
   validatePasswordReset(data) {
     this.subscriptions.add(
-      this._passwordResetService.validatePasswordReset(data).subscribe(res => {
+      this._passwordResetService.validatePasswordReset(data).subscribe((res) => {
         this.headerToken = res.headers.get('authorization');
 
         this.validatePasswordResetResponse = res;
-      })
+      }),
     );
   }
 

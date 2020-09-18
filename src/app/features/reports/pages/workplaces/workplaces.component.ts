@@ -40,7 +40,7 @@ export class WorkplacesComponent implements OnInit {
     this.subscriptions.add(
       this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
         if (workplaces.subsidaries) {
-          this.workplaces = workplaces.subsidaries.establishments.filter(item => item.ustatus !== 'PENDING');
+          this.workplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus !== 'PENDING');
 
           if (this.workplaces.length) {
             this.workplaces = filter(this.workplaces, this.exclusionCheck);
@@ -48,19 +48,20 @@ export class WorkplacesComponent implements OnInit {
 
           this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
 
-          this.totalEligible = filter(this.workplaces, workplace => workplace.wdf.overall).length;
+          this.totalEligible = filter(this.workplaces, (workplace) => workplace.wdf.overall).length;
           this.totalIneligible = this.workplaces.length - this.totalEligible;
         }
-      })
+      }),
     );
   }
 
   public downloadWdfParentReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(
-      this.reportService
-        .getParentWDFReport(this.primaryWorkplace.uid)
-        .subscribe(response => this.saveFile(response), () => {})
+      this.reportService.getParentWDFReport(this.primaryWorkplace.uid).subscribe(
+        (response) => this.saveFile(response),
+        () => {},
+      ),
     );
   }
 

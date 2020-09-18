@@ -41,7 +41,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
     private fb: FormBuilder,
     private userService: UserService,
     private passwordResetService: PasswordResetService,
-    private errorSummaryService: ErrorSummaryService
+    private errorSummaryService: ErrorSummaryService,
   ) {}
 
   // Get old password
@@ -70,7 +70,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
           ],
           confirmPasswordInput: ['', [Validators.required]],
         },
-        { validator: CustomValidators.matchInputValues }
+        { validator: CustomValidators.matchInputValues },
       ),
     });
 
@@ -143,8 +143,8 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
         () => this.resetPasswordEvent.emit(),
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
-      )
+        },
+      ),
     );
   }
 

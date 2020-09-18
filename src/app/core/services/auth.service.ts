@@ -27,13 +27,13 @@ export class AuthService {
     private router: Router,
     private establishmentService: EstablishmentService,
     private userService: UserService,
-    private permissionsService: PermissionsService
+    private permissionsService: PermissionsService,
   ) {}
 
   public get isAutheticated$(): Observable<boolean> {
     return this._isAuthenticated$.asObservable().pipe(
-      filter(authenticated => !isNull(authenticated)),
-      distinctUntilChanged()
+      filter((authenticated) => !isNull(authenticated)),
+      distinctUntilChanged(),
     );
   }
 
@@ -84,25 +84,25 @@ export class AuthService {
     console.log('Authservice has been asked to authenticate a user');
     return this.http.post<any>('/api/login/', { username, password }, { observe: 'response' }).pipe(
       tap(
-        response => {
+        (response) => {
           console.log('Got response from API');
           console.log(response);
           this.token = response.headers.get('authorization');
-          Sentry.configureScope(scope => {
+          Sentry.configureScope((scope) => {
             scope.setUser({
-              id: response.body.uid
+              id: response.body.uid,
             });
           });
         },
-        error => console.error(error)
-      )
+        (error) => console.error(error),
+      ),
     );
   }
 
   public refreshToken() {
     return this.http
-      .get<any>(`/api/login/refresh`, { observe: 'response' })
-      .pipe(tap(response => (this.token = response.headers.get('authorization'))));
+      .get<any>('/api/login/refresh', { observe: 'response' })
+      .pipe(tap((response) => (this.token = response.headers.get('authorization'))));
   }
 
   public logout(): void {
@@ -122,25 +122,23 @@ export class AuthService {
     this.userService.resetAgreedUpdatedTermsStatus = null;
     this.establishmentService.resetState();
     this.permissionsService.clearPermissions();
-    Sentry.configureScope(scope => {
+    Sentry.configureScope((scope) => {
       scope.setUser({
-        id: ''
+        id: '',
       });
-   });
+    });
   }
 
   public setPreviousToken(): void {
-    if(this.previousToken === null)
-      this.previousToken = this.token
+    if (this.previousToken === null) this.previousToken = this.token;
   }
 
   public restorePreviousToken(): void {
-    if(this.previousToken !== null)
-      this.token = this.previousToken
+    if (this.previousToken !== null) this.token = this.previousToken;
   }
 
   public getPreviousToken(): any {
-    return this.jwt.decodeToken(this.previousToken)
+    return this.jwt.decodeToken(this.previousToken);
   }
 
   private setPreviousUser(): void {

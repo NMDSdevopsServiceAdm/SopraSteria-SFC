@@ -25,7 +25,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   ngOnInit() {
@@ -93,8 +93,8 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
-        }
-      )
+        },
+      ),
     );
   }
 

@@ -26,7 +26,7 @@ export class TypeOfEmployerComponent extends Question {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -88,9 +88,10 @@ export class TypeOfEmployerComponent extends Question {
 
   updateEstablishment(props) {
     this.subscriptions.add(
-      this.establishmentService
-        .updateTypeOfEmployer(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateTypeOfEmployer(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
   }
 }

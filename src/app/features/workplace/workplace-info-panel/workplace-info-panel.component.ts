@@ -35,21 +35,21 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     private router: Router,
     private permissionsService: PermissionsService,
     private userService: UserService,
-    private alertService: AlertService
+    private alertService: AlertService,
   ) {}
 
   ngOnInit() {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.subscriptions.add(
-      this.permissionsService.hasWorkplacePermissions(this.workplace.uid).subscribe(hasPermissions => {
+      this.permissionsService.hasWorkplacePermissions(this.workplace.uid).subscribe((hasPermissions) => {
         if (hasPermissions) {
           this.canViewEstablishment = this.permissionsService.can(this.workplace.uid, 'canViewEstablishment');
           this.canChangePermissionsForSubsidiary = this.permissionsService.can(
             this.workplace.uid,
-            'canChangePermissionsForSubsidiary'
+            'canChangePermissionsForSubsidiary',
           );
         }
-      })
+      }),
     );
   }
 
@@ -60,7 +60,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public onChangeDataOwner($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(ChangeDataOwnerDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe(changeDataOwnerConfirmed => {
+    dialog.afterClosed.subscribe((changeDataOwnerConfirmed) => {
       if (changeDataOwnerConfirmed) {
         this.changeOwnershipAndPermissions();
         this.router.navigate(['/dashboard']);
@@ -78,24 +78,24 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     this.ownershipChangeRequester = [];
     this.subscriptions.add(
       this.establishmentService.changeOwnershipDetails(this.workplace.uid).subscribe(
-        data => {
+        (data) => {
           if (data && data.length > 0) {
-            this.userService.loggedInUser$.subscribe(user => {
+            this.userService.loggedInUser$.subscribe((user) => {
               if (user) {
                 this.loggedInUser = user.uid;
               }
             });
-            data.forEach(element => {
+            data.forEach((element) => {
               this.ownershipChangeRequestId.push(element.ownerChangeRequestUID);
               this.ownershipChangeRequester.push(element.createdByUserUID);
             });
-            this.ownershipChangeRequester.forEach(requester => {
+            this.ownershipChangeRequester.forEach((requester) => {
               this.ownershipChangeRequestCreatedByLoggegInUser = requester === this.loggedInUser ? true : false;
             });
             this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
             if (this.ownershipChangeRequestCreatedByLoggegInUser) {
               const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
-              dialog.afterClosed.subscribe(cancelDataOwnerConfirmed => {
+              dialog.afterClosed.subscribe((cancelDataOwnerConfirmed) => {
                 if (cancelDataOwnerConfirmed) {
                   this.changeOwnershipAndPermissions();
                   this.router.navigate(['/dashboard']);
@@ -110,17 +110,17 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
             }
           }
         },
-        error => {
+        (error) => {
           console.error(error.error.message);
-        }
-      )
+        },
+      ),
     );
   }
 
   public setDataPermissions($event: Event) {
     $event.preventDefault();
     const dialog = this.dialogService.open(SetDataPermissionDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe(setPermissionConfirmed => {
+    dialog.afterClosed.subscribe((setPermissionConfirmed) => {
       if (setPermissionConfirmed) {
         this.router.navigate(['/workplace/view-all-workplaces']);
         this.alertService.addAlert({

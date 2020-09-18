@@ -16,15 +16,12 @@ describe('WorkplaceTabComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        SharedModule,
-        RouterTestingModule,
-        HttpClientTestingModule],
+      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(),
-          deps: [HttpClient, Router, UserService]
+          deps: [HttpClient, Router, UserService],
         },
       ],
     }).compileComponents();

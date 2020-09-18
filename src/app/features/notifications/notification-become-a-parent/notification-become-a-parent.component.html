@@ -10,7 +10,7 @@
   <div class="govuk-grid-column-two-thirds" *ngIf="notification">
     <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-2">From:</h2>
     <p class="govuk-util__inline-block">Skills For Care, {{ notification.created | longDate }}</p>
-    <br/>
+    <br />
     <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-2">Subject:</h2>
     <p data-testid="type" class="govuk-util__inline-block">{{ notification?.type | notificationType }}</p>
   </div>

@@ -22,44 +22,37 @@ import { of } from 'rxjs';
 
 describe('DashboardComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
-    const component =  await render(DashboardComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule
-      ],
-      declarations: [
-        HomeTabComponent
-      ],
+    const component = await render(DashboardComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      declarations: [HomeTabComponent],
       providers: [
         {
           provide: WindowRef,
-          useClass: WindowRef
+          useClass: WindowRef,
         },
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(),
-          deps: [HttpClient, Router, UserService]
+          deps: [HttpClient, Router, UserService],
         },
         {
           provide: UserService,
           useFactory: MockUserService.factory(subsidiaries, isAdmin),
-          deps: [HttpClient]
+          deps: [HttpClient],
         },
         {
           provide: NotificationsService,
-          useClass: MockNotificationsService
+          useClass: MockNotificationsService,
         },
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService
+          useClass: MockEstablishmentService,
         },
         {
           provide: AuthService,
-          useClass: MockAuthService
-        }
-      ]
+          useClass: MockAuthService,
+        },
+      ],
     });
 
     const injector = getTestBed();
@@ -69,7 +62,7 @@ describe('DashboardComponent', () => {
     return {
       component,
       establishmentService,
-      router
+      router,
     };
   }
 
@@ -142,4 +135,3 @@ describe('DashboardComponent', () => {
     });
   });
 });
-

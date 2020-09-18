@@ -12,14 +12,14 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './british-citizenship.component.html',
 })
 export class BritishCitizenshipComponent extends QuestionComponent {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+  public answersAvailable = ['Yes', 'No', 'Don\'t know'];
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 

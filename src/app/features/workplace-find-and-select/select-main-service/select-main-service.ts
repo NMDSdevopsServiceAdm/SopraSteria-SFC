@@ -31,7 +31,7 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected workplaceService: WorkplaceService
+    protected workplaceService: WorkplaceService,
   ) {}
 
   ngOnInit() {
@@ -98,8 +98,8 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
         },
-        () => this.updateForm()
-      )
+        () => this.updateForm(),
+      ),
     );
   }
 
@@ -112,7 +112,7 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
       if (service.other) {
         this.form.addControl(
           `otherWorkplaceService${service.id}`,
-          new FormControl(null, [Validators.maxLength(this.otherServiceMaxLength)])
+          new FormControl(null, [Validators.maxLength(this.otherServiceMaxLength)]),
         );
 
         this.formErrorsMap.push({
@@ -135,7 +135,7 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
    * Then set boolean flag for ui to render the form
    */
   protected preFillForm(): void {
-    if (this.selectedMainService && this.allServices.findIndex(s => s.id === this.selectedMainService.id) > -1) {
+    if (this.selectedMainService && this.allServices.findIndex((s) => s.id === this.selectedMainService.id) > -1) {
       this.form.get('workplaceService').patchValue(this.selectedMainService.id);
 
       if (this.selectedMainService.other && this.form.get(`otherWorkplaceService${this.selectedMainService.id}`)) {

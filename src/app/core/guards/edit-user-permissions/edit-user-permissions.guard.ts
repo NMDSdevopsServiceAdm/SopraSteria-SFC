@@ -19,9 +19,9 @@ export class EditUserPermissionsGuard implements CanActivate {
     this.userUid = next.params.useruid;
 
     return this.userService.getAllUsersForEstablishment(this.workplaceUid).pipe(
-      map(users => {
-        const currentUser = users.find(user => (user.uid = this.userUid));
-        const editUsersList = users.filter(user => user.role === Roles.Edit);
+      map((users) => {
+        const currentUser = users.find((user) => (user.uid = this.userUid));
+        const editUsersList = users.filter((user) => user.role === Roles.Edit);
         if (currentUser && (!currentUser.isPrimary || (currentUser.isPrimary && editUsersList.length > 1))) {
           return true;
         } else {
@@ -32,7 +32,7 @@ export class EditUserPermissionsGuard implements CanActivate {
       catchError(() => {
         this.navigate();
         return of(false);
-      })
+      }),
     );
   }
 

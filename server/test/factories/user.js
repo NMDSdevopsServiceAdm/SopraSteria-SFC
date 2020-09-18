@@ -1,11 +1,11 @@
 const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
-const establishmentId = fake(f => f.helpers.replaceSymbolWithNumber('####'));
-const uid = fake(f => f.random.uuid());
+const establishmentId = fake((f) => f.helpers.replaceSymbolWithNumber('####'));
+const uid = fake((f) => f.random.uuid());
 module.exports = build('user', {
   fields: {
     establishmentId: establishmentId,
-    username: fake(f => f.internet.userName()),
+    username: fake((f) => f.internet.userName()),
     userUid: uid,
     id: sequence(),
     uid: uid,
@@ -13,11 +13,11 @@ module.exports = build('user', {
     role: 'Edit',
     establishment: {
       id: establishmentId,
-      uid: fake(f => f.random.uuid()),
+      uid: fake((f) => f.random.uuid()),
       isSubsidiary: false,
-      isParent: false
+      isParent: false,
     },
     dataPermissions: null,
-    parentIsOwner: false
-  }
+    parentIsOwner: false,
+  },
 });

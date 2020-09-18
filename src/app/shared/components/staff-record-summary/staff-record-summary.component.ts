@@ -33,7 +33,7 @@ export class StaffRecordSummaryComponent implements OnInit {
     private location: Location,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    public workerService: WorkerService
+    public workerService: WorkerService,
   ) {}
 
   ngOnInit() {

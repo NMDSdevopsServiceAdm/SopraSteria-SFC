@@ -29,7 +29,7 @@ export class CreateAccountService {
 
   public createAccount(
     establishmentUid: string,
-    requestPayload: CreateAccountRequest
+    requestPayload: CreateAccountRequest,
   ): Observable<CreateAccountResponse> {
     return this.http.post<CreateAccountResponse>(`/api/user/add/establishment/${establishmentUid}`, requestPayload);
   }
@@ -39,7 +39,7 @@ export class CreateAccountService {
   }
 
   public validateAccountActivationToken(
-    requestPayload: ValidateAccountActivationTokenRequest
+    requestPayload: ValidateAccountActivationTokenRequest,
   ): Observable<HttpResponse<ValidateAccountActivationTokenResponse>> {
     return this.http.post<ValidateAccountActivationTokenResponse>('/api/user/validateAddUser', requestPayload, {
       observe: 'response',

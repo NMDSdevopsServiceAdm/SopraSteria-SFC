@@ -23,7 +23,7 @@ export class WorkplaceNotFound implements OnInit, AfterViewInit {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected locationService: LocationService,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   ngOnInit() {
@@ -51,12 +51,10 @@ export class WorkplaceNotFound implements OnInit, AfterViewInit {
     this.submitted = true;
     if (this.form.valid) {
       this.subscriptions.add(
-        this.locationService
-          .getAddressesByPostCode(this.postcodeControl.value)
-          .subscribe(
-            (data: LocationSearchResponse) => this.onSuccess(data),
-            (error: HttpErrorResponse) => this.onError(error)
-          )
+        this.locationService.getAddressesByPostCode(this.postcodeControl.value).subscribe(
+          (data: LocationSearchResponse) => this.onSuccess(data),
+          (error: HttpErrorResponse) => this.onError(error),
+        ),
       );
     }
   }

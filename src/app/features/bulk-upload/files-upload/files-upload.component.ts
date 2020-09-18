@@ -38,7 +38,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
-    private renderer: Renderer2
+    private renderer: Renderer2,
   ) {}
 
   ngOnInit() {
@@ -72,7 +72,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
             this.bulkUploadService.uploadedFiles$.next(response);
           }
           this.checkForPreValidationError();
-        })
+        }),
     );
   }
 
@@ -83,7 +83,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
           this.fileUpload.setErrors({ prevalidation: preValidationError === true ? true : null });
           this.bulkUploadService.exposeForm$.next(this.form);
         }
-      })
+      }),
     );
   }
 
@@ -95,7 +95,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
     this.stopPolling = true;
     this.bulkUploadService.resetBulkUpload();
     const target = $event.target || $event.srcElement;
-    this.selectedFiles = Array.from(target[`files`]);
+    this.selectedFiles = Array.from(target['files']);
     this.fileUpload.setValidators(CustomValidators.checkFiles);
     this.fileUpload.updateValueAndValidity();
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
@@ -117,23 +117,26 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
 
   private getPresignedUrls(): void {
     this.subscriptions.add(
-      this.bulkUploadService
-        .getPresignedUrls(this.getPresignedUrlsRequest())
-        .subscribe((
-          response: PresignedUrlResponseItem[]) => this.prepForUpload(response),
-        error => {
+      this.bulkUploadService.getPresignedUrls(this.getPresignedUrlsRequest()).subscribe(
+        (response: PresignedUrlResponseItem[]) => this.prepForUpload(response),
+        (error) => {
           //handle 503 with custom message to prevent service unavailable redirection
           if (error.status === 503) {
-            const customeMessage = [{
-              name: error.status,
-              message: `Bulk upload is unable to continue processing your data due to an issue with your files.
+            const customeMessage = [
+              {
+                name: error.status,
+                message: `Bulk upload is unable to continue processing your data due to an issue with your files.
                 Please check and try again or contact Support on 0113 2410969.`,
-            }];
-            this.bulkUploadService.serverError$.next(this.errorSummaryService.getServerErrorMessage(error.status, customeMessage));
+              },
+            ];
+            this.bulkUploadService.serverError$.next(
+              this.errorSummaryService.getServerErrorMessage(error.status, customeMessage),
+            );
           } else {
             console.log(error);
           }
-        })
+        },
+      ),
     );
   }
 
@@ -170,10 +173,10 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
     this.stopPolling = false;
 
     this.uploadSubscription$ = combineLatest(
-      request.map(data => this.bulkUploadService.uploadFile(data.file, data.signedUrl))
+      request.map((data) => this.bulkUploadService.uploadFile(data.file, data.signedUrl)),
     )
       .pipe(
-        tap(events => {
+        tap((events) => {
           events.map((event, index: number) => {
             switch (event.type) {
               case HttpEventType.UploadProgress:
@@ -181,7 +184,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
                 break;
             }
           });
-        })
+        }),
       )
       .subscribe(
         null,
@@ -191,7 +194,7 @@ export class FilesUploadComponent implements OnInit, AfterViewInit {
           this.bulkUploadService.preValidateFiles$.next(true);
           this.filesUploading = false;
           this.filesUploaded = true;
-        }
+        },
       );
   }
 

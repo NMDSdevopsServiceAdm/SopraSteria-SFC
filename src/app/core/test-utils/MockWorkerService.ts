@@ -7,7 +7,7 @@ import { URLStructure } from '@core/model/url.model';
 
 const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
 
-export const  workerBuilder = build('Worker', {
+export const workerBuilder = build('Worker', {
   fields: {
     id: sequence(),
     uid: fake((f) => f.random.uuid()),
@@ -15,19 +15,19 @@ export const  workerBuilder = build('Worker', {
     mainJob: {
       id: sequence(),
       title: fake((f) => f.lorem.sentence()),
-      other: null
+      other: null,
     },
     contract: oneOf('Permanent', 'Temporary', 'Pool or Bank', 'Agency', 'Other'),
     localIdentifier: fake((f) => f.name.findName()),
-    zeroHoursContract: oneOf('Yes', 'No', 'Don\'t know'),
+    zeroHoursContract: oneOf('Yes', 'No', "Don't know"),
     weeklyHoursAverage: null,
     weeklyHoursContracted: {
       value: 'Yes',
-      hours: fake((f) => f.random.number())
+      hours: fake((f) => f.random.number()),
     },
     annualHourlyPay: {
       value: 'Hourly',
-      rate: 8.98
+      rate: 8.98,
     },
     careCertificate: 'Yes',
     apprenticeshipTraining: null,
@@ -45,8 +45,8 @@ export const  workerBuilder = build('Worker', {
     expiringTrainingCount: 0,
     missingMandatoryTrainingCount: 0,
     qualificationCount: 0,
-    fluJab: null
-  }
+    fluJab: null,
+  },
 });
 
 const worker = workerBuilder();
@@ -77,7 +77,7 @@ export class MockWorkerService extends WorkerService {
   public get returnTo(): URLStructure {
     return {
       url: ['/dashboard'],
-      fragment: 'workplace'
+      fragment: 'workplace',
     };
   }
 
@@ -89,9 +89,9 @@ export class MockWorkerService extends WorkerService {
       trainingLastUpdated: '2020-01-01T00:00:00Z',
       mainJob: {
         jobId: 8,
-        other: null
-      }
-    }
+        other: null,
+      },
+    },
   ] as Worker[]);
 
   getAllWorkers(establishmentUid: string): Observable<Worker[]> {
@@ -102,9 +102,9 @@ export class MockWorkerService extends WorkerService {
         trainingLastUpdated: '2020-01-01T00:00:00Z',
         mainJob: {
           jobId: 8,
-          other: null
-        }
-      }
+          other: null,
+        },
+      },
     ] as Worker[]);
   }
 }

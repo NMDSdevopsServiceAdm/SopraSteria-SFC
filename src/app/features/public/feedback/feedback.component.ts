@@ -31,7 +31,7 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
     private errorSummaryService: ErrorSummaryService,
     private feedbackService: FeedbackService,
     private formBuilder: FormBuilder,
-    private breadcrumbSerivce: BreadcrumbService
+    private breadcrumbSerivce: BreadcrumbService,
   ) {}
 
   ngOnInit() {
@@ -145,8 +145,8 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
             (error: HttpErrorResponse) => {
               this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
               this.errorSummaryService.scrollToErrorSummary();
-            }
-          )
+            },
+          ),
         );
       }
     } else {

@@ -21,7 +21,7 @@ exports.EstablishmentFkProperty = class EstablishmentFkProperty extends ChangePr
 
   savePropertyToSequelize() {
     return {
-      establishmentFk: this.property
+      establishmentFk: this.property,
     };
   }
 
@@ -33,15 +33,15 @@ exports.EstablishmentFkProperty = class EstablishmentFkProperty extends ChangePr
     if (!withHistory) {
       // simple form
       return {
-        establishmentFk: this.property
+        establishmentFk: this.property,
       };
     }
 
     return {
       establishmentFk: {
         currentValue: this.property,
-        ...this.changePropsToJSON(showPropertyHistoryOnly)
-      }
+        ...this.changePropsToJSON(showPropertyHistoryOnly),
+      },
     };
   }
 };

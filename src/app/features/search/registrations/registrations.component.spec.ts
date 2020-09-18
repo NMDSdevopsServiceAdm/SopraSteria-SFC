@@ -36,13 +36,11 @@ describe('RegistrationsComponent', () => {
             id: 2,
             nmdsId: 'J5678910',
           },
-        }
+        },
       ];
 
       const registrationService = TestBed.get(RegistrationsService);
-      spyOn(registrationService, 'getRegistrations').and.returnValue(
-        of(registrations)
-      );
+      spyOn(registrationService, 'getRegistrations').and.returnValue(of(registrations));
 
       const { fixture } = await render(RegistrationsComponent, {
         imports: [ReactiveFormsModule, HttpClientTestingModule],
@@ -50,8 +48,9 @@ describe('RegistrationsComponent', () => {
         providers: [
           {
             provide: RegistrationsService,
-            useClass: registrationService
-          }],
+            useClass: registrationService,
+          },
+        ],
       });
 
       const { componentInstance } = fixture;
@@ -73,7 +72,7 @@ describe('RegistrationsComponent', () => {
           id: 2,
           nmdsId: 'J5678910',
         },
-      }
+      },
     ];
 
     const { fixture } = await render(RegistrationsComponent, {
@@ -81,7 +80,7 @@ describe('RegistrationsComponent', () => {
       declarations: [FirstErrorPipe, RegistrationComponent],
       providers: [RegistrationsService],
       componentProperties: {
-        registrations
+        registrations,
       },
     });
 

@@ -25,7 +25,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   public establishmentId: number;
   public establishmentUid: string;
   public workplceName: string;
-  public totalMissingMandatoryTrainingCount: number = 0;
+  public totalMissingMandatoryTrainingCount = 0;
   public totalExpiredTraining = 0;
   public totalExpiringTraining = 0;
   public totalMissingMandatoryTraining = 0;
@@ -41,7 +41,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
     this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe(data => {
+      this.establishmentService.establishment$.subscribe((data) => {
         if (data && data.id) {
           this.establishmentId = data.id;
           this.establishmentUid = data.uid;
@@ -64,10 +64,10 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
 
   public fetchAllRecords() {
     this.subscriptions.add(
-      this.workplaceService.getAllMandatoryTrainings(this.establishmentId).subscribe(data => {
+      this.workplaceService.getAllMandatoryTrainings(this.establishmentId).subscribe((data) => {
         this.lastUpdated = moment(data.lastUpdated);
         this.mandatoryTrainings = data.mandatoryTraining;
-        this.mandatoryTrainings.forEach(training => {
+        this.mandatoryTrainings.forEach((training) => {
           let mandatoryTrainingObj = {
             trainingCategoryId: '',
             category: '',
@@ -86,7 +86,7 @@ export class ViewAllMandatoryTrainingComponent implements OnInit, OnDestroy {
           mandatoryTrainingObj.quantity = training.workers.length;
           if (training.workers && training.workers.length > 0) {
             mandatoryTrainingObj.workers = training.workers;
-            training.workers.forEach(worker => {
+            training.workers.forEach((worker) => {
               mandatoryTrainingObj.catMissingMandatoryTrainingCount += worker.missingMandatoryTrainingCount;
               mandatoryTrainingObj.catExpiredTrainingCount += worker.expiredTrainingCount;
               mandatoryTrainingObj.catExpiringTrainingCount += worker.expiringTrainingCount;

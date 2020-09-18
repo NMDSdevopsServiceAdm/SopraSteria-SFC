@@ -66,7 +66,7 @@ export interface Category {
 export interface WDF {
   effectiveFrom: Date;
   overalWdfEligible: boolean;
-  lastEligibility: Date;  // date establishment was last eligible
+  lastEligibility: Date; // date establishment was last eligible
   isEligible: boolean; //  are both the establishment & workers eligible?
   currentEligibility: boolean; //  is the establishment currently eligible?
   canConfirm: boolean; // can the establishment confirm their details are up-to-date?
@@ -211,12 +211,11 @@ export enum SortTrainingAndQualsOptionsWorker {
   '0_expired' = 'Expired',
   '1_expires_soon' = 'Expires soon',
   '2_missing' = 'Missing',
-  '3_worker' = 'Staff name'
+  '3_worker' = 'Staff name',
 }
 export enum SortTrainingAndQualsOptionsCat {
   '0_expired' = 'Expired',
   '1_expires_soon' = 'Expires soon',
   '2_missing' = 'Missing',
-  '3_category' = 'Category'
+  '3_category' = 'Category',
 }
-

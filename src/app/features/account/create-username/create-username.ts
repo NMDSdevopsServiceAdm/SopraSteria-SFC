@@ -33,7 +33,7 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   // Get password group
@@ -101,7 +101,7 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
           createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
           confirmPasswordInput: ['', [Validators.required]],
         },
-        { validator: CustomValidators.matchInputValues }
+        { validator: CustomValidators.matchInputValues },
       ),
     });
   }
@@ -180,11 +180,11 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
           finalize(() => {
             this.submitted = true;
             this.onSubmit();
-          })
+          }),
         )
         .subscribe(
           (data: object) => {
-            if (data[`status`] === '1') {
+            if (data['status'] === '1') {
               this.getUsername.setErrors({ usernameExists: true });
             } else {
               this.getUsername.setErrors({ usernameExists: null });
@@ -193,8 +193,8 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
           },
           (error: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          }
-        )
+          },
+        ),
     );
   }
 

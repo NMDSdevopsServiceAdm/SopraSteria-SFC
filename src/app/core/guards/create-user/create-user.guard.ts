@@ -17,7 +17,7 @@ export class CreateUserGuard implements CanActivate {
     };
 
     return this.createAccountService.validateAccountActivationToken(requestPayload).pipe(
-      map(response => {
+      map((response) => {
         this.createAccountService.userDetails$.next(response.body);
         this.createAccountService.token = response.headers.get('authorization');
 
@@ -27,7 +27,7 @@ export class CreateUserGuard implements CanActivate {
         this.router.navigate(['/activate-account', 'expired-activation-link']);
 
         return of(false);
-      })
+      }),
     );
   }
 }

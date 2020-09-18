@@ -13,9 +13,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  WdfWorkplaceConfirmationDialogComponent,
-} from '@features/workplace/wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
+import { WdfWorkplaceConfirmationDialogComponent } from '@features/workplace/wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { isObject, pick, pickBy, sortBy } from 'lodash';
 import { combineLatest, Subscription } from 'rxjs';
 import { flatMap, take, tap } from 'rxjs/operators';
@@ -45,7 +43,7 @@ export class WdfComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
-    private permissionsService: PermissionsService
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit() {
@@ -76,7 +74,7 @@ export class WdfComponent implements OnInit, OnDestroy {
           this.workplace = workplace;
           this.establishmentService.setState(workplace);
           this.workerCount = totalStaffRecords;
-        })
+        }),
     );
 
     if (this.canViewWorker) {
@@ -84,9 +82,9 @@ export class WdfComponent implements OnInit, OnDestroy {
         this.workerService
           .getAllWorkers(workplaceUid)
           .pipe(take(1))
-          .subscribe(workers => {
+          .subscribe((workers) => {
             this.workers = sortBy(workers, ['wdfEligible']);
-          })
+          }),
       );
     }
   }
@@ -103,7 +101,7 @@ export class WdfComponent implements OnInit, OnDestroy {
       !this.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate
     ) {
       const dialog = this.dialogService.open(WdfWorkplaceConfirmationDialogComponent, { workplace: this.workplace });
-      dialog.afterClosed.subscribe(confirmed => {
+      dialog.afterClosed.subscribe((confirmed) => {
         if (confirmed) {
           this.confirmAndSubmit();
         }
@@ -121,7 +119,7 @@ export class WdfComponent implements OnInit, OnDestroy {
           return wdfProperty.isEligible === Eligibility.YES && !wdfProperty.updatedSinceEffectiveDate;
         }
         return false;
-      })
+      }),
     );
     const props = pick(this.workplace, keys);
 
@@ -131,9 +129,11 @@ export class WdfComponent implements OnInit, OnDestroy {
         flatMap(() =>
           this.establishmentService
             .getEstablishment(this.workplace.uid, true)
-            .pipe(tap(workplace => (this.workplace = workplace)))
+            .pipe(tap((workplace) => (this.workplace = workplace))),
         ),
-        flatMap(() => this.reportService.getWDFReport(this.workplace.uid).pipe(tap(report => (this.report = report))))
+        flatMap(() =>
+          this.reportService.getWDFReport(this.workplace.uid).pipe(tap((report) => (this.report = report))),
+        ),
       )
       .subscribe(() => {
         this.router.navigate(this.returnUrl.url);

@@ -17,7 +17,7 @@ import { render } from '@testing-library/angular';
 
 import { StaffRecordsTabComponent } from './staff-records-tab.component';
 
-const { build, fake, sequence, } = require('@jackfranklin/test-data-bot');
+const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
 describe('StaffRecordsTab', () => {
   const establishmentBuilder = build('Establishment', {
@@ -31,37 +31,31 @@ describe('StaffRecordsTab', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
     const establishment = establishmentBuilder() as Establishment;
     const component = await render(StaffRecordsTabComponent, {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-        ],
-        declarations: [],
-        providers: [
-          {
-            provide: WorkerService,
-            useClass: MockWorkerService
-          },
-          {
-            provide: WindowRef,
-            useValue: WindowRef
-          },
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(),
-            deps: [HttpClient, Router, UserService]
-          },
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService
-          }
-        ],
-        componentProperties: {
-          workplace: establishment
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      declarations: [],
+      providers: [
+        {
+          provide: WorkerService,
+          useClass: MockWorkerService,
         },
-      })
-    ;
+        {
+          provide: WindowRef,
+          useValue: WindowRef,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+      ],
+      componentProperties: {
+        workplace: establishment,
+      },
+    });
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const workerService = injector.inject(WorkerService) as WorkerService;
@@ -69,7 +63,7 @@ describe('StaffRecordsTab', () => {
     return {
       component,
       establishmentService,
-      workerService
+      workerService,
     };
   }
 
@@ -81,16 +75,15 @@ describe('StaffRecordsTab', () => {
     const { component } = await setup();
     component.fixture.componentInstance.canAddWorker = true;
 
-    component.fixture.detectChanges()
+    component.fixture.detectChanges();
 
     expect(component.queryByTestId('flu-jab')).toBeTruthy();
   });
   it('should not show flu jab when no workers', async () => {
     const { component } = await setup();
     component.fixture.componentInstance.canAddWorker = true;
-    component.fixture.componentInstance.workers = []
-    component.fixture.detectChanges()
+    component.fixture.componentInstance.workers = [];
+    component.fixture.detectChanges();
     expect(component.queryByTestId('flu-jab')).toBeFalsy();
   });
 });
-

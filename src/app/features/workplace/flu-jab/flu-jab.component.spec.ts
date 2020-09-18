@@ -17,43 +17,38 @@ const workerBuilder = build('Worker', {
     id: sequence(),
     uid: fake((f) => f.random.uuid()),
     name: fake((f) => f.name.findName()),
-    fluJab: null
-  }
+    fluJab: null,
+  },
 });
 
-const workerWithFluJab = () => workerBuilder({
-  overrides: {
-    fluJab: oneOf('Yes', 'No', `Don't know`)
-  }
-});
+const workerWithFluJab = () =>
+  workerBuilder({
+    overrides: {
+      fluJab: oneOf('Yes', 'No', 'Don\'t know'),
+    },
+  });
 
 const getFluJabComponent = async () => {
   return render(FluJabComponent, {
-    imports: [
-      FormsModule,
-      ReactiveFormsModule,
-      HttpClientTestingModule,
-      SharedModule,
-      RouterTestingModule
-    ],
+    imports: [FormsModule, ReactiveFormsModule, HttpClientTestingModule, SharedModule, RouterTestingModule],
     providers: [
       {
         provide: WindowRef,
-        useClass: WindowRef
+        useClass: WindowRef,
       },
       {
         provide: EstablishmentService,
-        useClass: MockEstablishmentService
-      }
+        useClass: MockEstablishmentService,
+      },
     ],
   });
-}
+};
 
 const setup = async (workers) => {
   const httpTestingController = TestBed.inject(HttpTestingController);
   const req = httpTestingController.expectOne('/api/establishment/mocked-uid/fluJab');
   req.flush(workers);
-}
+};
 
 describe('FluJabComponent', () => {
   afterEach(() => {
@@ -71,7 +66,7 @@ describe('FluJabComponent', () => {
     fixture.detectChanges();
 
     expect(getByText(worker.name));
-  })
+  });
 
   it('should not select a radio button when worker has not answered question', async () => {
     const worker = workerBuilder();
@@ -83,10 +78,10 @@ describe('FluJabComponent', () => {
     fixture.detectChanges();
 
     const answers = getAllByRole('radio') as any[];
-    const checkedAnswers = answers.map(answer => answer.checked);
+    const checkedAnswers = answers.map((answer) => answer.checked);
 
     expect(checkedAnswers).not.toEqual(jasmine.arrayContaining([true]));
-  })
+  });
 
   it('should pre-select the radio buttons with workers flu jabs', async () => {
     const worker = workerWithFluJab();
@@ -100,7 +95,7 @@ describe('FluJabComponent', () => {
     const selectedRadioButton = fixture.nativeElement.querySelector(`input[value="${worker.fluJab}"]`);
 
     expect(selectedRadioButton.checked).toBeTruthy();
-  })
+  });
 
   it('should put all worker flu jabs', async () => {
     const firstWorker = workerBuilder();
@@ -123,13 +118,13 @@ describe('FluJabComponent', () => {
 
     expect(req.request.body).toEqual([
       {
-        "uid": firstWorker.uid,
-        "fluJab": "Yes"
+        uid: firstWorker.uid,
+        fluJab: 'Yes',
       },
       {
-        "uid": secondWorker.uid,
-        "fluJab": secondWorker.fluJab
-      }
-    ])
-  })
+        uid: secondWorker.uid,
+        fluJab: secondWorker.fluJab,
+      },
+    ]);
+  });
 });

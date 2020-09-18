@@ -35,7 +35,7 @@ export class CreateUserAccountComponent implements OnInit, OnDestroy, AfterViewI
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private workplaceService: WorkplaceService
+    private workplaceService: WorkplaceService,
   ) {}
 
   ngOnInit() {
@@ -82,7 +82,7 @@ export class CreateUserAccountComponent implements OnInit, OnDestroy, AfterViewI
       ]).subscribe(([locationAddress, workplace]) => {
         this.locationAddress = locationAddress;
         this.workplace = workplace;
-      })
+      }),
     );
   }
 
@@ -111,7 +111,7 @@ export class CreateUserAccountComponent implements OnInit, OnDestroy, AfterViewI
       this.workplaceService
         .addWorkplace(
           this.establishmentService.primaryWorkplace.uid,
-          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace)
+          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace),
         )
         .subscribe(
           (response: AddWorkplaceResponse) => {
@@ -122,8 +122,8 @@ export class CreateUserAccountComponent implements OnInit, OnDestroy, AfterViewI
           (response: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
             this.errorSummaryService.scrollToErrorSummary();
-          }
-        )
+          },
+        ),
     );
   }
 

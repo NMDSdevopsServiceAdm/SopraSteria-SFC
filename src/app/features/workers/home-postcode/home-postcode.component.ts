@@ -19,7 +19,7 @@ export class HomePostcodeComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -60,7 +60,7 @@ export class HomePostcodeComponent extends QuestionComponent {
       ? {
           postcode: postcode.value,
         }
-      : {postcode: null};
+      : { postcode: null };
   }
 
   postcodeValidator(control: AbstractControl) {

@@ -7,7 +7,7 @@ const linkToParentRequestQuery = `
   ("LinkToParentUID", "ParentEstablishmentID", "SubEstablishmentID", "PermissionRequest", "ApprovalStatus", "RejectionReason", "CreatedByUserUID", "UpdatedByUserUID")
 VALUES (:linkToParentUid, :parentEstablishmentId, :subEstId, :dataPermissions, :approvalStatus, :rejectionReason, :userUid, :userUid);`;
 
-exports.linkToParentRequest = async params =>
+exports.linkToParentRequest = async (params) =>
   db.query(linkToParentRequestQuery, {
     replacements: {
       linkToParentUid: params.linkToParentUID,
@@ -30,7 +30,7 @@ const getLinkToParentRequestQuery = `
     LIMIT :limit;
   `;
 
-exports.getLinkToParentRequest = async params =>
+exports.getLinkToParentRequest = async (params) =>
   db.query(getLinkToParentRequestQuery, {
     replacements: {
       subEstId: params.subEstablishmentId,
@@ -46,7 +46,7 @@ const checkAlreadyRequestedLinkToParentQuery = `
   AND "ApprovalStatus" = :status;
   `;
 
-exports.checkAlreadyRequestedLinkToParent = async params =>
+exports.checkAlreadyRequestedLinkToParent = async (params) =>
   db.query(checkAlreadyRequestedLinkToParentQuery, {
     replacements: {
       subEstId: params.subEstablishmentId,
@@ -55,13 +55,13 @@ exports.checkAlreadyRequestedLinkToParent = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-  const getRecipientUserDetailsQuery = `
+const getRecipientUserDetailsQuery = `
   select "UserUID" from cqc."Establishment" est
   LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
   JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
   WHERE :estID = est."EstablishmentUID" AND (individual."UserRoleValue" = :userRole OR individual."UserRoleValue" = :userAdmin) AND est."IsParent" = :isParent `;
 
-exports.getRecipientUserDetails = async params =>
+exports.getRecipientUserDetails = async (params) =>
   db.query(getRecipientUserDetailsQuery, {
     replacements: {
       estID: params.parentWorkplaceUId,
@@ -77,7 +77,7 @@ const getLinkToParentDetailsQuery = `
   FROM cqc."LinkToParent"
   WHERE "SubEstablishmentID" = :subEstId ORDER BY "created" DESC LIMIT :limit;
   `;
-exports.getLinkToParentDetails = async params =>
+exports.getLinkToParentDetails = async (params) =>
   db.query(getLinkToParentDetailsQuery, {
     replacements: {
       subEstId: params.subEstablishmentId,
@@ -90,7 +90,7 @@ const getLinkToParentUidQuery = `
   select "LinkToParentUID" from cqc."LinkToParent" where
   "SubEstablishmentID" = :estID AND "ApprovalStatus" = :approvalStatus`;
 
-exports.getLinkToParentUid = async params =>
+exports.getLinkToParentUid = async (params) =>
   db.query(getLinkToParentUidQuery, {
     replacements: {
       estID: params.establishmentId,
@@ -104,7 +104,7 @@ const updatedLinkToParentQuery = `
 SET "ApprovalStatus" = :approvalStatus, "RejectionReason" = :rejectionReason
 WHERE "LinkToParentUID" = :uid;`;
 
-exports.updatedLinkToParent = async params =>
+exports.updatedLinkToParent = async (params) =>
   db.query(updatedLinkToParentQuery, {
     replacements: {
       uid: params.linkToParentUid,
@@ -121,7 +121,7 @@ const updateLinkToParentQuery = `
   JOIN cqc."Establishment" as parent on sub."ParentEstablishmentID" =  parent."EstablishmentID"
   where "LinkToParentUID" = :uid `;
 
-exports.updateLinkToParent = async params =>
+exports.updateLinkToParent = async (params) =>
   db.query(updateLinkToParentQuery, {
     replacements: {
       uid: params.linkToParentUid,
@@ -136,7 +136,7 @@ const getNotificationDetailsQuery = `
   JOIN cqc."Establishment" as parent on sub."ParentEstablishmentID" =  parent."EstablishmentID"
   where "LinkToParentUID" = :uid `;
 
-exports.getNotificationDetails = async params =>
+exports.getNotificationDetails = async (params) =>
   db.query(getNotificationDetailsQuery, {
     replacements: {
       uid: params.typeUid,
@@ -150,7 +150,7 @@ const getSubEstablishmentNameQuery = `
   JOIN cqc."Establishment" as parent on sub."SubEstablishmentID" =  parent."EstablishmentID"
   where "LinkToParentUID" = :uid `;
 
-exports.getSubEstablishmentName = async params =>
+exports.getSubEstablishmentName = async (params) =>
   db.query(getSubEstablishmentNameQuery, {
     replacements: {
       uid: params.typeUid,
@@ -164,7 +164,7 @@ const checkLinkToParentUidQuery = `
   JOIN cqc."LinkToParent" as link on notify."typeUid" =  link."LinkToParentUID"
   where "notificationUid" = :notificationUid `;
 
-exports.checkLinkToParentUid = async params =>
+exports.checkLinkToParentUid = async (params) =>
   db.query(checkLinkToParentUidQuery, {
     replacements: {
       notificationUid: params.notificationUid,
@@ -177,7 +177,7 @@ const updateNotificationQuery = `
   SET "isViewed" = :isViewed
   WHERE "Notifications"."notificationUid" = :notificationUid`;
 
-exports.updateNotification = async params =>
+exports.updateNotification = async (params) =>
   db.query(updateNotificationQuery, {
     replacements: {
       notificationUid: params.notificationUid,
@@ -192,7 +192,7 @@ const getSubUserDetailsQuery = `
   JOIN cqc."User" individual ON individual."EstablishmentID" = COALESCE(parent."EstablishmentID", est."EstablishmentID")
   WHERE :estID = est."EstablishmentUID" AND individual."UserRoleValue" = :userRole AND est."IsParent" = :isParent `;
 
-exports.getSubUserDetails = async params =>
+exports.getSubUserDetails = async (params) =>
   db.query(getSubUserDetailsQuery, {
     replacements: {
       estID: params.parentWorkplaceUId,
@@ -207,7 +207,7 @@ const updatedLinkToParentIdQuery = `
 SET "ParentID" = :parentId, "ParentUID" = :parentUid, "DataPermissions" = :permissionRequest
 WHERE "EstablishmentID" = :estID;`;
 
-exports.updatedLinkToParentId = async params =>
+exports.updatedLinkToParentId = async (params) =>
   db.query(updatedLinkToParentIdQuery, {
     replacements: {
       parentId: params.parentEstablishmentId,
@@ -223,7 +223,7 @@ const getParentUidQuery = `
   FROM cqc."Establishment"
   WHERE "EstablishmentID" = :subEstId;
   `;
-exports.getParentUid = async params =>
+exports.getParentUid = async (params) =>
   db.query(getParentUidQuery, {
     replacements: {
       subEstId: params.parentEstablishmentId,
@@ -236,7 +236,7 @@ const getPermissionRequestQuery = `
   FROM cqc."LinkToParent"
   WHERE "LinkToParentUID" = :linkToParentUid;
   `;
-exports.getPermissionRequest = async params =>
+exports.getPermissionRequest = async (params) =>
   db.query(getPermissionRequestQuery, {
     replacements: {
       linkToParentUid: params.linkToParentUid,
@@ -249,7 +249,7 @@ const delinkParentQuery = `
 SET "ParentID" = :parentId, "ParentUID" = :parentUid
 WHERE "EstablishmentID" = :estID;`;
 
-exports.delinkParent = async params =>
+exports.delinkParent = async (params) =>
   db.query(delinkParentQuery, {
     replacements: {
       estID: params.establishmentId,
@@ -264,7 +264,7 @@ SELECT "EstablishmentID", "IsParent", "ParentID", "ParentUID"
 FROM cqc."Establishment"
 WHERE "EstablishmentID" = :estID;
   `;
-exports.getLastDeLinkToParentRequest = async params =>
+exports.getLastDeLinkToParentRequest = async (params) =>
   db.query(getLastDeLinkToParentRequestQuery, {
     replacements: {
       estID: params.establishmentId,
@@ -272,12 +272,12 @@ exports.getLastDeLinkToParentRequest = async params =>
     type: db.QueryTypes.SELECT,
   });
 
-  const getParentNameQuery = `
+const getParentNameQuery = `
   SELECT "NameValue"
   FROM cqc."Establishment"
   WHERE "EstablishmentID" = :parentEstablishmentId;
   `;
-exports.getParentName = async params =>
+exports.getParentName = async (params) =>
   db.query(getParentNameQuery, {
     replacements: {
       parentEstablishmentId: params.parentEstablishmentId,

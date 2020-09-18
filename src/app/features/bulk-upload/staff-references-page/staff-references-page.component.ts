@@ -35,22 +35,22 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(establishmentService, bulkUploadService, router, formBuilder, errorSummaryService);
 
     this.subscriptions.add(
       this.router.events
         .pipe(
-          filter(event => event instanceof NavigationEnd),
+          filter((event) => event instanceof NavigationEnd),
           map(() => this.activatedRoute),
-          filter(route => !route.snapshot.fragment),
-          map(route => route.snapshot.data)
+          filter((route) => !route.snapshot.fragment),
+          map((route) => route.snapshot.data),
         )
-        .subscribe(data => {
+        .subscribe((data) => {
           this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
           this.references = data.references;
-          this.workPlaceReferences = _filter(data.workplaceReferences, reference => {
+          this.workPlaceReferences = _filter(data.workplaceReferences, (reference) => {
             if (this.primaryWorkplace.isParent) {
               return reference.dataOwner === WorkplaceDataOwner.Parent || reference.uid === this.primaryWorkplace.uid;
             } else {
@@ -73,7 +73,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
           }
           this.setNextRoute();
           this.setBackLink();
-        })
+        }),
     );
   }
 
@@ -117,8 +117,8 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
               this.router.navigate(['/bulk-upload/workplace-references']);
             }
           },
-          (error: HttpErrorResponse) => this.onError(error)
-        )
+          (error: HttpErrorResponse) => this.onError(error),
+        ),
     );
   }
 }

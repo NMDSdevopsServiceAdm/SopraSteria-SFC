@@ -1,35 +1,39 @@
 /* jshint indent: 2 */
 
-module.exports = function(sequelize, DataTypes) {
-  const EstablishmentCapacity = sequelize.define('establishmentCapacity', {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true,
-      field: '"EstablishmentCapacityID"'
+module.exports = function (sequelize, DataTypes) {
+  const EstablishmentCapacity = sequelize.define(
+    'establishmentCapacity',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+        field: '"EstablishmentCapacityID"',
+      },
+      serviceCapacityId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: '"ServiceCapacityID"',
+      },
+      establishmentId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: '"EstablishmentID"',
+      },
+      answer: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: '"Answer"',
+      },
     },
-    serviceCapacityId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      field: '"ServiceCapacityID"'
+    {
+      tableName: '"EstablishmentCapacity"',
+      schema: 'cqc',
+      createdAt: false,
+      updatedAt: false,
     },
-    establishmentId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      field: '"EstablishmentID"'
-    },
-    answer: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      field: '"Answer"'
-    }
-  }, {
-    tableName: '"EstablishmentCapacity"',
-    schema: 'cqc',
-    createdAt: false,
-    updatedAt: false
-  });
+  );
 
   EstablishmentCapacity.associate = (models) => {
     // EstablishmentCapacity.hasOne(models.serviceCapacity, {
@@ -41,7 +45,7 @@ module.exports = function(sequelize, DataTypes) {
     EstablishmentCapacity.belongsTo(models.serviceCapacity, {
       foreignKey: 'serviceCapacityId',
       targetKey: 'id',
-      as: 'reference'
+      as: 'reference',
     });
   };
 

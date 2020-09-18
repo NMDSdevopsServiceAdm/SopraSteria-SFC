@@ -7,9 +7,8 @@ describe('FileValidateStatusComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FileValidateStatusComponent ]
-    })
-    .compileComponents();
+      declarations: [FileValidateStatusComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

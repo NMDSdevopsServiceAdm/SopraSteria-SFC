@@ -126,9 +126,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { click, getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        {provide: PermissionsService, useValue: mockPermissionsService}
-      ],
+      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: [trainingCategory],
@@ -160,9 +158,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { click, getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        {provide: PermissionsService, useValue: mockPermissionsService}
-      ],
+      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: [trainingCategory],
@@ -175,7 +171,6 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(container.queryAllByText('Update').length).toBe(0);
   });
 
-
   it('should list by Expired as default', async () => {
     const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
       can: sinon.stub().returns(true),
@@ -184,7 +179,8 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     const workplace = establishmentBuilder() as Establishment;
 
     const trainingCategories = [
-      trainingCategoryBuilder({ // expired
+      trainingCategoryBuilder({
+        // expired
         overrides: {
           category: 'B Category Name',
           training: [
@@ -196,7 +192,8 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           ],
         },
       }),
-      trainingCategoryBuilder({ // expiring
+      trainingCategoryBuilder({
+        // expiring
         overrides: {
           category: 'A Category Name',
           training: [
@@ -208,7 +205,8 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           ],
         },
       }),
-      trainingCategoryBuilder({  // up to date
+      trainingCategoryBuilder({
+        // up to date
         overrides: {
           category: 'C Category Name',
           training: [
@@ -220,7 +218,8 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           ],
         },
       }),
-      trainingCategoryBuilder({  // Missing
+      trainingCategoryBuilder({
+        // Missing
         overrides: {
           category: 'D Category Name',
           training: [missingTrainingBuilder()],
@@ -230,9 +229,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        { provide: PermissionsService, useValue: mockPermissionsService },
-      ],
+      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
       componentProperties: {
         workplace,
         trainingCategories,
@@ -241,7 +238,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     fixture.detectChanges();
 
-    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
+    const rows = fixture.nativeElement.querySelectorAll('table[data-testid=\'training-category-table\'] tbody tr');
 
     expect(rows.length).toBe(4);
     expect(rows[0].innerHTML).toContain('1 Expired');
@@ -257,7 +254,8 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     const workplace = establishmentBuilder() as Establishment;
 
     const trainingCategories = [
-      trainingCategoryBuilder({ // expired
+      trainingCategoryBuilder({
+        // expired
         overrides: {
           category: 'B Category Name',
           training: [
@@ -269,7 +267,8 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           ],
         },
       }),
-      trainingCategoryBuilder({ // expiring
+      trainingCategoryBuilder({
+        // expiring
         overrides: {
           category: 'A Category Name',
           training: [
@@ -281,7 +280,8 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           ],
         },
       }),
-      trainingCategoryBuilder({  // up to date
+      trainingCategoryBuilder({
+        // up to date
         overrides: {
           category: 'C Category Name',
           training: [
@@ -293,7 +293,8 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           ],
         },
       }),
-      trainingCategoryBuilder({  // Missing
+      trainingCategoryBuilder({
+        // Missing
         overrides: {
           category: 'D Category Name',
           training: [missingTrainingBuilder()],
@@ -301,12 +302,9 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       }),
     ];
 
-
     const { fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        { provide: PermissionsService, useValue: mockPermissionsService },
-      ],
+      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
       componentProperties: {
         workplace,
         trainingCategories,
@@ -315,10 +313,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     fixture.detectChanges();
     const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortBy')).nativeElement;
-    select.value = select.options[1].value;  // Expiring Soon
+    select.value = select.options[1].value; // Expiring Soon
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    let rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
+    let rows = fixture.nativeElement.querySelectorAll('table[data-testid=\'training-category-table\'] tbody tr');
 
     expect(rows.length).toBe(4);
     expect(rows[0].innerHTML).toContain('A Category Name');
@@ -326,10 +324,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(rows[2].innerHTML).toContain('C Category Name');
     expect(rows[3].innerHTML).toContain('D Category Name');
 
-    select.value = select.options[2].value;  //Missing
+    select.value = select.options[2].value; //Missing
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
+    rows = fixture.nativeElement.querySelectorAll('table[data-testid=\'training-category-table\'] tbody tr');
     expect(rows[0].innerHTML).toContain('D Category Name');
     expect(rows[1].innerHTML).toContain('A Category Name');
     expect(rows[2].innerHTML).toContain('B Category Name');

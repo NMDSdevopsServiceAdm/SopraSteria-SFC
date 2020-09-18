@@ -11,7 +11,7 @@ import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-cqc-status-change',
-  templateUrl: './cqc-status-change.component.html'
+  templateUrl: './cqc-status-change.component.html',
 })
 export class CqcStatusChangeComponent implements OnInit {
   @Output() removeCqcStatusChanges: EventEmitter<any> = new EventEmitter<any>();
@@ -25,7 +25,7 @@ export class CqcStatusChangeComponent implements OnInit {
     public cqcStatusChangeService: CqcStatusChangeService,
     public switchWorkplaceService: SwitchWorkplaceService,
     public dialogService: DialogService,
-    public alertService: AlertService
+    public alertService: AlertService,
   ) {}
   ngOnInit() {
     this.cqcStatusChangeForm = new FormGroup({});
@@ -42,16 +42,15 @@ export class CqcStatusChangeComponent implements OnInit {
     event.preventDefault();
 
     this.dialogService
-      .open(CqcConfirmationDialogComponent,
-        {
-          orgName: this.cqcStatusChange.orgName,
-          headingText: approve ? 'You\'re about to approve this request.' : 'You\'re about to reject this request.',
-          paragraphText: approve
-            ? `If you do this, ${this.cqcStatusChange.orgName} will be flagged as CQC regulated and their new main service will be ${this.cqcStatusChange.data.requestedService.name}.`
-            : `If you do this, ${this.cqcStatusChange.orgName} will not be flagged as CQC regulated and their main service will still be ${this.cqcStatusChange.data.currentService.name}.`,
-          buttonText: approve ? 'Approve this change' : 'Reject this change'
-        })
-      .afterClosed.subscribe(approveConfirmed => {
+      .open(CqcConfirmationDialogComponent, {
+        orgName: this.cqcStatusChange.orgName,
+        headingText: approve ? "You're about to approve this request." : "You're about to reject this request.",
+        paragraphText: approve
+          ? `If you do this, ${this.cqcStatusChange.orgName} will be flagged as CQC regulated and their new main service will be ${this.cqcStatusChange.data.requestedService.name}.`
+          : `If you do this, ${this.cqcStatusChange.orgName} will not be flagged as CQC regulated and their main service will still be ${this.cqcStatusChange.data.currentService.name}.`,
+        buttonText: approve ? 'Approve this change' : 'Reject this change',
+      })
+      .afterClosed.subscribe((approveConfirmed) => {
         if (approveConfirmed) {
           this.approveOrRejectRequest();
         }
@@ -86,7 +85,7 @@ export class CqcStatusChangeComponent implements OnInit {
         if (err instanceof HttpErrorResponse) {
           this.populateErrorFromServer(err);
         }
-      }
+      },
     );
   }
 

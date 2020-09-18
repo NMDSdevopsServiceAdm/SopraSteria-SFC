@@ -10,24 +10,18 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 describe('SelectMainServiceCQCComponent', () => {
   async function setup() {
-    const component =  await render(SelectMainServiceCqcComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        ReactiveFormsModule
-      ],
+    const component = await render(SelectMainServiceCqcComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService
+          useClass: MockEstablishmentService,
         },
-      ]
+      ],
     });
 
     return {
-      component
+      component,
     };
   }
 

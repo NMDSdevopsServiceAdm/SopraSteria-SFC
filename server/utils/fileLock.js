@@ -3,24 +3,23 @@ const config = require('../config/config');
 const models = require('../models/');
 const uuid = require('uuid');
 const s3 = new AWS.S3({
-  region: String(config.get('bulkupload.region'))
+  region: String(config.get('bulkupload.region')),
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 // Prevent multiple report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
 const reportsAvailable = ['la', 'training'];
-const Sentry = require("@sentry/node");
+const Sentry = require('@sentry/node');
 
 const fileLock = {
-
-  acquireLock: async function(reportType, logic, onUser, req, res) {
+  acquireLock: async function (reportType, logic, onUser, req, res) {
     let errorMessage = null;
     let successMessage = null;
     if (!reportsAvailable.includes(reportType)) {
       console.error('Lock *NOT* acquired.');
       if (res !== null) {
         res.status(500).send({
-          message: `reportType not correct`
+          message: `reportType not correct`,
         });
       }
       return;
@@ -47,7 +46,7 @@ const fileLock = {
     if (currentLockState[1] === 0) {
       console.error('Lock *NOT* acquired.');
       res.status(409).send({
-        message: errorMessage
+        message: errorMessage,
       });
       return;
     }
@@ -55,14 +54,13 @@ const fileLock = {
     req.buRequestId = String(uuid()).toLowerCase();
     res.status(200).send({
       message: successMessage,
-      requestId: req.buRequestId
+      requestId: req.buRequestId,
     });
 
     // run whatever the original logic was
     try {
       await logic(req, res);
-    } catch (e) {
-    }
+    } catch (e) {}
 
     // release the lock
     await fileLock.releaseLock(reportType, onUser, req, null);
@@ -74,7 +72,7 @@ const fileLock = {
       console.error('Lock *NOT* acquired.');
       if (res !== null) {
         res.status(500).send({
-          message: `reportType not correct`
+          message: `reportType not correct`,
         });
       }
       return;
@@ -91,7 +89,7 @@ const fileLock = {
     }
     if (res !== null) {
       res.status(200).send({
-        IDLockOn
+        IDLockOn,
       });
     }
   },
@@ -100,18 +98,20 @@ const fileLock = {
     if (!Number.isInteger(statusCode) || statusCode < 100) {
       statusCode = 500;
     }
-    return s3.putObject({
-      Bucket,
-      Key: `${req.userUid}/intermediary/${req.buRequestId}.json`,
-      Body: JSON.stringify({
-        url: req.url,
-        startTime: req.startTime,
-        endTime: new Date().toISOString(),
-        responseCode: statusCode,
-        responseBody: body,
-        responseHeaders: typeof headers === 'object' ? headers : undefined
+    return s3
+      .putObject({
+        Bucket,
+        Key: `${req.userUid}/intermediary/${req.buRequestId}.json`,
+        Body: JSON.stringify({
+          url: req.url,
+          startTime: req.startTime,
+          endTime: new Date().toISOString(),
+          responseCode: statusCode,
+          responseBody: body,
+          responseHeaders: typeof headers === 'object' ? headers : undefined,
+        }),
       })
-    }).promise();
+      .promise();
   },
 
   responseGet: async (req, res) => {
@@ -119,7 +119,7 @@ const fileLock = {
     const buRequestId = String(req.params.buRequestId).toLowerCase();
     if (!uuidRegex.test(buRequestId)) {
       res.status(400).send({
-        message: 'request id must be a uuid'
+        message: 'request id must be a uuid',
       });
       return;
     }
@@ -141,17 +141,19 @@ const fileLock = {
     } catch (err) {
       console.error('Report::responseGet: getting data returned an error:', err);
       res.status(404).send({
-        message: 'Not Found'
+        message: 'Not Found',
       });
       Sentry.captureException(err);
     }
   },
 
   getS3: async (key) => {
-    const data = await s3.getObject({
-      Bucket,
-      Key: key
-    }).promise();
+    const data = await s3
+      .getObject({
+        Bucket,
+        Key: key,
+      })
+      .promise();
     return JSON.parse(data.Body.toString());
   },
 
@@ -159,16 +161,16 @@ const fileLock = {
     let IDLockOn = null;
     let currentLockState = null;
     res.setTimeout(1000, () => {
-        res.status(200).send({
-          IDLockOn: req.query.subEstId || req.establishmentId,
-          reportLockHeld: true
-        });
+      res.status(200).send({
+        IDLockOn: req.query.subEstId || req.establishmentId,
+        reportLockHeld: true,
+      });
     });
 
     if (!reportsAvailable.includes(reportType)) {
       console.error('Lock *NOT* acquired.');
       res.status(500).send({
-        message: `reportType not correct`
+        message: `reportType not correct`,
       });
       return;
     }
@@ -176,36 +178,44 @@ const fileLock = {
 
     if (onUser) {
       IDLockOn = req.userUid;
-      currentLockState = await models.user.findAll({
-        attributes: [['UserUID', 'idLockOn'], [LockHeldTitle, 'reportLockHeld']],
-        where: {
-          uid: IDLockOn
-        }
-      }).then(res => {
-        return res.map(row => {
-          return row.dataValues;
+      currentLockState = await models.user
+        .findAll({
+          attributes: [
+            ['UserUID', 'idLockOn'],
+            [LockHeldTitle, 'reportLockHeld'],
+          ],
+          where: {
+            uid: IDLockOn,
+          },
+        })
+        .then((res) => {
+          return res.map((row) => {
+            return row.dataValues;
+          });
         });
-      });
-
     } else {
       IDLockOn = req.query.subEstId || req.establishmentId;
-      currentLockState = await models.establishment.findAll({
-        attributes: [['EstablishmentID', 'idLockOn'], [LockHeldTitle, 'reportLockHeld']],
-        where: {
-          id: IDLockOn
-        }
-      }).then(res => {
-        return res.map(row => {
-          return row.dataValues;
+      currentLockState = await models.establishment
+        .findAll({
+          attributes: [
+            ['EstablishmentID', 'idLockOn'],
+            [LockHeldTitle, 'reportLockHeld'],
+          ],
+          where: {
+            id: IDLockOn,
+          },
+        })
+        .then((res) => {
+          return res.map((row) => {
+            return row.dataValues;
+          });
         });
-      });
-
     }
     if (currentLockState.length > 0) {
       return res.status(200).send(currentLockState[0]);
     }
     return res.status(200).send({ IDLockOn, reportLockHeld: true });
-  }
+  },
 };
 module.exports.acquireLock = fileLock.acquireLock;
 module.exports.releaseLock = fileLock.releaseLock;

@@ -5,16 +5,16 @@ const httpMocks = require('node-mocks-http');
 const models = require('../../../../models');
 const permissions = require('../../../../routes/establishments/permissions').permissions;
 const buildUser = require('../../../factories/user');
-const {establishmentBuilder} = require('../../../factories/models');
+const { establishmentBuilder } = require('../../../factories/models');
 
 describe.skip('permissions route', () => {
   const user = buildUser();
 
   user.created = {
-    toJSON: () => {}
+    toJSON: () => {},
   };
   user.updated = {
-    toJSON: () => {}
+    toJSON: () => {},
   };
 
   beforeEach(() => {
@@ -47,7 +47,7 @@ describe.skip('permissions route', () => {
     req.isParent = user.isParent;
     req.establishment = {
       id: user.establishmentId,
-      uid:  user.establishment.uid
+      uid: user.establishment.uid,
     };
 
     const res = httpMocks.createResponse();
@@ -63,7 +63,7 @@ describe.skip('permissions route', () => {
   it('should not return canBecomeParent permission if pending requests', async () => {
     sinon.stub(models.Approvals, 'findOne').callsFake(() => {
       return {
-        id: 123
+        id: 123,
       };
     });
 
@@ -79,7 +79,7 @@ describe.skip('permissions route', () => {
     req.isParent = user.isParent;
     req.establishment = {
       id: user.establishmentId,
-      uid:  user.establishment.uid
+      uid: user.establishment.uid,
     };
 
     const res = httpMocks.createResponse();

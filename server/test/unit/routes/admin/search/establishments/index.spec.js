@@ -35,8 +35,8 @@ describe('server/routes/admin/search/establishments', () => {
             login: {
               username: 'thisperson9',
               status: 'Locked',
-            }
-          }
+            },
+          },
         ],
         updated: '2019-10-07T08:49:30.625Z',
       },
@@ -69,34 +69,36 @@ describe('server/routes/admin/search/establishments', () => {
 
     const response = res._getJSONData();
 
-    expect(response).to.deep.equal([{
-      uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-      name: '123444',
-      nmdsId: 'J1002343',
-      locationId: '1-23456789',
-      address1: '44',
-      address2: 'Grace St',
-      town: 'Leeds',
-      county: 'West Yorkshire',
-      postcode: 'WF14 9TS',
-      isParent: false,
-      isRegulated: false,
-      dataOwner: 'Workplace',
-      parent: {
-        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
-        nmdsId: 'W-1234567',
-      },
-      users: [
-        {
-          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-          username: 'thisperson9',
-          name: 'Test Name',
-          securityQuestion: 'Test Security Question',
-          securityAnswer: 'Test Security Question Answer',
-          isLocked: true,
+    expect(response).to.deep.equal([
+      {
+        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+        name: '123444',
+        nmdsId: 'J1002343',
+        locationId: '1-23456789',
+        address1: '44',
+        address2: 'Grace St',
+        town: 'Leeds',
+        county: 'West Yorkshire',
+        postcode: 'WF14 9TS',
+        isParent: false,
+        isRegulated: false,
+        dataOwner: 'Workplace',
+        parent: {
+          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
+          nmdsId: 'W-1234567',
         },
-      ],
-      lastUpdated: '2019-10-07T08:49:30.625Z'
-    }]);
+        users: [
+          {
+            uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+            username: 'thisperson9',
+            name: 'Test Name',
+            securityQuestion: 'Test Security Question',
+            securityAnswer: 'Test Security Question Answer',
+            isLocked: true,
+          },
+        ],
+        lastUpdated: '2019-10-07T08:49:30.625Z',
+      },
+    ]);
   });
 });

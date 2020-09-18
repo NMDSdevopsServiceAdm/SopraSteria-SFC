@@ -20,7 +20,7 @@ export class DownloadDataFilesComponent {
       .getDataCSV(this.establishmentService.establishmentId, type)
       .pipe(take(1))
       .subscribe(
-        response => {
+        (response) => {
           // TODO: Possibly extract this out into a helper function
           //       to get the filename from a response header
           const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
@@ -29,7 +29,7 @@ export class DownloadDataFilesComponent {
           const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
           saveAs(blob, filename);
         },
-        () => {}
+        () => {},
       );
   }
 }

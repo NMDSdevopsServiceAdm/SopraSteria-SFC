@@ -3,6 +3,6 @@ export class CqcRegisteredQuestionEnteredLocation {
     public registeredQuestionSelected = '',
     public cqcRegisteredPostcode = '',
     public locationId = '',
-    public notRegisteredPostcode = ''
+    public notRegisteredPostcode = '',
   ) {}
 }

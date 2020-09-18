@@ -58,7 +58,10 @@
         </li>
       </ul>
 
-      <section class="govuk-tabs__panel has-border" *ngIf="form.type !== 'registrations' && form.type !== 'parent-requests' && form.type !== 'cqc-status-changes' ">
+      <section
+        class="govuk-tabs__panel has-border"
+        *ngIf="form.type !== 'registrations' && form.type !== 'parent-requests' && form.type !== 'cqc-status-changes'"
+      >
         <form (ngSubmit)="onSubmit()" novalidate id="server-error">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -182,13 +185,15 @@
                   </label>
                   <div class="govuk-checkboxes">
                     <div class="govuk-checkboxes__item">
-                      <input id="parent"
-                      name="parent"
-                      [(ngModel)]="form.parent"
-                      class="govuk-checkboxes__input"
-                      type="checkbox"
-                      value="true"
-                      [class.govuk-select--error]="form.errors && form.errors.length">
+                      <input
+                        id="parent"
+                        name="parent"
+                        [(ngModel)]="form.parent"
+                        class="govuk-checkboxes__input"
+                        type="checkbox"
+                        value="true"
+                        [class.govuk-select--error]="form.errors && form.errors.length"
+                      />
                       <label class="govuk-label govuk-checkboxes__label" for="parent">
                         Only search for parents
                       </label>
@@ -218,7 +223,9 @@
       </div>
     </div>
 
-    <p class="govuk-!-font-weight-bold" *ngIf="results && results.length">Your search returned {{ results.length | number }} results.</p>
+    <p class="govuk-!-font-weight-bold" *ngIf="results && results.length">
+      Your search returned {{ results.length | number }} results.
+    </p>
 
     <div *ngIf="form.type === 'users'">
       <table class="govuk-table" *ngIf="results && results.length" data-testid="user-search-results">
@@ -233,23 +240,19 @@
         </thead>
         <tbody class="govuk-table__body">
           <ng-container *ngFor="let item of results; index as index">
-            <tr class="govuk-table__row" >
+            <tr class="govuk-table__row">
               <td class="govuk-table__cell">{{ item.name }}</td>
               <td class="govuk-table__cell">{{ item.username }}</td>
               <td class="govuk-table__cell">
                 <a (click)="setEstablishmentId(item.establishment.uid, item.username, null, $event)" href="#">{{
                   item.establishment.nmdsId
                 }}</a>
-
               </td>
               <td class="govuk-table__cell">{{ item.establishment.postcode }}</td>
               <td class="govuk-table__cell">
-                <a
-                  class="govuk-link--no-visited-state"
-                  href="#"
-                  (click)="toggleDetails(item.uid, $event)"
-                  >{{ workerDetailsLabel[item.uid] ? workerDetailsLabel[item.uid] : 'Open' }}</a
-                >
+                <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(item.uid, $event)">{{
+                  workerDetailsLabel[item.uid] ? workerDetailsLabel[item.uid] : 'Open'
+                }}</a>
               </td>
             </tr>
             <tr *ngIf="workerDetails[item.uid]" class="govuk-panel--gray">
@@ -257,11 +260,11 @@
                 <div class="govuk-!-margin-2">
                   <table class="govuk-table">
                     <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Location ID</th>
-                          <th class="govuk-table__header govuk-!-width-one-half" scope="col">Workplace</th>
-                          <th class="govuk-table__header govuk-!-width-one-third" scope="col">&nbsp;</th>
-                        </tr>
+                      <tr class="govuk-table__row">
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Location ID</th>
+                        <th class="govuk-table__header govuk-!-width-one-half" scope="col">Workplace</th>
+                        <th class="govuk-table__header govuk-!-width-one-third" scope="col">&nbsp;</th>
+                      </tr>
                     </thead>
                     <tbody class="govuk-table__body">
                       <tr class="govuk-table__row govuk-util__vertical-align-top">
@@ -269,9 +272,11 @@
                           {{ item.establishment.locationId }}
                         </td>
                         <td class="govuk-table__cell">
-                          <a (click)="setEstablishmentId(item.establishment.uid, item.username, null, $event)" href="#">{{
-                            item.establishment.name
-                          }}</a>
+                          <a
+                            (click)="setEstablishmentId(item.establishment.uid, item.username, null, $event)"
+                            href="#"
+                            >{{ item.establishment.name }}</a
+                          >
                         </td>
                         <th class="govuk-table__cell" scope="col">&nbsp;</th>
                       </tr>
@@ -281,11 +286,11 @@
                 <div class="govuk-!-margin-2">
                   <table class="govuk-table">
                     <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Security question</th>
-                          <th class="govuk-table__header govuk-!-width-one-half" scope="col">Answer</th>
-                          <th class="govuk-table__header govuk-!-width-one-third" scope="col">Locked</th>
-                        </tr>
+                      <tr class="govuk-table__row">
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Security question</th>
+                        <th class="govuk-table__header govuk-!-width-one-half" scope="col">Answer</th>
+                        <th class="govuk-table__header govuk-!-width-one-third" scope="col">Locked</th>
+                      </tr>
                     </thead>
                     <tbody class="govuk-table__body">
                       <tr class="govuk-table__row govuk-util__vertical-align-top">
@@ -296,7 +301,12 @@
                           {{ item.securityQuestionAnswer }}
                         </td>
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
-                          <a (click)="unlockUser(item.username, index, $event)" href="#" *ngIf="item.isLocked else notLocked">Yes, unlock</a>
+                          <a
+                            (click)="unlockUser(item.username, index, $event)"
+                            href="#"
+                            *ngIf="item.isLocked; else notLocked"
+                            >Yes, unlock</a
+                          >
                           <ng-template #notLocked>No</ng-template>
                         </td>
                       </tr>
@@ -333,12 +343,9 @@
               <td class="govuk-table__cell">{{ item.locationId || '-' }}</td>
               <td class="govuk-table__cell">-</td>
               <td class="govuk-table__cell">
-                <a
-                  class="govuk-link--no-visited-state"
-                  href="#"
-                  (click)="toggleDetails(item.uid, $event)"
-                  >{{ workerDetailsLabel[item.uid] ? workerDetailsLabel[item.uid] : 'Open' }}</a
-                >
+                <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(item.uid, $event)">{{
+                  workerDetailsLabel[item.uid] ? workerDetailsLabel[item.uid] : 'Open'
+                }}</a>
               </td>
             </tr>
             <tr *ngIf="workerDetails[item.uid]" class="govuk-panel--gray">
@@ -346,12 +353,12 @@
                 <div class="govuk-!-margin-2">
                   <table class="govuk-table">
                     <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                          <th class="govuk-table__header govuk-!-width-one-third" scope="col">Address</th>
-                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Parent ID</th>
-                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Regulated</th>
-                          <th class="govuk-table__header" scope="col">Data Owner</th>
-                        </tr>
+                      <tr class="govuk-table__row">
+                        <th class="govuk-table__header govuk-!-width-one-third" scope="col">Address</th>
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Parent ID</th>
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Regulated</th>
+                        <th class="govuk-table__header" scope="col">Data Owner</th>
+                      </tr>
                     </thead>
                     <tbody class="govuk-table__body">
                       <tr class="govuk-table__row govuk-util__vertical-align-top">
@@ -359,8 +366,10 @@
                           {{ displayAddress(item) }}
                         </td>
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
-                          <ng-container *ngIf="item.parent?.nmdsId else noParentID">
-                            <a (click)="setEstablishmentId(item.parent.uid, '', item.parent.nmdsId, $event)" href="#">{{ item.parent.nmdsId }}</a>
+                          <ng-container *ngIf="item.parent?.nmdsId; else noParentID">
+                            <a (click)="setEstablishmentId(item.parent.uid, '', item.parent.nmdsId, $event)" href="#">{{
+                              item.parent.nmdsId
+                            }}</a>
                           </ng-container>
 
                           <ng-template #noParentID>-</ng-template>
@@ -378,15 +387,18 @@
                 <div class="govuk-!-margin-2" *ngIf="item.users.length > 0">
                   <table class="govuk-table">
                     <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                          <th class="govuk-table__header govuk-!-width-one-third" scope="col">Users</th>
-                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Security question</th>
-                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Answer</th>
-                          <th class="govuk-table__header" scope="col">Locked</th>
-                        </tr>
+                      <tr class="govuk-table__row">
+                        <th class="govuk-table__header govuk-!-width-one-third" scope="col">Users</th>
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Security question</th>
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Answer</th>
+                        <th class="govuk-table__header" scope="col">Locked</th>
+                      </tr>
                     </thead>
                     <tbody class="govuk-table__body">
-                      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let user of item.users; index as userIndex">
+                      <tr
+                        class="govuk-table__row govuk-util__vertical-align-top"
+                        *ngFor="let user of item.users; index as userIndex"
+                      >
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
                           {{ user.name }}
                         </td>
@@ -397,7 +409,12 @@
                           {{ user.securityAnswer }}
                         </td>
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
-                          <a (click)="unlockWorkplaceUser(user.username, workplaceIndex, userIndex, $event)" href="#" *ngIf="user.isLocked else notLocked">Yes, unlock</a>
+                          <a
+                            (click)="unlockWorkplaceUser(user.username, workplaceIndex, userIndex, $event)"
+                            href="#"
+                            *ngIf="user.isLocked; else notLocked"
+                            >Yes, unlock</a
+                          >
                           <ng-template #notLocked>No</ng-template>
                         </td>
                       </tr>
@@ -432,12 +449,9 @@
                 {{ item.employerType?.other ? item.employerType.other : item.employerType?.value || '-' }}
               </td>
               <td class="govuk-table__cell">
-                <a
-                  class="govuk-link--no-visited-state"
-                  href="#"
-                  (click)="toggleDetails(item.uid, $event)"
-                  >{{ workerDetailsLabel[item.uid] ? workerDetailsLabel[item.uid] : 'Open' }}</a
-                >
+                <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(item.uid, $event)">{{
+                  workerDetailsLabel[item.uid] ? workerDetailsLabel[item.uid] : 'Open'
+                }}</a>
               </td>
             </tr>
             <tr *ngIf="workerDetails[item.uid]" class="govuk-panel--gray" data-testid="groups-workplace-details">
@@ -445,12 +459,12 @@
                 <div class="govuk-!-margin-2">
                   <table class="govuk-table">
                     <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                          <th class="govuk-table__header govuk-!-width-one-third" scope="col">Address</th>
-                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Parent ID</th>
-                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Regulated</th>
-                          <th class="govuk-table__header" scope="col">Data Owner</th>
-                        </tr>
+                      <tr class="govuk-table__row">
+                        <th class="govuk-table__header govuk-!-width-one-third" scope="col">Address</th>
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Parent ID</th>
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Regulated</th>
+                        <th class="govuk-table__header" scope="col">Data Owner</th>
+                      </tr>
                     </thead>
                     <tbody class="govuk-table__body">
                       <tr class="govuk-table__row govuk-util__vertical-align-top">
@@ -458,8 +472,10 @@
                           {{ displayAddressForGroups(item) }}
                         </td>
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
-                          <ng-container *ngIf="item.parent?.nmdsId else noParentID">
-                            <a (click)="setEstablishmentId(item.parent.uid, '', item.parent.nmdsId, $event)" href="#">{{ item.parent.nmdsId }}</a>
+                          <ng-container *ngIf="item.parent?.nmdsId; else noParentID">
+                            <a (click)="setEstablishmentId(item.parent.uid, '', item.parent.nmdsId, $event)" href="#">{{
+                              item.parent.nmdsId
+                            }}</a>
                           </ng-container>
 
                           <ng-template #noParentID>-</ng-template>
@@ -477,15 +493,18 @@
                 <div class="govuk-!-margin-2" *ngIf="item.users?.length > 0">
                   <table class="govuk-table">
                     <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                          <th class="govuk-table__header govuk-!-width-one-third" scope="col">Users</th>
-                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Security question</th>
-                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Answer</th>
-                          <th class="govuk-table__header" scope="col">Locked</th>
-                        </tr>
+                      <tr class="govuk-table__row">
+                        <th class="govuk-table__header govuk-!-width-one-third" scope="col">Users</th>
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Security question</th>
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Answer</th>
+                        <th class="govuk-table__header" scope="col">Locked</th>
+                      </tr>
                     </thead>
                     <tbody class="govuk-table__body">
-                      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let user of item.users; index as userIndex">
+                      <tr
+                        class="govuk-table__row govuk-util__vertical-align-top"
+                        *ngFor="let user of item.users; index as userIndex"
+                      >
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
                           {{ user.name }}
                         </td>
@@ -496,7 +515,12 @@
                           {{ user.securityAnswer }}
                         </td>
                         <td class="govuk-table__cell govuk-!-font-weight-regular">
-                          <a (click)="unlockWorkplaceUser(user.username, workplaceIndex, userIndex, $event)" href="#" *ngIf="user.isLocked else notLocked">Yes, unlock</a>
+                          <a
+                            (click)="unlockWorkplaceUser(user.username, workplaceIndex, userIndex, $event)"
+                            href="#"
+                            *ngIf="user.isLocked; else notLocked"
+                            >Yes, unlock</a
+                          >
                           <ng-template #notLocked>No</ng-template>
                         </td>
                       </tr>

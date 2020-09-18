@@ -25,7 +25,7 @@ const LocalIdentifier = require('./localIdentifier');
 const LocalIdentifiers = require('./localIdentifiers');
 const Permissions = require('./permissions');
 const OwnershipChange = require('./ownershipChange');
-const LinkToParent = require('./linkToParent')
+const LinkToParent = require('./linkToParent');
 const DataPermissions = require('./dataPermissions');
 const LocationDetails = require('./locationdetails');
 const MandatoryTraining = require('./mandatoryTraining');
@@ -111,7 +111,7 @@ router.route('/:id').post(async (req, res) => {
   };
 
   try {
-    await models.sequelize.transaction(async t => {
+    await models.sequelize.transaction(async (t) => {
       // Get the main service depending on whether the establishment is or is not cqc registered
       let serviceResults = null;
       if (establishmentData.IsRegulated) {
@@ -137,7 +137,7 @@ router.route('/:id').post(async (req, res) => {
         throw new RegistrationException(
           `Lookup on services for '${establishmentData.MainService}' being cqc registered (${establishmentData.IsRegulated}) resulted with zero records`,
           responseErrors.unexpectedMainServiceId.errCode,
-          responseErrors.unexpectedMainServiceId.errMessage
+          responseErrors.unexpectedMainServiceId.errMessage,
         );
       }
 
@@ -149,7 +149,7 @@ router.route('/:id').post(async (req, res) => {
         throw new RegistrationException(
           `Other field value of '${establishmentData.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
           responseErrors.unexpectedMainServiceId.errCode,
-          responseErrors.unexpectedMainServiceId.errMessage
+          responseErrors.unexpectedMainServiceId.errMessage,
         );
       }
 
@@ -163,7 +163,7 @@ router.route('/:id').post(async (req, res) => {
         establishmentData.LocationID,
         null, // PROV ID is not captured yet on registration
         establishmentData.PostCode,
-        establishmentData.IsRegulated
+        establishmentData.IsRegulated,
       );
 
       newEstablishment.initialiseSub(req.establishment.id, req.establishment.uid);
@@ -174,7 +174,7 @@ router.route('/:id').post(async (req, res) => {
           id: establishmentData.MainServiceId,
           other: establishmentData.MainServiceOther,
         },
-        ustatus: 'PENDING'
+        ustatus: 'PENDING',
       });
 
       // no Establishment properties on registration
@@ -188,7 +188,7 @@ router.route('/:id').post(async (req, res) => {
         throw new RegistrationException(
           'Inavlid establishment properties',
           responseErrors.invalidEstablishment.errCode,
-          responseErrors.invalidEstablishment.errMessage
+          responseErrors.invalidEstablishment.errMessage,
         );
       }
       // post via Slack
@@ -204,7 +204,7 @@ router.route('/:id').post(async (req, res) => {
       slackMsg.parentEstablishmentId = parentEstablishment.nmdsId;
       slackMsg.establishmentUid = establishmentData.eUID;
       slackMsg.username = req.username;
-      slack.info("New Workplace", JSON.stringify(slackMsg, null, 2));
+      slack.info('New Workplace', JSON.stringify(slackMsg, null, 2));
       // post through feedback topic - async method but don't wait for a responseThe
       sns.postToRegistrations(slackMsg);
 
@@ -264,7 +264,7 @@ router.route('/:id').get(async (req, res) => {
         false,
         true,
         null,
-        false
+        false,
       );
       delete jsonResponse.allOtherServices;
       delete jsonResponse.allServiceCapacities;
@@ -292,7 +292,7 @@ router.route('/:id').get(async (req, res) => {
       null,
       err,
       null,
-      `Failed to retrieve Establishment with id/uid: ${establishmentId}`
+      `Failed to retrieve Establishment with id/uid: ${establishmentId}`,
     );
 
     console.error('establishment::GET/:eID - failed', thisError.message);
@@ -320,7 +320,7 @@ router.route('/:id').delete(async (req, res) => {
       null,
       err,
       null,
-      `Failed to delete Establishment with id/uid: ${establishmentId}`
+      `Failed to delete Establishment with id/uid: ${establishmentId}`,
     );
 
     console.error('establishment::DELETE/:eID - failed', thisError.message);

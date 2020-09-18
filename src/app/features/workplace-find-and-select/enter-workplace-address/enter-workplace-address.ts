@@ -64,7 +64,7 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   // Get postcode

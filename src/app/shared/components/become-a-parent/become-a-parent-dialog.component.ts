@@ -48,7 +48,7 @@ export class BecomeAParentDialogComponent extends DialogComponent implements OnI
           this.router.navigate(['/dashboard']);
           this.alertService.addAlert({
             type: 'success',
-            message: `Your request to become a parent organisation has been sent.`,
+            message: 'Your request to become a parent organisation has been sent.',
           });
           this.closeDialogWindow(event, true);
         }

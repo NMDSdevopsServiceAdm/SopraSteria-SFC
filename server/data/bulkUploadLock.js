@@ -3,8 +3,9 @@
 const db = require('../utils/datastore');
 
 module.exports = {
-  attemptToAcquireLock: establishmentId =>
-    db.query(`
+  attemptToAcquireLock: (establishmentId) =>
+    db.query(
+      `
       UPDATE
         cqc."Establishment"
       SET
@@ -12,15 +13,18 @@ module.exports = {
       WHERE
         "EstablishmentID" = :establishmentId AND
         "bulkUploadLockHeld" = false
-    `, {
-      replacements: {
-        establishmentId
+    `,
+      {
+        replacements: {
+          establishmentId,
+        },
+        type: db.QueryTypes.UPDATE,
       },
-      type: db.QueryTypes.UPDATE
-    }),
+    ),
 
   updateLockState: (establishmentId, newState) =>
-    db.query(`
+    db.query(
+      `
       UPDATE
         cqc."Establishment"
       SET
@@ -28,17 +32,18 @@ module.exports = {
       WHERE
         "EstablishmentID" = :establishmentId AND
         "bulkUploadLockHeld" = true`,
-    {
-      replacements: {
-        establishmentId,
-        newState
+      {
+        replacements: {
+          establishmentId,
+          newState,
+        },
+        type: db.QueryTypes.UPDATE,
       },
-      type: db.QueryTypes.UPDATE
-    }
     ),
 
-  lockStatus: establishmentId =>
-    db.query(`
+  lockStatus: (establishmentId) =>
+    db.query(
+      `
       SELECT
         "EstablishmentID" AS "establishmentId",
         "bulkUploadState",
@@ -47,12 +52,12 @@ module.exports = {
         cqc."Establishment"
       WHERE
         "EstablishmentID" = :establishmentId`,
-    {
-      replacements: {
-        establishmentId
+      {
+        replacements: {
+          establishmentId,
+        },
+        type: db.QueryTypes.SELECT,
       },
-      type: db.QueryTypes.SELECT
-    }
     ),
 
   releaseLockQuery: (establishmentId, nextState) => {
@@ -82,9 +87,9 @@ module.exports = {
     return db.query(query, {
       replacements: {
         establishmentId,
-        nextState
+        nextState,
       },
-      type: db.QueryTypes.UPDATE
+      type: db.QueryTypes.UPDATE,
     });
-  }
+  },
 };

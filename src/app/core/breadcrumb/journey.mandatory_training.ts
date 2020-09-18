@@ -3,7 +3,6 @@ import { JourneyRoute } from './breadcrumb.model';
 enum Path {
   MANDATORY_TRAINING = '/add-mandatory-training',
   DASHBOARD = '/dashboard',
-
 }
 
 export const mandatoryTrainingJourney: JourneyRoute = {
@@ -18,4 +17,3 @@ export const mandatoryTrainingJourney: JourneyRoute = {
     },
   ],
 };
-

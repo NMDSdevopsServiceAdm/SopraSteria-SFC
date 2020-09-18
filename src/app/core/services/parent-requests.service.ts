@@ -20,8 +20,7 @@ export class ParentRequestsService {
   }
 
   public parentStatusRequested(establishmentId: number): Observable<boolean> {
-    return this.getParentRequestByEstablishmentId(establishmentId)
-      .pipe(map(result => result != null));
+    return this.getParentRequestByEstablishmentId(establishmentId).pipe(map((result) => result != null));
   }
 
   public parentApproval(data: object) {

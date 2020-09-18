@@ -37,7 +37,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
   constructor(
     private fb: FormBuilder,
     private passwordResetService: PasswordResetService,
-    private errorSummaryService: ErrorSummaryService
+    private errorSummaryService: ErrorSummaryService,
   ) {}
 
   // Get create password
@@ -60,7 +60,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
           ],
           confirmPasswordInput: ['', [Validators.required]],
         },
-        { validator: CustomValidators.matchInputValues }
+        { validator: CustomValidators.matchInputValues },
       ),
     });
 
@@ -124,13 +124,13 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
 
       this.subscriptions.add(
         this.passwordResetService.resetPassword(newPassword, this.headerToken).subscribe(
-          res => {
+          (res) => {
             this.resetPasswordOutput.emit(res);
           },
           (error: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          }
-        )
+          },
+        ),
       );
     }
   }

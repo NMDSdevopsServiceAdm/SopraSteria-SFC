@@ -19,78 +19,78 @@ module.exports.Establishment = {
   },
   employerType: {
     value: '',
-    other: ''
+    other: '',
   },
   numberOfStaff: 100,
   totalWorkers: 100,
   otherServices: [
     {
-      category: "Adult community care",
+      category: 'Adult community care',
       services: [
-        { id: 2, "name": "Community support and outreach" },
-        { id: 1, "name": "Carers support" }
-      ]
-    }
+        { id: 2, name: 'Community support and outreach' },
+        { id: 1, name: 'Carers support' },
+      ],
+    },
   ],
   serviceUsers: [
     {
       id: 1,
-      group: "Older people",
-      service: "Older people with dementia"
+      group: 'Older people',
+      service: 'Older people with dementia',
     },
     {
-      "id": 2,
-      "group": "Older people",
-      "service": "Older people with mental disorders or infirmities, excluding learning disability or dementia"
-    }
+      id: 2,
+      group: 'Older people',
+      service: 'Older people with mental disorders or infirmities, excluding learning disability or dementia',
+    },
   ],
   capacities: [
     {
-      question: "How many places do you currently have?",
+      question: 'How many places do you currently have?',
       questionId: 8,
       seq: 0,
-      answer: 65
+      answer: 65,
     },
     {
-      question: "Number of people using the service on the completion date",
+      question: 'Number of people using the service on the completion date',
       questionId: 9,
       seq: 0,
-      answer: 60
-    }
+      answer: 60,
+    },
   ],
-  share: { enabled: true, with: ["Local Authority"] },
+  share: { enabled: true, with: ['Local Authority'] },
   localAuthorities: [
     {
       id: 859,
       custodianCode: 211,
-      name: "Kirklees",
-      isPrimaryAuthority: true
-    }
+      name: 'Kirklees',
+      isPrimaryAuthority: true,
+    },
   ],
-  primaryAuthority: { custodianCode: 211, name: "Kirklees" },
+  primaryAuthority: { custodianCode: 211, name: 'Kirklees' },
   parentPermissions: '',
   vacancies: [
     {
       jobId: 1,
       title: '',
-      total: 1
-    }
+      total: 1,
+    },
   ],
   totalVacancies: 1,
   starters: [
     {
       jobId: 1,
       title: '',
-      total: 1
-    }
+      total: 1,
+    },
   ],
   totalStarters: 1,
   leavers: [
     {
       jobId: 1,
       title: '',
-      total: 1
-    }
+      total: 1,
+    },
   ],
   totalLeavers: 1,
   wdf: {
@@ -101,35 +101,35 @@ module.exports.Establishment = {
     currentEligibility: true,
     employerType: {
       isEligible: 'Yes',
-      updatedSinceEffectiveDate: false
+      updatedSinceEffectiveDate: false,
     },
     mainService: {
       isEligible: 'Yes',
-      updatedSinceEffectiveDate: false
+      updatedSinceEffectiveDate: false,
     },
     capacities: {
       isEligible: 'Yes',
-      updatedSinceEffectiveDate: false
+      updatedSinceEffectiveDate: false,
     },
     serviceUsers: {
       isEligible: 'Yes',
-      updatedSinceEffectiveDate: false
+      updatedSinceEffectiveDate: false,
     },
     vacancies: {
       isEligible: 'Yes',
-      updatedSinceEffectiveDate: false
+      updatedSinceEffectiveDate: false,
     },
     starters: {
       isEligible: 'Yes',
-      updatedSinceEffectiveDate: false
+      updatedSinceEffectiveDate: false,
     },
     leavers: {
       isEligible: 'Yes',
-      updatedSinceEffectiveDate: false
+      updatedSinceEffectiveDate: false,
     },
     numberOfStaff: {
       isEligible: 'Yes',
-      updatedSinceEffectiveDate: false
+      updatedSinceEffectiveDate: false,
     },
   },
   isParent: true,
@@ -137,5 +137,5 @@ module.exports.Establishment = {
   dataOwner: 'Parent',
   dataPermissions: 'Workplace and Staff',
   dataOwnershipRequested: '',
-  ownershipChangeRequestId: ''
+  ownershipChangeRequestId: '',
 };

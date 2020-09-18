@@ -3,14 +3,12 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 
 @Component({
   selector: 'app-cqc-status-changes',
-  templateUrl: './cqc-status-changes.component.html'
+  templateUrl: './cqc-status-changes.component.html',
 })
 export class CqcStatusChangesComponent implements OnInit {
   public cqcStatusChanges = [];
 
-  constructor(
-    public cqcStatusChangeService: CqcStatusChangeService
-  ) {}
+  constructor(public cqcStatusChangeService: CqcStatusChangeService) {}
 
   ngOnInit() {
     this.getCqcStatusChanges();
@@ -18,10 +16,10 @@ export class CqcStatusChangesComponent implements OnInit {
 
   public getCqcStatusChanges() {
     this.cqcStatusChangeService.getCqcStatusChanges().subscribe(
-      data => {
+      (data) => {
         this.cqcStatusChanges = data;
       },
-      error => this.onError(error)
+      (error) => this.onError(error),
     );
   }
 
