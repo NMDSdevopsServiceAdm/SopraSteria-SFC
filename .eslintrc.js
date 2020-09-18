@@ -9,5 +9,6 @@ module.exports = {
       'error',
       { type: 'element', prefix: 'app', style: 'kebab-case' },
     ],
+    "quotes": [2, "single", "avoid-escape"],
   }
 };
