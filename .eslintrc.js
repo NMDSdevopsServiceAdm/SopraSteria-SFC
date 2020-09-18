@@ -1,5 +1,8 @@
 module.exports = {
-  extends: ['plugin:@angular-eslint/recommended'],
+  extends: [
+    'plugin:@angular-eslint/recommended',
+    'prettier',
+  ],
   rules: {
     '@angular-eslint/directive-selector': [
       'error',
@@ -10,5 +13,5 @@ module.exports = {
       { type: 'element', prefix: 'app', style: 'kebab-case' },
     ],
     "quotes": [2, "single", "avoid-escape"],
-  }
+  },
 };
