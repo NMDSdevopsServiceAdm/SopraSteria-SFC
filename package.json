@@ -103,7 +103,7 @@
     "@testing-library/angular": "^8.2.0",
     "@types/faker": "^4.1.12",
     "@types/file-saver": "^2.0.1",
-    "@types/jasmine": "~2.8.17",
+    "@types/jasmine": "^3.5.14",
     "@types/jasminewd2": "~2.0.8",
     "@types/node": "^12.11.1",
     "aws-sdk-mock": "^4.5.0",
