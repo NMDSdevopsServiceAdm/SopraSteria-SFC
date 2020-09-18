@@ -134,7 +134,15 @@
     "supertest": "^4.0.2",
     "ts-node": "~7.0.1",
     "tslint": "~6.1.3",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "eslint": "^7.6.0",
+    "@angular-eslint/builder": "0.3.0-beta.1",
+    "@angular-eslint/eslint-plugin": "0.3.0-beta.1",
+    "@angular-eslint/eslint-plugin-template": "0.3.0-beta.1",
+    "@angular-eslint/schematics": "^0.3.0-beta.1",
+    "@angular-eslint/template-parser": "0.3.0-beta.1",
+    "@typescript-eslint/eslint-plugin": "3.9.0",
+    "@typescript-eslint/parser": "3.9.0"
   },
   "engines": {
     "node": "10.10.0",
