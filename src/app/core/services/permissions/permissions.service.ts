@@ -47,7 +47,11 @@ export class PermissionsService {
       this.router.navigate(['/dashboard']);
       return false;
     }
-
+    requiredPermissions.forEach(item => {
+      if (!permissionsList[item]) {
+        this.router.navigate(['/dashboard']);
+      }
+    });
     return true;
   }
 
