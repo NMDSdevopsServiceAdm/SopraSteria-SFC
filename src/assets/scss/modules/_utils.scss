@@ -96,3 +96,6 @@
 .govuk-max-width {
   max-width: calc(100vh - 274px);
 }
+.asc-font-19{
+  @include govuk-font($size: 19);
+}

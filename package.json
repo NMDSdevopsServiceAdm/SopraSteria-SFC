@@ -22,6 +22,7 @@
     "server:cover:integration": "nyc --reporter=html mocha server/test/integration/**/*.spec.js",
     "db:migration:generate": "sequelize migration:generate",
     "db:migrate": "sequelize db:migrate",
+    "db:migrate:undo": "sequelize db:migrate:undo",
     "cf:migrate": "node ./bin/cf-migrate.js"
   },
   "private": true,
@@ -61,8 +62,10 @@
     "helmet": "^3.23.2",
     "honeycomb-beeline": "^2.1.1",
     "is-ci": "^2.0.0",
+    "html2canvas": "^1.0.0-rc.7",
     "js-yaml": "^3.14.0",
     "jsonwebtoken": "^8.5.1",
+    "jspdf": "^2.1.1",
     "jszip": "^3.5.0",
     "lodash": "^4.17.20",
     "moment": "^2.27.0",
