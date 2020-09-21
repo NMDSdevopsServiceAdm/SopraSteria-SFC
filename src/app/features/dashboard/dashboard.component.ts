@@ -1,24 +1,29 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
+import { AuthService } from '@core/services/auth.service';
+import { BenchmarksService } from '@core/services/benchmarks.service';
+import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { interval, Subscription } from 'rxjs';
-import { DialogService } from '@core/services/dialog.service';
-import { Router } from '@angular/router';
-import { AlertService } from '@core/services/alert.service';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { take } from 'rxjs/operators';
-import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('workplaceTitle') public workplaceTitle: ElementRef;
+
   private subscriptions: Subscription = new Subscription();
   public canDeleteEstablishment: boolean;
   public canViewEstablishment: boolean;
@@ -29,6 +34,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public trainingAlert: number;
   public subsidiaryCount: number;
+  public canViewBenchmarks: boolean;
 
 
   constructor(
@@ -41,18 +47,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private dialogService: DialogService,
     private router: Router,
+    private benchmarksService: BenchmarksService
   ) { }
 
   ngOnInit() {
     this.authService.isOnAdminScreen = false;
     this.workplace = this.establishmentService.primaryWorkplace;
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
+    this.canViewBenchmarks = this.permissionsService.can(workplaceUid,'canViewBenchmarks');
     this.canViewListOfUsers = this.permissionsService.can(workplaceUid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
     this.canDeleteEstablishment = this.permissionsService.can(workplaceUid, 'canDeleteAllEstablishments');
 
     if (this.workplace) {
+      this.subscriptions.add(this.permissionsService.getPermissions(workplaceUid).subscribe(
+        permission => {
+          this.canViewBenchmarks = permission.permissions.canViewBenchmarks
+        }
+      ));
       this.subscriptions.add(
         this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
           total => {
@@ -108,6 +121,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       )
     );
+  }
+
+  ngAfterViewInit() {
+    this.benchmarksService.workplaceTitle = this.workplaceTitle;
   }
 
   public onDeleteWorkplace(event: Event): void {

@@ -30,6 +30,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       default: false,
       field: '"other"'
+    },
+    reportingID:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
     }
   }, {
     tableName: 'services',
@@ -52,7 +56,24 @@ module.exports = function(sequelize, DataTypes) {
       targetKey: 'id',
       as: 'establishments'
     });
+    Services.hasMany(models.benchmarks, {
+      foreignKey: 'MainServiceFK',
+      sourceKey: 'reportingID',
+      as:"benchmarksData"
+    });
   };
+
+  Services.careProvidingStaff = [
+    25, // seniorCareWorker,
+    10, //careWorker,
+    11, // communitySupport,
+    12, //employmentSupport,
+    3,  //adviceGuidance,
+    29, //technician,
+    20, //otherCare,
+    16, // nurseAssistant
+  ];
+
 
   return Services;
 };

@@ -1,4 +1,5 @@
 /* jshint indent: 2 */
+const postcodeHelper = require('../utils/getAddressAPI');
 
 module.exports = function(sequelize, DataTypes) {
   const CSSR = sequelize.define('cssr', {
@@ -45,6 +46,25 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
+
+  CSSR.getIdFromDistrict = async function(postcode) {
+    const postcodeData = await postcodeHelper.getAddressAPI.getPostcodeData(postcode);
+    if (!postcodeData || !postcodeData.addresses){
+      return false;
+    }
+    const district = postcodeData.addresses[0].district;
+    const cssr = await this.findOne({
+      attributes: ['id'],
+      where: {
+         LocalAuthority: district
+      }
+    });
+    if(cssr.id){
+      return cssr.id;
+    }else{
+      return false;
+    }
+  };
 
   return CSSR;
 };

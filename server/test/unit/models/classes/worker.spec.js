@@ -1,10 +1,11 @@
 const expect = require('chai').expect;
+const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
 
 const Worker = require('../../../../models/classes/worker').Worker;
 
 const worker = new Worker();
 
-describe.skip('Worker Class', () => {
+describe('Worker Class', () => {
   describe('load()', () => {
     it('should remove nurse specialism and registered nurse when not a registered nurse', async () => {
       const notRegisteredNurse = {
@@ -178,6 +179,19 @@ describe.skip('Worker Class', () => {
       expect(zeroHours.weeklyHoursAverage.hours).to.deep.equal(37);
       expect(zeroHoursWorker).to.deep.equal(true);
     });
+    it('should remove sickness when contract is agency or pool/bank', async () => {
+      const agencyBuilder = build({
+        fields: {
+          contract: oneOf('Agency', 'Pool/Bank'),
+          daysSick: { value: 'Yes', days: fake(f => f.random.number({ min: 1, max: 10 })) }
+        }
+      })
+      const agency = agencyBuilder();
+      const agencyWorker = await worker.load(agency);
+      expect(agency.daysSick.value).to.deep.equal(null);
+      expect(agency.daysSick.days).to.deep.equal(null);
+      expect(agencyWorker).to.deep.equal(true);
+    })
     it('should remove highest social care qualification when they do not have one', async () => {
       const nonSocialQual = {
         qualificationInSocialCare: 'No'
