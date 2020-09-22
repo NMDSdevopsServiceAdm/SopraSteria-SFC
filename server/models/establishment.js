@@ -1,5 +1,4 @@
 /* jshint indent: 2 */
-
 module.exports = function(sequelize, DataTypes) {
   const Establishment = sequelize.define('establishment', {
     id: {
@@ -745,6 +744,13 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
+
+  Establishment.turnOverData = function (establishmentId) {
+    return this.findByPk(establishmentId, {
+      attributes: ['id','NumberOfStaffValue','LeaversValue'],
+    });
+  };
+
   Establishment.findWithWorkersAndTraining = function (establishmentId) {
     return this.findByPk(establishmentId, {
       attributes: ['id'],
@@ -811,6 +817,65 @@ module.exports = function(sequelize, DataTypes) {
         }
       });
   };
+
+  Establishment.workers = async function (establishmentId,where,attribute) {
+    return this.findOne({
+      attributes: ['id'],
+      include: {
+        model: sequelize.models.worker,
+        attributes: ['id', 'uid', ...attribute],
+        as: 'workers',
+        where
+      }, where: {
+         id: establishmentId
+      }
+    });
+  };
+
+  Establishment.getBenchmarkData = async function (establishmentId) {
+    const postcode = await this.findOne({
+      attributes: ['postcode','id'],
+      where:{id: establishmentId}
+    });
+    if (!postcode){
+      return {};
+    }
+    let cssr = await sequelize.models.pcodedata.findOne({
+      attributes: ['uprn',"postcode"],
+      include:[{
+        model: sequelize.models.cssr,
+        attributes:["id"],
+        as: "theAuthority"
+      }],
+        where:{
+          postcode: postcode.postcode
+        }
+    });
+    if (cssr){
+      cssr = cssr.theAuthority.id;
+    }else{
+      cssr = await sequelize.models.cssr.getIdFromDistrict(postcode.postcode);
+      if (!cssr){
+        return {};
+      }
+    }
+    return await this.findOne({
+      attributes:['id'],
+      where:{id: establishmentId },
+      include:[{
+        model: sequelize.models.services,
+        as: "mainService",
+        include:[{
+          model: sequelize.models.benchmarks,
+          where:{
+            CssrID: cssr
+          },
+          as:"benchmarksData"
+        }]
+      }]
+    });
+  };
+
   Establishment.searchEstablishments = async function(where) {
     return await this.findAll({
       attributes: [

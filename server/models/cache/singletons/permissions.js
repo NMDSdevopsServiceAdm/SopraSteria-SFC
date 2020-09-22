@@ -280,6 +280,14 @@ let ALL_PERMISSIONS = [
     subOwnedByWorkplaceAccessByParent: [],
     subOwnedByParentAccessBySub: [],
     isAdmin: false,
+  },
+  {
+    code: 'canViewBenchmarks',
+    description: 'Can the Establishment view Benchmarks tab',
+    role: ['Edit','Read'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: false,
   }
 ];
 
