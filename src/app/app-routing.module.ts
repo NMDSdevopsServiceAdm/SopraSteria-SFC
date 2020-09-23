@@ -100,7 +100,6 @@ const routes: Routes = [
         loadChildren: () => import('./shared/components/benchmarks-tab/benchmarks.module').then(m => m.BenchmarksModule),
         canActivate: [],
         data: {
-          permissions: ['canViewBenchmarks'],
           title: 'Benchmarks',
         },
       },
