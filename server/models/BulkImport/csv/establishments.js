@@ -1755,7 +1755,7 @@ class Establishment {
       // sum of  all reasons counts must equal the sum of leavers
       const sumOfReasonsCounts = allReasonsCounts.reduce((total, thisCount) => parseInt(total, 10) + parseInt(thisCount, 10));
 
-      if (sumOfReasonsCounts !== sumOfLeavers) {
+      if (parseInt(sumOfReasonsCounts) !== parseInt(sumOfLeavers)) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,

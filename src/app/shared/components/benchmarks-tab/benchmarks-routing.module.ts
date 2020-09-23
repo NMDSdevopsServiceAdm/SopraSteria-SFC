@@ -1,13 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
+import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 
 const routes: Routes = [
   {
-    path: 'about-the-data/:establishmentID',
+    path: ':establishmentuid/about-the-data',
     component: BenchmarksAboutTheDataComponent,
-    canActivate: [],
-    data: { title: 'About the data' },
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      title: 'About the data',
+      permissions: ['canViewBenchmarks'],
+    },
   },
 ];
 
