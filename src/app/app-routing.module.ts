@@ -98,9 +98,8 @@ const routes: Routes = [
       {
         path: 'benchmarks',
         loadChildren: () => import('./shared/components/benchmarks-tab/benchmarks.module').then(m => m.BenchmarksModule),
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [],
         data: {
-          permissions: ['canViewBenchmarks'],
           title: 'Benchmarks',
         },
       },
