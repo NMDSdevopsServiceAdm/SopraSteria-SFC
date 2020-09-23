@@ -1,6 +1,6 @@
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const { ChangePropertyPrototype } = require('../../properties/changePrototype');
 
-exports.LongitudeProperty = class LongitudeProperty extends PropertyPrototype {
+exports.LongitudeProperty = class LongitudeProperty extends ChangePropertyPrototype {
   constructor() {
     super('Longitude');
   }
@@ -15,7 +15,7 @@ exports.LongitudeProperty = class LongitudeProperty extends PropertyPrototype {
     }
   }
 
-  restorePropertyFromSequelize(document) {
+  async restoreFromSequelize(document) {
     return document.Longitude;
   }
 
@@ -30,8 +30,17 @@ exports.LongitudeProperty = class LongitudeProperty extends PropertyPrototype {
   }
 
   toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+    if (!withHistory) {
+      return {
+        Longitude: this.property,
+      };
+    }
+
     return {
-      Longitude: this.property,
+      Longitude: {
+        currentValue: this.property,
+        ...this.changePropsToJSON(showPropertyHistoryOnly),
+      },
     };
   }
 };
