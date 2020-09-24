@@ -236,10 +236,10 @@ router.route('/').post(async (req, res) => {
 
   try {
     if (req.body.postcode) {
-      const { latitude, longitude } = await models.postcodes.firstOrCreate(req.body.postcode);
+      const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(req.body.postcode)) || {};
 
-      req.body.Latitude = latitude;
-      req.body.Longitude = longitude;
+      req.body.Latitude = Latitude;
+      req.body.Longitude = Longitude;
     }
 
     // TODO: JSON validation
@@ -298,10 +298,10 @@ const editWorker = async (req, res) => {
       }
 
       if (thisWorker.postcode !== req.body.postcode) {
-        const { latitude, longitude } = await models.postcodes.firstOrCreate(req.body.postcode);
+        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(req.body.postcode)) || {};
 
-        req.body.Latitude = latitude;
-        req.body.Longitude = longitude;
+        req.body.Latitude = Latitude;
+        req.body.Longitude = Longitude;
       }
 
       // by loading after the restore, only those properties defined in the
