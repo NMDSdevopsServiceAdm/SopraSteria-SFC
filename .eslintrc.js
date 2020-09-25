@@ -6,7 +6,12 @@ module.exports = {
     jasmine: true,
     commonjs: true,
   },
-  extends: ['eslint:recommended', 'prettier'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
+  ],
   rules: {
     quotes: [2, 'single', 'avoid-escape'],
   },
