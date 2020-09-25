@@ -32,7 +32,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy, After
     this.url = this.benchmarksService.returnTo?.url;
     this.fragment = this.benchmarksService.returnTo?.fragment;
     this.subscriptions.add(
-      this.benchmarksService.getTileData(this.workplace && this.workplace.id ? this.workplace.id : this.route.snapshot.params.establishmentID, []).subscribe(
+      this.benchmarksService.getTileData(this.workplace && this.workplace.id ? this.workplace.id : this.route.snapshot.params.establishmentuid, []).subscribe(
         (data) => {
           if (data) {
             this.meta = data.meta;

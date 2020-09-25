@@ -302,6 +302,29 @@ describe('Bulk Upload - Establishment CSV', () => {
       await crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
         expect(csvEstablishmentSchemaErrors).to.be.empty;
       });
-    })
+    });
+    it('should show a warning when number of leavers !== REASONNOS', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.ALLJOBROLES = '22';
+      establishmentRow.LEAVERS = '2';
+      establishmentRow.STARTERS = '0';
+      establishmentRow.VACANCIES = '0';
+      establishmentRow.REASONS = '21;22';
+      establishmentRow.REASONNOS = '3;5';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+      expect(establishment.validationErrors).to.deep.equal([
+        {
+          origin: 'Establishments',
+          lineNumber: establishment.lineNumber,
+          errCode: 1360,
+          errType: 'REASONS_FOR_LEAVING_ERROR',
+          error: 'The total number of REASONNOS you have entered does not equal the total number of LEAVERS',
+          source: "3;5 (8) - 2 (2)",
+          name: establishmentRow.LOCALESTID
+        }
+      ]);
+    });
   });
 });
