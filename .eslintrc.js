@@ -6,28 +6,28 @@ module.exports = {
     jasmine: true,
     commonjs: true,
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'prettier',
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   rules: {
     quotes: [2, 'single', 'avoid-escape'],
   },
   overrides: [
     {
-      files: ['src/**/*.ts'],
+      files: ['*.ts'],
       parserOptions: {
-        project: ['tsconfig.*?.json'],
-        createDefaultProgram: true,
+        project: './tsconfig.eslint.json',
       },
       extends: ['plugin:@angular-eslint/recommended'],
       rules: {
         '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'app', style: 'camelCase' }],
         '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'app', style: 'kebab-case' }],
+
         quotes: ['error', 'single', { allowTemplateLiterals: true }],
       },
+    },
+    {
+      files: ['*.component.html'],
+      parser: '@angular-eslint/template-parser',
+      extends: 'plugin:@angular-eslint/template/recommended',
     },
   ],
 };
