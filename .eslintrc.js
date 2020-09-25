@@ -9,7 +9,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
   },
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
+  extends: ['eslint:recommended', 'prettier'],
   rules: {
     quotes: [2, 'single', 'avoid-escape'],
   },
@@ -20,7 +20,7 @@ module.exports = {
       parserOptions: {
         project: './tsconfig.eslint.json',
       },
-      extends: ['plugin:@angular-eslint/recommended'],
+      extends: ['plugin:@typescript-eslint/recommended', 'plugin:@angular-eslint/recommended'],
       rules: {
         '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'app', style: 'camelCase' }],
         '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'app', style: 'kebab-case' }],
