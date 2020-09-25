@@ -6,10 +6,14 @@ module.exports = {
     jasmine: true,
     commonjs: true,
   },
+  parserOptions: {
+    ecmaVersion: 2018,
+  },
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   rules: {
     quotes: [2, 'single', 'avoid-escape'],
   },
+  ignorePatterns: ['/dist'],
   overrides: [
     {
       files: ['*.ts'],
