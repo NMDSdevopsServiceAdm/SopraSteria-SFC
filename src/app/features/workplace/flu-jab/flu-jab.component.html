@@ -1,12 +1,14 @@
-<app-error-summary *ngIf="submitted && serverError" [serverError]="serverError" [form]="form">
-</app-error-summary>
+<app-error-summary *ngIf="submitted && serverError" [serverError]="serverError" [form]="form"> </app-error-summary>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters-from-desktop">
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">Who's had a flu vaccination since 1 September 2020?</h1>
     <p>
-      You can return and update your information at any time.<br>
-      The link to return to this page is on the <a href="#">home tab</a>.
+      You can return and update your information at any time.<br />
+      The link to return to this page is on the
+      <a [routerLink]="returnToHome.url" [fragment]="returnToHome.fragment">
+        {{ isPrimaryWorkplace ? 'home tab' : 'staff records tab' }}</a
+      >.
     </p>
     <app-why-collecting-flu-jab></app-why-collecting-flu-jab>
   </div>
@@ -20,29 +22,44 @@
           <table class="govuk-table">
             <tbody class="govuk-table__body">
               <ng-container formArrayName="fluJabs">
-                <tr class="govuk-table__row" *ngFor="let item of fluJabsArray.controls; let i = index;" [formGroupName]="i">
+                <tr
+                  class="govuk-table__row"
+                  *ngFor="let item of fluJabsArray.controls; let i = index"
+                  [formGroupName]="i"
+                >
                   <th scope="row" class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third">
                     {{ item.value.name }}
                   </th>
                   <td class="govuk-table__cell">
                     <div class="govuk-radios govuk-radios--inline">
                       <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" formControlName="fluJab" id="fluJab-yes-{{ i }}"
-                          type="radio" value="Yes" />
-                        <label class="govuk-label govuk-radios__label" for="fluJab-yes-{{ i }}">
-                          Yes
-                        </label>
+                        <input
+                          class="govuk-radios__input"
+                          formControlName="fluJab"
+                          id="fluJab-yes-{{ i }}"
+                          type="radio"
+                          value="Yes"
+                        />
+                        <label class="govuk-label govuk-radios__label" for="fluJab-yes-{{ i }}"> Yes </label>
                       </div>
                       <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" formControlName="fluJab" id="fluJab-no-{{ i }}"
-                          type="radio" value="No" />
-                        <label class="govuk-label govuk-radios__label" for="fluJab-no-{{ i }}">
-                          No
-                        </label>
+                        <input
+                          class="govuk-radios__input"
+                          formControlName="fluJab"
+                          id="fluJab-no-{{ i }}"
+                          type="radio"
+                          value="No"
+                        />
+                        <label class="govuk-label govuk-radios__label" for="fluJab-no-{{ i }}"> No </label>
                       </div>
                       <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" formControlName="fluJab" id="fluJab-dontKnow-{{ i }}"
-                          type="radio" value="Don't know" />
+                        <input
+                          class="govuk-radios__input"
+                          formControlName="fluJab"
+                          id="fluJab-dontKnow-{{ i }}"
+                          type="radio"
+                          value="Don't know"
+                        />
                         <label class="govuk-label govuk-radios__label" for="fluJab-dontKnow-{{ i }}">
                           Don't know
                         </label>
