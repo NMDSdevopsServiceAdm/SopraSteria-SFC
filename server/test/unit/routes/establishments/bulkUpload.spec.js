@@ -18,6 +18,7 @@ const { Training } = require('../../../../models/classes/training');
 const { Worker } = require('../../../../models/classes/worker');
 const buildEstablishmentCSV = require('../../../../test/factories/establishment/csv');
 const buildWorkerCSV = require('../../../../test/factories/worker/csv');
+const ServiceCache = require('../../../../models/cache/singletons/services').ServiceCache;
 
 const errorsBuilder = build('Error', {
   fields: {
@@ -725,7 +726,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       sinon.stub(Establishment.prototype, 'key').get(() =>{
         return 'omar3';
       });
-
+      sinon.stub(ServiceCache, 'allMyServices').resolves({});
       await bulkUpload.validateEstablishmentCsv({
           LOCALESTID: 'omar3',
           STATUS: 'NEW',
