@@ -15,9 +15,7 @@ export class RegistrationComponent implements OnInit {
   public username: string;
   public approve: boolean;
 
-  constructor(
-    public registrationsService: RegistrationsService,
-  ) {}
+  constructor(public registrationsService: RegistrationsService) {}
   ngOnInit() {
     this.registrationForm = new FormGroup({
       nmdsId: new FormControl(this.registration.establishment.nmdsId, [
@@ -37,7 +35,9 @@ export class RegistrationComponent implements OnInit {
     this.approve = approve;
   }
   public onSubmit() {
+    console.log('SUBMIT!');
     if (this.registrationForm.valid) {
+      console.log('Valid');
       let data;
       data = {
         username: this.username,
@@ -55,13 +55,16 @@ export class RegistrationComponent implements OnInit {
 
       this.registrationsService.registrationApproval(data).subscribe(
         () => {
+          console.log('All goood');
           this.handleRegistration.emit(this.index);
         },
         (err) => {
+          console.log('Errorrr');
+          console.log(err);
           if (err instanceof HttpErrorResponse) {
             this.populateErrorFromServer(err);
           }
-        }
+        },
       );
     }
   }
