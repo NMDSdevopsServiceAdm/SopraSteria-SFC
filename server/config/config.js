@@ -372,6 +372,18 @@ const config = convict({
       },
     }
   },
+  locks: {
+    region: {
+      doc: 'AWS region override for locks S3 only',
+      format: '*',
+      default: 'eu-west-1',
+    },
+    bucketname: {
+      doc: 'Bucket used to create locks',
+      format: '*',
+      default: 'sfc-locks',
+    },
+  },
   public: {
     download: {
       baseurl: {
