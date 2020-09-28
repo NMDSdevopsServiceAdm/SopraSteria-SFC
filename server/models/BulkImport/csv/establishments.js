@@ -1503,18 +1503,33 @@ class Establishment {
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
     const leavers = this._currentLine.LEAVERS.split(';');
-
     const localValidationErrors = [];
     const allJobsCount = this._alljobs ? this._alljobs.length : 0;
+    const DONT_KNOW = '999'; // MUST BE A STRING VALUE!!!!!
+    const NONE = '0';
 
     if (allJobsCount === 0) {
       // no jobs defined, so ignore starters, leavers and vacancies
+      if( vacancies[0] === DONT_KNOW){
+        this._vacancies = [parseInt(DONT_KNOW)];
+      }else if(vacancies[0] === NONE){
+        this._vacancies = [parseInt(NONE)];
+      }
+      if( starters[0] === DONT_KNOW){
+        this._starters = [parseInt(DONT_KNOW)];
+      }else if(starters[0] === NONE){
+        this._starters = [parseInt(NONE)];
+      }
+      if( leavers[0] === DONT_KNOW){
+        this._leavers = [parseInt(DONT_KNOW)];
+      }else if(leavers[0] === NONE){
+        this._leavers = [parseInt(NONE)];
+      }
       return true;
     }
 
     // all counts must have the same number of entries as all job roles
     //  - except starters, leavers and vacancies can be a single value of 999
-    const DONT_KNOW = '999'; // MUST BE A STRING VALUE!!!!!
 
     if (!((vacancies.length === 1 && vacancies[0] === DONT_KNOW) || (vacancies.length === allJobsCount))) {
       localValidationErrors.push({
@@ -2432,9 +2447,9 @@ class Establishment {
           return returnThis;
         }) : [],
       numberOfStaff: this._totalPermTemp,
-      vacancies: this._vacancies ? this._vacancies : 'None',
-      starters: this._starters ? this._starters : 'None',
-      leavers: this.leavers ? this.leavers : 'None'
+      vacancies: this._vacancies,
+      starters: this._starters,
+      leavers: this._leavers,
     };
 
     if (this._regType === 2) {
