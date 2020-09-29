@@ -89,6 +89,8 @@ router.route('/').post(async (req, res) => {
         town: req.body.townCity,
         county: req.body.county,
         postcode: newPostcode,
+        Latitude: req.body.Latitude,
+        Longitude: req.body.Longitude,
         name: req.body.locationName,
       });
 
