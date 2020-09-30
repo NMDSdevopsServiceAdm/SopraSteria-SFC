@@ -107,16 +107,6 @@
             "scripts": [],
             "assets": ["src/favicon.ico", "src/assets"]
           }
-        },
-        "lint": {
-          "builder": "@angular-eslint/builder:lint",
-          "options": {
-            "eslintConfig": ".eslintrc.js",
-            "lintFilePatterns": ["src/**/*.ts"],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
     }
