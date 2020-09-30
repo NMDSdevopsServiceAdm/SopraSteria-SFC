@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -9,9 +9,9 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-benchmarks-about-the-data',
-  templateUrl: './about-the-data.component.html'
+  templateUrl: './about-the-data.component.html',
 })
-export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy, AfterViewInit {
+export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @ViewChild('aboutData') public aboutData: ElementRef;
 
@@ -25,32 +25,32 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy, After
     protected router: Router,
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksService,
-    protected backService: BackService
-  ) { }
+    protected backService: BackService,
+  ) {}
 
   ngOnInit() {
     this.url = this.benchmarksService.returnTo?.url;
     this.fragment = this.benchmarksService.returnTo?.fragment;
     this.subscriptions.add(
-      this.benchmarksService.getTileData(this.workplace && this.workplace.id ? this.workplace.id : this.route.snapshot.params.establishmentuid, []).subscribe(
-        (data) => {
+      this.benchmarksService
+        .getTileData(
+          this.workplace && this.workplace.id ? this.workplace.id : this.route.snapshot.params.establishmentuid,
+          [],
+        )
+        .subscribe((data) => {
           if (data) {
             this.meta = data.meta;
           }
-        }
-      ));
+        }),
+    );
     this.backService.setBackLink(this.benchmarksService.returnTo);
   }
 
   public pluralizeWorkplaces(workplaces) {
-    return workplaces > 1 ? 'workplaces' : 'workplace'
+    return workplaces > 1 ? 'workplaces' : 'workplace';
   }
 
   ngOnDestroy() {
-    this.subscriptions.unsubscribe()
-  }
-
-  ngAfterViewInit() {
-    this.benchmarksService.aboutData = this.aboutData;
+    this.subscriptions.unsubscribe();
   }
 }
