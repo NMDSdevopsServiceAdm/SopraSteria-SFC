@@ -1651,6 +1651,7 @@ class Establishment {
 
   _startersLeaverVacanciesWarnings(dbValues, buValues, savedAt, localValidationErrors, warning) {
     if (!savedAt.isSame(Date.now(), 'day')) {
+      if (!Array.isArray(this.allJobs)) return localValidationErrors;
       let isSame = true;
       for (var i = 0; i < this.allJobs.length; i++) {
         const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(this.allJobs[i]));
@@ -1669,6 +1670,7 @@ class Establishment {
           }
         }
       }
+      if (this.allJobs && this.allJobs.length === 0 && dbValues && Array.isArray(dbValues) && dbValues.length > 0) isSame = false;
       if (isSame) {
         localValidationErrors.push(warning);
       }
@@ -2223,7 +2225,7 @@ class Establishment {
 
       this._validateReasonsForLeaving();
 
-      this._validateNoChange();
+      // this._validateNoChange(); // Not working, disabled for LA Window
     }
 
     return this.validationErrors.length === 0;
