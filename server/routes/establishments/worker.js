@@ -297,7 +297,7 @@ const editWorker = async (req, res) => {
         req.body.establishmentFk = req.body.establishmentId;
       }
 
-      if (thisWorker.postcode !== req.body.postcode) {
+      if (req.body.postcode && req.body.postcode !== thisWorker.postcode) {
         const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(req.body.postcode)) || {};
 
         req.body.Latitude = Latitude;

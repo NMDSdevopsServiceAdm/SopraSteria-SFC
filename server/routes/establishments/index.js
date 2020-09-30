@@ -349,6 +349,13 @@ router.route('/:id').put(async (req, res) => {
 
       // by loading after the restore, only those properties defined in the
       //  PUT body will be updated (peristed)
+      if (req.body.PostCode && req.body.PostCode !== thisEstablishment.postcode) {
+        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(req.body.PostCode)) || {};
+
+        req.body.Latitude = Latitude;
+        req.body.Longitude = Longitude;
+      }
+
       const isValidEstablishment = await thisEstablishment.load(req.body);
 
       if (isValidEstablishment) {

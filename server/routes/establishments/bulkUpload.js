@@ -916,6 +916,21 @@ const validateEstablishmentCsv = async (
         thisEstablishmentAsAPI.IsCQCRegulated,
       );
 
+      const foundCurrentEstablishment = myCurrentEstablishments.find(
+        (thisCurrentEstablishment) => thisCurrentEstablishment.key === lineValidator.key,
+      );
+
+      if (
+        thisApiEstablishment.postcode &&
+        foundCurrentEstablishment &&
+        foundCurrentEstablishment.postcode !== thisApiEstablishment.postcode
+      ) {
+        const { Latitude, Longitude } = (await dbModels.postcodes.firstOrCreate(thisApiEstablishment.postcode)) || {};
+
+        thisEstablishmentAsAPI.Latitude = Latitude;
+        thisEstablishmentAsAPI.Longitude = Longitude;
+      }
+
       await thisApiEstablishment.load(thisEstablishmentAsAPI);
 
       keepAlive('establishment loaded', currentLineNumber);
@@ -1003,6 +1018,18 @@ const validateWorkerCsv = async (
   const thisWorkerAsAPI = lineValidator.toAPI();
 
   try {
+    const foundCurrentEstablishment = myCurrentEstablishments.find(
+      (establishment) => establishment.key === lineValidator.establishmentKey,
+    );
+    const foundCurrentWorker = foundCurrentEstablishment.theWorker(lineValidator.key);
+
+    if (thisWorkerAsAPI.postcode && foundCurrentWorker && foundCurrentWorker.postcode !== thisWorkerAsAPI.postcode) {
+      const { Latitude, Longitude } = (await dbModels.postcodes.firstOrCreate(thisWorkerAsAPI.postcode)) || {};
+
+      thisWorkerAsAPI.Latitude = Latitude;
+      thisWorkerAsAPI.Longitude = Longitude;
+    }
+
     // construct Worker entity
     const thisApiWorker = new Worker();
     await thisApiWorker.load(thisWorkerAsAPI);

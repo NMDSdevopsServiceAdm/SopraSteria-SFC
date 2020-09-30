@@ -70,7 +70,7 @@ router.route('/').post(async (req, res) => {
 
       const newPostcode = pCodeCheck.sanitisePostcode(req.body.postalCode);
 
-      if (newPostcode !== thisEstablishment.postcode) {
+      if (newPostcode && newPostcode !== thisEstablishment.postcode) {
         const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(newPostcode)) || {};
 
         req.body.postalCode = newPostcode;
