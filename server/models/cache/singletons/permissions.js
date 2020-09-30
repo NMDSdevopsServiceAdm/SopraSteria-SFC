@@ -285,8 +285,8 @@ let ALL_PERMISSIONS = [
     code: 'canViewBenchmarks',
     description: 'Can the Establishment view Benchmarks tab',
     role: ['Edit','Read'],
-    subOwnedByWorkplaceAccessByParent: [],
-    subOwnedByParentAccessBySub: [],
+    subOwnedByWorkplaceAccessByParent: ['Workplace and Staff','Workplace','None'],
+    subOwnedByParentAccessBySub: ['Workplace and Staff','Workplace','None'],
     isAdmin: false,
   }
 ];

@@ -40,6 +40,10 @@ bulkupload:
     completion:
         timeout: 180
 
+locks:
+    region: eu-west-1
+    bucketname: sfc-locks-dev
+
 public:
     download:
         baseurl: https://sfc-public-dev.s3.eu-west-2.amazonaws.com/public/download

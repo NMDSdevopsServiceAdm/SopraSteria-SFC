@@ -55,6 +55,7 @@ module.exports = function (sequelize, DataTypes) {
     if (!postcodeData || !postcodeData.addresses) {
       return false;
     }
+    
     const district = postcodeData.addresses[0].district;
     const cssr = await this.findOne({
       attributes: ['id'],
@@ -62,7 +63,8 @@ module.exports = function (sequelize, DataTypes) {
         LocalAuthority: district,
       },
     });
-    if (cssr.id) {
+
+    if (cssr && cssr.id) {
       return cssr.id;
     } else {
       return false;

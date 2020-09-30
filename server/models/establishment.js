@@ -878,7 +878,7 @@ module.exports = function (sequelize, DataTypes) {
         postcode: postcode.postcode,
       },
     });
-    if (cssr) {
+    if (cssr && cssr.theAuthority && cssr.theAuthority.id){
       cssr = cssr.theAuthority.id;
     } else {
       cssr = await sequelize.models.cssr.getIdFromDistrict(postcode.postcode);
