@@ -7,7 +7,6 @@ import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchm
 
 import { Establishment } from '../../../../mockdata/establishment';
 
-
 describe('BenchmarksTabComponent', () => {
   let component: BenchmarksTabComponent;
   let fixture: ComponentFixture<BenchmarksTabComponent>;
@@ -16,7 +15,7 @@ describe('BenchmarksTabComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [],
-      providers: [{ provide: BenchmarksService, useClass: MockBenchmarksService }]
+      providers: [{ provide: BenchmarksService, useClass: MockBenchmarksService }],
     }).compileComponents();
   }));
 
@@ -32,25 +31,23 @@ describe('BenchmarksTabComponent', () => {
   });
   it('should be able to build with only part of the data', () => {
     const tileData = {
-      tiles:{
+      tiles: {
         pay: {
-          workplaceValue:
-            {
-              value: 10,
-              hasValue: false
-            },
-          comparisonGroup:
-            {
-              value: 0,
-              hasValue: false
-            }
+          workplaceValue: {
+            value: 10,
+            hasValue: false,
+          },
+          comparisonGroup: {
+            value: 0,
+            hasValue: false,
+          },
         },
-    },
-      meta:{
+      },
+      meta: {
         workplaces: 10,
-        staff: 100
-      }
-  };
+        staff: 100,
+      },
+    };
     component.tilesData = tileData;
     fixture.detectChanges();
 
@@ -66,7 +63,7 @@ describe('BenchmarksTabComponent', () => {
   });
   it('should download a pdf', async () => {
     const event = new Event('click');
-    const pdfDownload= spyOn(component, 'downloadAsPDF').and.callThrough();
+    const pdfDownload = spyOn(component, 'downloadAsPDF').and.callThrough();
     const downloadPDF = await component.downloadAsPDF(event);
     expect(pdfDownload).toHaveBeenCalled();
     expect(downloadPDF.getNumberOfPages()).toEqual(2);
