@@ -58,3 +58,6 @@ CQCLocationAPICall/.nyc_output/
 
 # Google Lighthouse Results
 .lighthouseci/
+
+# ESLint
+.eslintcache

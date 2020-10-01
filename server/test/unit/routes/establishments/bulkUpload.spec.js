@@ -14,11 +14,8 @@ const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/est
 const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers');
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
 const { Establishment } = require('../../../../models/classes/establishment');
-const { Training } = require('../../../../models/classes/training');
-const { Worker } = require('../../../../models/classes/worker');
 const buildEstablishmentCSV = require('../../../../test/factories/establishment/csv');
 const buildWorkerCSV = require('../../../../test/factories/worker/csv');
-const ServiceCache = require('../../../../models/cache/singletons/services').ServiceCache;
 
 const errorsBuilder = build('Error', {
   fields: {

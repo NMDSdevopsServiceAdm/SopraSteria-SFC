@@ -37,6 +37,10 @@ bulkupload:
     region: eu-west-2
     bucketname: sfc-bulkupload-demo
 
+locks:
+    region: eu-west-1
+    bucketname: sfc-locks-demo
+
 public:
     download:
         baseurl: https://sfc-public-staging.s3.eu-west-2.amazonaws.com/public/download
