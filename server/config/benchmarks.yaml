@@ -36,4 +36,8 @@ bulkupload:
     completion:
         timeout: 180
 
+locks:
+    region: eu-west-1
+    bucketname: sfc-locks-dev
+
 # no notify definition - not used in development
