@@ -1,7 +1,6 @@
 'use strict';
 const moment = require('moment');
 const csv = require('csvtojson');
-const uuid = require('uuid');
 const config = require('../../config/config');
 const dbModels = require('../../models');
 const timerLog = require('../../utils/timerLog');
