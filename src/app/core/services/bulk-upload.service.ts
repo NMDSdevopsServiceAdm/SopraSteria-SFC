@@ -49,12 +49,12 @@ export class BulkUploadService {
   constructor(
     private http: HttpClient,
     private establishmentService: EstablishmentService,
-    private userService: UserService
+    private userService: UserService,
   ) {}
 
   public get workPlaceReferences$() {
     return this.userService.getEstablishments().pipe(
-      map(response => {
+      map((response) => {
         const references = [];
         if (response.primary) {
           references.push(response.primary);
@@ -64,9 +64,9 @@ export class BulkUploadService {
         }
         return references;
       }),
-      tap(references => {
+      tap((references) => {
         this.setWorkplaceReferences(references);
-      })
+      }),
     );
   }
 
@@ -87,9 +87,9 @@ export class BulkUploadService {
       () =>
         this.http.post<BulkUploadLock>(
           `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/uploaded`,
-          payload
+          payload,
         ),
-      undefined
+      undefined,
     );
   }
 
@@ -107,31 +107,31 @@ export class BulkUploadService {
   public preValidateFiles(workplaceUid: string): Observable<ValidatedFile[]> {
     return this.checkLockStatus(
       () => this.http.put<ValidatedFile[]>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`, null),
-      undefined
+      undefined,
     );
   }
 
   public getUploadedFiles(workplaceUid: string): Observable<ValidatedFile[]> {
     return this.checkLockStatus(
       () => this.http.get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`),
-      undefined
-    ).pipe(map(response => response.files));
+      undefined,
+    ).pipe(map((response) => response.files));
   }
 
   public getUploadedFileSignedURL(workplaceUid: string, key: string): Observable<string> {
     return this.checkLockStatus(
       () =>
         this.http.get<UploadedFilesRequestToDownloadResponse>(
-          `/api/establishment/${workplaceUid}/bulkupload/uploaded/${key}`
+          `/api/establishment/${workplaceUid}/bulkupload/uploaded/${key}`,
         ),
-      undefined
-    ).pipe(map(response => response.file.signedUrl));
+      undefined,
+    ).pipe(map((response) => response.file.signedUrl));
   }
 
   public validateFiles(workplaceUid: string): Observable<ValidatedFilesResponse> {
     return this.checkLockStatus(
       () => this.http.put<ValidatedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/validate`, null),
-      undefined
+      undefined,
     );
   }
 
@@ -141,7 +141,7 @@ export class BulkUploadService {
       {
         observe: 'response',
         responseType: 'blob' as 'json',
-      }
+      },
     );
   }
 
@@ -170,7 +170,7 @@ export class BulkUploadService {
       {
         observe: 'response',
         responseType: 'blob' as 'json',
-      }
+      },
     );
   }
 
@@ -245,7 +245,7 @@ export class BulkUploadService {
         .pipe(
           map((request: any) => {
             requestId = request.requestId;
-          })
+          }),
         )
         .pipe(
           // Run serperate function to get the current lock status
@@ -254,19 +254,22 @@ export class BulkUploadService {
               .pipe(startWith(0))
               .pipe(
                 concatMap(() =>
-                  from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`))
-                )
-              )
-          )
+                  from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`)),
+                ),
+              ),
+          ),
         )
-        .pipe(filter(state => state.bulkUploadLockHeld === false))
+        .pipe(filter((state) => state.reportLockHeld === false))
         .pipe(take(1))
         .pipe(
           concatMap(() =>
             from(
-              this.http.get<any>(`/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`, httpOptions)
-            )
-          )
+              this.http.get<any>(
+                `/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`,
+                httpOptions,
+              ),
+            ),
+          ),
         )
     );
   }

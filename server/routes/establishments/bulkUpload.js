@@ -23,7 +23,7 @@ const { Worker } = require('../../models/classes/worker');
 const { Qualification } = require('../../models/classes/qualification');
 const { Training } = require('../../models/classes/training');
 const { User } = require('../../models/classes/user');
-const fileLockS3 = require('../../../utils/fileLockS3');
+const fileLockS3 = require('../../utils/fileLockS3');
 // const { acquireLock, updateLockState, lockStatus, releaseLockQuery } = require('../../data/bulkUploadLock');
 
 const buStates = [
