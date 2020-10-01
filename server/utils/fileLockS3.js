@@ -11,12 +11,12 @@ const lockExists = async (establishmentId, lockName) => {
   let lockExists = true;
   try {
     console.log('Getting HEAD value of object in S3');
-    // await s3
-    //   .headObject({
-    //     Bucket,
-    //     Key: `establishments/${establishmentId}/${lockName}.json`,
-    //   })
-    //   .promise();
+    await s3
+      .headObject({
+        Bucket,
+        Key: `establishments/${establishmentId}/${lockName}.json`,
+      })
+      .promise();
   } catch (err) {
     if (err.statusCode === 403) {
       lockExists = false;
@@ -30,13 +30,13 @@ const lockExists = async (establishmentId, lockName) => {
 const lockAquired = async (establishmentId, lockName) => {
   let lockAquired = false;
   try {
-    // await s3
-    //   .putObject({
-    //     Body: JSON.stringify({}),
-    //     Bucket,
-    //     Key: `establishments/${establishmentId}/${lockName}.json`,
-    //   })
-    //   .promise();
+    await s3
+      .putObject({
+        Body: JSON.stringify({}),
+        Bucket,
+        Key: `establishments/${establishmentId}/${lockName}.json`,
+      })
+      .promise();
     lockAquired = true;
   } catch (err) {}
   return lockAquired;
@@ -45,12 +45,12 @@ const lockAquired = async (establishmentId, lockName) => {
 const lockDeleted = async (establishmentId, lockName) => {
   let lockDeleted = true;
   try {
-    // await s3
-    //   .deleteObject({
-    //     Bucket,
-    //     Key: `establishments/${establishmentId}/${lockName}.json`,
-    //   })
-    //   .promise();
+    await s3
+      .deleteObject({
+        Bucket,
+        Key: `establishments/${establishmentId}/${lockName}.json`,
+      })
+      .promise();
   } catch (err) {
     lockDeleted = false;
   }
@@ -61,7 +61,7 @@ const fileLockS3 = {
   async acquireLock(lockName, logic, req, res) {
     const { establishmentId } = req;
 
-    const exists = false;
+    const exists = await lockExists(establishmentId, lockName);
 
     if (!exists) {
       if (await lockAquired(establishmentId, lockName)) {
