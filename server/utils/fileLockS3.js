@@ -61,7 +61,7 @@ const fileLockS3 = {
   async acquireLock(lockName, logic, req, res) {
     const { establishmentId } = req;
 
-    const exists = await lockExists(establishmentId, lockName);
+    const exists = false;
 
     if (!exists) {
       if (await lockAquired(establishmentId, lockName)) {
