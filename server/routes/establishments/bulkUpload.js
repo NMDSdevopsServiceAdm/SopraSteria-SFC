@@ -23,7 +23,8 @@ const { Worker } = require('../../models/classes/worker');
 const { Qualification } = require('../../models/classes/qualification');
 const { Training } = require('../../models/classes/training');
 const { User } = require('../../models/classes/user');
-const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = require('../../data/bulkUploadLock');
+const fileLockS3 = require('../../../utils/fileLockS3');
+// const { acquireLock, updateLockState, lockStatus, releaseLockQuery } = require('../../data/bulkUploadLock');
 
 const buStates = [
   'READY',
@@ -78,150 +79,6 @@ const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validat
       'Large Bulk Upload',
       `${thisEstablishment.name} (ID ${thisEstablishment.nmdsId}) just did a bulk upload with a staff file containing ${workerCount} staff records.`,
     );
-};
-
-// Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
-// This function can't be an express middleware as it needs to run both before and after the regular logic
-const acquireLock = async function (logic, newState, req, res) {
-  const { establishmentId } = req;
-
-  req.startTime = new Date().toISOString();
-
-  console.log(`Acquiring lock for establishment ${establishmentId}.`);
-
-  // attempt to acquire the lock
-  const currentLockState = await attemptToAcquireLock(establishmentId);
-
-  // if no records were updated the lock could not be acquired
-  // Just respond with a 409 http code and don't call the regular logic
-  // close the response either way and continue processing in the background
-  if (currentLockState[1] === 0) {
-    console.log('Lock *NOT* acquired.');
-    res.status(409).send({
-      message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`,
-    });
-
-    return;
-  }
-
-  console.log('Lock acquired.', newState);
-
-  let nextState;
-
-  switch (newState) {
-    case buStates.DOWNLOADING:
-      {
-        // get the current bulk upload state
-        const currentState = await lockStatus(establishmentId);
-
-        if (currentState.length === 1) {
-          // don't update the status for downloads, just hold the lock
-          newState = currentState[0].bulkUploadState;
-          nextState = null;
-        } else {
-          nextState = buStates.READY;
-        }
-      }
-      break;
-
-    case buStates.UPLOADING:
-      nextState = buStates.UPLOADED;
-      break;
-
-    case buStates.VALIDATING:
-      // we don't yet know wether the validation should go to the PASSED, FAILED
-      // or WARNINGS state next as it depends on whether the data is valid or not
-      nextState = null;
-      break;
-
-    case buStates.COMPLETING:
-      nextState = buStates.READY;
-      break;
-
-    default:
-      newState = buStates.READY;
-      nextState = buStates.READY;
-      break;
-  }
-
-  // update the current state
-  await updateLockState(establishmentId, newState);
-
-  req.buRequestId = String(uuid()).toLowerCase();
-
-  res.status(200).send({
-    message: `Lock for establishment ${establishmentId} acquired.`,
-    requestId: req.buRequestId,
-  });
-
-  // run whatever the original logic was
-  try {
-    await logic(req, res);
-  } catch (e) {}
-
-  if (newState === buStates.VALIDATING) {
-    switch (res.buValidationResult) {
-      case buStates.PASSED:
-      case buStates.WARNINGS:
-        nextState = res.buValidationResult;
-        break;
-
-      default:
-        nextState = buStates.FAILED;
-        break;
-    }
-  }
-
-  // release the lock
-  await releaseLock(req, null, null, nextState);
-};
-
-const lockStatusGet = async (req, res) => {
-  const { establishmentId } = req;
-  res.setTimeout(1000, () => {
-    res.status(200).send({
-      establishmentId,
-      bulkUploadState: buStates.UNKNOWN,
-      bulkUploadLockHeld: true,
-    });
-  });
-
-  const currentLockState = await lockStatus(establishmentId);
-
-  res
-    .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
-    .send(
-      currentLockState.length === 0
-        ? {
-            establishmentId,
-            bulkUploadState: buStates.READY,
-            bulkUploadLockHeld: true,
-          }
-        : currentLockState[0],
-    );
-
-  return currentLockState[0];
-};
-
-const releaseLock = async (req, res, next, nextState = null) => {
-  try {
-    const establishmentId = req.query.subEstId || req.establishmentId;
-
-    if (Number.isInteger(establishmentId)) {
-      await releaseLockQuery(establishmentId, nextState);
-
-      console.log(`Lock released for establishment ${establishmentId}`);
-    }
-
-    if (res !== null) {
-      res.status(200).send({
-        establishmentId,
-      });
-    }
-  } catch (error) {
-    console.error(error.name);
-    console.error(error.message);
-  }
 };
 
 const responseGet = (req, res) => {
@@ -2841,21 +2698,21 @@ const checkDuplicateWorkerID = (
 
 const router = require('express').Router();
 
-router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
-router.route('/download/:downloadType').get(acquireLock.bind(null, downloadGet, buStates.DOWNLOADING));
+router.route('/signedUrl').get(fileLockS3.acquireLock.bind(null, 'bulkupload', signedUrlGet));
+router.route('/download/:downloadType').get(fileLockS3.acquireLock.bind(null, 'bulkupload', downloadGet));
 
-router.route('/uploaded').put(acquireLock.bind(null, uploadedPut, buStates.UPLOADING));
-router.route('/uploaded').post(acquireLock.bind(null, uploadedPost, buStates.UPLOADING));
-router.route('/uploaded').get(acquireLock.bind(null, uploadedGet, buStates.DOWNLOADING));
-router.route('/uploaded/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOADING));
+router.route('/uploaded').put(fileLockS3.acquireLock.bind(null, 'bulkupload', uploadedPut));
+router.route('/uploaded').post(fileLockS3.acquireLock.bind(null, 'bulkupload', uploadedPost));
+router.route('/uploaded').get(fileLockS3.acquireLock.bind(null, 'bulkupload', uploadedGet));
+router.route('/uploaded/*').get(fileLockS3.acquireLock.bind(null, 'bulkupload', uploadedStarGet));
 
-router.route('/validate').put(acquireLock.bind(null, validatePut, buStates.VALIDATING));
+router.route('/validate').put(fileLockS3.acquireLock.bind(null, 'bulkupload', validatePut));
 
-router.route('/report/:reportType').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
+router.route('/report/:reportType').get(fileLockS3.acquireLock.bind(null, 'bulkupload', reportGet));
 
-router.route('/complete').post(acquireLock.bind(null, completePost, buStates.COMPLETING));
-router.route('/lockstatus').get(lockStatusGet);
-router.route('/unlock').get(releaseLock);
+router.route('/complete').post(fileLockS3.acquireLock.bind(null, 'bulkupload', completePost));
+router.route('/lockstatus').get(fileLockS3.lockStatus.bind(null, 'bulkupload'));
+router.route('/unlock').get(fileLockS3.releaseLock.bind(null, 'bulkupload'));
 router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;
