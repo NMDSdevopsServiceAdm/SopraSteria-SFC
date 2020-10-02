@@ -1,13 +1,13 @@
-const AWS = require('aws-sdk');
-const config = require('../config/config');
-const uuid = require('uuid');
+// const AWS = require('aws-sdk');
+// const config = require('../config/config');
+// const uuid = require('uuid');
 
-const s3 = new AWS.S3({
-  region: String(config.get('locks.region')),
-});
-const Bucket = String(config.get('locks.bucketname'));
+// const s3 = new AWS.S3({
+//   region: String(config.get('locks.region')),
+// });
+// const Bucket = String(config.get('locks.bucketname'));
 
-const lockExists = async (establishmentId, lockName) => {
+/*const lockExists = async (establishmentId, lockName) => {
   let lockExists = true;
   try {
     console.log('Getting HEAD value of object in S3');
@@ -55,57 +55,70 @@ const lockDeleted = async (establishmentId, lockName) => {
     lockDeleted = false;
   }
   return lockDeleted;
-};
+};*/
 
 const fileLockS3 = {
-  async acquireLock(lockName, logic, req, res) {
-    const { establishmentId } = req;
+  acquireLock(lockName, logic, req, res) {
+    //const { establishmentId } = req;
 
-    const exists = await lockExists(establishmentId, lockName);
+    //const exists = await lockExists(establishmentId, lockName);
 
-    if (!exists) {
-      if (await lockAquired(establishmentId, lockName)) {
-        req.buRequestId = String(uuid()).toLowerCase();
-        res.status(200).send({
-          message: `Lock for establishment ${establishmentId} acquired.`,
-          requestId: req.buRequestId,
-        });
-      }
-    } else {
-      res.status(409).send({
-        message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`,
-      });
-    }
+    req.buRequestId = '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d';
+    res.status(200).send({
+      message: 'Lock for establishment testing acquired.',
+      requestId: req.buRequestId,
+    });
+    return;
 
-    try {
-      await logic(req, res);
-    } catch (e) {
-      console.log(e);
-    }
+    // if (!exists) {
+    //   if (await lockAquired(establishmentId, lockName)) {
+    //     req.buRequestId = String(uuid()).toLowerCase();
+    //     res.status(200).send({
+    //       message: `Lock for establishment ${establishmentId} acquired.`,
+    //       requestId: req.buRequestId,
+    //     });
+    //   }
+    // } else {
+    //   res.status(409).send({
+    //     message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`,
+    //   });
+    // }
 
-    await lockDeleted(establishmentId, lockName);
+    // try {
+    //   await logic(req, res);
+    // } catch (e) {
+    //   console.log(e);
+    // }
+
+    // await lockDeleted(establishmentId, lockName);
   },
 
-  async lockStatus(lockName, req, res) {
-    console.log('Looking up lock status');
-    const { establishmentId } = req;
+  lockStatus(lockName, req, res) {
+    res.status(200).send({ idLockOn: 'testing', reportLockHeld: true });
+    return;
 
-    const reportLockHeld = await lockExists(establishmentId, lockName);
-    console.log('Lock held status: ', reportLockHeld);
+    // console.log('Looking up lock status');
+    // const { establishmentId } = req;
 
-    res.status(200).send({ idLockOn: establishmentId, reportLockHeld });
+    // const reportLockHeld = await lockExists(establishmentId, lockName);
+    // console.log('Lock held status: ', reportLockHeld);
+
+    // res.status(200).send({ idLockOn: establishmentId, reportLockHeld });
   },
 
   async releaseLock(lockName, req, res) {
-    const { establishmentId } = req;
+    res.status(200).send({ idLockOn: 'testing', reportLockHeld: true });
+    return;
 
-    if (await lockDeleted(establishmentId, lockName)) {
-      res.status(200).send({
-        iDLockOn: establishmentId,
-      });
-    } else {
-      res.status(404).send();
-    }
+    // const { establishmentId } = req;
+
+    // if (await lockDeleted(establishmentId, lockName)) {
+    //   res.status(200).send({
+    //     iDLockOn: establishmentId,
+    //   });
+    // } else {
+    //   res.status(404).send();
+    // }
   },
 };
 
