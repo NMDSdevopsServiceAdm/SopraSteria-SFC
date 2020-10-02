@@ -103,7 +103,7 @@ export class ReportService {
         .pipe(
           // Run separate function to get the current lock status
           concatMap(() =>
-            interval(2000)
+            interval(5000)
               .pipe(startWith(0))
               .pipe(concatMap(() => from(this.http.get<LockStatus>(apiPath + '/lockstatus')))),
           ),
@@ -135,7 +135,7 @@ export class ReportService {
         .pipe(
           // Run serperate function to get the current lock status
           concatMap(() =>
-            interval(2000)
+            interval(5000)
               .pipe(startWith(0))
               .pipe(
                 concatMap(() =>
