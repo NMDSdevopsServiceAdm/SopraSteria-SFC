@@ -1480,6 +1480,7 @@ class Establishment {
 
     const regManager = 4;
     const isCQCRegulated = myRegType === 2;
+    const notHeadOffice = this._currentLine.MAINSERVICE !== '72'; // Head Office ID
 
     const hasRegisteredManagerVacancy =() => {
       let regManagerVacancies = 0;
@@ -1489,7 +1490,7 @@ class Establishment {
       return regManagerVacancies > 0;
     };
 
-    if(isCQCRegulated && !hasRegisteredManagerVacancy() && registeredManager === 0) {
+    if(isCQCRegulated && !hasRegisteredManagerVacancy() && registeredManager === 0 && notHeadOffice) {
       csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
         error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one'
       }));

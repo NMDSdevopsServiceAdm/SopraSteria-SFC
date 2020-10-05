@@ -94,9 +94,49 @@ describe('Bulk Upload - Establishment CSV', () => {
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       expect(establishment.validationErrors).to.deep.equal([]);
     });
+
   });
 
   describe('Cross Validations', () => {
+    it('should show error if not Head Office and no registered manager or vacancy for one', async () => {
+      const establishmentRow = buildEstablishmentCSV({
+        overrides: {
+          STATUS: 'NEW',
+          TOTALPERMTEMP: 1,
+          VACANCIES: '0;0;0',
+        },
+      });
+
+      const workerRow = buildWorkerCSV({
+        overrides: {
+          LOCALESTID: establishmentRow.LOCALESTID,
+        }
+      });
+
+      crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
+        expect(csvEstablishmentSchemaErrors[0].error).to.deep.equal('You do not have a staff record for a Registered Manager therefore must record a vacancy for one');
+      });
+    });
+    it('should NOT show error if Head Office and no registered manager or vacancy for one', async () => {
+      const establishmentRow = buildEstablishmentCSV({
+        overrides: {
+          STATUS: 'NEW',
+          TOTALPERMTEMP: 1,
+          VACANCIES: '0;0;0',
+          MAINSERVICE: '72'
+        },
+      });
+
+      const workerRow = buildWorkerCSV({
+        overrides: {
+          LOCALESTID: establishmentRow.LOCALESTID,
+        }
+      });
+
+      crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
+        expect(csvEstablishmentSchemaErrors.length).to.equal(0);
+      });
+    });
     it('should validate the total number of staff with the # of staff provided in the Worker CSV when the status is NEW', async () => {
       const establishmentRow = buildEstablishmentCSV({
         overrides: {
