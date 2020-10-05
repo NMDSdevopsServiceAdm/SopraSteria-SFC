@@ -76,13 +76,13 @@ const fileLockS3 = {
       });
     }
 
-    /*try {
-      //await logic(req, res);
+    try {
+      await logic(req, res);
     } catch (e) {
       console.log(e);
-    }*/
+    }
 
-    //await lockDeleted(establishmentId, lockName);
+    await lockDeleted(establishmentId, lockName);
   },
 
   async lockStatus(lockName, req, res) {
