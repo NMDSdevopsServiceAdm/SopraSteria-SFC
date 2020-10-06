@@ -55,10 +55,10 @@ SELECT
       ("ContractValue" IS NOT NULL)  AND
       ("WeeklyHoursContractedValue" IS NOT NULL OR "WeeklyHoursAverageValue" IS NOT NULL) AND
       ("ZeroHoursContractValue" IS NOT NULL) AND
-      ("DaysSickValue" IS NOT NULL) AND
-      (("AnnualHourlyPayValue" IS NOT NULL OR ("AnnualHourlyPayRate" IS NOT NULL OR "AnnualHourlyPayValue" = :Dont))) AND
+      ("DaysSickValue" IS NOT NULL AND "ContractValue" <> :agency ) AND
+      (("AnnualHourlyPayValue" IS NOT NULL ANd ("AnnualHourlyPayRate" IS NOT NULL OR "AnnualHourlyPayValue" = :Dont))) AND
       ("CareCertificateValue" IS NOT NULL) AND
-      ("QualificationInSocialCareValue" IS NOT NULL OR ("QualificationInSocialCareValue" = :No OR "QualificationInSocialCareValue" = :Dont) OR ("Qualification"."Level" IS NOT NULL OR "Qualification"."Level" != :emptyValue))  AND
+      ("QualificationInSocialCareValue" IS NOT NULL AND ("QualificationInSocialCareValue" = :No OR "QualificationInSocialCareValue" = :Dont) OR ("Qualification"."Level" IS NOT NULL OR "Qualification"."Level" != :emptyValue))  AND
       ("OtherQualificationsValue" IS NOT NULL) AND
       "LastWdfEligibility" > :effectiveDate AND
       ("DataOwner" = :Parent OR "DataPermissions" = :WorkplaceStaff) AND
@@ -176,6 +176,7 @@ exports.getEstablishmentData = async establishmentId =>
       Dont: 'Don\'t know',
       Other: 'Other',
       No: 'No',
+      agency: "Agency",
       emptyValue: '',
       WorkplaceStaff: 'Workplace and Staff',
       Parent: 'Parent',

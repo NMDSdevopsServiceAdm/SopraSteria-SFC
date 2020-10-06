@@ -262,6 +262,7 @@ class Worker extends EntityValidator {
     return this._properties.get('ApprenticeshipTraining') ? this._properties.get('ApprenticeshipTraining').property : null;
   }
 
+  // TODO: rename to zeroHoursContract
   get zeroContractHours () {
     return this._properties.get('ZeroHoursContract') ? this._properties.get('ZeroHoursContract').property : null;
   }
@@ -350,7 +351,10 @@ class Worker extends EntityValidator {
       }
 
       // Remove average hours if not on a zero hour contract
-      if (document.zeroHoursContract === 'No') {
+      const notZeroHours = ['No', 'Don\'t know'];
+      const contract = ['Permanent', 'Temporary', 'Other']
+      if (notZeroHours.includes(document.zeroHoursContract) && contract.includes(this.contract)
+          || notZeroHours.includes(this.zeroContractHours) && contract.includes(document.contract)) {
         document.weeklyHoursAverage = { value: null, hours: null };
       }
 

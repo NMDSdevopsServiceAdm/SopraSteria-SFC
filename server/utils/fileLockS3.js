@@ -10,7 +10,6 @@ const Bucket = String(config.get('locks.bucketname'));
 const lockExists = async (establishmentId, lockName) => {
   let lockExists = true;
   try {
-    console.log('Getting HEAD value of object in S3');
     await s3
       .headObject({
         Bucket,
@@ -22,8 +21,6 @@ const lockExists = async (establishmentId, lockName) => {
       lockExists = false;
     }
   }
-
-  console.log('File exists in S3: ', lockExists);
   return lockExists;
 };
 
@@ -38,7 +35,9 @@ const lockAquired = async (establishmentId, lockName) => {
       })
       .promise();
     lockAquired = true;
-  } catch (err) {}
+  } catch (err) {
+    console.log(err);
+  }
   return lockAquired;
 };
 
@@ -87,11 +86,9 @@ const fileLockS3 = {
   },
 
   async lockStatus(lockName, req, res) {
-    console.log('Looking up lock status');
     const { establishmentId } = req;
 
     const reportLockHeld = await lockExists(establishmentId, lockName);
-    console.log('Lock held status: ', reportLockHeld);
 
     res.status(200).send({ idLockOn: establishmentId, reportLockHeld });
   },
