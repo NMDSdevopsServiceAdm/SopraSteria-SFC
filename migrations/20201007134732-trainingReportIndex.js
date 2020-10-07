@@ -2,30 +2,48 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.transaction((transaction) => {
-      return queryInterface.sequelize.query(`
-CREATE UNIQUE INDEX CONCURRENTLY "MandatoryTraining_EstablishmentFKJobFK_Idx"
-    ON cqc."MandatoryTraining"
-    ("EstablishmentFK" ASC NULLS LAST, "JobFK" ASC NULLS LAST);
-
-CREATE UNIQUE INDEX CONCURRENTLY "MandatoryTraining_EstablishmentFKJobFKTrainingCategoryFK_Idx"
-    ON cqc."MandatoryTraining"
-    ("EstablishmentFK" ASC NULLS LAST, "JobFK" ASC NULLS LAST, "TrainingCategoryFK" ASC NULLS LAST);
-
-CREATE UNIQUE INDEX CONCURRENTLY "Establishment_EstablishmentUIDArchived_Idx"
-    ON cqc."Establishment"
-    ("EstablishmentUID" ASC NULLS LAST, "Archived" ASC NULLS LAST);
-      `);
-    });
+    return Promise.all([
+      queryInterface.addIndex(
+        {
+          tableName: 'MandatoryTraining',
+          schema: 'cqc',
+        },
+        {
+          fields: ['EstablishmentFK', 'JobFK'],
+          concurrently: true,
+          unique: true,
+        },
+      ),
+      queryInterface.addIndex(
+        {
+          tableName: 'MandatoryTraining',
+          schema: 'cqc',
+        },
+        {
+          fields: ['EstablishmentFK', 'JobFK', 'TrainingCategoryFK'],
+          concurrently: true,
+          unique: true,
+        },
+      ),
+      queryInterface.addIndex(
+        {
+          tableName: 'Establishment',
+          schema: 'cqc',
+        },
+        {
+          fields: ['EstablishmentUID', 'Archived'],
+          concurrently: true,
+          unique: true,
+        },
+      ),
+    ]);
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.transaction((transaction) => {
-      return queryInterface.sequelize.query(`
-DROP INDEX cqc."MandatoryTraining_EstablishmentFKJobFK_Idx";
-DROP INDEX cqc."MandatoryTraining_EstablishmentFKJobFKTrainingCategoryFK_Idx";
-DROP INDEX cqc."Establishment_EstablishmentUIDArchived_Idx";
-      `);
-    });
+    return queryInterface.sequelize.query(`
+DROP INDEX cqc."mandatory_training__establishment_f_k__job_f_k";
+DROP INDEX cqc."mandatory_training__establishment_f_k__job_f_k__training_catego";
+DROP INDEX cqc."establishment__establishment_u_i_d__archived";
+    `);
   },
 };
