@@ -61,7 +61,6 @@ SELECT
       ("QualificationInSocialCareValue" IS NOT NULL AND ("QualificationInSocialCareValue" = :No OR "QualificationInSocialCareValue" = :Dont) OR ("Qualification"."Level" IS NOT NULL OR "Qualification"."Level" != :emptyValue))  AND
       ("OtherQualificationsValue" IS NOT NULL) AND
       "LastWdfEligibility" > :effectiveDate AND
-      ("DataOwner" = :Parent OR "DataPermissions" = :WorkplaceStaff) AND
       "Archived" = :falseFlag
   ) AS "CompletedWorkerRecords",
   array_to_string(array(
@@ -137,6 +136,7 @@ ON
   "Establishment"."MainServiceFKValue" = MainService.id
 WHERE
   ("Establishment"."EstablishmentID" = :establishmentId OR "Establishment"."ParentID" = :establishmentId) AND
+   (("Establishment"."IsParent" = true) OR ("Establishment"."DataOwner" = :Parent OR "Establishment"."DataPermissions" = :WorkplaceStaff)) AND
   "Archived" = :falseFlag
 ORDER BY
   "EstablishmentID";
