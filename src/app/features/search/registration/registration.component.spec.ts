@@ -18,7 +18,7 @@ const newUserAccount = 'New-User-Account';
 const registrationTypeIrrelevant = 'Registration-Type-Irrelevant';
 const workplaceAddedByParent = 'Workplace-Added-By-Parent';
 
-fdescribe('RegistrationComponent', () => {
+describe('RegistrationComponent', () => {
   async function getRegistrationComponent(registrationType) {
     const registration = {
       email: null,
@@ -126,7 +126,7 @@ fdescribe('RegistrationComponent', () => {
     const registrationApproval = spyOn(component.registrationsService, 'registrationApproval').and.callThrough();
 
     const nmdsIdInput = container.querySelector('input[name=nmdsid]') as HTMLElement;
-    nmdsIdInput.nodeValue = '';
+    userEvent.clear(nmdsIdInput);
 
     const newNmdsId = 'G1234567';
     userEvent.type(nmdsIdInput, newNmdsId);
@@ -148,7 +148,7 @@ fdescribe('RegistrationComponent', () => {
       spyOn(component.handleRegistration, 'emit').and.callThrough();
 
       const nmdsIdInput = container.querySelector('input[name=nmdsid]') as HTMLElement;
-      nmdsIdInput.nodeValue = '';
+      userEvent.clear(nmdsIdInput);
 
       userEvent.type(nmdsIdInput, '');
 
@@ -163,7 +163,7 @@ fdescribe('RegistrationComponent', () => {
       const registrationApproval = spyOn(component.registrationsService, 'registrationApproval').and.callThrough();
 
       const nmdsIdInput = container.querySelector('input[name=nmdsid]') as HTMLElement;
-      nmdsIdInput.nodeValue = '';
+      userEvent.clear(nmdsIdInput);
 
       userEvent.type(nmdsIdInput, 'W123456');
 
@@ -178,7 +178,7 @@ fdescribe('RegistrationComponent', () => {
       const registrationApproval = spyOn(component.registrationsService, 'registrationApproval').and.callThrough();
 
       const nmdsIdInput = container.querySelector('input[name=nmdsid]') as HTMLElement;
-      nmdsIdInput.nodeValue = '';
+      userEvent.clear(nmdsIdInput);
 
       userEvent.type(nmdsIdInput, 'W12345678910');
 
@@ -193,7 +193,7 @@ fdescribe('RegistrationComponent', () => {
       const registrationApproval = spyOn(component.registrationsService, 'registrationApproval').and.callThrough();
 
       const nmdsIdInput = container.querySelector('input[name=nmdsid]') as HTMLElement;
-      nmdsIdInput.nodeValue = '';
+      userEvent.clear(nmdsIdInput);
 
       userEvent.type(nmdsIdInput, '12345678');
 
@@ -208,7 +208,7 @@ fdescribe('RegistrationComponent', () => {
       const registrationApproval = spyOn(component.registrationsService, 'registrationApproval').and.callThrough();
 
       const nmdsIdInput = container.querySelector('input[name=nmdsid]') as HTMLElement;
-      nmdsIdInput.nodeValue = '';
+      userEvent.clear(nmdsIdInput);
 
       userEvent.type(nmdsIdInput, 'w1234567');
 
@@ -216,7 +216,7 @@ fdescribe('RegistrationComponent', () => {
       expect(registrationApproval).toHaveBeenCalledTimes(0);
     });
 
-    fit('validates that a Workplace ID cannot be the same as an existing Workplace ID', async () => {
+    it('validates that a Workplace ID cannot be the same as an existing Workplace ID', async () => {
       const { getByText, fixture, container } = await getRegistrationComponent(registrationTypeIrrelevant);
       const { componentInstance: component } = fixture;
 
@@ -231,16 +231,13 @@ fdescribe('RegistrationComponent', () => {
       spyOn(component.registrationsService, 'registrationApproval').and.returnValue(throwError(mockErrorResponse));
 
       const nmdsIdInput = container.querySelector('input[name=nmdsid]') as HTMLElement;
-      nmdsIdInput.nodeValue = '';
+      userEvent.clear(nmdsIdInput);
 
-      await userEvent.type(nmdsIdInput, testNmdsId);
-      fixture.detectChanges();
+      userEvent.type(nmdsIdInput, testNmdsId);
       fireEvent.click(getByText('Approve'));
 
       expect(
-        screen.getByText(
-          `This workplace ID (${testNmdsId}) belongs to another workplace. Enter a different workplace ID.`,
-        ),
+        getByText(`This workplace ID (${testNmdsId}) belongs to another workplace. Enter a different workplace ID.`),
       );
     });
   });
