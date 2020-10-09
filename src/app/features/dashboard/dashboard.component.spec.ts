@@ -161,7 +161,7 @@ describe('DashboardComponent', () => {
 
       spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
       const spy = spyOn(router, 'navigate');
-      spy.and.returnValue(Promise.resolve({}));
+      spy.and.returnValue(Promise.resolve(true));
 
       const deleteWorkplace = component.getByText('Delete Workplace');
       deleteWorkplace.click();
