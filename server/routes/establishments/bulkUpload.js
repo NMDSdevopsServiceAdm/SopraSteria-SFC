@@ -1,15 +1,14 @@
 'use strict';
 const moment = require('moment');
 const csv = require('csvtojson');
-const uuid = require('uuid');
 const config = require('../../config/config');
 const dbModels = require('../../models');
 const timerLog = require('../../utils/timerLog');
 const slack = require('../../utils/slack/slack-logger');
 const BUDI = require('../../models/BulkImport/BUDI').BUDI;
 
-const s3 = new (require('aws-sdk')).S3({
-  region: String(config.get('bulkupload.region'))
+const s3 = new (require('aws-sdk').S3)({
+  region: String(config.get('bulkupload.region')),
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
@@ -23,7 +22,7 @@ const { Worker } = require('../../models/classes/worker');
 const { Qualification } = require('../../models/classes/qualification');
 const { Training } = require('../../models/classes/training');
 const { User } = require('../../models/classes/user');
-const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = require('../../data/bulkUploadLock');
+const fileLockS3 = require('../../utils/fileLockS3');
 
 const buStates = [
   'READY',
@@ -35,7 +34,7 @@ const buStates = [
   'WARNINGS',
   'PASSED',
   'COMPLETING',
-  'UNKNOWN'
+  'UNKNOWN',
 ].reduce((acc, item) => {
   acc[item] = item;
 
@@ -53,7 +52,7 @@ const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validat
 
   let workerCount = 0;
   if (validationDiferenceReport.new && validationDiferenceReport.new.length > 0) {
-    validationDiferenceReport.new.map(est => {
+    validationDiferenceReport.new.map((est) => {
       if (est.workers && est.workers.new) {
         workerCount = workerCount + est.workers.new.length;
       }
@@ -63,7 +62,7 @@ const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validat
     });
   }
   if (validationDiferenceReport.updated && validationDiferenceReport.updated.length > 0) {
-    validationDiferenceReport.updated.map(est => {
+    validationDiferenceReport.updated.map((est) => {
       if (est.workers && est.workers.new) {
         workerCount = workerCount + est.workers.new.length;
       }
@@ -73,156 +72,11 @@ const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validat
     });
   }
 
-  if (workerCount > 500) slack.info("Large Bulk Upload", `${thisEstablishment.name} (ID ${thisEstablishment.nmdsId}) just did a bulk upload with a staff file containing ${workerCount} staff records.`);
-};
-
-// Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
-// This function can't be an express middleware as it needs to run both before and after the regular logic
-const acquireLock = async function (logic, newState, req, res) {
-  const { establishmentId } = req;
-
-  req.startTime = (new Date()).toISOString();
-
-  console.log(`Acquiring lock for establishment ${establishmentId}.`);
-
-  // attempt to acquire the lock
-  const currentLockState = await attemptToAcquireLock(establishmentId);
-
-  // if no records were updated the lock could not be acquired
-  // Just respond with a 409 http code and don't call the regular logic
-  // close the response either way and continue processing in the background
-  if (currentLockState[1] === 0) {
-    console.log('Lock *NOT* acquired.');
-    res
-      .status(409)
-      .send({
-        message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`
-      });
-
-    return;
-  }
-
-  console.log('Lock acquired.', newState);
-
-  let nextState;
-
-  switch (newState) {
-    case buStates.DOWNLOADING: {
-      // get the current bulk upload state
-      const currentState = await lockStatus(establishmentId);
-
-      if (currentState.length === 1) {
-        // don't update the status for downloads, just hold the lock
-        newState = currentState[0].bulkUploadState;
-        nextState = null;
-      } else {
-        nextState = buStates.READY;
-      }
-    } break;
-
-    case buStates.UPLOADING:
-      nextState = buStates.UPLOADED;
-      break;
-
-    case buStates.VALIDATING:
-      // we don't yet know wether the validation should go to the PASSED, FAILED
-      // or WARNINGS state next as it depends on whether the data is valid or not
-      nextState = null;
-      break;
-
-    case buStates.COMPLETING:
-      nextState = buStates.READY;
-      break;
-
-    default:
-      newState = buStates.READY;
-      nextState = buStates.READY;
-      break;
-  }
-
-  // update the current state
-  await updateLockState(establishmentId, newState);
-
-  req.buRequestId = String(uuid()).toLowerCase();
-
-  res
-    .status(200)
-    .send({
-      message: `Lock for establishment ${establishmentId} acquired.`,
-      requestId: req.buRequestId
-    });
-
-  // run whatever the original logic was
-  try {
-    await logic(req, res);
-  } catch (e) {
-
-  }
-
-  if (newState === buStates.VALIDATING) {
-    switch (res.buValidationResult) {
-      case buStates.PASSED:
-      case buStates.WARNINGS:
-        nextState = res.buValidationResult;
-        break;
-
-      default:
-        nextState = buStates.FAILED;
-        break;
-    }
-  }
-
-  // release the lock
-  await releaseLock(req, null, null, nextState);
-};
-
-const lockStatusGet = async (req, res) => {
-  const { establishmentId } = req;
-  res.setTimeout(1000, () => {
-      res.status(200).send({
-        establishmentId,
-        bulkUploadState: buStates.UNKNOWN,
-        bulkUploadLockHeld: true
-      });
-  });
-
-  const currentLockState = await lockStatus(establishmentId);
-
-  res
-    .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
-    .send(
-      currentLockState.length === 0
-        ? {
-          establishmentId,
-          bulkUploadState: buStates.READY,
-          bulkUploadLockHeld: true
-        } : currentLockState[0]
+  if (workerCount > 500)
+    slack.info(
+      'Large Bulk Upload',
+      `${thisEstablishment.name} (ID ${thisEstablishment.nmdsId}) just did a bulk upload with a staff file containing ${workerCount} staff records.`,
     );
-
-  return currentLockState[0];
-};
-
-const releaseLock = async (req, res, next, nextState = null) => {
-  try {
-    const establishmentId = req.query.subEstId || req.establishmentId;
-
-    if (Number.isInteger(establishmentId)) {
-      await releaseLockQuery(establishmentId, nextState);
-
-      console.log(`Lock released for establishment ${establishmentId}`);
-    }
-
-    if (res !== null) {
-      res
-        .status(200)
-        .send({
-          establishmentId
-        });
-    }
-  } catch (error) {
-    console.error(error.name);
-    console.error(error.message);
-  }
 };
 
 const responseGet = (req, res) => {
@@ -231,7 +85,7 @@ const responseGet = (req, res) => {
 
   if (!uuidRegex.test(buRequestId)) {
     res.status(400).send({
-      message: 'request id must be a uuid'
+      message: 'request id must be a uuid',
     });
 
     return;
@@ -239,9 +93,10 @@ const responseGet = (req, res) => {
 
   s3.getObject({
     Bucket,
-    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`
-  }).promise()
-    .then(data => {
+    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`,
+  })
+    .promise()
+    .then((data) => {
       const jsonData = JSON.parse(data.Body.toString());
 
       if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
@@ -256,11 +111,11 @@ const responseGet = (req, res) => {
         throw new Error('Response code was not numeric');
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.log('bulkUpload::responseGet: getting data returned an error:', err);
 
       res.status(404).send({
-        message: 'Not Found'
+        message: 'Not Found',
       });
     });
 };
@@ -270,42 +125,46 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
     statusCode = 500;
   }
 
-  return s3.putObject({
-    Bucket,
-    Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-    Body: JSON.stringify({
-      url: req.url,
-      startTime: req.startTime,
-      endTime: (new Date()).toISOString(),
-      responseCode: statusCode,
-      responseBody: body,
-      responseHeaders: (typeof headers === 'object' ? headers : undefined)
+  return s3
+    .putObject({
+      Bucket,
+      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
+      Body: JSON.stringify({
+        url: req.url,
+        startTime: req.startTime,
+        endTime: new Date().toISOString(),
+        responseCode: statusCode,
+        responseBody: body,
+        responseHeaders: typeof headers === 'object' ? headers : undefined,
+      }),
     })
-  }).promise();
+    .promise();
 };
 
 const uploadedGet = async (req, res) => {
   try {
-    const data = await s3.listObjects({
-      Bucket,
-      Prefix: `${req.establishmentId}/latest/`
-    }).promise();
+    const data = await s3
+      .listObjects({
+        Bucket,
+        Prefix: `${req.establishmentId}/latest/`,
+      })
+      .promise();
 
     const returnData = await Promise.all(
-      data.Contents.filter(
-        myFile => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)
-      )
-        .map(async file => {
+      data.Contents.filter((myFile) => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)).map(
+        async (file) => {
           const elements = file.Key.split('/');
 
-          const objData = await s3.headObject({
-            Bucket,
-            Key: file.Key
-          }).promise();
+          const objData = await s3
+            .headObject({
+              Bucket,
+              Key: file.Key,
+            })
+            .promise();
 
           const username = objData && objData.Metadata ? objData.Metadata.username : '';
 
-          const fileMetaData = data.Contents.filter(myFile => myFile.Key === (file.Key + '.metadata.json'));
+          const fileMetaData = data.Contents.filter((myFile) => myFile.Key === file.Key + '.metadata.json');
 
           let metadataJSON = {};
 
@@ -323,16 +182,17 @@ const uploadedGet = async (req, res) => {
             warnings: metadataJSON.warnings ? metadataJSON.warnings : 0,
             fileType: metadataJSON.fileType ? metadataJSON.fileType : null,
             size: file.Size,
-            key: encodeURI(file.Key)
+            key: encodeURI(file.Key),
           };
-        })
+        },
+      ),
     );
 
     await saveResponse(req, res, 200, {
       establishment: {
-        uid: req.establishmentId
+        uid: req.establishmentId,
       },
-      files: returnData
+      files: returnData,
     });
   } catch (err) {
     console.error(err);
@@ -346,10 +206,12 @@ const uploadedStarGet = async (req, res) => {
   const elements = Key.split('/');
 
   try {
-    const objHeadData = await s3.headObject({
-      Bucket,
-      Key
-    }).promise();
+    const objHeadData = await s3
+      .headObject({
+        Bucket,
+        Key,
+      })
+      .promise();
 
     await saveResponse(req, res, 200, {
       file: {
@@ -361,9 +223,9 @@ const uploadedStarGet = async (req, res) => {
         signedUrl: s3.getSignedUrl('getObject', {
           Bucket,
           Key,
-          Expires: config.get('bulkupload.uploadSignedUrlExpire')
-        })
-      }
+          Expires: config.get('bulkupload.uploadSignedUrlExpire'),
+        }),
+      },
     });
   } catch (err) {
     if (err.code && err.code === 'NotFound') {
@@ -375,50 +237,52 @@ const uploadedStarGet = async (req, res) => {
   }
 };
 
-const purgeBulkUploadS3Objects = async establishmentId => {
+const purgeBulkUploadS3Objects = async (establishmentId) => {
   // drop all in latest
   const listParams = {
     Bucket,
-    Prefix: `${establishmentId}/latest/`
+    Prefix: `${establishmentId}/latest/`,
   };
 
   const latestObjects = await s3.listObjects(listParams).promise();
   const deleteKeys = [];
 
-  latestObjects.Contents.forEach(myFile => {
+  latestObjects.Contents.forEach((myFile) => {
     const ignoreRoot = /.*\/$/;
     if (!ignoreRoot.test(myFile.Key)) {
       deleteKeys.push({
-        Key: myFile.Key
+        Key: myFile.Key,
       });
     }
   });
 
   listParams.Prefix = `${establishmentId}/intermediary/`;
   const intermediaryObjects = await s3.listObjects(listParams).promise();
-  intermediaryObjects.Contents.forEach(myFile => {
+  intermediaryObjects.Contents.forEach((myFile) => {
     deleteKeys.push({
-      Key: myFile.Key
+      Key: myFile.Key,
     });
   });
 
   listParams.Prefix = `${establishmentId}/validation/`;
   const validationObjects = await s3.listObjects(listParams).promise();
-  validationObjects.Contents.forEach(myFile => {
+  validationObjects.Contents.forEach((myFile) => {
     deleteKeys.push({
-      Key: myFile.Key
+      Key: myFile.Key,
     });
   });
 
   if (deleteKeys.length > 0) {
     // now delete the objects in one go
-    await s3.deleteObjects({
-      Bucket,
-      Delete: {
-        Objects: deleteKeys,
-        Quiet: true
-      }
-    }).promise();
+    await s3
+      .deleteObjects({
+        Bucket,
+        Delete: {
+          Objects: deleteKeys,
+          Quiet: true,
+        },
+      })
+      .promise();
   }
 };
 
@@ -446,7 +310,7 @@ const uploadedPost = async (req, res) => {
 
     const signedUrls = [];
 
-    uploadedFiles.forEach(thisFile => {
+    uploadedFiles.forEach((thisFile) => {
       if (thisFile.filename) {
         thisFile.signedUrl = s3.getSignedUrl('putObject', {
           Bucket,
@@ -455,9 +319,9 @@ const uploadedPost = async (req, res) => {
           Metadata: {
             username,
             establishmentId,
-            validationstatus: 'pending'
+            validationstatus: 'pending',
           },
-          Expires: config.get('bulkupload.uploadSignedUrlExpire')
+          Expires: config.get('bulkupload.uploadSignedUrlExpire'),
         });
         signedUrls.push(thisFile);
       }
@@ -482,10 +346,10 @@ const signedUrlGet = async (req, res) => {
         Metadata: {
           username: String(req.username),
           establishmentId: String(establishmentId),
-          validationstatus: 'pending'
+          validationstatus: 'pending',
         },
-        Expires: config.get('bulkupload.uploadSignedUrlExpire')
-      })
+        Expires: config.get('bulkupload.uploadSignedUrlExpire'),
+      }),
     });
   } catch (err) {
     console.error('establishment::bulkupload GET/:PreSigned - failed', err.message);
@@ -505,12 +369,14 @@ const uploadedPut = async (req, res) => {
     // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
     const createModelPromises = [];
 
-    const data = await s3.listObjects({
-      Bucket,
-      Prefix: `${req.establishmentId}/latest/`
-    }).promise();
+    const data = await s3
+      .listObjects({
+        Bucket,
+        Prefix: `${req.establishmentId}/latest/`,
+      })
+      .promise();
 
-    data.Contents.forEach(myFile => {
+    data.Contents.forEach((myFile) => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
 
@@ -521,7 +387,7 @@ const uploadedPut = async (req, res) => {
 
     const allContent = await Promise.all(createModelPromises);
 
-    allContent.forEach(myfile => {
+    allContent.forEach((myfile) => {
       if (EstablishmentCsvValidator.isContent(myfile.data)) {
         myDownloads.establishments = myfile.data;
         establishmentMetadata.filename = myfile.filename;
@@ -587,15 +453,21 @@ const uploadedPut = async (req, res) => {
     const metadataS3Promises = [];
 
     if (importedEstablishments) {
-      if ((new EstablishmentCsvValidator(importedEstablishments[firstRow], firstLineNumber)).preValidate(establishmentHeaders)) {
+      if (
+        new EstablishmentCsvValidator(importedEstablishments[firstRow], firstLineNumber).preValidate(
+          establishmentHeaders,
+        )
+      ) {
         // count records and update metadata
         establishmentMetadata.records = importedEstablishments.length;
-        metadataS3Promises.push(uploadAsJSON(
-          username,
-          establishmentId,
-          establishmentMetadata,
-          `${establishmentId}/latest/${establishmentMetadata.filename}.metadata.json`
-        ));
+        metadataS3Promises.push(
+          uploadAsJSON(
+            username,
+            establishmentId,
+            establishmentMetadata,
+            `${establishmentId}/latest/${establishmentMetadata.filename}.metadata.json`,
+          ),
+        );
       } else {
         // reset metadata filetype because this is not an expected establishment
         establishmentMetadata.fileType = null;
@@ -603,15 +475,17 @@ const uploadedPut = async (req, res) => {
     }
 
     if (importedWorkers) {
-      if ((new WorkerCsvValidator(importedWorkers[firstRow], firstLineNumber)).preValidate(workerHeaders)) {
+      if (new WorkerCsvValidator(importedWorkers[firstRow], firstLineNumber).preValidate(workerHeaders)) {
         // count records and update metadata
         workerMetadata.records = importedWorkers.length;
-        metadataS3Promises.push(uploadAsJSON(
-          username,
-          establishmentId,
-          workerMetadata,
-          `${establishmentId}/latest/${workerMetadata.filename}.metadata.json`
-        ));
+        metadataS3Promises.push(
+          uploadAsJSON(
+            username,
+            establishmentId,
+            workerMetadata,
+            `${establishmentId}/latest/${workerMetadata.filename}.metadata.json`,
+          ),
+        );
       } else {
         // reset metadata filetype because this is not an expected establishment
         workerMetadata.fileType = null;
@@ -619,15 +493,17 @@ const uploadedPut = async (req, res) => {
     }
 
     if (importedTraining) {
-      if ((new TrainingCsvValidator(importedTraining[firstRow], firstLineNumber)).preValidate(trainingHeaders)) {
+      if (new TrainingCsvValidator(importedTraining[firstRow], firstLineNumber).preValidate(trainingHeaders)) {
         // count records and update metadata
         trainingMetadata.records = importedTraining.length;
-        metadataS3Promises.push(uploadAsJSON(
-          username,
-          establishmentId,
-          trainingMetadata,
-          `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`
-        ));
+        metadataS3Promises.push(
+          uploadAsJSON(
+            username,
+            establishmentId,
+            trainingMetadata,
+            `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`,
+          ),
+        );
       } else {
         // reset metadata filetype because this is not an expected establishment
         trainingMetadata.fileType = null;
@@ -637,7 +513,7 @@ const uploadedPut = async (req, res) => {
     // ////////////////////////////////////
     await Promise.all(metadataS3Promises);
 
-    const generateReturnData = metaData => ({
+    const generateReturnData = (metaData) => ({
       filename: metaData.filename,
       uploaded: metaData.lastModified,
       username: metaData.userName ? metaData.userName : null,
@@ -646,13 +522,13 @@ const uploadedPut = async (req, res) => {
       warnings: 0,
       fileType: metaData.fileType,
       size: metaData.size,
-      key: metaData.key
+      key: metaData.key,
     });
 
     const returnData = [];
 
     // now forn response for each file
-    data.Contents.forEach(myFile => {
+    data.Contents.forEach((myFile) => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
       if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
@@ -666,17 +542,19 @@ const uploadedPut = async (req, res) => {
           const fileNameElements = myFile.Key.split('/');
           const fileName = fileNameElements[fileNameElements.length - 1];
 
-          returnData.push(generateReturnData({
-            filename: fileName,
-            uploaded: myFile.LastModified,
-            username: myFile.username,
-            records: 0,
-            errors: 0,
-            warnings: 0,
-            fileType: null,
-            size: myFile.size,
-            key: myFile.Key
-          }));
+          returnData.push(
+            generateReturnData({
+              filename: fileName,
+              uploaded: myFile.LastModified,
+              username: myFile.username,
+              records: 0,
+              errors: 0,
+              warnings: 0,
+              fileType: null,
+              size: myFile.size,
+              key: myFile.Key,
+            }),
+          );
         }
       }
     });
@@ -695,17 +573,17 @@ const validatePut = async (req, res) => {
 
   const establishments = {
     imported: null,
-    establishmentMetadata: new MetaData()
+    establishmentMetadata: new MetaData(),
   };
 
   const workers = {
     imported: null,
-    workerMetadata: new MetaData()
+    workerMetadata: new MetaData(),
   };
 
   const trainings = {
     imported: null,
-    trainingMetadata: new MetaData()
+    trainingMetadata: new MetaData(),
   };
 
   let estNotFound = true;
@@ -715,85 +593,93 @@ const validatePut = async (req, res) => {
 
   try {
     const validationResponse =
-
       // get list of files from s3 bucket
-      await s3.listObjects({
-        Bucket,
-        Prefix: `${establishmentId}/latest/`
-      }).promise()
+      await s3
+        .listObjects({
+          Bucket,
+          Prefix: `${establishmentId}/latest/`,
+        })
+        .promise()
 
-      // download the contents of the appropriate ones we find
-        .then(data => Promise.all(data.Contents.reduce((arr, myFileStats) => {
-          keepAlive('bucket listed'); // keep connection alive
+        // download the contents of the appropriate ones we find
+        .then((data) =>
+          Promise.all(
+            data.Contents.reduce((arr, myFileStats) => {
+              keepAlive('bucket listed'); // keep connection alive
 
-          if (!(/.*metadata.json$/.test(myFileStats.Key) || /.*\/$/.test(myFileStats.Key))) {
-            arr.push(
-              downloadContent(myFileStats.Key)
+              if (!(/.*metadata.json$/.test(myFileStats.Key) || /.*\/$/.test(myFileStats.Key))) {
+                arr.push(
+                  downloadContent(myFileStats.Key)
+                    // for each downloaded file, test its type then update the closure variables
+                    .then((myFile) => {
+                      keepAlive('file downloaded', `${myFileStats.Key}`); // keep connection alive
 
-              // for each downloaded file, test its type then update the closure variables
-                .then(myFile => {
-                  keepAlive('file downloaded', `${myFileStats.Key}`); // keep connection alive
+                      let obj = null;
+                      let metadata = null;
 
-                  let obj = null;
-                  let metadata = null;
+                      // figure out which type of csv this file is and load the data
+                      if (estNotFound && EstablishmentCsvValidator.isContent(myFile.data)) {
+                        estNotFound = false;
+                        obj = establishments;
+                        metadata = establishments.establishmentMetadata;
 
-                  // figure out which type of csv this file is and load the data
-                  if (estNotFound && EstablishmentCsvValidator.isContent(myFile.data)) {
-                    estNotFound = false;
-                    obj = establishments;
-                    metadata = establishments.establishmentMetadata;
+                        metadata.filename = myFile.filename;
+                        metadata.fileType = 'Establishment';
+                        metadata.userName = myFile.username;
+                      } else if (wrkNotFound && WorkerCsvValidator.isContent(myFile.data)) {
+                        wrkNotFound = false;
+                        obj = workers;
+                        metadata = workers.workerMetadata;
 
-                    metadata.filename = myFile.filename;
-                    metadata.fileType = 'Establishment';
-                    metadata.userName = myFile.username;
-                  } else if (wrkNotFound && WorkerCsvValidator.isContent(myFile.data)) {
-                    wrkNotFound = false;
-                    obj = workers;
-                    metadata = workers.workerMetadata;
+                        metadata.filename = myFile.filename;
+                        metadata.fileType = 'Worker';
+                        metadata.userName = myFile.username;
+                      } else if (trnNotFound && TrainingCsvValidator.isContent(myFile.data)) {
+                        trnNotFound = false;
+                        obj = trainings;
+                        metadata = trainings.trainingMetadata;
 
-                    metadata.filename = myFile.filename;
-                    metadata.fileType = 'Worker';
-                    metadata.userName = myFile.username;
-                  } else if (trnNotFound && TrainingCsvValidator.isContent(myFile.data)) {
-                    trnNotFound = false;
-                    obj = trainings;
-                    metadata = trainings.trainingMetadata;
+                        metadata.filename = myFile.filename;
+                        metadata.fileType = 'Training';
+                        metadata.userName = myFile.username;
+                      }
 
-                    metadata.filename = myFile.filename;
-                    metadata.fileType = 'Training';
-                    metadata.userName = myFile.username;
-                  }
+                      // if not one of our expected types then just return
+                      if (obj === null) {
+                        return true;
+                      }
+                      // parse the file contents as csv then return the data
+                      return csv()
+                        .fromString(myFile.data)
+                        .then((imported) => {
+                          keepAlive('csv parsed', myFileStats.Key); // keep connection alive
 
-                  // if not one of our expected types then just return
-                  if (obj === null) {
-                    return true;
-                  }
-                  // parse the file contents as csv then return the data
-                  return csv().fromString(myFile.data).then(imported => {
-                    keepAlive('csv parsed', myFileStats.Key); // keep connection alive
+                          obj.imported = imported;
 
-                    obj.imported = imported;
+                          return true;
+                        });
+                    }),
+                );
+              }
 
-                    return true;
-                  });
-                })
-            );
-          }
+              return arr;
+            }, []),
+          ),
+        )
 
-          return arr;
-        }, [])))
-
-      // validate the csv files we found
-        .then(() => validateBulkUploadFiles(
-          true,
-          req.username,
-          establishmentId,
-          req.isParent,
-          establishments,
-          workers,
-          trainings,
-          keepAlive
-        ));
+        // validate the csv files we found
+        .then(() =>
+          validateBulkUploadFiles(
+            true,
+            req.username,
+            establishmentId,
+            req.isParent,
+            establishments,
+            workers,
+            trainings,
+            keepAlive,
+          ),
+        );
 
     // set what the next state should be
     res.buValidationResult = validationResponse.status;
@@ -802,7 +688,7 @@ const validatePut = async (req, res) => {
     await saveResponse(req, res, 200, {
       establishment: validationResponse.metaData.establishments.toJSON(),
       workers: validationResponse.metaData.workers.toJSON(),
-      training: validationResponse.metaData.training.toJSON()
+      training: validationResponse.metaData.training.toJSON(),
     });
   } catch (err) {
     console.error(err);
@@ -813,18 +699,19 @@ const validatePut = async (req, res) => {
 
 const downloadContent = async (key, size, lastModified) => {
   try {
-    return await s3.getObject({
-      Bucket,
-      Key: key
-    })
+    return await s3
+      .getObject({
+        Bucket,
+        Key: key,
+      })
       .promise()
-      .then(objData => ({
+      .then((objData) => ({
         key,
         data: objData.Body.toString(),
         filename: key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3],
         username: objData.Metadata.username,
         size,
-        lastModified
+        lastModified,
       }));
   } catch (err) {
     console.error(`api/establishment/bulkupload/downloadFile: ${key})\n`, err);
@@ -834,16 +721,18 @@ const downloadContent = async (key, size, lastModified) => {
 
 const uploadAsJSON = async (username, establishmentId, content, key) => {
   try {
-    await s3.putObject({
-      Bucket,
-      Key: key,
-      Body: JSON.stringify(content, null, 2),
-      ContentType: 'application/json',
-      Metadata: {
-        username,
-        establishmentId: String(establishmentId)
-      }
-    }).promise();
+    await s3
+      .putObject({
+        Bucket,
+        Key: key,
+        Body: JSON.stringify(content, null, 2),
+        ContentType: 'application/json',
+        Metadata: {
+          username,
+          establishmentId: String(establishmentId),
+        },
+      })
+      .promise();
   } catch (err) {
     console.error('uploadAsJSON: ', err);
     throw new Error(`Failed to upload S3 object: ${key}`);
@@ -857,7 +746,7 @@ const validateEstablishmentCsv = async (
   myEstablishments,
   myAPIEstablishments,
   myCurrentEstablishments,
-  keepAlive = () => {}
+  keepAlive = () => {},
 ) => {
   const lineValidator = new EstablishmentCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
 
@@ -869,37 +758,52 @@ const validateEstablishmentCsv = async (
     const thisEstablishmentAsAPI = lineValidator.toAPI();
 
     try {
-        const thisApiEstablishment = new Establishment();
-        thisApiEstablishment.initialise(
-          thisEstablishmentAsAPI.Address1,
-          thisEstablishmentAsAPI.Address2,
-          thisEstablishmentAsAPI.Address3,
-          thisEstablishmentAsAPI.Town,
-          null,
-          thisEstablishmentAsAPI.LocationId,
-          thisEstablishmentAsAPI.ProvId,
-          thisEstablishmentAsAPI.Postcode,
-          thisEstablishmentAsAPI.IsCQCRegulated
-        );
+      const thisApiEstablishment = new Establishment();
+      thisApiEstablishment.initialise(
+        thisEstablishmentAsAPI.Address1,
+        thisEstablishmentAsAPI.Address2,
+        thisEstablishmentAsAPI.Address3,
+        thisEstablishmentAsAPI.Town,
+        null,
+        thisEstablishmentAsAPI.LocationId,
+        thisEstablishmentAsAPI.ProvId,
+        thisEstablishmentAsAPI.Postcode,
+        thisEstablishmentAsAPI.IsCQCRegulated,
+      );
 
-        await thisApiEstablishment.load(thisEstablishmentAsAPI);
+      const foundCurrentEstablishment = myCurrentEstablishments.find(
+        (thisCurrentEstablishment) => thisCurrentEstablishment.key === lineValidator.key,
+      );
 
-        keepAlive('establishment loaded', currentLineNumber);
+      if (
+        thisApiEstablishment.postcode &&
+        foundCurrentEstablishment &&
+        foundCurrentEstablishment.postcode !== thisApiEstablishment.postcode
+      ) {
+        const { Latitude, Longitude } = (await dbModels.postcodes.firstOrCreate(thisApiEstablishment.postcode)) || {};
 
-        if (thisApiEstablishment.validate()) {
-          // No validation errors in the entity itself, so add it ready for completion
+        thisEstablishmentAsAPI.Latitude = Latitude;
+        thisEstablishmentAsAPI.Longitude = Longitude;
+      }
+
+      await thisApiEstablishment.load(thisEstablishmentAsAPI);
+
+      keepAlive('establishment loaded', currentLineNumber);
+
+      if (thisApiEstablishment.validate()) {
+        // No validation errors in the entity itself, so add it ready for completion
+        myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
+      } else {
+        const errors = thisApiEstablishment.errors;
+
+        if (errors.length === 0) {
           myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
         } else {
-          const errors = thisApiEstablishment.errors;
-
-          if (errors.length === 0) {
-            myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
-          } else {
-            // TODO: Remove this when capacities and services are fixed; temporarily adding establishments
-            // even though they're in error (because service/capacity validations put all in error)
-            myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
-          }
+          // TODO: Remove this when capacities and services are fixed; temporarily adding establishments
+          // even though they're in error (because service/capacity validations put all in error)
+          myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
         }
+      }
     } catch (err) {
       console.error('WA - localised validate establishment error until validation card', err);
     }
@@ -908,12 +812,11 @@ const validateEstablishmentCsv = async (
   }
   // collate all bulk upload validation errors/warnings
   if (lineValidator.validationErrors.length > 0) {
-    lineValidator.validationErrors.forEach(thisError => csvEstablishmentSchemaErrors.push(thisError));
+    lineValidator.validationErrors.forEach((thisError) => csvEstablishmentSchemaErrors.push(thisError));
   }
   if (!lineValidator._ignore) {
     myEstablishments.push(lineValidator);
   }
-
 };
 
 const loadWorkerQualifications = async (
@@ -921,7 +824,7 @@ const loadWorkerQualifications = async (
   thisQual,
   thisApiWorker,
   myAPIQualifications,
-  keepAlive = () => {}
+  keepAlive = () => {},
 ) => {
   const thisApiQualification = new Qualification();
 
@@ -959,7 +862,7 @@ const validateWorkerCsv = async (
   myAPIWorkers,
   myAPIQualifications,
   myCurrentEstablishments,
-  keepAlive = () => {}
+  keepAlive = () => {},
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
@@ -970,6 +873,18 @@ const validateWorkerCsv = async (
   const thisWorkerAsAPI = lineValidator.toAPI();
 
   try {
+    const foundCurrentEstablishment = myCurrentEstablishments.find(
+      (establishment) => establishment.key === lineValidator.establishmentKey,
+    );
+    const foundCurrentWorker = foundCurrentEstablishment.theWorker(lineValidator.key);
+
+    if (thisWorkerAsAPI.postcode && foundCurrentWorker && foundCurrentWorker.postcode !== thisWorkerAsAPI.postcode) {
+      const { Latitude, Longitude } = (await dbModels.postcodes.firstOrCreate(thisWorkerAsAPI.postcode)) || {};
+
+      thisWorkerAsAPI.Latitude = Latitude;
+      thisWorkerAsAPI.Longitude = Longitude;
+    }
+
     // construct Worker entity
     const thisApiWorker = new Worker();
     await thisApiWorker.load(thisWorkerAsAPI);
@@ -982,13 +897,13 @@ const validateWorkerCsv = async (
 
       // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
       //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
-      await Promise.all(lineValidator.toQualificationAPI().map(thisQual => loadWorkerQualifications(
-        lineValidator,
-        thisQual,
-        thisApiWorker,
-        myAPIQualifications,
-        keepAlive
-      )));
+      await Promise.all(
+        lineValidator
+          .toQualificationAPI()
+          .map((thisQual) =>
+            loadWorkerQualifications(lineValidator, thisQual, thisApiWorker, myAPIQualifications, keepAlive),
+          ),
+      );
     } else {
       const errors = thisApiWorker.errors;
 
@@ -1002,7 +917,7 @@ const validateWorkerCsv = async (
 
   // collate all bulk upload validation errors/warnings
   if (lineValidator.validationErrors.length > 0) {
-    lineValidator.validationErrors.forEach(thisError => csvWorkerSchemaErrors.push(thisError));
+    lineValidator.validationErrors.forEach((thisError) => csvWorkerSchemaErrors.push(thisError));
   }
 
   myWorkers.push(lineValidator);
@@ -1014,7 +929,7 @@ const validateTrainingCsv = async (
   csvTrainingSchemaErrors,
   myTrainings,
   myAPITrainings,
-  keepAlive = () => {}
+  keepAlive = () => {},
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   const lineValidator = new TrainingCsvValidator(thisLine, currentLineNumber);
@@ -1045,7 +960,7 @@ const validateTrainingCsv = async (
 
   // collate all bulk upload validation errors/warnings
   if (lineValidator.validationErrors.length > 0) {
-    lineValidator.validationErrors.forEach(thisError => csvTrainingSchemaErrors.push(thisError));
+    lineValidator.validationErrors.forEach((thisError) => csvTrainingSchemaErrors.push(thisError));
   }
 
   myTrainings.push(lineValidator);
@@ -1060,7 +975,7 @@ const validateBulkUploadFiles = async (
   establishments,
   workers,
   training,
-  keepAlive = () => {}
+  keepAlive = () => {},
 ) => {
   const csvEstablishmentSchemaErrors = [];
   const csvWorkerSchemaErrors = [];
@@ -1078,7 +993,14 @@ const validateBulkUploadFiles = async (
 
   keepAlive('begin validate files', establishmentId); // keep connection alive
 
-  const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent, RESTORE_ASSOCIATION_LEVEL, false, keepAlive);
+  const myCurrentEstablishments = await restoreExistingEntities(
+    username,
+    establishmentId,
+    isParent,
+    RESTORE_ASSOCIATION_LEVEL,
+    false,
+    keepAlive,
+  );
 
   const validateRestoredStateTime = new Date();
 
@@ -1101,21 +1023,29 @@ const validateBulkUploadFiles = async (
 
   // /////////////////////////
   // Parse and process Establishments CSV
-  if (Array.isArray(establishments.imported) && establishments.imported.length > 0 && establishments.establishmentMetadata.fileType === 'Establishment') {
+  if (
+    Array.isArray(establishments.imported) &&
+    establishments.imported.length > 0 &&
+    establishments.establishmentMetadata.fileType === 'Establishment'
+  ) {
     // validate all establishment rows
-    await Promise.all(establishments.imported.map((thisLine, currentLineNumber) => validateEstablishmentCsv(
-      thisLine,
-      currentLineNumber + 2,
-      csvEstablishmentSchemaErrors,
-      myEstablishments,
-      myAPIEstablishments,
-      myCurrentEstablishments,
-      keepAlive
-    )));
+    await Promise.all(
+      establishments.imported.map((thisLine, currentLineNumber) =>
+        validateEstablishmentCsv(
+          thisLine,
+          currentLineNumber + 2,
+          csvEstablishmentSchemaErrors,
+          myEstablishments,
+          myAPIEstablishments,
+          myCurrentEstablishments,
+          keepAlive,
+        ),
+      ),
+    );
 
     // having parsed all establishments, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
-    myEstablishments.forEach(thisEstablishment => {
+    myEstablishments.forEach((thisEstablishment) => {
       const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, '');
       if (allEstablishmentsByKey[keyNoWhitespace]) {
         // this establishment is a duplicate
@@ -1135,94 +1065,122 @@ const validateBulkUploadFiles = async (
   }
 
   const validateEstablishmentsTime = new Date();
-  timerLog('CHECKPOINT - BU Validate - have validated establishments', validateRestoredStateTime, validateEstablishmentsTime);
+  timerLog(
+    'CHECKPOINT - BU Validate - have validated establishments',
+    validateRestoredStateTime,
+    validateEstablishmentsTime,
+  );
 
   establishments.establishmentMetadata.records = myEstablishments.length;
 
   // /////////////////////////
   // Parse and process Workers CSV
   if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType === 'Worker') {
-    await Promise.all(workers.imported.map((thisLine, currentLineNumber) => validateWorkerCsv(
-      thisLine,
-      currentLineNumber + 2,
-      csvWorkerSchemaErrors,
-      myWorkers,
-      myAPIWorkers,
-      myAPIQualifications,
-      myCurrentEstablishments,
-      keepAlive
-    )));
+    await Promise.all(
+      workers.imported.map((thisLine, currentLineNumber) =>
+        validateWorkerCsv(
+          thisLine,
+          currentLineNumber + 2,
+          csvWorkerSchemaErrors,
+          myWorkers,
+          myAPIWorkers,
+          myAPIQualifications,
+          myCurrentEstablishments,
+          keepAlive,
+        ),
+      ),
+    );
 
     keepAlive('workers validated'); // keep connection alive
 
-  // having parsed all workers, check for duplicates
-  // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
-  const allKeys = [];
-  myWorkers.map(worker => {
-    const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
-    allKeys.push(id);
-  });
+    // having parsed all workers, check for duplicates
+    // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
+    const allKeys = [];
+    myWorkers.map((worker) => {
+      const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+      allKeys.push(id);
+    });
 
-  myWorkers.forEach(thisWorker => {
-    // check if hours matches others in the same job and same annual pay
-    checkPartTimeSalary(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
+    myWorkers.forEach((thisWorker) => {
+      // check if hours matches others in the same job and same annual pay
+      checkPartTimeSalary(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
 
-    // uniquness for a worker is across both the establishment and the worker
-    const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
-    const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '') : null;
+      // uniquness for a worker is across both the establishment and the worker
+      const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+      const changeKeyNoWhitespace = thisWorker.changeUniqueWorker
+        ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '')
+        : null;
 
-    if(checkDuplicateWorkerID(thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors)) {
+      if (
+        checkDuplicateWorkerID(
+          thisWorker,
+          allKeys,
+          changeKeyNoWhitespace,
+          keyNoWhitespace,
+          allWorkersByKey,
+          myAPIWorkers,
+          csvWorkerSchemaErrors,
+        )
+      ) {
+        // does not yet exist - check this worker can be associated with a known establishment
+        const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
 
-      // does not yet exist - check this worker can be associated with a known establishment
-      const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
-
-      const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
-        if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
-          if (thatWorker.weeklyContractedHours) {
-            return sum + thatWorker.weeklyContractedHours;
+        const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
+          if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
+            if (thatWorker.weeklyContractedHours) {
+              return sum + thatWorker.weeklyContractedHours;
+            }
+            if (thatWorker.weeklyAverageHours) {
+              return sum + thatWorker.weeklyAverageHours;
+            }
           }
-          if (thatWorker.weeklyAverageHours) {
-            return sum + thatWorker.weeklyAverageHours;
-          }
-        }
-        return sum;
-      }, 0);
+          return sum;
+        }, 0);
 
-      if (myWorkersTotalHours > 65) {
-        csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
-      }
-
-      if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
-        // not found the associated establishment
-        csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
-
-        // remove the entity
-        delete myAPIWorkers[thisWorker.lineNumber];
-      } else {
-        // this worker is unique and can be associated to establishment
-        allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
-
-        // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
-        if (changeKeyNoWhitespace) {
-          allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+        if (myWorkersTotalHours > 65) {
+          csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
         }
 
-        // associate this worker to the known establishment
-        const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace] ? myAPIEstablishments[establishmentKeyNoWhitespace] : null;
+        if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
+          // not found the associated establishment
+          csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
 
-        // key workers, to be used in training
-        const workerKeyNoWhitespace = (thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID).replace(/\s/g, '');
-        workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
-
-        if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
-          knownEstablishment.associateWorker(myAPIWorkers[thisWorker.lineNumber].key, myAPIWorkers[thisWorker.lineNumber]);
+          // remove the entity
+          delete myAPIWorkers[thisWorker.lineNumber];
         } else {
-          // this should never happen
-          console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
+          // this worker is unique and can be associated to establishment
+          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+
+          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+          if (changeKeyNoWhitespace) {
+            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+          }
+
+          // associate this worker to the known establishment
+          const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace]
+            ? myAPIEstablishments[establishmentKeyNoWhitespace]
+            : null;
+
+          // key workers, to be used in training
+          const workerKeyNoWhitespace = (
+            thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID
+          ).replace(/\s/g, '');
+          workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
+
+          if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
+            knownEstablishment.associateWorker(
+              myAPIWorkers[thisWorker.lineNumber].key,
+              myAPIWorkers[thisWorker.lineNumber],
+            );
+          } else {
+            // this should never happen
+            console.error(
+              `FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`,
+            );
+          }
         }
       }
-    }
-  });
+    });
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no workers records');
   }
@@ -1233,14 +1191,16 @@ const validateBulkUploadFiles = async (
 
   // /////////////////////////
   // Parse and process Training CSV
-  if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType === 'Training') {
-    await Promise.all(training.imported.map((thisLine, currentLineNumber) => validateTrainingCsv(
-      thisLine,
-      currentLineNumber + 2,
-      csvTrainingSchemaErrors,
-      myTrainings,
-      myAPITrainings
-    )));
+  if (
+    Array.isArray(training.imported) &&
+    training.imported.length > 0 &&
+    training.trainingMetadata.fileType === 'Training'
+  ) {
+    await Promise.all(
+      training.imported.map((thisLine, currentLineNumber) =>
+        validateTrainingCsv(thisLine, currentLineNumber + 2, csvTrainingSchemaErrors, myTrainings, myAPITrainings),
+      ),
+    );
 
     keepAlive('trainings processed');
 
@@ -1250,9 +1210,11 @@ const validateBulkUploadFiles = async (
     // (LOCALESTID) against all parsed establishments
     // Having parsed all establishments, workers and training, need to cross-check all training records' worker reference
     // (UNIQUEWORKERID) against all parsed workers
-    myTrainings.forEach(thisTraingRecord => {
+    myTrainings.forEach((thisTraingRecord) => {
       const establishmentKeyNoWhitespace = (thisTraingRecord.localeStId || '').replace(/\s/g, '');
-      const workerKeyNoWhitespace = ((thisTraingRecord.localeStId || '') + (thisTraingRecord.uniqueWorkerId || '')).replace(/\s/g, '');
+      const workerKeyNoWhitespace = (
+        (thisTraingRecord.localeStId || '') + (thisTraingRecord.uniqueWorkerId || '')
+      ).replace(/\s/g, '');
 
       if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
         // not found the associated establishment
@@ -1278,7 +1240,10 @@ const validateBulkUploadFiles = async (
         //  2. the worker has DOB defined (it's not a mandatory property)
         const trainingCompletedDate = moment.utc(thisTraingRecord._currentLine.DATECOMPLETED, 'DD-MM-YYYY');
         const foundAssociatedWorker = workersKeyed[workerKeyNoWhitespace];
-        const workerDob = foundAssociatedWorker && foundAssociatedWorker.DOB ? moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, 'DD-MM-YYYY') : null;
+        const workerDob =
+          foundAssociatedWorker && foundAssociatedWorker.DOB
+            ? moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, 'DD-MM-YYYY')
+            : null;
 
         if (workerDob && workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14) {
           csvTrainingSchemaErrors.push(thisTraingRecord.dobTrainingMismatch());
@@ -1288,7 +1253,9 @@ const validateBulkUploadFiles = async (
           knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
         } else {
           // this should never happen
-          console.error(`FATAL: failed to associate worker (line number: ${thisTraingRecord.lineNumber}/unique id (${thisTraingRecord.uniqueWorker})) with a known establishment.`);
+          console.error(
+            `FATAL: failed to associate worker (line number: ${thisTraingRecord.lineNumber}/unique id (${thisTraingRecord.uniqueWorker})) with a known establishment.`,
+          );
         }
       }
     });
@@ -1316,35 +1283,45 @@ const validateBulkUploadFiles = async (
 
   // The primary establishment should always be present
   // TODO - should use LOCAL_IDENTIFIER when available.
-  const primaryEstablishment = myCurrentEstablishments.find(thisCurrentEstablishment => thisCurrentEstablishment.id === establishmentId);
+  const primaryEstablishment = myCurrentEstablishments.find(
+    (thisCurrentEstablishment) => thisCurrentEstablishment.id === establishmentId,
+  );
 
   if (primaryEstablishment) {
     const onloadedPrimaryEstablishment = myAPIEstablishments[primaryEstablishment.key];
 
     if (!onloadedPrimaryEstablishment) {
-      csvEstablishmentSchemaErrors.unshift(EstablishmentCsvValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
+      csvEstablishmentSchemaErrors.unshift(
+        EstablishmentCsvValidator.missingPrimaryEstablishmentError(primaryEstablishment.name),
+      );
     } else {
       // primary establishment does exist in given CSV; check STATUS is not DELETE - cannot delete the primary establishment
       if (onloadedPrimaryEstablishment.status === 'DELETE') {
-        csvEstablishmentSchemaErrors.unshift(EstablishmentCsvValidator.cannotDeletePrimaryEstablishmentError(primaryEstablishment.name));
+        csvEstablishmentSchemaErrors.unshift(
+          EstablishmentCsvValidator.cannotDeletePrimaryEstablishmentError(primaryEstablishment.name),
+        );
       }
     }
   } else {
-    console.error(('Seriously, if seeing this then something has truely gone wrong - the primary establishment should always be in the set of current establishments!'));
+    console.error(
+      'Seriously, if seeing this then something has truely gone wrong - the primary establishment should always be in the set of current establishments!',
+    );
   }
 
   // Check for trying to upload against subsidaries for which this parent does not own (if a parent) - ignore the primary (self) establishment
   // must be a parent
   if (isParent) {
-    Object.values(myAPIEstablishments).forEach(thisOnloadEstablishment => {
+    Object.values(myAPIEstablishments).forEach((thisOnloadEstablishment) => {
       if (thisOnloadEstablishment.key !== primaryEstablishment.key) {
         // we're not the primary
-        const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrentEstablishment =>
-          thisCurrentEstablishment.key === thisOnloadEstablishment.key
+        const foundCurrentEstablishment = myCurrentEstablishments.find(
+          (thisCurrentEstablishment) => thisCurrentEstablishment.key === thisOnloadEstablishment.key,
         );
 
         if (foundCurrentEstablishment && foundCurrentEstablishment.dataOwner !== 'Parent') {
-          const lineValidator = myEstablishments.find(thisLineValidator => thisLineValidator.key === foundCurrentEstablishment.key);
+          const lineValidator = myEstablishments.find(
+            (thisLineValidator) => thisLineValidator.key === foundCurrentEstablishment.key,
+          );
 
           csvEstablishmentSchemaErrors.unshift(lineValidator.addNotOwner());
         }
@@ -1353,21 +1330,25 @@ const validateBulkUploadFiles = async (
   }
 
   // Run validations that require information about workers
-  await Promise.all(myEstablishments.map(async establishment => {
-    await establishment.crossValidate({
-      csvEstablishmentSchemaErrors,
-      myWorkers,
-      fetchMyEstablishmentsWorkers: Establishment.fetchMyEstablishmentsWorkers
-    });
-  }));
+  await Promise.all(
+    myEstablishments.map(async (establishment) => {
+      await establishment.crossValidate({
+        csvEstablishmentSchemaErrors,
+        myWorkers,
+        fetchMyEstablishmentsWorkers: Establishment.fetchMyEstablishmentsWorkers,
+      });
+    }),
+  );
 
   // Run validations that require information about establishments
-  await Promise.all(myWorkers.map(async worker => {
-    await worker.crossValidate({
-      csvWorkerSchemaErrors,
-      myEstablishments
-    });
-  }));
+  await Promise.all(
+    myWorkers.map(async (worker) => {
+      await worker.crossValidate({
+        csvWorkerSchemaErrors,
+        myEstablishments,
+      });
+    }),
+  );
 
   // /////////////////////////
   // Prepare validation results
@@ -1379,29 +1360,32 @@ const validateBulkUploadFiles = async (
   const qualificationsAsArray = Object.values(myAPIQualifications);
 
   // update CSV metadata error/warning counts
-  establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+  establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(
+    (thisError) => 'errCode' in thisError,
+  ).length;
+  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(
+    (thisError) => 'warnCode' in thisError,
+  ).length;
 
-  workers.workerMetadata.errors = csvWorkerSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+  workers.workerMetadata.errors = csvWorkerSchemaErrors.filter((thisError) => 'errCode' in thisError).length;
+  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter((thisError) => 'warnCode' in thisError).length;
 
-  training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+  training.trainingMetadata.errors = csvTrainingSchemaErrors.filter((thisError) => 'errCode' in thisError).length;
+  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter((thisError) => 'warnCode' in thisError).length;
 
   // set the status based upon whether there were errors or warnings
   let status = buStates.FAILED;
-  if ((
-    establishments.establishmentMetadata.errors +
-    workers.workerMetadata.errors +
-    training.trainingMetadata.errors) === 0
+  if (
+    establishments.establishmentMetadata.errors + workers.workerMetadata.errors + training.trainingMetadata.errors ===
+    0
   ) {
-    status = (
+    status =
       establishments.establishmentMetadata.warnings +
-    workers.workerMetadata.warnings +
-    training.trainingMetadata.warnings
-    ) === 0
-      ? buStates.PASSED
-      : buStates.WARNINGS;
+        workers.workerMetadata.warnings +
+        training.trainingMetadata.warnings ===
+      0
+        ? buStates.PASSED
+        : buStates.WARNINGS;
   }
 
   const validateCompleteTime = new Date();
@@ -1416,16 +1400,23 @@ const validateBulkUploadFiles = async (
   timerLog(
     'CHECKPOINT - BU Validate - overall validations including restoring state and difference report',
     validateStartTime,
-    validateDifferenceReportTime
+    validateDifferenceReportTime,
   );
 
   // from the validation report, get a summary of deleted establishments and workers
   // the report will always have new, udpated, deleted array values, even if empty
   // Note - Array.reduce but it doesn't work with empty arrays, except when you provide an initial value (0 in this case)
   establishments.establishmentMetadata.deleted = report.deleted.length;
-  const numberOfDeletedWorkersFromUpdatedEstablishments = report.updated.reduce((total, current) => total + current.workers.deleted.length, 0);
-  const numberOfDeletedWorkersFromDeletedEstablishments = report.deleted.reduce((total, current) => total + current.workers.deleted.length, 0);
-  workers.workerMetadata.deleted = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
+  const numberOfDeletedWorkersFromUpdatedEstablishments = report.updated.reduce(
+    (total, current) => total + current.workers.deleted.length,
+    0,
+  );
+  const numberOfDeletedWorkersFromDeletedEstablishments = report.deleted.reduce(
+    (total, current) => total + current.workers.deleted.length,
+    0,
+  );
+  workers.workerMetadata.deleted =
+    numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
 
   // upload intermediary/validation S3 objects
   if (commit) {
@@ -1433,152 +1424,182 @@ const validateBulkUploadFiles = async (
 
     // upload the metadata as JSON to S3 - these are requested for uploaded list endpoint
     if (establishments.imported) {
-      s3UploadPromises.push(uploadAsJSON(
-        username,
-        establishmentId,
-        establishments.establishmentMetadata,
-        `${establishmentId}/latest/${establishments.establishmentMetadata.filename}.metadata.json`
-      ));
+      s3UploadPromises.push(
+        uploadAsJSON(
+          username,
+          establishmentId,
+          establishments.establishmentMetadata,
+          `${establishmentId}/latest/${establishments.establishmentMetadata.filename}.metadata.json`,
+        ),
+      );
     }
 
     if (workers.imported) {
-      s3UploadPromises.push(uploadAsJSON(
-        username,
-        establishmentId,
-        workers.workerMetadata,
-        `${establishmentId}/latest/${workers.workerMetadata.filename}.metadata.json`
-      ));
+      s3UploadPromises.push(
+        uploadAsJSON(
+          username,
+          establishmentId,
+          workers.workerMetadata,
+          `${establishmentId}/latest/${workers.workerMetadata.filename}.metadata.json`,
+        ),
+      );
     }
 
     if (training.imported) {
-      s3UploadPromises.push(uploadAsJSON(
-        username,
-        establishmentId,
-        training.trainingMetadata,
-        `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`
-      ));
+      s3UploadPromises.push(
+        uploadAsJSON(
+          username,
+          establishmentId,
+          training.trainingMetadata,
+          `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`,
+        ),
+      );
     }
 
     // upload the validation data to S3 - these are reuquired for validation report -
     // although one object is likely to be quicker to upload - and only one object is required then to download
-    s3UploadPromises.push(uploadAsJSON(
-      username,
-      establishmentId,
-      csvEstablishmentSchemaErrors,
-      `${establishmentId}/validation/establishments.validation.json`
-    ));
+    s3UploadPromises.push(
+      uploadAsJSON(
+        username,
+        establishmentId,
+        csvEstablishmentSchemaErrors,
+        `${establishmentId}/validation/establishments.validation.json`,
+      ),
+    );
 
-    s3UploadPromises.push(uploadAsJSON(
-      username,
-      establishmentId,
-      csvWorkerSchemaErrors,
-      `${establishmentId}/validation/workers.validation.json`
-    ));
+    s3UploadPromises.push(
+      uploadAsJSON(
+        username,
+        establishmentId,
+        csvWorkerSchemaErrors,
+        `${establishmentId}/validation/workers.validation.json`,
+      ),
+    );
 
-    s3UploadPromises.push(uploadAsJSON(
-      username,
-      establishmentId,
-      csvTrainingSchemaErrors,
-      `${establishmentId}/validation/training.validation.json`
-    ));
+    s3UploadPromises.push(
+      uploadAsJSON(
+        username,
+        establishmentId,
+        csvTrainingSchemaErrors,
+        `${establishmentId}/validation/training.validation.json`,
+      ),
+    );
 
-    s3UploadPromises.push(uploadAsJSON(
-      username,
-      establishmentId,
-      report,
-      `${establishmentId}/validation/difference.report.json`
-    ));
+    s3UploadPromises.push(
+      uploadAsJSON(username, establishmentId, report, `${establishmentId}/validation/difference.report.json`),
+    );
 
     // to false to disable the upload of intermediary objects
     // the all entities intermediary file is required on completion - establishments entity for validation report
     if (establishmentsAsArray.length > 0) {
-      s3UploadPromises.push(uploadAsJSON(
-        username,
-        establishmentId,
-        establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false, false, false, false, true, null, true)),
-        `${establishmentId}/intermediary/all.entities.json`
-      ));
+      s3UploadPromises.push(
+        uploadAsJSON(
+          username,
+          establishmentId,
+          establishmentsAsArray.map((thisEstablishment) =>
+            thisEstablishment.toJSON(false, false, false, false, true, null, true),
+          ),
+          `${establishmentId}/intermediary/all.entities.json`,
+        ),
+      );
     }
 
     // for the purpose of the establishment validation report, need a list of all unique local authorities against all establishments
-    const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
-    const uniqueLocalAuthorities = establishmentsOnlyForJson.map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
+    const establishmentsOnlyForJson = establishmentsAsArray.map((thisEstablishment) => thisEstablishment.toJSON());
+    const uniqueLocalAuthorities = establishmentsOnlyForJson
+      .map((en) => (en.localAuthorities !== undefined ? en.localAuthorities : []))
       .reduce((acc, val) => acc.concat(val), [])
-      .map(la => la.name)
+      .map((la) => la.name)
       .sort((a, b) => a > b)
       .filter((value, index, self) => self.indexOf(value) === index);
 
-    s3UploadPromises.push(uploadAsJSON(
-      username,
-      establishmentId,
-      uniqueLocalAuthorities,
-      `${establishmentId}/intermediary/all.localauthorities.json`
-    ));
+    s3UploadPromises.push(
+      uploadAsJSON(
+        username,
+        establishmentId,
+        uniqueLocalAuthorities,
+        `${establishmentId}/intermediary/all.localauthorities.json`,
+      ),
+    );
 
     if (config.get('bulkupload.validation.storeIntermediaries')) {
       // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
       if (myEstablishments.length > 0) {
-        s3UploadPromises.push(uploadAsJSON(
-          username,
-          establishmentId,
-          myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
-          `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.csv.json`
-        ));
+        s3UploadPromises.push(
+          uploadAsJSON(
+            username,
+            establishmentId,
+            myEstablishments.map((thisEstablishment) => thisEstablishment.toJSON()),
+            `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.csv.json`,
+          ),
+        );
       }
 
       if (myWorkers.length > 0) {
-        s3UploadPromises.push(uploadAsJSON(
-          username,
-          establishmentId,
-          myWorkers.map(thisEstablishment => thisEstablishment.toJSON()),
-          `${establishmentId}/intermediary/${workers.workerMetadata.filename}.csv.json`
-        ));
+        s3UploadPromises.push(
+          uploadAsJSON(
+            username,
+            establishmentId,
+            myWorkers.map((thisEstablishment) => thisEstablishment.toJSON()),
+            `${establishmentId}/intermediary/${workers.workerMetadata.filename}.csv.json`,
+          ),
+        );
       }
 
       if (myTrainings.length > 0) {
-        s3UploadPromises.push(uploadAsJSON(
-          username,
-          establishmentId,
-          myTrainings.map(thisEstablishment => thisEstablishment.toJSON()),
-          `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`
-        ));
+        s3UploadPromises.push(
+          uploadAsJSON(
+            username,
+            establishmentId,
+            myTrainings.map((thisEstablishment) => thisEstablishment.toJSON()),
+            `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`,
+          ),
+        );
       }
 
       // upload the intermediary entities as JSON to S3
       if (establishmentsAsArray.length > 0) {
-        s3UploadPromises.push(uploadAsJSON(
-          username,
-          establishmentId,
-          establishmentsOnlyForJson,
-          `${establishmentId}/intermediary/establishment.entities.json`
-        ));
+        s3UploadPromises.push(
+          uploadAsJSON(
+            username,
+            establishmentId,
+            establishmentsOnlyForJson,
+            `${establishmentId}/intermediary/establishment.entities.json`,
+          ),
+        );
       }
 
       if (workersAsArray.length > 0) {
-        s3UploadPromises.push(uploadAsJSON(
-          username,
-          establishmentId,
-          workersAsArray.map(thisWorker => thisWorker.toJSON()),
-          `${establishmentId}/intermediary/worker.entities.json`
-        ));
+        s3UploadPromises.push(
+          uploadAsJSON(
+            username,
+            establishmentId,
+            workersAsArray.map((thisWorker) => thisWorker.toJSON()),
+            `${establishmentId}/intermediary/worker.entities.json`,
+          ),
+        );
       }
 
       if (trainingAsArray.length > 0) {
-        s3UploadPromises.push(uploadAsJSON(
-          username,
-          establishmentId,
-          trainingAsArray.map(thisTraining => thisTraining.toJSON()),
-          `${establishmentId}/intermediary/training.entities.json`
-        ));
+        s3UploadPromises.push(
+          uploadAsJSON(
+            username,
+            establishmentId,
+            trainingAsArray.map((thisTraining) => thisTraining.toJSON()),
+            `${establishmentId}/intermediary/training.entities.json`,
+          ),
+        );
       }
 
       if (qualificationsAsArray.length > 0) {
-        s3UploadPromises.push(uploadAsJSON(
-          username,
-          establishmentId,
-          qualificationsAsArray.map(thisQualification => thisQualification.toJSON()),
-          `${establishmentId}/intermediary/qualification.entities.json`
-        ));
+        s3UploadPromises.push(
+          uploadAsJSON(
+            username,
+            establishmentId,
+            qualificationsAsArray.map((thisQualification) => thisQualification.toJSON()),
+            `${establishmentId}/intermediary/qualification.entities.json`,
+          ),
+        );
       }
     }
 
@@ -1597,27 +1618,29 @@ const validateBulkUploadFiles = async (
     validation: {
       establishments: csvEstablishmentSchemaErrors,
       workers: csvWorkerSchemaErrors,
-      training: csvTrainingSchemaErrors
+      training: csvTrainingSchemaErrors,
     },
     metaData: {
       establishments: establishments.establishmentMetadata,
       workers: workers.workerMetadata,
-      training: training.trainingMetadata
+      training: training.trainingMetadata,
     },
     data: {
       csv: {
-        establishments: myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
-        workers: myWorkers.map(thisWorker => thisWorker.toJSON()),
-        training: myTrainings.map(thisTraining => thisTraining.toJSON())
+        establishments: myEstablishments.map((thisEstablishment) => thisEstablishment.toJSON()),
+        workers: myWorkers.map((thisWorker) => thisWorker.toJSON()),
+        training: myTrainings.map((thisTraining) => thisTraining.toJSON()),
       },
       entities: {
-        establishments: establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON()),
-        workers: workersAsArray.map(thisWorker => thisWorker.toJSON()),
-        training: trainingAsArray.map(thisTraining => thisTraining.toJSON()),
-        qualifications: qualificationsAsArray.map(thisQualification => thisQualification.toJSON())
+        establishments: establishmentsAsArray.map((thisEstablishment) => thisEstablishment.toJSON()),
+        workers: workersAsArray.map((thisWorker) => thisWorker.toJSON()),
+        training: trainingAsArray.map((thisTraining) => thisTraining.toJSON()),
+        qualifications: qualificationsAsArray.map((thisQualification) => thisQualification.toJSON()),
       },
-      resulting: establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false, false, false, false, true, null, true))
-    }
+      resulting: establishmentsAsArray.map((thisEstablishment) =>
+        thisEstablishment.toJSON(false, false, false, false, true, null, true),
+      ),
+    },
   };
 };
 
@@ -1630,7 +1653,7 @@ const restoreExistingEntities = async (
   isParent,
   assocationLevel = 1,
   onlyMine = false,
-  keepAlive = () => {}
+  keepAlive = () => {},
 ) => {
   try {
     const completionBulkUploadStatus = 'COMPLETE';
@@ -1653,25 +1676,35 @@ const restoreExistingEntities = async (
     const primaryEstablishment = new Establishment(loggedInUsername, completionBulkUploadStatus);
     currentEntities.push(primaryEstablishment);
 
-    restoreEntityPromises.push(primaryEstablishment.restore(myEstablishments.primary.uid, false, true, assocationLevel).then(data => {
-      keepAlive('establishment restored', myEstablishments.primary.uid); // keep connection alive
+    restoreEntityPromises.push(
+      primaryEstablishment.restore(myEstablishments.primary.uid, false, true, assocationLevel).then((data) => {
+        keepAlive('establishment restored', myEstablishments.primary.uid); // keep connection alive
 
-      return data;
-    }));
+        return data;
+      }),
+    );
 
-    if (myEstablishments.subsidaries && myEstablishments.subsidaries.establishments && Array.isArray(myEstablishments.subsidaries.establishments)) {
-      myEstablishments.subsidaries.establishments = myEstablishments.subsidaries.establishments.filter(est => est.ustatus !== 'PENDING');
-      myEstablishments.subsidaries.establishments.forEach(thisSubsidairy => {
+    if (
+      myEstablishments.subsidaries &&
+      myEstablishments.subsidaries.establishments &&
+      Array.isArray(myEstablishments.subsidaries.establishments)
+    ) {
+      myEstablishments.subsidaries.establishments = myEstablishments.subsidaries.establishments.filter(
+        (est) => est.ustatus !== 'PENDING',
+      );
+      myEstablishments.subsidaries.establishments.forEach((thisSubsidairy) => {
         if (!onlyMine || (onlyMine && thisSubsidairy.dataOwner === 'Parent')) {
           const newSub = new Establishment(loggedInUsername, completionBulkUploadStatus);
 
           currentEntities.push(newSub);
 
-          restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true, assocationLevel).then(data => {
-            keepAlive('sub establishment restored', thisSubsidairy.uid); // keep connection alive
+          restoreEntityPromises.push(
+            newSub.restore(thisSubsidairy.uid, false, true, assocationLevel).then((data) => {
+              keepAlive('sub establishment restored', thisSubsidairy.uid); // keep connection alive
 
-            return data;
-          }));
+              return data;
+            }),
+          );
         }
       });
     }
@@ -1690,11 +1723,7 @@ const restoreExistingEntities = async (
 //  able to complete on the upload though, they will need a report highlighting which, if any, of the
 //  the establishments and workers will be deleted.
 // Only generate this validation difference report, if there are no errors.
-const validationDifferenceReport = (
-  primaryEstablishmentId,
-  onloadEntities,
-  currentEntities
-) => {
+const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, currentEntities) => {
   const newEntities = [];
   const updatedEntities = [];
   const deletedEntities = [];
@@ -1707,9 +1736,11 @@ const validationDifferenceReport = (
   }
 
   // determine new and updated establishments, by referencing the onload set against the current set
-  onloadEntities.forEach(thisOnloadEstablishment => {
+  onloadEntities.forEach((thisOnloadEstablishment) => {
     // find a match for this establishment
-    const foundCurrentEstablishment = currentEntities.find(thisCurrentEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
+    const foundCurrentEstablishment = currentEntities.find(
+      (thisCurrentEstablishment) => thisCurrentEstablishment.key === thisOnloadEstablishment.key,
+    );
 
     if (foundCurrentEstablishment) {
       // for updated establishments, need to cross check the set of onload and current workers to identify the new, updated and deleted workers
@@ -1720,10 +1751,8 @@ const validationDifferenceReport = (
       const deletedWorkers = [];
 
       // find new/updated/deleted workers
-      onloadWorkers.forEach(thisOnloadWorker => {
-        const foundWorker = currentWorkers.find(thisCurrentWorker =>
-          thisCurrentWorker === thisOnloadWorker
-        );
+      onloadWorkers.forEach((thisOnloadWorker) => {
+        const foundWorker = currentWorkers.find((thisCurrentWorker) => thisCurrentWorker === thisOnloadWorker);
 
         if (foundWorker) {
           const theWorker = foundCurrentEstablishment.theWorker(foundWorker);
@@ -1736,14 +1765,14 @@ const validationDifferenceReport = (
               key: thisOnloadWorker,
               name: theWorker.nameOrId,
               localId: theWorker.localIdentifier,
-              status: theOnloadWorker.status
+              status: theOnloadWorker.status,
             });
           } else {
             updatedWorkers.push({
               key: thisOnloadWorker,
               name: theWorker.nameOrId,
               localId: theWorker.localIdentifier,
-              status: theOnloadWorker.status
+              status: theOnloadWorker.status,
             });
           }
         } else {
@@ -1752,14 +1781,14 @@ const validationDifferenceReport = (
             key: thisOnloadWorker,
             name: theWorker.nameOrId,
             localId: theWorker.localIdentifier,
-            status: theWorker.status
+            status: theWorker.status,
           });
         }
       });
 
       // find deleted workers
-      currentWorkers.forEach(thisCurrentWorker => {
-        const foundWorker = onloadWorkers.find(thisOnloadWorker => thisCurrentWorker === thisOnloadWorker);
+      currentWorkers.forEach((thisCurrentWorker) => {
+        const foundWorker = onloadWorkers.find((thisOnloadWorker) => thisCurrentWorker === thisOnloadWorker);
 
         if (!foundWorker) {
           const theWorker = foundCurrentEstablishment.theWorker(thisCurrentWorker);
@@ -1767,7 +1796,7 @@ const validationDifferenceReport = (
             key: thisCurrentWorker,
             name: theWorker.nameOrId,
             localId: theWorker.localIdentifier,
-            status: 'DELETED' // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight this has been automatically detected
+            status: 'DELETED', // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight this has been automatically detected
           });
         }
       });
@@ -1783,8 +1812,8 @@ const validationDifferenceReport = (
           localId: thisOnloadEstablishment.localIdentifier,
           status: thisOnloadEstablishment.status,
           workers: {
-            deleted: revisedSetOfDeletedWorkers
-          }
+            deleted: revisedSetOfDeletedWorkers,
+          },
         });
       } else {
         updatedEntities.push({
@@ -1795,8 +1824,8 @@ const validationDifferenceReport = (
           workers: {
             new: newWorkers,
             updated: updatedWorkers,
-            deleted: deletedWorkers
-          }
+            deleted: deletedWorkers,
+          },
         });
       }
     } else {
@@ -1804,18 +1833,20 @@ const validationDifferenceReport = (
         key: thisOnloadEstablishment.key,
         name: thisOnloadEstablishment.name,
         localId: thisOnloadEstablishment.localIdentifier,
-        status: thisOnloadEstablishment.status
+        status: thisOnloadEstablishment.status,
       });
     }
   });
 
   // determine the delete establishments, by reference the current set against the onload set
-  currentEntities.forEach(thisCurrentEstablishment => {
+  currentEntities.forEach((thisCurrentEstablishment) => {
     if (thisCurrentEstablishment.id !== primaryEstablishmentId) {
       // ignore those establishments that the primary does not own
       if (thisCurrentEstablishment.parentUid && thisCurrentEstablishment.dataOwner === 'Parent') {
         // find a match for this establishment
-        const foundOnloadEstablishment = onloadEntities.find(thisOnloadEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
+        const foundOnloadEstablishment = onloadEntities.find(
+          (thisOnloadEstablishment) => thisCurrentEstablishment.key === thisOnloadEstablishment.key,
+        );
 
         // cannot delete self
         if (!foundOnloadEstablishment) {
@@ -1823,13 +1854,13 @@ const validationDifferenceReport = (
           const currentWorkers = thisCurrentEstablishment.associatedWorkers;
           const deletedWorkers = [];
 
-          currentWorkers.forEach(thisCurrentWorker => {
+          currentWorkers.forEach((thisCurrentWorker) => {
             const thisWorker = thisCurrentEstablishment.theWorker(thisCurrentWorker);
             deletedWorkers.push({
               key: thisCurrentWorker,
               name: thisWorker.nameOrId,
               localId: thisWorker.localIdentifier,
-              status: 'DELETED' // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight
+              status: 'DELETED', // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight
               // this has been automatically detected
             });
           });
@@ -1841,8 +1872,8 @@ const validationDifferenceReport = (
             status: 'DELETED', // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight
             // this has been automatically detected
             workers: {
-              deleted: deletedWorkers
-            }
+              deleted: deletedWorkers,
+            },
           });
         }
       }
@@ -1856,7 +1887,7 @@ const validationDifferenceReport = (
   return {
     new: newEntities,
     updated: updatedEntities,
-    deleted: deletedEntities
+    deleted: deletedEntities,
   };
 };
 
@@ -1868,7 +1899,9 @@ const reportGet = async (req, res) => {
 
   try {
     if (!reportTypes.includes(reportType)) {
-      throw new Error(`router.route('/report').get - Invalid report type, valid types include - ${reportTypes.join(', ')}`);
+      throw new Error(
+        `router.route('/report').get - Invalid report type, valid types include - ${reportTypes.join(', ')}`,
+      );
     }
 
     let entities = null;
@@ -1884,7 +1917,7 @@ const reportGet = async (req, res) => {
       entities = establishment ? JSON.parse(establishment.data) : null;
       differenceReport = differenceReportS3 ? JSON.parse(differenceReportS3.data) : null;
     } catch (err) {
-      throw new Error('router.route(\'/report\').get - failed to download: ', entityKey);
+      throw new Error("router.route('/report').get - failed to download: ", entityKey);
     }
 
     const reportKey = `${req.establishmentId}/validation/${reportType}.validation.json`;
@@ -1893,7 +1926,7 @@ const reportGet = async (req, res) => {
       const content = await downloadContent(reportKey);
       messages = content ? JSON.parse(content.data) : null;
     } catch (err) {
-      throw new Error('router.route(\'/report\').get - failed to download: ', reportKey);
+      throw new Error("router.route('/report').get - failed to download: ", reportKey);
     }
 
     const errorTitle = '* Errors (will cause file(s) to be rejected) *';
@@ -1902,12 +1935,15 @@ const reportGet = async (req, res) => {
 
     const errors = messages
       .reduce((acc, val) => acc.concat(val), [])
-      .filter(msg => msg.errCode && msg.errType)
+      .filter((msg) => msg.errCode && msg.errType)
       .sort((a, b) => a.lineNumber - b.lineNumber)
-      .reduce((result, item) => ({
-        ...result,
-        [item.error]: [...(result[item.error] || []), item]
-      }), {});
+      .reduce(
+        (result, item) => ({
+          ...result,
+          [item.error]: [...(result[item.error] || []), item],
+        }),
+        {},
+      );
 
     printLine(readable, reportType, errors, NEWLINE);
 
@@ -1917,7 +1953,7 @@ const reportGet = async (req, res) => {
 
     const warnings = messages
       .reduce((acc, val) => acc.concat(val), [])
-      .filter(msg => msg.warnCode && msg.warnType)
+      .filter((msg) => msg.warnCode && msg.warnType)
       .sort((a, b) => a.lineNumber - b.lineNumber)
       .reduce((result, item) => ({ ...result, [item.warning]: [...(result[item.warning] || []), item] }), {});
 
@@ -1929,19 +1965,26 @@ const reportGet = async (req, res) => {
       readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
 
       if (entities) {
-        entities.forEach(item => readable.push(`${item}${NEWLINE}`));
+        entities.forEach((item) => readable.push(`${item}${NEWLINE}`));
       }
 
       // list all establishments that are being deleted
-      if (differenceReport && differenceReport.deleted && Array.isArray(differenceReport.deleted) && differenceReport.deleted.length > 0) {
+      if (
+        differenceReport &&
+        differenceReport.deleted &&
+        Array.isArray(differenceReport.deleted) &&
+        differenceReport.deleted.length > 0
+      ) {
         const deletedTitle = '* Deleted (the following Workplaces will be deleted) *';
         const deletedPadding = '*'.padStart(deletedTitle.length, '*');
         readable.push(`${NEWLINE}${deletedPadding}${NEWLINE}${deletedTitle}${NEWLINE}${deletedPadding}${NEWLINE}`);
 
         differenceReport.deleted
           .sort((x, y) => x.name > y.name)
-          .forEach(thisDeletedEstablishment => {
-            readable.push(`"${thisDeletedEstablishment.name}" (LOCALSTID - ${thisDeletedEstablishment.localId})${NEWLINE}`);
+          .forEach((thisDeletedEstablishment) => {
+            readable.push(
+              `"${thisDeletedEstablishment.name}" (LOCALSTID - ${thisDeletedEstablishment.localId})${NEWLINE}`,
+            );
           });
       }
     }
@@ -1949,10 +1992,14 @@ const reportGet = async (req, res) => {
     if (reportType === 'workers') {
       // list all workers that are being deleted
       if (differenceReport) {
-        const numberOfDeletedWorkersFromUpdatedEstablishments =
-          differenceReport.updated.reduce((total, current) => total + current.workers.deleted.length, 0);
-        const numberOfDeletedWorkersFromDeletedEstablishments =
-          differenceReport.deleted.reduce((total, current) => total + current.workers.deleted.length, 0);
+        const numberOfDeletedWorkersFromUpdatedEstablishments = differenceReport.updated.reduce(
+          (total, current) => total + current.workers.deleted.length,
+          0,
+        );
+        const numberOfDeletedWorkersFromDeletedEstablishments = differenceReport.deleted.reduce(
+          (total, current) => total + current.workers.deleted.length,
+          0,
+        );
 
         if (numberOfDeletedWorkersFromDeletedEstablishments) {
           const deletedTitle = '* Deleted Workplaces (the following Staff will be deleted) *';
@@ -1961,13 +2008,13 @@ const reportGet = async (req, res) => {
 
           differenceReport.deleted
             .sort((x, y) => x.name > y.name)
-            .forEach(thisDeletedEstablishment => {
+            .forEach((thisDeletedEstablishment) => {
               if (thisDeletedEstablishment.workers && thisDeletedEstablishment.workers.deleted) {
                 thisDeletedEstablishment.workers.deleted
                   .sort((x, y) => x.name > y.name)
-                  .forEach(thisWorker => {
+                  .forEach((thisWorker) => {
                     readable.push(
-                      `"${thisDeletedEstablishment.name}" (LOCALSTID - ${thisDeletedEstablishment.localId}) - "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`
+                      `"${thisDeletedEstablishment.name}" (LOCALSTID - ${thisDeletedEstablishment.localId}) - "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`,
                     );
                   });
               }
@@ -1981,13 +2028,13 @@ const reportGet = async (req, res) => {
 
           differenceReport.updated
             .sort((x, y) => x.name > y.name)
-            .forEach(thisUpdatedEstablishment => {
+            .forEach((thisUpdatedEstablishment) => {
               if (thisUpdatedEstablishment.workers && thisUpdatedEstablishment.workers.deleted) {
                 thisUpdatedEstablishment.workers.deleted
                   .sort((x, y) => x.name > y.name)
-                  .forEach(thisWorker => {
+                  .forEach((thisWorker) => {
                     readable.push(
-                      `"${thisUpdatedEstablishment.name}" (LOCALSTID - ${thisUpdatedEstablishment.localId})- "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`
+                      `"${thisUpdatedEstablishment.name}" (LOCALSTID - ${thisUpdatedEstablishment.localId})- "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`,
                     );
                   });
               }
@@ -1998,7 +2045,7 @@ const reportGet = async (req, res) => {
 
     await saveResponse(req, res, 200, readable.join(NEWLINE), {
       'Content-Type': 'text/plain',
-      'Content-disposition': `attachment; filename=${getFileName(reportType)}`
+      'Content-disposition': `attachment; filename=${getFileName(reportType)}`,
     });
   } catch (err) {
     console.error(err);
@@ -2007,21 +2054,25 @@ const reportGet = async (req, res) => {
 };
 
 const printLine = (readable, reportType, errors, sep) => {
-  Object.keys(errors).forEach(key => {
+  Object.keys(errors).forEach((key) => {
     readable.push(`${sep}${key}${sep}`);
-    errors[key].forEach(item => {
+    errors[key].forEach((item) => {
       if (reportType === 'training') {
-        return readable.push(`For worker with ${item.name} and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`);
+        return readable.push(
+          `For worker with ${item.name} and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`,
+        );
       } else if (reportType === 'establishments') {
         return readable.push(`For establishment called ${item.name} on line ${item.lineNumber}${sep}`);
       } else if (reportType === 'workers') {
-        return readable.push(`For worker with LOCALESTID ${item.name} and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`);
+        return readable.push(
+          `For worker with LOCALESTID ${item.name} and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`,
+        );
       }
     });
   });
 };
 
-const getFileName = reportType => {
+const getFileName = (reportType) => {
   switch (reportType) {
     case 'training':
       return 'TrainingResults.txt';
@@ -2036,16 +2087,12 @@ const getFileName = reportType => {
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment
-const restoreOnloadEntities = async (
-  loggedInUsername,
-  primaryEstablishmentId,
-  keepAlive = () => {}
-) => {
+const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId, keepAlive = () => {}) => {
   try {
     // the result of validation is to make available an S3 object outlining ALL entities ready to be uploaded
     const allEntitiesKey = `${primaryEstablishmentId}/intermediary/all.entities.json`;
 
-    const onLoadEntitiesJSON = await downloadContent(allEntitiesKey).then(myFile => {
+    const onLoadEntitiesJSON = await downloadContent(allEntitiesKey).then((myFile) => {
       keepAlive('restoreOnloadEntities');
 
       return myFile;
@@ -2057,7 +2104,7 @@ const restoreOnloadEntities = async (
     const onLoadEstablishments = [];
     const onloadPromises = [];
     if (onLoadEntities && Array.isArray(onLoadEntities)) {
-      onLoadEntities.forEach(thisEntity => {
+      onLoadEntities.forEach((thisEntity) => {
         const newOnloadEstablishment = new Establishment(loggedInUsername);
         onLoadEstablishments.push(newOnloadEstablishment);
 
@@ -2070,13 +2117,15 @@ const restoreOnloadEntities = async (
           thisEntity.locationId,
           thisEntity.provId,
           thisEntity.postcode,
-          thisEntity.isRegulated
+          thisEntity.isRegulated,
         );
-        onloadPromises.push(newOnloadEstablishment.load(thisEntity, true).then(data => {
-          keepAlive('newOnloadEstablishment loaded');
+        onloadPromises.push(
+          newOnloadEstablishment.load(thisEntity, true).then((data) => {
+            keepAlive('newOnloadEstablishment loaded');
 
-          return data;
-        }));
+            return data;
+          }),
+        );
       });
     }
     // wait here for the loading of all establishments from entities to complete
@@ -2096,13 +2145,15 @@ const completeNewEstablishment = async (
   onloadEstablishments,
   primaryEstablishmentId,
   primaryEstablishmentUid,
-  keepAlive = () => {}
+  keepAlive = () => {},
 ) => {
   try {
     const startTime = new Date();
 
     // find the onload establishment by key
-    const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisNewEstablishment.key);
+    const foundOnloadEstablishment = onloadEstablishments.find(
+      (thisOnload) => thisOnload.key === thisNewEstablishment.key,
+    );
 
     // the entity is already loaded, so simply prep it ready for saving
     if (foundOnloadEstablishment) {
@@ -2130,14 +2181,18 @@ const completeUpdateEstablishment = async (
   transaction,
   onloadEstablishments,
   myCurrentEstablishments,
-  keepAlive = () => {}
+  keepAlive = () => {},
 ) => {
   try {
     const startTime = new Date();
 
     // find the current establishment and onload establishment by key
-    const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisUpdatedEstablishment.key);
-    const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisUpdatedEstablishment.key);
+    const foundOnloadEstablishment = onloadEstablishments.find(
+      (thisOnload) => thisOnload.key === thisUpdatedEstablishment.key,
+    );
+    const foundCurrentEstablishment = myCurrentEstablishments.find(
+      (thisCurrent) => thisCurrent.key === thisUpdatedEstablishment.key,
+    );
 
     // current is already restored, so simply need pass the onload entity into the current along with the associated set of worker entities
     if (foundCurrentEstablishment) {
@@ -2161,7 +2216,10 @@ const completeUpdateEstablishment = async (
       timerLog('CHECKPOINT - BU COMPLETE - update establishment', startTime, endTime, numberOfWorkers);
     }
   } catch (err) {
-    console.error('completeUpdateEstablishment: failed to complete upon existing establishment: ', thisUpdatedEstablishment.key);
+    console.error(
+      'completeUpdateEstablishment: failed to complete upon existing establishment: ',
+      thisUpdatedEstablishment.key,
+    );
     throw err;
   }
 };
@@ -2170,13 +2228,15 @@ const completeDeleteEstablishment = async (
   thisDeletedEstablishment,
   theLoggedInUser,
   transaction,
-  myCurrentEstablishments
+  myCurrentEstablishments,
 ) => {
   try {
     const startTime = new Date();
 
     // find the current establishment by key
-    const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisDeletedEstablishment.key);
+    const foundCurrentEstablishment = myCurrentEstablishments.find(
+      (thisCurrent) => thisCurrent.key === thisDeletedEstablishment.key,
+    );
 
     // current is already restored, so simply need to delete it
     if (foundCurrentEstablishment) {
@@ -2187,7 +2247,10 @@ const completeDeleteEstablishment = async (
     const numberOfWorkers = foundCurrentEstablishment.workers.length;
     timerLog('CHECKPOINT - BU COMPLETE - delete establishment', startTime, endTime, numberOfWorkers);
   } catch (err) {
-    console.error('completeDeleteEstablishment: failed to complete upon deleting establishment: ', thisDeletedEstablishment.key);
+    console.error(
+      'completeDeleteEstablishment: failed to complete upon deleting establishment: ',
+      thisDeletedEstablishment.key,
+    );
     throw err;
   }
 };
@@ -2208,16 +2271,30 @@ const completePost = async (req, res) => {
     //  validating a bulk upload and completing it.
     const completeStartTime = new Date();
     // association level is just 1 (we need Establishment's workers for completion, but not the Worker's associated training and qualification)
-    const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1, keepAlive);
+    const myCurrentEstablishments = await restoreExistingEntities(
+      theLoggedInUser,
+      primaryEstablishmentId,
+      isParent,
+      1,
+      keepAlive,
+    );
 
     keepAlive('restore existing entities', primaryEstablishmentId);
 
     const restoredExistingStateTime = new Date();
-    timerLog('CHECKPOINT - BU COMPLETE - have restored current state of establishments/workers', completeStartTime, restoredExistingStateTime);
+    timerLog(
+      'CHECKPOINT - BU COMPLETE - have restored current state of establishments/workers',
+      completeStartTime,
+      restoredExistingStateTime,
+    );
 
     try {
       const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId, keepAlive);
-      const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null).then(data => {
+      const validationDiferenceReportDownloaded = await downloadContent(
+        `${primaryEstablishmentId}/validation/difference.report.json`,
+        null,
+        null,
+      ).then((data) => {
         keepAlive('differences downloaded');
 
         return data;
@@ -2225,70 +2302,89 @@ const completePost = async (req, res) => {
       const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
 
       const restoredOnLoadStateTime = new Date();
-      timerLog('CHECKPOINT - BU COMPLETE - have restored onloaded state from validation stage', restoredExistingStateTime, restoredOnLoadStateTime);
+      timerLog(
+        'CHECKPOINT - BU COMPLETE - have restored onloaded state from validation stage',
+        restoredExistingStateTime,
+        restoredOnLoadStateTime,
+      );
 
       // sequential promise console logger
-      const log = result => result === null;
+      const log = (result) => result === null;
 
       // could look to parallel the three above tasks as each is relatively intensive - but happy path first
       // process the set of new, updated and deleted entities for bulk upload completion, within a single transaction
       let completeCommitTransactionTime = null;
       try {
         // all creates, updates and deletes (archive) are done in one transaction to ensure database integrity
-        await dbModels.sequelize.transaction(async t => {
+        await dbModels.sequelize.transaction(async (t) => {
           // first create the new establishments - in sequence
           const starterNewPromise = Promise.resolve(null);
-          await validationDiferenceReport
-            .new
-            .reduce((p, thisNewEstablishment) => p.then(() =>
-              completeNewEstablishment(
-                thisNewEstablishment,
-                theLoggedInUser,
-                t,
-                onloadEstablishments,
-                primaryEstablishmentId,
-                primaryEstablishmentUid,
-                keepAlive
-              ).then(data => {
-                keepAlive('complete new establishment');
+          await validationDiferenceReport.new.reduce(
+            (p, thisNewEstablishment) =>
+              p.then(() =>
+                completeNewEstablishment(
+                  thisNewEstablishment,
+                  theLoggedInUser,
+                  t,
+                  onloadEstablishments,
+                  primaryEstablishmentId,
+                  primaryEstablishmentUid,
+                  keepAlive,
+                )
+                  .then((data) => {
+                    keepAlive('complete new establishment');
 
-                return data;
-              }).then(log)), starterNewPromise);
+                    return data;
+                  })
+                  .then(log),
+              ),
+            starterNewPromise,
+          );
 
           // now update the updated
           const starterUpdatedPromise = Promise.resolve(null);
-          await validationDiferenceReport
-            .updated
-            .reduce((p, thisUpdatedEstablishment) => p.then(() =>
-              completeUpdateEstablishment(
-                thisUpdatedEstablishment,
-                theLoggedInUser,
-                t,
-                onloadEstablishments,
-                myCurrentEstablishments,
-                keepAlive
-              ).then(data => {
-                keepAlive('completeUpdateEstablishment');
+          await validationDiferenceReport.updated.reduce(
+            (p, thisUpdatedEstablishment) =>
+              p.then(() =>
+                completeUpdateEstablishment(
+                  thisUpdatedEstablishment,
+                  theLoggedInUser,
+                  t,
+                  onloadEstablishments,
+                  myCurrentEstablishments,
+                  keepAlive,
+                )
+                  .then((data) => {
+                    keepAlive('completeUpdateEstablishment');
 
-                return data;
-              }).then(log)), starterUpdatedPromise);
+                    return data;
+                  })
+                  .then(log),
+              ),
+            starterUpdatedPromise,
+          );
 
           // and finally, delete the deleted
           const starterDeletedPromise = Promise.resolve(null);
-          await validationDiferenceReport
-            .deleted
-            .reduce((p, thisDeletedEstablishment) => p.then(() =>
-              completeDeleteEstablishment(
-                thisDeletedEstablishment,
-                theLoggedInUser,
-                t,
-                myCurrentEstablishments,
-                keepAlive
-              ).then(data => {
-                keepAlive('completeDeleteEstablishment');
+          await validationDiferenceReport.deleted.reduce(
+            (p, thisDeletedEstablishment) =>
+              p.then(() =>
+                completeDeleteEstablishment(
+                  thisDeletedEstablishment,
+                  theLoggedInUser,
+                  t,
+                  myCurrentEstablishments,
+                  keepAlive,
+                )
+                  .then((data) => {
+                    keepAlive('completeDeleteEstablishment');
 
-                return data;
-              }).then(log)), starterDeletedPromise);
+                    return data;
+                  })
+                  .then(log),
+              ),
+            starterDeletedPromise,
+          );
 
           completeCommitTransactionTime = new Date();
         });
@@ -2297,7 +2393,11 @@ const completePost = async (req, res) => {
         if (completeCommitTransactionTime) {
           timerLog('CHECKPOINT - BU COMPLETE - commit transaction', completeCommitTransactionTime, completeSaveTime);
         }
-        timerLog('CHECKPOINT - BU COMPLETE - have completed all establishments', restoredOnLoadStateTime, completeSaveTime);
+        timerLog(
+          'CHECKPOINT - BU COMPLETE - have completed all establishments',
+          restoredOnLoadStateTime,
+          completeSaveTime,
+        );
 
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects
@@ -2321,39 +2421,46 @@ const completePost = async (req, res) => {
         console.error("route('/complete') err: ", err);
 
         await saveResponse(req, res, 503, {
-          message: 'Failed to save'
+          message: 'Failed to save',
         });
       }
     } catch (err) {
-      console.error('router.route(\'/complete\').post: failed to download entities intermediary - atypical that the object does not exist because not yet validated: ', err);
+      console.error(
+        "router.route('/complete').post: failed to download entities intermediary - atypical that the object does not exist because not yet validated: ",
+        err,
+      );
 
       await saveResponse(req, res, 406, {
-        message: 'Validation has not run'
+        message: 'Validation has not run',
       });
     }
   } catch (err) {
     console.error(err);
 
     await saveResponse(req, res, 503, {
-      message: 'Service Unavailable'
+      message: 'Service Unavailable',
     });
   }
 };
 
 const determineMaxQuals = async (primaryEstablishmentId) => {
-  return dbModels.sequelize.query(
-    'select cqc.maxQualifications(:givenPrimaryEstablishment);',
-    {
-      replacements: {
-        givenPrimaryEstablishment: primaryEstablishmentId
-      },
-      type: dbModels.sequelize.QueryTypes.SELECT
-    }
-  );
+  return dbModels.sequelize.query('select cqc.maxQualifications(:givenPrimaryEstablishment);', {
+    replacements: {
+      givenPrimaryEstablishment: primaryEstablishmentId,
+    },
+    type: dbModels.sequelize.QueryTypes.SELECT,
+  });
 };
 
 // takes the given set of establishments, and returns the string equivalent of each of the establishments, workers and training CSV
-const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId, downloadType, maxQuals, responseSend) => {
+const exportToCsv = async (
+  NEWLINE,
+  allMyEstablishments,
+  primaryEstablishmentId,
+  downloadType,
+  maxQuals,
+  responseSend,
+) => {
   // before being able to write the worker header, we need to know the maximum number of qualifications
   // columns across all workers
 
@@ -2379,22 +2486,30 @@ const exportToCsv = async (NEWLINE, allMyEstablishments, primaryEstablishmentId,
 
     responseSend(columnNames, 'column names');
 
-    allMyEstablishments.forEach(thisEstablishment => {
+    allMyEstablishments.forEach((thisEstablishment) => {
       if (downloadType === 'establishments') {
         responseSend(NEWLINE + EstablishmentCsvValidator.toCSV(thisEstablishment), 'establishment');
       } else {
         // for each worker on this establishment
-        thisEstablishment.workers.forEach(thisWorker => {
+        thisEstablishment.workers.forEach((thisWorker) => {
           // note - thisEstablishment.name will need to be local identifier once available
           if (downloadType === 'workers') {
-            responseSend(NEWLINE + WorkerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS), 'worker');
-          } else if (thisWorker.training) { // or for this Worker's training records
-            thisWorker.training.forEach(thisTrainingRecord => {
-              responseSend(NEWLINE + TrainingCsvValidator.toCSV(
-                thisEstablishment.key,
-                thisWorker.localIdentifier ? thisWorker.localIdentifier : '',
-                thisTrainingRecord),
-              'training');
+            responseSend(
+              NEWLINE + WorkerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker, MAX_QUALS),
+              'worker',
+            );
+          } else if (thisWorker.training) {
+            // or for this Worker's training records
+            thisWorker.training.forEach((thisTrainingRecord) => {
+              responseSend(
+                NEWLINE +
+                  TrainingCsvValidator.toCSV(
+                    thisEstablishment.key,
+                    thisWorker.localIdentifier ? thisWorker.localIdentifier : '',
+                    thisTrainingRecord,
+                  ),
+                'training',
+              );
             });
           }
         });
@@ -2443,33 +2558,35 @@ const downloadGet = async (req, res) => {
         primaryEstablishmentId,
         downloadType,
         maxQuals,
-        responseSend
+        responseSend,
       );
 
       await saveResponse(req, res, 200, responseText.join(''), {
         'Content-Type': 'text/csv',
-        'Content-disposition': `attachment; filename=${new Date().toISOString().split('T')[0]}-sfc-bulk-upload-${downloadType}.csv`
+        'Content-disposition': `attachment; filename=${
+          new Date().toISOString().split('T')[0]
+        }-sfc-bulk-upload-${downloadType}.csv`,
       });
     } catch (err) {
-      console.error('router.get(\'/bulkupload/download\').get: failed to restore my establishments and all associated entities (workers, qualifications and training: ', err);
+      console.error(
+        "router.get('/bulkupload/download').get: failed to restore my establishments and all associated entities (workers, qualifications and training: ",
+        err,
+      );
 
       await saveResponse(req, res, 503, {
-        message: 'Failed to retrieve establishment data'
+        message: 'Failed to retrieve establishment data',
       });
     }
   } else {
     console.error(`router.get('/bulkupload/download').get: unexpected download type: ${downloadType}`, downloadType);
 
     await saveResponse(req, res, 400, {
-      message: `Unexpected download type: ${downloadType}`
+      message: `Unexpected download type: ${downloadType}`,
     });
   }
 };
 
-const checkDuplicateLocations = async (
-  myEstablishments,
-  csvEstablishmentSchemaErrors,
-) => {
+const checkDuplicateLocations = async (myEstablishments, csvEstablishmentSchemaErrors) => {
   const locations = [];
 
   myEstablishments
@@ -2479,9 +2596,7 @@ const checkDuplicateLocations = async (
       const exists = locations[locationId] !== undefined;
 
       if (exists) {
-        csvEstablishmentSchemaErrors.push(
-          thisEstablishment.getDuplicateLocationError(),
-        );
+        csvEstablishmentSchemaErrors.push(thisEstablishment.getDuplicateLocationError());
 
         return;
       }
@@ -2495,17 +2610,21 @@ const checkPartTimeSalary = (thisWorker, myWorkers, myCurrentEstablishments, csv
     return;
   }
   if (
-    (thisWorker._currentLine.CONTHOURS !== '' && parseFloat(thisWorker._currentLine.CONTHOURS) < 37) &&
-    (thisWorker._currentLine.SALARY !== '' && thisWorker._currentLine.SALARYINT === '1')
+    thisWorker._currentLine.CONTHOURS !== '' &&
+    parseFloat(thisWorker._currentLine.CONTHOURS) < 37 &&
+    thisWorker._currentLine.SALARY !== '' &&
+    thisWorker._currentLine.SALARYINT === '1'
   ) {
     let workersToCheckinDB = [];
-    let otherWorkerFTE = myWorkers.some(function(worker) {
+    let otherWorkerFTE = myWorkers.some(function (worker) {
       if (
-        (worker._currentLine.STATUS !== 'DELETE' && worker._currentLine.STATUS !== 'UNCHECKED' && worker._currentLine.STATUS !== 'NOCHANGE') &&
-        (worker._currentLine.SALARYINT === '1') &&
-        (worker._currentLine.SALARY === thisWorker._currentLine.SALARY) &&
-        (worker._currentLine.MAINJOBROLE === thisWorker._currentLine.MAINJOBROLE) &&
-        (parseFloat(worker._currentLine.CONTHOURS) > 36)
+        worker._currentLine.STATUS !== 'DELETE' &&
+        worker._currentLine.STATUS !== 'UNCHECKED' &&
+        worker._currentLine.STATUS !== 'NOCHANGE' &&
+        worker._currentLine.SALARYINT === '1' &&
+        worker._currentLine.SALARY === thisWorker._currentLine.SALARY &&
+        worker._currentLine.MAINJOBROLE === thisWorker._currentLine.MAINJOBROLE &&
+        parseFloat(worker._currentLine.CONTHOURS) > 36
       ) {
         return true;
       } else if (worker._currentLine.STATUS === 'UNCHECKED' || worker._currentLine.STATUS === 'NOCHANGE') {
@@ -2516,26 +2635,45 @@ const checkPartTimeSalary = (thisWorker, myWorkers, myCurrentEstablishments, csv
     if (otherWorkerFTE) {
       csvWorkerSchemaErrors.push(thisWorker.ftePayCheckHasDifferentHours());
     } else if (workersToCheckinDB.length) {
-      if (myCurrentEstablishments.some(function(establishment) {
-        return workersToCheckinDB.some(function(localID) {
-          localID = localID.replace(/\s/g, '');
-          if (establishment._workerEntities[localID]) {
-            const worker = establishment._workerEntities[localID];
-            if ((worker.annualHourlyPay && worker.annualHourlyPay.value === 'Annually' && worker.annualHourlyPay.rate == thisWorker._currentLine.SALARY) && worker.mainJob) {
-              const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(thisWorker._currentLine.MAINJOBROLE));
-              if ((worker.mainJob.jobId == mappedRole) && (worker.contractedHours && parseFloat(worker.contractedHours.hours) > 36)) {
-                return true;
+      if (
+        myCurrentEstablishments.some(function (establishment) {
+          return workersToCheckinDB.some(function (localID) {
+            localID = localID.replace(/\s/g, '');
+            if (establishment._workerEntities[localID]) {
+              const worker = establishment._workerEntities[localID];
+              if (
+                worker.annualHourlyPay &&
+                worker.annualHourlyPay.value === 'Annually' &&
+                worker.annualHourlyPay.rate == thisWorker._currentLine.SALARY &&
+                worker.mainJob
+              ) {
+                const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(thisWorker._currentLine.MAINJOBROLE));
+                if (
+                  worker.mainJob.jobId == mappedRole &&
+                  worker.contractedHours &&
+                  parseFloat(worker.contractedHours.hours) > 36
+                ) {
+                  return true;
+                }
               }
             }
-          }
-        });
-      })) {
+          });
+        })
+      ) {
         csvWorkerSchemaErrors.push(thisWorker.ftePayCheckHasDifferentHours());
       }
     }
   }
 };
-const checkDuplicateWorkerID = (thisWorker, allKeys, changeKeyNoWhitespace, keyNoWhitespace, allWorkersByKey, myAPIWorkers, csvWorkerSchemaErrors) => {
+const checkDuplicateWorkerID = (
+  thisWorker,
+  allKeys,
+  changeKeyNoWhitespace,
+  keyNoWhitespace,
+  allWorkersByKey,
+  myAPIWorkers,
+  csvWorkerSchemaErrors,
+) => {
   // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
   if (changeKeyNoWhitespace && (allWorkersByKey[changeKeyNoWhitespace] || allKeys.includes(changeKeyNoWhitespace))) {
     // this worker is a duplicate
@@ -2553,26 +2691,26 @@ const checkDuplicateWorkerID = (thisWorker, allKeys, changeKeyNoWhitespace, keyN
     return false;
   } else {
     return true;
-  };
+  }
 };
 
 const router = require('express').Router();
 
-router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
-router.route('/download/:downloadType').get(acquireLock.bind(null, downloadGet, buStates.DOWNLOADING));
+router.route('/signedUrl').get(fileLockS3.acquireLock.bind(null, 'bulkupload', signedUrlGet));
+router.route('/download/:downloadType').get(fileLockS3.acquireLock.bind(null, 'bulkupload', downloadGet));
 
-router.route('/uploaded').put(acquireLock.bind(null, uploadedPut, buStates.UPLOADING));
-router.route('/uploaded').post(acquireLock.bind(null, uploadedPost, buStates.UPLOADING));
-router.route('/uploaded').get(acquireLock.bind(null, uploadedGet, buStates.DOWNLOADING));
-router.route('/uploaded/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOADING));
+router.route('/uploaded').put(fileLockS3.acquireLock.bind(null, 'bulkupload', uploadedPut));
+router.route('/uploaded').post(fileLockS3.acquireLock.bind(null, 'bulkupload', uploadedPost));
+router.route('/uploaded').get(fileLockS3.acquireLock.bind(null, 'bulkupload', uploadedGet));
+router.route('/uploaded/*').get(fileLockS3.acquireLock.bind(null, 'bulkupload', uploadedStarGet));
 
-router.route('/validate').put(acquireLock.bind(null, validatePut, buStates.VALIDATING));
+router.route('/validate').put(fileLockS3.acquireLock.bind(null, 'bulkupload', validatePut));
 
-router.route('/report/:reportType').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
+router.route('/report/:reportType').get(fileLockS3.acquireLock.bind(null, 'bulkupload', reportGet));
 
-router.route('/complete').post(acquireLock.bind(null, completePost, buStates.COMPLETING));
-router.route('/lockstatus').get(lockStatusGet);
-router.route('/unlock').get(releaseLock);
+router.route('/complete').post(fileLockS3.acquireLock.bind(null, 'bulkupload', completePost));
+router.route('/lockstatus').get(fileLockS3.lockStatus.bind(null, 'bulkupload'));
+router.route('/unlock').get(fileLockS3.releaseLock.bind(null, 'bulkupload'));
 router.route('/response/:buRequestId').get(responseGet);
 
 module.exports = router;

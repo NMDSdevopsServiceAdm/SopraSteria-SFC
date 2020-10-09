@@ -35,14 +35,14 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    protected establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit() {
     this.return = this.establishmentService.returnTo;
 
     this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe(establishment => {
+      this.establishmentService.establishment$.subscribe((establishment) => {
         this.establishment = establishment;
         this.primaryWorkplace = this.establishmentService.primaryWorkplace;
 
@@ -51,7 +51,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
           this.setBackLink();
         }
-      })
+      }),
     );
 
     this.setupFormErrorsMap();
@@ -96,10 +96,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'exit':
-        const url =
-          this.primaryWorkplace && this.establishment.uid === this.primaryWorkplace.uid
-            ? ['/dashboard']
-            : ['/workplace', this.establishment.uid];
+        const url = this.isPrimaryWorkplace ? ['/dashboard'] : ['/workplace', this.establishment.uid];
         this.router.navigate(url, { fragment: 'workplace' });
         break;
 
@@ -157,5 +154,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected onError(error) {
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
+  }
+
+  public get isPrimaryWorkplace() {
+    return this.primaryWorkplace && this.establishment.uid === this.primaryWorkplace.uid;
   }
 }

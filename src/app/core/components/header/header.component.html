@@ -1,4 +1,4 @@
-<header #header class="govuk-header" role="banner" data-module="header" [class.open-dropdown]="showDropdown">
+<header class="govuk-header" role="banner" data-module="header" [class.open-dropdown]="showDropdown">
   <div class="govuk-header__container govuk-width-container">
     <div>
       <img src="/assets/images/logo.png" alt="Skills for Care" />
@@ -6,7 +6,6 @@
     <div>
       <a [routerLink]="['/']" class="govuk-header__strapline">Adult Social Care Workforce Data Set</a>
       <button
-        data-html2canvas-ignore
         (click)="toggleMenu()"
         type="button"
         class="govuk-header__menu-button"
@@ -16,7 +15,7 @@
         Menu
       </button>
     </div>
-    <nav data-html2canvas-ignore>
+    <nav>
       <ul class="govuk-header__navigation" id="navigation" aria-label="Top Level Navigation">
         <ng-container *ngIf="!isLoggedIn()">
           <li class="govuk-header__navigation-item">

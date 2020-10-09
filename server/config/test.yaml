@@ -47,6 +47,10 @@ bulkupload:
     completion:
         timeout: 120
 
+locks:
+    region: eu-west-1
+    bucketname: sfc-locks-staging
+
 public:
     download:
         baseurl: https://sfc-public-staging.s3.eu-west-2.amazonaws.com/public/download

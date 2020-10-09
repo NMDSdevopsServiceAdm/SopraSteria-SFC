@@ -1,7 +1,6 @@
 export interface BulkUploadStatus {
   establishmentId: string;
-  bulkUploadState: string;
-  bulkUploadLockHeld: boolean;
+  reportLockHeld: boolean;
 }
 
 export interface BulkUploadLock {

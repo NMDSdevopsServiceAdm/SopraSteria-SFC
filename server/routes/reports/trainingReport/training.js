@@ -13,6 +13,7 @@ const models = require('../../../../server/models');
 
 const cheerio = require('cheerio');
 const reportLock = require('../../../utils/fileLock');
+const fileLockS3 = require('../../../utils/fileLockS3');
 const Training = require('../../../models/classes/training').Training;
 
 const { getTrainingData, getJobName, getMndatoryTrainingDetails } = require('../../../data/trainingReport');
@@ -1055,9 +1056,10 @@ const reportGet = async (req, res) => {
 /**
  * Handle GET API requests to get Training report data
  */
-router.route('/report').get(reportLock.acquireLock.bind(null, 'training', reportGet,false));
-router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'training',false));
-router.route('/unlock').get(reportLock.releaseLock.bind(null, 'training',false));
+
+router.route('/report').get(fileLockS3.acquireLock.bind(null,'training', reportGet));
+router.route('/lockstatus').get(fileLockS3.lockStatus.bind(null, 'training'));
+router.route('/unlock').get(fileLockS3.releaseLock.bind(null, 'training'));
 router.route('/response/:buRequestId').get(reportLock.responseGet);
 
 module.exports = router;
