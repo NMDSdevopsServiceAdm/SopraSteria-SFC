@@ -1,4 +1,5 @@
 const getAddressAPI = require('../utils/getAddressAPI');
+const pCodeCheck = require('../utils/postcodeSanitizer');
 
 module.exports = function (sequelize, DataTypes) {
   const postcodes = sequelize.define(
@@ -38,6 +39,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   postcodes.firstOrCreate = async function (postcode) {
+    postcode = pCodeCheck.sanitisePostcode(postcode);
     let foundPostcode = await this.findByPostcode(postcode);
 
     if (foundPostcode) {

@@ -404,21 +404,11 @@ class Establishment extends EntityValidator {
       }
       // Consequential updates when one value means another should be empty or null
 
-      // When sharing is disabled, the local authority shared with should be removed
-      // if (document.share) {
-      //   if (!document.share.enabled) {
-      //     document.share.with = [];
-      //     document.localAuthorities = [];
-      //   }
-      // }
-
-      // If an establishment is not CQC regulated, remove CQC sharing and remove a location ID if set
-      // if (document.IsCQCRegulated === false || document.isRegulated === false) {
-      //   if (document.share && document.share.with) {
-      //     document.share.with = document.share.with.filter(item => item !== 'CQC');
-      //   }
-      //   document.locationId = null;
-      // }
+      if (document.share) {
+        if (!document.share.enabled || document.share.enabled && !document.share.with.includes('Local Authority')) {
+          document.localAuthorities = [];
+        }
+      }
 
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();
@@ -926,10 +916,6 @@ class Establishment extends EntityValidator {
           const buChanged = this._status === 'NOCHANGE';
           // now append the extendable properties
           const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
-          if (modifedUpdateDocument && !modifedUpdateDocument.ShareDataValue) {
-            modifedUpdateDocument.shareWithCQC = false;
-            modifedUpdateDocument.shareWithLA = false;
-          }
 
           // note - if the establishment was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {
