@@ -138,9 +138,6 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             req.parentIsOwner = referencedEstablishment.dataOwner === 'Parent' ? true : false;
             req.dataPermissions = referencedEstablishment.dataPermissions; // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
 
-            // we now know the
-            establishmentIdIsUID = false;
-
             // restore claims
             req.username = claim.sub;
             req.userUid = claim.userUid;
