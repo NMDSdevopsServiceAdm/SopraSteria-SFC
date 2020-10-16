@@ -34,8 +34,8 @@ const cqcStatusChanges = async (req, res) => {
 };
 
 const _mapResults = async (approvalResults) => {
-  const data;
-  const promises = approvalResults.map(async approval => {
+  let data;
+  const promises = approvalResults.map(async (approval) => {
     data = approval.Data;
     const currentServiceID = data.currentService.id || null;
     const requestedServiceID = data.requestedService.id || null;
@@ -54,14 +54,14 @@ const _mapResults = async (approvalResults) => {
         currentService: {
           ID: currentServiceID,
           name: data.currentService.name,
-          other: data.currentService.other || null
+          other: data.currentService.other || null,
         },
         requestedService: {
           ID: requestedServiceID,
           name: data.requestedService.name,
-          other: data.requestedService.other || null
-        }
-      }
+          other: data.requestedService.other || null,
+        },
+      },
     };
   });
   return await Promise.all(promises);
@@ -105,7 +105,7 @@ const _updateMainService = async (req, res) => {
     const mainService = {
       id: data.requestedService.id,
       name: data.requestedService.name,
-      ...(data.requestedService.other && { other: data.requestedService.other })
+      ...(data.requestedService.other && { other: data.requestedService.other }),
     };
 
     const thisEstablishment = new Establishment.Establishment(username);
