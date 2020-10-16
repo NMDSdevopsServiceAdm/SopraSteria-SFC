@@ -17,7 +17,6 @@ router.route('/').get(async (req, res) => {
   await getTrainingListWithMissingMandatoryTraining(req, res);
 });
 
-
 // gets requested training record using the training uid
 router.route('/:trainingUid').get(async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -33,7 +32,6 @@ router.route('/:trainingUid').get(async (req, res) => {
       // not found training record
       return res.status(404).send('Not Found');
     }
-
   } catch (err) {
     console.error(err);
     return res.status(503).send();
@@ -60,13 +58,11 @@ router.route('/').post(async (req, res) => {
     } else {
       return res.status(400).send('Unexpected Input.');
     }
-
   } catch (err) {
     console.error(err);
     return res.status(503).send();
   }
 });
-
 
 // updates requested training record using the training uid
 router.route('/:trainingUid').put(async (req, res) => {
@@ -95,18 +91,15 @@ router.route('/:trainingUid').put(async (req, res) => {
       } else {
         return res.status(400).send('Unexpected Input.');
       }
-
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
-
   } catch (err) {
     console.error(err);
     return res.status(503).send();
   }
 });
-
 
 // deletes requested training record using the training uid
 router.route('/:trainingUid').delete(async (req, res) => {
@@ -131,12 +124,10 @@ router.route('/:trainingUid').delete(async (req, res) => {
       } else {
         return res.status(404).json('Not Found');
       }
-
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
-
   } catch (err) {
     console.error(err);
     return res.status(503).send();
@@ -152,10 +143,10 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
     const mandatoryTrainingforWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
     if (allTrainingRecords.count === 0) {
       missingMandatoryTraining = mandatoryTrainingforWorker;
-    }else if (mandatoryTrainingforWorker.length > 0){
-      mandatoryTrainingforWorker.forEach(mandatoryTraining => {
+    } else if (mandatoryTrainingforWorker.length > 0) {
+      mandatoryTrainingforWorker.forEach((mandatoryTraining) => {
         mantrainingDone = false;
-        allTrainingRecords.training.forEach(training => {
+        allTrainingRecords.training.forEach((training) => {
           if (mandatoryTraining.trainingCategoryFK === training.trainingCategory.id) {
             mantrainingDone = true;
           }
@@ -165,12 +156,12 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
         }
       });
     }
-    missingMandatoryTraining.forEach(thisRecord => {
+    missingMandatoryTraining.forEach((thisRecord) => {
       allTrainingRecords.training.unshift({
         uid: thisRecord.id,
         trainingCategory: {
           id: thisRecord.workerTrainingCategories.id,
-          category: thisRecord.workerTrainingCategories.category
+          category: thisRecord.workerTrainingCategories.category,
         },
         title: undefined,
         missing: true,
@@ -180,7 +171,7 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
         notes: undefined,
         created: thisRecord.created.toISOString(),
         updated: thisRecord.updated.toISOString(),
-        updatedBy: thisRecord.updatedBy
+        updatedBy: thisRecord.updatedBy,
       });
     });
     res.status(200);
@@ -188,7 +179,7 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
   } catch (err) {
     console.error('Training::root - failed', err);
     res.status(503);
-    return res.send(`Failed to get Training Records for Worker having uid: ${workerUid}`);
+    return res.send(`Failed to get Training Records for Worker having uid: ${escape(workerUid)}`);
   }
 };
 module.exports = router;
