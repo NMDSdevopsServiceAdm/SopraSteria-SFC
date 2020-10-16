@@ -264,13 +264,13 @@ router.route('/alt').post(async (req, res) => {
         return res.json(formatLAResponse(reFetchResults));
       } else {
         console.error(
-          'establishment::la POST - Not found establishment having id: ${establishmentId} after having updated the establishment',
+          `establishment::la POST - Not found establishment having id: ${establishmentId} after having updated the establishment`,
           err,
         );
         return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
       }
     } else {
-      console.error('establishment::la POST - Not found establishment having id: ${establishmentId}', err);
+      console.error(`establishment::la POST - Not found establishment having id: ${establishmentId}`, err);
       return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
     }
   } catch (err) {
