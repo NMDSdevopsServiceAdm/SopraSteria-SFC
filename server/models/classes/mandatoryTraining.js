@@ -193,7 +193,6 @@ class MandatoryTraining extends EntityValidator {
   // Throws "Error" on error
   async save(savedBy, externalTransaction = null) {
     let returnSavedResponse = [];
-    let failedWhileSave = false;
     let initializedRecords = this._initialise();
     if (initializedRecords && this._isNew) {
       // create new Mandatory Training Record
@@ -217,7 +216,6 @@ class MandatoryTraining extends EntityValidator {
             if (allJobRoles && Array.isArray(allJobRoles) && allJobRoles.length > 0) {
               row.jobs = allJobRoles;
             } else {
-              failedWhileSave = true;
               throw new Error('No Job roles found');
             }
           }
