@@ -9,7 +9,6 @@
  * TO NOTE - Qualification is a simplified representation of User, Worker and Establishment; it does not have any managed properties or auditing.
  */
 const uuid = require('uuid');
-const moment = require('moment');
 
 // database models
 const models = require('../index');

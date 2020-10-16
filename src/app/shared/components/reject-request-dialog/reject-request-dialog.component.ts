@@ -95,7 +95,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
 
   public handleChange(evt) {
     const group = this.form as FormGroup;
-    const { rejectOption, reason } = group.controls;
+    const { reason } = group.controls;
     reason.clearValidators();
     reason.setValue('');
     if (this.form.value.rejectOption === 'YES') {

@@ -524,7 +524,7 @@ class User {
             );
 
             // also need to complete on the originating add user tracking record
-            const trackingResponse = await models.addUserTracking.update(
+            await models.addUserTracking.update(
               {
                 completed: this.created, // use the very same timestamp as that which the User record was created!
               },
@@ -825,7 +825,7 @@ class User {
           SecurityQuestionAnswerValue: '',
         };
 
-        let [updatedRecordCount, updatedRows] = await models.user.update(updateDocument, {
+        let [updatedRecordCount] = await models.user.update(updateDocument, {
           returning: true,
           where: {
             uid: this.uid,
@@ -897,7 +897,6 @@ class User {
 
           this._log(User.LOG_INFO, `Archived User with uid (${this._uid}) and id (${this._id})`);
         } else {
-          const nameId = this._properties.get('NameOrId');
           throw new UserExceptions.UserDeleteException(
             null,
             this.uid,

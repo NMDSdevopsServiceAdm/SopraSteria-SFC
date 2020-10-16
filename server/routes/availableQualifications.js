@@ -48,7 +48,7 @@ router.route('/:id').put(async function (req, res) {
       analysisFileCode: qualification.analysisFileCode,
     };
 
-    let results = await models.workerAvailableQualifications.update(updateDocument, {
+    await models.workerAvailableQualifications.update(updateDocument, {
       where: {
         id: qualificationId,
       },

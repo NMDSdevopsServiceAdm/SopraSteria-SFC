@@ -7,8 +7,6 @@ const isAuthorisedEstablishment = require('../../../utils/security/isAuthenticat
 const isLocal = require('../../../utils/security/isLocalTest').isLocal;
 
 // all user functionality is encapsulated
-const Establishment = require('../../../models/classes/establishment').Establishment;
-const Worker = require('../../../models/classes/worker').Worker;
 const WdfCalculator = require('../../../models/classes/wdfCalculator').WdfCalculator;
 
 const parentReport = require('./parent');
@@ -55,8 +53,6 @@ router.route('/establishment/:id').get(async (req, res) => {
 router.use('/establishment/:id/parent', [isAuthorisedEstablishment, parentReport]);
 
 router.route('/establishment/:id/override').get(async (req, res) => {
-  const establishmentId = req.establishmentId;
-
   let effectiveFrom = null;
   if (isLocal(req) && req.query.effectiveFrom) {
     // can only override the WDF effective date in local dev/test environments

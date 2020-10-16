@@ -3,7 +3,6 @@ const router = express.Router();
 const concatenateAddress = require('../utils/concatenateAddress').concatenateAddress;
 const uuid = require('uuid');
 const isLocal = require('../utils/security/isLocalTest').isLocal;
-const bcrypt = require('bcrypt-nodejs');
 const slack = require('../utils/slack/slack-logger');
 const sns = require('../aws/sns');
 
@@ -16,7 +15,6 @@ const EstablishmentModel = require('../models/classes/establishment').Establishm
 const EstablishmentSaveException = require('../models/classes/establishment/establishmentExceptions')
   .EstablishmentSaveException;
 const UserModel = require('../models/classes/user').User;
-const UserJsonException = require('../models/classes/user/userExceptions').UserJsonException;
 const UserSaveException = require('../models/classes/user/userExceptions').UserSaveException;
 
 const generateJWT = require('../utils/security/generateJWT');
