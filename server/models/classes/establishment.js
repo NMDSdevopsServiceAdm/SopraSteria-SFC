@@ -941,7 +941,6 @@ class Establishment extends EntityValidator {
           // it's current WDF eligibility. If it is eligible then
           // update the last WDF Eligibility status
           const wdfEligibility = await this.isWdfEligible(WdfCalculator.effectiveDate);
-          const effectiveDateTime = WdfCalculator.effectiveTime;
 
           let wdfAudit = null;
 

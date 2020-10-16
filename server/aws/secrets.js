@@ -4,13 +4,13 @@ let myLocalSecrets = null;
 
 const initialiseSecrets = async (region, wallet) => {
   const secrets = new AWS.SecretsManager({
-    region
+    region,
   });
 
   try {
     if (!wallet) throw new Error('wallet must be defined');
 
-    const mySecretsValue = await secrets.getSecretValue({SecretId: wallet}).promise();
+    const mySecretsValue = await secrets.getSecretValue({ SecretId: wallet }).promise();
     if (typeof mySecretsValue.SecretString !== 'undefined') {
       const mySecrets = JSON.parse(mySecretsValue.SecretString);
 
@@ -31,17 +31,12 @@ const initialiseSecrets = async (region, wallet) => {
         ADMIN_URL: mySecrets.ADMIN_URL,
         DD_API_KEY: mySecrets.DD_API_KEY,
         SENTRY_DSN: mySecrets.SENTRY_DSN,
-        HONEYCOMB_WRITE_KEY: mySecrets.HONEYCOMB_WRITE_KEY
+        HONEYCOMB_WRITE_KEY: mySecrets.HONEYCOMB_WRITE_KEY,
       };
     }
-
   } catch (err) {
     console.error('Failed to load AWS secrets: ', err);
   }
-};
-
-const resetSecrets = () => {
-  myLocalSecrets = null;
 };
 
 const dbHost = () => {
@@ -54,7 +49,7 @@ const dbHost = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const dbPass = () => {
   if (myLocalSecrets !== null) {
@@ -66,7 +61,7 @@ const dbPass = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const jwtSecret = () => {
   if (myLocalSecrets !== null) {
@@ -78,7 +73,7 @@ const jwtSecret = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const slackUrl = () => {
   if (myLocalSecrets !== null) {
@@ -90,7 +85,7 @@ const slackUrl = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 const getAddressKey = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.GET_ADDRESS) {
@@ -101,10 +96,9 @@ const getAddressKey = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
-
-const  govNotify = () => {
+const govNotify = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.NOTIFY_KEY) {
       throw new Error('Unknown NOTIFY_KEY secret');
@@ -114,9 +108,9 @@ const  govNotify = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
-const  adminUrl = () => {
+const adminUrl = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.ADMIN_URL) {
       throw new Error('Unknown ADMIN_URL secret');
@@ -126,7 +120,7 @@ const  adminUrl = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const datadogApiKey = () => {
   if (myLocalSecrets !== null) {
@@ -138,7 +132,7 @@ const datadogApiKey = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const sentryDsn = () => {
   if (myLocalSecrets !== null) {
@@ -150,7 +144,7 @@ const sentryDsn = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const honeycombWriteKey = () => {
   if (myLocalSecrets !== null) {
@@ -162,7 +156,7 @@ const honeycombWriteKey = () => {
   } else {
     throw new Error('Unknown secrets');
   }
-}
+};
 
 const dbAppUserKey = () => {
   if (myLocalSecrets !== null) {
@@ -197,7 +191,6 @@ const dbAppRootCertificate = () => {
     throw new Error('Unknown secrets');
   }
 };
-
 
 module.exports.initialiseSecrets = initialiseSecrets;
 module.exports.dbHost = dbHost;

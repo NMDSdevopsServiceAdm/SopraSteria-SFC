@@ -19,7 +19,7 @@ const search = async function (req, res) {
 
     return res.status(200).json(results);
   } catch (err) {
-    console.error(err.type)
+    console.error(err.type);
     console.error(err.message);
     return res.status(503).send();
   }

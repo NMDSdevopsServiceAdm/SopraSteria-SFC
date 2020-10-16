@@ -12,7 +12,6 @@ const usernameCheck = require('../../utils/security/usernameValidation').isUsern
 
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
-const uuid = require('uuid');
 const linkSubToParent = require('../../data/linkToParent');
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
@@ -479,8 +478,6 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
     return res.status(400).send();
   }
 
-  const thisUser = new User.User(establishmentId);
-
   try {
     const passTokenResults = await models.addUserTracking.findOne({
       where: {
@@ -800,7 +797,6 @@ const addTypeContent = async (notification) => {
       });
       if (subQuery.length === 1) {
         if (subQuery[0].createdByUserUID) {
-          let params = subQuery[0].createdByUserUID;
           const requestorName = await notifications.getRequesterName(notification.createdByUserUID);
           if (requestorName) {
             subQuery.forEach(function (element) {
