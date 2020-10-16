@@ -13,13 +13,24 @@ const AWS = require('aws-sdk');
 const cheerio = require('cheerio');
 
 const s3 = new AWS.S3({
-  region: String(config.get('bulkupload.region'))
+  region: String(config.get('bulkupload.region')),
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
 const { Establishment } = require('../../../models/classes/establishment');
-const { getEstablishmentData, getWorkerData, getCapicityData, getUtilisationData, getServiceCapacityDetails } = require('../../../data/parentWDFReport');
-const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = require('../../../data/parentWDFReportLock');
+const {
+  getEstablishmentData,
+  getWorkerData,
+  getCapicityData,
+  getUtilisationData,
+  getServiceCapacityDetails,
+} = require('../../../data/parentWDFReport');
+const {
+  attemptToAcquireLock,
+  updateLockState,
+  lockStatus,
+  releaseLockQuery,
+} = require('../../../data/parentWDFReportLock');
 
 // Constants string needed by this file in several places
 const folderName = 'template';
@@ -32,35 +43,21 @@ const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 // const debuglog = console.log.bind(console);
 const debuglog = () => {};
 
-const buStates = [
-  'READY',
-  'DOWNLOADING',
-  'FAILED',
-  'WARNINGS',
-  'PASSED',
-  'COMPLETING'
-].reduce((acc, item) => {
+const buStates = ['READY', 'DOWNLOADING', 'FAILED', 'WARNINGS', 'PASSED', 'COMPLETING'].reduce((acc, item) => {
   acc[item] = item;
 
   return acc;
 }, Object.create(null));
 
-const parseXML = fileContent =>
+const parseXML = (fileContent) =>
   cheerio.load(fileContent, {
     xml: {
       normalizeWhitespace: true,
-    }
+    },
   });
 
 // helper function to set a spreadsheet cell's value
-const putStringTemplate = (
-  sheetDoc,
-  stringsDoc,
-  sst,
-  sharedStringsUniqueCount,
-  element,
-  value
-) => {
+const putStringTemplate = (sheetDoc, stringsDoc, sst, sharedStringsUniqueCount, element, value) => {
   let vTag = element.children('v').first();
   let hasVTag = true;
   if (element.children('v').length === 0) {
@@ -103,55 +100,57 @@ const getReportData = async (date, thisEstablishment) => {
     date: date.toISOString(),
     parentName: thisEstablishment.name,
     establishments: await getEstablishmentReportData(thisEstablishment.id),
-    workers: await getWorkersReportData(thisEstablishment.id)
+    workers: await getWorkersReportData(thisEstablishment.id),
   };
 };
 
-const propsNeededToComplete = ('MainService,EmployerTypeValue,Capacities,Utilisations,ServiceUsers,NumberOfStaffValue,Vacancies,Starters,Leavers').split(',');
+const propsNeededToComplete = 'MainService,EmployerTypeValue,Capacities,Utilisations,ServiceUsers,NumberOfStaffValue,Vacancies,Starters,Leavers'.split(
+  ',',
+);
 
-const getEstablishmentReportData = async establishmentId => {
+const getEstablishmentReportData = async (establishmentId) => {
   const establishmentReturnData = await getEstablishmentData(establishmentId);
-  const establishmentData = establishmentReturnData.filter(est => est.Status !== "PENDING");
-  for(let i = 0; i< establishmentData.length; i++) {
+  const establishmentData = establishmentReturnData.filter((est) => est.Status !== 'PENDING');
+  for (let i = 0; i < establishmentData.length; i++) {
     let value = establishmentData[i];
     let getServiceCapacityData = await getServiceCapacityDetails(value.MainServiceFKValue);
-    if(getServiceCapacityData && getServiceCapacityData.length === 0){
+    if (getServiceCapacityData && getServiceCapacityData.length === 0) {
       value.Capacities = 'N/A';
       value.Utilisations = 'N/A';
-    }else{
+    } else {
       let capicityDetails = [];
       let utilisationDetails = [];
-      if(getServiceCapacityData.length === 2){
+      if (getServiceCapacityData.length === 2) {
         capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
         utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
-      }else if(getServiceCapacityData[0].Type === 'Capacity'){
+      } else if (getServiceCapacityData[0].Type === 'Capacity') {
         capicityDetails = await getCapicityData(value.EstablishmentID, value.MainServiceFKValue);
-        utilisationDetails = [{"Answer": 'N/A'}];
-      }else if(getServiceCapacityData[0].Type === 'Utilisation'){
+        utilisationDetails = [{ Answer: 'N/A' }];
+      } else if (getServiceCapacityData[0].Type === 'Utilisation') {
         utilisationDetails = await getUtilisationData(value.EstablishmentID, value.MainServiceFKValue);
-        capicityDetails = [{"Answer": 'N/A'}];
+        capicityDetails = [{ Answer: 'N/A' }];
       }
 
-      if(capicityDetails && capicityDetails.length > 0){
-        if(capicityDetails[0].Answer === null){
+      if (capicityDetails && capicityDetails.length > 0) {
+        if (capicityDetails[0].Answer === null) {
           value.Capacities = 'Missing';
-        }else if(capicityDetails[0].Answer === 'N/A'){
+        } else if (capicityDetails[0].Answer === 'N/A') {
           value.Capacities = 'N/A';
-        }else{
+        } else {
           value.Capacities = capicityDetails[0].Answer;
         }
-      }else{
+      } else {
         value.Capacities = 'Missing';
       }
-      if(utilisationDetails && utilisationDetails.length > 0){
-        if(utilisationDetails[0].Answer === null){
+      if (utilisationDetails && utilisationDetails.length > 0) {
+        if (utilisationDetails[0].Answer === null) {
           value.Utilisations = 'Missing';
-        }else if(utilisationDetails[0].Answer === 'N/A'){
+        } else if (utilisationDetails[0].Answer === 'N/A') {
           value.Utilisations = 'N/A';
-        }else{
+        } else {
           value.Utilisations = utilisationDetails[0].Answer;
         }
-      }else{
+      } else {
         value.Utilisations = 'Missing';
       }
     }
@@ -171,68 +170,72 @@ const getEstablishmentReportData = async establishmentId => {
       value.DateEligibilityAchieved = '';
     }
 
-    value.NumberOfStaffValue = (value.NumberOfStaffValue === null) ? 0: value.NumberOfStaffValue;
+    value.NumberOfStaffValue = value.NumberOfStaffValue === null ? 0 : value.NumberOfStaffValue;
 
     if (
       value.NumberOfStaffValue !== 0 &&
       value.NumberOfStaffValue !== null &&
-      (value.TotalIndividualWorkerRecord !== 0 || value.TotalIndividualWorkerRecord !== null)) {
-      value.PercentageOfWorkerRecords = `${parseFloat(+value.TotalIndividualWorkerRecord / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
+      (value.TotalIndividualWorkerRecord !== 0 || value.TotalIndividualWorkerRecord !== null)
+    ) {
+      value.PercentageOfWorkerRecords = `${parseFloat(
+        (+value.TotalIndividualWorkerRecord / +value.NumberOfStaffValue) * 100,
+      ).toFixed(1)}%`;
     } else {
       value.PercentageOfWorkerRecords = '0.0%';
     }
     if (value.VacanciesValue === null) {
       value.Vacancies = 'Missing';
-    }else if(value.VacanciesValue === 'None'){
+    } else if (value.VacanciesValue === 'None') {
       value.Vacancies = 0;
-    }else if(value.VacanciesValue === "Don't know"){
-      value.Vacancies =  "Don't know";
-    }else if(value.VacanciesValue === "With Jobs"){
-      value.Vacancies = (value.VacanciesCount === null)? 'Missing':  value.VacanciesCount;
+    } else if (value.VacanciesValue === "Don't know") {
+      value.Vacancies = "Don't know";
+    } else if (value.VacanciesValue === 'With Jobs') {
+      value.Vacancies = value.VacanciesCount === null ? 'Missing' : value.VacanciesCount;
     }
 
     if (value.StartersValue === null) {
       value.Starters = 'Missing';
-    }else if(value.StartersValue === 'None'){
+    } else if (value.StartersValue === 'None') {
       value.Starters = 0;
-    }else if(value.StartersValue === "Don't know"){
-      value.Starters =  "Don't know";
-    }else if(value.StartersValue === "With Jobs"){
-      value.Starters = (value.StartersCount === null)? 'Missing':  value.StartersCount;
+    } else if (value.StartersValue === "Don't know") {
+      value.Starters = "Don't know";
+    } else if (value.StartersValue === 'With Jobs') {
+      value.Starters = value.StartersCount === null ? 'Missing' : value.StartersCount;
     }
     if (value.LeaversValue === null) {
       value.Leavers = 'Missing';
-    }else if(value.LeaversValue === 'None'){
+    } else if (value.LeaversValue === 'None') {
       value.Leavers = 0;
-    }else if(value.LeaversValue === "Don't know"){
-      value.Leavers =  "Don't know";
-    }else if(value.LeaversValue === "With Jobs"){
-      value.Leavers = (value.LeaversCount === null)? 'Missing':  value.LeaversCount;
+    } else if (value.LeaversValue === "Don't know") {
+      value.Leavers = "Don't know";
+    } else if (value.LeaversValue === 'With Jobs') {
+      value.Leavers = value.LeaversCount === null ? 'Missing' : value.LeaversCount;
     }
 
-    if(value.EmployerTypeValue === null){
+    if (value.EmployerTypeValue === null) {
       value.EmployerTypeValue = '';
     }
 
-    if(value.ServiceUsers === ''){
+    if (value.ServiceUsers === '') {
       value.ServiceUsers = 'Missing';
-    }else{
+    } else {
       value.ServiceUsers = 'Yes';
     }
 
-    value.LeavingReasonsCountEqualsLeavers = (value.ReasonsForLeaving === value.LeaversValue) ? 'Yes' : 'No';
-    value.TotalWorkersCountGTEWorkerRecords = (value.NumberOfStaffValue >= value.TotalIndividualWorkerRecord) ? 'Yes' : 'No';
+    value.LeavingReasonsCountEqualsLeavers = value.ReasonsForLeaving === value.LeaversValue ? 'Yes' : 'No';
+    value.TotalWorkersCountGTEWorkerRecords =
+      value.NumberOfStaffValue >= value.TotalIndividualWorkerRecord ? 'Yes' : 'No';
 
     value.UpdatedInCurrentFinancialYear = value.LastUpdatedDate !== null ? 'Yes' : 'No';
 
     value.CompletedWorkerRecordsPercentage =
-      (value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null)
+      value.CompletedWorkerRecords === 0 || value.NumberOfStaffValue === 0 || value.NumberOfStaffValue === null
         ? '0.0%'
-        : `${parseFloat(+value.CompletedWorkerRecords / +value.NumberOfStaffValue * 100).toFixed(1)}%`;
+        : `${parseFloat((+value.CompletedWorkerRecords / +value.NumberOfStaffValue) * 100).toFixed(1)}%`;
 
     value.EstablishmentDataFullyCompleted = 'Yes';
 
-    propsNeededToComplete.forEach(prop => {
+    propsNeededToComplete.forEach((prop) => {
       if (value[prop] === null || value[prop] === '' || value[prop] === 'Missing') {
         value.EstablishmentDataFullyCompleted = 'No';
       }
@@ -242,68 +245,71 @@ const getEstablishmentReportData = async establishmentId => {
   return establishmentData;
 };
 
-const updateProps = ('DateOfBirthValue,GenderValue,NationalityValue,MainJobStartDateValue,' +
-'RecruitedFromValue,WeeklyHoursContractedValue,ZeroHoursContractValue,' +
-'DaysSickValue,AnnualHourlyPayValue,AnnualHourlyPayRate,CareCertificateValue,QualificationInSocialCareValue,QualificationInSocialCare,OtherQualificationsValue').split(',');
+const updateProps = (
+  'DateOfBirthValue,GenderValue,NationalityValue,MainJobStartDateValue,' +
+  'RecruitedFromValue,WeeklyHoursContractedValue,ZeroHoursContractValue,' +
+  'DaysSickValue,AnnualHourlyPayValue,AnnualHourlyPayRate,CareCertificateValue,QualificationInSocialCareValue,QualificationInSocialCare,OtherQualificationsValue'
+).split(',');
 
-const getWorkersReportData = async establishmentId => {
+const getWorkersReportData = async (establishmentId) => {
   const workerData = await getWorkerData(establishmentId);
-  let workersArray = workerData.
-      filter(worker => {
-        if(establishmentId !== worker.EstablishmentID){
-          return (worker.DataOwner === 'Parent' || worker.DataPermissions === "Workplace and Staff")
-        }else{
-          return true;
-        }
-      });
+  let workersArray = workerData.filter((worker) => {
+    if (establishmentId !== worker.EstablishmentID) {
+      return worker.DataOwner === 'Parent' || worker.DataPermissions === 'Workplace and Staff';
+    } else {
+      return true;
+    }
+  });
 
   workersArray.forEach((value, key) => {
-    if(value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know"){
+    if (value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know") {
       value.QualificationInSocialCare = 'N/A';
     }
-    if(value.AnnualHourlyPayRate === "Don't know" || value.AnnualHourlyPayValue === "Don't know"){
+    if (value.AnnualHourlyPayRate === "Don't know" || value.AnnualHourlyPayValue === "Don't know") {
       value.AnnualHourlyPayRate = 'N/A';
     }
-    if(value.DaysSickValue === 'No'){
+    if (value.DaysSickValue === 'No') {
       value.DaysSickValue = "Don't know";
-    }else if(value.DaysSickValue === 'Yes'){
+    } else if (value.DaysSickValue === 'Yes') {
       value.DaysSickValue = value.DaysSickDays;
     }
 
-    if(value.RecruitedFromValue === 'No'){
+    if (value.RecruitedFromValue === 'No') {
       value.RecruitedFromValue = "Don't know";
-    }else if(value.RecruitedFromValue === "Yes"){
+    } else if (value.RecruitedFromValue === 'Yes') {
       value.RecruitedFromValue = value.From;
     }
 
-    if(value.NationalityValue === "Other"){
+    if (value.NationalityValue === 'Other') {
       value.NationalityValue = value.Nationality;
     }
 
-    if((value.ContractValue === 'Permanent' || value.ContractValue === 'Temporary')
-    && value.ZeroHoursContractValue === 'No'){
-      if(value.WeeklyHoursContractedValue === 'Yes'){
+    if (
+      (value.ContractValue === 'Permanent' || value.ContractValue === 'Temporary') &&
+      value.ZeroHoursContractValue === 'No'
+    ) {
+      if (value.WeeklyHoursContractedValue === 'Yes') {
         value.HoursValue = value.WeeklyHoursContractedHours;
-      }else if(value.WeeklyHoursContractedValue === 'No'){
+      } else if (value.WeeklyHoursContractedValue === 'No') {
         value.HoursValue = "Don't know";
-      }else if(value.WeeklyHoursContractedValue === null){
+      } else if (value.WeeklyHoursContractedValue === null) {
         value.HoursValue = 'Missing';
       }
-    }else{
-      if(value.WeeklyHoursAverageValue === 'Yes'){
+    } else {
+      if (value.WeeklyHoursAverageValue === 'Yes') {
         value.HoursValue = value.WeeklyHoursAverageHours;
-      }else if(value.WeeklyHoursAverageValue === 'No'){
+      } else if (value.WeeklyHoursAverageValue === 'No') {
         value.HoursValue = "Don't know";
-      }else if(value.WeeklyHoursAverageValue === null){
+      } else if (value.WeeklyHoursAverageValue === null) {
         value.HoursValue = 'Missing';
       }
     }
 
-    if(value.ContractValue === 'Agency' || value.ContractValue === 'Pool/Bank'){
+    if (value.ContractValue === 'Agency' || value.ContractValue === 'Pool/Bank') {
       value.DaysSickValue = 'N/A';
     }
 
-    updateProps.forEach(prop => {
+    updateProps.forEach((prop) => {
       if (value[prop] === null) {
         value[prop] = 'Missing';
       }
@@ -326,7 +332,7 @@ const styleLookup = {
       H: 12,
       I: 12,
       J: 12,
-      K: 12
+      K: 12,
     },
     OVRLAST: {
       A: 2,
@@ -339,7 +345,7 @@ const styleLookup = {
       H: 22,
       I: 22,
       J: 22,
-      K: 22
+      K: 22,
     },
     ESTREGULAR: {
       A: 2,
@@ -358,7 +364,7 @@ const styleLookup = {
       N: 12,
       O: 15,
       P: 15,
-      Q: 15
+      Q: 15,
     },
     ESTLAST: {
       A: 2,
@@ -377,7 +383,7 @@ const styleLookup = {
       N: 12,
       O: 20,
       P: 20,
-      Q: 20
+      Q: 20,
     },
     WKRREGULAR: {
       A: 2,
@@ -398,7 +404,7 @@ const styleLookup = {
       P: 15,
       Q: 15,
       R: 15,
-      S: 15
+      S: 15,
     },
     WKRLAST: {
       A: 2,
@@ -419,8 +425,8 @@ const styleLookup = {
       P: 20,
       Q: 20,
       R: 20,
-      S: 20
-    }
+      S: 20,
+    },
   },
   RED: {
     OVRREGULAR: {
@@ -434,7 +440,7 @@ const styleLookup = {
       H: 11,
       I: 12,
       J: 12,
-      K: 66
+      K: 66,
     },
     OVRLAST: {
       A: 2,
@@ -447,7 +453,7 @@ const styleLookup = {
       H: 22,
       I: 22,
       J: 22,
-      K: 66
+      K: 66,
     },
     ESTREGULAR: {
       A: 2,
@@ -466,7 +472,7 @@ const styleLookup = {
       N: 66,
       O: 67,
       P: 67,
-      Q: 67
+      Q: 67,
     },
     ESTLAST: {
       A: 2,
@@ -485,7 +491,7 @@ const styleLookup = {
       N: 66,
       O: 67,
       P: 67,
-      Q: 67
+      Q: 67,
     },
     WKRREGULAR: {
       A: 2,
@@ -506,7 +512,7 @@ const styleLookup = {
       P: 67,
       Q: 67,
       R: 67,
-      S: 67
+      S: 67,
     },
     WKRLAST: {
       A: 2,
@@ -527,9 +533,9 @@ const styleLookup = {
       P: 67,
       Q: 67,
       R: 67,
-      S: 67
-    }
-  }
+      S: 67,
+    },
+  },
 };
 
 const setStyle = (cellToChange, columnText, rowType, isRed) => {
@@ -551,35 +557,20 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
     }
   }
 
-  putString(
-    cellToChange,
-    value
-  );
+  putString(cellToChange, value);
 
   setStyle(cellToChange, columnText, rowType, isRed);
 };
 
-const updateOverviewSheet = (
-  overviewSheet,
-  reportData,
-  sharedStrings,
-  sst,
-  sharedStringsUniqueCount
-) => {
+const updateOverviewSheet = (overviewSheet, reportData, sharedStrings, sst, sharedStringsUniqueCount) => {
   debuglog('updating overview sheet');
 
   const putString = putStringTemplate.bind(null, overviewSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   // set headers
-  putString(
-    overviewSheet("c[r='B6']"),
-    `Parent name : ${reportData.parentName}`
-  );
+  putString(overviewSheet("c[r='B6']"), `Parent name : ${reportData.parentName}`);
 
-  putString(
-    overviewSheet("c[r='B7']"),
-    `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`
-  );
+  putString(overviewSheet("c[r='B7']"), `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`);
 
   const templateRow = overviewSheet("row[r='11']");
 
@@ -587,8 +578,8 @@ const updateOverviewSheet = (
   let rowIndex = 16;
   let updateRowIndex = 16 + reportData.establishments.length - 1;
   // Move the information at the bottom to the correct place
-  for(; rowIndex > 11; rowIndex--, updateRowIndex--) {
-    if(rowIndex === 16) {
+  for (; rowIndex > 11; rowIndex--, updateRowIndex--) {
+    if (rowIndex === 16) {
       // fix the dimensions tag value
       const dimension = overviewSheet('dimension');
       dimension.attr('ref', String(dimension.attr('ref')).replace(/\d+$/, '') + updateRowIndex);
@@ -603,13 +594,13 @@ const updateOverviewSheet = (
 
     const mergeCell = overviewSheet(`mergeCell[ref='B${rowIndex}:L${rowIndex}']`);
 
-    if(mergeCell !== null) {
+    if (mergeCell !== null) {
       mergeCell.attr('ref', `B${updateRowIndex}:L${updateRowIndex}`);
     }
 
     if (currentRow.prev().length !== 0) {
       currentRow = currentRow.prev();
-      if(currentRow.name === 'row') {
+      if (currentRow.name === 'row') {
         break;
       }
     }
@@ -622,7 +613,7 @@ const updateOverviewSheet = (
   rowIndex = 12;
 
   if (reportData.establishments.length > 1) {
-    for (let i = 0; i < (reportData.establishments.length - 1); i++) {
+    for (let i = 0; i < reportData.establishments.length - 1; i++) {
       const tempRow = templateRow.clone(true);
 
       tempRow.attr('r', rowIndex);
@@ -652,95 +643,96 @@ const updateOverviewSheet = (
       const isRed = false;
       const cellToChange = currentRow.children(`c[r='${columnText}${row + 11}']`);
       switch (columnText) {
-        case 'B': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].SubsidiaryName
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'B':
+          {
+            putString(cellToChange, reportData.establishments[row].SubsidiaryName);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'C': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].SubsidiarySharingPermissions
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'C':
+          {
+            putString(cellToChange, reportData.establishments[row].SubsidiarySharingPermissions);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'D': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.establishments[row].CurrentWdfEligibilityStatus,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'D':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              reportData.establishments[row].CurrentWdfEligibilityStatus,
+              columnText,
+              rowType,
+            );
+          }
+          break;
 
-        case 'E': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].DateEligibilityAchieved
-          );
-        } break;
+        case 'E':
+          {
+            putString(cellToChange, reportData.establishments[row].DateEligibilityAchieved);
+          }
+          break;
 
-        case 'F': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.establishments[row].EstablishmentDataFullyCompleted,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'F':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              reportData.establishments[row].EstablishmentDataFullyCompleted,
+              columnText,
+              rowType,
+            );
+          }
+          break;
 
-        case 'G': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.establishments[row].UpdatedInCurrentFinancialYear,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'G':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              reportData.establishments[row].UpdatedInCurrentFinancialYear,
+              columnText,
+              rowType,
+            );
+          }
+          break;
 
-        case 'H': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].NumberOfStaffValue
-          );
-        } break;
+        case 'H':
+          {
+            putString(cellToChange, reportData.establishments[row].NumberOfStaffValue);
+          }
+          break;
 
-        case 'I': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].TotalIndividualWorkerRecord
-          );
-        } break;
+        case 'I':
+          {
+            putString(cellToChange, reportData.establishments[row].TotalIndividualWorkerRecord);
+          }
+          break;
 
-        case 'J': {
-          putString(
-            cellToChange,
-            reportData.establishments[row].CompletedWorkerRecords
-          );
-        } break;
+        case 'J':
+          {
+            putString(cellToChange, reportData.establishments[row].CompletedWorkerRecords);
+          }
+          break;
 
-        case 'K': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.establishments[row].CompletedWorkerRecordsPercentage,
-            columnText,
-            rowType,
-            true
-          );
-        } break;
+        case 'K':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              reportData.establishments[row].CompletedWorkerRecordsPercentage,
+              columnText,
+              rowType,
+              true,
+            );
+          }
+          break;
       }
 
       // TODO: duplicate the hyperlinked fields
       // //////////////////////////////////////
-
     }
 
     currentRow = currentRow.next();
@@ -757,36 +749,29 @@ const updateEstablishmentsSheet = (
   sharedStrings,
   sst,
   sharedStringsUniqueCount,
-  thisEstablishment
+  thisEstablishment,
 ) => {
   debuglog('updating establishments sheet');
 
   const putString = putStringTemplate.bind(null, establishmentsSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   // set headers
-  putString(
-    establishmentsSheet("c[r='B6']"),
-    `Parent name : ${reportData.parentName}`
-  );
+  putString(establishmentsSheet("c[r='B6']"), `Parent name : ${reportData.parentName}`);
 
-  putString(
-    establishmentsSheet("c[r='B7']"),
-    `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`
-  );
+  putString(establishmentsSheet("c[r='B7']"), `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`);
 
   // clone the row the apropriate number of times
   const templateRow = establishmentsSheet("row[r='11']");
   let currentRow = templateRow;
   let rowIndex = 12;
   let establishmentReportData = [...reportData.establishments];
-  let establishmentArray = establishmentReportData.
-      filter(est => {
-        if(thisEstablishment.id !== est.EstablishmentID){
-          return (est.DataOwner === 'Parent' || est.DataPermissions !== "None")
-        }else{
-          return true;
-        }
-      });
+  let establishmentArray = establishmentReportData.filter((est) => {
+    if (thisEstablishment.id !== est.EstablishmentID) {
+      return est.DataOwner === 'Parent' || est.DataPermissions !== 'None';
+    } else {
+      return true;
+    }
+  });
   if (establishmentArray.length > 1) {
     for (let i = 0; i < establishmentArray.length - 1; i++) {
       const tempRow = templateRow.clone(true);
@@ -794,7 +779,10 @@ const updateEstablishmentsSheet = (
       tempRow.attr('r', rowIndex);
 
       tempRow.children('c').each((index, element) => {
-        establishmentsSheet(element).attr('r', String(establishmentsSheet(element).attr('r')).replace(/\d+$/, '') + rowIndex);
+        establishmentsSheet(element).attr(
+          'r',
+          String(establishmentsSheet(element).attr('r')).replace(/\d+$/, '') + rowIndex,
+        );
       });
 
       currentRow.after(tempRow);
@@ -826,148 +814,117 @@ const updateEstablishmentsSheet = (
       const cellToChange = currentRow.children(`c[r='${columnText}${row + 11}']`);
 
       switch (columnText) {
-        case 'B': {
-          putString(
-            cellToChange,
-            establishmentArray[row].SubsidiaryName
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'B':
+          {
+            putString(cellToChange, establishmentArray[row].SubsidiaryName);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'C': {
-          putString(
-            cellToChange,
-            establishmentArray[row].SubsidiarySharingPermissions
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'C':
+          {
+            putString(cellToChange, establishmentArray[row].SubsidiarySharingPermissions);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'D': {
-          putString(
-            cellToChange,
-            establishmentArray[row].NmdsID
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'D':
+          {
+            putString(cellToChange, establishmentArray[row].NmdsID);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'E': {
-          putString(
-            cellToChange,
-            establishmentArray[row].EmployerTypeValue
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'E':
+          {
+            putString(cellToChange, establishmentArray[row].EmployerTypeValue);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'F': {
-          putString(
-            cellToChange,
-            establishmentArray[row].MainService
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'F':
+          {
+            putString(cellToChange, establishmentArray[row].MainService);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'G': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].Capacities,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'G':
+          {
+            basicValidationUpdate(putString, cellToChange, establishmentArray[row].Capacities, columnText, rowType);
+          }
+          break;
 
-        case 'H': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].Utilisations,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'H':
+          {
+            basicValidationUpdate(putString, cellToChange, establishmentArray[row].Utilisations, columnText, rowType);
+          }
+          break;
 
-        case 'I': {
-          putString(
-            cellToChange,
-            establishmentArray[row].OtherServices
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'I':
+          {
+            putString(cellToChange, establishmentArray[row].OtherServices);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'J': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].ServiceUsers,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'J':
+          {
+            basicValidationUpdate(putString, cellToChange, establishmentArray[row].ServiceUsers, columnText, rowType);
+          }
+          break;
 
-        case 'K': {
-          putString(
-            cellToChange,
-            establishmentArray[row].updated
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'K':
+          {
+            putString(cellToChange, establishmentArray[row].updated);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'L': {
-          putString(
-            cellToChange,
-            establishmentArray[row].NumberOfStaffValue
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'L':
+          {
+            putString(cellToChange, establishmentArray[row].NumberOfStaffValue);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'M': {
-          putString(
-            cellToChange,
-            establishmentArray[row].TotalIndividualWorkerRecord
-          );
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+        case 'M':
+          {
+            putString(cellToChange, establishmentArray[row].TotalIndividualWorkerRecord);
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'N': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].PercentageOfWorkerRecords,
-            columnText,
-            rowType,
-            true
-          );
-        } break;
+        case 'N':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              establishmentArray[row].PercentageOfWorkerRecords,
+              columnText,
+              rowType,
+              true,
+            );
+          }
+          break;
 
-        case 'O': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].Starters,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'O':
+          {
+            basicValidationUpdate(putString, cellToChange, establishmentArray[row].Starters, columnText, rowType);
+          }
+          break;
 
-        case 'P': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].Leavers,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'P':
+          {
+            basicValidationUpdate(putString, cellToChange, establishmentArray[row].Leavers, columnText, rowType);
+          }
+          break;
 
-        case 'Q': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            establishmentArray[row].Vacancies,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'Q':
+          {
+            basicValidationUpdate(putString, cellToChange, establishmentArray[row].Vacancies, columnText, rowType);
+          }
+          break;
       }
     }
     currentRow = currentRow.next();
@@ -978,27 +935,15 @@ const updateEstablishmentsSheet = (
   return establishmentsSheet;
 };
 
-const updateWorkersSheet = (
-  workersSheet,
-  reportData,
-  sharedStrings,
-  sst,
-  sharedStringsUniqueCount
-) => {
+const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, sharedStringsUniqueCount) => {
   debuglog('updating workers sheet');
 
   const putString = putStringTemplate.bind(null, workersSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   // set headers
-  putString(
-    workersSheet("c[r='B6']"),
-    `Parent name : ${reportData.parentName}`
-  );
+  putString(workersSheet("c[r='B6']"), `Parent name : ${reportData.parentName}`);
 
-  putString(
-    workersSheet("c[r='B7']"),
-    `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`
-  );
+  putString(workersSheet("c[r='B7']"), `Date: ${moment(reportData.date).format('DD/MM/YYYY')}`);
 
   // clone the row the apropriate number of times
   const templateRow = workersSheet("row[r='10']");
@@ -1040,191 +985,173 @@ const updateWorkersSheet = (
       const cellToChange = currentRow.children(`c[r='${columnText}${row + 10}']`);
 
       switch (columnText) {
-        case 'B': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.workers[row].NameOrIdValue,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'B':
+          {
+            basicValidationUpdate(putString, cellToChange, reportData.workers[row].NameOrIdValue, columnText, rowType);
+          }
+          break;
 
-        case 'C': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.workers[row].NameValue,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'C':
+          {
+            basicValidationUpdate(putString, cellToChange, reportData.workers[row].NameValue, columnText, rowType);
+          }
+          break;
 
-        case 'D': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.workers[row].GenderValue,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'D':
+          {
+            basicValidationUpdate(putString, cellToChange, reportData.workers[row].GenderValue, columnText, rowType);
+          }
+          break;
 
-        case 'E': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.workers[row].DateOfBirthValue,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'E':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              reportData.workers[row].DateOfBirthValue,
+              columnText,
+              rowType,
+            );
+          }
+          break;
 
-        case 'F': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.workers[row].NationalityValue,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'F':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              reportData.workers[row].NationalityValue,
+              columnText,
+              rowType,
+            );
+          }
+          break;
 
-        case 'G': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.workers[row].MainJobRole,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'G':
+          {
+            basicValidationUpdate(putString, cellToChange, reportData.workers[row].MainJobRole, columnText, rowType);
+          }
+          break;
 
-        case 'H': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.workers[row].MainJobStartDateValue,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'H':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              reportData.workers[row].MainJobStartDateValue,
+              columnText,
+              rowType,
+            );
+          }
+          break;
 
-        case 'I': {
-          putString(
-            cellToChange,
-            reportData.workers[row].RecruitedFromValue
-          );
+        case 'I':
+          {
+            putString(cellToChange, reportData.workers[row].RecruitedFromValue);
 
-          isRed = (reportData.workers[row].RecruitedFromValue === 'Missing');
+            isRed = reportData.workers[row].RecruitedFromValue === 'Missing';
 
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'J': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.workers[row].ContractValue,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'J':
+          {
+            basicValidationUpdate(putString, cellToChange, reportData.workers[row].ContractValue, columnText, rowType);
+          }
+          break;
 
-        case 'K': {
-          putString(
-            cellToChange,
-            reportData.workers[row].HoursValue
-          );
+        case 'K':
+          {
+            putString(cellToChange, reportData.workers[row].HoursValue);
 
-          isRed = (reportData.workers[row].HoursValue === 'Missing');
+            isRed = reportData.workers[row].HoursValue === 'Missing';
 
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'L': {
-          putString(
-            cellToChange,
-            reportData.workers[row].ZeroHoursContractValue
-          );
+        case 'L':
+          {
+            putString(cellToChange, reportData.workers[row].ZeroHoursContractValue);
 
-          isRed = (reportData.workers[row].ZeroHoursContractValue === 'Missing');
+            isRed = reportData.workers[row].ZeroHoursContractValue === 'Missing';
 
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'M': {
-          putString(
-            cellToChange,
-            reportData.workers[row].DaysSickValue
-          );
+        case 'M':
+          {
+            putString(cellToChange, reportData.workers[row].DaysSickValue);
 
-          isRed = (reportData.workers[row].DaysSickValue === 'Missing');
+            isRed = reportData.workers[row].DaysSickValue === 'Missing';
 
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'N': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.workers[row].AnnualHourlyPayValue,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'N':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              reportData.workers[row].AnnualHourlyPayValue,
+              columnText,
+              rowType,
+            );
+          }
+          break;
 
-        case 'O': {
-          basicValidationUpdate(
-            putString,
-            cellToChange,
-            reportData.workers[row].AnnualHourlyPayRate,
-            columnText,
-            rowType
-          );
-        } break;
+        case 'O':
+          {
+            basicValidationUpdate(
+              putString,
+              cellToChange,
+              reportData.workers[row].AnnualHourlyPayRate,
+              columnText,
+              rowType,
+            );
+          }
+          break;
 
-        case 'P': {
-          putString(
-            cellToChange,
-            reportData.workers[row].CareCertificateValue
-          );
+        case 'P':
+          {
+            putString(cellToChange, reportData.workers[row].CareCertificateValue);
 
-          isRed = (reportData.workers[row].CareCertificateValue === 'Missing');
+            isRed = reportData.workers[row].CareCertificateValue === 'Missing';
 
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
 
-        case 'Q': {
-          putString(
-            cellToChange,
-            reportData.workers[row].QualificationInSocialCareValue
-          );
+        case 'Q':
+          {
+            putString(cellToChange, reportData.workers[row].QualificationInSocialCareValue);
 
-          isRed = (reportData.workers[row].QualificationInSocialCareValue === 'Missing');
+            isRed = reportData.workers[row].QualificationInSocialCareValue === 'Missing';
 
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-        case 'R': {
-          putString(
-            cellToChange,
-            reportData.workers[row].QualificationInSocialCare
-          );
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
+        case 'R':
+          {
+            putString(cellToChange, reportData.workers[row].QualificationInSocialCare);
 
-          isRed = (reportData.workers[row].QualificationInSocialCare === 'Missing');
+            isRed = reportData.workers[row].QualificationInSocialCare === 'Missing';
 
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
-        case 'S': {
-          putString(
-            cellToChange,
-            reportData.workers[row].OtherQualificationsValue
-          );
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
+        case 'S':
+          {
+            putString(cellToChange, reportData.workers[row].OtherQualificationsValue);
 
-          isRed = (reportData.workers[row].OtherQualificationsValue === 'Missing');
+            isRed = reportData.workers[row].OtherQualificationsValue === 'Missing';
 
-          setStyle(cellToChange, columnText, rowType, isRed);
-        } break;
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
       }
     }
 
@@ -1243,7 +1170,7 @@ const getReport = async (date, thisEstablishment) => {
     return null;
   }
 
-  return (new Promise(resolve => {
+  return new Promise((resolve) => {
     const thePath = path.join(__dirname, folderName);
     const walker = walk.walk(thePath);
     const outputZip = new JsZip();
@@ -1254,7 +1181,7 @@ const getReport = async (date, thisEstablishment) => {
 
     walker.on('file', (root, fileStats, next) => {
       const pathName = root.replace(thePath, '').replace('\\', '/').replace(/^\//, '');
-      const zipPath = (pathName === '' ? fileStats.name : path.join(pathName, fileStats.name));
+      const zipPath = pathName === '' ? fileStats.name : path.join(pathName, fileStats.name);
       const readPath = path.join(thePath, zipPath);
       debuglog('file found', readPath);
 
@@ -1263,25 +1190,35 @@ const getReport = async (date, thisEstablishment) => {
 
         if (!err) {
           switch (zipPath) {
-            case overviewSheetName: {
-              overviewSheet = parseXML(fileContent);
-            } break;
+            case overviewSheetName:
+              {
+                overviewSheet = parseXML(fileContent);
+              }
+              break;
 
-            case establishmentsSheetName: {
-              establishmentsSheet = parseXML(fileContent);
-            } break;
+            case establishmentsSheetName:
+              {
+                establishmentsSheet = parseXML(fileContent);
+              }
+              break;
 
-            case workersSheetName: {
-              workersSheet = parseXML(fileContent);
-            } break;
+            case workersSheetName:
+              {
+                workersSheet = parseXML(fileContent);
+              }
+              break;
 
-            case sharedStringsName: {
-              sharedStrings = parseXML(fileContent);
-            } break;
+            case sharedStringsName:
+              {
+                sharedStrings = parseXML(fileContent);
+              }
+              break;
 
-            default: {
-              outputZip.file(zipPath, fileContent);
-            } break;
+            default:
+              {
+                outputZip.file(zipPath, fileContent);
+              }
+              break;
           }
         }
 
@@ -1298,35 +1235,44 @@ const getReport = async (date, thisEstablishment) => {
         const sharedStringsUniqueCount = [parseInt(sst.attr('uniqueCount'), 10)];
 
         // update the overview sheet with the report data and add it to the zip
-        outputZip.file(overviewSheetName, updateOverviewSheet(
-          overviewSheet,
-          reportData,
-          sharedStrings,
-          sst,
-          sharedStringsUniqueCount // pass unique count by reference rather than by value
-        ).xml());
+        outputZip.file(
+          overviewSheetName,
+          updateOverviewSheet(
+            overviewSheet,
+            reportData,
+            sharedStrings,
+            sst,
+            sharedStringsUniqueCount, // pass unique count by reference rather than by value
+          ).xml(),
+        );
 
         //outputZip.file(establishmentsSheetName, serializeXML(establishmentsSheet));
         //outputZip.file(workersSheetName, serializeXML(workersSheet));
 
         // update the establishments sheet with the report data and add it to the zip
-        outputZip.file(establishmentsSheetName, updateEstablishmentsSheet(
-          establishmentsSheet,
-          reportData,
-          sharedStrings,
-          sst,
-          sharedStringsUniqueCount, // pass unique count by reference rather than by value
-          thisEstablishment
-        ).xml());
+        outputZip.file(
+          establishmentsSheetName,
+          updateEstablishmentsSheet(
+            establishmentsSheet,
+            reportData,
+            sharedStrings,
+            sst,
+            sharedStringsUniqueCount, // pass unique count by reference rather than by value
+            thisEstablishment,
+          ).xml(),
+        );
 
         // update the workplaces sheet with the report data and add it to the zip
-        outputZip.file(workersSheetName, updateWorkersSheet(
-          workersSheet,
-          reportData,
-          sharedStrings,
-          sst,
-          sharedStringsUniqueCount // pass unique count by reference rather than by value
-        ).xml())
+        outputZip.file(
+          workersSheetName,
+          updateWorkersSheet(
+            workersSheet,
+            reportData,
+            sharedStrings,
+            sst,
+            sharedStringsUniqueCount, // pass unique count by reference rather than by value
+          ).xml(),
+        );
 
         // update the shared strings counts we've been keeping track of
         sst.attr('uniqueCount', sharedStringsUniqueCount[0]);
@@ -1339,12 +1285,12 @@ const getReport = async (date, thisEstablishment) => {
 
       resolve(outputZip);
     });
-  }))
-
-    .then(outputZip => outputZip.generateAsync({
+  }).then((outputZip) =>
+    outputZip.generateAsync({
       type: 'nodebuffer',
-      compression: 'DEFLATE'
-    }));
+      compression: 'DEFLATE',
+    }),
+  );
 };
 
 // Prevent multiple wdf report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
@@ -1352,7 +1298,7 @@ const getReport = async (date, thisEstablishment) => {
 const acquireLock = async function (logic, newState, req, res) {
   const { establishmentId } = req;
 
-  req.startTime = (new Date()).toISOString();
+  req.startTime = new Date().toISOString();
 
   console.log(`Acquiring lock for establishment ${establishmentId}.`);
 
@@ -1364,11 +1310,9 @@ const acquireLock = async function (logic, newState, req, res) {
   // close the response either way and continue processing in the background
   if (currentLockState[1] === 0) {
     console.log('Lock *NOT* acquired.');
-    res
-      .status(409)
-      .send({
-        message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`
-      });
+    res.status(409).send({
+      message: `The lock for establishment ${establishmentId} was not acquired as it's already being held by another ongoing process.`,
+    });
 
     return;
   }
@@ -1378,18 +1322,20 @@ const acquireLock = async function (logic, newState, req, res) {
   let nextState;
 
   switch (newState) {
-    case buStates.DOWNLOADING: {
-      // get the current wdf report state
-      const currentState = await lockStatus(establishmentId);
+    case buStates.DOWNLOADING:
+      {
+        // get the current wdf report state
+        const currentState = await lockStatus(establishmentId);
 
-      if (currentState.length === 1) {
-        // don't update the status for downloads, just hold the lock
-        newState = currentState[0].WdfReportState;
-        nextState = null;
-      } else {
-        nextState = buStates.READY;
+        if (currentState.length === 1) {
+          // don't update the status for downloads, just hold the lock
+          newState = currentState[0].WdfReportState;
+          nextState = null;
+        } else {
+          nextState = buStates.READY;
+        }
       }
-    } break;
+      break;
 
     case buStates.COMPLETING:
       nextState = buStates.READY;
@@ -1406,19 +1352,15 @@ const acquireLock = async function (logic, newState, req, res) {
 
   req.buRequestId = String(uuid()).toLowerCase();
 
-  res
-    .status(200)
-    .send({
-      message: `Lock for establishment ${establishmentId} acquired.`,
-      requestId: req.buRequestId
-    });
+  res.status(200).send({
+    message: `Lock for establishment ${establishmentId} acquired.`,
+    requestId: req.buRequestId,
+  });
 
   // run whatever the original logic was
   try {
     await logic(req, res);
-  } catch (e) {
-
-  }
+  } catch (e) {}
 
   // release the lock
   await releaseLock(req, null, null, nextState);
@@ -1434,11 +1376,9 @@ const releaseLock = async (req, res, next, nextState = null) => {
   }
 
   if (res !== null) {
-    res
-      .status(200)
-      .send({
-        establishmentId
-      });
+    res.status(200).send({
+      establishmentId,
+    });
   }
 };
 
@@ -1453,10 +1393,10 @@ const signedUrlGet = async (req, res) => {
         ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         Metadata: {
           username: String(req.username),
-          establishmentId: String(establishmentId)
+          establishmentId: String(establishmentId),
         },
-        Expires: config.get('bulkupload.uploadSignedUrlExpire')
-      })
+        Expires: config.get('bulkupload.uploadSignedUrlExpire'),
+      }),
     });
   } catch (err) {
     console.error('report/wdf/parent:PreSigned - failed', err.message);
@@ -1469,18 +1409,20 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
     statusCode = 500;
   }
 
-  return s3.putObject({
-    Bucket,
-    Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-    Body: JSON.stringify({
-      url: req.url,
-      startTime: req.startTime,
-      endTime: (new Date()).toISOString(),
-      responseCode: statusCode,
-      responseBody: body,
-      responseHeaders: (typeof headers === 'object' ? headers : undefined)
+  return s3
+    .putObject({
+      Bucket,
+      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
+      Body: JSON.stringify({
+        url: req.url,
+        startTime: req.startTime,
+        endTime: new Date().toISOString(),
+        responseCode: statusCode,
+        responseBody: body,
+        responseHeaders: typeof headers === 'object' ? headers : undefined,
+      }),
     })
-  }).promise();
+    .promise();
 };
 
 const responseGet = (req, res) => {
@@ -1489,7 +1431,7 @@ const responseGet = (req, res) => {
 
   if (!uuidRegex.test(buRequestId)) {
     res.status(400).send({
-      message: 'request id must be a uuid'
+      message: 'request id must be a uuid',
     });
 
     return;
@@ -1497,9 +1439,10 @@ const responseGet = (req, res) => {
 
   s3.getObject({
     Bucket,
-    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`
-  }).promise()
-    .then(data => {
+    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`,
+  })
+    .promise()
+    .then((data) => {
       const jsonData = JSON.parse(data.Body.toString());
 
       if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
@@ -1518,11 +1461,11 @@ const responseGet = (req, res) => {
         throw new Error('Response code was not numeric');
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.log('wdfReport::responseGet: getting data returned an error:', err);
 
       res.status(404).send({
-        message: 'Not Found'
+        message: 'Not Found',
       });
     });
 };
@@ -1537,10 +1480,11 @@ const lockStatusGet = async (req, res) => {
     .send(
       currentLockState.length === 0
         ? {
-          establishmentId,
-          WdfReportState: buStates.READY,
-          WdfReportdLockHeld: true
-        } : currentLockState[0]
+            establishmentId,
+            WdfReportState: buStates.READY,
+            WdfReportdLockHeld: true,
+          }
+        : currentLockState[0],
     );
 
   return currentLockState[0];
@@ -1559,7 +1503,9 @@ const reportGet = async (req, res) => {
         if (report) {
           await saveResponse(req, res, 200, report, {
             'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-disposition': `attachment; filename=${moment(date).format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`
+            'Content-disposition': `attachment; filename=${moment(date).format(
+              'YYYY-MM-DD',
+            )}-SFC-Parent-Wdf-Report.xlsx`,
           });
           console.log('report/wdf/parent - 200 response');
         } else {
@@ -1581,7 +1527,7 @@ const reportGet = async (req, res) => {
     console.error('report/wdf/parent - failed', err);
     await saveResponse(req, res, 503, {});
   }
-}
+};
 
 // gets report
 // NOTE - the Local Authority report is driven mainly by pgsql (postgres functions) and therefore does not
