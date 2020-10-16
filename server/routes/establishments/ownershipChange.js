@@ -65,7 +65,7 @@ router.route('/').post(async (req, res) => {
                 console.error('Invalid notification UUID');
                 return res.status(400).send();
               }
-              let addNotificationResp = await notifications.insertNewNotification(params);
+              await notifications.insertNewNotification(params);
             }
           }
           params.timeValue = 'NOW()';

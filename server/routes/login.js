@@ -3,7 +3,6 @@ const models = require('../models/index');
 const passport = require('passport');
 var router = express.Router();
 require('../utils/security/passport')(passport);
-const Login = require('../models').login;
 const crypto = require('crypto');
 const bcrypt = require('bcrypt-nodejs');
 
@@ -341,10 +340,6 @@ router.post('/', async (req, res) => {
                 },
                 { transaction: t },
               );
-
-              const resetLink = `${req.protocol}://${req.get(
-                'host',
-              )}/api/registration/validateResetPassword?reset=${requestUuid}`;
 
               // send email to recipient with the reset UUID if user is not locked
               try {
