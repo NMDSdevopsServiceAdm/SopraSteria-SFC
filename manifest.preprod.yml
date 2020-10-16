@@ -1,9 +1,9 @@
 applications:
-- name: sfcpreprod
-  memory: 8G
-  disk_quota: 4GB
-  instances: 10
-  buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.6.32
-  services:
-    - sfcuatdb02
+  - name: sfcpreprod
+    memory: 8G
+    disk_quota: 4GB
+    instances: 10
+    buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.7.31
+    services:
+      - sfcuatdb02
 stack: cflinuxfs3
