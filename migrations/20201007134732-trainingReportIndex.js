@@ -41,9 +41,9 @@ module.exports = {
 
   down: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.query(`
-DROP INDEX cqc."mandatory_training__establishment_f_k__job_f_k";
-DROP INDEX cqc."mandatory_training__establishment_f_k__job_f_k__training_catego";
-DROP INDEX cqc."establishment__establishment_u_i_d__archived";
+DROP INDEX IF EXISTS cqc."mandatory_training__establishment_f_k__job_f_k";
+DROP INDEX IF EXISTS cqc."mandatory_training__establishment_f_k__job_f_k__training_catego";
+DROP INDEX IF EXISTS cqc."establishment__establishment_u_i_d__archived";
     `);
   },
 };
