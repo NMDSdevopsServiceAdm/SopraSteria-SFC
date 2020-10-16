@@ -21,7 +21,7 @@ router.route('/:id').put(async (req, res) => {
       rejectionReason: req.body.rejectionReason,
       type: req.body.type,
     };
-    const owershipRequesterEsatblishmentId, objToUpdate;
+    let owershipRequesterEsatblishmentId, objToUpdate;
 
     if (!id) {
       console.error('Missing id or uid');

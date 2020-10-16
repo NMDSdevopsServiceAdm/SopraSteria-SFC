@@ -466,7 +466,6 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 router.use('/:uid/resend-activation', Authorization.isAuthorised);
 router.route('/:uid/resend-activation').post(async (req, res) => {
   const userId = req.params.uid;
-  const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
 
   // validating user id - must be a V4 UUID

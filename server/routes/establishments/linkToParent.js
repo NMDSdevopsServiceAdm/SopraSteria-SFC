@@ -59,13 +59,6 @@ router.route('/').post(async (req, res) => {
                   console.error('Invalid notification UUID');
                   return res.status(400).send();
                 }
-                let notificationParams = {
-                  notificationUid: params.notificationUid,
-                  type: 'LINKTOPARENTREQUEST',
-                  typeUid: params.linkToParentUID,
-                  recipientUserUid: getRecipientUserDetails[i].UserUID,
-                  userUid: params.userUid,
-                };
               }
               return res.status(201).send(lastLinkToParentRequest[0]);
             }

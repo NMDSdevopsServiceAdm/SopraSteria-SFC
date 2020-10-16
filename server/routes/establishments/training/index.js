@@ -145,7 +145,7 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
       missingMandatoryTraining = mandatoryTrainingforWorker;
     } else if (mandatoryTrainingforWorker.length > 0) {
       mandatoryTrainingforWorker.forEach((mandatoryTraining) => {
-        const mantrainingDone = false;
+        let mantrainingDone = false;
         allTrainingRecords.training.forEach((training) => {
           if (mandatoryTraining.trainingCategoryFK === training.trainingCategory.id) {
             mantrainingDone = true;
