@@ -38,7 +38,6 @@ const overviewSheetName = path.join('xl', 'worksheets', 'sheet1.xml');
 const establishmentsSheetName = path.join('xl', 'worksheets', 'sheet2.xml');
 const workersSheetName = path.join('xl', 'worksheets', 'sheet3.xml');
 const sharedStringsName = path.join('xl', 'sharedStrings.xml');
-const schema = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 // const debuglog = console.log.bind(console);
 const debuglog = () => {};
