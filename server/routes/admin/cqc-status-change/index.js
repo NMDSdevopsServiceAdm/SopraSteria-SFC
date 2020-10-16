@@ -34,6 +34,7 @@ const cqcStatusChanges = async (req, res) => {
 };
 
 const _mapResults = async (approvalResults) => {
+  const data;
   const promises = approvalResults.map(async approval => {
     data = approval.Data;
     const currentServiceID = data.currentService.id || null;

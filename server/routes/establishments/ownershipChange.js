@@ -39,13 +39,13 @@ router.route('/').post(async (req, res) => {
         let getRecipientUserDetails;
         params.parentId = thisEstablishment._parentId;
         params.establishmentId = params.subEstablishmentId;
-        if(thisEstablishment._dataOwner !== 'Parent'){
-           getRecipientUserDetails = await ownership.getRecipientSubUserDetails(params);
+        if (thisEstablishment._dataOwner !== 'Parent') {
+          getRecipientUserDetails = await ownership.getRecipientSubUserDetails(params);
         } else {
-           getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
+          getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
         }
         if (getRecipientUserDetails.length) {
-          for (i = 0; i < getRecipientUserDetails.length; i++) {
+          for (let i = 0; i < getRecipientUserDetails.length; i++) {
             //save records
             params.ownerRequestChangeUid = uuid.v4();
             if (!uuidRegex.test(params.ownerRequestChangeUid.toUpperCase())) {
@@ -90,7 +90,6 @@ router.route('/').post(async (req, res) => {
     return res.status(503).send({}); // intentionally an empty JSON response
   }
 });
-
 
 // POST request for cancel already requested ownership
 router.route('/:id').post(async (req, res) => {
@@ -172,27 +171,26 @@ router.route('/details').get(async (req, res) => {
           permissionRequest: req.body.permissionRequest,
         };
         let getRecipientUserDetails;
-        if(thisEstablishment._dataOwner !== 'Parent'){
+        if (thisEstablishment._dataOwner !== 'Parent') {
           getRecipientUserDetails = await ownership.getRecipientSubUserDetails(getRecipientUserDetailsParams);
-       } else {
-          getRecipientUserDetails = await ownership.getRecipientUserDetails(getRecipientUserDetailsParams);
-       }
-       if (getRecipientUserDetails.length > 0) {
-
-        const params = {
-          subEstablishmentId: req.establishmentId,
-          limit: getRecipientUserDetails.length
-        };
-        let owenershipChangeRequestDetails = await ownership.ownershipDetails(params);
-
-        if (!owenershipChangeRequestDetails.length) {
-          return res.status(400).send({
-            message: `Ownership change request details not found.`,
-          });
         } else {
-          return res.status(200).send(owenershipChangeRequestDetails);
+          getRecipientUserDetails = await ownership.getRecipientUserDetails(getRecipientUserDetailsParams);
         }
-      }
+        if (getRecipientUserDetails.length > 0) {
+          const params = {
+            subEstablishmentId: req.establishmentId,
+            limit: getRecipientUserDetails.length,
+          };
+          let owenershipChangeRequestDetails = await ownership.ownershipDetails(params);
+
+          if (!owenershipChangeRequestDetails.length) {
+            return res.status(400).send({
+              message: `Ownership change request details not found.`,
+            });
+          } else {
+            return res.status(200).send(owenershipChangeRequestDetails);
+          }
+        }
       }
     } else {
       return res.status(404).send({
