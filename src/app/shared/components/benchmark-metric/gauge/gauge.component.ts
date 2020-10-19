@@ -18,7 +18,7 @@ export class GaugeComponent implements OnInit {
     this.gauge = {
       chart: {
         type: 'bar',
-        margin: [55, 0, 35, 0],
+        margin: [55, 0, 0, 0],
         scrollablePlotArea: {
           minWidth: 700,
         },
@@ -45,6 +45,7 @@ export class GaugeComponent implements OnInit {
         tickPositioner: () => {
           return [1, this.maxRank];
         },
+        height: 50,
         labels: {
           y: 20,
           padding: 5,
@@ -52,13 +53,13 @@ export class GaugeComponent implements OnInit {
           formatter: function () {
             if (this.value === 1) {
               return (
-                '<span class="govuk-body">Highest ranking <span class="govuk-!-font-weight-bold govuk-!-margin-left-4">' +
+                '<span class="govuk-body govuk-!-margin-bottom-0">Highest ranking <span class="govuk-!-font-weight-bold govuk-!-margin-left-4">' +
                 this.value +
                 '</span></span>'
               );
             }
             return (
-              '<span class="govuk-body"><span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
+              '<span class="govuk-body govuk-!-margin-bottom-0"><span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
               this.value +
               '</span>Lowest ranking</span>'
             );
