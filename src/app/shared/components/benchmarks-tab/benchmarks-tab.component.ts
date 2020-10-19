@@ -105,18 +105,32 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       min: 1,
       max: 45,
       reversed: true,
-      tickAmount: 2,
       gridLineWidth: 0,
       title: { text: '' },
-      startOnTick: true,
-      endOnTick: true,
+      tickAmount: 2,
+      startOnTick: false,
+      endOnTick: false,
       maxPadding: 0,
+      tickPositioner: function () {
+        return [1, 45];
+      },
       labels: {
         y: 20,
         padding: 5,
         useHTML: true,
         formatter: function () {
-          return '<span class="govuk-body">' + this.value + '</span>';
+          if (this.value === 1) {
+            return (
+              '<span class="govuk-body">Highest ranking <span class="govuk-!-font-weight-bold govuk-!-margin-left-4">' +
+              this.value +
+              '</span></span>'
+            );
+          }
+          return (
+            '<span class="govuk-body"><span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
+            this.value +
+            '</span>Lowest ranking</span>'
+          );
         },
       },
       plotBands: [

@@ -118,12 +118,14 @@
   <app-benchmarks-about-the-data #aboutData class="hidden" [workplace]="workplace"></app-benchmarks-about-the-data>
 </div>
 <highcharts-chart
+  class="chart"
   [Highcharts]="Highcharts"
   [options]="chartOptions"
   style="width: 100%; height: 360px; display: block"
 ></highcharts-chart>
 
 <highcharts-chart
+  class="chart"
   [Highcharts]="Highcharts"
   [options]="gauge"
   style="width: 100%; height: 180px; display: block"
