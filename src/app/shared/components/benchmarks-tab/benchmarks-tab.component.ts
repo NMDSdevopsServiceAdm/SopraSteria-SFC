@@ -18,7 +18,10 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   chartOptions: Highcharts.Options = {
     chart: {
       type: 'column',
-      margin: [20, 15, 80, 15],
+      margin: [20, 0, 80, 0],
+      scrollablePlotArea: {
+        minWidth: 700,
+      },
     },
     series: [
       {
@@ -90,7 +93,10 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   gauge: Highcharts.Options = {
     chart: {
       type: 'bar',
-      margin: [100, 15, 35, 15],
+      margin: [100, 0, 35, 0],
+      scrollablePlotArea: {
+        minWidth: 700,
+      },
     },
     credits: { enabled: false },
     exporting: { enabled: false },
