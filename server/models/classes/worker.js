@@ -623,6 +623,10 @@ class Worker extends EntityValidator {
             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
           }
 
+          if (this.nurseSpecialisms && this.nurseSpecialisms.value === 'Yes') {
+            await models.workerNurseSpecialisms.bulkCreate(this.nurseSpecialisms.specialisms.map(thisSpecialism => ({nurseSpecialismFk: thisSpecialism.id, workerFk: this._id})), { transaction: thisTransaction });
+          }
+
           // having the worker id we can now create the audit record; inserting the workerFk
           const allAuditEvents = [{
             workerFk: this._id,

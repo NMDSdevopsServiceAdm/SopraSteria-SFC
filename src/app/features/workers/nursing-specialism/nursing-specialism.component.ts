@@ -51,26 +51,19 @@ export class NursingSpecialismComponent extends QuestionComponent {
       : this.getRoutePath('flu-jab');
     this.previous = this.getRoutePath('nursing-category');
 
+    let checkedSpecialisms = [];
     if (this.worker.nurseSpecialisms) {
-      if (this.worker.nurseSpecialisms.value === 'Yes') {
-        this.form.patchValue({
-          hasNurseSpecialism: 'Yes',
-        });
-      } else if (this.worker.nurseSpecialisms.value === `Don't know`) {
-        this.form.patchValue({
-          hasNurseSpecialism: `Don't know`,
-        });
-      } else if (this.worker.nurseSpecialisms.value === `No`) {
-        this.form.patchValue({
-          hasNurseSpecialism: 'No',
-        });
-      }
+      this.form.patchValue({
+        hasNurseSpecialism: this.worker.nurseSpecialisms.value,
+      });
+
+      checkedSpecialisms = this.worker.nurseSpecialisms.specialisms
+        .filter((specialism) => this.nursingSpecialisms.includes(specialism.specialism))
+        .map((specialism) => specialism.specialism);
     }
 
     for (let specialism of this.nursingSpecialisms) {
-      const checked =
-        this.worker.nurseSpecialisms.specialisms &&
-        this.worker.nurseSpecialisms.specialisms.map((s) => s.specialism).includes(specialism);
+      const checked = checkedSpecialisms.includes(specialism);
       this.selectedNurseSpecialismsArray.push(
         this.formBuilder.control({
           specialism,
