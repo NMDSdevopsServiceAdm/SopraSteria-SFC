@@ -1,6 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Directive, Input, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 
+@Directive({
+  selector: 'your-rank',
+})
+export class YourRankDirective {}
 @Component({
   selector: 'app-gauge',
   templateUrl: './gauge.component.html',
