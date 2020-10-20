@@ -13,12 +13,13 @@ export class YourRankDirective {}
 export class GaugeComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;
 
-  @Input('maxRank') private maxRank: number = 100;
+  @Input('maxRank') private maxRank: number = -2;
   @Input('currentRank') public currentRank: number = null;
 
   public gauge: Highcharts.Options;
 
   ngOnInit() {
+    const padding = this.maxRank / 10;
     this.gauge = {
       chart: {
         type: 'bar',
@@ -37,21 +38,18 @@ export class GaugeComponent implements OnInit {
         max: 1,
       },
       yAxis: {
-        min: 1,
-        max: this.maxRank,
+        min: 1 - padding,
+        max: this.maxRank + padding,
         reversed: true,
         gridLineWidth: 0,
         title: { text: '' },
-        tickAmount: 2,
         startOnTick: false,
         endOnTick: false,
-        maxPadding: 0,
         tickPositioner: () => {
           return [1, this.maxRank];
         },
         height: 50,
         labels: {
-          y: 20,
           padding: 5,
           useHTML: true,
           formatter: function () {
@@ -62,6 +60,7 @@ export class GaugeComponent implements OnInit {
                 '</span></span>'
               );
             }
+            if (this.value < 0) return;
             return (
               '<span class="govuk-body govuk-!-margin-bottom-0"><span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
               this.value +
@@ -71,8 +70,8 @@ export class GaugeComponent implements OnInit {
         },
         plotBands: [
           {
-            from: 1,
-            to: this.maxRank,
+            from: 1 - padding,
+            to: this.maxRank + padding,
             color: {
               linearGradient: { x1: 0, x2: 1, y1: 0, y2: 0 },
               stops: [
@@ -88,7 +87,7 @@ export class GaugeComponent implements OnInit {
         {
           name: 'Target',
           type: 'scatter',
-          data: [[this.currentRank, this.currentRank]],
+          data: [[0, this.currentRank]],
           dataLabels: {
             enabled: true,
             padding: 0,
