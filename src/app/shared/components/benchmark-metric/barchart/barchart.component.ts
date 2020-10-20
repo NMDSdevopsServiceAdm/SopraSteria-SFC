@@ -21,6 +21,7 @@ export class BarchartComponent implements OnInit {
   @Input('goodcqc') private goodcqc: number = null;
   @Input('lowturnover') private lowturnover: number = null;
   @Input('altdescription') private altdescription: string = '';
+  @Input('nodata') private nodata: string = '';
   @Input('type') private type: Metric;
 
   public barchart: Highcharts.Options;
@@ -30,12 +31,53 @@ export class BarchartComponent implements OnInit {
     const formatPay = (data) => {
       return '£' + (Number(data) / 100).toFixed(2);
     };
+    const nodata = this.nodata;
     this.barchart = {
       chart: {
         type: 'column',
-        margin: [20, 0, 85, 0],
+        margin: [20, 0, 90, 0],
         scrollablePlotArea: {
           minWidth: 700,
+        },
+        events: {
+          load: function () {
+            const categoryWidth = this.plotWidth / this.xAxis[0].series[0].data.length;
+            let width = categoryWidth;
+
+            this.series[0].points.forEach((point, index) => {
+              if (point.y === null && (index === 0 || index === 1 || this.series[0].points[index - 1]?.y !== null)) {
+                let message;
+                if (point.name !== 'Your workplace') {
+                  message = 'We do not have enough data to show this comparison yet.';
+                  if (this.series[0].points[index + 1]?.y === null && this.series[0].points[index + 2]?.y === null) {
+                    width = categoryWidth * 3;
+                  } else if (this.series[0].points[index + 1]?.y === null) {
+                    width = categoryWidth * 2;
+                  }
+                } else {
+                  switch (nodata) {
+                    case 'nopay':
+                      message = "You've not added any data about hourly pay yet.";
+                      break;
+                    default:
+                      '';
+                  }
+                }
+
+                const offset = point.x * categoryWidth + width / 2;
+                const text = this.renderer
+                  .text('<span class="govuk-body">' + message + '</span>', -999, -999, true)
+                  .css({
+                    width,
+                  })
+                  .add();
+                text.attr({
+                  x: this.plotLeft + offset - text.getBBox().width / 2,
+                  y: this.plotTop + this.plotHeight / 2,
+                });
+              }
+            });
+          },
         },
       },
       series: [
