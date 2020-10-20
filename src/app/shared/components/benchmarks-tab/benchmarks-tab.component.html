@@ -117,13 +117,6 @@
   </div>
   <app-benchmarks-about-the-data #aboutData class="hidden" [workplace]="workplace"></app-benchmarks-about-the-data>
 </div>
-<highcharts-chart
-  class="chart"
-  [Highcharts]="Highcharts"
-  [options]="chartOptions"
-  style="width: 100%; height: 360px; display: block"
-></highcharts-chart>
 
-<app-gauge [maxRank]="45" [currentRank]="11">
-  <your-rank>Your workplace is ranked 11 in your comparison group.</your-rank>
-</app-gauge>
+<app-barchart [type]="metrics.pay" [yourworkplace]="859" [comparisongroup]="838" [goodcqc]="734" [lowturnover]="1065">
+</app-barchart>
