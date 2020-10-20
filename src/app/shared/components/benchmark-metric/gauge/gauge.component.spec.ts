@@ -16,13 +16,8 @@ fdescribe('BenchmarksTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show lowest rank', async () => {
+  it("shouldn't show ranks if no max", async () => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.getElementsByClassName('govuk-body')[1].innerText).toEqual('100Lowest ranking');
-  });
-
-  it('should show highest rank', async () => {
-    fixture.detectChanges();
-    expect(fixture.nativeElement.getElementsByClassName('govuk-body')[0].innerText).toEqual('Highest ranking 1');
+    expect(fixture.nativeElement.getElementsByClassName('govuk-body').length).toEqual(0);
   });
 });
