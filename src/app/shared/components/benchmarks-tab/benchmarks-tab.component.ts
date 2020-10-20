@@ -5,7 +5,6 @@ import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService } from '@core/services/pdf.service';
 import { Subscription } from 'rxjs';
 
-import { Metric } from '../benchmark-metric/barchart/barchart.component';
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
 
 @Component({
@@ -19,7 +18,6 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
 
-  public metrics = Metric;
   public tilesData: BenchmarksResponse = {
     tiles: {
       pay: {
