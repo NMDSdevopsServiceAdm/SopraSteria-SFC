@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GaugeComponent } from './gauge.component';
 
-fdescribe('BenchmarksTabComponent', () => {
+describe('BenchmarksTabComponent', () => {
   let component: GaugeComponent;
   let fixture: ComponentFixture<GaugeComponent>;
 
