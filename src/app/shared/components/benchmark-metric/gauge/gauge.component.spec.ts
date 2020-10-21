@@ -16,8 +16,8 @@ describe('BenchmarksTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it("shouldn't show ranks if no max", async () => {
+  it("shouldn't show ranks", async () => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.getElementsByClassName('govuk-body').length).toEqual(0);
+    expect(fixture.nativeElement.getElementsByClassName('govuk-body').length).toEqual(2);
   });
 });
