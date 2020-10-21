@@ -40,7 +40,7 @@ export class BarchartComponent implements OnInit {
     this.barchart = {
       chart: {
         type: 'column',
-        margin: [20, 0, 100, 0],
+        margin: [30, 0, 100, 0],
         scrollablePlotArea: {
           minWidth: 960,
         },
@@ -55,9 +55,11 @@ export class BarchartComponent implements OnInit {
                 if (point.name !== 'Your workplace') {
                   message = 'We do not have enough data to show this comparison yet.';
                   if (this.series[0].points[index + 1]?.y === null && this.series[0].points[index + 2]?.y === null) {
-                    width = categoryWidth * 3;
+                    width = categoryWidth * 3 - 40;
+                    message = 'We do not have enough data to show these comparisons yet.';
                   } else if (this.series[0].points[index + 1]?.y === null) {
-                    width = categoryWidth * 2;
+                    width = categoryWidth * 2 - 40;
+                    message = 'We do not have enough data to show these comparisons yet.';
                   }
                 } else {
                   switch (nodata) {
