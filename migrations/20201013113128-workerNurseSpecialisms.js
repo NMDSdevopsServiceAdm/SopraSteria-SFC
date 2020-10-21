@@ -92,6 +92,8 @@ module.exports = {
           queryInterface.removeColumn(table, 'NurseSpecialismsChangedBy', { transaction })
         ]);
 
+        await queryInterface.sequelize.query(`DROP TYPE cqc."enum_Worker_NurseSpecialismsValue";`, { transaction });
+
         return Promise.resolve();
       } catch (e) {
         return Promise.reject(e);
