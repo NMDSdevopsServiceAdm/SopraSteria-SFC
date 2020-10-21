@@ -928,7 +928,32 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"NurseSpecialismFKChangedBy"',
       },
-
+      NurseSpecialismsValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: '"NurseSpecialismsValue"',
+      },
+      NurseSpecialismsSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"NurseSpecialismsSavedAt"',
+      },
+      NurseSpecialismsChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"NurseSpecialismsChangedAt"',
+      },
+      NurseSpecialismsSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"NurseSpecialismsSavedBy"',
+      },
+      NurseSpecialismsChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"NurseSpecialismsChangedBy"',
+      },
       RegisteredNurseValue: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -1096,6 +1121,13 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'workerFk',
       otherKey: 'jobFk',
       as: 'otherJobs',
+    });
+    Worker.belongsToMany(models.workerNurseSpecialism, {
+      through: 'workerNurseSpecialisms',
+      foreignKey: 'workerFk',
+      targetKey: 'workerFk',
+      otherKey: 'nurseSpecialismFk',
+      as: 'nurseSpecialisms',
     });
   };
   Worker.permAndTempCountForEstablishment = function (establishmentId) {

@@ -299,6 +299,10 @@ class Worker extends EntityValidator {
     return this._properties.get('NurseSpecialism') ? this._properties.get('NurseSpecialism').property : null;
   }
 
+  get nurseSpecialisms () {
+    return this._properties.get('NurseSpecialisms') ? this._properties.get('NurseSpecialisms').property : null;
+  }
+
   // takes the given JSON document and creates a Worker's set of extendable properties
   // Returns true if the resulting Worker is valid; otherwise false
   async load (document, associatedEntities = false, bulkUploadCompletion = false) {
@@ -619,6 +623,10 @@ class Worker extends EntityValidator {
             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
           }
 
+          if (this.nurseSpecialisms && this.nurseSpecialisms.value === 'Yes') {
+            await models.workerNurseSpecialisms.bulkCreate(this.nurseSpecialisms.specialisms.map(thisSpecialism => ({nurseSpecialismFk: thisSpecialism.id, workerFk: this._id})), { transaction: thisTransaction });
+          }
+
           // having the worker id we can now create the audit record; inserting the workerFk
           const allAuditEvents = [{
             workerFk: this._id,
@@ -888,6 +896,11 @@ class Worker extends EntityValidator {
           {
             model: models.workerNurseSpecialism,
             as: 'nurseSpecialism',
+            attributes: ['id', 'specialism']
+          },
+          {
+            model: models.workerNurseSpecialism,
+            as: 'nurseSpecialisms',
             attributes: ['id', 'specialism']
           }
         ]

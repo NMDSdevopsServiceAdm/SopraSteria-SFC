@@ -1,5 +1,6 @@
 import { Contracts } from './contracts.enum';
 import { JobRole } from './job.model';
+import { NurseSpecialism } from './nurse-specialism.model';
 import { WDFValue } from './wdf.model';
 
 export interface Worker {
@@ -16,7 +17,7 @@ export interface Worker {
     jobs: JobRole[];
   };
   mainJobStartDate?: string;
-  fluJab?:string;
+  fluJab?: string;
   nationalInsuranceNumber?: string;
   dateOfBirth?: string;
   postcode?: string;
@@ -82,6 +83,10 @@ export interface Worker {
   registeredNurse: string;
   nurseSpecialism: {
     specialism: string;
+  };
+  nurseSpecialisms?: {
+    value: string;
+    specialisms: NurseSpecialism[];
   };
   created?: string;
   updated?: string;

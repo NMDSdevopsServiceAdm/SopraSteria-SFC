@@ -616,6 +616,241 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         });
       });
 
+      describe('nurse specialisms', () => {
+        it('should not emit a warning for any combination of specialisms 1-6', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                MAINJOBROLE: "16",
+                NMCREG: '1',
+                NURSESPEC: '1;2;3;4;5;6'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(0);
+        });
+
+        it('should not emit a warning when either specialism 7 or 8', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                MAINJOBROLE: "16",
+                NMCREG: '1',
+                NURSESPEC: '7'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(0);
+        });
+
+        it('should emit a warning when any combination of specialisms 1-6 along with either 7 or 8', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                MAINJOBROLE: "16",
+                NMCREG: '1',
+                NURSESPEC: '1;2;3;8'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(1);
+          expect(validationErrors).to.deep.equal([
+            {
+              worker: '3',
+              name: 'MARMA',
+              lineNumber: 2,
+              warnCode: 3350,
+              warnType: 'NURSE_SPEC_WARNING',
+              warning:
+              'NURSESPEC it is not possible to use code 7 (not applicable) and code 8 (not known) with codes 1 to 6. Code 7 and 8 will be ignored',
+              source: '1;2;3;8'
+            }
+          ]);
+        });
+
+        it('should emit a warning when both specialisms 7 and 8', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                MAINJOBROLE: "16",
+                NMCREG: '1',
+                NURSESPEC: '7;8'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(1);
+          expect(validationErrors).to.deep.equal([
+            {
+              worker: '3',
+              name: 'MARMA',
+              lineNumber: 2,
+              warnCode: 3350,
+              warnType: 'NURSE_SPEC_WARNING',
+              warning:
+              'NURSESPEC it is not possible to use codes 7 (not applicable) with code 8 (not know). These will be ignored',
+              source: '7;8'
+            }
+          ]);
+        });
+
+        it('should emit a warning when specialism is not any of 1-8', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                MAINJOBROLE: "16",
+                NMCREG: '1',
+                NURSESPEC: '1;2;9'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          await bulkUpload.transform();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(1);
+          expect(validationErrors).to.deep.equal([
+            {
+              worker: '3',
+              name: 'MARMA',
+              lineNumber: 2,
+              warnCode: 3350,
+              warnType: 'NURSE_SPEC_WARNING',
+              warning:
+              'NURSESPEC the code 9 you have entered has not been recognised and will be ignored',
+              source: '1;2;9'
+            }
+          ]);
+        });
+      });
+
     const countryCodesToTest = [262, 418, 995];
     countryCodesToTest.forEach(countryCode => {
         it('should validate for COUNTRYOFBIRTH ' + countryCode, async () => {
@@ -875,8 +1110,8 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           expect(mappedCsv.NMCREG).to.equal('');
         }
         // Needs sandbox
-        if (worker.nurseSpecialism) {
-          expect(parseInt(mappedCsv.NURSESPEC)).to.equal(worker.nurseSpecialism.id);
+        if (worker.nurseSpecialisms && worker.nurseSpecialisms.value === 'Yes') {
+          expect(parseInt(mappedCsv.NURSESPEC)).to.equal(worker.nurseSpecialisms.specialisms[0].id);
         } else {
           expect(mappedCsv.NURSESPEC).to.equal('');
         }
