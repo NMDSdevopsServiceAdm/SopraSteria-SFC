@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Directive, Input, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 
 export enum Metric {
@@ -7,6 +7,11 @@ export enum Metric {
   'qualification',
   'sickness',
 }
+
+@Directive({
+  selector: 'metric-desc',
+})
+export class MetricDescDirective {}
 
 @Component({
   selector: 'app-barchart',
@@ -35,14 +40,14 @@ export class BarchartComponent implements OnInit {
     this.barchart = {
       chart: {
         type: 'column',
-        margin: [20, 0, 90, 0],
+        margin: [20, 0, 100, 0],
         scrollablePlotArea: {
-          minWidth: 700,
+          minWidth: 960,
         },
         events: {
           load: function () {
             const categoryWidth = this.plotWidth / this.xAxis[0].series[0].data.length;
-            let width = categoryWidth;
+            let width = categoryWidth - 40;
 
             this.series[0].points.forEach((point, index) => {
               if (point.y === null && (index === 0 || index === 1 || this.series[0].points[index - 1]?.y !== null)) {
@@ -57,14 +62,14 @@ export class BarchartComponent implements OnInit {
                 } else {
                   switch (nodata) {
                     case 'nopay':
-                      message = "You've not added any data about hourly pay yet.";
+                      message = "You're turnover seems to be over 999%, please contact us.";
                       break;
                     default:
                       message = '';
                   }
                 }
 
-                const offset = point.x * categoryWidth + width / 2;
+                const offset = point.x * categoryWidth + width / 2 + 20;
                 const text = this.renderer
                   .text('<span class="govuk-body">' + message + '</span>', -999, -999, true)
                   .css({
@@ -73,7 +78,7 @@ export class BarchartComponent implements OnInit {
                   .add();
                 text.attr({
                   x: this.plotLeft + offset - text.getBBox().width / 2,
-                  y: this.plotTop + this.plotHeight / 2,
+                  y: this.plotTop + (this.plotHeight / 3) * 2,
                 });
               }
             });
@@ -131,7 +136,12 @@ export class BarchartComponent implements OnInit {
       xAxis: {
         type: 'category',
         labels: {
+          align: 'left',
+          x: -100,
           useHTML: true,
+          style: {
+            width: 200,
+          },
           formatter: function () {
             const bold = this.isFirst ? 'govuk-!-font-weight-bold' : 'govuk-!-font-weight-regular';
             return '<span class="govuk-body ' + bold + '">' + this.value + '</span>';
@@ -158,6 +168,15 @@ export class BarchartComponent implements OnInit {
       },
       title: {
         text: null,
+      },
+      plotOptions: {
+        series: {
+          states: {
+            hover: {
+              enabled: false,
+            },
+          },
+        },
       },
     };
   }

@@ -13,19 +13,20 @@ export class YourRankDirective {}
 export class GaugeComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;
 
-  @Input('maxRank') private maxRank: number = -2;
+  @Input('maxRank') private maxRank: number = 10000000;
   @Input('currentRank') public currentRank: number = null;
 
   public gauge: Highcharts.Options;
 
   ngOnInit() {
     const padding = this.maxRank / 10;
+    const max = this.maxRank;
     this.gauge = {
       chart: {
         type: 'bar',
         margin: [55, 0, 0, 0],
         scrollablePlotArea: {
-          minWidth: 700,
+          minWidth: 320,
         },
       },
       credits: { enabled: false },
@@ -53,17 +54,23 @@ export class GaugeComponent implements OnInit {
           padding: 5,
           useHTML: true,
           formatter: function () {
+            let value;
+            if (max === 10000000) {
+              value = '';
+            } else {
+              value = this.value;
+            }
             if (this.value === 1) {
               return (
-                '<span class="govuk-body govuk-!-margin-bottom-0">Highest ranking <span class="govuk-!-font-weight-bold govuk-!-margin-left-4">' +
-                this.value +
+                '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-right-2">Highest ranking <span class="govuk-!-font-weight-bold govuk-!-margin-left-4">' +
+                value +
                 '</span></span>'
               );
             }
             if (this.value < 0) return;
             return (
-              '<span class="govuk-body govuk-!-margin-bottom-0"><span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
-              this.value +
+              '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-left-2"><span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
+              value +
               '</span>Lowest ranking</span>'
             );
           },
@@ -76,7 +83,7 @@ export class GaugeComponent implements OnInit {
               linearGradient: { x1: 0, x2: 1, y1: 0, y2: 0 },
               stops: [
                 [0, '#CB0101'], // start
-                [0.5, '#E35704'], // middle
+                [0.2, '#E35704'], // middle
                 [1, '#19963C'], // end
               ],
             },

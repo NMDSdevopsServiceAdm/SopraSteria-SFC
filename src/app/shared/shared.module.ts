@@ -20,6 +20,7 @@ import { HighchartsChartModule } from 'highcharts-angular';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
+import { MetricDescDirective } from './components/benchmark-metric/barchart/barchart.component';
 import { BenchmarksMetricModule } from './components/benchmark-metric/benchmark-metric.module';
 import { YourRankDirective } from './components/benchmark-metric/gauge/gauge.component';
 import {
@@ -185,6 +186,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     YourWorkplaceDirective,
     ComparisonGroupDirective,
     YourRankDirective,
+    MetricDescDirective,
   ],
   exports: [
     AlertComponent,
