@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BarchartComponent } from './barchart.component';
 
-fdescribe('BenchmarksTabComponent', () => {
+describe('BenchmarksTabComponent', () => {
   let component: BarchartComponent;
   let fixture: ComponentFixture<BarchartComponent>;
 
