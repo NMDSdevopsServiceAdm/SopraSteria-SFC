@@ -922,9 +922,9 @@ class BUDI {
 
   static mapNurseSpecialismsToDb(specialisms) {
     if (specialisms.length === 1 && specialisms[0] === 7) {
-      return { value: `Don't know` }
-    } else if (specialisms.length === 1 && specialisms[0] === 8) {
       return { value: 'No' }
+    } else if (specialisms.length === 1 && specialisms[0] === 8) {
+      return { value: `Don't know` }
     } else {
       return {
         value: 'Yes',

@@ -3633,9 +3633,9 @@ class Worker {
 
     // "NURSESPEC"
     if (entity.mainJob.jobId === NURSE_JOB_ID && entity.nurseSpecialisms) {
-      if (entity.nurseSpecialisms.value === `Don't know`) {
+      if (entity.nurseSpecialisms.value === 'No') {
         columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 7));
-      } else if (entity.nurseSpecialisms.value === `No`) {
+      } else if (entity.nurseSpecialisms.value === `Don't know`) {
         columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 8));
       } else if (entity.nurseSpecialisms.value === 'Yes') {
         columns.push(entity.nurseSpecialisms.specialisms
