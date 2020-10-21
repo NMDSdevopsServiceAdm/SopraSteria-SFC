@@ -60,7 +60,7 @@ export class BarchartComponent implements OnInit {
                       message = "You've not added any data about hourly pay yet.";
                       break;
                     default:
-                      '';
+                      message = '';
                   }
                 }
 
