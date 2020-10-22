@@ -7,6 +7,7 @@ const OTHER_MAX_LENGTH=120;
 exports.WorkerNurseSpecialismsProperty = class WorkerNurseSpecialismsProperty extends ChangePropertyPrototype {
     constructor() {
         super('NurseSpecialisms');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -58,9 +59,13 @@ exports.WorkerNurseSpecialismsProperty = class WorkerNurseSpecialismsProperty ex
     }
 
     savePropertyToSequelize() {
-        const nurseSpecialismsDocument = {
-          NurseSpecialismsValue: this.property.value
-        };
+      const nurseSpecialismsDocument = {
+        NurseSpecialismsValue: null,
+        additionalModels: { workerNurseSpecialisms: [] }
+      };
+
+      if (this.property) {
+        nurseSpecialismsDocument.NurseSpecialismsValue = this.property.value
 
         if (this.property.value === 'Yes') {
           nurseSpecialismsDocument.additionalModels = {
@@ -71,12 +76,10 @@ exports.WorkerNurseSpecialismsProperty = class WorkerNurseSpecialismsProperty ex
                 };
             })
           };
-        } else {
-            nurseSpecialismsDocument.additionalModels = {
-              workerNurseSpecialisms: []
-            };
         }
-        return nurseSpecialismsDocument;
+      }
+
+      return nurseSpecialismsDocument;
     }
 
     isEqual(currentValue, newValue) {
@@ -110,17 +113,13 @@ exports.WorkerNurseSpecialismsProperty = class WorkerNurseSpecialismsProperty ex
       if (!withHistory) {
         // simple form
         return {
-          nurseSpecialisms: {
-            value: this.property.value ? this.property.value : null,
-            specialisms: this.property.specialisms ? this.property.specialisms : [],
-          }
+          nurseSpecialisms: this.property
         };
       }
 
       return {
         nurseSpecialisms: {
-          value: this.property.value ? this.property.value : null,
-          specialisms: this.property.specialisms ? this.property.specialisms : [],
+          ...this.property,
           ... this.changePropsToJSON(showPropertyHistoryOnly)
         }
       };
