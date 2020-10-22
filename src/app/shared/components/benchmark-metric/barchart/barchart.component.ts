@@ -26,11 +26,6 @@ export class BarchartComponent implements OnInit {
   public barchart: Highcharts.Options;
 
   ngOnInit() {
-    const type = this.type;
-    const formatPay = (data) => {
-      return '£' + (Number(data) / 100).toFixed(2);
-    };
-    const nodata = this.nodata;
     this.barchart = {
       chart: {
         type: 'column',
@@ -39,46 +34,7 @@ export class BarchartComponent implements OnInit {
           minWidth: 960,
         },
         events: {
-          load: function () {
-            const categoryWidth = this.plotWidth / this.xAxis[0].series[0].data.length;
-            let width = categoryWidth - 40;
-
-            this.series[0].points.forEach((point, index) => {
-              if (point.y === null && (index === 0 || index === 1 || this.series[0].points[index - 1]?.y !== null)) {
-                let message;
-                if (point.name !== 'Your workplace') {
-                  message = 'We do not have enough data to show this comparison yet.';
-                  if (this.series[0].points[index + 1]?.y === null && this.series[0].points[index + 2]?.y === null) {
-                    width = categoryWidth * 3 - 40;
-                    message = 'We do not have enough data to show these comparisons yet.';
-                  } else if (this.series[0].points[index + 1]?.y === null) {
-                    width = categoryWidth * 2 - 40;
-                    message = 'We do not have enough data to show these comparisons yet.';
-                  }
-                } else {
-                  switch (nodata) {
-                    case 'nopay':
-                      message = "You're turnover seems to be over 999%, please contact us.";
-                      break;
-                    default:
-                      message = '';
-                  }
-                }
-
-                const offset = point.x * categoryWidth + width / 2 + 20;
-                const text = this.renderer
-                  .text('<span class="govuk-body">' + message + '</span>', -999, -999, true)
-                  .css({
-                    width,
-                  })
-                  .add();
-                text.attr({
-                  x: this.plotLeft + offset - text.getBBox().width / 2,
-                  y: this.plotTop + (this.plotHeight / 3) * 2,
-                });
-              }
-            });
-          },
+          load: this.addEmptyStates(this.nodata),
         },
       },
       series: [
@@ -100,24 +56,7 @@ export class BarchartComponent implements OnInit {
             align: 'left',
             padding: 0,
             useHTML: true,
-            formatter: function () {
-              let value;
-              switch (type) {
-                case Metric.pay:
-                  value = formatPay(this.y);
-                  break;
-                case Metric.sickness:
-                  value = this.y + ' days';
-                  break;
-                default:
-                  value = this.y + '%';
-              }
-              const size = this.key === 'Your workplace' ? 'govuk-heading-xl' : 'govuk-heading-m';
-              return '<span class="' + size + ' govuk-!-margin-bottom-2">' + value + '</span>';
-            },
-            nullFormatter: function () {
-              return 'this value is null';
-            },
+            formatter: this.formatDataLabels(this.type, this.formatPay),
             crop: false,
             overflow: 'allow',
           },
@@ -138,10 +77,7 @@ export class BarchartComponent implements OnInit {
           style: {
             width: 200,
           },
-          formatter: function () {
-            const bold = this.isFirst ? 'govuk-!-font-weight-bold' : 'govuk-!-font-weight-regular';
-            return '<span class="govuk-body ' + bold + '">' + this.value + '</span>';
-          },
+          formatter: this.formatLabel(),
         },
       },
       responsive: {
@@ -175,5 +111,77 @@ export class BarchartComponent implements OnInit {
         },
       },
     };
+  }
+
+  private formatLabel(): Highcharts.AxisLabelsFormatterCallbackFunction {
+    return function () {
+      const bold = this.isFirst ? 'govuk-!-font-weight-bold' : 'govuk-!-font-weight-regular';
+      return '<span class="govuk-body ' + bold + '">' + this.value + '</span>';
+    };
+  }
+
+  private formatDataLabels(type: Metric, formatPay: Function): Highcharts.DataLabelsFormatterCallbackFunction {
+    return function () {
+      let value;
+      switch (type) {
+        case Metric.pay:
+          value = formatPay(this.y);
+          break;
+        case Metric.sickness:
+          value = this.y + ' days';
+          break;
+        default:
+          value = this.y + '%';
+      }
+      const size = this.key === 'Your workplace' ? 'govuk-heading-xl' : 'govuk-heading-m';
+      return '<span class="' + size + ' govuk-!-margin-bottom-2">' + value + '</span>';
+    };
+  }
+
+  private addEmptyStates(nodata: string): Highcharts.ChartLoadCallbackFunction {
+    return function () {
+      const categoryWidth = this.plotWidth / this.xAxis[0].series[0].data.length;
+      let width = categoryWidth - 40;
+
+      this.series[0].points.forEach((point, index) => {
+        if (point.y === null && (index === 0 || index === 1 || this.series[0].points[index - 1]?.y !== null)) {
+          let message;
+          if (point.name !== 'Your workplace') {
+            message = 'We do not have enough data to show this comparison yet.';
+            if (this.series[0].points[index + 1]?.y === null && this.series[0].points[index + 2]?.y === null) {
+              width = categoryWidth * 3 - 40;
+              message = 'We do not have enough data to show these comparisons yet.';
+            } else if (this.series[0].points[index + 1]?.y === null) {
+              width = categoryWidth * 2 - 40;
+              message = 'We do not have enough data to show these comparisons yet.';
+            }
+          } else {
+            switch (nodata) {
+              case 'nopay':
+                message = "You're turnover seems to be over 999%, please contact us.";
+                break;
+              default:
+                message = '';
+            }
+          }
+
+          const offset = point.x * categoryWidth + width / 2 + 20;
+          const text = this.renderer
+            .text('<span class="govuk-body">' + message + '</span>', -999, -999, true)
+            .css({
+              width,
+            })
+            .add();
+          text.attr({
+            x: this.plotLeft + offset - text.getBBox().width / 2,
+            y: this.plotTop + (this.plotHeight / 3) * 2,
+          });
+        }
+      });
+    };
+  }
+
+  private formatPay(data: number) {
+    return '£' + (Number(data) / 100).toFixed(2);
   }
 }

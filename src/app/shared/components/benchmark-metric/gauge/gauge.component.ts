@@ -12,15 +12,13 @@ export class YourRankDirective {}
 })
 export class GaugeComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;
-
   @Input('maxRank') private maxRank: number = 10000000;
   @Input('currentRank') public currentRank: number = null;
 
+  public padding = this.maxRank / 10;
   public gauge: Highcharts.Options;
 
   ngOnInit() {
-    const padding = this.maxRank / 10;
-    const max = this.maxRank;
     this.gauge = {
       chart: {
         type: 'bar',
@@ -39,8 +37,8 @@ export class GaugeComponent implements OnInit {
         max: 1,
       },
       yAxis: {
-        min: 1 - padding,
-        max: this.maxRank + padding,
+        min: 1 - this.padding,
+        max: this.maxRank + this.padding,
         reversed: true,
         gridLineWidth: 0,
         title: { text: '' },
@@ -53,32 +51,12 @@ export class GaugeComponent implements OnInit {
         labels: {
           padding: 5,
           useHTML: true,
-          formatter: function () {
-            let value;
-            if (max === 10000000) {
-              value = '';
-            } else {
-              value = this.value;
-            }
-            if (this.value === 1) {
-              return (
-                '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-right-2">Highest ranking <span class="govuk-!-font-weight-bold govuk-!-margin-left-4">' +
-                value +
-                '</span></span>'
-              );
-            }
-            if (this.value < 0) return;
-            return (
-              '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-left-2"><span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
-              value +
-              '</span>Lowest ranking</span>'
-            );
-          },
+          formatter: this.formatLabel(this.maxRank),
         },
         plotBands: [
           {
-            from: 1 - padding,
-            to: this.maxRank + padding,
+            from: 1 - this.padding,
+            to: this.maxRank + this.padding,
             color: {
               linearGradient: { x1: 0, x2: 1, y1: 0, y2: 0 },
               stops: [
@@ -122,6 +100,30 @@ export class GaugeComponent implements OnInit {
           },
         },
       },
+    };
+  }
+
+  private formatLabel(max: number): Highcharts.AxisLabelsFormatterCallbackFunction {
+    return function () {
+      let value;
+      if (max === 10000000) {
+        value = '';
+      } else {
+        value = this.value;
+      }
+      if (this.value === 1) {
+        return (
+          '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-right-2">Highest ranking <span class="govuk-!-font-weight-bold govuk-!-margin-left-4">' +
+          value +
+          '</span></span>'
+        );
+      }
+      if (this.value < 0) return;
+      return (
+        '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-left-2"><span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
+        value +
+        '</span>Lowest ranking</span>'
+      );
     };
   }
 }
