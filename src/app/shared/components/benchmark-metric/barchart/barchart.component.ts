@@ -1,12 +1,6 @@
 import { Component, Directive, Input, OnInit } from '@angular/core';
+import { Metric } from '@core/model/benchmarks.model';
 import * as Highcharts from 'highcharts';
-
-export enum Metric {
-  'pay',
-  'turnover',
-  'qualification',
-  'sickness',
-}
 
 @Directive({
   selector: 'metric-desc',
