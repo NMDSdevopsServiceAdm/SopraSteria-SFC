@@ -86,7 +86,7 @@
   <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
     <dt class="govuk-summary-list__key">Nursing and Midwifery Council Category</dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.registeredNurse || '-' }}
+      {{ (worker.registeredNurse | nursingCategoriesText) || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('nursing-category')" (click)="setReturn()">

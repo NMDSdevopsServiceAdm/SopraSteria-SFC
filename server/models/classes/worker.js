@@ -328,7 +328,7 @@ class Worker extends EntityValidator {
         }
         if (mainJob && mainJob.jobId !== 23 && !otherRegNurse) {
           document.registeredNurse = null;
-          document.nurseSpecialism = { id: null, specialism: null };
+          document.nurseSpecialisms = { value: null, specialisms: null };
         }
         // If their job isn't a social worker - remove the approved mental health worker
         if (mainJob && mainJob.jobId !== 27 && !otherSocialWorker) {
