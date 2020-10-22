@@ -1829,29 +1829,53 @@ class Worker {
   }
 
   _validateNursingSpecialist () {
-    const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
+    const listOfNurseSpecialisms = this._currentLine.NURSESPEC.length ? this._currentLine.NURSESPEC.split(';').map(s => parseFloat(s)) : [];
+    const specialisms = [1,2,3,4,5,6];
+    const notSpecialisms = [7,8];
+
     const NURSING_ROLE = 16;
     const otherJobRoleIsNurse = Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE);
     const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
     const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
 
-    if (
-      (this._mainJobRole === NURSING_ROLE ||
-      (Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE))) &&
-      myNursingSpecialist !== 0 &&
-      isNaN(myNursingSpecialist)
-    ) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.NURSE_SPEC_WARNING,
-        warnType: 'NURSE_SPEC_WARNING',
-        warning: 'NURSESPEC has not been supplied',
-        source: this._currentLine.NURSESPEC
-      });
-      return false;
-    } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
+    if (mainJobRoleIsNurse || otherJobRoleIsNurse) {
+      if (listOfNurseSpecialisms.length === 0) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnType: 'NURSE_SPEC_WARNING',
+          warning: 'NURSESPEC has not been supplied',
+          source: this._currentLine.NURSESPEC
+        });
+      }
+
+      if (specialisms.some(s => listOfNurseSpecialisms.includes(s)) && notSpecialisms.some(s => listOfNurseSpecialisms.includes(s))) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnType: 'NURSE_SPEC_WARNING',
+          warning: 'NURSESPEC it is not possible to use code 7 (not applicable) and code 8 (not known) with codes 1 to 6. Code 7 and 8 will be ignored',
+          source: this._currentLine.NURSESPEC
+        });
+      }
+
+      if (notSpecialisms.every(s => listOfNurseSpecialisms.includes(s))) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnType: 'NURSE_SPEC_WARNING',
+          warning: 'NURSESPEC it is not possible to use codes 7 (not applicable) with code 8 (not know). These will be ignored',
+          source: this._currentLine.NURSESPEC
+        });
+      }
+    }
+    else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1862,10 +1886,10 @@ class Worker {
         source: this._currentLine.NURSESPEC
       });
       return false;
-    } else {
-      this._nursingSpecialist = myNursingSpecialist;
-      return true;
     }
+
+    this._nursingSpecialist = listOfNurseSpecialisms;
+    return true;
   }
 
   _validateAmhp () {
@@ -2410,22 +2434,25 @@ class Worker {
   }
 
   _transformNursingSpecialist () {
-    if (this._nursingSpecialist || this._nursingSpecialist === 0) {
-      const myValidatedSpecialist = BUDI.nursingSpecialist(BUDI.TO_ASC, this._nursingSpecialist);
-
-      if (!myValidatedSpecialist) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.NURSE_SPEC_WARNING,
-          warnType: 'NURSE_SPEC_WARNING',
-          warning: 'The code you have entered for NURSESPEC is incorrect and will be ignored',
-          source: this._currentLine.NURSESPEC
-        });
-      } else {
-        this._nursingSpecialist = myValidatedSpecialist;
+    if (this._nursingSpecialist && Array.isArray(this._nursingSpecialist)) {
+      const validatedSpecialisms = [];
+      for (let specialism of this._nursingSpecialist) {
+        const validatedSpecialism = BUDI.nursingSpecialist(BUDI.TO_ASC, specialism);
+        if (!validatedSpecialism) {
+          this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
+            lineNumber: this._lineNumber,
+            warnCode: Worker.NURSE_SPEC_WARNING,
+            warnType: 'NURSE_SPEC_WARNING',
+            warning: `NURSESPEC the code ${specialism} you have entered has not been recognised and will be ignored`,
+            source: this._currentLine.NURSESPEC
+          });
+        } else {
+          validatedSpecialisms.push(validatedSpecialism);
+        }
       }
+      this._nursingSpecialist = validatedSpecialisms;
     }
   }
 
@@ -2909,6 +2936,10 @@ class Worker {
       approvedMentalHealthWorker: this._amhp ? this._amhp : undefined,
       completed: true // on bulk upload, every Worker record is naturally completed!
     };
+
+    if (this._nursingSpecialist) {
+      changeProperties.nurseSpecialisms = BUDI.mapNurseSpecialismsToDb(this._nursingSpecialist);
+    }
 
     if (this._fluVac) {
       switch (this._fluVac) {
@@ -3601,11 +3632,20 @@ class Worker {
     );
 
     // "NURSESPEC"
-    columns.push(
-      entity.mainJob.jobId === NURSE_JOB_ID && entity.nurseSpecialism
-        ? BUDI.nursingSpecialist(BUDI.FROM_ASC, entity.nurseSpecialism.id)
-        : ''
-    );
+    if (entity.mainJob.jobId === NURSE_JOB_ID && entity.nurseSpecialisms) {
+      if (entity.nurseSpecialisms.value === 'No') {
+        columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 7));
+      } else if (entity.nurseSpecialisms.value === `Don't know`) {
+        columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 8));
+      } else if (entity.nurseSpecialisms.value === 'Yes') {
+        columns.push(entity.nurseSpecialisms.specialisms
+          .map(thisSpecialism =>BUDI.nursingSpecialist(BUDI.FROM_ASC, thisSpecialism.id))
+          .join(';')
+        );
+      }
+    } else {
+      columns.push('');
+    }
 
     // "AMHP"
     let amhp = '';
