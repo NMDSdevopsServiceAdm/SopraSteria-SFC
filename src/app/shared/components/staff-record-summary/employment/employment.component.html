@@ -116,11 +116,11 @@
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('nursing-specialism')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.registeredNurse">
+        <ng-container *ngIf="!worker.nurseSpecialisms">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.registeredNurse"> Change </ng-container>
+        <ng-container *ngIf="worker.nurseSpecialisms"> Change </ng-container>
         <span class="govuk-visually-hidden"> nursing and midwifery council category</span>
       </a>
     </dd>
