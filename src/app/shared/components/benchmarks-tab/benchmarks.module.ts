@@ -6,16 +6,10 @@ import { BenchmarksRoutingModule } from '@shared/components/benchmarks-tab/bench
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
 
-
 @NgModule({
-  imports: [CommonModule, RouterModule, OverlayModule,BenchmarksRoutingModule],
-  declarations: [
-    BenchmarksAboutTheDataComponent,
-  ],
-  exports: [
-    BenchmarksAboutTheDataComponent,
-  ],
-  providers: [
-  ],
+  imports: [CommonModule, RouterModule, OverlayModule, BenchmarksRoutingModule],
+  declarations: [BenchmarksAboutTheDataComponent],
+  exports: [BenchmarksAboutTheDataComponent],
+  providers: [],
 })
 export class BenchmarksModule {}

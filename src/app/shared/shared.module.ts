@@ -15,10 +15,14 @@ import {
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
 import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
+import { MetricDescDirective } from './components/benchmark-metric/barchart/barchart.component';
+import { BenchmarksMetricModule } from './components/benchmark-metric/benchmark-metric.module';
+import { YourRankDirective } from './components/benchmark-metric/gauge/gauge.component';
 import {
   BenchmarkTileComponent,
   ComparisonGroupDirective,
@@ -37,7 +41,6 @@ import { DatePickerComponent } from './components/date-picker/date-picker.compon
 import { DetailsComponent } from './components/details/details.component';
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
-import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component'
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
 import {
   LinkToParentCancelDialogComponent,
@@ -85,6 +88,7 @@ import { TainingInfoPanelComponent } from './components/training-info-panel/trai
 import { TrainingLinkPanelComponent } from './components/trianing-link-panel/trianing-link-panel.component.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
+import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
@@ -92,6 +96,7 @@ import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
+import { NursingCategoriesTextPipe } from './pipes/nursing-categories-text.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
 import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
@@ -100,7 +105,15 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule, BenchmarksModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    OverlayModule,
+    HighchartsChartModule,
+    BenchmarksModule,
+    BenchmarksMetricModule,
+  ],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,
@@ -124,6 +137,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     InsetTextComponent,
     MessagesComponent,
     NumericAnswerPipe,
+    NursingCategoriesTextPipe,
     OpenEndedAnswerPipe,
     OrderOtherPipe,
     PanelComponent,
@@ -172,7 +186,9 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BenchmarksTabComponent,
     ComparisonGroupHeaderComponent,
     YourWorkplaceDirective,
-    ComparisonGroupDirective
+    ComparisonGroupDirective,
+    YourRankDirective,
+    MetricDescDirective,
   ],
   exports: [
     AlertComponent,
@@ -196,6 +212,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     InsetTextComponent,
     MessagesComponent,
     NumericAnswerPipe,
+    NursingCategoriesTextPipe,
     OpenEndedAnswerPipe,
     OrderOtherPipe,
     PanelComponent,
@@ -243,11 +260,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BenchmarksTabComponent,
     ComparisonGroupHeaderComponent,
     YourWorkplaceDirective,
-    ComparisonGroupDirective
+    ComparisonGroupDirective,
   ],
-  providers: [
-    DialogService,
-    TotalStaffComponent
-  ],
+  providers: [DialogService, TotalStaffComponent],
 })
-export class SharedModule { }
+export class SharedModule {}
