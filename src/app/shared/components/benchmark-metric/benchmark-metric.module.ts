@@ -1,14 +1,15 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { NgModule } from '@angular/core';
-import { BenchmarksRoutingModule } from '@shared/components/benchmarks-tab/benchmarks-routing.module';
 import { HighchartsChartModule } from 'highcharts-angular';
 
 import { BarchartComponent } from './barchart/barchart.component';
+import { MetricDescDirective } from './barchart/barchart.component';
 import { GaugeComponent } from './gauge/gauge.component';
+import { YourRankDirective } from './gauge/gauge.component';
 
 @NgModule({
-  imports: [OverlayModule, HighchartsChartModule, BenchmarksRoutingModule],
-  declarations: [GaugeComponent, BarchartComponent],
+  imports: [OverlayModule, HighchartsChartModule],
+  declarations: [GaugeComponent, MetricDescDirective, BarchartComponent, YourRankDirective],
   exports: [GaugeComponent, BarchartComponent],
   providers: [],
 })
