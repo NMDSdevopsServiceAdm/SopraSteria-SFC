@@ -17,7 +17,6 @@ const linkSubToParent = require('../../data/linkToParent');
 const User = require('../../models/classes/user');
 const notifications = require('../../data/notifications');
 const ownershipChangeRequests = require('../../data/ownership');
-const { rateLimiting } = require('../utils/middleware/rateLimiting');
 
 // default route
 router.route('/').get(async (req, res) => {
@@ -961,7 +960,6 @@ router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) =>
 });
 
 router.use('/swap/establishment/:id', Authorization.isAdmin);
-router.use('/swap/establishment/:id', rateLimiting);
 router.route('/swap/establishment/:id').post(async (req, res) => {
   const newEstablishmentId = req.params.id;
 
