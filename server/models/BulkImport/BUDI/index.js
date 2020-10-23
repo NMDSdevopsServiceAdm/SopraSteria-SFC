@@ -920,6 +920,19 @@ class BUDI {
     return found ? found.BUDI : null;
   }
 
+  static mapNurseSpecialismsToDb(specialisms) {
+    if (specialisms.length === 1 && specialisms[0] === 7) {
+      return { value: 'No' }
+    } else if (specialisms.length === 1 && specialisms[0] === 8) {
+      return { value: `Don't know` }
+    } else {
+      return {
+        value: 'Yes',
+        specialisms: specialisms.filter(s => s !== 7 && s !== 8).map(s => ({ id: s }))
+      }
+    }
+  }
+
   // maps (highest) qualification levels
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
   static qualificationLevels (direction, originalCode) {
