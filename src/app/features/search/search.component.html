@@ -2,49 +2,61 @@
   <div class="govuk-tabs govuk-!-padding-top-0">
     <div class="govuk-grid-column-full">
       <ul class="govuk-tabs__list">
-        <li class="govuk-tabs__list-item" [class.govuk-tabs__tab--selected]="form.type === 'users'">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'users'">
           <a
+            role="tab"
             class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'users'"
             [routerLink]="['/search-users']"
           >
             Users
           </a>
         </li>
-        <li class="govuk-tabs__list-item" [class.govuk-tabs__tab--selected]="form.type === 'establishments'">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'establishments'">
           <a
+            role="tab"
             class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'establishments'"
             [routerLink]="['/search-establishments']"
           >
             Workplaces
           </a>
         </li>
-        <li class="govuk-tabs__list-item" [class.govuk-tabs__tab--selected]="form.type === 'groups'">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'groups'">
           <a
+            role="tab"
             class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'groups'"
             [routerLink]="['/search-groups']"
           >
             Groups
           </a>
         </li>
-        <li class="govuk-tabs__list-item" [class.govuk-tabs__tab--selected]="form.type === 'registrations'">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'registrations'">
           <a
+            role="tab"
             class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'registrations'"
             [routerLink]="['/registrations']"
           >
             Registrations
           </a>
         </li>
-        <li class="govuk-tabs__list-item" [class.govuk-tabs__tab--selected]="form.type === 'parent-requests'">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'parent-requests'">
           <a
+            role="tab"
             class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'parent-requests'"
             [routerLink]="['/parent-requests']"
           >
             Parent Requests
           </a>
         </li>
-        <li class="govuk-tabs__list-item" [class.govuk-tabs__tab--selected]="form.type === 'cqc-status-changes'">
+        <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="form.type === 'cqc-status-changes'">
           <a
+            role="tab"
             class="govuk-tabs__tab"
+            [class.govuk-tabs__tab--selected]="form.type === 'cqc-status-changes'"
             [routerLink]="['/cqc-status-changes']"
           >
             CQC Changes
