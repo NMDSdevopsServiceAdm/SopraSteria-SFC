@@ -7,8 +7,8 @@
   }
 
   &.success {
-    border-color: $funGreen;
-    background-color: rgba($funGreen, 0.25);
+    border-color: govuk-colour("green");
+    background-color: rgba(govuk-colour("green"), 0.25);
   }
 
   &.warning {

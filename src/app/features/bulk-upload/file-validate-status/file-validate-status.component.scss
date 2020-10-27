@@ -10,7 +10,7 @@
 }
 
 .govuk-file-validate-status--pass {
-  background: $funGreen;
+  background: govuk-colour("green");
 }
 
 .govuk-file-validate-status--fail {

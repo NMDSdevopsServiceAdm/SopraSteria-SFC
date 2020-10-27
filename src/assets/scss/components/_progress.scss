@@ -12,11 +12,11 @@
     }
 
     /* IE10 */
-    color: $funGreen;
+    color: govuk-colour("green");
 
     &::-webkit-progress-value,
     &::-moz-progress-bar {
-      background: $funGreen;
+      background: govuk-colour("green");
     }
   }
 }
