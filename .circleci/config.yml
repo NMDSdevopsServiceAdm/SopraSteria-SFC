@@ -127,7 +127,7 @@ jobs:
     working_directory: ~/project
     docker:
       - image: circleci/node:lts-browsers
-        enviroment:
+        environment:
           NODE_OPTIONS=--max_old_space_size=4096
     steps:
         - checkout
