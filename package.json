@@ -55,7 +55,7 @@
     "details-element-polyfill": "^2.4.0",
     "exceljs": "^4.0.1",
     "express": "^4.17.1",
-    "express-http-proxy": "^1.6.0",
+    "express-http-proxy": "^1.6.2",
     "express-sanitizer": "^1.0.5",
     "file-saver": "^2.0.2",
     "govuk-frontend": "^2.13.0",
