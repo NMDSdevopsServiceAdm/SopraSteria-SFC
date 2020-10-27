@@ -49,11 +49,11 @@
 }
 
 .govuk-util__list-record {
-  border-bottom: solid 1px $alto;
+  border-bottom: solid 1px govuk-colour("mid-grey");
   padding: govuk-spacing(4) 0;
 
   &:first-child {
-    border-top: solid 1px $alto;
+    border-top: solid 1px govuk-colour("mid-grey");
   }
 }
 
