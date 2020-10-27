@@ -12,5 +12,5 @@
 }
 
 .govuk-file-validate-status--fail {
-  background: $govuk-error-colour;
+  background: govuk-colour("red");
 }
