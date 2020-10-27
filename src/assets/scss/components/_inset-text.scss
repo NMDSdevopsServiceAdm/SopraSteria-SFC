@@ -1,9 +1,7 @@
-@import '../partials/colors';
-
 .govuk-inset-text {
   &.todo {
-    border-color: $jaffa;
-    background-color: rgba($jaffa, 0.25);
+    border-color: govuk-colour("orange");
+    background-color: rgba(govuk-colour("orange"), 0.25);
   }
 
   &.success {
@@ -12,7 +10,7 @@
   }
 
   &.warning {
-    border-color: $jaffa;
-    background-color: rgba($jaffa, 0.25);
+    border-color: govuk-colour("orange");
+    background-color: rgba(govuk-colour("orange"), 0.25);
   }
 }

@@ -1,5 +1,3 @@
-@import '../partials/colors';
-
 .govuk-util__float-right {
   float: right;
 }
@@ -17,7 +15,7 @@
 }
 
 .govuk-util__light-bg {
-  background: $mercury;
+  background: govuk-colour("light-grey");
 }
 
 .govuk-util__relative-top-1 {
