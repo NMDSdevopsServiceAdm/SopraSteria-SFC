@@ -109,7 +109,7 @@
       <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Yes'">
         <ul class="govuk-list govuk-!-margin-bottom-0">
           <li *ngFor="let specialism of worker.nurseSpecialisms.specialisms">
-            <span>{{ specialism.specialism }}</span>
+            <span>{{ specialism.specialism | nursingSpecialismsText }}</span>
           </li>
         </ul>
       </ng-container>
