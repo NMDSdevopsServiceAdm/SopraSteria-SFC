@@ -11,12 +11,10 @@ import { ViewAllMandatoryTrainingComponent } from '@features/workplace/view-all-
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
 import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
-import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
-import { BenchmarksMetricModule } from './components/benchmark-metric/benchmark-metric.module';
 import {
   BenchmarkTileComponent,
   ComparisonGroupDirective,
@@ -83,15 +81,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-    OverlayModule,
-    HighchartsChartModule,
-    BenchmarksModule,
-    BenchmarksMetricModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule, BenchmarksModule],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,

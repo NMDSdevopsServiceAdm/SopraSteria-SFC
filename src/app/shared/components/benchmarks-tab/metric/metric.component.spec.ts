@@ -1,65 +1,99 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserModule, By } from '@angular/platform-browser';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BenchmarksService } from '@core/services/benchmarks.service';
-import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { Metric } from '@core/model/benchmarks.model';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { BenchmarksMetricComponent } from '@shared/components/benchmarks-tab/metric/metric.component';
-import { within } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
+import { of } from 'rxjs';
+
+const payTileData = {
+  workplaceValue: { value: 1000, hasValue: true },
+  comparisonGroup: { value: 1100, hasValue: true },
+  goodCqc: { value: 1200, hasValue: true },
+  lowTurnover: { value: 900, hasValue: true },
+};
+
+const noPayTileData = {
+  workplaceValue: { value: null, hasValue: false },
+  comparisonGroup: { value: null, hasValue: false },
+  goodCqc: { value: null, hasValue: false },
+  lowTurnover: { value: null, hasValue: false },
+};
+
+const getBenchmarksMetricComponent = async () => {
+  return render(BenchmarksMetricComponent, {
+    imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BenchmarksModule],
+    providers: [
+      {
+        provide: EstablishmentService,
+        useClass: MockEstablishmentService,
+      },
+      {
+        provide: ActivatedRoute,
+        useValue: {
+          data: of({
+            metric: Metric.pay,
+          }),
+        },
+      },
+    ],
+  });
+};
+
+const setup = (pay) => {
+  const establishmentUid = TestBed.inject(EstablishmentService).establishment.uid;
+  const metric = 'pay';
+
+  const httpTestingController = TestBed.inject(HttpTestingController);
+
+  const req = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/?tiles=${metric}`);
+  req.flush({
+    tiles: {
+      pay,
+    },
+  });
+};
 
 describe('BenchmarksMetricComponent', () => {
-  let component: BenchmarksMetricComponent;
-  let fixture: ComponentFixture<BenchmarksMetricComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BenchmarksModule],
-      declarations: [],
-      providers: [
-        { provide: BenchmarksService, useClass: MockBenchmarksService },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              url: [{ path: 1 }, { path: 2 }],
-              params: {
-                establishmentID: 123,
-              },
-            },
-          },
-        },
-      ],
-    }).compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(BenchmarksMetricComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  afterEach(() => {
+    const httpTestingController = TestBed.inject(HttpTestingController);
+    httpTestingController.verify();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-  it('should have the right text with only one workplace', async () => {
+  it('should create a barchart with workplace benchmarks data', async () => {
+    const { fixture, getByText } = await getBenchmarksMetricComponent();
+
+    setup(payTileData);
+
     fixture.detectChanges();
-    const componenttext = await within(document.body).findByTestId('meta-data');
-    expect(componenttext.innerHTML).toContain(
-      `is 1 staff from 1 workplace providing the same main service as you in your local authority`,
-    );
+
+    const yourWorkplace = getByText('£10.00');
+    const comparisonGroup = getByText('£11.00');
+    const goodCqc = getByText('£12.00');
+    const lowTurnover = getByText('£9.00');
+
+    expect(yourWorkplace).toBeTruthy();
+    expect(comparisonGroup).toBeTruthy();
+    expect(goodCqc).toBeTruthy();
+    expect(lowTurnover).toBeTruthy();
   });
-  it('should have the right text with correct comma placement', async () => {
+
+  it('should create a barchart messages when no benchmarks data available', async () => {
+    const { fixture, getByText } = await getBenchmarksMetricComponent();
+
+    setup(noPayTileData);
+
     fixture.detectChanges();
-    const componenttext = await within(document.body).findByTestId('meta-data');
-    expect(componenttext.innerHTML).toContain(
-      `is 1,000 staff from 1,000 workplaces providing the same main service as you in your local authority`,
-    );
-  });
-  it('should have the right text with no data', async () => {
-    fixture.detectChanges();
-    const lineItemCount = fixture.debugElement.queryAll(By.css('li')).length;
-    expect(lineItemCount).toBe(2);
+
+    const noYourWorkplaceDataMessage = getByText('Your turnover seems to be over 999%, please contact us.');
+    const noComparisonGroupsDataMessage = getByText('We do not have enough data to show these comparisons yet.');
+
+    expect(noYourWorkplaceDataMessage).toBeTruthy();
+    expect(noComparisonGroupsDataMessage).toBeTruthy();
   });
 });

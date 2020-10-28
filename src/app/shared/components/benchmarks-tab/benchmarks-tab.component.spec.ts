@@ -41,6 +41,14 @@ describe('BenchmarksTabComponent', () => {
             value: 0,
             hasValue: false,
           },
+          goodCqc: {
+            value: 0,
+            hasValue: false,
+          },
+          lowTurnover: {
+            value: 0,
+            hasValue: false,
+          },
         },
       },
       meta: {

@@ -29,6 +29,14 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           value: 0,
           hasValue: false,
         },
+        goodCqc: {
+          value: 0,
+          hasValue: false,
+        },
+        lowTurnover: {
+          value: 0,
+          hasValue: false,
+        },
       },
       sickness: {
         workplaceValue: {
@@ -36,6 +44,14 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           hasValue: false,
         },
         comparisonGroup: {
+          value: 0,
+          hasValue: false,
+        },
+        goodCqc: {
+          value: 0,
+          hasValue: false,
+        },
+        lowTurnover: {
           value: 0,
           hasValue: false,
         },
@@ -49,6 +65,14 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           value: 0,
           hasValue: false,
         },
+        goodCqc: {
+          value: 0,
+          hasValue: false,
+        },
+        lowTurnover: {
+          value: 0,
+          hasValue: false,
+        },
       },
       turnover: {
         workplaceValue: {
@@ -56,6 +80,14 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           hasValue: false,
         },
         comparisonGroup: {
+          value: 0,
+          hasValue: false,
+        },
+        goodCqc: {
+          value: 0,
+          hasValue: false,
+        },
+        lowTurnover: {
           value: 0,
           hasValue: false,
         },

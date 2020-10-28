@@ -1,16 +1,9 @@
 <span class="govuk-caption-xl">Benchmarks</span>
-<h1 class="govuk-heading-xl">Metric</h1>
-<!-- <app-barchart
-  [type]="metrics.sickness"
-  [yourworkplace]="90"
-  [comparisongroup]="null"
-  [goodcqc]="67"
-  [lowturnover]="43"
-  [nodata]="'nopay'"
->
-  <metric-desc>Average hourly rate for care worker.</metric-desc>
-</app-barchart> -->
+<h1 class="govuk-heading-xl">Pay</h1>
+<app-barchart [type]="metric" [benchmarks]="benchmarks" [noData]="'nopay'">
+  <ng-container metric-desc>Average hourly rate for care worker.</ng-container>
+</app-barchart>
 
-<!-- <app-gauge [maxRank]="4" [currentRank]="2">
-  <your-rank>Your workplace is ranked 11 in your comparison group.</your-rank>
-</app-gauge> -->
+<!--<app-gauge [maxRank]="10" [currentRank]="2">
+  <ng-container your-rank>Your workplace is ranked 2 in your comparison group.</ng-container>
+</app-gauge>-->

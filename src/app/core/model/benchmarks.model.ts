@@ -14,6 +14,8 @@ export interface Meta {
 export interface Tile {
   workplaceValue: BenchmarkValue;
   comparisonGroup: BenchmarkValue;
+  goodCqc: BenchmarkValue;
+  lowTurnover: BenchmarkValue;
 }
 export interface BenchmarkValue {
   value: number;
