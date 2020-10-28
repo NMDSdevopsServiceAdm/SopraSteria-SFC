@@ -39,8 +39,48 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "Staff"
-
-    }},{
+    },
+    payGoodCQC: {
+    type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "PayGoodCQC"
+  },
+    payLowTurnover: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "PayLowTurnover"
+    },
+    sicknessGoodCQC:{
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "SicknessGoodCQC"
+    },
+    sicknessLowTurnover: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "SicknessLowTurnover"
+    },
+    turnoverGoodCQC:{
+      type: DataTypes.DECIMAL(5, 2),
+      allowNull: true,
+      field: "TurnoverGoodCQC"
+    },
+    turnoverLowTurnover:{
+      type:  DataTypes.DECIMAL(5, 2),
+      allowNull: true,
+      field: "TurnoverLowTurnover"
+    },
+    qualificationsGoodCQC:{
+      type: DataTypes.DECIMAL(3, 2),
+      allowNull: true,
+      field: "QualificationsGoodCQC"
+    },
+    qualificationsLowTurnover:{
+      type: DataTypes.DECIMAL(3, 2),
+      allowNull: true,
+      field: "QualificationsLowTurnover"
+    }
+  },{
     tableName: '"Benchmarks"',
     schema: 'cqc',
     createdAt: false,
