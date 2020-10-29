@@ -126,7 +126,7 @@ jobs:
   install:
     working_directory: ~/project
     docker:
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:12.19.0-browsers
     environment:
       NODE_OPTIONS=--max_old_space_size=4096
     steps:
@@ -146,7 +146,7 @@ jobs:
                 - dist
   test_frontend:
     docker:
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:12.19.0-browsers
     steps:
       - checkout
       - restore_cache:
@@ -158,7 +158,7 @@ jobs:
           command: npm run test
   test_backend:
     docker:
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:12.19.0-browsers
     steps:
       - checkout
       - restore_cache:
@@ -168,7 +168,7 @@ jobs:
           command: npm run server:test:unit
   performance:
     docker:
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:12.19.0-browsers
     steps:
         - checkout
         - attach_workspace:
@@ -280,7 +280,7 @@ jobs:
           live_domain: <<parameters.live_domain>>
   sentry_release:
     docker:
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:12.19.0-browsers
     environment:
       SENTRY_ORG: skills-for-care
       SENTRY_PROJECT: skills-for-care
