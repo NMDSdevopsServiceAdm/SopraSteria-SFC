@@ -70,6 +70,8 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
+import { FormatMoneyPipe } from './pipes/format-money.pipe';
+import { FormatPercentPipe } from './pipes/format-percent.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { NursingCategoriesTextPipe } from './pipes/nursing-categories-text.pipe';
@@ -155,6 +157,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ComparisonGroupHeaderComponent,
     YourWorkplaceDirective,
     ComparisonGroupDirective,
+    FormatMoneyPipe,
+    FormatPercentPipe,
   ],
   exports: [
     AlertComponent,
@@ -227,6 +231,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ComparisonGroupHeaderComponent,
     YourWorkplaceDirective,
     ComparisonGroupDirective,
+    FormatMoneyPipe,
+    FormatPercentPipe,
   ],
   providers: [DialogService, TotalStaffComponent],
 })

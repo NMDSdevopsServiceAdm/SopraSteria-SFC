@@ -26,6 +26,6 @@ export interface BenchmarkValue {
 export enum Metric {
   'pay',
   'turnover',
-  'qualification',
+  'qualifications',
   'sickness',
 }

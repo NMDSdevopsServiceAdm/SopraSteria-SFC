@@ -376,7 +376,41 @@ const routes: Routes = [
             canActivate: [CheckPermissionsGuard],
             data: {
               title: 'Pay',
+              description: 'Average hourly rate for care worker.',
               metric: Metric.pay,
+              permissions: ['canViewBenchmarks'],
+            },
+          },
+          {
+            path: 'turnover',
+            component: BenchmarksMetricComponent,
+            canActivate: [CheckPermissionsGuard],
+            data: {
+              title: 'Turnover',
+              description: 'Staff (on permanent and temporary contracts) who left in the last 12 months.',
+              metric: Metric.turnover,
+              permissions: ['canViewBenchmarks'],
+            },
+          },
+          {
+            path: 'qualifications',
+            component: BenchmarksMetricComponent,
+            canActivate: [CheckPermissionsGuard],
+            data: {
+              title: 'Qualifications',
+              description: 'Care-providing staff with relevant level 2 or above.',
+              metric: Metric.qualifications,
+              permissions: ['canViewBenchmarks'],
+            },
+          },
+          {
+            path: 'sickness',
+            component: BenchmarksMetricComponent,
+            canActivate: [CheckPermissionsGuard],
+            data: {
+              title: 'Sickness',
+              description: 'Average days each worker was off in the last 12 months.',
+              metric: Metric.sickness,
               permissions: ['canViewBenchmarks'],
             },
           },

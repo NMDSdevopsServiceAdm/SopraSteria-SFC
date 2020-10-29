@@ -1,7 +1,7 @@
 <span class="govuk-caption-xl">Benchmarks</span>
-<h1 class="govuk-heading-xl">Pay</h1>
+<h1 class="govuk-heading-xl">{{ title }}</h1>
 <app-barchart [type]="metric" [benchmarks]="benchmarks" [noData]="'nopay'">
-  <ng-container metric-desc>Average hourly rate for care worker.</ng-container>
+  <ng-container metric-desc>{{ description }}</ng-container>
 </app-barchart>
 
 <!--<app-gauge [maxRank]="10" [currentRank]="2">

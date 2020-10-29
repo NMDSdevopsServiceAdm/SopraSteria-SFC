@@ -7,6 +7,7 @@ import { BarchartComponent } from './barchart.component';
 
 import { build, fake } from '@jackfranklin/test-data-bot';
 import { BarchartOptionsBuilder } from './barchart-options-builder';
+import { FormatUtil } from '@core/utils/fomat-util';
 
 const benchmarksBuilder = build<Tile>('Benchmarks', {
   fields: {
@@ -30,7 +31,7 @@ const getBarchartComponent = async (type: Metric, benchmarks: Tile) => {
   });
 };
 
-describe('BenchmarksTabComponent', () => {
+describe('BarchartComponent', () => {
   it('should display a bar for each column', async () => {
     const benchmarks = benchmarksBuilder();
 
@@ -83,7 +84,7 @@ describe('BenchmarksTabComponent', () => {
       }
 
       function getByPayText(data: any) {
-        return getByText('£' + (Number(data) / 100).toFixed(2));
+        return getByText(FormatUtil.formatMoney(data));
       }
     });
   });
@@ -99,7 +100,7 @@ describe('BenchmarksTabComponent', () => {
       }
 
       function getByTurnoverText(data: any) {
-        return getByText(data + '%');
+        return getByText(FormatUtil.formatPercent(data));
       }
     });
   });
@@ -108,14 +109,14 @@ describe('BenchmarksTabComponent', () => {
     it('should display correct data labels for qualification', async () => {
       const benchmarks = benchmarksBuilder();
 
-      const { getByText } = await getBarchartComponent(Metric.qualification, benchmarks);
+      const { getByText } = await getBarchartComponent(Metric.qualifications, benchmarks);
 
       for (let key in benchmarks) {
         expect(getByQualificationText(benchmarks[key].value)).toBeTruthy();
       }
 
       function getByQualificationText(data: any) {
-        return getByText(data + '%');
+        return getByText(FormatUtil.formatPercent(data));
       }
     });
   });

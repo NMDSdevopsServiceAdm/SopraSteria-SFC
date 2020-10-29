@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { FormatUtil } from '@core/utils/fomat-util';
 import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchmarks-tab.component';
 
 import { Establishment } from '../../../../mockdata/establishment';
@@ -29,6 +30,7 @@ describe('BenchmarksTabComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
   it('should be able to build with only part of the data', () => {
     const tileData = {
       tiles: {
@@ -61,14 +63,17 @@ describe('BenchmarksTabComponent', () => {
 
     expect(component).toBeTruthy();
   });
+
   it('should format Pay data correctly', () => {
-    const paydata = component.formatPay(512.345);
+    const paydata = FormatUtil.formatMoney(512.345);
     expect(paydata).toBe('£5.12');
   });
+
   it('should format percent data correctly', () => {
-    const percentData = component.formatPercent(0.357894767643573);
+    const percentData = FormatUtil.formatPercent(0.357894767643573);
     expect(percentData).toBe('36%');
   });
+
   it('should download a pdf', async () => {
     const event = new Event('click');
     const pdfDownload = spyOn(component, 'downloadAsPDF').and.callThrough();

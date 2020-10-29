@@ -18,15 +18,16 @@ router.route('/').get(async (req, res) => {
     if (tiles.includes('qualifications')) reply.tiles.qualifications = await qualifications(establishmentId);
     if (tiles.includes('turnover')) reply.tiles.turnover = await turnover(establishmentId);
 
-    reply = await comparisonGroupData(reply, benchmarkComparisonGroup);
-    reply = await getMetaData(reply, benchmarkComparisonGroup);
+    reply = comparisonGroupData(reply, benchmarkComparisonGroup);
+    reply = getMetaData(reply, benchmarkComparisonGroup);
     return res.status(200).json(reply);
   } catch (err) {
     console.error(err);
     return res.status(503).send();
   }
 });
-const getMetaData = async (reply,benchmarkComparisonGroup) => {
+
+const getMetaData = (reply,benchmarkComparisonGroup) => {
   if (!benchmarkComparisonGroup) {
     reply.meta.workplaces = 0;
     reply.meta.staff = 0;
@@ -37,24 +38,35 @@ const getMetaData = async (reply,benchmarkComparisonGroup) => {
   return reply;
 
 };
-const comparisonGroupData = async (reply, benchmarkComparisonGroup) => {
+
+const comparisonGroupData = (reply, benchmarkComparisonGroup) => {
   Object.keys(reply.tiles).map(key => {
     if (!benchmarkComparisonGroup) {
       reply.tiles[key].comparisonGroup.value = 0;
       reply.tiles[key].comparisonGroup.hasValue = false;
       reply.tiles[key].comparisonGroup.stateMessage = 'no-data';
     } else {
-      reply.tiles[key].comparisonGroup.value = benchmarkComparisonGroup[key] ? benchmarkComparisonGroup[key] : 0;
-      reply.tiles[key].comparisonGroup.hasValue =  benchmarkComparisonGroup[key] !== null  ;
+      reply.tiles[key].comparisonGroup.value = benchmarkComparisonGroup[key] ? parseFloat(benchmarkComparisonGroup[key]) : 0;
+      reply.tiles[key].comparisonGroup.hasValue =  benchmarkComparisonGroup[key] !== null;
       if (!reply.tiles[key].comparisonGroup.hasValue) {
         reply.tiles[key].comparisonGroup.stateMessage = 'no-data';
+      }
+      reply.tiles[key].goodCqc.value = benchmarkComparisonGroup[`${key}GoodCQC`] ? parseFloat(benchmarkComparisonGroup[`${key}GoodCQC`]) : 0;
+      reply.tiles[key].goodCqc.hasValue = benchmarkComparisonGroup[`${key}GoodCQC`] !== null;
+      if (!reply.tiles[key].goodCqc.hasValue) {
+        reply.tiles[key].goodCqc.stateMessage = 'no-data';
+      }
+      reply.tiles[key].lowTurnover.value = benchmarkComparisonGroup[`${key}LowTurnover`] ? parseFloat(benchmarkComparisonGroup[`${key}LowTurnover`]) : 0;
+      reply.tiles[key].lowTurnover.hasValue = benchmarkComparisonGroup[`${key}LowTurnover`] !== null;
+      if (!reply.tiles[key].lowTurnover.hasValue) {
+        reply.tiles[key].lowTurnover.stateMessage = 'no-data';
       }
     }
   });
   return reply;
 };
-const pay = async (establishmentId) => {
 
+const pay = async (establishmentId) => {
   const careworkersWithHourlyPayCount = await models.worker.careworkersWithHourlyPayCount(establishmentId);
   let averagePaidAmount = 0;
   let stateMessage = '';
@@ -72,11 +84,20 @@ const pay = async (establishmentId) => {
     comparisonGroup: {
       value: 0,
       hasValue: false
+    },
+    goodCqc: {
+      value: 0,
+      hasValue: false
+    },
+    lowTurnover: {
+      value: 0,
+      hasValue: false
     }
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
+
 const turnoverGetData = async (establishmentId) => {
 
   const establishment = await models.establishment.turnOverData(establishmentId);
@@ -105,6 +126,7 @@ const turnoverGetData = async (establishmentId) => {
   }
   return { percentOfPermTemp, stateMessage: '' };
 };
+
 const turnover = async (establishmentId) => {
   const { percentOfPermTemp, stateMessage } = await turnoverGetData(establishmentId);
   const json = {
@@ -115,11 +137,20 @@ const turnover = async (establishmentId) => {
     comparisonGroup: {
       value: 0,
       hasValue: false
+    },
+    goodCqc: {
+      value: 0,
+      hasValue: false
+    },
+    lowTurnover: {
+      value: 0,
+      hasValue: false
     }
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
+
 const qualifications = async (establishmentId) => {
   const noquals = await models.worker.specificJobsAndSocialCareQuals(establishmentId, models.services.careProvidingStaff);
   const quals = await models.worker.specificJobsAndNoSocialCareQuals(establishmentId, models.services.careProvidingStaff);
@@ -140,11 +171,20 @@ const qualifications = async (establishmentId) => {
     comparisonGroup: {
       value: 0,
       hasValue: false
+    },
+    goodCqc: {
+      value: 0,
+      hasValue: false
+    },
+    lowTurnover: {
+      value: 0,
+      hasValue: false
     }
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
+
 const sickness = async (establishmentId) => {
   const whereClause = { DaysSickValue: 'Yes', archived: false };
   const establishmentWorkers = await models.establishment.workers(establishmentId, whereClause, ['DaysSickDays']);
@@ -168,11 +208,20 @@ const sickness = async (establishmentId) => {
     comparisonGroup: {
       value: 0,
       hasValue: false
+    },
+    goodCqc: {
+      value: 0,
+      hasValue: false
+    },
+    lowTurnover: {
+      value: 0,
+      hasValue: false
     }
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
+
 module.exports = router;
 module.exports.pay = pay;
 module.exports.sickness = sickness;

@@ -33,13 +33,13 @@
     >
       <your-workplace>
         <ng-container *ngIf="tilesData.tiles.pay?.workplaceValue.hasValue; else payYourEmpty">
-          {{ formatPay(tilesData.tiles.pay.workplaceValue.value) }}
+          {{ tilesData.tiles.pay.workplaceValue.value | formatMoney }}
         </ng-container>
         <ng-template #payYourEmpty> You've not added any data about hourly pay yet. </ng-template>
       </your-workplace>
       <comparison-group>
         <ng-container *ngIf="tilesData.tiles.pay?.comparisonGroup.hasValue; else payCompEmpty">
-          {{ formatPay(tilesData.tiles.pay.comparisonGroup.value) }}
+          {{ tilesData.tiles.pay.comparisonGroup.value | formatMoney }}
         </ng-container>
         <ng-template #payCompEmpty> We do not have enough data to show this comparison yet. </ng-template>
       </comparison-group>
@@ -52,7 +52,7 @@
     >
       <your-workplace>
         <ng-container *ngIf="tilesData.tiles.turnover?.workplaceValue.hasValue">
-          {{ formatPercent(tilesData.tiles.turnover.workplaceValue.value) }}
+          {{ tilesData.tiles.turnover.workplaceValue.value | formatPercent }}
         </ng-container>
         <ng-container [ngSwitch]="tilesData.tiles.turnover?.workplaceValue.stateMessage">
           <ng-container *ngSwitchCase="'no-workers'">
@@ -69,7 +69,7 @@
       </your-workplace>
       <comparison-group>
         <ng-container *ngIf="tilesData.tiles.turnover?.comparisonGroup.hasValue; else turnCompEmpty">
-          {{ formatPercent(tilesData.tiles.turnover.comparisonGroup.value) }}
+          {{ tilesData.tiles.turnover.comparisonGroup.value | formatPercent }}
         </ng-container>
         <ng-template #turnCompEmpty> We do not have enough data to show this comparison yet. </ng-template>
       </comparison-group>
@@ -103,13 +103,13 @@
     >
       <your-workplace>
         <ng-container *ngIf="tilesData.tiles.qualifications?.workplaceValue.hasValue; else qualYourEmpty">
-          {{ formatPercent(tilesData.tiles.qualifications.workplaceValue.value) }}
+          {{ tilesData.tiles.qualifications.workplaceValue.value | formatPercent }}
         </ng-container>
         <ng-template #qualYourEmpty> You've not added any data about social care qualifications yet. </ng-template>
       </your-workplace>
       <comparison-group>
         <ng-container *ngIf="tilesData.tiles.qualifications?.comparisonGroup.hasValue; else qualCompEmpty">
-          {{ formatPercent(tilesData.tiles.qualifications.comparisonGroup.value) }}
+          {{ tilesData.tiles.qualifications.comparisonGroup.value | formatPercent }}
         </ng-container>
         <ng-template #qualCompEmpty> We do not have enough data to show this comparison yet. </ng-template>
       </comparison-group>

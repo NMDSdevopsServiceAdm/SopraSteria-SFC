@@ -41,10 +41,10 @@ module.exports = function(sequelize, DataTypes) {
       field: "Staff"
     },
     payGoodCQC: {
-    type: DataTypes.INTEGER,
-      allowNull: true,
-      field: "PayGoodCQC"
-  },
+      type: DataTypes.INTEGER,
+        allowNull: true,
+        field: "PayGoodCQC"
+    },
     payLowTurnover: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -80,12 +80,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: "QualificationsLowTurnover"
     }
-  },{
+  },
+  {
     tableName: '"Benchmarks"',
     schema: 'cqc',
     createdAt: false,
     updatedAt: false
   });
+
   Benchmarks.associate = (models) => {
     Benchmarks.belongsTo(models.services, {
       foreignKey: 'MainServiceFK',

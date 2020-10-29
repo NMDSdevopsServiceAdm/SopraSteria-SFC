@@ -116,13 +116,6 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     );
   }
 
-  public formatPercent(data) {
-    return Math.round(data * 100) + '%';
-  }
-  public formatPay(data) {
-    return '£' + (Number(data) / 100).toFixed(2);
-  }
-
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BenchmarkValue, Metric, Tile } from '@core/model/benchmarks.model';
+import { FormatUtil } from '@core/utils/fomat-util';
 import { merge } from 'lodash';
 
 @Injectable({
@@ -131,13 +132,13 @@ export class BarchartOptionsBuilder {
       let value;
       switch (type) {
         case Metric.pay:
-          value = formatPay(this.y);
+          value = FormatUtil.formatMoney(this.y);
           break;
         case Metric.sickness:
           value = this.y + ' days';
           break;
         default:
-          value = this.y + '%';
+          value = FormatUtil.formatPercent(this.y);
       }
       const size = this.key === 'Your workplace' ? 'govuk-heading-xl' : 'govuk-heading-m';
       return '<span class="' + size + ' govuk-!-margin-bottom-2">' + value + '</span>';
