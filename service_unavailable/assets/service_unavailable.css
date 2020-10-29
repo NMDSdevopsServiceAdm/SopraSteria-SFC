@@ -7,8 +7,8 @@ html {
 }
 
 body {
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
-    Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',
+    sans-serif;
   font-weight: 300;
 }
 
@@ -72,7 +72,7 @@ p {
 }
 
 .icon-link:before {
-  content: "";
+  content: '';
   display: inline-block;
   margin-right: 5px;
   vertical-align: text-bottom;
@@ -121,7 +121,7 @@ h2,
   margin-top: 3rem;
 }
 
-a[role="button"] {
+a[role='button'] {
   text-decoration: none;
   line-height: 40px;
 }
@@ -210,7 +210,7 @@ a[role="button"] {
 }
 
 #footer-container .main-footer .container .logo img {
-  border-left: 3px solid #00823b;
+  border-left: 3px solid #00703c;
   padding: 0 0 0 10px;
   padding: 0 0 0 1rem;
   margin: 0 0 0 15px;

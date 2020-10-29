@@ -58,7 +58,7 @@
     "express-http-proxy": "^1.6.2",
     "express-sanitizer": "^1.0.5",
     "file-saver": "^2.0.2",
-    "govuk-frontend": "^2.13.0",
+    "govuk-frontend": "^3.9.1",
     "helmet": "^3.23.2",
     "highcharts": "^8.2.0",
     "highcharts-angular": "^2.8.0",
