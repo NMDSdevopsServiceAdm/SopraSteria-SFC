@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "npm run cf:migrate && node --max-old-space-size=4096 server.js",
-    "build": "ng build",
+    "build": "ng build --no-progress",
     "build:clean": "rimraf dist",
     "build:watch": "ng serve --proxy-config proxy.conf.json",
     "build:prod": "npm run build:clean && ng build --prod",
