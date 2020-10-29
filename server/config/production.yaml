@@ -1,57 +1,52 @@
 aws:
-    region: eu-west-1
-    secrets:
-        use: true
-        wallet: prod/api
-    kinesis:
-      enabled: true
-      establishments: establishments.prod
-      workers: workers.prod
-      users: users.prod
-    sns:
-      enabled: true
-      registrations: arn:aws:sns:eu-west-1:364648107127:registrations-prod
-      feedback: arn:aws:sns:eu-west-1:364648107127:feedback-prod
+  region: eu-west-1
+  secrets:
+    use: true
+    wallet: prod/api
+  sns:
+    enabled: true
+    registrations: arn:aws:sns:eu-west-1:364648107127:registrations-prod
+    feedback: arn:aws:sns:eu-west-1:364648107127:feedback-prod
 
 slack:
-    level : 3     # enables Slack notifications
+  level: 3 # enables Slack notifications
 
 jwt:
-    iss: 'asc-wds.skillsforcare.org.uk'
-    ttl:
-        login: 30
+  iss: 'asc-wds.skillsforcare.org.uk'
+  ttl:
+    login: 30
 
 db:
-    pool:
-        min: 100
-        max: 300
-        acquire: 240000
-        idle: 200000
-    ssl: true
-    username: sfcapp
-    client_ssl:
-        status: false
-        usingFiles: false
+  pool:
+    min: 100
+    max: 300
+    acquire: 240000
+    idle: 200000
+  ssl: true
+  username: sfcapp
+  client_ssl:
+    status: false
+    usingFiles: false
 
 notify:
-    replyTo: '44e98371-2e44-4c6b-ad76-235136be0f8a'
-    templates:
-        resetPassword: 'fd430f0d-6609-400a-b171-cf124453ec1c'
-        addUser: 'f20e9cbe-920d-4b1f-b05d-bac1ca8d5b54'
+  replyTo: '44e98371-2e44-4c6b-ad76-235136be0f8a'
+  templates:
+    resetPassword: 'fd430f0d-6609-400a-b171-cf124453ec1c'
+    addUser: 'f20e9cbe-920d-4b1f-b05d-bac1ca8d5b54'
 
 bulkupload:
-    region: eu-west-2
-    bucketname: sfc-bulkupload-prod
-    validation:
-        timeout: 300
-        storeIntermediaries: false
-    completion:
-        timeout: 120
+  region: eu-west-2
+  bucketname: sfc-bulkupload-prod
+  validation:
+    timeout: 300
+    storeIntermediaries: false
+  completion:
+    timeout: 120
 
 locks:
-    region: eu-west-1
-    bucketname: sfc-locks-prod
+  region: eu-west-1
+  bucketname: sfc-locks-prod
 
 public:
-    download:
-        baseurl: https://sfc-public-prod.s3.eu-west-2.amazonaws.com/public/download
+  download:
+    baseurl: https://sfc-public-prod.s3.eu-west-2.amazonaws.com/public/download

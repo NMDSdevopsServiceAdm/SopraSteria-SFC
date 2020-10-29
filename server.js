@@ -69,10 +69,8 @@ var ReportsRoute = require('./server/routes/reports/index');
 
 var errors = require('./server/routes/errors');
 
-// Kinesis and SNS
-const AWSKinesis = require('./server/aws/kinesis');
+// SNS
 const AWSsns = require('./server/aws/sns');
-AWSKinesis.initialise(config.get('aws.region'));
 AWSsns.initialise(config.get('aws.region'));
 
 // test only routes - helpers to setup and execute automated tests

@@ -14,7 +14,6 @@ const Sequelize = require('sequelize');
 
 // notifications
 const sendAddUserEmail = require('../../utils/email/notify-email').sendAddUser;
-const AWSKinesis = require('../../aws/kinesis');
 
 const UserExceptions = require('./user/userExceptions');
 
@@ -474,9 +473,6 @@ class User {
             await this.trackNewUser(savedBy.toLowerCase(), t, ttl);
           }
 
-          // this is an async method - don't wait for it to return
-          AWSKinesis.userPump(AWSKinesis.CREATED, this.toJSON());
-
           this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
         });
       } catch (err) {
@@ -671,9 +667,6 @@ class User {
               );
             });
             await Promise.all(createModelPromises);
-
-            // this is an async method - don't wait for it to return
-            AWSKinesis.userPump(AWSKinesis.UPDATED, this.toJSON());
 
             this._log(User.LOG_INFO, `Updated User with uid (${this.uid}) and name (${this.fullname})`);
           } else {
@@ -892,8 +885,6 @@ class User {
               transaction: thisTransaction,
             },
           );
-
-          AWSKinesis.userPump(AWSKinesis.DELETED, this.toJSON());
 
           this._log(User.LOG_INFO, `Archived User with uid (${this._uid}) and id (${this._id})`);
         } else {
