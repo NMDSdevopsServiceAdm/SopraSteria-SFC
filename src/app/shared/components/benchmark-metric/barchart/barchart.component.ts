@@ -1,8 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Metric, Tile } from '@core/model/benchmarks.model';
 import * as Highcharts from 'highcharts';
-import { of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+
 import { BarchartOptionsBuilder } from './barchart-options-builder';
 
 @Component({
@@ -15,7 +14,7 @@ export class BarchartComponent implements OnInit, OnChanges {
 
   @Input() benchmarks: Tile = null;
   @Input() altDescription: string = '';
-  @Input() noData: string = '';
+  @Input() noData: string;
   @Input() type: Metric;
 
   loaded: boolean = false;

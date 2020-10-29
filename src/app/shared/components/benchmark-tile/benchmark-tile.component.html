@@ -1,21 +1,61 @@
 <div class="govuk-grid-column-one-half">
   <div class="asc-tile">
     <div class="asc-tile-description">
-      <h2 class="govuk-heading-l govuk-!-margin-bottom-2">{{title}}</h2>
-      <p class="govuk-body-s govuk-!-margin-bottom-0">{{description}}</p>
+      <h2 class="govuk-heading-l govuk-!-margin-bottom-2">{{ content.title }}</h2>
+      <p class="govuk-body-s govuk-!-margin-bottom-0">{{ content.description }}</p>
     </div>
     <div class="asc-tile-key">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full govuk-grid-column-one-half-from-desktop">
-          <h3 class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-bottom-2 govuk-!-margin-top-4">Your workplace</h3>
-          <p data-testid="yourworkplace" class="govuk-!-margin-bottom-0 asc-tile-key-text" [ngClass]="{'asc-color-turquoise asc-tile-key-number': showYourWorkplace, 'govuk-body-s': !showYourWorkplace}">
-            <ng-content select="your-workplace"></ng-content>
+          <h3 class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-bottom-2 govuk-!-margin-top-4">
+            Your workplace
+          </h3>
+          <p
+            data-testid="yourworkplace"
+            class="govuk-!-margin-bottom-0 asc-tile-key-text"
+            [ngClass]="{
+              'asc-color-turquoise asc-tile-key-number': tile?.workplaceValue.hasValue,
+              'govuk-body-s': !tile?.workplaceValue.hasValue
+            }"
+          >
+            <ng-container *ngIf="tile?.workplaceValue.hasValue; else yourEmpty">
+              <ng-container [ngSwitch]="content.type">
+                <ng-container *ngSwitchCase="metrics.pay">
+                  {{ tile.workplaceValue.value | formatMoney }}
+                </ng-container>
+                <ng-container *ngSwitchCase="metrics.sickness">
+                  {{ tile.workplaceValue.value }}
+                </ng-container>
+                <ng-container *ngSwitchDefault>{{ tile.workplaceValue.value | formatPercent }}</ng-container>
+              </ng-container>
+            </ng-container>
+            <ng-template #yourEmpty>{{ content.noData[tile?.workplaceValue?.stateMessage] }}</ng-template>
           </p>
         </div>
         <div class="govuk-grid-column-full govuk-grid-column-one-half-from-desktop">
-          <h3 class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-bottom-2 govuk-!-margin-top-4">Comparison group</h3>
-          <p data-testid="comparisongroup" class="govuk-!-margin-bottom-0 asc-tile-key-text" [ngClass]="{'asc-color-turquoise asc-tile-key-number': showComparisonGroup, 'govuk-body-s': !showComparisonGroup}">
-            <ng-content select="comparison-group"></ng-content>
+          <h3 class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-bottom-2 govuk-!-margin-top-4">
+            Comparison group
+          </h3>
+          <p
+            data-testid="comparisongroup"
+            class="govuk-!-margin-bottom-0 asc-tile-key-text"
+            [ngClass]="{
+              'asc-color-turquoise asc-tile-key-number': tile?.comparisonGroup.hasValue,
+              'govuk-body-s': !tile?.comparisonGroup.hasValue
+            }"
+          >
+            <ng-container *ngIf="tile?.comparisonGroup.hasValue; else compEmpty">
+              <ng-container [ngSwitch]="content.type">
+                <ng-container *ngSwitchCase="metrics.pay">
+                  {{ tile.comparisonGroup.value | formatMoney }}
+                </ng-container>
+                <ng-container *ngSwitchCase="metrics.sickness">
+                  {{ tile.comparisonGroup.value }}
+                </ng-container>
+                <ng-container *ngSwitchDefault>{{ tile.comparisonGroup.value | formatPercent }}</ng-container>
+              </ng-container>
+            </ng-container>
+            <ng-template #compEmpty> We do not have enough data to show this comparison yet. </ng-template>
           </p>
         </div>
       </div>

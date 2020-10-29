@@ -5,15 +5,20 @@ import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
+import { MetricsContent } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
 import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
+import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
+import { BenchmarksMetricComponent } from '@shared/components/benchmarks-tab/metric/metric.component';
 
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
@@ -34,17 +39,12 @@ import { ServicesCapacityComponent } from './services-capacity/services-capacity
 import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
+import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
-import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
-import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { ViewAllMandatoryTrainingComponent } from './view-all-mandatory-trainings/view-all-mandatory-training.component';
-import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
-import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
-import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
-import { BenchmarksMetricComponent } from '@shared/components/benchmarks-tab/metric/metric.component';
-import { Metric } from '@core/model/benchmarks.model';
+import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const routes: Routes = [
   {
@@ -375,9 +375,7 @@ const routes: Routes = [
             component: BenchmarksMetricComponent,
             canActivate: [CheckPermissionsGuard],
             data: {
-              title: 'Pay',
-              description: 'Average hourly rate for care worker.',
-              metric: Metric.pay,
+              ...MetricsContent.Pay,
               permissions: ['canViewBenchmarks'],
             },
           },
@@ -386,9 +384,7 @@ const routes: Routes = [
             component: BenchmarksMetricComponent,
             canActivate: [CheckPermissionsGuard],
             data: {
-              title: 'Turnover',
-              description: 'Staff (on permanent and temporary contracts) who left in the last 12 months.',
-              metric: Metric.turnover,
+              ...MetricsContent.Turnover,
               permissions: ['canViewBenchmarks'],
             },
           },
@@ -397,9 +393,7 @@ const routes: Routes = [
             component: BenchmarksMetricComponent,
             canActivate: [CheckPermissionsGuard],
             data: {
-              title: 'Qualifications',
-              description: 'Care-providing staff with relevant level 2 or above.',
-              metric: Metric.qualifications,
+              ...MetricsContent.Qualifications,
               permissions: ['canViewBenchmarks'],
             },
           },
@@ -408,9 +402,7 @@ const routes: Routes = [
             component: BenchmarksMetricComponent,
             canActivate: [CheckPermissionsGuard],
             data: {
-              title: 'Sickness',
-              description: 'Average days each worker was off in the last 12 months.',
-              metric: Metric.sickness,
+              ...MetricsContent.Sickness,
               permissions: ['canViewBenchmarks'],
             },
           },

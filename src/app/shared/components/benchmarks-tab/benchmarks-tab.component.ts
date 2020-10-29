@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BenchmarksResponse } from '@core/model/benchmarks.model';
+import { BenchmarksResponse, MetricsContent } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService } from '@core/services/pdf.service';
@@ -17,6 +17,11 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
 
   @Input() workplace: Establishment;
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
+
+  public payContent = MetricsContent.Pay;
+  public turnoverContent = MetricsContent.Turnover;
+  public qualificationsContent = MetricsContent.Qualifications;
+  public sicknessContent = MetricsContent.Sickness;
 
   public tilesData: BenchmarksResponse = {
     tiles: {

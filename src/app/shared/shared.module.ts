@@ -15,11 +15,7 @@ import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplac
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
-import {
-  BenchmarkTileComponent,
-  ComparisonGroupDirective,
-  YourWorkplaceDirective,
-} from './components/benchmark-tile/benchmark-tile.component';
+import { BenchmarkTileComponent } from './components/benchmark-tile/benchmark-tile.component';
 import { BenchmarksTabComponent } from './components/benchmarks-tab/benchmarks-tab.component';
 import { BenchmarksModule } from './components/benchmarks-tab/benchmarks.module';
 import { ComparisonGroupHeaderComponent } from './components/benchmarks-tab/comparison-group-header/comparison-group-header.component';
@@ -155,8 +151,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BenchmarkTileComponent,
     BenchmarksTabComponent,
     ComparisonGroupHeaderComponent,
-    YourWorkplaceDirective,
-    ComparisonGroupDirective,
     FormatMoneyPipe,
     FormatPercentPipe,
   ],
@@ -229,8 +223,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BenchmarkTileComponent,
     BenchmarksTabComponent,
     ComparisonGroupHeaderComponent,
-    YourWorkplaceDirective,
-    ComparisonGroupDirective,
     FormatMoneyPipe,
     FormatPercentPipe,
   ],

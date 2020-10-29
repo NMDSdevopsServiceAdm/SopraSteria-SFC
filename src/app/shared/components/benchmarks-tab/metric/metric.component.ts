@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { mergeMap, map, tap } from 'rxjs/operators';
-
-import { Metric, Tile } from '@core/model/benchmarks.model';
+import { Metric, NoData, Tile } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { Subscription } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-benchmarks-metric',
@@ -14,9 +13,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
 
-  public metric: Metric;
+  public type: Metric;
   public title: string;
   public description: string;
+  public noData: NoData;
   public loaded: boolean = false;
   public benchmarks: Tile = null;
 
@@ -35,13 +35,14 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
           tap((data) => {
             this.title = data.title;
             this.description = data.description;
+            this.noData = data.noData;
           }),
-          map((data) => (this.metric = data.metric as Metric)),
-          mergeMap(() => this.benchmarksService.getTileData(establishmentUid, [Metric[this.metric]])),
+          map((data) => (this.type = data.type as Metric)),
+          mergeMap(() => this.benchmarksService.getTileData(establishmentUid, [Metric[this.type]])),
         )
         .subscribe((benchmarks) => {
           this.loaded = true;
-          this.benchmarks = benchmarks.tiles[Metric[this.metric]];
+          this.benchmarks = benchmarks.tiles[Metric[this.type]];
         }),
     );
   }

@@ -96,7 +96,7 @@ export class BarchartOptionsBuilder {
           },
           data: this.buildChartData(benchmarks),
           dataLabels: {
-            formatter: this.formatDataLabels(type, this.formatPay),
+            formatter: this.formatDataLabels(type),
           },
         },
       ],
@@ -127,7 +127,7 @@ export class BarchartOptionsBuilder {
     };
   }
 
-  private formatDataLabels(type: Metric, formatPay: Function): Highcharts.DataLabelsFormatterCallbackFunction {
+  private formatDataLabels(type: Metric): Highcharts.DataLabelsFormatterCallbackFunction {
     return function () {
       let value;
       switch (type) {
@@ -145,7 +145,7 @@ export class BarchartOptionsBuilder {
     };
   }
 
-  private addEmptyStates(nodata: string): Highcharts.ChartLoadCallbackFunction {
+  private addEmptyStates(noData: string): Highcharts.ChartLoadCallbackFunction {
     return function () {
       const categoryWidth = this.plotWidth / this.xAxis[0].series[0].data.length;
       let width = categoryWidth - 40;
@@ -163,13 +163,7 @@ export class BarchartOptionsBuilder {
               message = 'We do not have enough data to show these comparisons yet.';
             }
           } else {
-            switch (nodata) {
-              case 'nopay':
-                message = 'Your turnover seems to be over 999%, please contact us.';
-                break;
-              default:
-                message = '';
-            }
+            message = noData;
           }
 
           const offset = point.x * categoryWidth + width / 2 + 20;
@@ -186,10 +180,6 @@ export class BarchartOptionsBuilder {
         }
       });
     };
-  }
-
-  private formatPay(data: number) {
-    return '£' + (Number(data) / 100).toFixed(2);
   }
 
   private buildChartData(benchmarks: Tile): any[] {
