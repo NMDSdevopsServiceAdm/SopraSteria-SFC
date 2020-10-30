@@ -4,8 +4,6 @@ footer {
   margin-top: govuk-px-to-rem(100);
 
   a.govuk-footer__link {
-    @include govuk-focusable-fill;
-
     &:link,
     &:visited {
       color: $govuk-link-colour;
@@ -19,7 +17,7 @@ footer {
     // When focussed, the text colour needs to be darker to ensure that colour
     // contrast is still acceptable
     &:focus {
-      color: $govuk-focus-text-colour;
+      @include govuk-focused-text;
     }
   }
 

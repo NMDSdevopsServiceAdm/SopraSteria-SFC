@@ -1,11 +1,9 @@
 /* autoprefixer grid: on */
 
-@import '~govuk-frontend/settings/all';
-
 $govuk-global-styles: true;
 $govuk-font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
 
-@import '~govuk-frontend/all';
+@import '~govuk-frontend/govuk/all';
 
 body {
   font-family: $govuk-font-family;

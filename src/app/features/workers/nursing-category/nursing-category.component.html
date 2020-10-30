@@ -18,10 +18,10 @@
                 [formControlName]="'nursingCategory'"
                 name="nursingCategory"
                 type="radio"
-                [value]="category.value"
+                [value]="category"
               />
               <label class="govuk-label govuk-radios__label" for="nursingCategory-{{ i }}">
-                {{ category.text }}
+                {{ category | nursingCategoriesText }}
               </label>
             </div>
           </div>

@@ -3,7 +3,7 @@
     <path id="a" d="M0 0h9.172v15.49H0z"/>
   </defs>
   <g fill="none" fill-rule="evenodd">
-    <circle cx="12" cy="12" r="12" fill="#D4351C" fill-rule="nonzero"/>
+    <circle cx="12" cy="12" r="12" fill="#d4351c" fill-rule="nonzero"/>
     <g transform="translate(7.5 5)">
       <mask id="b" fill="#fff">
         <use xlink:href="#a"/>

@@ -58,11 +58,13 @@ export class NursingSpecialismComponent extends QuestionComponent {
       });
 
       checkedSpecialisms = this.worker.nurseSpecialisms.specialisms
-        .filter((specialism) => this.nursingSpecialisms.includes(specialism.specialism))
-        .map((specialism) => specialism.specialism);
+        ? this.worker.nurseSpecialisms.specialisms
+            .filter((specialism) => this.nursingSpecialisms.includes(specialism.specialism))
+            .map((specialism) => specialism.specialism)
+        : [];
     }
 
-    for (let specialism of this.nursingSpecialisms) {
+    for (const specialism of this.nursingSpecialisms) {
       const checked = checkedSpecialisms.includes(specialism);
       this.selectedNurseSpecialismsArray.push(
         this.formBuilder.control({
