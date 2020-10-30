@@ -1,15 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
+import { AlertService } from '@core/services/alert.service';
+import { DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import { DialogService } from '@core/services/dialog.service';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
-import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-parent-request',
-  templateUrl: './parent-request.component.html'
+  templateUrl: './parent-request.component.html',
 })
 export class ParentRequestComponent implements OnInit {
   @Output() removeParentRequest: EventEmitter<any> = new EventEmitter<any>();
@@ -23,7 +23,7 @@ export class ParentRequestComponent implements OnInit {
     public parentRequestsService: ParentRequestsService,
     public switchWorkplaceService: SwitchWorkplaceService,
     public dialogService: DialogService,
-    public alertService: AlertService
+    public alertService: AlertService,
   ) {}
   ngOnInit() {
     this.parentRequestForm = new FormGroup({});
@@ -40,17 +40,16 @@ export class ParentRequestComponent implements OnInit {
     event.preventDefault();
 
     this.dialogService
-      .open(ParentConfirmationDialogComponent,
-        {
-          orgName: this.parentRequest.orgName,
-          headingText: approve ? "You're about to approve this request." : "You're about to reject this request.",
-          paragraphText: approve
-            ? `If you do this, ${this.parentRequest.orgName} will become a parent workplace.`
-            : `If you do this, ${this.parentRequest.orgName} will not become a parent workplace.`,
-          buttonText: approve ? 'Approve request' : 'Reject request'
-        })
-      .afterClosed.subscribe(approveConfirmed => {
-        if(approveConfirmed) {
+      .open(ParentConfirmationDialogComponent, {
+        orgName: this.parentRequest.orgName,
+        headingText: approve ? "You're about to approve this request." : "You're about to reject this request.",
+        paragraphText: approve
+          ? `If you do this, ${this.parentRequest.orgName} will become a parent workplace.`
+          : `If you do this, ${this.parentRequest.orgName} will not become a parent workplace.`,
+        buttonText: approve ? 'Approve request' : 'Reject request',
+      })
+      .afterClosed.subscribe((approveConfirmed) => {
+        if (approveConfirmed) {
           this.approveOrRejectRequest();
         }
       });
@@ -84,12 +83,12 @@ export class ParentRequestComponent implements OnInit {
         if (err instanceof HttpErrorResponse) {
           this.populateErrorFromServer(err);
         }
-      }
+      },
     );
   }
 
   private showConfirmationMessage() {
-    const approvedOrRejected = this.approve ? "approved" : "rejected";
+    const approvedOrRejected = this.approve ? 'approved' : 'rejected';
 
     this.alertService.addAlert({
       type: 'success',

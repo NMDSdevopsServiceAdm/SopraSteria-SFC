@@ -45,10 +45,6 @@ const initialiseSecrets = async (region, wallet) => {
   }
 };
 
-const resetSecrets = () => {
-  myLocalSecrets = null;
-};
-
 const dbHost = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_HOST) {

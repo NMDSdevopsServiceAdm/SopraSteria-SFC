@@ -32,7 +32,7 @@ const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
 class Worker extends EntityValidator {
-  constructor (establishmentId, bulkUploadStatus = null) {
+  constructor(establishmentId, bulkUploadStatus = null) {
     super();
 
     this._establishmentId = establishmentId;
@@ -71,11 +71,8 @@ class Worker extends EntityValidator {
   }
 
   // returns true if valid establishment id
-  get _isEstablishmentIdValid () {
-    if ((this._establishmentId &&
-             Number.isInteger(this._establishmentId) &&
-             this._establishmentId > 0)
-    ) {
+  get _isEstablishmentIdValid() {
+    if (this._establishmentId && Number.isInteger(this._establishmentId) && this._establishmentId > 0) {
       return true;
     } else {
       return false;
@@ -83,34 +80,45 @@ class Worker extends EntityValidator {
   }
 
   // private logging
-  static get LOG_ERROR () { return 100; }
-  static get LOG_WARN () { return 200; }
-  static get LOG_INFO () { return 300; }
-  static get LOG_TRACE () { return 400; }
-  static get LOG_DEBUG () { return 500; }
+  static get LOG_ERROR() {
+    return 100;
+  }
+  static get LOG_WARN() {
+    return 200;
+  }
+  static get LOG_INFO() {
+    return 300;
+  }
+  static get LOG_TRACE() {
+    return 400;
+  }
+  static get LOG_DEBUG() {
+    return 500;
+  }
 
-  set logLevel (logLevel) {
+  set logLevel(logLevel) {
     this._logLevel = logLevel;
   }
 
-  _log (level, msg) {
+  _log(level, msg) {
     if (this._logLevel >= level) {
       console.log(`TODO: (${level}) - Worker class: `, msg);
     }
   }
 
   // used by save to initialise a new Worker; returns true if having initialised this worker
-  _initialise () {
+  _initialise() {
     if (this._uid === null) {
       this._isNew = true;
       this._uid = uuid.v4();
 
       if (!this._isEstablishmentIdValid) {
-        throw new WorkerExceptions.WorkerSaveException(null,
+        throw new WorkerExceptions.WorkerSaveException(
+          null,
           this._uid,
           this._nameId,
-         `Unexpected Establishment Id (${this._establishmentId})`,
-         'Unknown Establishment'
+          `Unexpected Establishment Id (${this._establishmentId})`,
+          'Unknown Establishment',
         );
       }
 
@@ -123,41 +131,41 @@ class Worker extends EntityValidator {
 
   // this method add this given qualification (entity) as an association to this worker entity - (bulk import)
   //  - note, no unique key for a qualification; just simply an array of
-  associateQualification (qualification) {
+  associateQualification(qualification) {
     this._qualificationsEntities.push(qualification);
   }
 
   // this method add this given training (entity) as an association to this worker entity - (bulk import)
   //  - note, no unique key for a training; just simply an array of
-  associateTraining (training) {
+  associateTraining(training) {
     this._trainingEntities.push(training);
   }
 
-  get qualifications () {
+  get qualifications() {
     return this._qualificationsEntities;
   }
 
-  get training () {
+  get training() {
     return this._trainingEntities;
   }
 
-  get changeLocalIdentifer () {
+  get changeLocalIdentifer() {
     return this._changeLocalIdentifer;
   }
 
-  get establishmentId () {
+  get establishmentId() {
     return this._establishmentId;
   }
 
-  set establishmentId (establishmentId) {
+  set establishmentId(establishmentId) {
     this._establishmentId = establishmentId;
   }
 
-  get localIdentifier () {
+  get localIdentifier() {
     return this._properties.get('LocalIdentifier') ? this._properties.get('LocalIdentifier').property : null;
   }
 
-  get nameOrId () {
+  get nameOrId() {
     // returns the name or id property - if known
     if (this._properties.get('NameOrId') && this._properties.get('NameOrId').property) {
       return this._properties.get('NameOrId').property;
@@ -166,136 +174,151 @@ class Worker extends EntityValidator {
     }
   }
 
-  get key () {
-    return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, '') : this.nameOrId).replace(/\s/g, '');
+  get key() {
+    return (this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
+      ? this.localIdentifier.replace(/\s/g, '')
+      : this.nameOrId
+    ).replace(/\s/g, '');
   }
 
-  get status () {
+  get status() {
     return this._status;
   }
 
-  get contract () {
+  get contract() {
     return this._properties.get('Contract') ? this._properties.get('Contract').property : null;
   }
 
-  get postcode () {
+  get postcode() {
     return this._properties.get('Postcode') ? this._properties.get('Postcode').property : null;
   }
 
-  get fluJab () {
+  get fluJab() {
     return this._properties.get('FluJab') ? this._properties.get('FluJab').property : null;
   }
 
-  get nationalInsuranceNumber () {
-    return this._properties.get('NationalInsuranceNumber') ? this._properties.get('NationalInsuranceNumber').property : null;
+  get nationalInsuranceNumber() {
+    return this._properties.get('NationalInsuranceNumber')
+      ? this._properties.get('NationalInsuranceNumber').property
+      : null;
   }
 
-  get dateOfBirth () {
+  get dateOfBirth() {
     return this._properties.get('DateOfBirth') ? this._properties.get('DateOfBirth').property : null;
   }
 
-  get gender () {
+  get gender() {
     return this._properties.get('Gender') ? this._properties.get('Gender').property : null;
   }
 
-  get disabiliity () {
+  get disabiliity() {
     return this._properties.get('Disability') ? this._properties.get('Disability').property : null;
   }
 
-  get careCerticate () {
+  get careCerticate() {
     return this._properties.get('CareCertificate') ? this._properties.get('CareCertificate').property : null;
   }
 
-  get approvedMentalHealthWorker () {
-    return this._properties.get('ApprovedMentalHealthWorker') ? this._properties.get('ApprovedMentalHealthWorker').property : null;
+  get approvedMentalHealthWorker() {
+    return this._properties.get('ApprovedMentalHealthWorker')
+      ? this._properties.get('ApprovedMentalHealthWorker').property
+      : null;
   }
 
-  get socialCareQualification () {
-    return this._properties.get('QualificationInSocialCare') ? this._properties.get('QualificationInSocialCare').property : null;
+  get socialCareQualification() {
+    return this._properties.get('QualificationInSocialCare')
+      ? this._properties.get('QualificationInSocialCare').property
+      : null;
   }
 
-  get socialCareQualificationLevel () {
-    return this._properties.get('SocialCareQualification') ? this._properties.get('SocialCareQualification').property : null;
+  get socialCareQualificationLevel() {
+    return this._properties.get('SocialCareQualification')
+      ? this._properties.get('SocialCareQualification').property
+      : null;
   }
 
-  get nonSocialCareQualification () {
+  get nonSocialCareQualification() {
     return this._properties.get('OtherQualifications') ? this._properties.get('OtherQualifications').property : null;
   }
 
-  get nonSocialCareQualificationLevel () {
+  get nonSocialCareQualificationLevel() {
     return this._properties.get('HighestQualification') ? this._properties.get('HighestQualification').property : null;
   }
 
-  get ethnicity () {
+  get ethnicity() {
     return this._properties.get('Ethnicity') ? this._properties.get('Ethnicity').property : null;
   }
 
-  get nationality () {
+  get nationality() {
     return this._properties.get('Nationality') ? this._properties.get('Nationality').property : null;
   }
 
-  get countryOfBirth () {
+  get countryOfBirth() {
     return this._properties.get('CountryOfBirth') ? this._properties.get('CountryOfBirth').property : null;
   }
 
-  get britishCitizenship () {
+  get britishCitizenship() {
     return this._properties.get('BritishCitizenship') ? this._properties.get('BritishCitizenship').property : null;
   }
 
-  get yearArrived () {
+  get yearArrived() {
     return this._properties.get('YearArrived') ? this._properties.get('YearArrived').property : null;
   }
 
-  get recruitmentSource () {
+  get recruitmentSource() {
     return this._properties.get('RecruitedFrom') ? this._properties.get('RecruitedFrom').property : null;
   }
 
-  get mainJobStartDate () {
+  get mainJobStartDate() {
     return this._properties.get('MainJobStartDate') ? this._properties.get('MainJobStartDate').property : null;
   }
 
-  get socialCareStartDate () {
+  get socialCareStartDate() {
     return this._properties.get('SocialCareStartDate') ? this._properties.get('SocialCareStartDate').property : null;
   }
 
-  get apprenticeship () {
-    return this._properties.get('ApprenticeshipTraining') ? this._properties.get('ApprenticeshipTraining').property : null;
+  get apprenticeship() {
+    return this._properties.get('ApprenticeshipTraining')
+      ? this._properties.get('ApprenticeshipTraining').property
+      : null;
   }
 
   // TODO: rename to zeroHoursContract
-  get zeroContractHours () {
+  get zeroContractHours() {
     return this._properties.get('ZeroHoursContract') ? this._properties.get('ZeroHoursContract').property : null;
   }
 
-  get daysSick () {
+  get daysSick() {
     return this._properties.get('DaysSick') ? this._properties.get('DaysSick').property : null;
   }
 
-  get annualHourlyPay () {
+  get annualHourlyPay() {
     return this._properties.get('AnnualHourlyPay') ? this._properties.get('AnnualHourlyPay').property : null;
   }
 
-  get mainJob () {
+  get mainJob() {
     return this._properties.get('MainJob') ? this._properties.get('MainJob').property : null;
   }
 
-  get contractedHours () {
-    return this._properties.get('WeeklyHoursContracted') ? this._properties.get('WeeklyHoursContracted').property : null;
+  get contractedHours() {
+    return this._properties.get('WeeklyHoursContracted')
+      ? this._properties.get('WeeklyHoursContracted').property
+      : null;
   }
 
-  get averageHours () {
+  get averageHours() {
     return this._properties.get('WeeklyHoursAverage') ? this._properties.get('WeeklyHoursAverage').property : null;
   }
 
-  get otherJobs () {
+  get otherJobs() {
     return this._properties.get('OtherJobs') ? this._properties.get('OtherJobs').property : null;
   }
 
-  get registeredNurse () {
+  get registeredNurse() {
     return this._properties.get('RegisteredNurse') ? this._properties.get('RegisteredNurse').property : null;
   }
 
-  get nurseSpecialism () {
+  get nurseSpecialism() {
     return this._properties.get('NurseSpecialism') ? this._properties.get('NurseSpecialism').property : null;
   }
 
@@ -305,7 +328,7 @@ class Worker extends EntityValidator {
 
   // takes the given JSON document and creates a Worker's set of extendable properties
   // Returns true if the resulting Worker is valid; otherwise false
-  async load (document, associatedEntities = false, bulkUploadCompletion = false) {
+  async load(document, associatedEntities = false, bulkUploadCompletion = false) {
     try {
       // bulk upload status
       if (document.status) {
@@ -321,7 +344,7 @@ class Worker extends EntityValidator {
         const mainJob = document.mainJob ? document.mainJob : this.mainJob;
         const otherJobs = document.otherJobs ? document.otherJobs : this.otherJobs;
         if (otherJobs && otherJobs.jobs) {
-          otherJobs.jobs.map(otherJob => {
+          otherJobs.jobs.map((otherJob) => {
             if (otherJob.jobId === 23) otherRegNurse = true;
             if (otherJob.jobId === 27) otherSocialWorker = true;
           });
@@ -348,23 +371,25 @@ class Worker extends EntityValidator {
           document.yearArrived = { value: null, year: null };
         }
       }
-      const notContract = ['Agency', 'Pool/Bank']
+      const notContract = ['Agency', 'Pool/Bank'];
       // Remove contracted hours If on a zero hour contract
       if (document.zeroHoursContract === 'Yes' || notContract.includes(document.contract)) {
         document.weeklyHoursContracted = { value: null, hours: null };
       }
 
       // Remove average hours if not on a zero hour contract
-      const notZeroHours = ['No', 'Don\'t know'];
-      const contract = ['Permanent', 'Temporary', 'Other']
-      if (notZeroHours.includes(document.zeroHoursContract) && contract.includes(this.contract)
-          || notZeroHours.includes(this.zeroContractHours) && contract.includes(document.contract)) {
+      const notZeroHours = ['No', "Don't know"];
+      const contract = ['Permanent', 'Temporary', 'Other'];
+      if (
+        (notZeroHours.includes(document.zeroHoursContract) && contract.includes(this.contract)) ||
+        (notZeroHours.includes(this.zeroContractHours) && contract.includes(document.contract))
+      ) {
         document.weeklyHoursAverage = { value: null, hours: null };
       }
 
       // Remove sickness if 'Agency' or 'Pool/Bank' contract
       if (notContract.includes(document.contract)) {
-        document.daysSick = { value: null, days: null }
+        document.daysSick = { value: null, days: null };
       }
 
       // Remove social care qualification if they don't have one
@@ -403,7 +428,7 @@ class Worker extends EntityValidator {
           this._trainingEntities = [];
           if (document.training && Array.isArray(document.training)) {
             // console.log("WA DEBUG - document.training: ", document.training)
-            document.training.forEach(thisTraining => {
+            document.training.forEach((thisTraining) => {
               const newTrainingRecord = new Training(null, null);
 
               this.associateTraining(newTrainingRecord);
@@ -415,7 +440,7 @@ class Worker extends EntityValidator {
           this._qualificationsEntities = [];
           if (document.qualifications && Array.isArray(document.qualifications)) {
             // console.log("WA DEBUG - document.qualifications: ", document.qualifications)
-            document.qualifications.forEach(thisQualificationRecord => {
+            document.qualifications.forEach((thisQualificationRecord) => {
               const newQualificationRecord = new Qualification(null, null);
 
               this.associateQualification(newQualificationRecord);
@@ -430,23 +455,20 @@ class Worker extends EntityValidator {
       }
     } catch (err) {
       this._log(Worker.LOG_ERROR, `Woker::load - failed: ${err}`);
-      throw new WorkerExceptions.WorkerJsonException(
-        err,
-        null,
-        'Failed to load Worker from JSON');
+      throw new WorkerExceptions.WorkerJsonException(err, null, 'Failed to load Worker from JSON');
     }
     return this.isValid();
   }
 
   // returns true if Worker is valid, otherwise false
-  isValid () {
+  isValid() {
     // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
     if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
       // the property manager returns a list of all properties that are invalid; or true
       const thisWorkerIsValid = this._properties.isValid;
 
       // reason is an unmanaged property - validate explicitly
-      const unmanagedPropertiesValid = (this._reason === null) || (this._reason !== null && this._reason.id > 0);
+      const unmanagedPropertiesValid = this._reason === null || (this._reason !== null && this._reason.id > 0);
 
       if (thisWorkerIsValid === true && unmanagedPropertiesValid) {
         return true;
@@ -454,13 +476,12 @@ class Worker extends EntityValidator {
         // only add validations if not already existing
         if (thisWorkerIsValid && Array.isArray(thisWorkerIsValid) && this._validations.length == 0) {
           const propertySuffixLength = 'Property'.length * -1;
-          thisWorkerIsValid.forEach(thisInvalidProp => {
-            this._validations.push(new ValidationMessage(
-              ValidationMessage.WARNING,
-              111111111,
-              'Invalid',
-              [thisInvalidProp.slice(0, propertySuffixLength)]
-            ));
+          thisWorkerIsValid.forEach((thisInvalidProp) => {
+            this._validations.push(
+              new ValidationMessage(ValidationMessage.WARNING, 111111111, 'Invalid', [
+                thisInvalidProp.slice(0, propertySuffixLength),
+              ]),
+            );
           });
         }
 
@@ -472,7 +493,7 @@ class Worker extends EntityValidator {
     }
   }
 
-  async saveAssociatedEntities (savedBy, bulkUploaded = false, externalTransaction) {
+  async saveAssociatedEntities(savedBy, bulkUploaded = false, externalTransaction) {
     const newQualificationsPromises = [];
     const newTrainingPromises = [];
 
@@ -480,16 +501,15 @@ class Worker extends EntityValidator {
       // there is no change audit on training; simply delete all that is there and recreate
       if (this._trainingEntities && this._trainingEntities.length > 0) {
         // delete all existing training records for this worker
-        await models.workerTraining.destroy(
-          {
-            where: {
-              workerFk: this._id
-            },
-            transaction: externalTransaction
-          });
+        await models.workerTraining.destroy({
+          where: {
+            workerFk: this._id,
+          },
+          transaction: externalTransaction,
+        });
 
         // now create new training records
-        this._trainingEntities.forEach(currentTrainingRecord => {
+        this._trainingEntities.forEach((currentTrainingRecord) => {
           currentTrainingRecord.workerId = this._id;
           currentTrainingRecord.workerUid = this._uid;
           currentTrainingRecord.establishmentId = this._establishmentId;
@@ -500,20 +520,21 @@ class Worker extends EntityValidator {
       // there is no change audit on qualifications; simply delete all that is there and recreate
       if (this._qualificationsEntities && this._qualificationsEntities.length > 0) {
         // delete all existing training records for this worker
-        await models.workerQualifications.destroy(
-          {
-            where: {
-              workerFk: this._id
-            },
-            transaction: externalTransaction
-          });
+        await models.workerQualifications.destroy({
+          where: {
+            workerFk: this._id,
+          },
+          transaction: externalTransaction,
+        });
 
         // now create new training records
-        this._qualificationsEntities.forEach(currentQualificationRecord => {
+        this._qualificationsEntities.forEach((currentQualificationRecord) => {
           currentQualificationRecord.workerId = this._id;
           currentQualificationRecord.workerUid = this._uid;
           currentQualificationRecord.establishmentId = this._establishmentId;
-          newQualificationsPromises.push(currentQualificationRecord.save(savedBy, bulkUploaded, 0, externalTransaction));
+          newQualificationsPromises.push(
+            currentQualificationRecord.save(savedBy, bulkUploaded, 0, externalTransaction),
+          );
         });
       }
 
@@ -528,11 +549,11 @@ class Worker extends EntityValidator {
 
   static async saveMany(savedBy, workers) {
     try {
-      await models.sequelize.transaction(async t => {
+      await models.sequelize.transaction(async (t) => {
         for (let worker of workers) {
           await worker.save(savedBy, false, 0, t);
         }
-      })
+      });
     } catch (err) {
       console.error('Worker::saveMany error: ', err);
       throw err;
@@ -541,7 +562,7 @@ class Worker extends EntityValidator {
 
   // saves the Worker to DB. Returns true if saved; false is not.
   // Throws "WorkerSaveException" on error
-  async save (savedBy, bulkUploaded = false, ttl = 0, externalTransaction = null, associatedEntities = false) {
+  async save(savedBy, bulkUploaded = false, ttl = 0, externalTransaction = null, associatedEntities = false) {
     const mustSave = this._initialise();
 
     // with bulk upload, if this entity's status is "UNCHECKED", do not save it
@@ -551,11 +572,13 @@ class Worker extends EntityValidator {
 
     if (!this.uid) {
       this._log(Worker.LOG_ERROR, 'Not able to save an unknown uid');
-      throw new WorkerExceptions.WorkerSaveException(null,
+      throw new WorkerExceptions.WorkerSaveException(
+        null,
         this.uid,
         nameId ? nameId.property : null,
         'Not able to save an unknown uid',
-        'Worker does not exist');
+        'Worker does not exist',
+      );
     }
 
     if (mustSave && this._isNew) {
@@ -571,12 +594,12 @@ class Worker extends EntityValidator {
           source: bulkUploaded ? 'Bulk' : 'Online',
           updated: creationDate,
           created: creationDate,
-          attributes: ['id', 'created', 'updated']
+          attributes: ['id', 'created', 'updated'],
         };
 
         // need to create the Worker record and the Worker Audit event
         //  in one transaction
-        await models.sequelize.transaction(async t => {
+        await models.sequelize.transaction(async (t) => {
           // the saving of an Worker can be initiated within
           //  an external transaction
           const thisTransaction = externalTransaction || t;
@@ -589,7 +612,14 @@ class Worker extends EntityValidator {
 
           // always recalculate WDF - if not bulk upload (this._status)
           if (this._status === null) {
-            await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_ADD, false);
+            await WdfCalculator.calculate(
+              savedBy,
+              this._establishmentId,
+              null,
+              thisTransaction,
+              WdfCalculator.WORKER_ADD,
+              false,
+            );
           }
 
           // every time the worker is saved, need to calculate
@@ -600,11 +630,14 @@ class Worker extends EntityValidator {
           const effectiveDateTime = WdfCalculator.effectiveTime;
 
           let wdfAudit = null;
-          if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
+          if (
+            currentWdfEligibiity.isEligible &&
+            (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)
+          ) {
             modifedCreationDocument.lastWdfEligibility = updatedTimestamp;
             wdfAudit = {
               username: savedBy.toLowerCase(),
-              type: 'wdfEligible'
+              type: 'wdfEligible',
             };
           }
 
@@ -628,16 +661,20 @@ class Worker extends EntityValidator {
           }
 
           // having the worker id we can now create the audit record; inserting the workerFk
-          const allAuditEvents = [{
-            workerFk: this._id,
-            username: savedBy.toLowerCase(),
-            type: 'created'
-          }].concat(this._properties.auditEvents.map(thisEvent => {
-            return {
-              ...thisEvent,
-              workerFk: this._id
-            };
-          }));
+          const allAuditEvents = [
+            {
+              workerFk: this._id,
+              username: savedBy.toLowerCase(),
+              type: 'created',
+            },
+          ].concat(
+            this._properties.auditEvents.map((thisEvent) => {
+              return {
+                ...thisEvent,
+                workerFk: this._id,
+              };
+            }),
+          );
           if (wdfAudit) {
             wdfAudit.workerFk = this._id;
             allAuditEvents.push(wdfAudit);
@@ -651,15 +688,17 @@ class Worker extends EntityValidator {
         const nameId = this._properties.get('NameOrId');
 
         if (err.name && err.name === 'SequelizeUniqueConstraintError') {
-          if (err.parent.constraint && (err.parent.constraint === 'worker_LocalIdentifier_unq')) {
-            throw new WorkerExceptions.WorkerSaveException(null, this._uid, nameId ? nameId.property : null, 'Duplicate LocalIdentifier', 'Duplicate LocalIdentifier');
+          if (err.parent.constraint && err.parent.constraint === 'worker_LocalIdentifier_unq') {
+            throw new WorkerExceptions.WorkerSaveException(
+              null,
+              this._uid,
+              nameId ? nameId.property : null,
+              'Duplicate LocalIdentifier',
+              'Duplicate LocalIdentifier',
+            );
           }
         } else {
-          throw new WorkerExceptions.WorkerSaveException(null,
-            this.uid,
-            nameId ? nameId.property : null,
-            err,
-            null);
+          throw new WorkerExceptions.WorkerSaveException(null, this.uid, nameId ? nameId.property : null, err, null);
         }
       }
     } else {
@@ -669,21 +708,21 @@ class Worker extends EntityValidator {
 
         // need to update the existing Worker record and add an
         //  updated audit event within a single transaction
-        await models.sequelize.transaction(async t => {
+        await models.sequelize.transaction(async (t) => {
           // the saving of an Worker can be initiated within
           //  an external transaction
           const thisTransaction = externalTransaction || t;
 
           const buChanged = this._status === 'NOCHANGE';
           // now append the extendable properties
-          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {},buChanged);
+          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
 
           // note - if the worker was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {
             ...modifedUpdateDocument,
             source: bulkUploaded ? 'Bulk' : 'Online',
             updated: updatedTimestamp,
-            updatedBy: savedBy.toLowerCase()
+            updatedBy: savedBy.toLowerCase(),
           };
 
           if (this._changeLocalIdentifer) {
@@ -699,26 +738,26 @@ class Worker extends EntityValidator {
           const effectiveDateTime = WdfCalculator.effectiveTime;
 
           let wdfAudit = null;
-          if (currentWdfEligibiity.isEligible && (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)) {
+          if (
+            currentWdfEligibiity.isEligible &&
+            (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)
+          ) {
             updateDocument.lastWdfEligibility = updatedTimestamp;
             wdfAudit = {
               username: savedBy.toLowerCase(),
-              type: 'wdfEligible'
+              type: 'wdfEligible',
             };
           }
 
           // now save the document
-          const [updatedRecordCount, updatedRows] = await models.worker.update(
-            updateDocument,
-            {
-              returning: true,
-              where: {
-                uid: this.uid
-              },
-              attributes: ['id', 'updated'],
-              transaction: thisTransaction
-            }
-          );
+          const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
+            returning: true,
+            where: {
+              uid: this.uid,
+            },
+            attributes: ['id', 'updated'],
+            transaction: thisTransaction,
+          });
 
           if (updatedRecordCount === 1) {
             const updatedRecord = updatedRows[0].get({ plain: true });
@@ -728,16 +767,20 @@ class Worker extends EntityValidator {
             this._id = updatedRecord.ID;
 
             // having updated the record, create the audit event
-            const allAuditEvents = [{
-              workerFk: this._id,
-              username: savedBy.toLowerCase(),
-              type: 'updated'
-            }].concat(this._properties.auditEvents.map(thisEvent => {
-              return {
-                ...thisEvent,
-                workerFk: this._id
-              };
-            }));
+            const allAuditEvents = [
+              {
+                workerFk: this._id,
+                username: savedBy.toLowerCase(),
+                type: 'updated',
+              },
+            ].concat(
+              this._properties.auditEvents.map((thisEvent) => {
+                return {
+                  ...thisEvent,
+                  workerFk: this._id,
+                };
+              }),
+            );
             if (wdfAudit) {
               wdfAudit.workerFk = this._id;
               allAuditEvents.push(wdfAudit);
@@ -748,37 +791,44 @@ class Worker extends EntityValidator {
             const additionalModels = this._properties.additionalModels;
             const additionalModelsByname = Object.keys(additionalModels);
             const deleteMmodelPromises = [];
-            additionalModelsByname.forEach(async thisModelByName => {
+            additionalModelsByname.forEach(async (thisModelByName) => {
               deleteMmodelPromises.push(
                 models[thisModelByName].destroy({
                   where: {
-                    workerFk: this._id
+                    workerFk: this._id,
                   },
-                  transaction: thisTransaction
-                })
+                  transaction: thisTransaction,
+                }),
               );
             });
             await Promise.all(deleteMmodelPromises);
             const createMmodelPromises = [];
-            additionalModelsByname.forEach(async thisModelByName => {
+            additionalModelsByname.forEach(async (thisModelByName) => {
               const thisModelData = additionalModels[thisModelByName];
               createMmodelPromises.push(
                 models[thisModelByName].bulkCreate(
-                  thisModelData.map(thisRecord => {
+                  thisModelData.map((thisRecord) => {
                     return {
                       ...thisRecord,
-                      workerFk: this._id
+                      workerFk: this._id,
                     };
                   }),
-                  { transaction: thisTransaction }
-                )
+                  { transaction: thisTransaction },
+                ),
               );
             });
             await Promise.all(createMmodelPromises);
 
             // always recalculate WDF - if not bulk upload (this._status)
-            if(this._status === null) {
-              await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_UPDATE, false);
+            if (this._status === null) {
+              await WdfCalculator.calculate(
+                savedBy,
+                this._establishmentId,
+                null,
+                thisTransaction,
+                WdfCalculator.WORKER_UPDATE,
+                false,
+              );
             }
 
             if (associatedEntities) {
@@ -788,11 +838,13 @@ class Worker extends EntityValidator {
             this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
           } else {
             const nameId = this._properties.get('NameOrId');
-            throw new WorkerExceptions.WorkerSaveException(null,
+            throw new WorkerExceptions.WorkerSaveException(
+              null,
               this.uid,
               nameId ? nameId.property : null,
               err,
-                                                                    `Failed to update resulting worker record with uid: ${this._uid}`);
+              `Failed to update resulting worker record with uid: ${this._uid}`,
+            );
           }
         });
       } catch (err) {
@@ -800,22 +852,29 @@ class Worker extends EntityValidator {
         const nameId = this._properties.get('NameOrId');
 
         if (err.name && err.name === 'SequelizeUniqueConstraintError') {
-          if (err.parent.constraint && (err.parent.constraint === 'worker_LocalIdentifier_unq')) {
-            throw new WorkerExceptions.WorkerSaveException(null, this._uid, nameId ? nameId.property : null, 'Duplicate LocalIdentifier', 'Duplicate LocalIdentifier');
+          if (err.parent.constraint && err.parent.constraint === 'worker_LocalIdentifier_unq') {
+            throw new WorkerExceptions.WorkerSaveException(
+              null,
+              this._uid,
+              nameId ? nameId.property : null,
+              'Duplicate LocalIdentifier',
+              'Duplicate LocalIdentifier',
+            );
           }
         } else {
-          throw new WorkerExceptions.WorkerSaveException(null,
+          throw new WorkerExceptions.WorkerSaveException(
+            null,
             this.uid,
             nameId ? nameId.property : null,
             err,
-                                                                `Failed to update worker record with uid: ${this._uid}`);
+            `Failed to update worker record with uid: ${this._uid}`,
+          );
         }
       }
     }
 
     if (mustSave && !this._isNew) {
       // update Worker - update timestamp!
-
     }
 
     // on successful completion of save, reset all change properties
@@ -831,14 +890,16 @@ class Worker extends EntityValidator {
   // loads the Worker (with given id) from DB, but only if it belongs to the given Establishment
   // returns true on success; false if no Worker
   // Can throw WorkerRestoreException exception.
-  async restore (workerUid, showHistory = false, associatedEntities = false, associatedLevel) {
+  async restore(workerUid, showHistory = false, associatedEntities = false, associatedLevel) {
     if (!workerUid) {
-      throw new WorkerExceptions.WorkerRestoreException(null,
+      throw new WorkerExceptions.WorkerRestoreException(
+        null,
         null,
         null,
         'Worker::restore failed: Missing uid',
         null,
-        'Unexpected Error');
+        'Unexpected Error',
+      );
     }
 
     try {
@@ -850,48 +911,48 @@ class Worker extends EntityValidator {
         where: {
           establishmentFk: this._establishmentId,
           uid: workerUid,
-          archived: false
+          archived: false,
         },
         include: [
           {
             model: models.job,
             as: 'mainJob',
-            attributes: ['id', 'title']
+            attributes: ['id', 'title'],
           },
           {
             model: models.ethnicity,
             as: 'ethnicity',
-            attributes: ['id', 'ethnicity']
+            attributes: ['id', 'ethnicity'],
           },
           {
             model: models.nationality,
             as: 'nationality',
-            attributes: ['id', 'nationality']
+            attributes: ['id', 'nationality'],
           },
           {
             model: models.qualification,
             as: 'socialCareQualification',
-            attributes: ['id', 'level']
+            attributes: ['id', 'level'],
           },
           {
             model: models.qualification,
             as: 'highestQualification',
-            attributes: ['id', 'level']
+            attributes: ['id', 'level'],
           },
           {
             model: models.country,
             as: 'countryOfBirth',
-            attributes: ['id', 'country']
+            attributes: ['id', 'country'],
           },
           {
             model: models.recruitedFrom,
             as: 'recruitedFrom',
-            attributes: ['id', 'from']
+            attributes: ['id', 'from'],
           },
           {
             model: models.job,
             as: 'otherJobs',
-            attributes: ['id', 'title']
+            attributes: ['id', 'title'],
           },
           {
             model: models.workerNurseSpecialism,
@@ -923,11 +984,9 @@ class Worker extends EntityValidator {
         if (showHistory) {
           fetchResults.auditEvents = await models.workerAudit.findAll({
             where: {
-              workerFk: fetchResults.id
+              workerFk: fetchResults.id,
             },
-            order: [
-              ['id', 'DESC']
-            ]
+            order: [['id', 'DESC']],
           });
         }
 
@@ -943,39 +1002,43 @@ class Worker extends EntityValidator {
           const myQualificationsSet = await models.workerQualifications.findAll({
             attributes: ['uid'],
             where: {
-              workerFk: this._id
-            }
+              workerFk: this._id,
+            },
           });
 
           if (myQualificationsSet && Array.isArray(myQualificationsSet)) {
-            await Promise.all(myQualificationsSet.map(async thisQualification => {
-              const newQualification = new Qualification(this._establishmentId, this._uid);
-              newQualification.workerId = this._id;
+            await Promise.all(
+              myQualificationsSet.map(async (thisQualification) => {
+                const newQualification = new Qualification(this._establishmentId, this._uid);
+                newQualification.workerId = this._id;
 
-              await newQualification.restore(thisQualification.uid, false);
-              this.associateQualification(newQualification);
+                await newQualification.restore(thisQualification.uid, false);
+                this.associateQualification(newQualification);
 
-              return {};
-            }));
+                return {};
+              }),
+            );
           }
 
           const myTrainingSet = await models.workerTraining.findAll({
             attributes: ['uid'],
             where: {
-              workerFk: this._id
-            }
+              workerFk: this._id,
+            },
           });
 
           if (myTrainingSet && Array.isArray(myTrainingSet)) {
-            await Promise.all(myTrainingSet.map(async thisTrainingRecord => {
-              const newTrainingRecord = new Training(this._establishmentId, this._uid);
-              newTrainingRecord.workerId = this._id;
+            await Promise.all(
+              myTrainingSet.map(async (thisTrainingRecord) => {
+                const newTrainingRecord = new Training(this._establishmentId, this._uid);
+                newTrainingRecord.workerId = this._id;
 
-              await newTrainingRecord.restore(thisTrainingRecord.uid, false);
-              this.associateTraining(newTrainingRecord);
+                await newTrainingRecord.restore(thisTrainingRecord.uid, false);
+                this.associateTraining(newTrainingRecord);
 
-              return {};
-            }));
+                return {};
+              }),
+            );
           }
         }
 
@@ -987,16 +1050,12 @@ class Worker extends EntityValidator {
       // typically errors when making changes to model or database schema!
       this._log(Worker.LOG_ERROR, err);
 
-      throw new WorkerExceptions.WorkerRestoreException(null,
-        this.uid,
-        null,
-        err,
-        null);
+      throw new WorkerExceptions.WorkerRestoreException(null, this.uid, null, err, null);
     }
   }
 
   // "deletes" this Worker by setting the Worker to archived - does not delete any data!
-  async archive (deletedBy, externalTransaction = null, associatedEntities = false) {
+  async archive(deletedBy, externalTransaction = null, associatedEntities = false) {
     let t;
     try {
       const updatedTimestamp = new Date();
@@ -1011,7 +1070,7 @@ class Worker extends EntityValidator {
         archived: true,
         LocalIdentifierValue: null,
         updated: updatedTimestamp,
-        updatedBy: deletedBy
+        updatedBy: deletedBy,
       };
 
       if (this._reason) {
@@ -1023,17 +1082,14 @@ class Worker extends EntityValidator {
       }
 
       // now save the document
-      const [updatedRecordCount, updatedRows] = await models.worker.update(
-        updateDocument,
-        {
-          returning: true,
-          where: {
-            uid: this.uid
-          },
-          attributes: ['id', 'updated'],
-          transaction: thisTransaction
-        }
-      );
+      const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
+        returning: true,
+        where: {
+          uid: this.uid,
+        },
+        attributes: ['id', 'updated'],
+        transaction: thisTransaction,
+      });
 
       if (updatedRecordCount === 1) {
         const updatedRecord = updatedRows[0].get({ plain: true });
@@ -1042,15 +1098,17 @@ class Worker extends EntityValidator {
         this._updatedBy = deletedBy;
         this._id = updatedRecord.ID;
 
-        const allAuditEvents = [{
-          workerFk: this._id,
-          username: deletedBy,
-          type: 'deleted'
-        }];
+        const allAuditEvents = [
+          {
+            workerFk: this._id,
+            username: deletedBy,
+            type: 'deleted',
+          },
+        ];
 
         // having updated the record, create the audit event
         await models.workerAudit.bulkCreate(allAuditEvents, {
-          transaction: thisTransaction
+          transaction: thisTransaction,
         });
 
         // delete all training and qualifications for this user??
@@ -1060,7 +1118,14 @@ class Worker extends EntityValidator {
 
         // always recalculate WDF - if not bulk upload (this._status)
         if (this._status === null) {
-          await WdfCalculator.calculate(deletedBy, this._establishmentId, null, thisTransaction, WdfCalculator.WORKER_DELETE, false);
+          await WdfCalculator.calculate(
+            deletedBy,
+            this._establishmentId,
+            null,
+            thisTransaction,
+            WdfCalculator.WORKER_DELETE,
+            false,
+          );
         }
 
         if (t) {
@@ -1075,7 +1140,7 @@ class Worker extends EntityValidator {
           this.uid,
           nameId ? nameId.property : null,
           err,
-          `Failed to update (archive) worker record with uid: ${this._uid}`
+          `Failed to update (archive) worker record with uid: ${this._uid}`,
         );
       }
     } catch (err) {
@@ -1088,17 +1153,18 @@ class Worker extends EntityValidator {
       // if the name/Id property is known, use it in the error message
       const nameId = this._properties.get('NameOrId');
 
-      throw new WorkerExceptions.WorkerDeleteException(null,
+      throw new WorkerExceptions.WorkerDeleteException(
+        null,
         this.uid,
         nameId ? nameId.property : null,
         err,
-        `Failed to delete (archive) worker record with uid: ${this._uid}`
+        `Failed to delete (archive) worker record with uid: ${this._uid}`,
       );
     }
   }
 
   // returns a set of Workers based on given filter criteria (all if no filters defined) - restricted to the given Establishment
-  static async fetch (establishmentId, filters = null) {
+  static async fetch(establishmentId, filters = null) {
     const allWorkers = [];
     try {
       let fetchResults = null;
@@ -1106,19 +1172,29 @@ class Worker extends EntityValidator {
       fetchResults = await models.worker.findAll({
         where: {
           establishmentFk: establishmentId,
-          archived: false
+          archived: false,
         },
         include: [
           {
             model: models.job,
             as: 'mainJob',
-            attributes: ['id', 'title']
-          }
+            attributes: ['id', 'title'],
+          },
         ],
-        attributes: ['uid', 'LocalIdentifierValue', 'NameOrIdValue', 'ContractValue', 'CompletedValue', 'MainJobFkOther', 'lastWdfEligibility', 'created', 'updated', 'updatedBy', 'establishmentFk'],
-        order: [
-          ['updated', 'DESC']
-        ]
+        attributes: [
+          'uid',
+          'LocalIdentifierValue',
+          'NameOrIdValue',
+          'ContractValue',
+          'CompletedValue',
+          'MainJobFkOther',
+          'lastWdfEligibility',
+          'created',
+          'updated',
+          'updatedBy',
+          'establishmentFk',
+        ],
+        order: [['updated', 'DESC']],
       });
 
       if (fetchResults) {
@@ -1126,34 +1202,38 @@ class Worker extends EntityValidator {
         const effectiveFromDate = WdfCalculator.effectiveDate;
         const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
 
-        await Promise.all(fetchResults.map(async thisWorker => {
-          const worker = new Worker(thisWorker.establishmentFk);
-          await worker.restore(thisWorker.uid);
+        await Promise.all(
+          fetchResults.map(async (thisWorker) => {
+            const worker = new Worker(thisWorker.establishmentFk);
+            await worker.restore(thisWorker.uid);
 
-          const isEligible = await worker.isWdfEligible(effectiveFromDate);
+            const isEligible = await worker.isWdfEligible(effectiveFromDate);
 
-          if (thisWorker.lastWdfEligibility === null && isEligible.isEligible) {
-            thisWorker.lastWdfEligibility = new Date();
-          }
-          allWorkers.push({
-            uid: thisWorker.uid,
-            localIdentifier: thisWorker.LocalIdentifierValue ? thisWorker.LocalIdentifierValue : null,
-            nameOrId: thisWorker.NameOrIdValue,
-            contract: thisWorker.ContractValue,
-            mainJob: {
-              jobId: thisWorker.mainJob.id,
-              title: thisWorker.mainJob.title,
-              other: thisWorker.MainJobFkOther ? thisWorker.MainJobFkOther : undefined
-            },
-            completed: thisWorker.CompletedValue,
-            created: thisWorker.created.toJSON(),
-            updated: thisWorker.updated.toJSON(),
-            updatedBy: thisWorker.updatedBy,
-            effectiveFrom: effectiveFromIso,
-            wdfEligible: isEligible.isEligible,
-            wdfEligibilityLastUpdated: thisWorker.lastWdfEligibility ? thisWorker.lastWdfEligibility.toISOString() : undefined
-          });
-        }));
+            if (thisWorker.lastWdfEligibility === null && isEligible.isEligible) {
+              thisWorker.lastWdfEligibility = new Date();
+            }
+            allWorkers.push({
+              uid: thisWorker.uid,
+              localIdentifier: thisWorker.LocalIdentifierValue ? thisWorker.LocalIdentifierValue : null,
+              nameOrId: thisWorker.NameOrIdValue,
+              contract: thisWorker.ContractValue,
+              mainJob: {
+                jobId: thisWorker.mainJob.id,
+                title: thisWorker.mainJob.title,
+                other: thisWorker.MainJobFkOther ? thisWorker.MainJobFkOther : undefined,
+              },
+              completed: thisWorker.CompletedValue,
+              created: thisWorker.created.toJSON(),
+              updated: thisWorker.updated.toJSON(),
+              updatedBy: thisWorker.updatedBy,
+              effectiveFrom: effectiveFromIso,
+              wdfEligible: isEligible.isEligible,
+              wdfEligibilityLastUpdated: thisWorker.lastWdfEligibility
+                ? thisWorker.lastWdfEligibility.toISOString()
+                : undefined,
+            });
+          }),
+        );
         await Promise.all(workerPromise);
         return allWorkers;
       }
@@ -1166,14 +1246,15 @@ class Worker extends EntityValidator {
   // helper returns a set 'json ready' objects for representing a Worker's overall
   //  change history, from a given set of audit events (those events being created
   //  or updated only)
-  formatWorkerHistoryEvents (auditEvents) {
+  formatWorkerHistoryEvents(auditEvents) {
     if (auditEvents) {
-      return auditEvents.filter(thisEvent => ['created', 'updated', 'wdfEligible'].includes(thisEvent.type))
-        .map(thisEvent => {
+      return auditEvents
+        .filter((thisEvent) => ['created', 'updated', 'wdfEligible'].includes(thisEvent.type))
+        .map((thisEvent) => {
           return {
             when: thisEvent.when,
             username: thisEvent.username,
-            event: thisEvent.type
+            event: thisEvent.type,
           };
         });
     } else {
@@ -1184,15 +1265,15 @@ class Worker extends EntityValidator {
   // helper returns a set 'json ready' objects for representing a Worker's audit
   //  history, from a the given set of audit events including those of individual
   //  worker properties)
-  formatWorkerHistory (auditEvents) {
+  formatWorkerHistory(auditEvents) {
     if (auditEvents) {
-      return auditEvents.map(thisEvent => {
+      return auditEvents.map((thisEvent) => {
         return {
           when: thisEvent.when,
           username: thisEvent.username,
           event: thisEvent.type,
           property: thisEvent.property,
-          change: thisEvent.event
+          change: thisEvent.event,
         };
       });
     } else {
@@ -1203,16 +1284,29 @@ class Worker extends EntityValidator {
   // returns a Javascript object which can be used to present as JSON
   //  showHistory appends the historical account of changes at Worker and individual property level
   //  showHistoryTimeline just returns the history set of audit events for the given Worker
-  toJSON (showHistory = false, showPropertyHistoryOnly = true, showHistoryTimeline = false, modifiedOnlyProperties = false, associatedEntities = false, wdf = false) {
+  toJSON(
+    showHistory = false,
+    showPropertyHistoryOnly = true,
+    showHistoryTimeline = false,
+    modifiedOnlyProperties = false,
+    associatedEntities = false,
+    wdf = false,
+  ) {
     if (!showHistoryTimeline) {
       // JSON representation of extendable properties
 
-      const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, null, wdf ? WdfCalculator.effectiveDate : null);
+      const myJSON = this._properties.toJSON(
+        showHistory,
+        showPropertyHistoryOnly,
+        modifiedOnlyProperties,
+        null,
+        wdf ? WdfCalculator.effectiveDate : null,
+      );
 
       // add worker default properties
       const myDefaultJSON = {
         uid: this.uid,
-        changeLocalIdentifer: this.changeLocalIdentifer ? this.changeLocalIdentifer : undefined
+        changeLocalIdentifer: this.changeLocalIdentifer ? this.changeLocalIdentifer : undefined,
       };
 
       myDefaultJSON.created = this.created ? this.created.toJSON() : null;
@@ -1229,14 +1323,22 @@ class Worker extends EntityValidator {
         return {
           ...myDefaultJSON,
           ...myJSON,
-          history: this.formatWorkerHistoryEvents(this._auditEvents)
+          history: this.formatWorkerHistoryEvents(this._auditEvents),
         };
       } else {
         return {
           ...myDefaultJSON,
           ...myJSON,
-          training: associatedEntities ? this._trainingEntities.map(thisTrainingRecord => thisTrainingRecord ? thisTrainingRecord.toJSON() : undefined) : undefined,
-          qualifications: associatedEntities ? this._qualificationsEntities.map(thisQualification => thisQualification ? thisQualification.toJSON() : undefined) : undefined
+          training: associatedEntities
+            ? this._trainingEntities.map((thisTrainingRecord) =>
+                thisTrainingRecord ? thisTrainingRecord.toJSON() : undefined,
+              )
+            : undefined,
+          qualifications: associatedEntities
+            ? this._qualificationsEntities.map((thisQualification) =>
+                thisQualification ? thisQualification.toJSON() : undefined,
+              )
+            : undefined,
         };
       }
     } else {
@@ -1246,34 +1348,34 @@ class Worker extends EntityValidator {
         created: this.created.toJSON(),
         updated: this.updated.toJSON(),
         updatedBy: this.updatedBy,
-        history: this.formatWorkerHistory(this._auditEvents)
+        history: this.formatWorkerHistory(this._auditEvents),
       };
     }
   }
 
   /*
-     * attributes
-     */
-  get uid () {
+   * attributes
+   */
+  get uid() {
     return this._uid;
   }
 
-  get created () {
+  get created() {
     return this._created;
   }
 
-  get updated () {
+  get updated() {
     return this._updated;
   }
 
-  get updatedBy () {
+  get updatedBy() {
     return this._updatedBy;
   }
 
   // HELPERS
   // returns false if establishment is not valid, otherwise returns
   //  the establishment id
-  static async validateEstablishment (establishmentId) {
+  static async validateEstablishment(establishmentId) {
     if (!establishmentId) return false;
 
     if (!Number.isInteger(establishmentId)) return false;
@@ -1284,11 +1386,12 @@ class Worker extends EntityValidator {
     try {
       referenceEstablishment = await models.establishment.findOne({
         where: {
-          id: establishmentId
+          id: establishmentId,
         },
-        attributes: ['id']
+        attributes: ['id'],
       });
-      if (referenceEstablishment && referenceEstablishment.id && referenceEstablishment.id === establishmentId) return true;
+      if (referenceEstablishment && referenceEstablishment.id && referenceEstablishment.id === establishmentId)
+        return true;
     } catch (err) {
       console.error(err);
     }
@@ -1296,7 +1399,7 @@ class Worker extends EntityValidator {
   }
 
   // returns true if all mandatory properties for a Worker exist and are valid
-  get hasMandatoryProperties () {
+  get hasMandatoryProperties() {
     let allExistAndValid = true; // assume all exist until proven otherwise
 
     // in bulk upload, a worker entity, if UNCHECKED, will be nothing more than a status and a local identifier
@@ -1305,36 +1408,33 @@ class Worker extends EntityValidator {
         const nameIdProperty = this._properties.get('NameOrId');
         if (!(nameIdProperty && nameIdProperty.isInitialised && nameIdProperty.valid)) {
           allExistAndValid = false;
-          this._validations.push(new ValidationMessage(
-            ValidationMessage.ERROR,
-            101,
-            nameIdProperty ? 'Invalid' : 'Missing',
-            ['WorkerNameOrId']
-          ));
+          this._validations.push(
+            new ValidationMessage(ValidationMessage.ERROR, 101, nameIdProperty ? 'Invalid' : 'Missing', [
+              'WorkerNameOrId',
+            ]),
+          );
           this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid name or id property');
         }
 
         const mainJobProperty = this._properties.get('MainJob');
         if (!(mainJobProperty && mainJobProperty.isInitialised && mainJobProperty.valid)) {
           allExistAndValid = false;
-          this._validations.push(new ValidationMessage(
-            ValidationMessage.ERROR,
-            102,
-            mainJobProperty ? 'Invalid' : 'Missing',
-            ['WorkerMainJob']
-          ));
+          this._validations.push(
+            new ValidationMessage(ValidationMessage.ERROR, 102, mainJobProperty ? 'Invalid' : 'Missing', [
+              'WorkerMainJob',
+            ]),
+          );
           this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid main job property');
         }
 
         const contractProperty = this._properties.get('Contract');
         if (!(contractProperty && contractProperty.isInitialised && contractProperty.valid)) {
           allExistAndValid = false;
-          this._validations.push(new ValidationMessage(
-            ValidationMessage.ERROR,
-            103,
-            contractProperty ? 'Invalid' : 'Missing',
-            ['WorkerContract']
-          ));
+          this._validations.push(
+            new ValidationMessage(ValidationMessage.ERROR, 103, contractProperty ? 'Invalid' : 'Missing', [
+              'WorkerContract',
+            ]),
+          );
           this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid contract property');
         }
       } catch (err) {
@@ -1347,10 +1447,10 @@ class Worker extends EntityValidator {
 
   // this helper validates reason, doing a lookup on id or reason text; returns false if
   //  invalidate, otherwise the validated reason (with id and reason)
-  async validateReason (reasonDef) {
+  async validateReason(reasonDef) {
     if (!reasonDef) return false;
     if (!(reasonDef.id || reasonDef.reason)) return false;
-    if (reasonDef.id && !(Number.isInteger(reasonDef.id))) return false;
+    if (reasonDef.id && !Number.isInteger(reasonDef.id)) return false;
 
     // reason "other" qualifier is optional, but if given, it must be less than 500 characters
     const MAX_LENGTH_ON_OTHER_REASON = 500;
@@ -1360,16 +1460,16 @@ class Worker extends EntityValidator {
     if (reasonDef.id) {
       referenceReason = await models.workerLeaveReasons.findOne({
         where: {
-          id: reasonDef.id
+          id: reasonDef.id,
         },
-        attributes: ['id', 'reason']
+        attributes: ['id', 'reason'],
       });
     } else {
       referenceReason = await models.workerLeaveReasons.findOne({
         where: {
-          reason: reasonDef.reason
+          reason: reasonDef.reason,
         },
-        attributes: ['id', 'reason']
+        attributes: ['id', 'reason'],
       });
     }
 
@@ -1379,7 +1479,7 @@ class Worker extends EntityValidator {
       return {
         id: referenceReason.id,
         reason: referenceReason.reason,
-        other: reasonDef.id === leaveReasonIdOfOther && reasonDef.other ? reasonDef.other : null
+        other: reasonDef.id === leaveReasonIdOfOther && reasonDef.other ? reasonDef.other : null,
       };
     } else {
       return false;
@@ -1388,27 +1488,29 @@ class Worker extends EntityValidator {
 
   // returns true if this worker is WDF eligible as referenced from the
   //  given effective date; otherwise returns false
-  async isWdfEligible (effectiveFrom) {
+  async isWdfEligible(effectiveFrom) {
     const wdfByProperty = await this.wdf(effectiveFrom);
     const wdfPropertyValues = Object.values(wdfByProperty);
 
     // NOTE - the worker does not have to be completed before it can be eligible for WDF
     return {
       lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-      isEligible: wdfPropertyValues.every(thisWdfProperty => {
-        if ((thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
-                    (thisWdfProperty.isEligible === 'Not relevant')) {
+      isEligible: wdfPropertyValues.every((thisWdfProperty) => {
+        if (
+          (thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
+          thisWdfProperty.isEligible === 'Not relevant'
+        ) {
           return true;
         } else {
           return false;
         }
       }),
-      currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty.isEligible !== 'No'),
-      ...wdfByProperty
+      currentEligibility: wdfPropertyValues.every((thisWdfProperty) => thisWdfProperty.isEligible !== 'No'),
+      ...wdfByProperty,
     };
   }
 
-  _isPropertyWdfBasicEligible (refEpoch, property) {
+  _isPropertyWdfBasicEligible(refEpoch, property) {
     // no record given, so test eligibility of this Worker
     const PER_PROPERTY_ELIGIBLE = 0;
     const RECORD_LEVEL_ELIGIBLE = 1;
@@ -1426,69 +1528,80 @@ class Worker extends EntityValidator {
         break;
       case COMPLETED_PROPERTY_ELIGIBLE:
         const completedProperty = this._properties.get('Completed');
-        referenceTime = completedProperty && completedProperty.savedAt
-          ? completedProperty.savedAt.getTime()
-          : null;
+        referenceTime = completedProperty && completedProperty.savedAt ? completedProperty.savedAt.getTime() : null;
         break;
     }
 
-    return property &&
-                (property.property !== null && property.property !== undefined) &&
-                property.valid &&
-                referenceTime !== null;
+    return (
+      property &&
+      property.property !== null &&
+      property.property !== undefined &&
+      property.valid &&
+      referenceTime !== null
+    );
   }
 
   // returns the WDF eligibility of each WDF relevant property as referenced from
   //  the given effect date
   // if "record" is given, then the WDF eligibility is calculated from the raw Worker record data
-  async wdf (effectiveFrom) {
+  async wdf(effectiveFrom) {
     const myWdf = {};
     const effectiveFromEpoch = effectiveFrom.getTime();
 
     // gender/date of birth/nationality
     myWdf.gender = {
       isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Gender')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('Gender').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties.get('Gender').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     myWdf.dateOfBirth = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DateOfBirth')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('DateOfBirth').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DateOfBirth'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties.get('DateOfBirth').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     myWdf.nationality = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Nationality')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('Nationality').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Nationality'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties.get('Nationality').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     // main job, other job, main job start date, source of recruitment, employment status (contract)
     myWdf.mainJob = {
       isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJob')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('MainJob').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties.get('MainJob').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     myWdf.mainJobStartDate = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJobStartDate')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('MainJobStartDate').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJobStartDate'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties
+        .get('MainJobStartDate')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     myWdf.recruitedFrom = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('RecruitedFrom')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('RecruitedFrom').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('RecruitedFrom'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties.get('RecruitedFrom').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     myWdf.contract = {
       isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Contract')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('Contract').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties.get('Contract').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
-    // zero hours contract, contracted/average weekly hours (dependent on zero hours selected and on employment status/contract),
-
-    const CONTRACT_TYPE = ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'];
-
     myWdf.zeroHoursContract = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ZeroHoursContract')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('ZeroHoursContract').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ZeroHoursContract'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties
+        .get('ZeroHoursContract')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     let weeklyHoursContractedEligible;
@@ -1501,20 +1614,35 @@ class Worker extends EntityValidator {
     } else {
       if (this._properties.get('ZeroHoursContract').property === 'No') {
         if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
-          weeklyHoursContractedEligible = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursContracted')) ? 'Yes' : 'No';
+          weeklyHoursContractedEligible = this._isPropertyWdfBasicEligible(
+            effectiveFromEpoch,
+            this._properties.get('WeeklyHoursContracted'),
+          )
+            ? 'Yes'
+            : 'No';
         } else {
           weeklyHoursContractedEligible = 'Not relevant';
         }
 
         if (['Pool/Bank', 'Agency', 'Other'].includes(this._properties.get('Contract').property)) {
-          weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage')) ? 'Yes' : 'No';
+          weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(
+            effectiveFromEpoch,
+            this._properties.get('WeeklyHoursAverage'),
+          )
+            ? 'Yes'
+            : 'No';
         } else {
           weeklyHoursAverageEligible = 'Not relevant';
         }
       } else if (this._properties.get('ZeroHoursContract').property === 'Yes') {
         // regardless of contract, all workers on zero hours contract, have an average set of weekly hours
         weeklyHoursContractedEligible = 'Not relevant';
-        weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage')) ? 'Yes' : 'No';
+        weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(
+          effectiveFromEpoch,
+          this._properties.get('WeeklyHoursAverage'),
+        )
+          ? 'Yes'
+          : 'No';
       } else {
         // if zero hours contract is neither Yes or No, the average/contracted hour egligibility is not relevant
         weeklyHoursContractedEligible = 'Not relevant';
@@ -1524,105 +1652,150 @@ class Worker extends EntityValidator {
 
     myWdf.weeklyHoursContracted = {
       isEligible: weeklyHoursContractedEligible,
-      updatedSinceEffectiveDate: this._properties.get('WeeklyHoursContracted').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties
+        .get('WeeklyHoursContracted')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     myWdf.weeklyHoursAverage = {
       isEligible: weeklyHoursAverageEligible,
-      updatedSinceEffectiveDate: this._properties.get('WeeklyHoursAverage').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties
+        .get('WeeklyHoursAverage')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     // sickness and salary
     myWdf.annualHourlyPay = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('AnnualHourlyPay')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('AnnualHourlyPay').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('AnnualHourlyPay'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties
+        .get('AnnualHourlyPay')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     let daysSickEligible;
     // Note - contract is a mandatory property - it will always have value
     if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
-      daysSickEligible = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DaysSick')) ? 'Yes' : 'No';
+      daysSickEligible = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DaysSick'))
+        ? 'Yes'
+        : 'No';
     } else {
       daysSickEligible = 'Not relevant';
     }
 
     myWdf.daysSick = {
       isEligible: daysSickEligible,
-      updatedSinceEffectiveDate: this._properties.get('DaysSick').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties.get('DaysSick').toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     // qualifications and care certificate
     myWdf.careCertificate = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CareCertificate')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('CareCertificate').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CareCertificate'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties
+        .get('CareCertificate')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     myWdf.qualificationInSocialCare = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('QualificationInSocialCare')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('QualificationInSocialCare').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(
+        effectiveFromEpoch,
+        this._properties.get('QualificationInSocialCare'),
+      )
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties
+        .get('QualificationInSocialCare')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     let socialCareQualificationEligible;
     let highestQualificationEligible;
 
-    if (this._properties.get('QualificationInSocialCare').property === null || this._properties.get('QualificationInSocialCare').property !== 'Yes') {
+    if (
+      this._properties.get('QualificationInSocialCare').property === null ||
+      this._properties.get('QualificationInSocialCare').property !== 'Yes'
+    ) {
       // if not having defined 'having a qualification in social care' or 'have said no'
       socialCareQualificationEligible = 'Not relevant';
     } else {
-      socialCareQualificationEligible = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('SocialCareQualification')) ? 'Yes' : 'No';
+      socialCareQualificationEligible = this._isPropertyWdfBasicEligible(
+        effectiveFromEpoch,
+        this._properties.get('SocialCareQualification'),
+      )
+        ? 'Yes'
+        : 'No';
     }
 
     myWdf.socialCareQualification = {
       isEligible: socialCareQualificationEligible,
-      updatedSinceEffectiveDate: this._properties.get('SocialCareQualification').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties
+        .get('SocialCareQualification')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     myWdf.otherQualification = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherQualifications')) ? 'Yes' : 'No',
-      updatedSinceEffectiveDate: this._properties.get('OtherQualifications').toJSON(false, true, WdfCalculator.effectiveDate)
+      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherQualifications'))
+        ? 'Yes'
+        : 'No',
+      updatedSinceEffectiveDate: this._properties
+        .get('OtherQualifications')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
-    if (this._properties.get('OtherQualifications').property === null || this._properties.get('OtherQualifications').property !== 'Yes') {
+    if (
+      this._properties.get('OtherQualifications').property === null ||
+      this._properties.get('OtherQualifications').property !== 'Yes'
+    ) {
       // if not having defined 'having another qualification' or 'have said no'
       highestQualificationEligible = 'Not relevant';
     } else {
-      highestQualificationEligible = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('HighestQualification')) ? 'Yes' : 'No';
+      highestQualificationEligible = this._isPropertyWdfBasicEligible(
+        effectiveFromEpoch,
+        this._properties.get('HighestQualification'),
+      )
+        ? 'Yes'
+        : 'No';
     }
 
     myWdf.highestQualification = {
       isEligible: highestQualificationEligible,
-      updatedSinceEffectiveDate: this._properties.get('HighestQualification').toJSON(false, true, WdfCalculator.effectiveDate)
+      updatedSinceEffectiveDate: this._properties
+        .get('HighestQualification')
+        .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
     return myWdf;
   }
 
   // returns the WDF eligibilty as JSON object
-  async wdfToJson () {
+  async wdfToJson() {
     const effectiveFrom = WdfCalculator.effectiveDate;
     return {
       effectiveFrom: effectiveFrom.toISOString(),
-      ...await this.isWdfEligible(effectiveFrom)
+      ...(await this.isWdfEligible(effectiveFrom)),
     };
   }
 
-  static async _updateLocalIdOnWorker (thisGivenWorker, transaction, updatedTimestamp, username, allAuditEvents) {
+  static async _updateLocalIdOnWorker(thisGivenWorker, transaction, updatedTimestamp, username, allAuditEvents) {
     const updatedWorker = await models.worker.update(
       {
         LocalIdentifierValue: thisGivenWorker.value,
         LocalIdentifierSavedBy: username,
         LocalIdentifierChangedBy: username,
         LocalIdentifierSavedAt: updatedTimestamp,
-        LocalIdentifierChangedAt: updatedTimestamp
+        LocalIdentifierChangedAt: updatedTimestamp,
       },
       {
         returning: true,
         where: {
-          uid: thisGivenWorker.uid
+          uid: thisGivenWorker.uid,
         },
         attributes: ['id', 'updated'],
-        transaction
-      }
+        transaction,
+      },
     );
 
     if (updatedWorker[0] === 1) {
@@ -1631,7 +1804,7 @@ class Worker extends EntityValidator {
         workerFk: updatedRecord.ID,
         username,
         type: 'saved',
-        property: 'LocalIdentifier'
+        property: 'LocalIdentifier',
       });
       allAuditEvents.push({
         workerFk: updatedRecord.ID,
@@ -1639,8 +1812,8 @@ class Worker extends EntityValidator {
         type: 'changed',
         property: 'LocalIdentifier',
         event: {
-          new: thisGivenWorker.value
-        }
+          new: thisGivenWorker.value,
+        },
       });
     }
   }
@@ -1648,28 +1821,34 @@ class Worker extends EntityValidator {
   // update the local identifiers across all workers associated with the given establishment
   //  - When updating the local identifier, the local identifier property itself is audited, but the workers's own
   //    "updated" status is not updated
-  static async bulkUpdateLocalIdentifiers (username, establishmentId, givenLocalIdentifiers) {
+  static async bulkUpdateLocalIdentifiers(username, establishmentId, givenLocalIdentifiers) {
     try {
       const myWorkers = await Worker.fetch(establishmentId);
-      const myWorkersUIDs = myWorkers.map(worker => {
+      const myWorkersUIDs = myWorkers.map((worker) => {
         return {
           uid: worker.uid,
-          localIdentifier: worker.localIdentifier
+          localIdentifier: worker.localIdentifier,
         };
       });
 
       const updatedTimestamp = new Date();
       const updatedUids = [];
-      await models.sequelize.transaction(async t => {
+      await models.sequelize.transaction(async (t) => {
         const dbUpdatePromises = [];
         const allAuditEvents = [];
 
-        givenLocalIdentifiers.forEach(thisGivenWorker => {
+        givenLocalIdentifiers.forEach((thisGivenWorker) => {
           if (thisGivenWorker && thisGivenWorker.uid) {
-            const foundWorker = myWorkersUIDs.find(currentWorker => currentWorker.uid === thisGivenWorker.uid);
+            const foundWorker = myWorkersUIDs.find((currentWorker) => currentWorker.uid === thisGivenWorker.uid);
 
             if (foundWorker && foundWorker.localIdentifier !== thisGivenWorker.value) {
-              const updateThisWorker = Worker._updateLocalIdOnWorker(thisGivenWorker, t, updatedTimestamp, username, allAuditEvents);
+              const updateThisWorker = Worker._updateLocalIdOnWorker(
+                thisGivenWorker,
+                t,
+                updatedTimestamp,
+                username,
+                allAuditEvents,
+              );
               dbUpdatePromises.push(updateThisWorker);
               updatedUids.push(thisGivenWorker);
             } else if (foundWorker) {
@@ -1691,7 +1870,7 @@ class Worker extends EntityValidator {
     }
   }
 
-  static async recalcWdf (username, establishmentId, workerUid, externalTransaction) {
+  static async recalcWdf(username, establishmentId, workerUid, externalTransaction) {
     try {
       const thisWorker = new Worker(establishmentId);
       await thisWorker.restore(workerUid);
@@ -1702,25 +1881,25 @@ class Worker extends EntityValidator {
         if (wdfEligibility.isEligible) {
           const updatedWorker = await models.worker.update(
             {
-              lastWdfEligibility: new Date()
+              lastWdfEligibility: new Date(),
             },
             {
               where: {
-                uid: workerUid
+                uid: workerUid,
               },
               returning: true,
               plain: true,
-              transaction: externalTransaction
-            }
+              transaction: externalTransaction,
+            },
           );
 
           await models.workerAudit.create(
             {
               workerFk: updatedWorker[1].dataValues.ID,
               username,
-              type: 'wdfEligible'
+              type: 'wdfEligible',
             },
-            { transaction: externalTransaction }
+            { transaction: externalTransaction },
           );
         }
       } // end if _lastWdfEligibility

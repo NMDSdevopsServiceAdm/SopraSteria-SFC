@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-
 
 @Injectable({
   providedIn: 'root',
@@ -17,19 +16,19 @@ export class TotalStaffFormService {
         null,
         [
           Validators.required,
-          this.nonIntegerValidator(new RegExp('\d*[.]\d*')),
+          this.nonIntegerValidator(new RegExp('d*[.]d*')),
           Validators.min(this.totalStaffConstraints.min),
           Validators.max(this.totalStaffConstraints.max),
-          Validators.pattern('^[0-9]+$')
+          Validators.pattern('^[0-9]+$'),
         ],
       ],
     });
   }
 
   private nonIntegerValidator(nameRe: RegExp): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} | null => {
+    return (control: AbstractControl): { [key: string]: any } | null => {
       const forbidden = nameRe.test(control.value);
-      return forbidden ? {'nonInteger': {value: control.value}} : null;
+      return forbidden ? { nonInteger: { value: control.value } } : null;
     };
   }
 

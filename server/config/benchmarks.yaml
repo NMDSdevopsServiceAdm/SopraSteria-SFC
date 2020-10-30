@@ -3,11 +3,6 @@ aws:
     secrets:
         use: true
         wallet: benchmarks/api
-    kinesis:
-      enabled: true
-      establishments: establishments.dev
-      workers: workers.dev
-      users: users.dev
     sns:
       enabled: true
       registrations: arn:aws:sns:eu-west-1:364648107127:registrations-dev
