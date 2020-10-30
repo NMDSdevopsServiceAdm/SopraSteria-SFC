@@ -4,7 +4,7 @@
     <title>Green tick</title>
     <desc>Created with Sketch.</desc>
     <g id="Green-tick" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <circle id="Oval" fill="#03893F" cx="11" cy="11" r="11"></circle>
+        <circle id="Oval" fill="#00703c" cx="11" cy="11" r="11"></circle>
         <path d="M5,11.5 L9,15.5" id="Stroke-6" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"></path>
         <path d="M17,7.5 L9,15.5" id="Stroke-6" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"></path>
     </g>

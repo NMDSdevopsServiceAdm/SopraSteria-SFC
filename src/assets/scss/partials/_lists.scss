@@ -29,7 +29,7 @@
     position: relative;
 
     @include govuk-font(19);
-    background-color: govuk-colour('grey-3');
+    background-color: govuk-colour('light-grey');
   }
 
   dd {
@@ -40,7 +40,7 @@
     position: relative;
 
     @include govuk-font(24, 'bold');
-    background-color: govuk-colour('grey-3');
+    background-color: govuk-colour('light-grey');
   }
 
   &.govuk-list--definition-xl {
@@ -74,7 +74,7 @@
             left: 0;
             bottom: 15px;
 
-            border-left: 1px solid govuk-colour('grey-1');
+            border-left: 1px solid govuk-colour('dark-grey');
           }
         }
       }
@@ -86,7 +86,7 @@
       grid-column-start: 1;
       grid-column-end: 2;
       @if $i > 1 {
-        border-top: 1px solid govuk-colour('grey-1');
+        border-top: 1px solid govuk-colour('dark-grey');
       }
 
       @include govuk-media-query($from: tablet) {
@@ -104,7 +104,7 @@
             top: 15px;
             left: 0;
             bottom: 0;
-            border-left: 1px solid govuk-colour('grey-1');
+            border-left: 1px solid govuk-colour('dark-grey');
           }
         }
       }
@@ -133,7 +133,7 @@
     margin: 0;
     position: relative;
     @include govuk-font(19, $weight: bold);
-    background-color: govuk-colour('grey-3');
+    background-color: govuk-colour('light-grey');
   }
 
   dd {
@@ -142,7 +142,7 @@
     @include govuk-responsive-padding(3, 'right');
     margin: 0;
     position: relative;
-    background-color: govuk-colour('grey-3');
+    background-color: govuk-colour('light-grey');
   }
 }
 

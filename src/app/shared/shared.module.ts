@@ -71,6 +71,7 @@ import { FormatPercentPipe } from './pipes/format-percent.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { NursingCategoriesTextPipe } from './pipes/nursing-categories-text.pipe';
+import { NursingSpecialismsTextPipe } from './pipes/nursing-specialisms-text.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
 import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
@@ -104,6 +105,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     MessagesComponent,
     NumericAnswerPipe,
     NursingCategoriesTextPipe,
+    NursingSpecialismsTextPipe,
     OpenEndedAnswerPipe,
     OrderOtherPipe,
     PanelComponent,
@@ -177,6 +179,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     MessagesComponent,
     NumericAnswerPipe,
     NursingCategoriesTextPipe,
+    NursingSpecialismsTextPipe,
     OpenEndedAnswerPipe,
     OrderOtherPipe,
     PanelComponent,
