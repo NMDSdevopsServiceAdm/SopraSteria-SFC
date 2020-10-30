@@ -119,7 +119,7 @@
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "3.9.0",
     "@typescript-eslint/parser": "3.9.0",
-    "aws-sdk-mock": "^4.5.0",
+    "aws-sdk-mock": "^5.1.0",
     "chai": "^4.2.0",
     "codelyzer": "^5.1.2",
     "eslint": "^7.6.0",
