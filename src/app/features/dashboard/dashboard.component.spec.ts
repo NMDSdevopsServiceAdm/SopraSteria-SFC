@@ -22,7 +22,7 @@ import { of } from 'rxjs';
 
 describe('DashboardComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
-    const component =  await render(DashboardComponent, {
+    const component = await render(DashboardComponent, {
       imports: [
         SharedModule,
         RouterModule,
@@ -78,6 +78,38 @@ describe('DashboardComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('Tabs', () => {
+    it('should display the Benchmarks tab when canViewBenchmarks is true', async () => {
+      const { component } = await setup(true);
+
+      component.fixture.componentInstance.canViewBenchmarks = true;
+      component.fixture.detectChanges();
+
+      expect(component.getByTestId('tab_benchmarks')).toBeTruthy();
+    });
+    it('should not display the Benchmarks tab when canViewBenchmarks is false', async () => {
+      const { component } = await setup(true);
+
+      component.fixture.componentInstance.canViewBenchmarks = false;
+
+      component.fixture.detectChanges();
+
+      expect(component.queryByTestId('tab_benchmarks')).toBeNull();
+    });
+    it('should display the Users tab', async () => {
+      const { component } = await setup(true);
+
+      const establishment = {
+        ...component.fixture.componentInstance.workplace
+      };
+      establishment.isRegulated = false;
+      component.fixture.componentInstance.workplace = establishment;
+      component.fixture.detectChanges();
+
+      expect(component.getByText('Users')).toBeTruthy();
+    });
+  });
+
   describe('Archive Workplace', () => {
     it('should display a Delete Workplace link if user is an admin', async () => {
       const { component } = await setup(true);
@@ -129,7 +161,7 @@ describe('DashboardComponent', () => {
 
       spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
       const spy = spyOn(router, 'navigate');
-      spy.and.returnValue(Promise.resolve({}));
+      spy.and.returnValue(Promise.resolve(true));
 
       const deleteWorkplace = component.getByText('Delete Workplace');
       deleteWorkplace.click();

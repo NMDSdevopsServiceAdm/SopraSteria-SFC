@@ -2,7 +2,6 @@
   "recommendations": [
     "editorconfig.editorconfig",
     "esbenp.prettier-vscode",
-    "ms-vscode.vscode-typescript-tslint-plugin",
     "rbbit.typescript-hero"
   ]
 }

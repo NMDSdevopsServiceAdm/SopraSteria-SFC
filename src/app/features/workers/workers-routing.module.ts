@@ -48,6 +48,7 @@ import {
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { FluJabComponent } from './flu-jab/flu-jab.component';
 
 const routes: Routes = [
   {
@@ -140,6 +141,11 @@ const routes: Routes = [
         path: 'mental-health-professional',
         component: MentalHealthProfessionalComponent,
         data: { title: 'Mental Health Professional' },
+      },
+      {
+        path: 'flu-jab',
+        component: FluJabComponent,
+        data: { title: 'Flu Vaccination' },
       },
       {
         path: 'national-insurance-number',

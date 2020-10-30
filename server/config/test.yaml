@@ -1,52 +1,51 @@
 aws:
-    region: eu-west-1
-    secrets:
-        use: true
-        wallet: staging/api
-    kinesis:
-      enabled: true
-      establishments: establishments.staging
-      workers: workers.staging
-      users: users.staging
-    sns:
-      enabled: true
-      registrations: arn:aws:sns:eu-west-1:364648107127:registrations-staging
-      feedback: arn:aws:sns:eu-west-1:364648107127:feedback-staging
+  region: eu-west-1
+  secrets:
+    use: true
+    wallet: staging/api
+  sns:
+    enabled: true
+    registrations: arn:aws:sns:eu-west-1:364648107127:registrations-staging
+    feedback: arn:aws:sns:eu-west-1:364648107127:feedback-staging
 
 db:
-    pool:
-        min: 15
-        max: 15
-    ssl: true
-    username: sfcapp
-    database: sfctstdb
-    client_ssl:
-        status: true
-        usingFiles: false
+  pool:
+    min: 15
+    max: 15
+  ssl: true
+  username: sfcapp
+  database: sfctstdb
+  client_ssl:
+    status: true
+    usingFiles: false
 
 slack:
-    level : 3     # enables Slack notifications
+  level: 3 # enables Slack notifications
 
 jwt:
-    iss: 'sfcstaging.cloudapps.digital'
-    ttl:
-        login: 10
+  iss: 'sfcstaging.cloudapps.digital'
+  ttl:
+    login: 10
 
 notify:
-    replyTo: '73711295-a4da-4303-9127-65be2a409681'
-    templates:
-        resetPassword: 'f2c43610-9ec9-4271-b9b1-dd55569b191c'
-        addUser: 'e581eea2-4206-4c90-8594-4357960e3e74'
+  replyTo: '73711295-a4da-4303-9127-65be2a409681'
+  templates:
+    resetPassword: 'f2c43610-9ec9-4271-b9b1-dd55569b191c'
+    addUser: 'e581eea2-4206-4c90-8594-4357960e3e74'
 
 bulkupload:
-    region: eu-west-2
-    bucketname: sfc-bulkupload-staging
-    validation:
-        timeout: 300
-        storeIntermediaries: false
-    completion:
-        timeout: 120
+  region: eu-west-2
+  bucketname: sfc-bulkupload-staging
+  validation:
+    timeout: 300
+    storeIntermediaries: false
+  completion:
+    timeout: 120
+
+locks:
+  region: eu-west-1
+  bucketname: sfc-locks-staging
 
 public:
-    download:
-        baseurl: https://sfc-public-staging.s3.eu-west-2.amazonaws.com/public/download
+  download:
+    baseurl: https://sfc-public-staging.s3.eu-west-2.amazonaws.com/public/download

@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { take } from 'rxjs/operators';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
-import { Router } from '@angular/router';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -20,27 +19,26 @@ export class SwitchWorkplaceService {
     public establishmentService: EstablishmentService,
     public permissionsService: PermissionsService,
     public authService: AuthService,
-    public notificationsService: NotificationsService
+    public notificationsService: NotificationsService,
   ) {}
 
-  public navigateToWorkplace(id, username, nmdsId, e): void {
-    e.preventDefault();
+  public navigateToWorkplace(id, username, nmdsId): void {
     if (!username && nmdsId) {
-      this.getAllNotificationWorkplace(nmdsId).subscribe(data => {
+      this.getAllNotificationWorkplace(nmdsId).subscribe((data) => {
         if (data) {
           this.notificationData = data;
         }
       });
     }
     this.getNewEstablishmentId(id, username).subscribe(
-      data => {
+      (data) => {
         this.permissionsService.clearPermissions();
         this.onSwapSuccess(data);
       },
-      error => this.onError(error)
+      (error) => this.onError(error),
     );
   }
-  
+
   public getAllNotificationWorkplace(nmdsId) {
     return this.http.get<any>(`/api/user/swap/establishment/notification/${nmdsId}`);
   }
@@ -54,6 +52,7 @@ export class SwitchWorkplaceService {
 
   private onSwapSuccess(data) {
     if (data.body && data.body.establishment && data.body.establishment.uid) {
+      this.authService.isOnAdminScreen = false;
       this.authService.setPreviousToken();
       this.authService.token = data.headers.get('authorization');
       const workplaceUid = data.body.establishment.uid;
@@ -61,8 +60,8 @@ export class SwitchWorkplaceService {
         .getEstablishment(workplaceUid)
         .pipe(take(1))
         .subscribe(
-          workplace => {
-            this.notificationsService.getAllNotifications().subscribe(notify => {
+          (workplace) => {
+            this.notificationsService.getAllNotifications().subscribe((notify) => {
               this.notificationsService.notifications$.next(this.notificationData ? this.notificationData : notify);
               this.establishmentService.setState(workplace);
               this.establishmentService.setPrimaryWorkplace(workplace);
@@ -70,7 +69,7 @@ export class SwitchWorkplaceService {
               this.router.navigate(['/dashboard']);
             });
           },
-          error => this.onError(error)
+          (error) => this.onError(error),
         );
     }
   }

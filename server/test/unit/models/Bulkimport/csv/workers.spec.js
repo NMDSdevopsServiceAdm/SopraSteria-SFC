@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const workers = require('../../../mockdata/workers').data;
 const establishmentId = require('../../../mockdata/workers').establishmentId;
-const apprenticeshipTypes = require('../../../mockdata/workers').apprenticeshipTypes;
+const yesNoDontKnow = require('../../../mockdata/workers').yesNoDontKnow;
 const maxquals = require('../../../mockdata/workers').maxquals;
 const knownHeaders = require('../../../mockdata/workers').knownHeaders;
 const moment = require('moment');
@@ -13,6 +13,7 @@ const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
 const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
 const testUtils = require('../../../../../utils/testUtils');
 const csv = require('csvtojson');
+const { build } = require('@jackfranklin/test-data-bot');
 
 const BUDI_TO_ASC = 100;
 
@@ -23,6 +24,131 @@ function mapCsvToWorker(worker, headers) {
   });
   return mapped;
 }
+
+const buildWorkerCsv = build('WorkerCSV', {
+  fields: {
+    AMHP: "",
+    APPRENTICE: "2",
+    AVGHOURS: "",
+    BRITISHCITIZENSHIP: "",
+    CARECERT: "3",
+    CONTHOURS: "23",
+    COUNTRYOFBIRTH: "826",
+    DAYSSICK: "1",
+    DISABLED: "0",
+    DISPLAYID: "Aaron Russell",
+    DOB: "10/12/1982",
+    EMPLSTATUS: "1",
+    ETHNICITY: "41",
+    GENDER: "1",
+    HOURLYRATE: "",
+    LOCALESTID: "MARMA",
+    MAINJOBROLE: "4",
+    MAINJRDESC: "",
+    NATIONALITY: "826",
+    FLUVAC: "",
+    NINUMBER: "JA622112A",
+    NMCREG: "",
+    NONSCQUAL: "2",
+    NURSESPEC: "",
+    OTHERJOBROLE: "10",
+    OTHERJRDESC: "",
+    POSTCODE: "LS1 1AA",
+    QUALACH01: "",
+    QUALACH01NOTES: "",
+    QUALACH02: "",
+    QUALACH02NOTES: "",
+    QUALACH03: "",
+    QUALACH03NOTES: "",
+    RECSOURCE: "16",
+    SALARY: "20000",
+    SALARYINT: "1",
+    SCQUAL: "2",
+    STARTDATE: "12/11/2001",
+    STARTINSECT: "2001",
+    STATUS: "UPDATE",
+    UNIQUEWORKERID: "3",
+    YEAROFENTRY: "",
+    ZEROHRCONT: "2"
+  },
+});
+
+const buildWorkerRecord = build('WorkerRecord', {
+  fields: {
+    _properties: {
+      get() {
+        return { changedAt: moment() };
+      }
+    },
+    daysSick: {
+      days: 1
+    }
+  }
+})
+
+const buildEstablishmentRecord = build('EstablishmentRecord', {
+  _validations: [],
+  _username: 'aylingw',
+  _id: 479,
+  _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+  _ustatus: null,
+  _created: '2019-03-15T09:54:10.562Z',
+  _updated: '2019-10-04T15:46:16.158Z',
+  _updatedBy: 'aylingw',
+  _auditEvents: null,
+  _name: 'WOZiTech, with even more care',
+  _address1: 'First Line',
+  _address2: 'Second Line',
+  _address3: '',
+  _town: 'My Town',
+  _county: '',
+  _locationId: 'A-328849599',
+  _provId: null,
+  _postcode: 'LN11 9JG',
+  _isRegulated: false,
+  _mainService: { id: 16, name: 'Head office services' },
+  _nmdsId: 'G1001114',
+  _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
+  _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
+  _establishmentWdfEligibility: null,
+  _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
+  _isParent: true,
+  _parentUid: null,
+  _parentId: null,
+  _parentName: null,
+  _dataOwner: 'Workplace',
+  _dataPermissions: 'None',
+  _archived: false,
+  _dataOwnershipRequested: null,
+  _reasonsForLeaving: '',
+  _properties: {
+    _properties: [Object],
+    _propertyTypes: [Array],
+    _auditEvents: null,
+    _modifiedProperties: [],
+    _additionalModels: null
+  },
+  _isNew: false,
+  _workerEntities: {
+  },
+  _readyForDeletionWorkers: null,
+  _status: 'NEW',
+  _logLevel: 300,
+  daysSick: {
+    days: 1
+  }
+});
+
+const buildSecondEstablishmentRecord = () => buildEstablishmentRecord({
+  overrides: {
+    _id: 1446,
+    _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+    _isRegulated: true,
+    _status: 'COMPLETE',
+    _parentId: 479,
+    _dataOwner: 'Parent'
+  }
+})
 
 const getUnitInstance = () => {
   const ALL_CAPACITIES = null;
@@ -87,149 +213,11 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }
         ).Worker)(
-          {
-            AMHP: "",
-            APPRENTICE: "2",
-            AVGHOURS: "",
-            BRITISHCITIZENSHIP: "",
-            CARECERT: "3",
-            CONTHOURS: "23",
-            COUNTRYOFBIRTH: "826",
-            DAYSSICK: "1",
-            DISABLED: "0",
-            DISPLAYID: "Aaron Russell",
-            DOB: "10/12/1982",
-            EMPLSTATUS: "1",
-            ETHNICITY: "41",
-            GENDER: "1",
-            HOURLYRATE: "",
-            LOCALESTID: "MARMA",
-            MAINJOBROLE: "4",
-            MAINJRDESC: "",
-            NATIONALITY: "826",
-            NINUMBER: "JA622112A",
-            NMCREG: "",
-            NONSCQUAL: "2",
-            NURSESPEC: "",
-            OTHERJOBROLE: "10",
-            OTHERJRDESC: "",
-            POSTCODE: "LS1 1AA",
-            QUALACH01: "",
-            QUALACH01NOTES: "",
-            QUALACH02: "",
-            QUALACH02NOTES: "",
-            QUALACH03: "",
-            QUALACH03NOTES: "",
-            RECSOURCE: "16",
-            SALARY: "20000",
-            SALARYINT: "1",
-            SCQUAL: "2",
-            STARTDATE: "12/11/2001",
-            STARTINSECT: "2001",
-            STATUS: "UPDATE",
-            UNIQUEWORKERID: "3",
-            YEAROFENTRY: "",
-            ZEROHRCONT: "2"
-          },
+          buildWorkerCsv(),
           2,
           [
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 479,
-              _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _ustatus: null,
-              _created: '2019-03-15T09:54:10.562Z',
-              _updated: '2019-10-04T15:46:16.158Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech, with even more care',
-              _address1: 'First Line',
-              _address2: 'Second Line',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: 'A-328849599',
-              _provId: null,
-              _postcode: 'LN11 9JG',
-              _isRegulated: false,
-              _mainService: { id: 16, name: 'Head office services' },
-              _nmdsId: 'G1001114',
-              _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-              _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-              _establishmentWdfEligibility: null,
-              _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-              _isParent: true,
-              _parentUid: null,
-              _parentId: null,
-              _parentName: null,
-              _dataOwner: 'Workplace',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {
-              },
-              _readyForDeletionWorkers: null,
-              _status: 'NEW',
-              _logLevel: 300
-            },
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 1446,
-              _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-              _ustatus: null,
-              _created: '2019-07-31T15:09:57.405Z',
-              _updated: '2019-10-04T15:46:16.797Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech Cares Sub 100',
-              _address1: 'Number 1',
-              _address2: 'My street',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: '1-888777666',
-              _provId: '1-999888777',
-              _postcode: 'LN11 9JG',
-              _isRegulated: true,
-              _mainService: { id: 1, name: 'Carers support' },
-              _nmdsId: 'G1002110',
-              _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-              _overallWdfEligibility: null,
-              _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-              _staffWdfEligibility: null,
-              _isParent: false,
-              _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _parentId: 479,
-              _parentName: null,
-              _dataOwner: 'Parent',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {},
-              _readyForDeletionWorkers: null,
-              _status: 'COMPLETE',
-              _logLevel: 300
-            }
+            buildEstablishmentRecord(),
+            buildSecondEstablishmentRecord()
           ]);
 
         expect(bulkUpload).to.have.property('crossValidate');
@@ -278,149 +266,15 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }
         ).Worker)(
-          {
-            AMHP: "",
-            APPRENTICE: "2",
-            AVGHOURS: "",
-            BRITISHCITIZENSHIP: "",
-            CARECERT: "3",
-            CONTHOURS: "23",
-            COUNTRYOFBIRTH: "826",
-            DAYSSICK: "1",
-            DISABLED: "0",
-            DISPLAYID: "Aaron Russell",
-            DOB: "10/12/1982",
-            EMPLSTATUS: "1",
-            ETHNICITY: "41",
-            GENDER: "1",
-            HOURLYRATE: "",
-            LOCALESTID: "MARMA",
-            MAINJOBROLE: "4",
-            MAINJRDESC: "",
-            NATIONALITY: "826",
-            NINUMBER: "JA622112A",
-            NMCREG: "",
-            NONSCQUAL: "2",
-            NURSESPEC: "",
-            OTHERJOBROLE: "10",
-            OTHERJRDESC: "",
-            POSTCODE: "LS1 1AA",
-            QUALACH01: "",
-            QUALACH01NOTES: "",
-            QUALACH02: "",
-            QUALACH02NOTES: "",
-            QUALACH03: "",
-            QUALACH03NOTES: "",
-            RECSOURCE: "16",
-            SALARY: "20000",
-            SALARYINT: "1",
-            SCQUAL: "2",
-            STARTDATE: "12/11/2001",
-            STARTINSECT: "2001",
-            STATUS: "UPDATE",
-            UNIQUEWORKERID: "3",
-            YEAROFENTRY: "",
-            ZEROHRCONT: "2"
-          },
+          buildWorkerCsv(),
           2,
           [
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 479,
-              _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _ustatus: null,
-              _created: '2019-03-15T09:54:10.562Z',
-              _updated: '2019-10-04T15:46:16.158Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech, with even more care',
-              _address1: 'First Line',
-              _address2: 'Second Line',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: 'A-328849599',
-              _provId: null,
-              _postcode: 'LN11 9JG',
-              _isRegulated: true,
-              _mainService: { id: 16, name: 'Head office services' },
-              _nmdsId: 'G1001114',
-              _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-              _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-              _establishmentWdfEligibility: null,
-              _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-              _isParent: true,
-              _parentUid: null,
-              _parentId: null,
-              _parentName: null,
-              _dataOwner: 'Workplace',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {
-              },
-              _readyForDeletionWorkers: null,
-              _status: 'NEW',
-              _logLevel: 300
-            },
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 1446,
-              _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-              _ustatus: null,
-              _created: '2019-07-31T15:09:57.405Z',
-              _updated: '2019-10-04T15:46:16.797Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech Cares Sub 100',
-              _address1: 'Number 1',
-              _address2: 'My street',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: '1-888777666',
-              _provId: '1-999888777',
-              _postcode: 'LN11 9JG',
-              _isRegulated: true,
-              _mainService: { id: 1, name: 'Carers support' },
-              _nmdsId: 'G1002110',
-              _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-              _overallWdfEligibility: null,
-              _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-              _staffWdfEligibility: null,
-              _isParent: false,
-              _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _parentId: 479,
-              _parentName: null,
-              _dataOwner: 'Parent',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {},
-              _readyForDeletionWorkers: null,
-              _status: 'COMPLETE',
-              _logLevel: 300
-            }
+            buildEstablishmentRecord({
+              overrides: {
+                _isRegulated: true
+              }
+            }),
+            buildSecondEstablishmentRecord()
           ]);
 
         expect(bulkUpload).to.have.property('crossValidate');
@@ -461,149 +315,15 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }
         ).Worker)(
-          {
-            AMHP: "",
-            APPRENTICE: "2",
-            AVGHOURS: "",
-            BRITISHCITIZENSHIP: "",
-            CARECERT: "3",
-            CONTHOURS: "23",
-            COUNTRYOFBIRTH: "826",
-            DAYSSICK: "1",
-            DISABLED: "0",
-            DISPLAYID: "Aaron Russell",
-            DOB: "10/12/1982",
-            EMPLSTATUS: "1",
-            ETHNICITY: "41",
-            GENDER: "1",
-            HOURLYRATE: "",
-            LOCALESTID: "MARMA",
-            MAINJOBROLE: "4",
-            MAINJRDESC: "",
-            NATIONALITY: "826",
-            NINUMBER: "JA622112A",
-            NMCREG: "",
-            NONSCQUAL: "2",
-            NURSESPEC: "",
-            OTHERJOBROLE: "10",
-            OTHERJRDESC: "",
-            POSTCODE: "LS1 1AA",
-            QUALACH01: "",
-            QUALACH01NOTES: "",
-            QUALACH02: "",
-            QUALACH02NOTES: "",
-            QUALACH03: "",
-            QUALACH03NOTES: "",
-            RECSOURCE: "16",
-            SALARY: "20000",
-            SALARYINT: "1",
-            SCQUAL: "2",
-            STARTDATE: "12/11/2001",
-            STARTINSECT: "2001",
-            STATUS: "UPDATE",
-            UNIQUEWORKERID: "3",
-            YEAROFENTRY: "",
-            ZEROHRCONT: "2"
-          },
+          buildWorkerCsv(),
           2,
           [
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 479,
-              _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _ustatus: null,
-              _created: '2019-03-15T09:54:10.562Z',
-              _updated: '2019-10-04T15:46:16.158Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech, with even more care',
-              _address1: 'First Line',
-              _address2: 'Second Line',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: 'A-328849599',
-              _provId: null,
-              _postcode: 'LN11 9JG',
-              _isRegulated: true,
-              _mainService: { id: 16, name: 'Head office services' },
-              _nmdsId: 'G1001114',
-              _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-              _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-              _establishmentWdfEligibility: null,
-              _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-              _isParent: true,
-              _parentUid: null,
-              _parentId: null,
-              _parentName: null,
-              _dataOwner: 'Workplace',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {
-              },
-              _readyForDeletionWorkers: null,
-              _status: 'NEW',
-              _logLevel: 300
-            },
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 1446,
-              _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-              _ustatus: null,
-              _created: '2019-07-31T15:09:57.405Z',
-              _updated: '2019-10-04T15:46:16.797Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech Cares Sub 100',
-              _address1: 'Number 1',
-              _address2: 'My street',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: '1-888777666',
-              _provId: '1-999888777',
-              _postcode: 'LN11 9JG',
-              _isRegulated: true,
-              _mainService: { id: 1, name: 'Carers support' },
-              _nmdsId: 'G1002110',
-              _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-              _overallWdfEligibility: null,
-              _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-              _staffWdfEligibility: null,
-              _isParent: false,
-              _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _parentId: 479,
-              _parentName: null,
-              _dataOwner: 'Parent',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {},
-              _readyForDeletionWorkers: null,
-              _status: 'COMPLETE',
-              _logLevel: 300
-            }
+            buildEstablishmentRecord({
+              overrides: {
+                _isRegulated: true
+              }
+            }),
+            buildSecondEstablishmentRecord()
           ]);
 
         expect(bulkUpload).to.have.property('crossValidate');
@@ -644,149 +364,19 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }
         ).Worker)(
-          {
-            AMHP: "",
-            APPRENTICE: "2",
-            AVGHOURS: "",
-            BRITISHCITIZENSHIP: "",
-            CARECERT: "3",
-            CONTHOURS: "23",
-            COUNTRYOFBIRTH: "826",
-            DAYSSICK: "1",
-            DISABLED: "0",
-            DISPLAYID: "Aaron Russell",
-            DOB: "10/12/1982",
-            EMPLSTATUS: "1",
-            ETHNICITY: "41",
-            GENDER: "1",
-            HOURLYRATE: "",
-            LOCALESTID: "MARMA",
-            MAINJOBROLE: "3",
-            MAINJRDESC: "",
-            NATIONALITY: "826",
-            NINUMBER: "JA622112A",
-            NMCREG: "",
-            NONSCQUAL: "2",
-            NURSESPEC: "",
-            OTHERJOBROLE: "10",
-            OTHERJRDESC: "",
-            POSTCODE: "LS1 1AA",
-            QUALACH01: "",
-            QUALACH01NOTES: "",
-            QUALACH02: "",
-            QUALACH02NOTES: "",
-            QUALACH03: "",
-            QUALACH03NOTES: "",
-            RECSOURCE: "16",
-            SALARY: "20000",
-            SALARYINT: "1",
-            SCQUAL: "2",
-            STARTDATE: "12/11/2001",
-            STARTINSECT: "2001",
-            STATUS: "UPDATE",
-            UNIQUEWORKERID: "3",
-            YEAROFENTRY: "",
-            ZEROHRCONT: "2"
-          },
+          buildWorkerCsv({
+            overrides: {
+              MAINJOBROLE: "3"
+            }
+          }),
           2,
           [
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 479,
-              _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _ustatus: null,
-              _created: '2019-03-15T09:54:10.562Z',
-              _updated: '2019-10-04T15:46:16.158Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech, with even more care',
-              _address1: 'First Line',
-              _address2: 'Second Line',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: 'A-328849599',
-              _provId: null,
-              _postcode: 'LN11 9JG',
-              _isRegulated: true,
-              _mainService: { id: 16, name: 'Head office services' },
-              _nmdsId: 'G1001114',
-              _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-              _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-              _establishmentWdfEligibility: null,
-              _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-              _isParent: true,
-              _parentUid: null,
-              _parentId: null,
-              _parentName: null,
-              _dataOwner: 'Workplace',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {
-              },
-              _readyForDeletionWorkers: null,
-              _status: 'NEW',
-              _logLevel: 300
-            },
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 1446,
-              _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-              _ustatus: null,
-              _created: '2019-07-31T15:09:57.405Z',
-              _updated: '2019-10-04T15:46:16.797Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech Cares Sub 100',
-              _address1: 'Number 1',
-              _address2: 'My street',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: '1-888777666',
-              _provId: '1-999888777',
-              _postcode: 'LN11 9JG',
-              _isRegulated: true,
-              _mainService: { id: 1, name: 'Carers support' },
-              _nmdsId: 'G1002110',
-              _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-              _overallWdfEligibility: null,
-              _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-              _staffWdfEligibility: null,
-              _isParent: false,
-              _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _parentId: 479,
-              _parentName: null,
-              _dataOwner: 'Parent',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {},
-              _readyForDeletionWorkers: null,
-              _status: 'COMPLETE',
-              _logLevel: 300
-            }
+            buildEstablishmentRecord({
+              overrides: {
+                _isRegulated: true
+              }
+            }),
+            buildSecondEstablishmentRecord()
           ]);
 
         expect(bulkUpload).to.have.property('crossValidate');
@@ -827,149 +417,19 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }
         ).Worker)(
-          {
-            AMHP: "",
-            APPRENTICE: "2",
-            AVGHOURS: "",
-            BRITISHCITIZENSHIP: "",
-            CARECERT: "3",
-            CONTHOURS: "23",
-            COUNTRYOFBIRTH: "826",
-            DAYSSICK: "1",
-            DISABLED: "0",
-            DISPLAYID: "Aaron Russell",
-            DOB: "10/12/1982",
-            EMPLSTATUS: "1",
-            ETHNICITY: "41",
-            GENDER: "1",
-            HOURLYRATE: "",
-            LOCALESTID: "MARMA",
-            MAINJOBROLE: "3",
-            MAINJRDESC: "",
-            NATIONALITY: "826",
-            NINUMBER: "JA622112A",
-            NMCREG: "",
-            NONSCQUAL: "2",
-            NURSESPEC: "",
-            OTHERJOBROLE: "10",
-            OTHERJRDESC: "",
-            POSTCODE: "LS1 1AA",
-            QUALACH01: "",
-            QUALACH01NOTES: "",
-            QUALACH02: "",
-            QUALACH02NOTES: "",
-            QUALACH03: "",
-            QUALACH03NOTES: "",
-            RECSOURCE: "16",
-            SALARY: "20000",
-            SALARYINT: "1",
-            SCQUAL: "2",
-            STARTDATE: "12/11/2001",
-            STARTINSECT: "2001",
-            STATUS: "UPDATE",
-            UNIQUEWORKERID: "3",
-            YEAROFENTRY: "",
-            ZEROHRCONT: "2"
-          },
+          buildWorkerCsv({
+            overrides: {
+              MAINJOBROLE: "3"
+            }
+          }),
           2,
           [
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 479,
-              _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _ustatus: null,
-              _created: '2019-03-15T09:54:10.562Z',
-              _updated: '2019-10-04T15:46:16.158Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech, with even more care',
-              _address1: 'First Line',
-              _address2: 'Second Line',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: 'A-328849599',
-              _provId: null,
-              _postcode: 'LN11 9JG',
-              _isRegulated: true,
-              _mainService: { id: 16, name: 'Head office services' },
-              _nmdsId: 'G1001114',
-              _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-              _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-              _establishmentWdfEligibility: null,
-              _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-              _isParent: true,
-              _parentUid: null,
-              _parentId: null,
-              _parentName: null,
-              _dataOwner: 'Workplace',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {
-              },
-              _readyForDeletionWorkers: null,
-              _status: 'NEW',
-              _logLevel: 300
-            },
-            {
-              _validations: [],
-              _username: 'aylingw',
-              _id: 1446,
-              _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-              _ustatus: null,
-              _created: '2019-07-31T15:09:57.405Z',
-              _updated: '2019-10-04T15:46:16.797Z',
-              _updatedBy: 'aylingw',
-              _auditEvents: null,
-              _name: 'WOZiTech Cares Sub 100',
-              _address1: 'Number 1',
-              _address2: 'My street',
-              _address3: '',
-              _town: 'My Town',
-              _county: '',
-              _locationId: '1-888777666',
-              _provId: '1-999888777',
-              _postcode: 'LN11 9JG',
-              _isRegulated: true,
-              _mainService: { id: 1, name: 'Carers support' },
-              _nmdsId: 'G1002110',
-              _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-              _overallWdfEligibility: null,
-              _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-              _staffWdfEligibility: null,
-              _isParent: false,
-              _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-              _parentId: 479,
-              _parentName: null,
-              _dataOwner: 'Parent',
-              _dataPermissions: 'None',
-              _archived: false,
-              _dataOwnershipRequested: null,
-              _reasonsForLeaving: '',
-              _properties: {
-                _properties: [Object],
-                _propertyTypes: [Array],
-                _auditEvents: null,
-                _modifiedProperties: [],
-                _additionalModels: null
-              },
-              _isNew: false,
-              _workerEntities: {},
-              _readyForDeletionWorkers: null,
-              _status: 'COMPLETE',
-              _logLevel: 300
-            }
+            buildEstablishmentRecord({
+              overrides: {
+                _isRegulated: true
+              }
+            }),
+            buildSecondEstablishmentRecord()
           ]);
 
         expect(bulkUpload).to.have.property('crossValidate');
@@ -997,54 +457,412 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         expect(csvWorkerSchemaErrors).to.deep.equal([]);
       });
 
+      describe('days sick', () => {
+        it('should emit a warning when days sick not already changed today', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv(),
+            2,
+            [
+              buildEstablishmentRecord()
+            ]
+          );
+
+          bulkUpload._currentWorker = buildWorkerRecord({
+            overrides: {
+              _properties: {
+                get() {
+                  return { savedAt: moment().add(-1, 'days') };
+                }
+              }
+            }
+          });
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          // assert a error was returned
+          expect(bulkUpload.validationErrors.map(err => err.warning)).to.include('DAYSSICK in the last 12 months has not changed please check this is correct');
+        });
+
+        it('should not emit a warning when days sick already changed today', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv(),
+            2,
+            [
+              buildEstablishmentRecord()
+            ]
+          );
+
+          bulkUpload._currentWorker = buildWorkerRecord();
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          // assert a error was returned
+          expect(bulkUpload.validationErrors.map(err => err.warning)).not.to.include('DAYSSICK in the last 12 months has not changed please check this is correct');
+        });
+      })
+      describe('flu jab', () => {
+        const codesToTest = ['1', '2', '999'];
+        codesToTest.forEach(code => {
+          it('should not emit an warning if FLUVAC is not ' + code, async () => {
+            const bulkUpload = new (testUtils.sandBox(
+              filename,
+              {
+                locals: {
+                  require: testUtils.wrapRequire({
+                    '../BUDI': {
+                      BUDI
+                    },
+                    'moment': moment
+                  }),
+                },
+              }
+            ).Worker)(
+              buildWorkerCsv({
+                overrides: {
+                  STATUS: 'NEW',
+                  FLUVAC: code
+                }
+              }),
+              2,
+              [
+                buildEstablishmentRecord(),
+                buildSecondEstablishmentRecord()
+              ]);
+
+            expect(bulkUpload).to.have.property('crossValidate');
+
+            // Regular validation has to run first for the establishment to populate the internal properties correctly
+            await bulkUpload.validate();
+
+            const validationErrors = bulkUpload._validationErrors;
+
+            // assert a error was returned
+            expect(validationErrors.length).to.equal(0);
+          });
+        });
+        it('should emit an warning if FLUVAC is not in 1, 2, 999, null', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                FLUVAC: '8'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(1);
+          expect(validationErrors).to.deep.equal([
+            {
+              worker: '3',
+              name: 'MARMA',
+              lineNumber: 2,
+              warnCode: 3055,
+              warnType: 'WORKER_FLUVAC_WARNING',
+              warning:
+              'FLUVAC the code you have selected has not been recognised and will be ignored',
+              source: '8'
+            }
+          ]);
+        });
+      });
+
+      describe('nurse specialisms', () => {
+        it('should not emit a warning for any combination of specialisms 1-6', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                MAINJOBROLE: "16",
+                NMCREG: '1',
+                NURSESPEC: '1;2;3;4;5;6'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(0);
+        });
+
+        it('should not emit a warning when either specialism 7 or 8', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                MAINJOBROLE: "16",
+                NMCREG: '1',
+                NURSESPEC: '7'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(0);
+        });
+
+        it('should emit a warning when any combination of specialisms 1-6 along with either 7 or 8', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                MAINJOBROLE: "16",
+                NMCREG: '1',
+                NURSESPEC: '1;2;3;8'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(1);
+          expect(validationErrors).to.deep.equal([
+            {
+              worker: '3',
+              name: 'MARMA',
+              lineNumber: 2,
+              warnCode: 3350,
+              warnType: 'NURSE_SPEC_WARNING',
+              warning:
+              'NURSESPEC it is not possible to use code 7 (not applicable) and code 8 (not known) with codes 1 to 6. Code 7 and 8 will be ignored',
+              source: '1;2;3;8'
+            }
+          ]);
+        });
+
+        it('should emit a warning when both specialisms 7 and 8', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                MAINJOBROLE: "16",
+                NMCREG: '1',
+                NURSESPEC: '7;8'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(1);
+          expect(validationErrors).to.deep.equal([
+            {
+              worker: '3',
+              name: 'MARMA',
+              lineNumber: 2,
+              warnCode: 3350,
+              warnType: 'NURSE_SPEC_WARNING',
+              warning:
+              'NURSESPEC it is not possible to use codes 7 (not applicable) with code 8 (not know). These will be ignored',
+              source: '7;8'
+            }
+          ]);
+        });
+
+        it('should emit a warning when specialism is not any of 1-8', async () => {
+          const bulkUpload = new (testUtils.sandBox(
+            filename,
+            {
+              locals: {
+                require: testUtils.wrapRequire({
+                  '../BUDI': {
+                    BUDI
+                  },
+                  'moment': moment
+                }),
+              },
+            }
+          ).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                MAINJOBROLE: "16",
+                NMCREG: '1',
+                NURSESPEC: '1;2;9'
+              }
+            }),
+            2,
+            [
+              buildEstablishmentRecord(),
+              buildSecondEstablishmentRecord()
+            ]);
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          await bulkUpload.transform();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(1);
+          expect(validationErrors).to.deep.equal([
+            {
+              worker: '3',
+              name: 'MARMA',
+              lineNumber: 2,
+              warnCode: 3350,
+              warnType: 'NURSE_SPEC_WARNING',
+              warning:
+              'NURSESPEC the code 9 you have entered has not been recognised and will be ignored',
+              source: '1;2;9'
+            }
+          ]);
+        });
+      });
+
     const countryCodesToTest = [262, 418, 995];
     countryCodesToTest.forEach(countryCode => {
         it('should validate for COUNTRYOFBIRTH ' + countryCode, async () => {
           const validator = new WorkerCsvValidator(
-            {
-              AMHP: "",
-              APPRENTICE: "2",
-              AVGHOURS: "",
-              BRITISHCITIZENSHIP: "",
-              CARECERT: "3",
-              CONTHOURS: "23",
-              COUNTRYOFBIRTH: `${countryCode}`,
-              DAYSSICK: "1",
-              DISABLED: "0",
-              DISPLAYID: "Aaron Russell",
-              DOB: "10/12/1982",
-              EMPLSTATUS: "1",
-              ETHNICITY: "41",
-              GENDER: "1",
-              HOURLYRATE: "",
-              LOCALESTID: "MARMA",
-              MAINJOBROLE: "3",
-              MAINJRDESC: "",
-              NATIONALITY: "862",
-              NINUMBER: "JA622112A",
-              NMCREG: "",
-              NONSCQUAL: "2",
-              NURSESPEC: "",
-              OTHERJOBROLE: "10",
-              OTHERJRDESC: "",
-              POSTCODE: "LS1 1AA",
-              QUALACH01: "",
-              QUALACH01NOTES: "",
-              QUALACH02: "",
-              QUALACH02NOTES: "",
-              QUALACH03: "",
-              QUALACH03NOTES: "",
-              RECSOURCE: "16",
-              SALARY: "20000",
-              SALARYINT: "1",
-              SCQUAL: "2",
-              STARTDATE: "12/11/2001",
-              STARTINSECT: "2001",
-              STATUS: "NEW",
-              UNIQUEWORKERID: "3",
-              YEAROFENTRY: "",
-              ZEROHRCONT: "2"
-            },
+            buildWorkerCsv({
+              overrides: {
+                MAINJOBROLE: "3",
+                COUNTRYOFBIRTH: `${countryCode}`,
+                NATIONALITY: "862",
+                STATUS: "NEW"
+              }
+            }),
             2,
             []);
 
@@ -1067,50 +885,14 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
 
         it('should validate for NATIONALITY ' + countryCode, async () => {
           const validator = new WorkerCsvValidator(
-            {
-              AMHP: "",
-              APPRENTICE: "2",
-              AVGHOURS: "",
-              BRITISHCITIZENSHIP: "",
-              CARECERT: "3",
-              CONTHOURS: "23",
-              COUNTRYOFBIRTH: "826",
-              DAYSSICK: "1",
-              DISABLED: "0",
-              DISPLAYID: "Aaron Russell",
-              DOB: "10/12/1982",
-              EMPLSTATUS: "1",
-              ETHNICITY: "41",
-              GENDER: "1",
-              HOURLYRATE: "",
-              LOCALESTID: "MARMA",
-              MAINJOBROLE: "3",
-              MAINJRDESC: "",
-              NATIONALITY: `${countryCode}`,
-              NINUMBER: "JA622112A",
-              NMCREG: "",
-              NONSCQUAL: "2",
-              NURSESPEC: "",
-              OTHERJOBROLE: "10",
-              OTHERJRDESC: "",
-              POSTCODE: "LS1 1AA",
-              QUALACH01: "",
-              QUALACH01NOTES: "",
-              QUALACH02: "",
-              QUALACH02NOTES: "",
-              QUALACH03: "",
-              QUALACH03NOTES: "",
-              RECSOURCE: "16",
-              SALARY: "20000",
-              SALARYINT: "1",
-              SCQUAL: "2",
-              STARTDATE: "12/11/2001",
-              STARTINSECT: "2001",
-              STATUS: "NEW",
-              UNIQUEWORKERID: "3",
-              YEAROFENTRY: "",
-              ZEROHRCONT: "2"
-            },
+            buildWorkerCsv({
+              overrides: {
+                MAINJOBROLE: "3",
+                COUNTRYOFBIRTH: "826",
+                NATIONALITY: `${countryCode}`,
+                STATUS: "NEW",
+              }
+            }),
             2,
             []);
 
@@ -1136,7 +918,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
     describe('toCSV(establishmentId, entity, MAX_QUALIFICATIONS) with worker ' + index, () => {
       it('should match the header values', async () => {
 
-      let workerCSV = getUnitInstance();
+        let workerCSV = getUnitInstance();
         const columnHeaders = workerCSV.headers(maxquals).split(',');
         workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
         expect(typeof workerCSV).to.equal('string');
@@ -1188,6 +970,11 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         expect(mappedCsv.UNIQUEWORKERID).to.equal(worker.localIdentifier);
         expect(mappedCsv.STATUS).to.equal('UNCHECKED');
         expect(mappedCsv.DISPLAYID).to.equal(worker.nameOrId);
+        if (worker.fluJab) {
+          expect(mappedCsv.FLUVAC).to.equal('2');
+        } else {
+          expect(mappedCsv.FLUVAC).to.equal('');
+        }
         if (worker.nationalInsuranceNumber) {
           expect(mappedCsv.NINUMBER).to.equal(worker.nationalInsuranceNumber.replace(/\s+/g, ''));
         } else {
@@ -1323,8 +1110,8 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           expect(mappedCsv.NMCREG).to.equal('');
         }
         // Needs sandbox
-        if (worker.nurseSpecialism) {
-          expect(parseInt(mappedCsv.NURSESPEC)).to.equal(worker.nurseSpecialism.id);
+        if (worker.nurseSpecialisms && worker.nurseSpecialisms.value === 'Yes') {
+          expect(parseInt(mappedCsv.NURSESPEC)).to.equal(worker.nurseSpecialisms.specialisms[0].id);
         } else {
           expect(mappedCsv.NURSESPEC).to.equal('');
         }
@@ -1359,15 +1146,29 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         }
       });
     });
-    apprenticeshipTypes.forEach(apprenticeshipType => {
+    yesNoDontKnow.forEach(apprenticeshipType => {
       it('should output the correct apprenticeship figure with apprenticeship value ' + apprenticeshipType.value, async () => {
         worker.apprenticeship = apprenticeshipType.value;
         let workerCSV = getUnitInstance();
         workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
         const output = workerCSV.split(',');
         // 19 column is apprenticeship
-        expect(output[18]).to.deep.equal(apprenticeshipType.code);
+        expect(output[19]).to.deep.equal(apprenticeshipType.code);
       });
+    });
+  });
+  describe('isContent()', () => {
+    it('return true when headings match with CHGUNIQUEWRKID', async () => {
+      const header = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI';
+      expect(WorkerCsvValidator.isContent(header)).to.deep.equal(true);
+    });
+    it('return true when headings match without CHGUNIQUEWRKID', async () => {
+      const header = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,';
+      expect(WorkerCsvValidator.isContent(header)).to.deep.equal(true);
+    });
+    it('return false when headings don\'t match', async () => {
+      const header = 'NOTATALLWHATWEEXPECT,HOWCOULDYOUUPLOADTHISFILE,';
+      expect(WorkerCsvValidator.isContent(header)).to.deep.equal(false);
     });
   });
 });

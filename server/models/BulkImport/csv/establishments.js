@@ -4,10 +4,11 @@ const hasProp = (obj, prop) =>
 
 const BUDI = require('../BUDI').BUDI;
 const models = require('../../index');
+const clonedeep = require('lodash.clonedeep');
+const moment = require('moment');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
-const localAuthorityEmployerTypes = [1, 3];
 const nonDirectCareJobRoles = [1, 2, 4, 5, 7, 8, 9, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28];
 const employedContractStatusIds = [1, 2];
 const cqcRegulatedServiceCodes = [24, 25, 20, 22, 21, 23, 19, 27, 28, 26, 29, 30, 32, 31, 33, 34];
@@ -1306,77 +1307,75 @@ class Establishment {
     };
   }
 
+  getTotal(allWorkers) {
+    let total = 0;
+    for (let totalInRole of allWorkers.split(';')) {
+      if (totalInRole !== '999') {
+        total += parseInt(totalInRole);
+      }
+    }
+    return total;
+  }
+
   _crossValidateTotalPermTemp (
     csvEstablishmentSchemaErrors,
-    {
-      employedWorkers = 0,
-      nonEmployedWorkers = 0,
-      directCareWorkers = 0,
-      managerialProfessionalWorkers = 0
-    }) {
+    { employedWorkers = 0, nonEmployedWorkers = 0 }
+  ) {
+    const vacancies = this.getTotal(this._currentLine.VACANCIES);
+    const starters = this.getTotal(this._currentLine.STARTERS);
+    const leavers = this.getTotal(this._currentLine.LEAVERS);
+
     const template = {
       origin: 'Establishments',
       lineNumber: this._lineNumber,
-      warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
-      warnType: 'TOTAL_PERM_TEMP_WARNING',
       source: this._currentLine.TOTALPERMTEMP,
-      name: this._currentLine.LOCALESTID
+      name: this._currentLine.LOCALESTID,
     };
 
-    // Is the establishment CQC regulated?
-    const isCQCRegulated = this._regType === 2;
+    const totalStaff = employedWorkers + nonEmployedWorkers;
 
-    // Is the establishment a local authority?
-    const isLocalAuthority = localAuthorityEmployerTypes.findIndex(type => this._establishmentType === type) !== -1;
-
-
-    let notSharedLivesOnly = false;
-    let notHeadOfficeOnly = false;
-    if (this._mainService && this._mainService.id) {
-      // Is the establishment only shared lives (code 19)?
-     notSharedLivesOnly = this._mainService.id !== 19;
-
-    // Is the establishment only head office services (code 16)?
-     notHeadOfficeOnly = this._mainService.id !== 16;
-    }
-    if (this._totalPermTemp === employedWorkers + nonEmployedWorkers) {
-      if (notHeadOfficeOnly) {
-        if (employedWorkers === 0) {
-          if(false) {
-            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-              warning: 'The number of employed staff is 0 please check your staff records'
-            }));
-          }
-        } else if (employedWorkers < nonEmployedWorkers) {
-          if(false) {
-            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-              warning: 'The number of employed staff is less than the number of non-employed staff please check your staff records'
-            }));
-          }
-        }
-
-        if (isCQCRegulated && notSharedLivesOnly && directCareWorkers === 0) {
-          if(false) {
-            csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-              warning: 'The number of direct care staff is 0 please check your staff records'
-            }));
-          }
-        }
+    if (this._totalPermTemp !== totalStaff) {
+      csvEstablishmentSchemaErrors.unshift(
+        Object.assign(clonedeep(template), {
+          warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
+          warnType: 'TOTAL_PERM_TEMP_WARNING',
+          warning: 'TOTALPERMTEMP (Total staff and the number of worker records) does not match',
+        })
+      );
+    } else if(this._totalPermTemp === totalStaff) {
+      if (starters > totalStaff) {
+        csvEstablishmentSchemaErrors.unshift(
+          Object.assign(clonedeep(template), {
+            warnCode: Establishment.STARTERS_WARNING,
+            warnType: 'STARTERS_WARNING',
+            warning: 'STARTERS data you have entered does not fall within the expected range please ensure this is correct',
+          })
+        )
       }
-
-      if (isLocalAuthority && managerialProfessionalWorkers === 0) {
-        if(false) {
-          csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
-            warning: 'The number of non-direct care staff is 0 please check your staff records'
-          }));
-        }
+      if (leavers >= totalStaff) {
+        csvEstablishmentSchemaErrors.unshift(
+          Object.assign(clonedeep(template), {
+            warnCode: Establishment.LEAVERS_WARNING,
+            warnType: 'LEAVERS_WARNING',
+            warning: 'LEAVERS data you have entered does not fall within the expected range please ensure this is correct',
+          })
+        );
+      }
+      if (vacancies >= totalStaff) {
+        csvEstablishmentSchemaErrors.unshift(
+          Object.assign(clonedeep(template), {
+            warnCode: Establishment.VACANCIES_WARNING,
+            warnType: 'VACANCIES_WARNING',
+            warning: 'VACANCIES data you have entered does not fall within the expected range please ensure this is correct',
+          })
+        );
       }
     }
   }
 
   _validateAllJobs () {
     // optional
-    const allJobs = this._currentLine.ALLJOBROLES.split(';');
+    const allJobs = (this._currentLine.ALLJOBROLES) ? this._currentLine.ALLJOBROLES.split(';') : [];
     const localValidationErrors = [];
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
@@ -1481,6 +1480,7 @@ class Establishment {
 
     const regManager = 4;
     const isCQCRegulated = myRegType === 2;
+    const notHeadOffice = this._currentLine.MAINSERVICE !== '72'; // Head Office ID
 
     const hasRegisteredManagerVacancy =() => {
       let regManagerVacancies = 0;
@@ -1490,7 +1490,7 @@ class Establishment {
       return regManagerVacancies > 0;
     };
 
-    if(isCQCRegulated && !hasRegisteredManagerVacancy() && registeredManager === 0) {
+    if(isCQCRegulated && !hasRegisteredManagerVacancy() && registeredManager === 0 && notHeadOffice) {
       csvEstablishmentSchemaErrors.unshift(Object.assign(template, {
         error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one'
       }));
@@ -1504,25 +1504,40 @@ class Establishment {
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
     const leavers = this._currentLine.LEAVERS.split(';');
-
     const localValidationErrors = [];
     const allJobsCount = this._alljobs ? this._alljobs.length : 0;
+    const DONT_KNOW = '999'; // MUST BE A STRING VALUE!!!!!
+    const NONE = '0';
 
     if (allJobsCount === 0) {
       // no jobs defined, so ignore starters, leavers and vacancies
+      if( vacancies[0] === DONT_KNOW){
+        this._vacancies = [parseInt(DONT_KNOW)];
+      }else if(vacancies[0] === NONE){
+        this._vacancies = [parseInt(NONE)];
+      }
+      if( starters[0] === DONT_KNOW){
+        this._starters = [parseInt(DONT_KNOW)];
+      }else if(starters[0] === NONE){
+        this._starters = [parseInt(NONE)];
+      }
+      if( leavers[0] === DONT_KNOW){
+        this._leavers = [parseInt(DONT_KNOW)];
+      }else if(leavers[0] === NONE){
+        this._leavers = [parseInt(NONE)];
+      }
       return true;
     }
 
     // all counts must have the same number of entries as all job roles
     //  - except starters, leavers and vacancies can be a single value of 999
-    const DONT_KNOW = '999'; // MUST BE A STRING VALUE!!!!!
 
     if (!((vacancies.length === 1 && vacancies[0] === DONT_KNOW) || (vacancies.length === allJobsCount))) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.VACANCIES_ERROR,
         errType: 'VACANCIES_ERROR',
-        error: 'Vacancies (VACANCIES) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values',
+        error: 'ALLJOBROLES and VACANCIES do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.VACANCIES} - ${this._currentLine.ALLJOBROLES}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1533,7 +1548,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.STARTERS_ERROR,
         errType: 'STARTERS_ERROR',
-        error: 'Starters (STARTERS) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values',
+        error: 'ALLJOBROLES and STARTERS do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.STARTERS} - ${this._currentLine.ALLJOBROLES}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1544,7 +1559,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.LEAVERS_ERROR,
         errType: 'LEAVERS_ERROR',
-        error: 'Leavers (LEAVERS) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values',
+        error: 'ALLJOBROLES and LEAVERS do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.LEAVERS} - ${this._currentLine.ALLJOBROLES}`,
         name: this._currentLine.LOCALESTID
       });
@@ -1611,6 +1626,91 @@ class Establishment {
     return true;
   }
 
+  _validateNoChange () {
+    let localValidationErrors= [];
+    var thisEstablishment = this._allCurrentEstablishments.find(establishment => establishment.localIdentifier.replace(/\s/g, '') === this._currentLine.LOCALESTID.replace(/\s/g, ''));
+    const startersSavedAt = moment(thisEstablishment._properties.get("Starters").savedAt);
+
+    const starterWarning = this._getStartersNoChangeWarning();
+    localValidationErrors = this._startersLeaverVacanciesWarnings(thisEstablishment.starters, this.starters,startersSavedAt, localValidationErrors, starterWarning);
+
+    const leaversSavedAt = moment(thisEstablishment._properties.get("Leavers").savedAt);
+    const leaverWarning  = this._getLeaversNoChangeWarning();
+    localValidationErrors = this._startersLeaverVacanciesWarnings(thisEstablishment.leavers,this.leavers,leaversSavedAt,localValidationErrors,leaverWarning);
+
+    const vacanciesSavedAt = moment(thisEstablishment._properties.get("Vacancies").savedAt);
+    const vacanciesWarning = this._getVacanciesNoChangeWarning();
+    localValidationErrors = this._startersLeaverVacanciesWarnings(thisEstablishment.vacancies,this.vacancies,vacanciesSavedAt,localValidationErrors,vacanciesWarning);
+
+    if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
+        return false;
+      }
+      return true;
+  }
+
+
+  _startersLeaverVacanciesWarnings(dbValues, buValues, savedAt, localValidationErrors, warning) {
+    if (!savedAt.isSame(Date.now(), 'day')) {
+      if (!Array.isArray(this.allJobs)) return localValidationErrors;
+      let isSame = true;
+      for (var i = 0; i < this.allJobs.length; i++) {
+        const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(this.allJobs[i]));
+        const buValue = buValues && buValues[i] ? buValues[i] : null;
+        if (dbValues && Array.isArray(dbValues) && dbValues.length > 0) {
+          const starterJob = dbValues.find(job => job.jobId === mappedRole);
+
+          if ((starterJob && starterJob.total !== buValue) || (!starterJob && buValue > 0)) {
+            isSame = false;
+            break;
+          }
+        } else {
+          if (buValue > 0) {
+            isSame = false;
+            break;
+          }
+        }
+      }
+      if (this.allJobs && this.allJobs.length === 0 && dbValues && Array.isArray(dbValues) && dbValues.length > 0) isSame = false;
+      if (isSame) {
+        localValidationErrors.push(warning);
+      }
+    }
+    return localValidationErrors;
+  }
+
+  _getStartersNoChangeWarning() {
+    return {
+      lineNumber: this._lineNumber,
+      warnCode: Establishment.STARTERS_WARNING,
+      warnType: 'STARTERS_WARNING',
+      warning: `STARTERS in the last 12 months has not changed please check this is correct`,
+      source: this.starters,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+  _getVacanciesNoChangeWarning() {
+    return {
+      lineNumber: this._lineNumber,
+      warnCode: Establishment.VACANCIES_WARNING,
+      warnType: 'VACANCIES_WARNING',
+      warning: `VACANCIES value has not changed please check this is correct`,
+      source: this.vacancies,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+  _getLeaversNoChangeWarning() {
+    return {
+      lineNumber: this._lineNumber,
+      warnCode: Establishment.LEAVERS_WARNING,
+      warnType: 'LEAVERS_WARNING',
+      warning: `LEAVERS in the last 12 months has not changed please check this is correct`,
+      source: this.leavers,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+
+
   _validateReasonsForLeaving () {
     // only if the sum of "LEAVERS" is greater than 0
     const sumOfLeavers = this._leavers && Array.isArray(this._leavers) && this._leavers[0] !== 999 ? this._leavers.reduce((total, thisCount) => total + thisCount) : 0;
@@ -1671,7 +1771,7 @@ class Establishment {
       // sum of  all reasons counts must equal the sum of leavers
       const sumOfReasonsCounts = allReasonsCounts.reduce((total, thisCount) => parseInt(total, 10) + parseInt(thisCount, 10));
 
-      if (sumOfReasonsCounts !== sumOfLeavers) {
+      if (parseInt(sumOfReasonsCounts) !== parseInt(sumOfLeavers)) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
@@ -2098,38 +2198,38 @@ class Establishment {
 
   // returns true on success, false is any attribute of Establishment fails
   async validate () {
-    let status = true;
-
-    status = !this._validateLocalisedId() ? false : status;
-    status = !this._validateEstablishmentName() ? false : status;
-    status = !this._validateStatus() ? false : status;
+    this._validateLocalisedId();
+    this._validateEstablishmentName();
+    this._validateStatus();
 
     // if the status is unchecked or deleted, then don't continue validation
     if (!STOP_VALIDATING_ON.includes(this._status)) {
-      status = await this._validateAddress() ? false : status;
-      status = !this._validateEstablishmentType() ? false : status;
+      await this._validateAddress();
+      this._validateEstablishmentType();
 
-      status = !this._validateShareWithCQC() ? false : status;
-      status = !this._validateShareWithLA() ? false : status;
-      status = !this._validateLocalAuthorities() ? false : status;
+      this._validateShareWithCQC();
+      this._validateShareWithLA();
+      this._validateLocalAuthorities();
 
-      status = !this._validateMainService() ? false : status;
-      status = !this._validateRegType() ? false : status;
-      status = !this._validateProvID() ? false : status;
-      status = await this._validateLocationID() ? false : status;
+      this._validateMainService();
+      this._validateRegType();
+      this._validateProvID();
+      await this._validateLocationID();
 
-      status = !this._validateAllServices() ? false : status;
-      status = !this._validateServiceUsers() ? false : status;
-      status = !this._validateCapacitiesAndUtilisations() ? false : status;
+      this._validateAllServices();
+      this._validateServiceUsers();
+      this._validateCapacitiesAndUtilisations();
 
-      status = !this._validateTotalPermTemp() ? false : status;
-      status = !this._validateAllJobs() ? false : status;
-      status = !this._validateJobRoleTotals() ? false : status;
+      this._validateTotalPermTemp();
+      this._validateAllJobs();
+      this._validateJobRoleTotals();
 
-      status = !this._validateReasonsForLeaving() ? false : status;
+      this._validateReasonsForLeaving();
+
+      // this._validateNoChange(); // Not working, disabled for LA Window
     }
 
-    return status;
+    return this.validationErrors.length === 0;
   }
 
   // Adds items to csvEstablishmentSchemaErrors if validations that depend on
@@ -2140,7 +2240,7 @@ class Establishment {
     fetchMyEstablishmentsWorkers
   }) {
     // if establishment isn't being added or updated then exit early
-    if (!(['NEW', 'UPDATE'].includes(this._status))) {
+    if (!(['NEW', 'UPDATE', 'NOCHANGE'].includes(this._status))) {
       return;
     }
 
@@ -2198,9 +2298,6 @@ class Establishment {
         }
       });
 
-
-
-    // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
     this._crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, totals);
     this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }
@@ -2351,9 +2448,9 @@ class Establishment {
           return returnThis;
         }) : [],
       numberOfStaff: this._totalPermTemp,
-      vacancies: this._vacancies ? this._vacancies : 'None',
-      starters: this._starters ? this._starters : 'None',
-      leavers: this.leavers ? this.leavers : 'None'
+      vacancies: this._vacancies,
+      starters: this._starters,
+      leavers: this._leavers,
     };
 
     if (this._regType === 2) {

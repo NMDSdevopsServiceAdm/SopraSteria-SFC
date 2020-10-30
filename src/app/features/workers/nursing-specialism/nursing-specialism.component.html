@@ -2,26 +2,79 @@
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop">
+    <div class="govuk-grid-column-three-quarters-from-desktop">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              Which of the following specialisms does this nurse use in their current role?
-            </h1>
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl govuk-!-margin-bottom-4">
+            <h1 class="govuk-fieldset__heading">Is this nurse using any of their specialisms in their current role?</h1>
           </legend>
-          <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let specialism of nursingSpecialism; let i = index">
+          <p>
+            All registered nurses choose from one of four specialisms as part of their nursing degree (adult nursing,
+            children's nursing, mental health nursing or learning disability nursing). They can specialise in other
+            areas like community care after they have qualified.
+          </p>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                id="nurseSpecialism-{{ i }}"
-                [formControlName]="'nurseSpecialism'"
-                name="nurseSpecialism"
+                id="hasNurseSpecialism-yes"
+                name="hasNurseSpecialism"
+                formControlName="hasNurseSpecialism"
                 type="radio"
-                [value]="specialism"
+                value="Yes"
               />
-              <label class="govuk-label govuk-radios__label" for="nurseSpecialism-{{ i }}">
-                {{ specialism }}
+              <label for="hasNurseSpecialism-yes" class="govuk-label govuk-radios__label">Yes</label>
+            </div>
+            <div
+              class="govuk-radios__conditional govuk-radios__conditional--hidden"
+              [class.govuk-radios__conditional--hidden]="form.get('hasNurseSpecialism').value !== 'Yes'"
+              id="conditional-nurseSpecialism"
+            >
+              <div class="govuk-form-group">
+                <span id="selectedNurseSpecialisms-hint" class="govuk-hint">Select all that apply.</span>
+                <div class="govuk-checkboxes">
+                  <div
+                    class="govuk-checkboxes__item"
+                    *ngFor="let specialism of selectedNurseSpecialismsArray.controls; let i = index"
+                  >
+                    <input
+                      class="govuk-checkboxes__input"
+                      id="selectedNurseSpecialism-{{ i }}"
+                      name="selectedNurseSpecialisms"
+                      type="checkbox"
+                      (change)="specialism.value.checked = !specialism.value.checked"
+                      [checked]="specialism.value.checked"
+                      [value]="specialism.value.specialism"
+                    />
+                    <label class="govuk-label govuk-checkboxes__label" for="selectedNurseSpecialism-{{ i }}">
+                      {{ specialism.value.specialism | nursingSpecialismsText }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="hasNurseSpecialism-dontKnow"
+                name="hasNurseSpecialism"
+                formControlName="hasNurseSpecialism"
+                type="radio"
+                value="Don't know"
+              />
+              <label for="hasNurseSpecialism-dontKnow" class="govuk-label govuk-radios__label"> Don't know </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="hasNurseSpecialism-no"
+                name="hasNurseSpecialism"
+                formControlName="hasNurseSpecialism"
+                type="radio"
+                value="No"
+              />
+              <label for="hasNurseSpecialism-no" class="govuk-label govuk-radios__label">
+                This nurse is not using any of their specialisms in their current role
               </label>
             </div>
           </div>

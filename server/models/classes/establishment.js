@@ -11,8 +11,7 @@ const moment = require('moment');
 const uuid = require('uuid');
 
 // Shorthand for hasOwnProperty that also works with bare objects
-const hasProp = (obj, prop) =>
-  Object.prototype.hasOwnProperty.bind(obj)(prop);
+const hasProp = (obj, prop) => Object.prototype.hasOwnProperty.bind(obj)(prop);
 
 // database models
 const models = require('../index');
@@ -22,9 +21,6 @@ const ValidationMessage = require('./validations/validationMessage').ValidationM
 
 // associations
 const Worker = require('./worker').Worker;
-
-// notifications
-const AWSKinesis = require('../../aws/kinesis');
 
 // exceptions
 const EstablishmentExceptions = require('./establishment/establishmentExceptions');
@@ -204,6 +200,14 @@ class Establishment extends EntityValidator {
 
   get postcode() {
     return this._postcode;
+  }
+
+  get latitude() {
+    return this._properties.get('Latitude') ? this._properties.get('Latitude').property : null;
+  }
+
+  get longitude() {
+    return this._properties.get('Longitude') ? this._properties.get('Longitude').property : null;
   }
 
   get isRegulated() {
@@ -400,21 +404,11 @@ class Establishment extends EntityValidator {
       }
       // Consequential updates when one value means another should be empty or null
 
-      // When sharing is disabled, the local authority shared with should be removed
-      // if (document.share) {
-      //   if (!document.share.enabled) {
-      //     document.share.with = [];
-      //     document.localAuthorities = [];
-      //   }
-      // }
-
-      // If an establishment is not CQC regulated, remove CQC sharing and remove a location ID if set
-      // if (document.IsCQCRegulated === false || document.isRegulated === false) {
-      //   if (document.share && document.share.with) {
-      //     document.share.with = document.share.with.filter(item => item !== 'CQC');
-      //   }
-      //   document.locationId = null;
-      // }
+      if (document.share) {
+        if (!document.share.enabled || (document.share.enabled && !document.share.with.includes('Local Authority'))) {
+          document.localAuthorities = [];
+        }
+      }
 
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();
@@ -432,11 +426,11 @@ class Establishment extends EntityValidator {
           mainServiceAdded = true;
         }
         if (document && document.otherServices && Array.isArray(document.otherServices)) {
-          document.otherServices.forEach(thisService => {
+          document.otherServices.forEach((thisService) => {
             if (thisService.id) {
               allAssociatedServiceIndices.push(thisService.id);
             } else if (thisService.services && Array.isArray(thisService.services)) {
-              thisService.services.forEach(innerService => {
+              thisService.services.forEach((innerService) => {
                 allAssociatedServiceIndices.push(innerService.id);
               });
             }
@@ -444,7 +438,7 @@ class Establishment extends EntityValidator {
           servicesAdded = true;
         }
         if (document && document.services && Array.isArray(document.services)) {
-          document.services.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+          document.services.forEach((thisService) => allAssociatedServiceIndices.push(thisService.id));
 
           // if no main service given in document, then use the current known main service property
           if (!mainServiceAdded && this.mainService) {
@@ -454,7 +448,7 @@ class Establishment extends EntityValidator {
           servicesAdded = true;
         }
         if (mainServiceAdded && !servicesAdded && this.otherServices) {
-          this.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+          this.otherServices.forEach((thisService) => allAssociatedServiceIndices.push(thisService.id));
         }
 
         document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
@@ -468,11 +462,11 @@ class Establishment extends EntityValidator {
         if (hasProp(document, 'isRegulated')) {
           this._isRegulated = document.isRegulated;
 
-          if(!this.isRegulated) {
+          if (!this.isRegulated) {
             this._locationId = null;
 
             if (this.shareWith && this.shareWith.with) {
-              this.shareWith.with = this.shareWith.with.filter(x => x !== 'CQC');
+              this.shareWith.with = this.shareWith.with.filter((x) => x !== 'CQC');
             }
           }
         }
@@ -510,7 +504,7 @@ class Establishment extends EntityValidator {
         if (document.workers && Array.isArray(document.workers)) {
           this._readyForDeletionWorkers = [];
 
-          document.workers.forEach(thisWorker => {
+          document.workers.forEach((thisWorker) => {
             // we're loading from JSON, not entity, so there is no key property; so add it
             thisWorker.key = thisWorker.localIdentifier
               ? thisWorker.localIdentifier.replace(/\s/g, '')
@@ -539,8 +533,8 @@ class Establishment extends EntityValidator {
 
           // this has updated existing Worker associations and/or added new Worker associations
           // however, how do we mark for deletion those no longer required
-          Object.values(this._workerEntities).forEach(thisWorker => {
-            const foundWorker = document.workers.find(givenWorker => {
+          Object.values(this._workerEntities).forEach((thisWorker) => {
+            const foundWorker = document.workers.find((givenWorker) => {
               return givenWorker.key === thisWorker.key;
             });
             if (!foundWorker) {
@@ -569,11 +563,11 @@ class Establishment extends EntityValidator {
         // only add validations if not already existing
         if (thisEstablishmentIsValid && Array.isArray(thisEstablishmentIsValid) && this._validations.length === 0) {
           const propertySuffixLength = 'Property'.length * -1;
-          thisEstablishmentIsValid.forEach(thisInvalidProp => {
+          thisEstablishmentIsValid.forEach((thisInvalidProp) => {
             this._validations.push(
               new ValidationMessage(ValidationMessage.WARNING, 111111111, 'Invalid', [
                 thisInvalidProp.slice(0, propertySuffixLength),
-              ])
+              ]),
             );
           });
         }
@@ -588,10 +582,10 @@ class Establishment extends EntityValidator {
 
   async saveAssociatedEntities(savedBy, bulkUploaded = false, externalTransaction) {
     if (this._workerEntities) {
-      const log = result => result == null;
+      const log = (result) => result == null;
 
       try {
-        const workersAsArray = Object.values(this._workerEntities).map(thisWorker => {
+        const workersAsArray = Object.values(this._workerEntities).map((thisWorker) => {
           thisWorker.establishmentId = this._id;
           return thisWorker;
         });
@@ -601,7 +595,7 @@ class Establishment extends EntityValidator {
         await workersAsArray.reduce(
           (p, thisWorkerToSave) =>
             p.then(() => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true)).then(log),
-          starterSavePromise
+          starterSavePromise,
         );
 
         // now deleted workers
@@ -609,7 +603,7 @@ class Establishment extends EntityValidator {
         await this._readyForDeletionWorkers.reduce(
           (p, thisWorkerToDelete) =>
             p.then(() => thisWorkerToDelete.archive(savedBy, externalTransaction, true).then(log)),
-          starterDeletedPromise
+          starterDeletedPromise,
         );
       } catch (err) {
         console.error('Establishment::saveAssociatedEntities error: ', err);
@@ -631,7 +625,7 @@ class Establishment extends EntityValidator {
         this.uid,
         this.name,
         'Not able to save an unknown uid',
-        'Establishment does not exist'
+        'Establishment does not exist',
       );
     }
 
@@ -642,7 +636,7 @@ class Establishment extends EntityValidator {
         await this.saveAssociatedEntities(
           savedBy,
           bulkUploaded,
-          externalTransaction || (await models.sequelize.transaction())
+          externalTransaction || (await models.sequelize.transaction()),
         );
       }
 
@@ -687,7 +681,7 @@ class Establishment extends EntityValidator {
               limit 1`,
             {
               type: models.sequelize.QueryTypes.SELECT,
-            }
+            },
           );
 
           if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
@@ -720,7 +714,7 @@ class Establishment extends EntityValidator {
             this.uid,
             this.name,
             'Failed to generate NMDS ID',
-            'Failed to generate NMDS ID'
+            'Failed to generate NMDS ID',
           );
         }
 
@@ -756,7 +750,7 @@ class Establishment extends EntityValidator {
 
         // need to create the Establishment record and the Establishment Audit event
         //  in one transaction
-        await models.sequelize.transaction(async t => {
+        await models.sequelize.transaction(async (t) => {
           // the saving of an Establishment can be initiated within
           //  an external transaction
           const thisTransaction = externalTransaction || t;
@@ -791,12 +785,12 @@ class Establishment extends EntityValidator {
               type: 'created',
             },
           ].concat(
-            this._properties.auditEvents.map(thisEvent => {
+            this._properties.auditEvents.map((thisEvent) => {
               return {
                 ...thisEvent,
                 establishmentFk: this._id,
               };
-            })
+            }),
           );
           await models.establishmentAudit.bulkCreate(allAuditEvents, { transaction: thisTransaction });
 
@@ -804,30 +798,30 @@ class Establishment extends EntityValidator {
           const additionalModels = this._properties.additionalModels;
           const additionalModelsByname = Object.keys(additionalModels);
           const deleteModelPromises = [];
-          additionalModelsByname.forEach(async thisModelByName => {
+          additionalModelsByname.forEach(async (thisModelByName) => {
             deleteModelPromises.push(
               models[thisModelByName].destroy({
                 where: {
                   establishmentId: this._id,
                 },
                 transaction: thisTransaction,
-              })
+              }),
             );
           });
           await Promise.all(deleteModelPromises);
           const createModelPromises = [];
-          additionalModelsByname.forEach(async thisModelByName => {
+          additionalModelsByname.forEach(async (thisModelByName) => {
             const thisModelData = additionalModels[thisModelByName];
             createModelPromises.push(
               models[thisModelByName].bulkCreate(
-                thisModelData.map(thisRecord => {
+                thisModelData.map((thisRecord) => {
                   return {
                     ...thisRecord,
                     establishmentId: this._id,
                   };
                 }),
-                { transaction: thisTransaction }
-              )
+                { transaction: thisTransaction },
+              ),
             );
           });
           await Promise.all(createModelPromises);
@@ -840,12 +834,9 @@ class Establishment extends EntityValidator {
               null,
               thisTransaction,
               WdfCalculator.ESTABLISHMENT_ADD,
-              false
+              false,
             );
           }
-
-          // this is an async method - don't wait for it to return
-          AWSKinesis.establishmentPump(AWSKinesis.CREATED, this.toJSON());
 
           // if requested, propagate the saving of this establishment down to each of the associated entities
           if (associatedEntities) {
@@ -854,7 +845,7 @@ class Establishment extends EntityValidator {
 
           this._log(
             Establishment.LOG_INFO,
-            `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`
+            `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`,
           );
         });
       } catch (err) {
@@ -870,7 +861,7 @@ class Establishment extends EntityValidator {
               this.uid,
               this.name,
               'Duplicate Establishment',
-              'Duplicate Establishment'
+              'Duplicate Establishment',
             );
           }
         }
@@ -882,7 +873,7 @@ class Establishment extends EntityValidator {
               this.uid,
               this.name,
               'Duplicate LocalIdentifier',
-              'Duplicate LocalIdentifier'
+              'Duplicate LocalIdentifier',
             );
           }
         }
@@ -894,7 +885,7 @@ class Establishment extends EntityValidator {
             this.uid,
             this.name,
             'Unknown Location',
-            'Unknown Location'
+            'Unknown Location',
           );
         }
 
@@ -904,7 +895,7 @@ class Establishment extends EntityValidator {
             this.uid,
             this.name,
             'Unknown NMDSID',
-            'Unknown NMDSID'
+            'Unknown NMDSID',
           );
         }
 
@@ -918,17 +909,13 @@ class Establishment extends EntityValidator {
 
         // need to update the existing Establishment record and add an
         //  updated audit event within a single transaction
-        await models.sequelize.transaction(async t => {
+        await models.sequelize.transaction(async (t) => {
           // the saving of an Establishment can be initiated within
           //  an external transaction
           const thisTransaction = externalTransaction || t;
           const buChanged = this._status === 'NOCHANGE';
           // now append the extendable properties
           const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
-          if(modifedUpdateDocument && !modifedUpdateDocument.ShareDataValue){
-            modifedUpdateDocument.shareWithCQC = false;
-            modifedUpdateDocument.shareWithLA = false;
-          }
 
           // note - if the establishment was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {
@@ -954,7 +941,6 @@ class Establishment extends EntityValidator {
           // it's current WDF eligibility. If it is eligible then
           // update the last WDF Eligibility status
           const wdfEligibility = await this.isWdfEligible(WdfCalculator.effectiveDate);
-          const effectiveDateTime = WdfCalculator.effectiveTime;
 
           let wdfAudit = null;
 
@@ -997,12 +983,12 @@ class Establishment extends EntityValidator {
                 type: 'updated',
               },
             ].concat(
-              this._properties.auditEvents.map(thisEvent => {
+              this._properties.auditEvents.map((thisEvent) => {
                 return {
                   ...thisEvent,
                   establishmentFk: this._id,
                 };
-              })
+              }),
             );
 
             if (wdfAudit) {
@@ -1017,14 +1003,14 @@ class Establishment extends EntityValidator {
             const additionalModelsByname = Object.keys(additionalModels);
             const deleteModelPromises = [];
 
-            additionalModelsByname.forEach(async thisModelByName => {
+            additionalModelsByname.forEach(async (thisModelByName) => {
               deleteModelPromises.push(
                 models[thisModelByName].destroy({
                   where: {
                     establishmentId: this._id,
                   },
                   transaction: thisTransaction,
-                })
+                }),
               );
             });
 
@@ -1032,18 +1018,18 @@ class Establishment extends EntityValidator {
 
             const createModelPromises = [];
 
-            additionalModelsByname.forEach(async thisModelByName => {
+            additionalModelsByname.forEach(async (thisModelByName) => {
               const thisModelData = additionalModels[thisModelByName];
               createModelPromises.push(
                 models[thisModelByName].bulkCreate(
-                  thisModelData.map(thisRecord => {
+                  thisModelData.map((thisRecord) => {
                     return {
                       ...thisRecord,
                       establishmentId: this._id,
                     };
                   }),
-                  { transaction: thisTransaction }
-                )
+                  { transaction: thisTransaction },
+                ),
               );
             });
 
@@ -1057,7 +1043,7 @@ class Establishment extends EntityValidator {
                 null,
                 thisTransaction,
                 WdfCalculator.ESTABLISHMENT_UPDATE,
-                false
+                false,
               );
             }
 
@@ -1066,9 +1052,6 @@ class Establishment extends EntityValidator {
               await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
             }
 
-            // this is an async method - don't wait for it to return
-            AWSKinesis.establishmentPump(AWSKinesis.UPDATED, this.toJSON());
-
             this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
           } else {
             throw new EstablishmentExceptions.EstablishmentSaveException(
@@ -1076,7 +1059,7 @@ class Establishment extends EntityValidator {
               this.uid,
               this.name,
               `Failed to update resulting establishment record with id: ${this._id}`,
-              `Failed to update resulting establishment record with id: ${this._id}`
+              `Failed to update resulting establishment record with id: ${this._id}`,
             );
           }
         });
@@ -1088,7 +1071,7 @@ class Establishment extends EntityValidator {
               this.uid,
               this.name,
               'Duplicate LocalIdentifier',
-              'Duplicate LocalIdentifier'
+              'Duplicate LocalIdentifier',
             );
           }
         }
@@ -1098,7 +1081,7 @@ class Establishment extends EntityValidator {
           this.uid,
           this.name,
           err,
-          `Failed to update establishment record with id: ${this._id}`
+          `Failed to update establishment record with id: ${this._id}`,
         );
       }
     }
@@ -1106,12 +1089,12 @@ class Establishment extends EntityValidator {
     return mustSave;
   }
 
-/**
+  /**
    * Function to fetch all the parents details.
    * @param id is a string or number
    * @fetchQuery consist of parameters based on which we will filter parent detals.
    */
-   async fetchParentDetails(id) {
+  async fetchParentDetails(id) {
     if (!id) {
       throw new EstablishmentExceptions.EstablishmentRestoreException(
         null,
@@ -1119,7 +1102,7 @@ class Establishment extends EntityValidator {
         null,
         'User::restore failed: Missing id or uid',
         null,
-        'Unexpected Error'
+        'Unexpected Error',
       );
     }
     try {
@@ -1155,7 +1138,7 @@ class Establishment extends EntityValidator {
     }
   }
 
- /**
+  /**
    * Function will update linkToParentRequested column.
    * @param establishmentId is a number
    */
@@ -1169,7 +1152,7 @@ class Establishment extends EntityValidator {
           where: {
             id: establishmentId,
           },
-        }
+        },
       );
       if (updatedEstablishment) {
         return true;
@@ -1189,7 +1172,7 @@ class Establishment extends EntityValidator {
         null,
         'User::restore failed: Missing id or uid',
         null,
-        'Unexpected Error'
+        'Unexpected Error',
       );
     }
     try {
@@ -1280,7 +1263,7 @@ class Establishment extends EntityValidator {
         });
 
         const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([
-          ServiceCache.allMyOtherServices(establishmentServices.map(x => x)),
+          ServiceCache.allMyOtherServices(establishmentServices.map((x) => x)),
           models.services.findOne({
             where: {
               id: fetchResults.MainServiceFKValue,
@@ -1290,7 +1273,7 @@ class Establishment extends EntityValidator {
           }),
           models.serviceUsers.findAll({
             where: {
-              id: establishmentServiceUserResults.map(su => su.serviceUserId),
+              id: establishmentServiceUserResults.map((su) => su.serviceUserId),
             },
             attributes: ['id', 'service', 'group', 'seq'],
             order: [['seq', 'ASC']],
@@ -1333,8 +1316,8 @@ class Establishment extends EntityValidator {
         ]);
 
         // For services merge any other data into resultset
-        fetchResults.serviceUsers = establishmentServiceUserResults.map(suResult => {
-          const serviceUser = serviceUsers.find(element => {
+        fetchResults.serviceUsers = establishmentServiceUserResults.map((suResult) => {
+          const serviceUser = serviceUsers.find((element) => {
             return suResult.serviceUserId === element.id;
           });
           if (suResult.other) {
@@ -1347,8 +1330,8 @@ class Establishment extends EntityValidator {
           }
         });
 
-        fetchResults.otherServices = establishmentServices.map(suResult => {
-          const otherService = otherServices.find(element => {
+        fetchResults.otherServices = establishmentServices.map((suResult) => {
+          const otherService = otherServices.find((element) => {
             return suResult.serviceId === element.id;
           });
           if (suResult.other) {
@@ -1408,7 +1391,9 @@ class Establishment extends EntityValidator {
           }
 
           if (allCapacitiesResults.otherServices) {
-            allCapacitiesResults.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+            allCapacitiesResults.otherServices.forEach((thisService) =>
+              allAssociatedServiceIndices.push(thisService.id),
+            );
           }
         }
 
@@ -1461,7 +1446,7 @@ class Establishment extends EntityValidator {
               limit 1`,
             {
               type: models.sequelize.QueryTypes.SELECT,
-            }
+            },
           );
 
           if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
@@ -1494,13 +1479,13 @@ class Establishment extends EntityValidator {
 
           if (myWorkerSet && Array.isArray(myWorkerSet)) {
             await Promise.all(
-              myWorkerSet.map(async thisWorker => {
+              myWorkerSet.map(async (thisWorker) => {
                 const newWorker = new Worker(this._id, this._status);
                 await newWorker.restore(
                   thisWorker.uid,
                   false,
                   associatedLevel > 1 ? associatedEntities : false,
-                  associatedLevel
+                  associatedLevel,
                 );
 
                 // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
@@ -1508,7 +1493,7 @@ class Establishment extends EntityValidator {
                 this.associateWorker(newWorker.key, newWorker);
 
                 return {};
-              })
+              }),
             );
           }
         }
@@ -1570,7 +1555,7 @@ class Establishment extends EntityValidator {
         // if deleting this establishment, and if requested, then delete all the associated entities (workers) too
         if (associatedEntities && this._workerEntities) {
           await Promise.all(
-            Object.values(this._workerEntities).map(thisWorker => thisWorker.archive(deletedBy, thisTransaction))
+            Object.values(this._workerEntities).map((thisWorker) => thisWorker.archive(deletedBy, thisTransaction)),
           );
         }
 
@@ -1582,12 +1567,9 @@ class Establishment extends EntityValidator {
             null,
             thisTransaction,
             WdfCalculator.ESTABLISHMENT_DELETE,
-            false
+            false,
           );
         }
-
-        // this is an async method - don't wait for it to return
-        AWSKinesis.establishmentPump(AWSKinesis.DELETED, this.toJSON());
 
         if (t) {
           t.commit();
@@ -1602,7 +1584,7 @@ class Establishment extends EntityValidator {
           this.uid,
           nameId ? nameId.property : null,
           '',
-          `Failed to update (archive) estabalishment record with uid: ${this._uid}`
+          `Failed to update (archive) estabalishment record with uid: ${this._uid}`,
         );
       }
     } catch (err) {
@@ -1619,7 +1601,7 @@ class Establishment extends EntityValidator {
         this.uid,
         nameId ? nameId.property : null,
         err,
-        `Failed to update (archive) estabalishment record with uid: ${this._uid}`
+        `Failed to update (archive) estabalishment record with uid: ${this._uid}`,
       );
     }
   }
@@ -1630,8 +1612,8 @@ class Establishment extends EntityValidator {
   formatHistoryEvents(auditEvents) {
     if (auditEvents) {
       return auditEvents
-        .filter(thisEvent => ['created', 'updated', 'wdfEligible', 'overalWdfEligible'].includes(thisEvent.type))
-        .map(thisEvent => {
+        .filter((thisEvent) => ['created', 'updated', 'wdfEligible', 'overalWdfEligible'].includes(thisEvent.type))
+        .map((thisEvent) => {
           return {
             when: thisEvent.when,
             username: thisEvent.username,
@@ -1648,7 +1630,7 @@ class Establishment extends EntityValidator {
   //  Establishment properties)
   formatHistory(auditEvents) {
     if (auditEvents) {
-      return auditEvents.map(thisEvent => {
+      return auditEvents.map((thisEvent) => {
         return {
           when: thisEvent.when,
           username: thisEvent.username,
@@ -1676,7 +1658,7 @@ class Establishment extends EntityValidator {
     modifiedOnlyProperties = false,
     fullDescription = true,
     filteredPropertiesByName = null,
-    includeAssociatedEntities = false
+    includeAssociatedEntities = false,
   ) {
     if (!showHistoryTimeline) {
       if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
@@ -1689,7 +1671,7 @@ class Establishment extends EntityValidator {
         showPropertyHistoryOnly,
         modifiedOnlyProperties,
         filteredPropertiesByName,
-        false
+        false,
       );
 
       // add Establishment default properties
@@ -1710,6 +1692,8 @@ class Establishment extends EntityValidator {
         myDefaultJSON.town = this.town;
         myDefaultJSON.county = this.county;
         myDefaultJSON.postcode = this.postcode;
+        myDefaultJSON.Latitude = this.latitude;
+        myDefaultJSON.Longitude = this.longitude;
         myDefaultJSON.locationId = this.locationId;
         myDefaultJSON.provId = this.provId;
         myDefaultJSON.isRegulated = this.isRegulated;
@@ -1748,7 +1732,9 @@ class Establishment extends EntityValidator {
           ...myDefaultJSON,
           ...myJSON,
           workers: includeAssociatedEntities
-            ? Object.values(this._workerEntities).map(thisWorker => thisWorker.toJSON(false, false, false, false, true))
+            ? Object.values(this._workerEntities).map((thisWorker) =>
+                thisWorker.toJSON(false, false, false, false, true),
+              )
             : undefined,
         };
       }
@@ -1780,7 +1766,7 @@ class Establishment extends EntityValidator {
           this._validations.push(
             new ValidationMessage(ValidationMessage.ERROR, 101, this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing', [
               'NMDSID',
-            ])
+            ]),
           );
           this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
         }
@@ -1790,7 +1776,7 @@ class Establishment extends EntityValidator {
           this._validations.push(
             new ValidationMessage(ValidationMessage.ERROR, 102, this.name ? `Invalid: ${this.name}` : 'Missing', [
               'Name',
-            ])
+            ]),
           );
           this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
         }
@@ -1808,12 +1794,12 @@ class Establishment extends EntityValidator {
               ValidationMessage.ERROR,
               103,
               this._address ? `Invalid: ${this._address}` : 'Missing',
-              ['Address']
-            )
+              ['Address'],
+            ),
           );
           this._log(
             Establishment.LOG_ERROR,
-            'Establishment::hasMandatoryProperties - missing or invalid first line of address'
+            'Establishment::hasMandatoryProperties - missing or invalid first line of address',
           );
         }
 
@@ -1824,8 +1810,8 @@ class Establishment extends EntityValidator {
               ValidationMessage.ERROR,
               104,
               this._postcode ? `Invalid: ${this._postcode}` : 'Missing',
-              ['Postcode']
-            )
+              ['Postcode'],
+            ),
           );
           this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid postcode');
         }
@@ -1845,11 +1831,11 @@ class Establishment extends EntityValidator {
             this._validations.push(
               new ValidationMessage(ValidationMessage.ERROR, 106, 'Missing (mandatory) for a CQC Registered site', [
                 'LocationID',
-              ])
+              ]),
             );
             this._log(
               Establishment.LOG_ERROR,
-              'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace'
+              'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace',
             );
           }
         }
@@ -1861,8 +1847,8 @@ class Establishment extends EntityValidator {
     return allExistAndValid;
   }
 
-  async canConfirm (effectiveFrom, lastEligibility, wdfPropertyValues) {
-    const hasEligibleProperties = wdfPropertyValues.every(thisWdfProperty => (thisWdfProperty.isEligible !== 'No'));
+  async canConfirm(effectiveFrom, lastEligibility, wdfPropertyValues) {
+    const hasEligibleProperties = wdfPropertyValues.every((thisWdfProperty) => thisWdfProperty.isEligible !== 'No');
 
     if (!hasEligibleProperties) {
       return false;
@@ -1894,9 +1880,9 @@ class Establishment extends EntityValidator {
 
       // whether just the establishment fields are currently considered wdf valid
       currentEligibility: wdfPropertyValues.every(
-        thisWdfProperty =>
+        (thisWdfProperty) =>
           (thisWdfProperty.isEligible === 'Yes' && thisWdfProperty.updatedSinceEffectiveDate) ||
-          thisWdfProperty.isEligible === 'Not relevant'
+          thisWdfProperty.isEligible === 'Not relevant',
       ),
       // Can the Establishment confirm their up-to-date information?
       canConfirm: canConfirm,
@@ -1974,13 +1960,13 @@ class Establishment extends EntityValidator {
       // we're only interested in the main service capacities
       const mainServiceCapacities = capacitiesProperty
         .toJSON(false, false)
-        .allServiceCapacities.filter(thisCapacity => /^Main Service - /.test(thisCapacity.service));
+        .allServiceCapacities.filter((thisCapacity) => /^Main Service - /.test(thisCapacity.service));
 
       if (mainServiceCapacities.length === 0) {
         capacitiesEligible = 'Not relevant';
       } else {
         // ensure all all main service's capacities have been answered - note, the can only be one Main Service capacity set
-        capacitiesEligible = mainServiceCapacities[0].questions.every(thisQuestion => hasProp(thisQuestion, 'answer'))
+        capacitiesEligible = mainServiceCapacities[0].questions.every((thisQuestion) => hasProp(thisQuestion, 'answer'))
           ? 'Yes'
           : 'No';
       }
@@ -2059,10 +2045,10 @@ class Establishment extends EntityValidator {
           where: {
             id: establishmentId,
           },
-        }
+        },
       );
     } catch (err) {
-      this._log(Establishment.LOG_ERROR, `bulkUploadSuccess - failed: ${err}`);
+      console.error(Establishment.LOG_ERROR, `bulkUploadSuccess - failed: ${err}`);
     }
   }
 
@@ -2153,8 +2139,8 @@ class Establishment extends EntityValidator {
             models.sequelize.fn(
               'SUM',
               models.sequelize.literal(
-                `CASE WHEN "workers"."LastWdfEligibility" > '${WdfCalculator.effectiveDate.toISOString()}' THEN 1 ELSE 0 END`
-              )
+                `CASE WHEN "workers"."LastWdfEligibility" > '${WdfCalculator.effectiveDate.toISOString()}' THEN 1 ELSE 0 END`,
+              ),
             ),
             'eligibleWorkersCount',
           ],
@@ -2197,7 +2183,7 @@ class Establishment extends EntityValidator {
           'lastWdfEligibility',
           'establishmentWdfEligibility',
           'NumberOfStaffValue',
-          'ustatus'
+          'ustatus',
         ],
       };
     } else {
@@ -2213,7 +2199,7 @@ class Establishment extends EntityValidator {
           'dataPermissions',
           'dataOwnershipRequested',
           'ustatus',
-          'postcode'
+          'postcode',
         ],
         include: [
           {
@@ -2237,7 +2223,7 @@ class Establishment extends EntityValidator {
 
     // map the results to the desired type
     const mappedResults = await Promise.all(
-      fetchResults.map(async thisSub => {
+      fetchResults.map(async (thisSub) => {
         const {
           id,
           uid,
@@ -2250,7 +2236,7 @@ class Establishment extends EntityValidator {
           dataPermissions,
           dataOwnershipRequested,
           ustatus,
-          postcode
+          postcode,
         } = thisSub;
 
         return {
@@ -2276,7 +2262,7 @@ class Establishment extends EntityValidator {
               })
             : undefined,
         };
-      })
+      }),
     );
 
     // The first result is the primary establishment. put it in a special field
@@ -2319,7 +2305,7 @@ class Establishment extends EntityValidator {
           sep: ';',
         },
         type: db.QueryTypes.SELECT,
-      }
+      },
     );
   }
 
@@ -2343,7 +2329,7 @@ class Establishment extends EntityValidator {
         },
         attributes: ['id', 'updated'],
         transaction,
-      }
+      },
     );
 
     if (updatedEstablishment[0] === 1) {
@@ -2386,7 +2372,7 @@ class Establishment extends EntityValidator {
       });
 
       if (myEstablishments.subsidaries) {
-        myEstablishments.subsidaries.establishments.forEach(thisEst => {
+        myEstablishments.subsidaries.establishments.forEach((thisEst) => {
           // only those subs "owned" by this parent
           if (thisEst.dataOwner === 'Parent') {
             myEstablishmentUIDs.push({
@@ -2405,12 +2391,14 @@ class Establishment extends EntityValidator {
       //   so when iterating through the local identifiers, check if the local identifier has changed before issuing
       //   any update!
 
-      await models.sequelize.transaction(async t => {
+      await models.sequelize.transaction(async (t) => {
         const dbUpdatePromises = [];
         const allAuditEvents = [];
-        givenLocalIdentifiers.forEach(thisGivenEstablishment => {
+        givenLocalIdentifiers.forEach((thisGivenEstablishment) => {
           if (thisGivenEstablishment && thisGivenEstablishment.uid) {
-            const foundEstablishment = myEstablishmentUIDs.find(thisEst => thisEst.uid === thisGivenEstablishment.uid);
+            const foundEstablishment = myEstablishmentUIDs.find(
+              (thisEst) => thisEst.uid === thisGivenEstablishment.uid,
+            );
 
             // only if the found and given local identifiers are not equal, then update the record
             if (foundEstablishment && foundEstablishment.localIdentifier !== thisGivenEstablishment.value) {
@@ -2419,7 +2407,7 @@ class Establishment extends EntityValidator {
                 t,
                 updatedTimestamp,
                 username,
-                allAuditEvents
+                allAuditEvents,
               );
               dbUpdatePromises.push(updateThisEstablishment);
               updatedUids.push(thisGivenEstablishment);
@@ -2495,7 +2483,7 @@ class Establishment extends EntityValidator {
       //
       const missingEstablishments = [];
       if (results && Array.isArray(results)) {
-        results.forEach(thisEstablishment => {
+        results.forEach((thisEstablishment) => {
           missingEstablishments.push({
             uid: thisEstablishment.EstablishmentUID,
             name: thisEstablishment.NameValue,
@@ -2521,10 +2509,10 @@ class Establishment extends EntityValidator {
   // recalcs the establishment known by given establishment
   static async recalcWdf(username, establishmentId) {
     try {
-      const log = result => result == null;
+      const log = (result) => result == null;
       const thisEstablishment = new Establishment(username);
 
-      await models.sequelize.transaction(async t => {
+      await models.sequelize.transaction(async (t) => {
         if (await thisEstablishment.restore(establishmentId)) {
           // only try to update if not yet eligible
           if (thisEstablishment._lastWdfEligibility === null) {
@@ -2540,7 +2528,7 @@ class Establishment extends EntityValidator {
                     id: establishmentId,
                   },
                   transaction: t,
-                }
+                },
               );
 
               await models.establishmentAudit.create(
@@ -2549,7 +2537,7 @@ class Establishment extends EntityValidator {
                   username,
                   type: 'wdfEligible',
                 },
-                { transaction: t }
+                { transaction: t },
               );
             }
           } // end if _lastWdfEligibility
@@ -2559,7 +2547,7 @@ class Establishment extends EntityValidator {
           const workerPromise = Promise.resolve(null);
           await workers.reduce(
             (p, thisWorker) => p.then(() => Worker.recalcWdf(username, establishmentId, thisWorker.uid, t).then(log)),
-            workerPromise
+            workerPromise,
           );
 
           // having updated establishment and all workers, recalculate the overall WDF eligibility
@@ -2585,7 +2573,7 @@ class Establishment extends EntityValidator {
         null,
         'User::restore failed: Missing id or uid',
         null,
-        'Unexpected Error'
+        'Unexpected Error',
       );
     }
     try {
@@ -2609,7 +2597,7 @@ class Establishment extends EntityValidator {
         if (establishmentIsParent !== false) {
           data.dataOwner = establishment.isParent === false ? 'Parent' : 'Workplace';
         }
-        let responseToReturn = await establishment.update(data).then(function(establishmentDetails) {
+        let responseToReturn = await establishment.update(data).then(function (establishmentDetails) {
           return establishmentDetails;
         });
         return responseToReturn;

@@ -126,7 +126,9 @@ jobs:
   install:
     working_directory: ~/project
     docker:
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:12.19.0-browsers
+    environment:
+      NODE_OPTIONS=--max_old_space_size=4096
     steps:
         - checkout
         - node/install-packages:
@@ -144,17 +146,19 @@ jobs:
                 - dist
   test_frontend:
     docker:
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:12.19.0-browsers
     steps:
       - checkout
       - restore_cache:
             keys:
                 - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
+          command: sudo apt-get install -yq libxss1
+      - run:
           command: npm run test
   test_backend:
     docker:
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:12.19.0-browsers
     steps:
       - checkout
       - restore_cache:
@@ -164,7 +168,7 @@ jobs:
           command: npm run server:test:unit
   performance:
     docker:
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:12.19.0-browsers
     steps:
         - checkout
         - attach_workspace:
@@ -276,7 +280,7 @@ jobs:
           live_domain: <<parameters.live_domain>>
   sentry_release:
     docker:
-      - image: circleci/node:lts-browsers
+      - image: circleci/node:12.19.0-browsers
     environment:
       SENTRY_ORG: skills-for-care
       SENTRY_PROJECT: skills-for-care
@@ -321,9 +325,9 @@ workflows:
             requires:
               - install
         - blue_green:
-            name: blue_green_dev
-            appname: sfcdev
-            env_prefix: SFC_DEV
+            name: blue_green_benchmarks
+            appname: sfcbenchmarks
+            env_prefix: SFC_BENCHMARKS
             requires:
                 - test_frontend
                 - test_backend
@@ -331,18 +335,17 @@ workflows:
             filters:
                 branches:
                     only:
-                        - develop
+                        - feat/benchmarks
             endpoint: https://api.cloud.service.gov.uk
             org: dhsc-skills-for-care-nmds-sc-2
             space: sandbox
-            manifest: manifest.dev.yml
+            manifest: manifest.benchmarks.yml
             package: '.'
-            dark_subdomain: sfcdev-dark
+            dark_subdomain: sfcbenchmarks-dark
             dark_domain: cloudapps.digital
-            live_subdomain: sfcdev
+            live_subdomain: sfcbenchmarks
             live_domain: cloudapps.digital
-            build_steps:
-                - run: npm run build
+            workspace_path: .
         - blue_green:
             name: blue_green_staging
             appname: sfcstaging
@@ -426,11 +429,11 @@ workflows:
             workspace_path: .
         -  sentry_release:
              requires:
-               - blue_green_dev
+               - blue_green_benchmarks
              filters:
                branches:
                  only:
-                   - develop
+                   - feat/benchmarks
              env: development
         - sentry_release:
             requires:

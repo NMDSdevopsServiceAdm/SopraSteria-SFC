@@ -5,7 +5,7 @@
     "paths": {
       "@core/*": ["src/app/core/*"],
       "@features/*": ["src/app/features/*"],
-      "@shared/*": ["src/app/shared/*"],
+      "@shared/*": ["src/app/shared/*"]
     },
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
@@ -14,7 +14,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es5",
+    "target": "es2015",
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2018", "dom"]
   }

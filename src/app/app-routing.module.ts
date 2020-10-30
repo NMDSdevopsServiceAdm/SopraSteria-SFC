@@ -96,6 +96,14 @@ const routes: Routes = [
         data: { title: 'Workplace' },
       },
       {
+        path: 'benchmarks',
+        loadChildren: () => import('./shared/components/benchmarks-tab/benchmarks.module').then(m => m.BenchmarksModule),
+        canActivate: [],
+        data: {
+          title: 'Benchmarks',
+        },
+      },
+      {
         path: 'reports',
         loadChildren: () => import('@features/reports/reports.module').then(m => m.ReportsModule),
         data: { title: 'Reports' },
@@ -144,6 +152,15 @@ const routes: Routes = [
         data: {
           roles: [Roles.Admin],
           title: 'Search Establishments',
+        },
+      },
+      {
+        path: 'search-groups',
+        loadChildren: () => import('@features/search/search.module').then(m => m.SearchModule),
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Search Groups',
         },
       },
       {

@@ -1,24 +1,27 @@
 <div class="govuk-tabs" data-module="tabs"></div>
 
 <ul class="govuk-tabs__list" role="tablist" #tablist>
-  <li class="govuk-tabs__list-item" *ngFor="let tab of tabs; let i = index">
-    <a
-      id="tab_{{ tab.slug }}"
-      class="govuk-tabs__tab"
-      [class.govuk-tabs__tab--selected]="tab.active"
-      [class.govuk-tabs__tab--alert]="tab.alert"
-      [class.govuk-tabs__tab--red-alert]="tab.redAlert"
-      href="#{{ tab.slug }}"
-      role="tab"
-      [attr.aria-controls]="tab.slug"
-      [attr.aria-selected]="tab.active"
-      [attr.tabindex]="tab.active ? 0 : -1"
-      (click)="selectTab($event, i)"
-      (keyup)="onKeyUp($event)"
-      (keydown)="onKeyDown($event)"
-    >
-      {{ tab.title }}
-    </a>
-  </li>
+  <ng-container *ngFor="let tab of tabs; let i = index">
+    <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="tab.active">
+      <a
+        id="tab_{{ tab.slug }}"
+        class="govuk-tabs__tab"
+        [class.govuk-tabs__tab--selected]="tab.active"
+        [class.govuk-tabs__tab--alert]="tab.alert"
+        [class.govuk-tabs__tab--red-alert]="tab.redAlert"
+        href="#{{ tab.slug }}"
+        role="tab"
+        [attr.aria-controls]="tab.slug"
+        [attr.aria-selected]="tab.active"
+        [attr.tabindex]="tab.active ? 0 : -1"
+        (click)="selectTab($event, i)"
+        (keyup)="onKeyUp($event)"
+        (keydown)="onKeyDown($event)"
+        [attr.data-testid]="'tab_' + tab.slug"
+      >
+        {{ tab.title }}
+      </a>
+    </li>
+  </ng-container>
 </ul>
 <ng-content></ng-content>

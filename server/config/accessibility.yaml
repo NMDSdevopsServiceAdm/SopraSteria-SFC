@@ -3,8 +3,6 @@ aws:
     secrets:
         use: true
         wallet: demo/api
-  kinesis:
-    enabled: false
   sns:
     enabled: false
 
@@ -36,6 +34,10 @@ notify:
 bulkupload:
     region: eu-west-2
     bucketname: sfc-bulkupload-demo
+
+locks:
+    region: eu-west-1
+    bucketname: sfc-locks-demo
 
 public:
     download:

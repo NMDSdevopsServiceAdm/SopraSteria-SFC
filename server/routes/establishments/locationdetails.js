@@ -1,8 +1,10 @@
 const express = require('express');
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
+
 const pCodeCheck = require('../../utils/postcodeSanitizer');
 
 // all user functionality is encapsulated
+const models = require('../../models');
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['LocationId', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'Postcode', 'Name'];
 
@@ -10,7 +12,8 @@ const filteredProperties = ['LocationId', 'Address1', 'Address2', 'Address3', 'T
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
-  const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+  const showHistory =
+    req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
   const showHistoryTime = req.query.history === 'timeline' ? true : false;
   const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
 
@@ -20,12 +23,22 @@ router.route('/').get(async (req, res) => {
     if (await thisEstablishment.restore(establishmentId, showHistory)) {
       // show only brief info on Establishment
 
-      return res.status(200).json(thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, filteredProperties));
+      return res
+        .status(200)
+        .json(
+          thisEstablishment.toJSON(
+            showHistory,
+            showPropertyHistoryOnly,
+            showHistoryTime,
+            false,
+            false,
+            filteredProperties,
+          ),
+        );
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
-
   } catch (err) {
     const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
       thisEstablishment.id,
@@ -33,7 +46,8 @@ router.route('/').get(async (req, res) => {
       null,
       err,
       null,
-      `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
+      `Failed to retrieve Establishment with id/uid: ${establishmentId}`,
+    );
 
     console.error('establishment::cqcLocationId GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
@@ -45,7 +59,6 @@ router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
-
   try {
     // before updating an Establishment, we need to be sure the Establishment is
     //  available to the given user. The best way of doing that
@@ -54,6 +67,16 @@ router.route('/').post(async (req, res) => {
     //  an Establishment (if needing to make inter-property decisions)
     if (await thisEstablishment.restore(establishmentId)) {
       // TODO: JSON validation
+
+      const newPostcode = pCodeCheck.sanitisePostcode(req.body.postalCode);
+
+      if (newPostcode && newPostcode !== thisEstablishment.postcode) {
+        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(newPostcode)) || {};
+
+        req.body.postalCode = newPostcode;
+        req.body.Latitude = Latitude;
+        req.body.Longitude = Longitude;
+      }
 
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
@@ -65,8 +88,10 @@ router.route('/').post(async (req, res) => {
         address3: req.body.addressLine3 ? req.body.addressLine3 : null,
         town: req.body.townCity,
         county: req.body.county,
-        postcode: pCodeCheck.sanitisePostcode(req.body.postalCode),
-        name: req.body.locationName
+        postcode: newPostcode,
+        Latitude: req.body.Latitude,
+        Longitude: req.body.Longitude,
+        name: req.body.locationName,
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
@@ -77,21 +102,19 @@ router.route('/').post(async (req, res) => {
       } else {
         return res.status(400).send('Unexpected Input.');
       }
-
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error("Establishment::mainService POST: ", err.message);
+      console.error('Establishment::mainService POST: ', err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error("Establishment::mainService POST: ", err.message);
+      console.error('Establishment::mainService POST: ', err.message);
       return res.status(503).send(err.safe);
     } else {
-      console.error("Unexpected exception: ", err);
+      console.error('Unexpected exception: ', err);
     }
   }
 });

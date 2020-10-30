@@ -3,14 +3,14 @@ const moment = require('moment');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
-const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,NINUMBER,'+
+const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,FLUVAC,NINUMBER,'+
 'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,'+
 'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
 'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
 'OTHERJOBROLE,OTHERJRDESC,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
 'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
 
-const _headers_v1_without_chgUnique = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMBER,' +
+const _headers_v1_without_chgUnique = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,NINUMBER,' +
 'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
 'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
 'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
@@ -32,6 +32,7 @@ class Worker {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._allCurrentEstablishments = allCurrentEstablishments;
+    this._currentWorker = null;
 
     this._validationErrors = [];
     this._contractType = null;
@@ -44,6 +45,7 @@ class Worker {
     this._key = null;
     this._establishmentKey = null;
 
+    this._fluVac = null;
     this._NINumber = null;
     this._postCode = null;
     this._DOB = null;
@@ -146,6 +148,7 @@ class Worker {
 
   static get UNIQUE_WORKER_ID_WARNING () { return 3020; }
   static get DISPLAY_ID_WARNING () { return 3050; }
+  static get FLUVAC_WARNING () { return 3055; }
   static get NINUMBER_WARNING () { return 3060; }
   static get POSTCODE_WARNING () { return 3070; }
   static get DOB_WARNING () { return 3080; }
@@ -263,6 +266,10 @@ class Worker {
 
   get dislpayID () {
     return this._displayId;
+  }
+
+  get fluVac () {
+    return this._fluVac;
   }
 
   get niNumber () {
@@ -503,8 +510,8 @@ class Worker {
 
         // having found the establishment, find the worker within the establishment
         if (foundEstablishment) {
-          const foundWorker = foundEstablishment.theWorker(workerKey);
-          return !!foundWorker;
+          this._currentWorker = foundEstablishment.theWorker(workerKey);
+          return !!this._currentWorker;
         } else {
           return false;
         }
@@ -545,7 +552,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
-              error: 'Staff record has a status of UNCHECKED but doens\'t exist, please change to NEW if you want to add this staff record',
+              error: 'Staff record has a status of UNCHECKED but doesn\'t exist, please change to NEW if you want to add this staff record',
               source: myStatus
             });
           }
@@ -626,6 +633,29 @@ class Worker {
     } else {
       this._displayId = myDisplayId;
       return true;
+    }
+  }
+
+  _validateFluVac () {
+    const myFluVac = parseInt(this._currentLine.FLUVAC, 10);
+    const fluVacValues = [1, 2, 999];
+
+    if (this._currentLine.FLUVAC.length > 0) {
+      if (isNaN(myFluVac) || !fluVacValues.includes(myFluVac)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.FLUVAC_WARNING,
+          warnType: 'WORKER_FLUVAC_WARNING',
+          warning: 'FLUVAC the code you have selected has not been recognised and will be ignored',
+          source: this._currentLine.FLUVAC
+        });
+        return false;
+      } else {
+        this._fluVac = myFluVac;
+        return true;
+      }
     }
   }
 
@@ -1268,6 +1298,27 @@ class Worker {
     }
   }
 
+  _validateDaysSickChanged () {
+    if (this._currentLine.STATUS !== "UPDATE" && this._currentLine.STATUS !== "NOCHANGE")
+    {
+      return;
+    }
+
+    if (this._currentWorker
+      && moment(this._currentWorker._properties.get("DaysSick").savedAt).isBefore(Date.now(), 'day')
+      && this._currentWorker.daysSick.days === parseInt(this._currentLine.DAYSSICK)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.DAYSICK_WARNING,
+        warnType: 'DAYSICK_WARNING',
+        warning: 'DAYSSICK in the last 12 months has not changed please check this is correct',
+        source: this._currentLine.DAYSSICK
+      });
+    }
+  }
+
   _validateSalaryInt () {
     const salaryIntValues = [1, 3];
     const mySalaryInt = parseInt(this._currentLine.SALARYINT, 10);
@@ -1778,29 +1829,53 @@ class Worker {
   }
 
   _validateNursingSpecialist () {
-    const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
+    const listOfNurseSpecialisms = this._currentLine.NURSESPEC.length ? this._currentLine.NURSESPEC.split(';').map(s => parseFloat(s)) : [];
+    const specialisms = [1,2,3,4,5,6];
+    const notSpecialisms = [7,8];
+
     const NURSING_ROLE = 16;
     const otherJobRoleIsNurse = Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE);
     const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
     const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
 
-    if (
-      (this._mainJobRole === NURSING_ROLE ||
-      (Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE))) &&
-      myNursingSpecialist !== 0 &&
-      isNaN(myNursingSpecialist)
-    ) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.NURSE_SPEC_WARNING,
-        warnType: 'NURSE_SPEC_WARNING',
-        warning: 'NURSESPEC has not been supplied',
-        source: this._currentLine.NURSESPEC
-      });
-      return false;
-    } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
+    if (mainJobRoleIsNurse || otherJobRoleIsNurse) {
+      if (listOfNurseSpecialisms.length === 0) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnType: 'NURSE_SPEC_WARNING',
+          warning: 'NURSESPEC has not been supplied',
+          source: this._currentLine.NURSESPEC
+        });
+      }
+
+      if (specialisms.some(s => listOfNurseSpecialisms.includes(s)) && notSpecialisms.some(s => listOfNurseSpecialisms.includes(s))) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnType: 'NURSE_SPEC_WARNING',
+          warning: 'NURSESPEC it is not possible to use code 7 (not applicable) and code 8 (not known) with codes 1 to 6. Code 7 and 8 will be ignored',
+          source: this._currentLine.NURSESPEC
+        });
+      }
+
+      if (notSpecialisms.every(s => listOfNurseSpecialisms.includes(s))) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnType: 'NURSE_SPEC_WARNING',
+          warning: 'NURSESPEC it is not possible to use codes 7 (not applicable) with code 8 (not know). These will be ignored',
+          source: this._currentLine.NURSESPEC
+        });
+      }
+    }
+    else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1811,10 +1886,10 @@ class Worker {
         source: this._currentLine.NURSESPEC
       });
       return false;
-    } else {
-      this._nursingSpecialist = myNursingSpecialist;
-      return true;
     }
+
+    this._nursingSpecialist = listOfNurseSpecialisms;
+    return true;
   }
 
   _validateAmhp () {
@@ -2359,22 +2434,25 @@ class Worker {
   }
 
   _transformNursingSpecialist () {
-    if (this._nursingSpecialist || this._nursingSpecialist === 0) {
-      const myValidatedSpecialist = BUDI.nursingSpecialist(BUDI.TO_ASC, this._nursingSpecialist);
-
-      if (!myValidatedSpecialist) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.NURSE_SPEC_WARNING,
-          warnType: 'NURSE_SPEC_WARNING',
-          warning: 'The code you have entered for NURSESPEC is incorrect and will be ignored',
-          source: this._currentLine.NURSESPEC
-        });
-      } else {
-        this._nursingSpecialist = myValidatedSpecialist;
+    if (this._nursingSpecialist && Array.isArray(this._nursingSpecialist)) {
+      const validatedSpecialisms = [];
+      for (let specialism of this._nursingSpecialist) {
+        const validatedSpecialism = BUDI.nursingSpecialist(BUDI.TO_ASC, specialism);
+        if (!validatedSpecialism) {
+          this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
+            lineNumber: this._lineNumber,
+            warnCode: Worker.NURSE_SPEC_WARNING,
+            warnType: 'NURSE_SPEC_WARNING',
+            warning: `NURSESPEC the code ${specialism} you have entered has not been recognised and will be ignored`,
+            source: this._currentLine.NURSESPEC
+          });
+        } else {
+          validatedSpecialisms.push(validatedSpecialism);
+        }
       }
+      this._nursingSpecialist = validatedSpecialisms;
     }
   }
 
@@ -2561,13 +2639,26 @@ class Worker {
     };
   }
 
+  ftePayCheckHasDifferentHours () {
+    return {
+      origin: 'Workers',
+      lineNumber: this._lineNumber,
+      warnCode: Worker.SALARY_ERROR,
+      warnType: 'SALARY_ERROR',
+      warning: `SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay`,
+      source: this._currentLine.LOCALESTID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID
+    };
+  }
+
   preValidate (headers) {
     return this._validateHeaders(headers);
   }
 
   static isContent (data) {
     const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-    const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMB/;
+    const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,/;
 
     return contentRegex1.test(data.substring(0, 50)) || contentRegex2.test(data.substring(0, 50));
   }
@@ -2666,10 +2757,12 @@ class Worker {
     status = !this._validateChangeUniqueWorkerId() ? false : status;
     status = !this._validateDisplayId() ? false : status;
     status = !this._validateStatus() ? false : status;
+    status = !this._validateDaysSickChanged() ? false : status;
 
     // only continue to process validation, if the status is not UNCHECKED, DELETED OR UNCHANGED
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateContractType() ? false : status;
+      status = !this._validateFluVac() ? false : status;
       status = !this._validateNINumber() ? false : status;
       status = !this._validatePostCode() ? false : status;
       status = !this._validateDOB() ? false : status;
@@ -2740,6 +2833,7 @@ class Worker {
       uniqueWorkerId: this._uniqueWorkerId,
       changeUniqueWorker: this._changeUniqueWorkerId ? this._changeUniqueWorkerId : undefined,
       displayId: this._displayId,
+      fluJab: this._fluVac ? this.fluVac : undefined,
       niNumber: this._NINumber ? this._NINumber : undefined,
       postcode: this._postCode ? this._postCode : undefined,
       dateOfBirth: this._DOB ? this._DOB.format('DD/MM/YYYY') : undefined,
@@ -2842,6 +2936,24 @@ class Worker {
       approvedMentalHealthWorker: this._amhp ? this._amhp : undefined,
       completed: true // on bulk upload, every Worker record is naturally completed!
     };
+
+    if (this._nursingSpecialist) {
+      changeProperties.nurseSpecialisms = BUDI.mapNurseSpecialismsToDb(this._nursingSpecialist);
+    }
+
+    if (this._fluVac) {
+      switch (this._fluVac) {
+        case 1:
+          changeProperties.fluJab = 'Yes';
+          break;
+        case 2:
+          changeProperties.fluJab = 'No';
+          break;
+        case 999:
+          changeProperties.fluJab = 'Don\'t know';
+          break;
+      }
+    }
 
     if (this._startInsect) {
       if (this._startInsect === 999) {
@@ -3230,7 +3342,7 @@ class Worker {
 
   // takes the given Worker entity and writes it out to CSV string (one line)
   static toCSV (establishmentId, entity, MAX_QUALIFICATIONS) {
-    // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
+    // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","FLUVAC","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
     //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     const columns = [];
@@ -3246,6 +3358,23 @@ class Worker {
 
     // "DISPLAYID"
     columns.push(csvQuote(entity.nameOrId));
+
+    // "FLUVAC"
+    let fluvac = '';
+    switch (entity.fluJab) {
+      case 'Yes':
+        fluvac = 1;
+        break;
+
+      case 'No':
+        fluvac = 2;
+        break;
+
+      case 'Don\'t know':
+        fluvac = 999;
+        break;
+    }
+    columns.push(fluvac);
 
     // "NINUMBER"
     columns.push(entity.nationalInsuranceNumber ? entity.nationalInsuranceNumber.replace(/\s+/g, '') : ''); // remove whitespace
@@ -3503,11 +3632,20 @@ class Worker {
     );
 
     // "NURSESPEC"
-    columns.push(
-      entity.mainJob.jobId === NURSE_JOB_ID && entity.nurseSpecialism
-        ? BUDI.nursingSpecialist(BUDI.FROM_ASC, entity.nurseSpecialism.id)
-        : ''
-    );
+    if (entity.mainJob.jobId === NURSE_JOB_ID && entity.nurseSpecialisms) {
+      if (entity.nurseSpecialisms.value === 'No') {
+        columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 7));
+      } else if (entity.nurseSpecialisms.value === `Don't know`) {
+        columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 8));
+      } else if (entity.nurseSpecialisms.value === 'Yes') {
+        columns.push(entity.nurseSpecialisms.specialisms
+          .map(thisSpecialism =>BUDI.nursingSpecialist(BUDI.FROM_ASC, thisSpecialism.id))
+          .join(';')
+        );
+      }
+    } else {
+      columns.push('');
+    }
 
     // "AMHP"
     let amhp = '';

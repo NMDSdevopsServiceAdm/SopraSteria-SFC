@@ -15,8 +15,8 @@
       >
         <img src="/assets/images/bin.svg" alt="" />
         <span class="govuk-!-margin-left-1">
-        Delete <span class="govuk-visually-hidden">{{ workplace.name }}</span> Workplace
-      </span>
+          Delete <span class="govuk-visually-hidden">{{ workplace.name }}</span> Workplace
+        </span>
       </button>
     </div>
     <p class="govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-0">
@@ -25,33 +25,29 @@
     <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16 govuk-!-margin-top-2">
       Last signed in on {{ lastLoggedIn | date: 'd MMMM y' }}
     </p>
-
   </div>
 
   <div class="govuk-grid-column-one-third contact-col" [class.contact-col--parent]="workplace?.isParent">
-    <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
-      Contact Skills for Care
-    </h2>
-    <p class="govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-0">
-      0113 241 0969
-    </p>
+    <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Contact Skills for Care</h2>
+    <p class="govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-0">0113 241 0969</p>
     <p class="govuk-!-font-size-16 govuk-!-margin-top-2">
       <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support@skillsforcare.org.uk</a>
     </p>
     <p class="govuk__flex govuk__align-items-center govuk-!-font-size-16">
-      <img alt="" src="/assets/images/envelope.svg" class="govuk-!-margin-right-1">
+      <img alt="" src="/assets/images/envelope.svg" class="govuk-!-margin-right-1" />
       <ng-container *ngIf="numberOfNewNotifications > 0; else noNotifications">
         You have
         <a [routerLink]="['/notifications']">
-          <span class="notification-alert__count">{{ numberOfNewNotifications }}</span>new
+          <span class="notification-alert__count">{{ numberOfNewNotifications }}</span
+          >new
           {{
-                numberOfNewNotifications
-                  | i18nPlural
-                    : {
-                        '=1': 'notification',
-                        other: 'notifications'
-                      }
-              }}
+            numberOfNewNotifications
+              | i18nPlural
+                : {
+                    '=1': 'notification',
+                    other: 'notifications'
+                  }
+          }}
         </a>
       </ng-container>
       <ng-template #noNotifications>
@@ -60,10 +56,7 @@
     </p>
   </div>
 </div>
-<div class="govuk-grid-row">
-
-
-</div>
+<div class="govuk-grid-row"></div>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
@@ -89,7 +82,11 @@
         <app-training-and-qualifications-tab [workplace]="workplace"></app-training-and-qualifications-tab>
       </app-tab>
 
-      <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'User accounts'">
+      <app-tab *ngIf="workplace && canViewBenchmarks" [title]="'Benchmarks'">
+        <app-benchmarks-tab class="asc-benchmarks-tab" [workplace]="workplace"></app-benchmarks-tab>
+      </app-tab>
+
+      <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'Users'">
         <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
       </app-tab>
     </app-tabs>

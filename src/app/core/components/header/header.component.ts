@@ -4,6 +4,7 @@ import { AuthService } from '@core/services/auth.service';
 import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
+import { Roles } from '@core/model/roles.enum';
 
 @Component({
   selector: 'app-header',
@@ -11,6 +12,7 @@ import { Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
+  private _isOnAdminScreen: boolean;
   public fullname: string;
   public user: UserDetails;
   public showDropdown = false;
@@ -19,10 +21,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.userService.loggedInUser$.subscribe(user => {
+      this.userService.loggedInUser$.subscribe((user) => {
         this.user = user;
         this.fullname = user && user.fullname ? user.fullname.split(' ')[0] : null;
-      })
+      }),
+    );
+    this.subscriptions.add(
+      this.authService.isOnAdminScreen$.subscribe((isOnAdminScreen) => {
+        this._isOnAdminScreen = isOnAdminScreen;
+      }),
     );
   }
 
@@ -32,6 +39,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public isLoggedIn(): boolean {
     return this.authService.isAuthenticated();
+  }
+
+  public isAdminUser(): boolean {
+    return this.userService.loggedInUser ? this.userService.loggedInUser.role === Roles.Admin : false;
+  }
+
+  public isOnAdminScreen(): boolean {
+    return this._isOnAdminScreen;
   }
 
   public toggleMenu(): void {

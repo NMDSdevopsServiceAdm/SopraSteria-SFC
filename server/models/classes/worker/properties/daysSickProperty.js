@@ -5,6 +5,7 @@ const DAYS_SICK_TYPE = ['Yes', 'No'];
 exports.WorkerDaysSickProperty = class WorkerDaysSickProperty extends ChangePropertyPrototype {
     constructor() {
         super('DaysSick');
+        this._allowNull = true;
     }
 
     static clone() {
@@ -59,11 +60,17 @@ exports.WorkerDaysSickProperty = class WorkerDaysSickProperty extends ChangeProp
         }
         return daysSickDocument;
     }
+
     savePropertyToSequelize() {
         const daysSickDocument = {
-            DaysSickValue: this.property.value,
-            DaysSickDays: this.property.value === 'Yes' ? this.property.days : null
+            DaysSickValue: null,
+            DaysSickDays: null
         };
+
+        if (this.property) {
+            daysSickDocument.DaysSickValue = this.property.value;
+            daysSickDocument.DaysSickDays = this.property.value === 'Yes' ? this.property.days : null
+        }
 
         return daysSickDocument;
     }

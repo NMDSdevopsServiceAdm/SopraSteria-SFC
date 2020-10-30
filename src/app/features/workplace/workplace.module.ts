@@ -25,6 +25,7 @@ import {
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
+import { FluJabComponent } from './flu-jab/flu-jab.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
@@ -62,6 +63,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     DataSharingComponent,
     DataSharingWithLocalAuthoritiesComponent,
     EditWorkplaceComponent,
+    FluJabComponent,
     LeaversComponent,
     OtherServicesComponent,
     ServicesCapacityComponent,
