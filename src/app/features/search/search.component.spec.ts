@@ -9,6 +9,8 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 import { SearchComponent } from './search.component';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { WindowRef } from '@core/services/window.ref';
+import { RegistrationsService } from '@core/services/registrations.service';
+import { of } from 'rxjs';
 
 const getSearchComponent = async () => {
   return render(SearchComponent, {
@@ -32,6 +34,7 @@ const getSearchComponent = async () => {
         provide: SwitchWorkplaceService,
         useClass: MockSwitchWorkplaceService,
       },
+      [RegistrationsService],
     ],
   });
 };
@@ -101,7 +104,7 @@ describe('SearchComponent', () => {
       expect(searchResults.getByText('My workplace'));
     });
 
-    it('should nagivate to workplace when clicking workplace id link', async () => {
+    it('should navigate to workplace when clicking workplace id link', async () => {
       const { fixture, navigate, getByText, getByTestId } = await getSearchComponent();
 
       await setup(fixture, navigate, getByText);
@@ -116,7 +119,7 @@ describe('SearchComponent', () => {
       await expect(spy).toHaveBeenCalled();
     });
 
-    it('should nagivate to workplace when clicking workplace name link', async () => {
+    it('should navigate to workplace when clicking workplace name link', async () => {
       const { fixture, navigate, getByText, getByTestId } = await getSearchComponent();
 
       await setup(fixture, navigate, getByText);
@@ -132,20 +135,24 @@ describe('SearchComponent', () => {
       await expect(spy).toHaveBeenCalled();
     });
 
-    it('should nagivate to open unlock user dialog when clicking unlock button', async () => {
+    it('should open unlock user dialog when clicking unlock button', async () => {
       const { fixture, navigate, getByText, getByTestId } = await getSearchComponent();
 
       await setup(fixture, navigate, getByText, true);
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+
+      const spy = spyOn(registrationsService, 'unlockAccount').and.returnValue(of({}));
 
       const searchResults = within(getByTestId('user-search-results'));
       fireEvent.click(searchResults.getByText('Open'));
       fireEvent.click(searchResults.getByText('Yes, unlock'));
 
-      fixture.detectChanges();
-
       const adminUnlockModal = within(document.body).getByRole('dialog');
+      const confirm = within(adminUnlockModal).getByText('Unlock account');
+      confirm.click();
 
-      expect(adminUnlockModal).toBeTruthy();
+      await expect(spy).toHaveBeenCalled();
     });
   });
 
