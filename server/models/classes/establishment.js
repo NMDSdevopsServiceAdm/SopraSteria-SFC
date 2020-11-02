@@ -2099,15 +2099,15 @@ class Establishment extends EntityValidator {
     // only get the sub if the isParent parameter is truthy
     const where = isParent
       ? {
-          $or: [
+          [models.Sequelize.Op.or]: [
             {
               id: {
-                $eq: primaryEstablishmentId,
+                [models.Sequelize.Op.eq]: primaryEstablishmentId,
               },
             },
             {
               ParentID: {
-                $eq: primaryEstablishmentId,
+                [models.Sequelize.Op.eq]: primaryEstablishmentId,
               },
             },
           ],

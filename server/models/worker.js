@@ -1116,16 +1116,16 @@ module.exports = function (sequelize, DataTypes) {
       as: 'recruitedFrom',
     });
     Worker.belongsToMany(models.job, {
-      through: 'workerJobs',
+      through: models.workerJobs,
       foreignKey: 'workerFk',
-      targetKey: 'workerFk',
+      // targetKey: 'workerFk',
       otherKey: 'jobFk',
       as: 'otherJobs',
     });
     Worker.belongsToMany(models.workerNurseSpecialism, {
-      through: 'workerNurseSpecialisms',
+      through: models.workerNurseSpecialisms,
       foreignKey: 'workerFk',
-      targetKey: 'workerFk',
+      // targetKey: 'workerFk',
       otherKey: 'nurseSpecialismFk',
       as: 'nurseSpecialisms',
     });
@@ -1195,6 +1195,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
   Worker.careworkersWithHourlyPayCount = async function (establishmentId) {
+    console.log(sequelize);
     return this.count({
       where: {
         establishmentFk: establishmentId,
