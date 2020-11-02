@@ -1,4 +1,3 @@
-
 const convict = require('convict');
 const fs = require('fs');
 const yaml = require('js-yaml');
@@ -17,90 +16,91 @@ const config = convict({
     doc: 'The application environment',
     format: ['production', 'preproduction', 'benchmarks', 'development', 'test', 'accessibility', 'localhost'],
     default: 'localhost',
-    env: 'NODE_ENV'
+    env: 'NODE_ENV',
   },
   version: {
     doc: 'The API version',
     format: String,
-    default: '0.0.0'
+    default: '0.0.0',
   },
   log: {
     level: {
       doc: 'Not yet used, but will be the default log level',
       format: String,
-      default: 'NONE'
+      default: 'NONE',
     },
     sequelize: {
       doc: 'Whether to log sequelize SQL statements',
       format: 'Boolean',
-      default: false
-    }
+      default: false,
+    },
   },
   listen: {
     port: {
       doc: 'Server binding port',
       format: 'port',
       default: 3000,
-      env: 'PORT'
+      env: 'PORT',
     },
     ip: {
       doc: 'Server binding IP',
-      format: "ipaddress",
-      default: "127.0.0.1",
+      format: 'ipaddress',
+      default: '127.0.0.1',
       env: 'HOST',
-    }
+    },
   },
   db: {
     host: {
       doc: 'Database host name/IP',
       format: String,
       default: 'localhost',
-      env: 'DB_HOST'
+      env: 'DB_HOST',
     },
     database: {
       doc: 'Database name',
       format: String,
       default: 'sfcdevdb',
-      env: 'DB_NAME'
+      env: 'DB_NAME',
     },
     username: {
-        doc: 'Database username',
-        format: String,
-        default: 'sfcadmin',
-        env: 'DB_USER'
+      doc: 'Database username',
+      format: String,
+      default: 'sfcadmin',
+      env: 'DB_USER',
     },
     password: {
-        doc: 'Database username',
-        format: '*',
-      default: 'unknown',           // note - bug in notify - must provide a default value for it to use env var
-        env: 'DB_PASS'
+      doc: 'Database username',
+      format: '*',
+      default: 'unknown', // note - bug in notify - must provide a default value for it to use env var
+      env: 'DB_PASS',
     },
     port: {
-        doc: 'Database port',
-        format: 'port',
-        default: 5432,
-        env: 'DB_PORT'
+      doc: 'Database port',
+      format: 'port',
+      default: 5432,
+      env: 'DB_PORT',
     },
     dialect: {
       doc: 'Database dialect (sequelize)',
       format: String,
-      default: 'postgres'
+      default: 'postgres',
     },
     ssl: {
       doc: 'Use SSL?',
       format: 'Boolean',
       default: false,
-      env: 'DB_SSL'
+      env: 'DB_SSL',
     },
     client_ssl: {
       status: {
         doc: 'Client SSL enabled or not',
         format: 'Boolean',
         default: false,
-        env: "DB_CLIENT_SSL_STATUS"
+        env: 'DB_CLIENT_SSL_STATUS',
       },
       usingFiles: {
-        doc: 'If true, retrieves client certificate, client key and root certificate from file; if false, using data values',
+        doc:
+          'If true, retrieves client certificate, client key and root certificate from file; if false, using data values',
         format: 'Boolean',
         default: true,
       },
@@ -109,20 +109,20 @@ const config = convict({
           doc: 'The full path location of the client certificate file',
           format: String,
           default: 'TBC',
-          env: "DB_CLIENT_SSL_CERTIFICATE"
+          env: 'DB_CLIENT_SSL_CERTIFICATE',
         },
         key: {
           doc: 'The full path location of the client key file',
           format: String,
           default: 'TBC',
-          env: "DB_CLIENT_SSL_KEY"
+          env: 'DB_CLIENT_SSL_KEY',
         },
         ca: {
           doc: 'The full path location of the server certificate (authority - ca) file',
           format: String,
           default: 'TBC',
-          env: "DB_CLIENT_SSL_CA"
-        }
+          env: 'DB_CLIENT_SSL_CA',
+        },
       },
       data: {
         certificate: {
@@ -139,137 +139,139 @@ const config = convict({
           doc: 'The server certificate (authority - ca)',
           format: String,
           default: 'TBC',
-        }
-      }
+        },
+      },
     },
     pool: {
       min: {
         doc: 'Minimum number of connections in the pool',
         format: 'int',
-        default: 5
+        default: 5,
       },
       max: {
         doc: 'Maximum number of connections in the pool',
         format: 'int',
-        default: 5
+        default: 5,
       },
       acquire: {
         doc: 'How long to wait for a connection to become available in the pool',
         format: 'int',
-        default: 60000
+        default: 60000,
       },
       idle: {
         doc: 'The maximum time, in milliseconds, that a connection can be idle before being released.',
         format: 'int',
-        default: 1000
-      }
-    }
+        default: 1000,
+      },
+    },
   },
   notify: {
-      key: {
-          doc: 'The gov.uk notify key',
-          format: '*',
-          default: 'unknown',           // note - bug in notify - must provide a default value for it to use env var
-          env: "NOTIFY_KEY"
+    key: {
+      doc: 'The gov.uk notify key',
+      format: '*',
+      default: 'unknown', // note - bug in notify - must provide a default value for it to use env var
+      env: 'NOTIFY_KEY',
+    },
+    replyTo: {
+      doc: 'The id to use for reply-to',
+      format: function check(val) {
+        const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+        if (!uuidRegex.test(val.toUpperCase())) throw new TypeError('gov.uk notify reply-to id should be a V4 UUID');
       },
-      replyTo: {
-        doc: 'The id to use for reply-to',
+      default: '80d54020-c420-46f1-866d-b8cc3196809d',
+    },
+    templates: {
+      resetPassword: {
+        doc: 'The template id for sending reset password emails',
         format: function check(val) {
           const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-          if (!uuidRegex.test(val.toUpperCase())) throw new TypeError('gov.uk notify reply-to id should be a V4 UUID');
+          if (!uuidRegex.test(val.toUpperCase()))
+            throw new TypeError('gov.uk notify reset password template id should be a V4 UUID');
         },
-        default: '80d54020-c420-46f1-866d-b8cc3196809d'
+        default: '80d54020-c420-46f1-866d-b8cc3196809d',
       },
-      templates: {
-        resetPassword: {
-          doc: 'The template id for sending reset password emails',
-          format: function check(val) {
-            const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-            if (!uuidRegex.test(val.toUpperCase())) throw new TypeError('gov.uk notify reset password template id should be a V4 UUID');
-          },
-          default: '80d54020-c420-46f1-866d-b8cc3196809d'
+      addUser: {
+        doc: 'The template id for sending user registration emails',
+        format: function check(val) {
+          const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+          if (!uuidRegex.test(val.toUpperCase()))
+            throw new TypeError('gov.uk notify add user template id should be a V4 UUID');
         },
-        addUser: {
-          doc: 'The template id for sending user registration emails',
-          format: function check(val) {
-            const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-            if (!uuidRegex.test(val.toUpperCase())) throw new TypeError('gov.uk notify add user template id should be a V4 UUID');
-          },
-          default: '80d54020-c420-46f1-866d-b8cc3196809d'
-        }
-      }
+        default: '80d54020-c420-46f1-866d-b8cc3196809d',
+      },
+    },
   },
   jwt: {
-      iss: {
-          doc: 'The JWT issuer',
-          format: 'url',
-          env: 'TOKEN_ISS',
-          default: 'http://localhost:3000'
+    iss: {
+      doc: 'The JWT issuer',
+      format: 'url',
+      env: 'TOKEN_ISS',
+      default: 'http://localhost:3000',
+    },
+    secret: {
+      doc: 'The JWT signing secret',
+      format: '*',
+      default: 'nodeauthsecret',
+      env: 'TOKEN_SECRET',
+    },
+    ttl: {
+      default: {
+        doc: 'The (default) Time To Live (in minutes) for token (timeout)',
+        format: 'int',
+        default: 5,
       },
-      secret: {
-        doc: 'The JWT signing secret',
-        format: '*',
-        default: 'nodeauthsecret',
-        env: 'TOKEN_SECRET'
+      login: {
+        doc: 'The Time To Live (in minutes) for login token',
+        format: 'int',
+        default: 5,
+        env: 'LOGIN_JWT_TTL',
       },
-      ttl: {
-        default : {
-          doc: 'The (default) Time To Live (in minutes) for token (timeout)',
-          format: 'int',
-          default: 5
-        },
-        login: {
-          doc: 'The Time To Live (in minutes) for login token',
-          format: 'int',
-          default: 5,
-          env: 'LOGIN_JWT_TTL'
-        }
+    },
+    aud: {
+      login: {
+        doc: 'The logged in JWT audience',
+        format: String,
+        default: 'ADS-WDS',
       },
-      aud: {
-        login: {
-          doc: 'The logged in JWT audience',
-          format: String,
-          default: 'ADS-WDS'
-        },
-        passwordReset: {
-          doc: 'The password reset JWT audience',
-          format: String,
-          default: 'ADS-WDS-password-reset'
-        },
-        addUser: {
-          doc: 'The add user JWT audience',
-          format: String,
-          default: 'ADS-WDS-add-user'
-        },
-        internalAdminApp: {
-          doc: 'The JWT audience for the Internal Admin application',
-          format: String,
-          default: 'ADS-WDS-Internal-Admin-App'
-        },
-      }
+      passwordReset: {
+        doc: 'The password reset JWT audience',
+        format: String,
+        default: 'ADS-WDS-password-reset',
+      },
+      addUser: {
+        doc: 'The add user JWT audience',
+        format: String,
+        default: 'ADS-WDS-add-user',
+      },
+      internalAdminApp: {
+        doc: 'The JWT audience for the Internal Admin application',
+        format: String,
+        default: 'ADS-WDS-Internal-Admin-App',
+      },
+    },
   },
   slack: {
-      url: {
-          doc: 'The slack notification endpoint',
-          format: 'url',
-          default: 'unknown',           // note - bug in notify - must provide a default value for it to use env var
-          env: 'SLACK_URL'
+    url: {
+      doc: 'The slack notification endpoint',
+      format: 'url',
+      default: 'unknown', // note - bug in notify - must provide a default value for it to use env var
+      env: 'SLACK_URL',
+    },
+    level: {
+      doc: 'The level of notifications to be sent to Slack: 0 - disabled, 1-error, 2-warning, 3-info, 5 - trace',
+      format: function check(val) {
+        if (![0, 1, 2, 3, 5].includes(val)) throw new TypeError('Slack level must be one of 0, 1, 2, 3 or 5');
       },
-      level: {
-          doc: 'The level of notifications to be sent to Slack: 0 - disabled, 1-error, 2-warning, 3-info, 5 - trace',
-          format: function check(val) {
-              if (![0, 1, 2, 3, 5].includes(val)) throw new TypeError('Slack level must be one of 0, 1, 2, 3 or 5');
-          },
-          env: 'SLACK_LEVEL',
-          default: 0
-      }
+      env: 'SLACK_LEVEL',
+      default: 0,
+    },
   },
   getAddress: {
     apikey: {
       doc: 'API key for getAddress.io',
       format: 'String',
       default: '',
-    }
+    },
   },
   aws: {
     region: {
@@ -279,36 +281,15 @@ const config = convict({
     },
     secrets: {
       use: {
-        doc: 'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
+        doc:
+          'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
         format: 'Boolean',
-        default: false
+        default: false,
       },
       wallet: {
         doc: 'The name of the AWS Secrets Manager wallet to recall from',
         format: String,
-        default: 'bob'
-      }
-    },
-    kinesis: {
-      enabled: {
-        doc: 'Enables/disables kinesis pump',
-        format: 'Boolean',
-        default: false,
-      },
-      establishments: {
-        doc: 'The name of the kinesis stream into which to pump all establishments',
-        format: String,
-        default: 'kensis-establishments',
-      },
-      workers: {
-        doc: 'The name of the kinesis stream into which to pump all workers',
-        format: String,
-        default: 'kensis-workers',
-      },
-      users: {
-        doc: 'The name of the kinesis stream into which to pump all users',
-        format: String,
-        default: 'kensis-users',
+        default: 'bob',
       },
     },
     sns: {
@@ -349,28 +330,28 @@ const config = convict({
       timeout: {
         doc: 'The timeout in seconds for bulk upload validations',
         format: 'int',
-        default: 300
+        default: 300,
       },
       storeIntermediaries: {
         doc: 'If true, intermediary trace data will be stored',
         format: 'Boolean',
-        default: false
+        default: false,
       },
     },
     completion: {
       timeout: {
         doc: 'The timeout in seconds for bulk upload completion',
         format: 'int',
-        default: 300
+        default: 300,
       },
     },
     download: {
       timeout: {
         doc: 'The timeout in seconds for bulk upload download',
         format: 'int',
-        default: 300
+        default: 300,
       },
-    }
+    },
   },
   locks: {
     region: {
@@ -403,8 +384,8 @@ const config = convict({
     overrideWdfEffectiveDate: {
       doc: 'Allows for overridding the effective date - false is default (calculated) effective date',
       format: '*',
-      default: false
-    }
+      default: false,
+    },
   },
   app: {
     reports: {
@@ -412,78 +393,78 @@ const config = convict({
         fromDate: {
           doc: 'A fixed from reporting date; in the format YYYY-MM-DD',
           format: String,
-          default: '2020-09-14'
+          default: '2020-09-14',
         },
         toDate: {
           doc: 'A fixed to reporting date; in the format YYYY-MM-DD',
           format: String,
-          default: '2020-10-31'
+          default: '2020-10-31',
         },
         timeout: {
-          doc: "The timeout, in seconds, on the Local Authority user and admin API endpoints",
+          doc: 'The timeout, in seconds, on the Local Authority user and admin API endpoints',
           format: 'int',
           default: 180,
-        }
-      }
-    }
+        },
+      },
+    },
   },
   test: {
     baseurl: {
       doc: 'The API URL to run integration tests against',
       format: String,
       default: 'http://localhost',
-      env: 'TEST_BASEURL'
+      env: 'TEST_BASEURL',
     },
     admin: {
       username: {
         doc: 'A username of an admin user who can approve the registration request for new logins',
         format: String,
         default: 'unknown',
-        env: 'TEST_ADMINUSERNAME'
+        env: 'TEST_ADMINUSERNAME',
       },
       password: {
         doc: 'A password of an admin user who can approve the registration request for new logins',
         format: String,
         default: 'unknown',
-        env: 'TEST_ADMINPASSWORD'
-      }
-    }
+        env: 'TEST_ADMINPASSWORD',
+      },
+    },
   },
   rateLimiting: {
     points: {
       doc: 'How many times you want allow a user to visit sensitive endpoints',
       format: 'int',
-      default: 60
+      default: 60,
     },
     duration: {
       doc: 'How long a peroid you want to monitor a user visiting endpoints',
       format: 'int',
-      default: 1 * 60 * 60 // 1 hour
+      default: 1 * 60 * 60, // 1 hour
     },
     table: {
       doc: 'The table name you want to create/update to log user requests',
       format: String,
-      default: 'SensitiveSessions'
-    }
+      default: 'SensitiveSessions',
+    },
   },
   timezone: {
     doc: 'What timezone is the service running in?',
     format: String,
-    default: 'Europe/London'
+    default: 'Europe/London',
   },
   datadog: {
     site: {
       doc: 'Datadog URL',
       format: String,
-      default: 'datadoghq.eu'
+      default: 'datadoghq.eu',
     },
     api_key: {
       doc: 'Datadog API Key',
       format: String,
       default: '',
       sensitive: true,
-      env: 'DD_API_KEY'
-    }
+      env: 'DD_API_KEY',
+    },
   },
   sentry: {
     dsn: {
@@ -491,17 +472,17 @@ const config = convict({
       format: String,
       default: 'https://59c078b68dc0429aa404e59920f288fd@o409195.ingest.sentry.io/5281212',
       sensitive: true,
-      env: 'SENTRY_DSN'
+      env: 'SENTRY_DSN',
     },
     sample_rate: {
       doc: 'Sample Rate as a percentage of events to be sent',
-      format: function(val) {
+      format: function (val) {
         if (val !== 0 && (!val || val > 1 || val < 0)) {
           throw new Error('must be a float between 0 and 1, inclusive');
         }
       },
       default: 0.3,
-    }
+    },
   },
   honeycomb: {
     write_key: {
@@ -509,9 +490,9 @@ const config = convict({
       format: String,
       default: 'blank',
       sensitive: true,
-      env: 'HONEYCOMB_WRITE_KEY'
-    }
-  }
+      env: 'HONEYCOMB_WRITE_KEY',
+    },
+  },
 });
 
 // Load environment dependent configuration
@@ -525,24 +506,19 @@ config.load(commonConfigfile);
 config.load(envConfigfile);
 
 // Perform validation
-config.validate(
-    {allowed: 'strict'}
-);
+config.validate({ allowed: 'strict' });
 
 // now, if defined, load secrets from AWS Secret Manager
 if (config.get('aws.secrets.use')) {
-  AWSSecrets.initialiseSecrets(
-    config.get('aws.region'),
-    config.get('aws.secrets.wallet')
-  ).then(ret => {
+  AWSSecrets.initialiseSecrets(config.get('aws.region'), config.get('aws.secrets.wallet')).then((ret) => {
     // DB rebind
     config.set('db.host', AWSSecrets.dbHost());
     config.set('db.password', AWSSecrets.dbPass());
 
     if (config.get('db.client_ssl.status')) {
-      config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
-      config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
-      config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
+      config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, '\n'));
+      config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, '\n'));
+      config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, '\n'));
     }
 
     // external APIs
@@ -550,7 +526,7 @@ if (config.get('aws.secrets.use')) {
     config.set('notify.key', AWSSecrets.govNotify());
     config.set('admin.url', AWSSecrets.adminUrl());
     config.set('getAddress.apikey', AWSSecrets.getAddressKey());
-  //  config.set('datadog.api_key', AWSSecrets.datadogApiKey()); // Data dog is still work in progress, checking if we really need this
+    //  config.set('datadog.api_key', AWSSecrets.datadogApiKey()); // Data dog is still work in progress, checking if we really need this
     config.set('sentry.dsn', AWSSecrets.sentryDsn());
     config.set('honeycomb.write_key', AWSSecrets.honeycombWriteKey());
 

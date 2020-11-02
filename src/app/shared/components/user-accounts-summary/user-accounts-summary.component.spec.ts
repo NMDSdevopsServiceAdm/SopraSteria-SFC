@@ -21,7 +21,7 @@ describe('UserAccountsSummaryComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(UserAccountsSummaryComponent);
-    permissionsService = TestBed.get(PermissionsService);
+    permissionsService = TestBed.inject(PermissionsService);
     permissionsService.setPermissions(Establishment.uid, PermissionsList);
     component = fixture.componentInstance;
     component.workplace = Establishment;

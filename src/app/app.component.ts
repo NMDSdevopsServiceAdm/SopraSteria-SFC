@@ -24,16 +24,16 @@ export class AppComponent implements OnInit {
     private nestedRoutesService: NestedRoutesService,
     private authService: AuthService,
     private idleService: IdleService,
-    private angulartics2GoogleTagManager: Angulartics2GoogleTagManager
+    private angulartics2GoogleTagManager: Angulartics2GoogleTagManager,
   ) {
-    this.nestedRoutesService.routes$.subscribe(routes => {
+    this.nestedRoutesService.routes$.subscribe((routes) => {
       if (routes) {
         const titles = routes.reduce(
           (titleArray, breadcrumb) => {
             titleArray.push(breadcrumb.title);
             return titleArray;
           },
-          [this.baseTitle]
+          [this.baseTitle],
         );
 
         this.title.setTitle(titles.join(' - '));
@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       window.scrollTo(0, 0);
       if (document.activeElement && document.activeElement !== document.body) {
         (document.activeElement as HTMLElement).blur();
@@ -52,22 +52,19 @@ export class AppComponent implements OnInit {
       this.top.nativeElement.focus();
     });
 
-    this.authService.isAutheticated$.subscribe(authenticated => {
+    this.authService.isAutheticated$.subscribe((authenticated) => {
       if (authenticated) {
         this.idleService.start();
 
         this.idleService.ping$.pipe(takeWhile(() => this.idleService.isRunning)).subscribe(() => {
-          this.authService
-            .refreshToken()
-            .pipe(take(1))
-            .subscribe();
+          this.authService.refreshToken().pipe(take(1)).subscribe();
         });
 
         this.idleService.onTimeout().subscribe(() => {
           this.authService.storeRedirectLocation();
           this.authService.logout();
         });
-      } else if (!authenticated && this.idleService.isRunning) {
+      } else if (this.idleService.isRunning) {
         this.idleService.clear();
       }
     });

@@ -14,7 +14,6 @@ const Sequelize = require('sequelize');
 
 // notifications
 const sendAddUserEmail = require('../../utils/email/notify-email').sendAddUser;
-const AWSKinesis = require('../../aws/kinesis');
 
 const UserExceptions = require('./user/userExceptions');
 
@@ -45,7 +44,7 @@ class User {
     // localised attributes - optional on load
     this._username = null;
     this._password = null;
-    this._isPrimary - null;
+    this._isPrimary = null;
     this._tribalId = null;
     this._lastLogin = null;
     this._establishmentUid = null;
@@ -204,7 +203,7 @@ class User {
           this._uid,
           this.fullname,
           `Unexpected Establishment Id (${this._establishmentId})`,
-          'Unknown Establishment'
+          'Unknown Establishment',
         );
 
       // note, do not initialise the id as this will be returned by database
@@ -316,7 +315,7 @@ class User {
         where: {
           userFk: this._id,
         },
-      }
+      },
     );
 
     // now add a tracking record
@@ -330,7 +329,7 @@ class User {
         uuid: this._trackingUUID,
         by: savedBy.toLowerCase(),
       },
-      { transaction }
+      { transaction },
     );
 
     // now send the email
@@ -351,7 +350,7 @@ class User {
         this.uid,
         this.fullname,
         'Not able to save an unknown uid',
-        'User does not exist'
+        'User does not exist',
       );
     }
 
@@ -370,12 +369,12 @@ class User {
           isPrimary: this._isPrimary,
           archived: false,
           attributes: ['id', 'created', 'updated'],
-          agreedUpdatedTerms: true
+          agreedUpdatedTerms: true,
         };
 
         // need to create the User record and the User Audit event
         //  in one transaction
-        await models.sequelize.transaction(async t => {
+        await models.sequelize.transaction(async (t) => {
           // the saving of an User can be initiated within
           //  an external transaction
           const thisTransaction = externalTransaction ? externalTransaction : t;
@@ -413,9 +412,9 @@ class User {
                 status: this._status,
                 isActive: this._active,
                 invalidAttempt: 0,
-                agreedUpdatedTerms: true
+                agreedUpdatedTerms: true,
               },
-              { transaction: thisTransaction }
+              { transaction: thisTransaction },
             );
 
             // also need to complete on the originating add user tracking record
@@ -430,7 +429,7 @@ class User {
                 },
                 returning: true,
                 plain: false,
-              }
+              },
             );
 
             // if there was a tracking record, need also to delete (archive) the original User record used for the registration
@@ -444,7 +443,7 @@ class User {
                     id: trackingResponse[1][0].dataValues.UserFK,
                   },
                   transaction: thisTransaction,
-                }
+                },
               );
           }
 
@@ -458,12 +457,12 @@ class User {
                 type: 'created',
               },
             ].concat(
-              this._properties.auditEvents.map(thisEvent => {
+              this._properties.auditEvents.map((thisEvent) => {
                 return {
                   ...thisEvent,
                   userFk: this._id,
                 };
-              })
+              }),
             );
             await models.userAudit.bulkCreate(allAuditEvents, { transaction: thisTransaction });
           }
@@ -473,9 +472,6 @@ class User {
             // need to send an email having added an "Add User" tracking record
             await this.trackNewUser(savedBy.toLowerCase(), t, ttl);
           }
-
-          // this is an async method - don't wait for it to return
-          AWSKinesis.userPump(AWSKinesis.CREATED, this.toJSON());
 
           this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
         });
@@ -488,7 +484,7 @@ class User {
               this.uid,
               this.fullname,
               'Duplicate Username',
-              'Duplicate Username'
+              'Duplicate Username',
             );
           }
         } else {
@@ -502,7 +498,7 @@ class User {
 
         // need to update the existing User record and add an
         //  updated audit event within a single transaction
-        await models.sequelize.transaction(async t => {
+        await models.sequelize.transaction(async (t) => {
           // the saving of an User can be initiated within
           //  an external transaction
           const thisTransaction = externalTransaction ? externalTransaction : t;
@@ -518,13 +514,13 @@ class User {
                 status: this._status,
                 isActive: this._active,
                 invalidAttempt: 0,
-                agreedUpdatedTerms: this._agreedUpdatedTerms
+                agreedUpdatedTerms: this._agreedUpdatedTerms,
               },
-              { transaction: thisTransaction }
+              { transaction: thisTransaction },
             );
 
             // also need to complete on the originating add user tracking record
-            const trackingResponse = await models.addUserTracking.update(
+            await models.addUserTracking.update(
               {
                 completed: this.created, // use the very same timestamp as that which the User record was created!
               },
@@ -535,7 +531,7 @@ class User {
                 },
                 returning: true,
                 plain: false,
-              }
+              },
             );
 
             const allAuditEvents = [
@@ -551,14 +547,14 @@ class User {
           if (this._agreedUpdatedTerms) {
             await models.login.update(
               {
-                agreedUpdatedTerms: true
+                agreedUpdatedTerms: true,
               },
               {
                 where: {
                   registrationId: this._id,
                 },
                 transaction: thisTransaction,
-              }
+              },
             );
           }
 
@@ -581,7 +577,7 @@ class User {
                 returning: true,
                 raw: true,
                 attributes: ['id', 'updated'],
-              }
+              },
             );
           }
 
@@ -629,12 +625,12 @@ class User {
                   type: 'updated',
                 },
               ].concat(
-                this._properties.auditEvents.map(thisEvent => {
+                this._properties.auditEvents.map((thisEvent) => {
                   return {
                     ...thisEvent,
                     userFk: this._id,
                   };
-                })
+                }),
               );
               // having updated the record, create the audit event
               await models.userAudit.bulkCreate(allAuditEvents, { transaction: thisTransaction });
@@ -644,36 +640,33 @@ class User {
             const additionalModels = this._properties.additionalModels;
             const additionalModelsByname = Object.keys(additionalModels);
             const deleteModelPromises = [];
-            additionalModelsByname.forEach(async thisModelByName => {
+            additionalModelsByname.forEach(async (thisModelByName) => {
               deleteModelPromises.push(
                 models[thisModelByName].destroy({
                   where: {
                     userFk: this._id,
                   },
                   transaction: thisTransaction,
-                })
+                }),
               );
             });
             await Promise.all(deleteModelPromises);
             const createModelPromises = [];
-            additionalModelsByname.forEach(async thisModelByName => {
+            additionalModelsByname.forEach(async (thisModelByName) => {
               const thisModelData = additionalModels[thisModelByName];
               createModelPromises.push(
                 models[thisModelByName].bulkCreate(
-                  thisModelData.map(thisRecord => {
+                  thisModelData.map((thisRecord) => {
                     return {
                       ...thisRecord,
                       userFk: this._id,
                     };
                   }),
-                  { transaction: thisTransaction }
-                )
+                  { transaction: thisTransaction },
+                ),
               );
             });
             await Promise.all(createModelPromises);
-
-            // this is an async method - don't wait for it to return
-            AWSKinesis.userPump(AWSKinesis.UPDATED, this.toJSON());
 
             this._log(User.LOG_INFO, `Updated User with uid (${this.uid}) and name (${this.fullname})`);
           } else {
@@ -682,7 +675,7 @@ class User {
               this.uid,
               this.fullname,
               err,
-              `Failed to update resulting user record with id: ${this._id}`
+              `Failed to update resulting user record with id: ${this._id}`,
             );
           }
         });
@@ -692,7 +685,7 @@ class User {
           this.uid,
           this.fullname,
           err,
-          `Failed to update user record with id: ${this._id}`
+          `Failed to update user record with id: ${this._id}`,
         );
       }
     }
@@ -711,7 +704,7 @@ class User {
         null,
         'User::restore failed: Missing uid or username',
         null,
-        'Unexpected Error'
+        'Unexpected Error',
       );
     }
 
@@ -766,7 +759,8 @@ class User {
         this._updatedBy = fetchResults.updatedBy;
         this._tribalId = fetchResults.tribalId;
         this._lastLogin = fetchResults.login && fetchResults.login.username ? fetchResults.login.lastLogin : null;
-        this._agreedUpdatedTerms = fetchResults.login && fetchResults.login.agreedUpdatedTerms ? fetchResults.login.agreedUpdatedTerms : false;
+        this._agreedUpdatedTerms =
+          fetchResults.login && fetchResults.login.agreedUpdatedTerms ? fetchResults.login.agreedUpdatedTerms : false;
 
         // TODO: change to amanaged property
         this._isPrimary = fetchResults.isPrimary;
@@ -805,7 +799,7 @@ class User {
     try {
       const updatedTimestamp = new Date();
 
-      await models.sequelize.transaction(async t => {
+      await models.sequelize.transaction(async (t) => {
         const thisTransaction = externalTransaction ? externalTransaction : t;
         let randomNewUsername = uuid.v4();
         let oldUsername = this._username;
@@ -824,7 +818,7 @@ class User {
           SecurityQuestionAnswerValue: '',
         };
 
-        let [updatedRecordCount, updatedRows] = await models.user.update(updateDocument, {
+        let [updatedRecordCount] = await models.user.update(updateDocument, {
           returning: true,
           where: {
             uid: this.uid,
@@ -843,7 +837,7 @@ class User {
                 registrationId: this._id,
               },
               transaction: thisTransaction,
-            }
+            },
           );
 
           await models.addUserTracking.update(
@@ -855,7 +849,7 @@ class User {
               where: {
                 userFk: this._id,
               },
-            }
+            },
           );
 
           const auditEvent = {
@@ -873,7 +867,7 @@ class User {
               replacements: { username: oldUsername, usernameNew: randomNewUsername },
               type: models.sequelize.QueryTypes.UPDATE,
               transaction: thisTransaction,
-            }
+            },
           );
           await models.sequelize.query(
             'UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
@@ -881,7 +875,7 @@ class User {
               replacements: { username: oldUsername, usernameNew: randomNewUsername },
               type: models.sequelize.QueryTypes.UPDATE,
               transaction: thisTransaction,
-            }
+            },
           );
           await models.sequelize.query(
             'UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
@@ -889,20 +883,17 @@ class User {
               replacements: { username: oldUsername, usernameNew: randomNewUsername },
               type: models.sequelize.QueryTypes.UPDATE,
               transaction: thisTransaction,
-            }
+            },
           );
-
-          AWSKinesis.userPump(AWSKinesis.DELETED, this.toJSON());
 
           this._log(User.LOG_INFO, `Archived User with uid (${this._uid}) and id (${this._id})`);
         } else {
-          const nameId = this._properties.get('NameOrId');
           throw new UserExceptions.UserDeleteException(
             null,
             this.uid,
             null,
             err,
-            `Failed to update (archive) user record with uid: ${this._uid}`
+            `Failed to update (archive) user record with uid: ${this._uid}`,
           );
         }
       });
@@ -914,7 +905,7 @@ class User {
         this.uid,
         null,
         err,
-        `Failed to update (archive) user record with uid: ${this._uid}`
+        `Failed to update (archive) user record with uid: ${this._uid}`,
       );
     }
   }
@@ -932,7 +923,7 @@ class User {
 
     const returnData = { Read: 0, Edit: 0 };
 
-    results.forEach(element => {
+    results.forEach((element) => {
       returnData[element.UserRoleValue] = Number.parseInt(element.roleCount);
     });
 
@@ -969,7 +960,7 @@ class User {
     });
 
     if (fetchResults) {
-      fetchResults.forEach(thisUser => {
+      fetchResults.forEach((thisUser) => {
         allUsers.push({
           uid: thisUser.uid,
           fullname: thisUser.FullNameValue,
@@ -981,12 +972,14 @@ class User {
           updated: thisUser.updated.toJSON(),
           updatedBy: thisUser.updatedBy,
           isPrimary: thisUser.isPrimary ? true : false,
-          status: thisUser.login && thisUser.login.status ? thisUser.login.status : null
+          status: thisUser.login && thisUser.login.status ? thisUser.login.status : null,
         });
       });
 
-      allUsers = allUsers.map(user => {
-        return Object.assign(user, { status: user.username == null ? 'Pending' : (user.status !== null)? user.status: 'Active' });
+      allUsers = allUsers.map((user) => {
+        return Object.assign(user, {
+          status: user.username == null ? 'Pending' : user.status !== null ? user.status : 'Active',
+        });
       });
 
       allUsers.sort((a, b) => {
@@ -1004,12 +997,12 @@ class User {
   formatWorkerHistoryEvents(auditEvents) {
     if (auditEvents) {
       return auditEvents
-        .filter(thisEvent =>
+        .filter((thisEvent) =>
           ['created', 'updated', 'loginSuccess', 'loginFailed', 'loginWhileLocked', 'passwdReset'].includes(
-            thisEvent.type
-          )
+            thisEvent.type,
+          ),
         )
-        .map(thisEvent => {
+        .map((thisEvent) => {
           return {
             when: thisEvent.when,
             username: thisEvent.username,
@@ -1026,7 +1019,7 @@ class User {
   //  User properties)
   formatWorkerHistory(auditEvents) {
     if (auditEvents) {
-      return auditEvents.map(thisEvent => {
+      return auditEvents.map((thisEvent) => {
         return {
           when: thisEvent.when,
           username: thisEvent.username,
@@ -1047,7 +1040,7 @@ class User {
     showHistory = false,
     showPropertyHistoryOnly = true,
     showHistoryTimeline = false,
-    modifiedOnlyProperties = false
+    modifiedOnlyProperties = false,
   ) {
     if (!showHistoryTimeline) {
       // JSON representation of extendable properties

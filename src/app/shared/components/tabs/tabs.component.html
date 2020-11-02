@@ -7,8 +7,6 @@
         id="tab_{{ tab.slug }}"
         class="govuk-tabs__tab"
         [class.govuk-tabs__tab--selected]="tab.active"
-        [class.govuk-tabs__tab--alert]="tab.alert"
-        [class.govuk-tabs__tab--red-alert]="tab.redAlert"
         href="#{{ tab.slug }}"
         role="tab"
         [attr.aria-controls]="tab.slug"
@@ -21,6 +19,8 @@
       >
         {{ tab.title }}
       </a>
+
+      <i [class.govuk-tabs__tab--alert]="tab.alert" [class.govuk-tabs__tab--red-alert]="tab.redAlert"></i>
     </li>
   </ng-container>
 </ul>

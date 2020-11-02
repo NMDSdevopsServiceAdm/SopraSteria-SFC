@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -7,9 +7,9 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 
 @Component({
   selector: 'app-total-staff-change',
@@ -35,7 +35,7 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
     private backService: BackService,
     private establishmentService: EstablishmentService,
     private workerService: WorkerService,
-    private totalStaffFormService: TotalStaffFormService
+    private totalStaffFormService: TotalStaffFormService,
   ) {
     this.form = totalStaffFormService.createForm(formBuilder);
   }
@@ -98,9 +98,9 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
 
     this.subscriptions.add(
       this.establishmentService.postStaff(this.workplace.uid, totalStaff).subscribe(
-        data => this.onSuccess(data.numberOfStaff),
-        error => this.onError(error)
-      )
+        (data) => this.onSuccess(data.numberOfStaff),
+        (error) => this.onError(error),
+      ),
     );
   }
 

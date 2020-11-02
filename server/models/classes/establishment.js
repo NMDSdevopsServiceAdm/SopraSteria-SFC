@@ -405,7 +405,7 @@ class Establishment extends EntityValidator {
       // Consequential updates when one value means another should be empty or null
 
       if (document.share) {
-        if (!document.share.enabled || document.share.enabled && !document.share.with.includes('Local Authority')) {
+        if (!document.share.enabled || (document.share.enabled && !document.share.with.includes('Local Authority'))) {
           document.localAuthorities = [];
         }
       }
@@ -941,7 +941,6 @@ class Establishment extends EntityValidator {
           // it's current WDF eligibility. If it is eligible then
           // update the last WDF Eligibility status
           const wdfEligibility = await this.isWdfEligible(WdfCalculator.effectiveDate);
-          const effectiveDateTime = WdfCalculator.effectiveTime;
 
           let wdfAudit = null;
 
@@ -2049,7 +2048,7 @@ class Establishment extends EntityValidator {
         },
       );
     } catch (err) {
-      this._log(Establishment.LOG_ERROR, `bulkUploadSuccess - failed: ${err}`);
+      console.error(Establishment.LOG_ERROR, `bulkUploadSuccess - failed: ${err}`);
     }
   }
 
