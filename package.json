@@ -7,7 +7,7 @@
     "build": "node --max_old_space_size=4096 node_modules/@angular/cli/bin/ng build --no-progress",
     "build:clean": "rimraf dist",
     "build:watch": "ng serve --proxy-config proxy.conf.json",
-    "build:prod": "npm run build:clean && ng build --prod",
+    "build:prod": "npm run build:clean && npm run build -- --prod",
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
