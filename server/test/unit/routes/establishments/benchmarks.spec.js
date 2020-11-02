@@ -483,6 +483,14 @@ describe('benchmarks', () => {
               value: 0,
               hasValue: false,
             },
+            goodCqc: {
+              hasValue: false,
+              value: 0,
+            },
+            lowTurnover: {
+              hasValue: false,
+              value: 0,
+            },
           },
         },
         meta: {},
@@ -497,6 +505,14 @@ describe('benchmarks', () => {
             comparisonGroup: {
               value: 10,
               hasValue: true,
+            },
+            goodCqc: {
+              hasValue: true,
+              value: 0,
+            },
+            lowTurnover: {
+              hasValue: true,
+              value: 0,
             },
           },
         },
@@ -529,6 +545,14 @@ describe('benchmarks', () => {
               value: 0,
               hasValue: false,
             },
+            goodCqc: {
+              hasValue: false,
+              value: 0,
+            },
+            lowTurnover: {
+              hasValue: false,
+              value: 0,
+            },
           },
         },
         meta: {},
@@ -545,11 +569,11 @@ describe('benchmarks', () => {
               hasValue: true,
             },
             goodCqc: {
-              hasValue: false,
+              hasValue: true,
               value: 0,
             },
             lowTurnover: {
-              hasValue: false,
+              hasValue: true,
               value: 0,
             },
           },
@@ -583,6 +607,14 @@ describe('benchmarks', () => {
               value: 0,
               hasValue: false,
             },
+            goodCqc: {
+              hasValue: false,
+              value: 0,
+            },
+            lowTurnover: {
+              hasValue: false,
+              value: 0,
+            },
           },
           sickness: {
             workplaceValue: {
@@ -592,6 +624,14 @@ describe('benchmarks', () => {
             comparisonGroup: {
               value: 0,
               hasValue: false,
+            },
+            goodCqc: {
+              hasValue: false,
+              value: 0,
+            },
+            lowTurnover: {
+              hasValue: false,
+              value: 0,
             },
           },
         },
@@ -609,11 +649,11 @@ describe('benchmarks', () => {
               hasValue: true,
             },
             goodCqc: {
-              hasValue: false,
+              hasValue: true,
               value: 0,
             },
             lowTurnover: {
-              hasValue: false,
+              hasValue: true,
               value: 0,
             },
           },
@@ -627,11 +667,11 @@ describe('benchmarks', () => {
               hasValue: true,
             },
             goodCqc: {
-              hasValue: false,
+              hasValue: true,
               value: 0,
             },
             lowTurnover: {
-              hasValue: false,
+              hasValue: true,
               value: 0,
             },
           },
