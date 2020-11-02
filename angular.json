@@ -25,14 +25,33 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
               {
                 "glob": "**/*",
                 "input": "./node_modules/govuk-frontend/govuk/assets/",
                 "output": "./assets/"
               }
             ],
-            "styles": ["./src/styles.scss"]
+            "styles": ["./src/styles.scss"],
+            "allowedCommonJsDependencies": [
+              "@babel",
+              "raf",
+              "core-js",
+              "file-saver",
+              "url",
+              "highcharts",
+              "lodash",
+              "url-parse",
+              "rxjs/internal/operators/take",
+              "@babel/runtime/helpers/slicedToArray",
+              "@babel/runtime/helpers/possibleConstructorReturn",
+              "@babel/runtime/helpers/inherits",
+              "@babel/runtime/helpers/toConsumableArray",
+              "@babel/runtime/helpers/get",
+              "@babel/runtime/regenerator"
+            ]
           },
           "configurations": {
             "test": {
