@@ -151,7 +151,7 @@
     "rimraf": "^3.0.2",
     "sandboxed-module": "^2.0.4",
     "sinon": "^7.5.0",
-    "supertest": "^5.0.0",
+    "supertest": "^6.0.0",
     "ts-node": "~7.0.1",
     "tslint": "~6.1.3"
   },
