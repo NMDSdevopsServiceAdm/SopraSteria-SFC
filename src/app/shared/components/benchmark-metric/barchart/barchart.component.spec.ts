@@ -1,5 +1,5 @@
 import { Metric, Tile } from '@core/model/benchmarks.model';
-import { FormatUtil } from '@core/utils/fomat-util';
+import { FormatUtil } from '@core/utils/format-util';
 import { build, fake } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';

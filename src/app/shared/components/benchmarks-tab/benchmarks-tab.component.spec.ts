@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
-import { FormatUtil } from '@core/utils/fomat-util';
+import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchmarks-tab.component';
 
 import { Establishment } from '../../../../mockdata/establishment';

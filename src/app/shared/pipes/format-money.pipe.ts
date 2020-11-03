@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { FormatUtil } from '@core/utils/fomat-util';
+import { FormatUtil } from '@core/utils/format-util';
 
 @Pipe({
   name: 'formatMoney',
