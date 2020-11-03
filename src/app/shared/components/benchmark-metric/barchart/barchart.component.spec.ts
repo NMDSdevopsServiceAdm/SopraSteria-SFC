@@ -76,7 +76,9 @@ describe('BarchartComponent', () => {
     it('should display correct data labels for pay', async () => {
       const benchmarks = benchmarksBuilder();
 
-      const { getByText } = await getBarchartComponent(Metric.pay, benchmarks);
+      const { fixture, getByText } = await getBarchartComponent(Metric.pay, benchmarks);
+
+      fixture.detectChanges();
 
       for (let key in benchmarks) {
         expect(getByPayText(benchmarks[key].value)).toBeTruthy();
@@ -92,7 +94,9 @@ describe('BarchartComponent', () => {
     it('should display correct data labels for turnover', async () => {
       const benchmarks = benchmarksBuilder();
 
-      const { getByText } = await getBarchartComponent(Metric.turnover, benchmarks);
+      const { fixture, getByText } = await getBarchartComponent(Metric.turnover, benchmarks);
+
+      fixture.detectChanges();
 
       for (let key in benchmarks) {
         expect(getByTurnoverText(benchmarks[key].value)).toBeTruthy();
@@ -108,8 +112,9 @@ describe('BarchartComponent', () => {
     it('should display correct data labels for qualification', async () => {
       const benchmarks = benchmarksBuilder();
 
-      const { getByText } = await getBarchartComponent(Metric.qualifications, benchmarks);
+      const { fixture, getByText } = await getBarchartComponent(Metric.qualifications, benchmarks);
 
+      fixture.detectChanges();
       for (let key in benchmarks) {
         expect(getByQualificationText(benchmarks[key].value)).toBeTruthy();
       }
@@ -124,7 +129,8 @@ describe('BarchartComponent', () => {
     it('should display correct data labels for sickness', async () => {
       const benchmarks = benchmarksBuilder();
 
-      const { getByText } = await getBarchartComponent(Metric.sickness, benchmarks);
+      const { fixture, getByText } = await getBarchartComponent(Metric.sickness, benchmarks);
+      fixture.detectChanges();
 
       for (let key in benchmarks) {
         expect(getBySicknessText(benchmarks[key].value)).toBeTruthy();
