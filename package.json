@@ -133,7 +133,7 @@
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^2.2.0",
     "karma-cli": "^2.0.0",
-    "karma-coverage-istanbul-reporter": "~2.1.1",
+    "karma-coverage-istanbul-reporter": "~3.0.3",
     "karma-jasmine": "^4.0.1",
     "karma-jasmine-html-reporter": "^1.5.4",
     "lint-staged": "^10.5.1",
