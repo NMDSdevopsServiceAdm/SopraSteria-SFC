@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Metric } from '@core/model/benchmarks.model';
+import { MetricsContent } from '@core/model/benchmarks.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
@@ -19,13 +19,13 @@ const payTileData = {
 };
 
 const noPayTileData = {
-  workplaceValue: { value: null, hasValue: false },
+  workplaceValue: { value: null, hasValue: false, stateMessage: 'no-workers' },
   comparisonGroup: { value: null, hasValue: false },
   goodCqc: { value: null, hasValue: false },
   lowTurnover: { value: null, hasValue: false },
 };
 
-const getBenchmarksMetricComponent = async () => {
+const getBenchmarksMetricComponent = async (componentProperties = {}) => {
   return render(BenchmarksMetricComponent, {
     imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BenchmarksModule],
     providers: [
@@ -37,11 +37,12 @@ const getBenchmarksMetricComponent = async () => {
         provide: ActivatedRoute,
         useValue: {
           data: of({
-            metric: Metric.pay,
+            ...MetricsContent.Pay,
           }),
         },
       },
     ],
+    componentProperties,
   });
 };
 
@@ -66,7 +67,9 @@ describe('BenchmarksMetricComponent', () => {
   });
 
   it('should create a barchart with workplace benchmarks data', async () => {
-    const { fixture, getByText } = await getBenchmarksMetricComponent();
+    const { fixture, getByText } = await getBenchmarksMetricComponent({
+      benchmarks: payTileData,
+    });
 
     setup(payTileData);
 
@@ -84,13 +87,16 @@ describe('BenchmarksMetricComponent', () => {
   });
 
   it('should create a barchart messages when no benchmarks data available', async () => {
-    const { fixture, getByText } = await getBenchmarksMetricComponent();
+    const { fixture, getByText } = await getBenchmarksMetricComponent({
+      benchmarks: noPayTileData,
+    });
 
     setup(noPayTileData);
 
     fixture.detectChanges();
+    await fixture.whenStable();
 
-    const noYourWorkplaceDataMessage = getByText('Your turnover seems to be over 999%, please contact us.');
+    const noYourWorkplaceDataMessage = getByText(MetricsContent.Pay.noData['no-workers']);
     const noComparisonGroupsDataMessage = getByText('We do not have enough data to show these comparisons yet.');
 
     expect(noYourWorkplaceDataMessage).toBeTruthy();

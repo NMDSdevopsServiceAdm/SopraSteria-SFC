@@ -1,13 +1,12 @@
 import { Metric, Tile } from '@core/model/benchmarks.model';
+import { FormatUtil } from '@core/utils/fomat-util';
+import { build, fake } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { HighchartsChartModule } from 'highcharts-angular';
 
-import { BarchartComponent } from './barchart.component';
-
-import { build, fake } from '@jackfranklin/test-data-bot';
 import { BarchartOptionsBuilder } from './barchart-options-builder';
-import { FormatUtil } from '@core/utils/fomat-util';
+import { BarchartComponent } from './barchart.component';
 
 const benchmarksBuilder = build<Tile>('Benchmarks', {
   fields: {
