@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Metric } from '@core/model/benchmarks.model';
 
 import { BenchmarkTileComponent } from './benchmark-tile.component';
@@ -15,6 +16,7 @@ describe('BenchmarkTileComponent', () => {
       description: 'Test description',
       noData: {},
       type: Metric.pay,
+      journey: JourneyType.BENCHMARK_METRIC_PAY,
     };
     component.tile = {
       workplaceValue: {
