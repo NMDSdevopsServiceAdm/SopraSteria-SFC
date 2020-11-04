@@ -66,7 +66,7 @@ const comparisonGroupData = (reply, benchmarkComparisonGroup) => {
         const item = comparison === 'comparisonGroup' ? key : key + comparison;
         const value = benchmarkComparisonGroup[item];
         reply.tiles[key][comparison].value = value ? parseInt(value) : 0;
-        reply.tiles[key][comparison].hasValue = benchmarkComparisonGroup[item] !== null;
+        reply.tiles[key][comparison].hasValue = value !== null;
         if (reply.tiles[key][comparison].hasValue) delete reply.tiles[key][comparison].stateMessage;
       });
     }
