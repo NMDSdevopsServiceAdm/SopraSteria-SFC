@@ -73,7 +73,7 @@
     "jspdf": "^2.1.1",
     "jszip": "^3.5.0",
     "lodash": "^4.17.20",
-    "moment": "^2.27.0",
+    "moment": "^2.29.1",
     "moment-timezone": "^0.5.31",
     "morgan": "^1.10.0",
     "ngx-moment": "^3.5.0",
