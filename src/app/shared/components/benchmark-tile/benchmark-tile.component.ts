@@ -1,33 +1,15 @@
-import { Component, Directive, Input, OnDestroy, OnInit } from '@angular/core';
-
-@Directive({
-  selector: 'your-workplace'
-})
-export class YourWorkplaceDirective {}
-@Directive({
-  selector: 'comparison-group'
-})
-export class ComparisonGroupDirective {}
+import { Component, Input } from '@angular/core';
+import { Metric, MetricsContent, Tile } from '@core/model/benchmarks.model';
 
 @Component({
   selector: 'app-benchmark-tile',
   templateUrl: './benchmark-tile.component.html',
   styleUrls: ['./benchmark-tile.component.scss'],
 })
-export class BenchmarkTileComponent implements OnInit, OnDestroy {
-  @Input() public title: string;
-  @Input() public description: string;
-  @Input() public showYourWorkplace: boolean;
-  @Input() public showComparisonGroup: boolean;
-  constructor(
-  ) {
-  }
+export class BenchmarkTileComponent {
+  @Input() public content: MetricsContent;
+  @Input() public tile: Tile;
 
-  ngOnInit() {
-
-  }
-
-  ngOnDestroy() {
-
-  }
+  public metrics = Metric;
+  constructor() {}
 }

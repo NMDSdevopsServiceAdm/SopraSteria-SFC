@@ -1,0 +1,9 @@
+<span class="govuk-caption-xl">Benchmarks</span>
+<h1 class="govuk-heading-xl">{{ title }}</h1>
+<app-barchart [type]="type" [benchmarks]="benchmarks" [noData]="noData[benchmarks.workplaceValue?.stateMessage]">
+  <ng-container metric-desc>{{ description }}</ng-container>
+</app-barchart>
+
+<!--<app-gauge [maxRank]="10" [currentRank]="2">
+  <ng-container your-rank>Your workplace is ranked 2 in your comparison group.</ng-container>
+</app-gauge>-->
