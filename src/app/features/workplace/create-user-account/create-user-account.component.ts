@@ -11,14 +11,14 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { AccountDetails } from '@features/account/account-details/account-details';
+import { AccountDetailsDirective } from '@features/account/account-details/account-details';
 
 @Component({
   selector: 'app-create-account',
   templateUrl: './create-user-account.component.html',
 })
-export class CreateUserAccountComponent extends AccountDetails {
-  public callToActionLabel = 'Save user account';
+export class CreateUserAccountComponent extends AccountDetailsDirective {
+  public callToActionLabel = 'Save user';
   public establishmentUid: string;
   public workplace: Establishment;
   public roleRadios: RadioFieldData[] = [
@@ -40,7 +40,7 @@ export class CreateUserAccountComponent extends AccountDetails {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
@@ -69,13 +69,21 @@ export class CreateUserAccountComponent extends AccountDetails {
 
   protected save() {
     this.subscriptions.add(
-      this.createAccountService
-        .createAccount(this.establishmentUid, this.form.value)
-        .subscribe(() => this.navigateToNextRoute(), (error: HttpErrorResponse) => this.onError(error))
+      this.createAccountService.createAccount(this.establishmentUid, this.form.value).subscribe(
+        (data) => this.navigateToNextRoute(data),
+        (error: HttpErrorResponse) => this.onError(error),
+      ),
     );
   }
 
-  protected navigateToNextRoute(): void {
-    this.router.navigate(['/workplace', this.establishmentUid, 'user', 'saved']);
+  protected navigateToNextRoute(data): void {
+    this.router.navigate(['/workplace', this.establishmentUid, 'user', 'saved', data.uid]);
+  }
+
+  get returnTo() {
+    return {
+      url: ['/dashboard'],
+      fragment: 'users',
+    };
   }
 }

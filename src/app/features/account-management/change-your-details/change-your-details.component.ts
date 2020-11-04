@@ -10,13 +10,13 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { AccountDetails } from '@features/account/account-details/account-details';
+import { AccountDetailsDirective } from '@features/account/account-details/account-details';
 
 @Component({
   selector: 'app-change-your-details',
   templateUrl: './change-your-details.component.html',
 })
-export class ChangeYourDetailsComponent extends AccountDetails {
+export class ChangeYourDetailsComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save and return';
   public userDetails: UserDetails;
   private primaryWorkplace: Establishment;
@@ -28,7 +28,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
-    protected userService: UserService
+    protected userService: UserService,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
@@ -43,10 +43,10 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   private setupSubscriptions(): void {
     this.subscriptions.add(
-      this.userService.loggedInUser$.subscribe(user => {
+      this.userService.loggedInUser$.subscribe((user) => {
         this.userDetails = user;
         this.prefillForm(user);
-      })
+      }),
     );
   }
 
@@ -59,12 +59,12 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.primaryWorkplace.uid, this.userDetails.uid, userDetails).subscribe(
-        data => {
+        (data) => {
           this.userService.loggedInUser = { ...this.userDetails, ...data };
           this.router.navigate(['/account-management']);
         },
-        (error: HttpErrorResponse) => this.onError(error)
-      )
+        (error: HttpErrorResponse) => this.onError(error),
+      ),
     );
   }
 }

@@ -12,12 +12,10 @@
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">{{ userDetails?.fullname }}</span>
-          <h1 class="govuk-fieldset__heading">
-            Your security question
-          </h1>
+          <h1 class="govuk-fieldset__heading">Security question</h1>
         </legend>
 
-        <p>You will need this if you forget your username or if you speak to Skills for Care about your account.</p>
+        <p>You'll need this if you forget your username or need to speak to Skills for Care about your account.</p>
 
         <ng-container *ngFor="let item of formControlsMap">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
@@ -45,5 +43,5 @@
     </div>
   </div>
 
-  <app-submit-exit-buttons [return]="return"></app-submit-exit-buttons>
+  <app-submit-exit-buttons [return]="return" [exit]="'Cancel'"></app-submit-exit-buttons>
 </form>
