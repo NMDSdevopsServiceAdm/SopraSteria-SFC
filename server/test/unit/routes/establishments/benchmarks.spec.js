@@ -23,13 +23,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -51,13 +54,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -97,13 +103,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -124,13 +133,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -153,13 +165,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -181,13 +196,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -212,13 +230,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -241,13 +262,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -269,13 +293,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -297,13 +324,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -327,13 +357,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -356,13 +389,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -385,15 +421,18 @@ describe('benchmarks', () => {
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
       };
       expect(json).to.deep.equal(expectedJSON);
@@ -416,13 +455,16 @@ describe('benchmarks', () => {
         comparisonGroup: {
           value: 0,
           hasValue: false,
+          stateMessage: 'no-data',
         },
         goodCqc: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
         lowTurnover: {
           hasValue: false,
+          stateMessage: 'no-data',
           value: 0,
         },
       };
@@ -446,15 +488,18 @@ describe('benchmarks', () => {
       },
       goodCqc: {
         hasValue: false,
+        stateMessage: 'no-data',
         value: 0,
       },
       lowTurnover: {
         hasValue: false,
+        stateMessage: 'no-data',
         value: 0,
       },
       comparisonGroup: {
         value: 0,
         hasValue: false,
+        stateMessage: 'no-data',
       },
     };
     expect(json).to.deep.equal(expectedJSON);
@@ -502,10 +547,6 @@ describe('benchmarks', () => {
               value: 10,
               hasValue: true,
             },
-            comparisonGroup: {
-              value: 10,
-              hasValue: true,
-            },
             goodCqc: {
               hasValue: true,
               value: 0,
@@ -513,6 +554,10 @@ describe('benchmarks', () => {
             lowTurnover: {
               hasValue: true,
               value: 0,
+            },
+            comparisonGroup: {
+              value: 10,
+              hasValue: true,
             },
           },
         },
@@ -564,10 +609,6 @@ describe('benchmarks', () => {
               value: 10,
               hasValue: true,
             },
-            comparisonGroup: {
-              value: 0,
-              hasValue: true,
-            },
             goodCqc: {
               hasValue: true,
               value: 0,
@@ -575,6 +616,10 @@ describe('benchmarks', () => {
             lowTurnover: {
               hasValue: true,
               value: 0,
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: true,
             },
           },
         },
@@ -644,10 +689,6 @@ describe('benchmarks', () => {
               value: 10,
               hasValue: true,
             },
-            comparisonGroup: {
-              value: 10,
-              hasValue: true,
-            },
             goodCqc: {
               hasValue: true,
               value: 0,
@@ -655,6 +696,10 @@ describe('benchmarks', () => {
             lowTurnover: {
               hasValue: true,
               value: 0,
+            },
+            comparisonGroup: {
+              value: 10,
+              hasValue: true,
             },
           },
           sickness: {
@@ -662,10 +707,6 @@ describe('benchmarks', () => {
               value: 50,
               hasValue: true,
             },
-            comparisonGroup: {
-              value: 10,
-              hasValue: true,
-            },
             goodCqc: {
               hasValue: true,
               value: 0,
@@ -673,6 +714,10 @@ describe('benchmarks', () => {
             lowTurnover: {
               hasValue: true,
               value: 0,
+            },
+            comparisonGroup: {
+              value: 10,
+              hasValue: true,
             },
           },
         },
