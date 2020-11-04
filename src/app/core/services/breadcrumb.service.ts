@@ -3,6 +3,12 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/router';
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney } from '@core/breadcrumb/journey.accounts';
+import {
+  benchmarkMetricPayJourney,
+  benchmarkMetricQualificationsJourney,
+  benchmarkMetricSicknessJourney,
+  benchmarkMetricTurnoverJourney,
+} from '@core/breadcrumb/journey.benchmark_metric';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
@@ -23,11 +29,11 @@ export class BreadcrumbService {
   constructor(private router: Router, private location: Location) {
     this.router.events
       .pipe(
-        filter(event => event instanceof NavigationEnd),
+        filter((event) => event instanceof NavigationEnd),
         map(() => parse(this.router.url).pathname),
         distinctUntilChanged(),
         map(() => this._routes$.value),
-        filter(val => !!val)
+        filter((val) => !!val),
       )
       .subscribe(() => {
         this._routes$.next(null);
@@ -120,7 +126,7 @@ export class BreadcrumbService {
   }
 
   private getParts(url: string) {
-    return url.split('/').filter(part => part !== '');
+    return url.split('/').filter((part) => part !== '');
   }
 
   private isParameter(part: string) {
@@ -164,6 +170,22 @@ export class BreadcrumbService {
       }
       case JourneyType.MANDATORY_TRAINING: {
         routes = mandatoryTrainingJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_METRIC_PAY: {
+        routes = benchmarkMetricPayJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_METRIC_SICKNESS: {
+        routes = benchmarkMetricSicknessJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_METRIC_TURNOVER: {
+        routes = benchmarkMetricTurnoverJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_METRIC_QUALIFICATIONS: {
+        routes = benchmarkMetricQualificationsJourney;
         break;
       }
       default: {

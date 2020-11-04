@@ -1,3 +1,5 @@
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+
 export interface BenchmarksResponse {
   tiles: {
     pay?: Tile;
@@ -42,6 +44,7 @@ export class MetricsContent {
   description: string;
   noData: NoData;
   type: Metric;
+  journey: JourneyType;
 
   static get Pay(): MetricsContent {
     return {
@@ -51,6 +54,7 @@ export class MetricsContent {
         'no-workers': "You've not added any data about hourly pay yet.",
       },
       type: Metric.pay,
+      journey: JourneyType.BENCHMARK_METRIC_PAY,
     };
   }
 
@@ -65,6 +69,7 @@ export class MetricsContent {
         'no-permTemp': 'You need records for permanent or temporary staff to see turnover.',
       },
       type: Metric.turnover,
+      journey: JourneyType.BENCHMARK_METRIC_TURNOVER,
     };
   }
 
@@ -76,6 +81,7 @@ export class MetricsContent {
         'no-workers': "You've not added any data about sickness yet.",
       },
       type: Metric.sickness,
+      journey: JourneyType.BENCHMARK_METRIC_SICKNESS,
     };
   }
 
@@ -87,6 +93,7 @@ export class MetricsContent {
         'no-workers': "You've not added any data about social care qualifications yet.",
       },
       type: Metric.qualifications,
+      journey: JourneyType.BENCHMARK_METRIC_QUALIFICATIONS,
     };
   }
 }
