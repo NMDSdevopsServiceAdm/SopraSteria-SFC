@@ -9,6 +9,7 @@ import {
   benchmarkMetricSicknessJourney,
   benchmarkMetricTurnoverJourney,
 } from '@core/breadcrumb/journey.benchmark_metric';
+import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
@@ -162,6 +163,10 @@ export class BreadcrumbService {
       }
       case JourneyType.ACCOUNT: {
         routes = accountJourney;
+        break;
+      }
+      case JourneyType.EDIT_USER: {
+        routes = editUserJourney;
         break;
       }
       case JourneyType.NOTIFICATIONS: {

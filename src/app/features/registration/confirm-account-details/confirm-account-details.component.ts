@@ -23,7 +23,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     private router: Router,
     private userService: UserService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder
+    protected formBuilder: FormBuilder,
   ) {
     super(errorSummaryService, formBuilder);
   }
@@ -32,9 +32,9 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     this.setupSubscriptions();
     this.setBackLink();
     this.subscriptions.add(
-    this.registrationService.isCqcRegulated$.subscribe(value => {
-      this.slectedCqcValue = value;
-    })
+      this.registrationService.isCqcRegulated$.subscribe((value) => {
+        this.slectedCqcValue = value;
+      }),
     );
   }
 
@@ -53,7 +53,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
         this.loginCredentials = loginCredentials;
         this.securityDetails = securityDetails;
         this.setAccountDetails();
-      })
+      }),
     );
   }
 
@@ -73,7 +73,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
         data: this.userDetails.email,
       },
       {
-        label: 'Contact phone',
+        label: 'Phone number',
         data: this.userDetails.phone,
       },
     ];
@@ -123,15 +123,13 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
 
   protected save(): void {
     this.subscriptions.add(
-      this.registrationService
-        .postRegistration(this.generatePayload())
-        .subscribe(
-          registration =>
-            registration.userstatus === 'PENDING'
-              ? this.router.navigate(['/registration/awaiting-approval'])
-              : this.router.navigate(['/registration/complete']),
-          (error: HttpErrorResponse) => this.onError(error)
-        )
+      this.registrationService.postRegistration(this.generatePayload()).subscribe(
+        (registration) =>
+          registration.userstatus === 'PENDING'
+            ? this.router.navigate(['/registration/awaiting-approval'])
+            : this.router.navigate(['/registration/complete']),
+        (error: HttpErrorResponse) => this.onError(error),
+      ),
     );
   }
 

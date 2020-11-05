@@ -301,12 +301,13 @@ const routes: Routes = [
         },
       },
       {
-        path: 'user/saved',
+        path: 'user/saved/:useruid',
         canActivate: [CheckPermissionsGuard],
         component: UserAccountSavedComponent,
+        resolve: { user: UserAccountResolver },
         data: {
           permissions: ['canAddUser'],
-          title: 'User Account Saved',
+          title: 'User has been added',
         },
       },
       {

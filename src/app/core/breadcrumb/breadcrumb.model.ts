@@ -12,6 +12,7 @@ export enum JourneyType {
   BENCHMARK_METRIC_SICKNESS,
   BENCHMARK_METRIC_TURNOVER,
   BENCHMARK_METRIC_QUALIFICATIONS,
+  EDIT_USER,
 }
 
 export interface JourneyRoute {

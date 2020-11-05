@@ -26,8 +26,7 @@ export class BarchartComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     if (this.benchmarks) {
-      this.options = this.builder.buildChartOptions(this.benchmarks, this.type, this.noData, this.altDescription);
-      this.loaded = true;
+      this.setOptions();
     } else {
       this.emptyChartOptions = this.builder.buildEmptyChartOptions(this.altDescription);
     }
@@ -35,8 +34,12 @@ export class BarchartComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (Object.keys(changes).includes('benchmarks') && this.benchmarks) {
-      this.options = this.builder.buildChartOptions(this.benchmarks, this.type, this.noData, this.altDescription);
-      this.loaded = true;
+      this.setOptions();
     }
+  }
+
+  private setOptions() {
+    this.options = this.builder.buildChartOptions(this.benchmarks, this.type, this.noData, this.altDescription);
+    this.loaded = true;
   }
 }

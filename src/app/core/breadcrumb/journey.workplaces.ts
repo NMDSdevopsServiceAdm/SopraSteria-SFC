@@ -30,15 +30,15 @@ export const myWorkplaceJourney: JourneyRoute = {
       },
     },
     {
-      title: 'New user account',
+      title: 'Add a user',
       path: Path.CREATE_ACCOUNT,
     },
     {
-      title: 'Account details',
+      title: 'User details',
       path: Path.USER_ACCOUNT,
       referrer: {
         path: Path.DASHBOARD,
-        fragment: 'user-accounts',
+        fragment: 'users',
       },
       children: [
         {
@@ -46,7 +46,7 @@ export const myWorkplaceJourney: JourneyRoute = {
           path: Path.USER_PERMISSIONS,
           referrer: {
             path: Path.DASHBOARD,
-            fragment: 'user-accounts',
+            fragment: 'users',
           },
         },
       ],
@@ -81,15 +81,15 @@ export const allWorkplacesJourney: JourneyRoute = {
               },
             },
             {
-              title: 'New user account',
+              title: 'Add a user',
               path: Path.CREATE_ACCOUNT,
             },
             {
-              title: 'Account details',
+              title: 'User details',
               path: Path.USER_ACCOUNT,
               referrer: {
                 path: Path.WORKPLACE,
-                fragment: 'user-accounts',
+                fragment: 'users',
               },
               children: [
                 {
@@ -97,7 +97,7 @@ export const allWorkplacesJourney: JourneyRoute = {
                   path: Path.USER_PERMISSIONS,
                   referrer: {
                     path: Path.WORKPLACE,
-                    fragment: 'user-accounts',
+                    fragment: 'users',
                   },
                 },
               ],
