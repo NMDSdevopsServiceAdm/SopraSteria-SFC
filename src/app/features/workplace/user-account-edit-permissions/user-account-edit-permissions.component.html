@@ -43,9 +43,7 @@
                       type="checkbox"
                       [formControlName]="'primary'"
                     />
-                    <label class="govuk-label govuk-checkboxes__label" for="primary">
-                      Make this user a primary user
-                    </label>
+                    <label class="govuk-label govuk-checkboxes__label" for="primary">Make primary user</label>
                   </div>
                 </div>
               </div>
@@ -56,5 +54,5 @@
     </div>
   </div>
 
-  <app-submit-button [return]="true" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-exit-buttons [cta]="'Save and return'" [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
 </form>

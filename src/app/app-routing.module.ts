@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServiceComponent,
-} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
@@ -18,9 +16,7 @@ import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import {
-  MigratedUserTermsConditionsComponent,
-} from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 
 const routes: Routes = [
@@ -41,7 +37,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    loadChildren: () => import('@features/public/public.module').then(m => m.PublicModule),
+    loadChildren: () => import('@features/public/public.module').then((m) => m.PublicModule),
   },
   {
     path: '',
@@ -54,12 +50,15 @@ const routes: Routes = [
       },
       {
         path: 'registration',
-        loadChildren: () => import('@features/registration/registration.module').then(m => m.RegistrationModule),
+        loadChildren: () => import('@features/registration/registration.module').then((m) => m.RegistrationModule),
         data: { title: 'Registration' },
       },
       {
         path: 'activate-account',
-        loadChildren: () => import('@features/activate-user-account/activate-user-account.module').then(m => m.ActivateUserAccountModule),
+        loadChildren: () =>
+          import('@features/activate-user-account/activate-user-account.module').then(
+            (m) => m.ActivateUserAccountModule,
+          ),
         data: { title: 'Activate User Account' },
       },
       {
@@ -92,25 +91,17 @@ const routes: Routes = [
       },
       {
         path: 'workplace',
-        loadChildren: () => import('@features/workplace/workplace.module').then(m => m.WorkplaceModule),
+        loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },
       },
       {
-        path: 'benchmarks',
-        loadChildren: () => import('./shared/components/benchmarks-tab/benchmarks.module').then(m => m.BenchmarksModule),
-        canActivate: [],
-        data: {
-          title: 'Benchmarks',
-        },
-      },
-      {
         path: 'reports',
-        loadChildren: () => import('@features/reports/reports.module').then(m => m.ReportsModule),
+        loadChildren: () => import('@features/reports/reports.module').then((m) => m.ReportsModule),
         data: { title: 'Reports' },
       },
       {
         path: 'add-workplace',
-        loadChildren: () => import('@features/add-workplace/add-workplace.module').then(m => m.AddWorkplaceModule),
+        loadChildren: () => import('@features/add-workplace/add-workplace.module').then((m) => m.AddWorkplaceModule),
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canAddEstablishment'],
@@ -119,7 +110,8 @@ const routes: Routes = [
       },
       {
         path: 'account-management',
-        loadChildren: () => import('@features/account-management/account-management.module').then(m => m.AccountManagementModule),
+        loadChildren: () =>
+          import('@features/account-management/account-management.module').then((m) => m.AccountManagementModule),
         data: { title: 'Account details' },
       },
       {
@@ -129,7 +121,7 @@ const routes: Routes = [
       },
       {
         path: 'bulk-upload',
-        loadChildren: () => import('@features/bulk-upload/bulk-upload.module').then(m => m.BulkUploadModule),
+        loadChildren: () => import('@features/bulk-upload/bulk-upload.module').then((m) => m.BulkUploadModule),
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canBulkUpload'],
@@ -138,7 +130,7 @@ const routes: Routes = [
       },
       {
         path: 'search-users',
-        loadChildren: () => import('@features/search/search.module').then(m => m.SearchModule),
+        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
         canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin],
@@ -147,7 +139,7 @@ const routes: Routes = [
       },
       {
         path: 'search-establishments',
-        loadChildren: () => import('@features/search/search.module').then(m => m.SearchModule),
+        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
         canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin],
@@ -156,7 +148,7 @@ const routes: Routes = [
       },
       {
         path: 'search-groups',
-        loadChildren: () => import('@features/search/search.module').then(m => m.SearchModule),
+        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
         canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin],
@@ -165,7 +157,7 @@ const routes: Routes = [
       },
       {
         path: 'registrations',
-        loadChildren: () => import('@features/search/search.module').then(m => m.SearchModule),
+        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
         canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin],
@@ -174,7 +166,7 @@ const routes: Routes = [
       },
       {
         path: 'parent-requests',
-        loadChildren: () => import('@features/search/search.module').then(m => m.SearchModule),
+        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
         canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin],
@@ -183,7 +175,7 @@ const routes: Routes = [
       },
       {
         path: 'cqc-status-changes',
-        loadChildren: () => import('@features/search/search.module').then(m => m.SearchModule),
+        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
         canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin],
@@ -192,11 +184,14 @@ const routes: Routes = [
       },
       {
         path: 'notifications',
-        loadChildren: () => import('@features/notifications/notifications.module').then(m => m.NotificationsModule),
+        loadChildren: () => import('@features/notifications/notifications.module').then((m) => m.NotificationsModule),
       },
       {
         path: 'add-mandatory-training',
-        loadChildren: () => import('@features/add-mandatory-training/add-mandatory-training.module').then(m => m.AddMandatoryTrainingModule),
+        loadChildren: () =>
+          import('@features/add-mandatory-training/add-mandatory-training.module').then(
+            (m) => m.AddMandatoryTrainingModule,
+          ),
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canAddEstablishment'],

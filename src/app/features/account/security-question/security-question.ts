@@ -1,4 +1,5 @@
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+/*eslint @typescript-eslint/no-empty-function: ["error", { allow: ['methods'] }]*/
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -9,7 +10,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class SecurityQuestion implements OnInit, OnDestroy, AfterViewInit {
+export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public formErrorsMap: Array<ErrorDetails>;
   public callToActionLabel: string;
@@ -18,11 +19,11 @@ export class SecurityQuestion implements OnInit, OnDestroy, AfterViewInit {
   public return: URLStructure;
   public formControlsMap: any[] = [
     {
-      label: 'Enter a security question',
+      label: 'Security question',
       name: 'securityQuestion',
     },
     {
-      label: 'Enter the answer to the security question',
+      label: 'Answer to security question',
       name: 'securityQuestionAnswer',
     },
   ];
@@ -34,7 +35,7 @@ export class SecurityQuestion implements OnInit, OnDestroy, AfterViewInit {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   // Get security question

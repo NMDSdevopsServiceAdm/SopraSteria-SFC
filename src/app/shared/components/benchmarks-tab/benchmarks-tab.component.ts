@@ -1,8 +1,9 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BenchmarksResponse } from '@core/model/benchmarks.model';
+import { BenchmarksResponse, MetricsContent } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService } from '@core/services/pdf.service';
+import { CloneObjectUtil } from '@core/utils/cloneObject-util';
 import { Subscription } from 'rxjs';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
@@ -18,48 +19,26 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
 
+  public payContent = MetricsContent.Pay;
+  public turnoverContent = MetricsContent.Turnover;
+  public qualificationsContent = MetricsContent.Qualifications;
+  public sicknessContent = MetricsContent.Sickness;
+  private tile = {
+    value: 0,
+    hasValue: false,
+  };
+  private tilesValues = {
+    workplaceValue: CloneObjectUtil.clone(this.tile),
+    comparisonGroup: CloneObjectUtil.clone(this.tile),
+    goodCqc: CloneObjectUtil.clone(this.tile),
+    lowTurnover: CloneObjectUtil.clone(this.tile),
+  };
   public tilesData: BenchmarksResponse = {
     tiles: {
-      pay: {
-        workplaceValue: {
-          value: 0,
-          hasValue: false,
-        },
-        comparisonGroup: {
-          value: 0,
-          hasValue: false,
-        },
-      },
-      sickness: {
-        workplaceValue: {
-          value: 0,
-          hasValue: false,
-        },
-        comparisonGroup: {
-          value: 0,
-          hasValue: false,
-        },
-      },
-      qualifications: {
-        workplaceValue: {
-          value: 0,
-          hasValue: false,
-        },
-        comparisonGroup: {
-          value: 0,
-          hasValue: false,
-        },
-      },
-      turnover: {
-        workplaceValue: {
-          value: 0,
-          hasValue: false,
-        },
-        comparisonGroup: {
-          value: 0,
-          hasValue: false,
-        },
-      },
+      pay: CloneObjectUtil.clone(this.tilesValues),
+      sickness: CloneObjectUtil.clone(this.tilesValues),
+      qualifications: CloneObjectUtil.clone(this.tilesValues),
+      turnover: CloneObjectUtil.clone(this.tilesValues),
     },
     meta: {
       workplaces: 0,
@@ -82,13 +61,6 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           }
         }),
     );
-  }
-
-  public formatPercent(data) {
-    return Math.round(data * 100) + '%';
-  }
-  public formatPay(data) {
-    return '£' + (Number(data) / 100).toFixed(2);
   }
 
   ngOnDestroy() {

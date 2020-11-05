@@ -1,2 +1,8 @@
-<p class="govuk-!-font-size-27"><ng-content select="metric-desc"></ng-content></p>
-<highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="barchart"></highcharts-chart>
+<p class="govuk-!-font-size-27"><ng-content select="[metric-desc]"></ng-content></p>
+
+<ng-container *ngIf="loaded; else loading">
+  <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
+</ng-container>
+<ng-template #loading>
+  <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="emptyChartOptions"></highcharts-chart>
+</ng-template>

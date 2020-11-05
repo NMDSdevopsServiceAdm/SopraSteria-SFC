@@ -6,14 +6,14 @@ import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { AccountDetails } from '@features/account/account-details/account-details';
+import { AccountDetailsDirective } from '@features/account/account-details/account-details';
 import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-change-your-details',
   templateUrl: './change-your-details.component.html',
 })
-export class ChangeYourDetailsComponent extends AccountDetails {
+export class ChangeYourDetailsComponent extends AccountDetailsDirective {
   private flow: string;
   public callToActionLabel = 'Continue';
   public locationAddress: LocationAddress;
@@ -24,7 +24,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, router);
   }
@@ -45,8 +45,8 @@ export class ChangeYourDetailsComponent extends AccountDetails {
           if (userDetails) {
             this.prefillForm(userDetails);
           }
-        }
-      )
+        },
+      ),
     );
   }
 
