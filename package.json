@@ -181,7 +181,10 @@
     }
   },
   "lint-staged": {
-    "*.{js,ts,component.html}": "eslint --cache --fix",
-    "*.{js,css,md}": "prettier --write"
+    "*.{js,ts,component.html}": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ],
+    "*.{css,md}": "prettier --write"
   }
 }

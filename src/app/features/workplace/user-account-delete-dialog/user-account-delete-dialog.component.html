@@ -1,10 +1,6 @@
-<h1 id="dialogHeading" class="govuk-heading-l">You are about to delete this user account.</h1>
+<h1 id="dialogHeading" class="govuk-heading-l">You are about to delete this user</h1>
 
-<p>This will delete all the information stored in the account.</p>
+<p>If you do this, {{ data.user.fullname }} will not be able to sign in as a user anymore.</p>
 
-<p>
-  <strong>Once deleted,the user will have no accessto the account.</strong>
-</p>
-
-<button (click)="close($event, true)" class="govuk-button">Delete account</button>
+<button (click)="close($event, true)" class="govuk-button">Delete this user</button>
 <a href="#" class="govuk-list govuk-list--inline govuk-util__float-right" (click)="close($event, false)">Cancel</a>

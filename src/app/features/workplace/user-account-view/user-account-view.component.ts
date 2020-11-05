@@ -12,9 +12,7 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import {
-  UserAccountDeleteDialogComponent,
-} from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
+import { UserAccountDeleteDialogComponent } from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
 import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
@@ -65,7 +63,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.add(
-      this.userService.returnUrl$.pipe(take(1)).subscribe(returnUrl => {
+      this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
         this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid] };
       }),
     );
@@ -80,16 +78,16 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.resendActivationLink(this.user.uid).subscribe(
         () => {
-          this.router.navigate(this.return.url, { fragment: 'user-accounts' });
+          this.router.navigate(this.return.url, { fragment: 'users' });
           this.alertService.addAlert({
             type: 'success',
-            message: 'Account set up link has been resent.',
+            message: 'The user set-up email has been sent again.',
           });
         },
         () => {
           this.alertService.addAlert({
             type: 'warning',
-            message: 'There was an error resending account set up link.',
+            message: 'There was an error resending the user set-up email.',
           });
         },
       ),
@@ -99,7 +97,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   public onDeleteUser(event: Event) {
     event.preventDefault();
     const dialog = this.dialogService.open(UserAccountDeleteDialogComponent, { user: this.user });
-    dialog.afterClosed.subscribe(deleteConfirmed => {
+    dialog.afterClosed.subscribe((deleteConfirmed) => {
       if (deleteConfirmed) {
         this.deleteUser();
       }
@@ -114,15 +112,15 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
             ...this.loggedInUser,
             ...{ isPrimary: true },
           })
-          .subscribe(data => (this.userService.loggedInUser = data)),
+          .subscribe((data) => (this.userService.loggedInUser = data)),
       );
     }
 
     this.subscriptions.add(
       this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
         () => {
-          this.router.navigate(this.return.url, { fragment: 'user-accounts' });
-          this.alertService.addAlert({ type: 'success', message: 'User successfully deleted.' });
+          this.router.navigate(this.return.url, { fragment: 'users' });
+          this.alertService.addAlert({ type: 'success', message: 'The user has been deleted.' });
         },
         () => {
           this.alertService.addAlert({
@@ -150,7 +148,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
         data: this.user.email,
       },
       {
-        label: 'Contact phone',
+        label: 'Phone number',
         data: this.user.phone,
       },
     ];
@@ -166,7 +164,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   private setPermissions(users: Array<UserDetails>, loggedInUser: UserDetails) {
     const canEditUser = this.permissionsService.can(this.establishment.uid, 'canEditUser');
     const isPending = this.user.username === null;
-    const editUsersList = users.filter(user => user.role === Roles.Edit);
+    const editUsersList = users.filter((user) => user.role === Roles.Edit);
 
     this.canDeleteUser =
       this.permissionsService.can(this.establishment.uid, 'canDeleteUser') &&

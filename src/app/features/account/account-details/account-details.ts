@@ -1,5 +1,6 @@
+/*eslint @typescript-eslint/no-empty-function: ["error", { allow: ['methods'] }]*/
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EMAIL_PATTERN, PHONE_PATTERN } from '@core/constants/constants';
@@ -11,7 +12,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
+export abstract class AccountDetailsDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
@@ -31,7 +32,7 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
       name: 'email',
     },
     {
-      label: 'Contact phone number',
+      label: 'Phone number',
       name: 'phone',
     },
   ];
@@ -127,11 +128,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter contact phone number.',
+            message: 'Please enter phone number.',
           },
           {
             name: 'pattern',
-            message: 'Invalid contact phone number.',
+            message: 'Invalid phone number.',
           },
         ],
       },

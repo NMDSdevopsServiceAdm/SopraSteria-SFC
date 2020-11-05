@@ -12,17 +12,11 @@
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">{{ userDetails?.fullname }}</span>
-          <h1 class="govuk-fieldset__heading">
-            Your password
-          </h1>
+          <h1 class="govuk-fieldset__heading">Password</h1>
         </legend>
 
-        <p>Change password for account {{ userDetails?.username }}</p>
-
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getOldPasswordInput.errors">
-          <label class="govuk-label" for="oldPasswordInput">
-            Password
-          </label>
+          <label class="govuk-label" for="oldPasswordInput">Old password</label>
           <span *ngIf="submitted && getOldPasswordInput.errors" id="oldPasswordInput-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('oldPasswordInput') }}
           </span>
@@ -38,11 +32,9 @@
 
         <div [formGroupName]="'passwordGroup'">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getCreatePasswordInput.errors">
-            <label class="govuk-label" for="createPasswordInput">
-              New password
-            </label>
+            <label class="govuk-label" for="createPasswordInput">New password</label>
             <span id="createPasswordInput-hint" class="govuk-hint">
-              This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
+              This should be at least 8 characters, contain one uppercase and one lowercase letter and a number
             </span>
             <span
               *ngIf="submitted && getCreatePasswordInput.errors"
@@ -64,9 +56,7 @@
           </div>
 
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors">
-            <label class="govuk-label" for="confirmPasswordInput">
-              Confirm password
-            </label>
+            <label class="govuk-label" for="confirmPasswordInput">Confirm new password</label>
             <span
               *ngIf="submitted && getConfirmPasswordInput.errors"
               id="passwordGroup-confirmPasswordInput-error"
@@ -89,5 +79,5 @@
     </div>
   </div>
 
-  <app-submit-exit-buttons [cta]="'Save new password'" [return]="return"></app-submit-exit-buttons>
+  <app-submit-exit-buttons [cta]="'Save and return'" [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
 </form>
