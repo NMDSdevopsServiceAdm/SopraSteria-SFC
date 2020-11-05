@@ -2,14 +2,13 @@ import { Location } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/router';
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { accountJourney } from '@core/breadcrumb/journey.accounts';
+import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
 import {
   benchmarkMetricPayJourney,
   benchmarkMetricQualificationsJourney,
   benchmarkMetricSicknessJourney,
   benchmarkMetricTurnoverJourney,
 } from '@core/breadcrumb/journey.benchmark_metric';
-import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
