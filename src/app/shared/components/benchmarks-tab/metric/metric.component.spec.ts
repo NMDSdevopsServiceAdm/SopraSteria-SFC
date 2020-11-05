@@ -4,7 +4,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MetricsContent } from '@core/model/benchmarks.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { BenchmarksMetricComponent } from '@shared/components/benchmarks-tab/metric/metric.component';
@@ -32,6 +34,10 @@ const getBenchmarksMetricComponent = async (componentProperties = {}) => {
       {
         provide: EstablishmentService,
         useClass: MockEstablishmentService,
+      },
+      {
+        provide: BreadcrumbService,
+        useClass: MockBreadcrumbService,
       },
       {
         provide: ActivatedRoute,

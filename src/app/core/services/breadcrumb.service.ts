@@ -3,6 +3,12 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/router';
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
+import {
+  benchmarkMetricPayJourney,
+  benchmarkMetricQualificationsJourney,
+  benchmarkMetricSicknessJourney,
+  benchmarkMetricTurnoverJourney,
+} from '@core/breadcrumb/journey.benchmark_metric';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
@@ -168,6 +174,22 @@ export class BreadcrumbService {
       }
       case JourneyType.MANDATORY_TRAINING: {
         routes = mandatoryTrainingJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_METRIC_PAY: {
+        routes = benchmarkMetricPayJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_METRIC_SICKNESS: {
+        routes = benchmarkMetricSicknessJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_METRIC_TURNOVER: {
+        routes = benchmarkMetricTurnoverJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_METRIC_QUALIFICATIONS: {
+        routes = benchmarkMetricQualificationsJourney;
         break;
       }
       default: {

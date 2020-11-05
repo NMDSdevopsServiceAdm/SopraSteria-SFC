@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Metric, NoData, Tile } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
@@ -24,6 +25,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     private benchmarksService: BenchmarksService,
     private establishmentService: EstablishmentService,
     private route: ActivatedRoute,
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit() {
@@ -33,6 +35,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
       this.route.data
         .pipe(
           tap((data) => {
+            this.breadcrumbService.show(data.journey);
             this.title = data.title;
             this.description = data.description;
             this.noData = data.noData;
