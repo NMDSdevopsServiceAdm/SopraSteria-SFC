@@ -1,10 +1,20 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds" data-testid="comparison-group-text">
-    <p *ngIf=" meta && meta.staff && meta.workplaces else noCompGroup"><b>Your comparison group</b> is {{meta.staff | number}} staff from {{meta.workplaces | number}} {{pluralizeWorkplaces(meta.workplaces)}} providing the same main service as you in your local authority.</p>
-    <ng-template #noCompGroup><p><b>Your comparison group</b> information is not available at the moment.</p></ng-template>
+    <p *ngIf="meta && meta.staff && meta.workplaces; else noCompGroup">
+      <b>Your comparison group</b> is {{ meta.staff | number }} staff from {{ meta.workplaces | number }}
+      {{ pluralizeWorkplaces(meta.workplaces) }} providing the same main service as you in your local authority.
+    </p>
+    <ng-template #noCompGroup
+      ><p><b>Your comparison group</b> information is not available at the moment.</p></ng-template
+    >
   </div>
   <div class="govuk-grid-column-one-thirds">
-    <a class="asc-font-19" data-html2canvas-ignore [routerLink]="['/benchmarks',workplaceID,'about-the-data']" (click)="setReturn()">About the data</a>
+    <a
+      class="asc-font-19"
+      data-html2canvas-ignore
+      [routerLink]="['/workplace', workplaceID, 'benchmarks', 'about-the-data']"
+      (click)="setReturn()"
+      >About the data</a
+    >
   </div>
 </div>
-

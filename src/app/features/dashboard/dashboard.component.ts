@@ -96,7 +96,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.userService.updateReturnUrl({
       url: ['/dashboard'],
-      fragment: 'user-accounts',
+      fragment: 'users',
     });
 
     // get latest notification after every 30 seconds

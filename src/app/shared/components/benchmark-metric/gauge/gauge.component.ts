@@ -1,10 +1,6 @@
-import { Component, Directive, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 
-@Directive({
-  selector: 'your-rank',
-})
-export class YourRankDirective {}
 @Component({
   selector: 'app-gauge',
   templateUrl: './gauge.component.html',
@@ -12,8 +8,8 @@ export class YourRankDirective {}
 })
 export class GaugeComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;
-  @Input('maxRank') private maxRank: number = 10000000;
-  @Input('currentRank') public currentRank: number = null;
+  @Input() private maxRank: number = 10000000;
+  @Input() public currentRank: number = null;
 
   public padding = this.maxRank / 10;
   public gauge: Highcharts.Options;
@@ -113,14 +109,17 @@ export class GaugeComponent implements OnInit {
       }
       if (this.value === 1) {
         return (
-          '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-right-2">Highest ranking <span class="govuk-!-font-weight-bold govuk-!-margin-left-4">' +
+          '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-right-2">' +
+          'Highest ranking ' +
+          '<span class="govuk-!-font-weight-bold govuk-!-margin-left-4">' +
           value +
           '</span></span>'
         );
       }
       if (this.value < 0) return;
       return (
-        '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-left-2"><span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
+        '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-left-2">' +
+        '<span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
         value +
         '</span>Lowest ranking</span>'
       );

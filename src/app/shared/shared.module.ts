@@ -11,19 +11,11 @@ import { ViewAllMandatoryTrainingComponent } from '@features/workplace/view-all-
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
 import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
-import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
-import { MetricDescDirective } from './components/benchmark-metric/barchart/barchart.component';
-import { BenchmarksMetricModule } from './components/benchmark-metric/benchmark-metric.module';
-import { YourRankDirective } from './components/benchmark-metric/gauge/gauge.component';
-import {
-  BenchmarkTileComponent,
-  ComparisonGroupDirective,
-  YourWorkplaceDirective,
-} from './components/benchmark-tile/benchmark-tile.component';
+import { BenchmarkTileComponent } from './components/benchmark-tile/benchmark-tile.component';
 import { BenchmarksTabComponent } from './components/benchmarks-tab/benchmarks-tab.component';
 import { BenchmarksModule } from './components/benchmarks-tab/benchmarks.module';
 import { ComparisonGroupHeaderComponent } from './components/benchmarks-tab/comparison-group-header/comparison-group-header.component';
@@ -74,6 +66,8 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
+import { FormatMoneyPipe } from './pipes/format-money.pipe';
+import { FormatPercentPipe } from './pipes/format-percent.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { NursingCategoriesTextPipe } from './pipes/nursing-categories-text.pipe';
@@ -86,15 +80,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-    OverlayModule,
-    HighchartsChartModule,
-    BenchmarksModule,
-    BenchmarksMetricModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule, BenchmarksModule],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,
@@ -167,10 +153,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BenchmarkTileComponent,
     BenchmarksTabComponent,
     ComparisonGroupHeaderComponent,
-    YourWorkplaceDirective,
-    ComparisonGroupDirective,
-    YourRankDirective,
-    MetricDescDirective,
+    FormatMoneyPipe,
+    FormatPercentPipe,
   ],
   exports: [
     AlertComponent,
@@ -242,8 +226,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BenchmarkTileComponent,
     BenchmarksTabComponent,
     ComparisonGroupHeaderComponent,
-    YourWorkplaceDirective,
-    ComparisonGroupDirective,
+    FormatMoneyPipe,
+    FormatPercentPipe,
   ],
   providers: [DialogService, TotalStaffComponent],
 })

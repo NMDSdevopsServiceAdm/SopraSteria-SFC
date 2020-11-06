@@ -1,6 +1,8 @@
 import { JourneyRoute } from './breadcrumb.model';
 
 enum Path {
+  USER_ACCOUNT = '/workplace/:workplaceUid/user/:workerUid',
+  EDIT_USER_ACCOUNT = '/workplace/:workplaceUid/user/:workerUid/edit-details',
   ACCOUNT_DETAILS = '/account-management',
   YOUR_DETAILS = '/account-management/change-your-details',
   YOUR_PASSWORD = '/account-management/change-password',
@@ -10,7 +12,7 @@ enum Path {
 export const accountJourney: JourneyRoute = {
   children: [
     {
-      title: 'Account details',
+      title: 'My account details',
       path: Path.ACCOUNT_DETAILS,
       children: [
         {
@@ -18,12 +20,27 @@ export const accountJourney: JourneyRoute = {
           path: Path.YOUR_DETAILS,
         },
         {
-          title: 'Your password',
+          title: 'Password',
           path: Path.YOUR_PASSWORD,
         },
         {
-          title: 'Your security question',
+          title: 'Security question',
           path: Path.YOUR_SECURITY_QUESTION,
+        },
+      ],
+    },
+  ],
+};
+
+export const editUserJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'User details',
+      path: Path.USER_ACCOUNT,
+      children: [
+        {
+          title: 'Details',
+          path: Path.EDIT_USER_ACCOUNT,
         },
       ],
     },

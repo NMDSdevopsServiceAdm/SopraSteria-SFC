@@ -8,15 +8,15 @@ import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
-import { AccountDetails } from '@features/account/account-details/account-details';
+import { AccountDetailsDirective } from '@features/account/account-details/account-details';
 
 @Component({
   selector: 'app-user-account-edit-details',
   templateUrl: './user-account-edit-details.component.html',
 })
-export class UserAccountEditDetailsComponent extends AccountDetails {
+export class UserAccountEditDetailsComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save and return';
-  protected userDetails: UserDetails = this.route.snapshot.data.user;
+  public userDetails: UserDetails = this.route.snapshot.data.user;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -25,15 +25,16 @@ export class UserAccountEditDetailsComponent extends AccountDetails {
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
-    protected userService: UserService
+    protected userService: UserService,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
 
   protected init() {
-    this.breadcrumbService.show(JourneyType.ACCOUNT);
+    this.breadcrumbService.show(JourneyType.EDIT_USER);
+
     this.prefillForm(this.userDetails);
-    this.return = { url: ['/dashboard'], fragment: 'user-accounts' };
+    this.return = { url: ['/dashboard'], fragment: 'users' };
   }
 
   protected save(): void {
@@ -46,8 +47,8 @@ export class UserAccountEditDetailsComponent extends AccountDetails {
         .updateUserDetails(this.userDetails.establishmentUid, this.userDetails.uid, userDetails)
         .subscribe(
           () => this.router.navigate(['/workplace', this.userDetails.establishmentUid, 'user', this.userDetails.uid]),
-          (error: HttpErrorResponse) => this.onError(error)
-        )
+          (error: HttpErrorResponse) => this.onError(error),
+        ),
     );
   }
 }

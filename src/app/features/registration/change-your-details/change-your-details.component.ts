@@ -5,13 +5,13 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
-import { AccountDetails } from '@features/account/account-details/account-details';
+import { AccountDetailsDirective } from '@features/account/account-details/account-details';
 
 @Component({
   selector: 'app-change-your-details',
   templateUrl: './change-your-details.component.html',
 })
-export class ChangeYourDetailsComponent extends AccountDetails {
+export class ChangeYourDetailsComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save and return';
   private previousAndReturnRoute: any[] = ['/registration/confirm-account-details'];
 
@@ -20,7 +20,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
@@ -36,7 +36,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
         if (userDetails) {
           this.prefillForm(userDetails);
         }
-      })
+      }),
     );
   }
 
