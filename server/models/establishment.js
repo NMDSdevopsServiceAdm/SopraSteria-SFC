@@ -1,4 +1,5 @@
-/* jshint indent: 2 */
+const { Op } = require('sequelize');
+
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
     'establishment',
@@ -929,7 +930,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         ustatus: {
-          [sequelize.Op.is]: null,
+          [Op.is]: null,
         },
         ...where,
       },

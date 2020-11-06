@@ -1,3 +1,5 @@
+const { Op } = require('sequelize');
+
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
     'worker',
@@ -1176,7 +1178,7 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
         QualificationInSocialCareValue: 'Yes',
         SocialCareQualificationFkValue: {
-          [sequelize.Op.not]: [10],
+          [Op.not]: [10],
         },
       },
     });
@@ -1188,14 +1190,13 @@ module.exports = function (sequelize, DataTypes) {
         MainJobFkValue: jobArray,
         archived: false,
         SocialCareQualificationFkValue: {
-          [sequelize.Op.gt]: 2,
-          [sequelize.Op.not]: [10],
+          [Op.gt]: 2,
+          [Op.not]: [10],
         },
       },
     });
   };
   Worker.careworkersWithHourlyPayCount = async function (establishmentId) {
-    console.log(sequelize);
     return this.count({
       where: {
         establishmentFk: establishmentId,
@@ -1203,7 +1204,7 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
         AnnualHourlyPayValue: 'Hourly',
         AnnualHourlyPayRate: {
-          [sequelize.Op.not]: null,
+          [Op.not]: null,
         },
       },
     });
@@ -1215,7 +1216,7 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
         AnnualHourlyPayValue: 'Hourly',
         AnnualHourlyPayRate: {
-          [sequelize.Op.not]: null,
+          [Op.not]: null,
         },
         establishmentFk: establishmentId,
       },
