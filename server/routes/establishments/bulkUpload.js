@@ -158,7 +158,7 @@ const acquireLock = async function (logic, newState, req, res) {
   try {
     await logic(req, res);
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   if (newState === buStates.VALIDATING) {
