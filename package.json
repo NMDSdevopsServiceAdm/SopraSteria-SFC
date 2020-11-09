@@ -150,7 +150,7 @@
     "require-dir": "^1.2.0",
     "rimraf": "^3.0.2",
     "sandboxed-module": "^2.0.4",
-    "supertest": "^6.0.0",
+    "supertest": "^6.0.1",
     "sinon": "^9.2.1",
     "ts-node": "~7.0.1",
     "tslint": "~6.1.3"
