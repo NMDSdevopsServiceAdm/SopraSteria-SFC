@@ -185,7 +185,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
 
       expect(csvEstablishmentSchemaErrors.length).equals(0);
     });
-    it.only(' give duplicate location ID error if NOCHANGE and duplicate in DB', async () => {
+    it(' give duplicate location ID error if NOCHANGE and duplicate in DB', async () => {
       const csvEstablishmentSchemaErrors = [];
       const myEstablishments = [
         buildEstablishmentCSV({
