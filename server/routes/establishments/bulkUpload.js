@@ -2758,7 +2758,9 @@ const checkDuplicateLocations = async (myEstablishments, csvEstablishmentSchemaE
     .filter((thisEstablishment) => thisEstablishment._currentLine.LOCATIONID)
     .filter(
       (thisEstablishment) =>
-        thisEstablishment._currentLine.STATUS !== 'UNCHECKED' && thisEstablishment._currentLine.STATUS !== 'DELETE',
+        thisEstablishment._currentLine.STATUS !== 'UNCHECKED' &&
+        thisEstablishment._currentLine.STATUS !== 'DELETE' &&
+        thisEstablishment._currentLine.STATUS !== 'NOCHANGE',
     )
     .forEach((thisEstablishment) => {
       const locationId = thisEstablishment._currentLine.LOCATIONID;
