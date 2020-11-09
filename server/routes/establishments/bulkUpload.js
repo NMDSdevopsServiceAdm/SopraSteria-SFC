@@ -1206,7 +1206,7 @@ const validateBulkUploadFiles = async (
       }
     });
 
-    await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors);
+    await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, myCurrentEstablishments);
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no establishment records');
   }
@@ -2733,21 +2733,40 @@ const downloadGet = async (req, res) => {
   }
 };
 
-const checkDuplicateLocations = async (myEstablishments, csvEstablishmentSchemaErrors) => {
+const checkDuplicateLocations = async (myEstablishments, csvEstablishmentSchemaErrors, myCurrentEstablishments) => {
   const locations = [];
+  myEstablishments
+    .filter((thisEstablishment) => thisEstablishment._currentLine.STATUS === 'NOCHANGE')
+    .forEach((thisEstablishment) => {
+      myCurrentEstablishments.forEach((establishment) => {
+        if (
+          establishment.localIdentifier &&
+          establishment.localIdentifier === thisEstablishment._currentLine.LOCALESTID
+        ) {
+          const locationId = establishment.locationId;
+          const exists = locations[locationId] !== undefined;
+          if (exists) {
+            csvEstablishmentSchemaErrors.push(thisEstablishment.getDuplicateLocationError());
+            return;
+          }
+          locations[locationId] = thisEstablishment.lineNumber;
+        }
+      });
+    });
 
   myEstablishments
     .filter((thisEstablishment) => thisEstablishment._currentLine.LOCATIONID)
+    .filter(
+      (thisEstablishment) =>
+        thisEstablishment._currentLine.STATUS !== 'UNCHECKED' && thisEstablishment._currentLine.STATUS !== 'DELETE',
+    )
     .forEach((thisEstablishment) => {
       const locationId = thisEstablishment._currentLine.LOCATIONID;
       const exists = locations[locationId] !== undefined;
-
       if (exists) {
         csvEstablishmentSchemaErrors.push(thisEstablishment.getDuplicateLocationError());
-
         return;
       }
-
       locations[locationId] = thisEstablishment.lineNumber;
     });
 };
