@@ -1,11 +1,9 @@
-<h1 id="dialogHeading" class="govuk-heading-l">You are about to delete this staff record.</h1>
+<h1 id="dialogHeading" class="govuk-heading-l">You're about to delete this staff record</h1>
 <p>Once deleted you will not be able to access it again.</p>
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-      <h1 class="govuk-fieldset__heading">
-        Why are you removing this staff record?
-      </h1>
+      <h1 class="govuk-fieldset__heading">Why are you removing this staff record?</h1>
     </legend>
     <div class="govuk-form-group">
       <select class="govuk-select" [formControlName]="'reason'" id="reason" name="reason">
@@ -18,9 +16,7 @@
 
     <div *ngIf="form.controls.reason.value == 8" class="govuk-character-count">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('details').invalid">
-        <label class="govuk-label" for="details">
-          Provide details
-        </label>
+        <label class="govuk-label" for="details"> Provide details </label>
         <span *ngIf="submitted && form.get('details').errors" id="details-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           {{ getFormErrorMessage('details', 'maxLength') }}
