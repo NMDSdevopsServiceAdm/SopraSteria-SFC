@@ -117,6 +117,24 @@ module.exports = {
           },
           t,
         ),
+        queryInterface.createTable(
+          'DataImports',
+          {
+            Type: {
+              type: Sequelize.DataTypes.ENUM,
+              allowNull: false,
+              values: ['Benchmarks'],
+            },
+            Date: {
+              type: Sequelize.DataTypes.DATE,
+              allowNull: false,
+            },
+          },
+          {
+            schema: 'cqc',
+            transaction: t,
+          },
+        ),
       ]);
     });
   },
