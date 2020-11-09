@@ -157,7 +157,9 @@ const acquireLock = async function (logic, newState, req, res) {
   // run whatever the original logic was
   try {
     await logic(req, res);
-  } catch (e) {}
+  } catch (e) {
+    console.error(e);
+  }
 
   if (newState === buStates.VALIDATING) {
     switch (res.buValidationResult) {
@@ -2305,7 +2307,7 @@ const completeNewEstablishment = async (
       // as this new establishment is created from a parent, it automatically becomes a sub
       foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
       keepAlive('foundOnloadEstablishment initialised');
-      await foundOnloadEstablishment.save(theLoggedInUser, true, 0, transaction, true);
+      await foundOnloadEstablishment.save(theLoggedInUser, true, transaction, true);
       keepAlive('foundOnloadEstablishment saved');
       await foundOnloadEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
       keepAlive('foundOnloadEstablishment wdf calculated');
@@ -2351,7 +2353,7 @@ const completeUpdateEstablishment = async (
       keepAlive('complete upload');
       await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
       keepAlive('complete upload loaded');
-      await foundCurrentEstablishment.save(theLoggedInUser, true, 0, transaction, true);
+      await foundCurrentEstablishment.save(theLoggedInUser, true, transaction, true);
       keepAlive('complete upload saved');
       await foundCurrentEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
       keepAlive('complete upload wdf');
