@@ -615,7 +615,7 @@ class Establishment extends EntityValidator {
 
   // saves the Establishment to DB. Returns true if saved; false is not.
   // Throws "EstablishmentSaveException" on error
-  async save(savedBy, bulkUploaded = false, ttl = 0, externalTransaction = null, associatedEntities = false) {
+  async save(savedBy, bulkUploaded = false, externalTransaction = null, associatedEntities = false) {
     const mustSave = this._initialise();
 
     if (!this.uid) {
@@ -2295,7 +2295,7 @@ class Establishment extends EntityValidator {
       JOIN cqc."Worker" on "Worker"."EstablishmentFK" = "Establishment"."EstablishmentID"
       LEFT JOIN cqc."WorkerJobs" on "WorkerJobs"."WorkerFK" = "Worker"."ID"
       WHERE "Worker"."LocalIdentifierValue" IS NOT NULL AND
-      "Establishment"."LocalIdentifierValue" = :establishmentKey
+       REPLACE("Establishment"."LocalIdentifierValue", :space, :no_space) = REPLACE(:establishmentKey,:space,:no_space)
       AND "Establishment"."EstablishmentID" = :establishmentId
       GROUP BY "establishmentKey", "uniqueWorker", "contractTypeId", "mainJobRoleId"`,
       {
@@ -2303,6 +2303,8 @@ class Establishment extends EntityValidator {
           establishmentKey,
           establishmentId,
           sep: ';',
+          space: ' ',
+          no_space: '',
         },
         type: db.QueryTypes.SELECT,
       },
