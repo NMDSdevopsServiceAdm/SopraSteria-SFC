@@ -30,7 +30,12 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         type: 'Benchmarks',
       },
+      order: [['date', 'DESC']],
     });
+
+    if (!dataImport) {
+      return null;
+    }
 
     return dataImport.date;
   };
