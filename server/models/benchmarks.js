@@ -42,45 +42,85 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'Staff',
       },
-      paygoodCqc: {
+      payGoodCqc: {
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'PayGoodCQC',
       },
-      paylowTurnover: {
+      payLowTurnover: {
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'PayLowTurnover',
       },
-      sicknessgoodCqc: {
+      sicknessGoodCqc: {
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'SicknessGoodCQC',
       },
-      sicknesslowTurnover: {
+      sicknessLowTurnover: {
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'SicknessLowTurnover',
       },
-      turnovergoodCqc: {
+      turnoverGoodCqc: {
         type: DataTypes.DECIMAL(5, 2),
         allowNull: true,
         field: 'TurnoverGoodCQC',
       },
-      turnoverlowTurnover: {
+      turnoverLowTurnover: {
         type: DataTypes.DECIMAL(5, 2),
         allowNull: true,
         field: 'TurnoverLowTurnover',
       },
-      qualificationsgoodCqc: {
+      qualificationsGoodCqc: {
         type: DataTypes.DECIMAL(3, 2),
         allowNull: true,
         field: 'QualificationsGoodCQC',
       },
-      qualificationslowTurnover: {
+      qualificationsLowTurnover: {
         type: DataTypes.DECIMAL(3, 2),
         allowNull: true,
         field: 'QualificationsLowTurnover',
+      },
+      payWorkplaces: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'PayWorkplaces',
+      },
+      payStaff: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'PayStaff',
+      },
+      turnoverWorkplaces: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'TurnoverWorkplaces',
+      },
+      turnoverStaff: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'TurnoverStaff',
+      },
+      sicknessWorkplaces: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'SicknessWorkplaces',
+      },
+      sicknessStaff: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'SicknessStaff',
+      },
+      qualificationsWorkplaces: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'QualificationsWorkplaces',
+      },
+      qualificationsStaff: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'QualificationsStaff',
       },
     },
     {

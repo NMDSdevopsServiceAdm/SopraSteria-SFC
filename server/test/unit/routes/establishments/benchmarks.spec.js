@@ -517,247 +517,53 @@ describe('benchmarks', () => {
         staff: 1000,
       };
 
-      const reply = {
-        tiles: {
-          pay: {
-            workplaceValue: {
-              value: 10,
-              hasValue: true,
-            },
-            comparisonGroup: {
-              value: 0,
-              hasValue: false,
-            },
-            goodCqc: {
-              hasValue: false,
-              value: 0,
-            },
-            lowTurnover: {
-              hasValue: false,
-              value: 0,
-            },
-          },
-        },
-        meta: {},
-      };
       const expectedJson = {
-        tiles: {
-          pay: {
-            workplaceValue: {
-              value: 10,
-              hasValue: true,
-            },
-            goodCqc: {
-              hasValue: true,
-              value: 0,
-            },
-            lowTurnover: {
-              hasValue: true,
-              value: 0,
-            },
-            comparisonGroup: {
-              value: 10,
-              hasValue: true,
-            },
-          },
-        },
-        meta: {},
+        value: 10,
+        hasValue: true,
       };
-      const json = await benchmarks.comparisonGroupData(reply, benchmarkComparisonGroup);
 
-      expect(json.tiles).to.deep.equal(expectedJson.tiles);
+      const json = benchmarks.buildComparisonGroupMetrics('pay', benchmarkComparisonGroup);
+
+      expect(json.comparisonGroup).to.deep.equal(expectedJson);
     });
     it('should return the correct sickness comparison Data', async () => {
       const benchmarkComparisonGroup = {
         CssrID: 0,
         MainServiceFK: 0,
         pay: 10,
-        sickness: 0,
+        sickness: 1,
         turnover: '9.99',
         qualifications: '9.99',
         workplaces: 5,
         staff: 1000,
       };
 
-      const reply = {
-        tiles: {
-          sickness: {
-            workplaceValue: {
-              value: 10,
-              hasValue: true,
-            },
-            comparisonGroup: {
-              value: 0,
-              hasValue: false,
-            },
-            goodCqc: {
-              hasValue: false,
-              value: 0,
-            },
-            lowTurnover: {
-              hasValue: false,
-              value: 0,
-            },
-          },
-        },
-        meta: {},
-      };
       const expectedJson = {
-        tiles: {
-          sickness: {
-            workplaceValue: {
-              value: 10,
-              hasValue: true,
-            },
-            goodCqc: {
-              hasValue: true,
-              value: 0,
-            },
-            lowTurnover: {
-              hasValue: true,
-              value: 0,
-            },
-            comparisonGroup: {
-              value: 0,
-              hasValue: true,
-            },
-          },
-        },
-        meta: {},
+        value: 1,
+        hasValue: true,
       };
-      const json = await benchmarks.comparisonGroupData(reply, benchmarkComparisonGroup);
+      const json = benchmarks.buildComparisonGroupMetrics('sickness', benchmarkComparisonGroup);
 
-      expect(json.tiles).to.deep.equal(expectedJson.tiles);
-    });
-    it('should return the correct comparison Data when passed both pay and sickness', async () => {
-      const benchmarkComparisonGroup = {
-        CssrID: 0,
-        MainServiceFK: 0,
-        pay: 10,
-        sickness: 10,
-        turnover: '9.99',
-        qualifications: '9.99',
-        workplaces: 5,
-        staff: 1000,
-      };
-
-      const reply = {
-        tiles: {
-          pay: {
-            workplaceValue: {
-              value: 10,
-              hasValue: true,
-            },
-            comparisonGroup: {
-              value: 0,
-              hasValue: false,
-            },
-            goodCqc: {
-              hasValue: false,
-              value: 0,
-            },
-            lowTurnover: {
-              hasValue: false,
-              value: 0,
-            },
-          },
-          sickness: {
-            workplaceValue: {
-              value: 50,
-              hasValue: true,
-            },
-            comparisonGroup: {
-              value: 0,
-              hasValue: false,
-            },
-            goodCqc: {
-              hasValue: false,
-              value: 0,
-            },
-            lowTurnover: {
-              hasValue: false,
-              value: 0,
-            },
-          },
-        },
-        meta: {},
-      };
-      const expectedJson = {
-        tiles: {
-          pay: {
-            workplaceValue: {
-              value: 10,
-              hasValue: true,
-            },
-            goodCqc: {
-              hasValue: true,
-              value: 0,
-            },
-            lowTurnover: {
-              hasValue: true,
-              value: 0,
-            },
-            comparisonGroup: {
-              value: 10,
-              hasValue: true,
-            },
-          },
-          sickness: {
-            workplaceValue: {
-              value: 50,
-              hasValue: true,
-            },
-            goodCqc: {
-              hasValue: true,
-              value: 0,
-            },
-            lowTurnover: {
-              hasValue: true,
-              value: 0,
-            },
-            comparisonGroup: {
-              value: 10,
-              hasValue: true,
-            },
-          },
-        },
-        meta: {},
-      };
-      const json = await benchmarks.comparisonGroupData(reply, benchmarkComparisonGroup);
-
-      expect(json.tiles).to.deep.equal(expectedJson.tiles);
+      expect(json.comparisonGroup).to.deep.equal(expectedJson);
     });
     it('should return the correct state message when there is no comparison group value', async () => {
       const benchmarkComparisonGroup = null;
 
-      const reply = {
-        tiles: {
-          pay: {
-            workplaceValue: {
-              value: 0,
-              hasValue: false,
-              stateMessage: 'no-workers',
-            },
-            comparisonGroup: {
-              value: 0,
-              hasValue: false,
-            },
-          },
-        },
-        meta: {},
+      const json = benchmarks.buildComparisonGroupMetrics('pay', benchmarkComparisonGroup);
+
+      const expectedJson = {
+        value: 0,
+        hasValue: false,
+        stateMessage: 'no-data',
       };
-      const json = await benchmarks.comparisonGroupData(reply, benchmarkComparisonGroup);
 
-      let expectedJson = reply;
-      expectedJson.tiles.pay.comparisonGroup.value = 0;
-      expectedJson.tiles.pay.comparisonGroup.hasValue = false;
-      expectedJson.tiles.pay.comparisonGroup.stateMessage = 'no-data';
-
-      expect(json).to.deep.equal(expectedJson);
+      expect(json.comparisonGroup).to.deep.equal(expectedJson);
     });
   });
   describe('getMetaData', () => {
-    it('should return the correct meta  Data', async () => {
+    it('should return the correct meta Data', async () => {
+      sinon.stub(models.dataImports, 'benchmarksLastUpdated').returns(new Date(2020, 0, 1));
+
       const benchmarkComparisonGroup = {
         CssrID: 0,
         MainServiceFK: 0,
@@ -769,82 +575,27 @@ describe('benchmarks', () => {
         staff: 1000,
       };
 
-      const reply = {
-        tiles: {
-          pay: {
-            workplaceValue: {
-              value: 10,
-              hasValue: true,
-            },
-            comparisonGroup: {
-              value: 10,
-              hasValue: true,
-            },
-          },
-        },
-        meta: {},
-      };
       const expectedJson = {
-        tiles: {
-          pay: {
-            workplaceValue: {
-              value: 10,
-              hasValue: true,
-            },
-            comparisonGroup: {
-              value: 10,
-              hasValue: true,
-            },
-          },
-        },
-        meta: {
-          workplaces: 5,
-          staff: 1000,
-        },
+        workplaces: 5,
+        staff: 1000,
+        lastUpdated: new Date(2020, 0, 1),
       };
-      const json = await benchmarks.getMetaData(reply, benchmarkComparisonGroup);
+      const json = await benchmarks.getMetaData(benchmarkComparisonGroup);
 
-      expect(json.meta).to.deep.equal(expectedJson.meta);
+      expect(json).to.deep.equal(expectedJson);
     });
     it('should return the correct meta data when there is no comparison group data', async () => {
+      sinon.stub(models.dataImports, 'benchmarksLastUpdated').returns(null);
       const benchmarkComparisonGroup = null;
 
-      const reply = {
-        tiles: {
-          pay: {
-            workplaceValue: {
-              value: 10,
-              hasValue: true,
-            },
-            comparisonGroup: {
-              value: 10,
-              hasValue: true,
-            },
-          },
-        },
-        meta: {},
-      };
       const expectedJson = {
-        tiles: {
-          pay: {
-            workplaceValue: {
-              value: 10,
-              hasValue: true,
-            },
-            comparisonGroup: {
-              value: 10,
-              hasValue: true,
-            },
-          },
-        },
-        meta: {
-          workplaces: 0,
-          staff: 0,
-        },
+        workplaces: 0,
+        staff: 0,
+        lastUpdated: null,
       };
-      const json = await benchmarks.getMetaData(reply, benchmarkComparisonGroup);
+      const json = await benchmarks.getMetaData(benchmarkComparisonGroup);
 
-      expect(json.meta).to.deep.equal(expectedJson.meta);
+      expect(json).to.deep.equal(expectedJson);
     });
   });
 });

@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Metric, Tile } from '@core/model/benchmarks.model';
+import { Metric, NoData, Tile } from '@core/model/benchmarks.model';
 import * as Highcharts from 'highcharts';
 
 import { BarchartOptionsBuilder } from './barchart-options-builder';
@@ -12,12 +12,12 @@ import { BarchartOptionsBuilder } from './barchart-options-builder';
 export class BarchartComponent implements OnInit, OnChanges {
   Highcharts: typeof Highcharts = Highcharts;
 
-  @Input() benchmarks: Tile = null;
-  @Input() altDescription: string = '';
-  @Input() noData: string;
+  @Input() tile: Tile = null;
+  @Input() altDescription = '';
+  @Input() noData: NoData;
   @Input() type: Metric;
 
-  loaded: boolean = false;
+  loaded = false;
 
   public options: Highcharts.Options;
   public emptyChartOptions: Highcharts.Options;
@@ -25,7 +25,7 @@ export class BarchartComponent implements OnInit, OnChanges {
   constructor(private builder: BarchartOptionsBuilder) {}
 
   ngOnInit() {
-    if (this.benchmarks) {
+    if (this.tile) {
       this.setOptions();
     } else {
       this.emptyChartOptions = this.builder.buildEmptyChartOptions(this.altDescription);
@@ -33,13 +33,18 @@ export class BarchartComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (Object.keys(changes).includes('benchmarks') && this.benchmarks) {
+    if (Object.keys(changes).includes('tile') && this.tile) {
       this.setOptions();
     }
   }
 
   private setOptions() {
-    this.options = this.builder.buildChartOptions(this.benchmarks, this.type, this.noData, this.altDescription);
+    this.options = this.builder.buildChartOptions(
+      this.tile,
+      this.type,
+      this.noData[this.tile.workplaceValue?.stateMessage],
+      this.altDescription,
+    );
     this.loaded = true;
   }
 }

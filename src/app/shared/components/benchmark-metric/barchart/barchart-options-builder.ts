@@ -82,7 +82,7 @@ export class BarchartOptionsBuilder {
     },
   };
 
-  public buildChartOptions(benchmarks: Tile, type: Metric, noData: string, altDescription: string): Highcharts.Options {
+  public buildChartOptions(tile: Tile, type: Metric, noData: string, altDescription: string): Highcharts.Options {
     const source = {
       chart: {
         events: {
@@ -94,7 +94,7 @@ export class BarchartOptionsBuilder {
           accessibility: {
             description: altDescription,
           },
-          data: this.buildChartData(benchmarks),
+          data: this.buildChartData(tile),
           dataLabels: {
             formatter: this.formatDataLabels(type),
           },
@@ -182,16 +182,16 @@ export class BarchartOptionsBuilder {
     };
   }
 
-  private buildChartData(benchmarks: Tile): any[] {
+  private buildChartData(tile: Tile): any[] {
     const get = (bv: BenchmarkValue) => {
       return bv && bv.hasValue ? bv.value : null;
     };
 
     return [
-      { y: get(benchmarks?.workplaceValue), color: '#28a197', name: 'Your workplace' },
-      { y: get(benchmarks?.comparisonGroup), name: 'Comparison group' },
-      { y: get(benchmarks?.goodCqc), name: 'Good and outstanding CQC providers in your comparison group' },
-      { y: get(benchmarks?.lowTurnover), name: 'Workplaces with a low turnover rate in your comparison group' },
+      { y: get(tile?.workplaceValue), color: '#28a197', name: 'Your workplace' },
+      { y: get(tile?.comparisonGroup), name: 'Comparison group' },
+      { y: get(tile?.goodCqc), name: 'Good and outstanding CQC providers in your comparison group' },
+      { y: get(tile?.lowTurnover), name: 'Workplaces with a low turnover rate in your comparison group' },
     ];
   }
 }

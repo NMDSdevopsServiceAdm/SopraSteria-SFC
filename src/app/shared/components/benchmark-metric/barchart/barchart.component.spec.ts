@@ -17,15 +17,15 @@ const benchmarksBuilder = build<Tile>('Benchmarks', {
   },
 });
 
-const getBarchartComponent = async (type: Metric, benchmarks: Tile) => {
+const getBarchartComponent = async (type: Metric, tile: Tile) => {
   return render(BarchartComponent, {
     imports: [HighchartsChartModule, SharedModule],
     providers: [BarchartOptionsBuilder],
     componentProperties: {
       type,
       altDescription: '',
-      noData: 'nopay',
-      benchmarks,
+      noData: { 'no-workers': '' },
+      tile,
     },
   });
 };
@@ -80,7 +80,7 @@ describe('BarchartComponent', () => {
 
       fixture.detectChanges();
 
-      for (let key in benchmarks) {
+      for (const key in benchmarks) {
         expect(getByPayText(benchmarks[key].value)).toBeTruthy();
       }
 
@@ -98,7 +98,7 @@ describe('BarchartComponent', () => {
 
       fixture.detectChanges();
 
-      for (let key in benchmarks) {
+      for (const key in benchmarks) {
         expect(getByTurnoverText(benchmarks[key].value)).toBeTruthy();
       }
 
@@ -115,7 +115,7 @@ describe('BarchartComponent', () => {
       const { fixture, getByText } = await getBarchartComponent(Metric.qualifications, benchmarks);
 
       fixture.detectChanges();
-      for (let key in benchmarks) {
+      for (const key in benchmarks) {
         expect(getByQualificationText(benchmarks[key].value)).toBeTruthy();
       }
 
@@ -132,7 +132,7 @@ describe('BarchartComponent', () => {
       const { fixture, getByText } = await getBarchartComponent(Metric.sickness, benchmarks);
       fixture.detectChanges();
 
-      for (let key in benchmarks) {
+      for (const key in benchmarks) {
         expect(getBySicknessText(benchmarks[key].value)).toBeTruthy();
       }
 

@@ -56,6 +56,7 @@ describe('BenchmarksTabComponent', () => {
       meta: {
         workplaces: 10,
         staff: 100,
+        updated: null,
       },
     };
     component.tilesData = tileData;

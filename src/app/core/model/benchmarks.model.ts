@@ -12,12 +12,15 @@ export interface BenchmarksResponse {
 export interface Meta {
   workplaces: number;
   staff: number;
+  lastUpdated?: Date;
 }
 export interface Tile {
   workplaceValue: BenchmarkValue;
   comparisonGroup: BenchmarkValue;
   goodCqc: BenchmarkValue;
   lowTurnover: BenchmarkValue;
+  workplaces?: number;
+  staff?: number;
 }
 export interface BenchmarkValue {
   value: number;
