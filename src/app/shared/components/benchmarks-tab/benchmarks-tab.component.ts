@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BenchmarksResponse, MetricsContent } from '@core/model/benchmarks.model';
+import { BenchmarksResponse, MetricsContent, Tile } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService } from '@core/services/pdf.service';
@@ -23,33 +23,14 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public turnoverContent = MetricsContent.Turnover;
   public qualificationsContent = MetricsContent.Qualifications;
   public sicknessContent = MetricsContent.Sickness;
-  private tile = {
-    value: 0,
-    hasValue: false,
-  };
-  private tilesValues = {
-    workplaceValue: CloneObjectUtil.clone(this.tile),
-    comparisonGroup: CloneObjectUtil.clone(this.tile),
-    goodCqc: CloneObjectUtil.clone(this.tile),
-    lowTurnover: CloneObjectUtil.clone(this.tile),
-  };
-  public tilesData: BenchmarksResponse = {
-    tiles: {
-      pay: CloneObjectUtil.clone(this.tilesValues),
-      sickness: CloneObjectUtil.clone(this.tilesValues),
-      qualifications: CloneObjectUtil.clone(this.tilesValues),
-      turnover: CloneObjectUtil.clone(this.tilesValues),
-    },
-    meta: {
-      workplaces: 0,
-      staff: 0,
-    },
-  };
-  private elref: ElementRef<any>;
 
-  constructor(private benchmarksService: BenchmarksService, private elRef: ElementRef, private pdfService: PdfService) {
-    this.elref = elRef;
-  }
+  public tilesData: BenchmarksResponse;
+
+  constructor(
+    private benchmarksService: BenchmarksService,
+    private elRef: ElementRef,
+    private pdfService: PdfService,
+  ) {}
 
   ngOnInit() {
     this.subscriptions.add(
@@ -65,6 +46,22 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  get payTile(): Tile {
+    return this.tilesData?.tiles?.pay;
+  }
+
+  get turnoverTile(): Tile {
+    return this.tilesData?.tiles?.turnover;
+  }
+
+  get sicknessTile(): Tile {
+    return this.tilesData?.tiles?.sickness;
+  }
+
+  get qualificationsTile(): Tile {
+    return this.tilesData?.tiles?.qualifications;
   }
 
   public async downloadAsPDF($event: Event) {

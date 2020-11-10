@@ -18,8 +18,11 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   public title: string;
   public description: string;
   public noData: NoData;
-  public loaded: boolean = false;
-  public benchmarks: Tile = null;
+  public tile: Tile = null;
+  public metaDataAvailable: boolean;
+  public numberOfStaff: number;
+  public numberOfWorkplaces: number;
+  public lastUpdated: Date;
 
   constructor(
     private benchmarksService: BenchmarksService,
@@ -44,8 +47,13 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
           mergeMap(() => this.benchmarksService.getTileData(establishmentUid, [Metric[this.type]])),
         )
         .subscribe((benchmarks) => {
-          this.loaded = true;
-          this.benchmarks = benchmarks.tiles[Metric[this.type]];
+          this.tile = benchmarks.tiles[Metric[this.type]];
+          this.metaDataAvailable = Boolean(benchmarks.meta && this.tile.workplaces && this.tile.staff);
+          if (this.metaDataAvailable) {
+            this.numberOfWorkplaces = this.tile.workplaces;
+            this.numberOfStaff = this.tile.staff;
+            this.lastUpdated = benchmarks.meta.lastUpdated;
+          }
         }),
     );
   }

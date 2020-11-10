@@ -4,21 +4,15 @@ const models = require('../../../models');
 const clonedeep = require('lodash.clonedeep');
 
 const comparisonJson = {
-  comparisonGroup: {
-    value: 0,
-    hasValue: false,
-    stateMessage: 'no-data',
-  },
-  goodCqc: {
-    value: 0,
-    hasValue: false,
-    stateMessage: 'no-data',
-  },
-  lowTurnover: {
-    value: 0,
-    hasValue: false,
-    stateMessage: 'no-data',
-  },
+  value: 0,
+  hasValue: false,
+  stateMessage: 'no-data',
+};
+
+const comparisonGroupsJson = {
+  comparisonGroup: clonedeep(comparisonJson),
+  goodCqc: clonedeep(comparisonJson),
+  lowTurnover: clonedeep(comparisonJson),
 };
 
 router.route('/').get(async (req, res) => {
@@ -34,13 +28,13 @@ router.route('/').get(async (req, res) => {
       tiles: {},
       meta: {},
     };
-    if (tiles.includes('pay')) reply.tiles.pay = await pay(establishmentId);
-    if (tiles.includes('sickness')) reply.tiles.sickness = await sickness(establishmentId);
-    if (tiles.includes('qualifications')) reply.tiles.qualifications = await qualifications(establishmentId);
-    if (tiles.includes('turnover')) reply.tiles.turnover = await turnover(establishmentId);
+    if (tiles.includes('pay')) reply.tiles.pay = await pay(establishmentId, benchmarkComparisonGroup);
+    if (tiles.includes('sickness')) reply.tiles.sickness = await sickness(establishmentId, benchmarkComparisonGroup);
+    if (tiles.includes('qualifications'))
+      reply.tiles.qualifications = await qualifications(establishmentId, benchmarkComparisonGroup);
+    if (tiles.includes('turnover')) reply.tiles.turnover = await turnover(establishmentId, benchmarkComparisonGroup);
 
-    reply = comparisonGroupData(reply, benchmarkComparisonGroup);
-    reply = getMetaData(reply, benchmarkComparisonGroup);
+    reply.meta = await getMetaData(benchmarkComparisonGroup);
     return res.status(200).json(reply);
   } catch (err) {
     console.error(err);
@@ -48,33 +42,37 @@ router.route('/').get(async (req, res) => {
   }
 });
 
-const getMetaData = (reply, benchmarkComparisonGroup) => {
-  if (!benchmarkComparisonGroup) {
-    reply.meta.workplaces = 0;
-    reply.meta.staff = 0;
-    return reply;
+const getMetaData = async (benchmarkComparisonGroup) => {
+  return {
+    workplaces: benchmarkComparisonGroup ? benchmarkComparisonGroup.workplaces : 0,
+    staff: benchmarkComparisonGroup ? benchmarkComparisonGroup.staff : 0,
+    lastUpdated: await models.dataImports.benchmarksLastUpdated(),
+  };
+};
+
+const buildComparisonGroupMetrics = (key, comparisonGroups) => {
+  const comparisonGroupMetrics = clonedeep(comparisonGroupsJson);
+  if (comparisonGroups) {
+    comparisonGroupMetrics.comparisonGroup = buildMetric(comparisonGroups[key]);
+    comparisonGroupMetrics.goodCqc = buildMetric(comparisonGroups[`${key}GoodCqc`]);
+    comparisonGroupMetrics.lowTurnover = buildMetric(comparisonGroups[`${key}LowTurnover`]);
+    comparisonGroupMetrics.staff = comparisonGroups[`${key}Staff`];
+    comparisonGroupMetrics.workplaces = comparisonGroups[`${key}Workplaces`];
   }
-  reply.meta.workplaces = benchmarkComparisonGroup.workplaces;
-  reply.meta.staff = benchmarkComparisonGroup.staff;
-  return reply;
+  return comparisonGroupMetrics;
 };
 
-const comparisonGroupData = (reply, benchmarkComparisonGroup) => {
-  Object.keys(reply.tiles).map((key) => {
-    if (benchmarkComparisonGroup) {
-      Object.keys(comparisonJson).map((comparison) => {
-        const item = comparison === 'comparisonGroup' ? key : key + comparison;
-        const value = benchmarkComparisonGroup[item];
-        reply.tiles[key][comparison].value = value ? parseInt(value) : 0;
-        reply.tiles[key][comparison].hasValue = value !== null;
-        if (reply.tiles[key][comparison].hasValue) delete reply.tiles[key][comparison].stateMessage;
-      });
-    }
-  });
-  return reply;
+const buildMetric = (metricValue) => {
+  const comparisonGroup = clonedeep(comparisonJson);
+  comparisonGroup.value = metricValue ? parseFloat(metricValue) : 0;
+  comparisonGroup.hasValue = metricValue !== null;
+  if (comparisonGroup.hasValue) {
+    delete comparisonGroup.stateMessage;
+  }
+  return comparisonGroup;
 };
 
-const pay = async (establishmentId) => {
+const pay = async (establishmentId, benchmarkComparisonGroup) => {
   const careworkersWithHourlyPayCount = await models.worker.careworkersWithHourlyPayCount(establishmentId);
   let averagePaidAmount = 0;
   let stateMessage = '';
@@ -89,7 +87,7 @@ const pay = async (establishmentId) => {
       value: averagePaidAmount,
       hasValue: stateMessage.length === 0,
     },
-    ...clonedeep(comparisonJson),
+    ...buildComparisonGroupMetrics('pay', benchmarkComparisonGroup),
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
@@ -122,20 +120,20 @@ const turnoverGetData = async (establishmentId) => {
   return { percentOfPermTemp, stateMessage: '' };
 };
 
-const turnover = async (establishmentId) => {
+const turnover = async (establishmentId, benchmarkComparisonGroup) => {
   const { percentOfPermTemp, stateMessage } = await turnoverGetData(establishmentId);
   const json = {
     workplaceValue: {
       value: percentOfPermTemp,
       hasValue: stateMessage.length === 0,
     },
-    ...clonedeep(comparisonJson),
+    ...buildComparisonGroupMetrics('turnover', benchmarkComparisonGroup),
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
 
-const qualifications = async (establishmentId) => {
+const qualifications = async (establishmentId, benchmarkComparisonGroup) => {
   const noquals = await models.worker.specificJobsAndSocialCareQuals(
     establishmentId,
     models.services.careProvidingStaff,
@@ -158,13 +156,13 @@ const qualifications = async (establishmentId) => {
       value: percentOfHigherQuals,
       hasValue: stateMessage.length === 0,
     },
-    ...clonedeep(comparisonJson),
+    ...buildComparisonGroupMetrics('qualifications', benchmarkComparisonGroup),
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
 
-const sickness = async (establishmentId) => {
+const sickness = async (establishmentId, benchmarkComparisonGroup) => {
   const whereClause = { DaysSickValue: 'Yes', archived: false };
   const establishmentWorkers = await models.establishment.workers(establishmentId, whereClause, ['DaysSickDays']);
   let averageSickDays = 0;
@@ -186,7 +184,7 @@ const sickness = async (establishmentId) => {
       value: averageSickDays,
       hasValue: stateMessage.length === 0,
     },
-    ...clonedeep(comparisonJson),
+    ...buildComparisonGroupMetrics('sickness', benchmarkComparisonGroup),
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
@@ -197,5 +195,5 @@ module.exports.pay = pay;
 module.exports.sickness = sickness;
 module.exports.qualifications = qualifications;
 module.exports.turnover = turnover;
-module.exports.comparisonGroupData = comparisonGroupData;
+module.exports.buildComparisonGroupMetrics = buildComparisonGroupMetrics;
 module.exports.getMetaData = getMetaData;

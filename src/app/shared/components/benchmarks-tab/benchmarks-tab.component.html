@@ -21,14 +21,14 @@
   </div>
   <app-comparison-group-header
     #comparisonGroupText
-    [meta]="tilesData.meta"
-    [workplaceID]="this.workplace.uid"
+    [meta]="tilesData?.meta"
+    [workplaceID]="workplace.uid"
   ></app-comparison-group-header>
   <div class="govuk-grid-row">
-    <app-benchmark-tile [content]="payContent" [tile]="tilesData.tiles.pay"> </app-benchmark-tile>
-    <app-benchmark-tile [content]="turnoverContent" [tile]="tilesData.tiles.turnover"> </app-benchmark-tile>
-    <app-benchmark-tile [content]="sicknessContent" [tile]="tilesData.tiles.sickness"> </app-benchmark-tile>
-    <app-benchmark-tile [content]="qualificationsContent" [tile]="tilesData.tiles.qualifications"> </app-benchmark-tile>
+    <app-benchmark-tile [content]="payContent" [tile]="payTile"> </app-benchmark-tile>
+    <app-benchmark-tile [content]="turnoverContent" [tile]="turnoverTile"> </app-benchmark-tile>
+    <app-benchmark-tile [content]="sicknessContent" [tile]="sicknessTile"> </app-benchmark-tile>
+    <app-benchmark-tile [content]="qualificationsContent" [tile]="qualificationsTile"> </app-benchmark-tile>
   </div>
   <app-benchmarks-about-the-data #aboutData class="hidden" [workplace]="workplace"></app-benchmarks-about-the-data>
 </div>
