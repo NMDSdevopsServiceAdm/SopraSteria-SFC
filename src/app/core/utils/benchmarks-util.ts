@@ -2,20 +2,18 @@ import { BenchmarkValue, Tile } from '@core/model/benchmarks.model';
 
 export class BenchmarksUtil {
   static hasValue(tile: Tile, benchmarkValueCallback: (_: Tile) => BenchmarkValue): boolean {
-    if (tile) {
-      const benchmarkValue = benchmarkValueCallback(tile);
-      return benchmarkValue?.hasValue;
+    if (!tile) {
+      return false;
     }
-    return false;
+
+    return benchmarkValueCallback(tile)?.hasValue;
   }
 
   static value(tile: Tile, benchmarkValueCallback: (_: Tile) => BenchmarkValue): number {
-    if (tile) {
-      const benchmarkValue = benchmarkValueCallback(tile);
-      if (benchmarkValue?.hasValue) {
-        return benchmarkValue.value;
-      }
+    if (!this.hasValue(tile, benchmarkValueCallback)) {
+      return null;
     }
-    return null;
+
+    return benchmarkValueCallback(tile).value;
   }
 }
