@@ -295,7 +295,8 @@ router
       if (!passwordCheck(req.body[0].user.password)) {
         return res.status(400).json({
           success: 0,
-          message: 'Invalid Password',
+          message:
+            'Password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
         });
       }
     }

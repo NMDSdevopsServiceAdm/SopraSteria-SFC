@@ -144,7 +144,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
           {
             name: 'pattern',
             message:
-              'Your password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
+              'Password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
           },
         ],
       },

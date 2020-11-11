@@ -84,7 +84,8 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
           },
           {
             name: 'pattern',
-            message: 'Invalid password',
+            message:
+              'New password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
           },
         ],
       },
