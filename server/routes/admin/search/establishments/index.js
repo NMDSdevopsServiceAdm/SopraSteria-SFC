@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../../models');
-const { Op } = require('sequelize');
 
 const search = async function (req, res) {
   try {
@@ -9,21 +8,27 @@ const search = async function (req, res) {
     let search = {};
 
     if (searchFields && searchFields.postcode) {
-      const postcodeSearchField = searchFields.postcode.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_');
+      const postcodeSearchField = searchFields.postcode
+        .replace(/[%_]/g, '')
+        .replace(/\*/g, '%')
+        .replace(/\?/g, '_');
 
       search = {
         postcode: {
-          [Op.iLike]: postcodeSearchField,
+          [models.sequelize.Op.iLike]: postcodeSearchField,
         },
       };
     }
 
     if (searchFields && searchFields.nmdsId) {
-      const nmdsIdSearchField = searchFields.nmdsId.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_');
+      const nmdsIdSearchField = searchFields.nmdsId
+        .replace(/[%_]/g, '')
+        .replace(/\*/g, '%')
+        .replace(/\?/g, '_');
 
       search = {
         nmdsId: {
-          [Op.iLike]: nmdsIdSearchField,
+          [models.sequelize.Op.iLike]: nmdsIdSearchField,
         },
       };
     }
@@ -36,7 +41,7 @@ const search = async function (req, res) {
 
       search = {
         locationId: {
-          [Op.iLike]: locationIdSearchField,
+          [models.sequelize.Op.iLike]: locationIdSearchField,
         },
       };
     }
@@ -60,7 +65,7 @@ const search = async function (req, res) {
       ],
       where: {
         ustatus: {
-          [Op.is]: null,
+          [models.sequelize.Op.is]: null,
         },
         ...search,
       },
@@ -91,8 +96,10 @@ const search = async function (req, res) {
       ],
     });
 
-    const results = establishments.map((establishment) => {
-      const parent = establishment.Parent ? { uid: establishment.Parent.uid, nmdsId: establishment.Parent.nmdsId } : {};
+    const results = establishments.map(establishment => {
+      const parent = establishment.Parent
+        ? { uid: establishment.Parent.uid, nmdsId: establishment.Parent.nmdsId }
+        : {};
 
       const users = establishment.users
         ? establishment.users.map((user) => {
