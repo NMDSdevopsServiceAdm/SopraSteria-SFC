@@ -858,34 +858,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.getBenchmarkData = async function (establishmentId) {
-    const postcode = await this.findOne({
-      attributes: ['postcode', 'id'],
-      where: { id: establishmentId },
-    });
-    if (!postcode) {
-      return {};
-    }
-    let cssr = await sequelize.models.pcodedata.findOne({
-      attributes: ['uprn', 'postcode'],
-      include: [
-        {
-          model: sequelize.models.cssr,
-          attributes: ['id'],
-          as: 'theAuthority',
-        },
-      ],
-      where: {
-        postcode: postcode.postcode,
-      },
-    });
-    if (cssr && cssr.theAuthority && cssr.theAuthority.id){
-      cssr = cssr.theAuthority.id;
-    } else {
-      cssr = await sequelize.models.cssr.getIdFromDistrict(postcode.postcode);
-      if (!cssr) {
-        return {};
-      }
-    }
+    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
     return await this.findOne({
       attributes: ['id'],
       where: { id: establishmentId },

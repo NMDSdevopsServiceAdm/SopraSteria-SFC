@@ -1,50 +1,54 @@
 /* jshint indent: 2 */
 
-module.exports = function(sequelize, DataTypes) {
-  const Services =  sequelize.define('services', {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
+module.exports = function (sequelize, DataTypes) {
+  const Services = sequelize.define(
+    'services',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      name: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      category: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      iscqcregistered: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      isMain: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'ismain',
+      },
+      other: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        default: false,
+        field: '"other"',
+      },
+      reportingID: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
-    name: {
-      type: DataTypes.TEXT,
-      allowNull: true
+    {
+      tableName: 'services',
+      schema: 'cqc',
+      createdAt: false,
+      updatedAt: false,
     },
-    category: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    iscqcregistered: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true
-    },
-    isMain: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
-      field: 'ismain'
-    },
-    other: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
-      default: false,
-      field: '"other"'
-    },
-    reportingID:{
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    }
-  }, {
-    tableName: 'services',
-    schema: 'cqc',
-    createdAt: false,
-    updatedAt: false
-  });
+  );
   Services.findNameByID = function (id) {
     return this.findOne({
       where: {
-        id: id
+        id: id,
       },
       attributes: ['name'],
     });
@@ -54,12 +58,12 @@ module.exports = function(sequelize, DataTypes) {
       through: 'establishmentServices',
       foreignKey: 'serviceId',
       targetKey: 'id',
-      as: 'establishments'
+      as: 'establishments',
     });
     Services.hasMany(models.benchmarks, {
       foreignKey: 'MainServiceFK',
       sourceKey: 'reportingID',
-      as:"benchmarksData"
+      as: 'benchmarksData',
     });
   };
 
@@ -68,12 +72,11 @@ module.exports = function(sequelize, DataTypes) {
     10, //careWorker,
     11, // communitySupport,
     12, //employmentSupport,
-    3,  //adviceGuidance,
+    3, //adviceGuidance,
     29, //technician,
     20, //otherCare,
     16, // nurseAssistant
   ];
-
 
   return Services;
 };

@@ -24,7 +24,7 @@ db:
     status: false
     usingFiles: false
 log:
-  sequelize: false
+  sequelize: true
 
 bulkupload:
   region: eu-west-2

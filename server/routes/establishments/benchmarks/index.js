@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../../models');
 const clonedeep = require('lodash.clonedeep');
-
+const rankings = require('./rankings');
 const comparisonJson = {
   value: 0,
   hasValue: false,
@@ -14,6 +14,8 @@ const comparisonGroupsJson = {
   goodCqc: clonedeep(comparisonJson),
   lowTurnover: clonedeep(comparisonJson),
 };
+
+router.use('/rankings', rankings);
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
