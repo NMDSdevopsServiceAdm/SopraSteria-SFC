@@ -10,7 +10,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { PasswordResetService } from '@core/services/password-reset.service';
@@ -37,20 +37,20 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
   constructor(
     private fb: FormBuilder,
     private passwordResetService: PasswordResetService,
-    private errorSummaryService: ErrorSummaryService
+    private errorSummaryService: ErrorSummaryService,
   ) {}
 
   // Get create password
-  get getPasswordInput() {
+  get getPasswordInput(): AbstractControl {
     return this.form.get('passwordGroup.createPasswordInput');
   }
 
   // Get confirm password
-  get getConfirmPasswordInput() {
+  get getConfirmPasswordInput(): AbstractControl {
     return this.form.get('passwordGroup.confirmPasswordInput');
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.form = this.fb.group({
       passwordGroup: this.fb.group(
         {
@@ -60,7 +60,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
           ],
           confirmPasswordInput: ['', [Validators.required]],
         },
-        { validator: CustomValidators.matchInputValues }
+        { validator: CustomValidators.matchInputValues },
       ),
     });
 
@@ -69,7 +69,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
     this.setupServerErrorsMap();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
@@ -80,11 +80,11 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
         type: [
           {
             name: 'required',
-            message: 'Please enter your password.',
+            message: 'Please enter your password',
           },
           {
             name: 'pattern',
-            message: 'Invalid password.',
+            message: 'Invalid password',
           },
         ],
       },
@@ -93,11 +93,11 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
         type: [
           {
             name: 'required',
-            message: 'Please confirm your password.',
+            message: 'Please confirm your password',
           },
           {
             name: 'notMatched',
-            message: 'Confirm password does not match.',
+            message: 'Confirmation needs to be the same as the new password',
           },
         ],
       },
@@ -108,7 +108,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
     this.serverErrorsMap = [
       {
         name: 503,
-        message: 'Database error.',
+        message: 'Database error',
       },
     ];
   }
@@ -124,13 +124,13 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
 
       this.subscriptions.add(
         this.passwordResetService.resetPassword(newPassword, this.headerToken).subscribe(
-          res => {
+          (res) => {
             this.resetPasswordOutput.emit(res);
           },
           (error: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          }
-        )
+          },
+        ),
       );
     }
   }

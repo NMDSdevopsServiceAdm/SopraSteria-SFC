@@ -1,5 +1,6 @@
+/*eslint @typescript-eslint/no-empty-function: ["error", { allow: ['methods'] }]*/
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES, PASSWORD_PATTERN } from '@core/constants/constants';
@@ -14,7 +15,7 @@ import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 @Directive()
-export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
+export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
   public callToActionLabel: string;
@@ -33,7 +34,7 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   // Get password group
@@ -101,7 +102,7 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
           createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
           confirmPasswordInput: ['', [Validators.required]],
         },
-        { validator: CustomValidators.matchInputValues }
+        { validator: CustomValidators.matchInputValues },
       ),
     });
   }
@@ -113,23 +114,23 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Enter a username.',
+            message: 'Enter a username',
           },
           {
             name: 'maxlength',
-            message: `Your username must be no longer than ${this.userNameMaxLength} characters.`,
+            message: `Your username must be no longer than ${this.userNameMaxLength} characters`,
           },
           {
             name: 'minlength',
-            message: `Your username must be at least ${this.userNameMinLength} characters long.`,
+            message: `Your username must be at least ${this.userNameMinLength} characters long`,
           },
           {
             name: 'usernameExists',
-            message: 'The username you entered is unavailable.',
+            message: 'The username you entered is unavailable',
           },
           {
             name: 'pattern',
-            message: 'Your username cannot contain special characters, for example @.',
+            message: 'Your username cannot contain special characters, for example @',
           },
         ],
       },
@@ -138,12 +139,12 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Enter your password.',
+            message: 'Enter your password',
           },
           {
             name: 'pattern',
             message:
-              'Your password must be least 8 characters, contain one uppercase and one lowercase letter and a number.',
+              'Your password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
           },
         ],
       },
@@ -152,11 +153,11 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Confirm your password.',
+            message: 'Confirm your password',
           },
           {
             name: 'notMatched',
-            message: 'The password you entered does not match. Enter the same password.',
+            message: 'The password you entered does not match. Enter the same password',
           },
         ],
       },
@@ -167,7 +168,7 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
     this.serverErrorsMap = [
       {
         name: 503,
-        message: 'Database error.',
+        message: 'Database error',
       },
     ];
   }
@@ -180,10 +181,10 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
           finalize(() => {
             this.submitted = true;
             this.onSubmit();
-          })
+          }),
         )
         .subscribe(
-          (data: object) => {
+          (data) => {
             if (data[`status`] === '1') {
               this.getUsername.setErrors({ usernameExists: true });
             } else {
@@ -193,8 +194,8 @@ export class CreateUsername implements OnInit, OnDestroy, AfterViewInit {
           },
           (error: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          }
-        )
+          },
+        ),
     );
   }
 

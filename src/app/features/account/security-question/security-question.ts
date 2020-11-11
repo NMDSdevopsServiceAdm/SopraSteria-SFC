@@ -87,7 +87,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
         type: [
           {
             name: 'required',
-            message: 'Please enter your security question.',
+            message: 'Enter a security question',
           },
           {
             name: 'maxlength',
@@ -100,7 +100,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
         type: [
           {
             name: 'required',
-            message: 'Please enter your security answer.',
+            message: 'Enter a security answer',
           },
           {
             name: 'maxlength',

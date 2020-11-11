@@ -34,8 +34,7 @@
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getCreatePasswordInput.errors">
             <label class="govuk-label" for="createPasswordInput">New password</label>
             <span id="createPasswordInput-hint" class="govuk-hint">
-              This should be at least 8 characters long, contain at least one uppercase and one lowercase letter and a
-              number
+              Must be at least 8 characters long and have uppercase letters, lowercase letters and numbers.
             </span>
             <span
               *ngIf="submitted && getCreatePasswordInput.errors"
