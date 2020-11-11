@@ -108,7 +108,7 @@ if (AppConfig.ready) {
       }
     }
 
-    sequelize.connectionManager.pool.clear();
+    sequelize.connectionManager.pool.destroyAllNow();
 
     // now the database is ready
     db.status.ready = true;
