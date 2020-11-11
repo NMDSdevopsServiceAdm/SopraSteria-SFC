@@ -427,7 +427,7 @@ class User {
                 where: {
                   uuid: this._trackingUUID,
                 },
-                returning: true,
+                returning: ['*'],
                 plain: false,
               },
             );
@@ -529,7 +529,7 @@ class User {
                 where: {
                   uuid: this._trackingUUID,
                 },
-                returning: true,
+                returning: ['*'],
                 plain: false,
               },
             );
@@ -574,7 +574,7 @@ class User {
                   isPrimary: true,
                 },
                 transaction: thisTransaction,
-                returning: true,
+                returning: ['*'],
                 raw: true,
                 attributes: ['id', 'updated'],
               },
@@ -593,7 +593,7 @@ class User {
 
           // now save the document
           let [updatedRecordCount, updatedRows] = await models.user.update(updateDocument, {
-            returning: true,
+            returning: ['*'],
             where: {
               uid: this.uid,
             },
@@ -819,7 +819,7 @@ class User {
         };
 
         let [updatedRecordCount] = await models.user.update(updateDocument, {
-          returning: true,
+          returning: ['*'],
           where: {
             uid: this.uid,
           },

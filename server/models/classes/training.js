@@ -541,7 +541,7 @@ class Training extends EntityValidator {
 
           // now save the document
           let [updatedRecordCount, updatedRows] = await models.workerTraining.update(updateDocument, {
-            returning: true,
+            returning: ['*'],
             where: {
               uid: this.uid,
             },

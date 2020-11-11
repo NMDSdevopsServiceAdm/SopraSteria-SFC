@@ -1,3 +1,5 @@
+const { Op } = require('sequelize');
+
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
     'worker',
@@ -1116,16 +1118,16 @@ module.exports = function (sequelize, DataTypes) {
       as: 'recruitedFrom',
     });
     Worker.belongsToMany(models.job, {
-      through: 'workerJobs',
+      through: models.workerJobs,
       foreignKey: 'workerFk',
-      targetKey: 'workerFk',
+      // targetKey: 'workerFk',
       otherKey: 'jobFk',
       as: 'otherJobs',
     });
     Worker.belongsToMany(models.workerNurseSpecialism, {
-      through: 'workerNurseSpecialisms',
+      through: models.workerNurseSpecialisms,
       foreignKey: 'workerFk',
-      targetKey: 'workerFk',
+      // targetKey: 'workerFk',
       otherKey: 'nurseSpecialismFk',
       as: 'nurseSpecialisms',
     });
@@ -1176,7 +1178,7 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
         QualificationInSocialCareValue: 'Yes',
         SocialCareQualificationFkValue: {
-          [sequelize.Op.not]: [10],
+          [Op.not]: [10],
         },
       },
     });
@@ -1188,8 +1190,8 @@ module.exports = function (sequelize, DataTypes) {
         MainJobFkValue: jobArray,
         archived: false,
         SocialCareQualificationFkValue: {
-          [sequelize.Op.gt]: 2,
-          [sequelize.Op.not]: [10],
+          [Op.gt]: 2,
+          [Op.not]: [10],
         },
       },
     });
@@ -1202,7 +1204,7 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
         AnnualHourlyPayValue: 'Hourly',
         AnnualHourlyPayRate: {
-          [sequelize.Op.not]: null,
+          [Op.not]: null,
         },
       },
     });
@@ -1214,7 +1216,7 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
         AnnualHourlyPayValue: 'Hourly',
         AnnualHourlyPayRate: {
-          [sequelize.Op.not]: null,
+          [Op.not]: null,
         },
         establishmentFk: establishmentId,
       },

@@ -960,7 +960,7 @@ class Establishment extends EntityValidator {
 
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
-            returning: true,
+            returning: ['*'],
             where: {
               uid: this.uid,
             },
@@ -1528,7 +1528,7 @@ class Establishment extends EntityValidator {
       };
 
       const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
-        returning: true,
+        returning: ['*'],
         where: {
           uid: this.uid,
         },
@@ -2099,15 +2099,15 @@ class Establishment extends EntityValidator {
     // only get the sub if the isParent parameter is truthy
     const where = isParent
       ? {
-          $or: [
+          [models.Sequelize.Op.or]: [
             {
               id: {
-                $eq: primaryEstablishmentId,
+                [models.Sequelize.Op.eq]: primaryEstablishmentId,
               },
             },
             {
               ParentID: {
-                $eq: primaryEstablishmentId,
+                [models.Sequelize.Op.eq]: primaryEstablishmentId,
               },
             },
           ],
@@ -2325,7 +2325,7 @@ class Establishment extends EntityValidator {
         LocalIdentifierChangedAt: updatedTimestamp,
       },
       {
-        returning: true,
+        returning: ['*'],
         where: {
           uid: thisGivenEstablishment.uid,
         },
