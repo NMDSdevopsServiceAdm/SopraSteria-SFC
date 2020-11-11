@@ -322,7 +322,7 @@ class Worker extends EntityValidator {
     return this._properties.get('NurseSpecialism') ? this._properties.get('NurseSpecialism').property : null;
   }
 
-  get nurseSpecialisms() {
+  get nurseSpecialisms () {
     return this._properties.get('NurseSpecialisms') ? this._properties.get('NurseSpecialisms').property : null;
   }
 
@@ -657,13 +657,7 @@ class Worker extends EntityValidator {
           }
 
           if (this.nurseSpecialisms && this.nurseSpecialisms.value === 'Yes') {
-            await models.workerNurseSpecialisms.bulkCreate(
-              this.nurseSpecialisms.specialisms.map((thisSpecialism) => ({
-                nurseSpecialismFk: thisSpecialism.id,
-                workerFk: this._id,
-              })),
-              { transaction: thisTransaction },
-            );
+            await models.workerNurseSpecialisms.bulkCreate(this.nurseSpecialisms.specialisms.map(thisSpecialism => ({nurseSpecialismFk: thisSpecialism.id, workerFk: this._id})), { transaction: thisTransaction });
           }
 
           // having the worker id we can now create the audit record; inserting the workerFk
@@ -757,7 +751,7 @@ class Worker extends EntityValidator {
 
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
-            returning: ['*'],
+            returning: true,
             where: {
               uid: this.uid,
             },
@@ -963,14 +957,14 @@ class Worker extends EntityValidator {
           {
             model: models.workerNurseSpecialism,
             as: 'nurseSpecialism',
-            attributes: ['id', 'specialism'],
+            attributes: ['id', 'specialism']
           },
           {
             model: models.workerNurseSpecialism,
             as: 'nurseSpecialisms',
-            attributes: ['id', 'specialism'],
-          },
-        ],
+            attributes: ['id', 'specialism']
+          }
+        ]
       };
 
       const fetchResults = await models.worker.findOne(fetchQuery);
@@ -1089,7 +1083,7 @@ class Worker extends EntityValidator {
 
       // now save the document
       const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
-        returning: ['*'],
+        returning: true,
         where: {
           uid: this.uid,
         },
@@ -1795,7 +1789,7 @@ class Worker extends EntityValidator {
         LocalIdentifierChangedAt: updatedTimestamp,
       },
       {
-        returning: ['*'],
+        returning: true,
         where: {
           uid: thisGivenWorker.uid,
         },
@@ -1893,7 +1887,7 @@ class Worker extends EntityValidator {
               where: {
                 uid: workerUid,
               },
-              returning: ['*'],
+              returning: true,
               plain: true,
               transaction: externalTransaction,
             },

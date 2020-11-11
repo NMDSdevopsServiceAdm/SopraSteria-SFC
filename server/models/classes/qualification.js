@@ -462,7 +462,7 @@ class Qualification extends EntityValidator {
 
           // now save the document
           let [updatedRecordCount, updatedRows] = await models.workerQualifications.update(updateDocument, {
-            returning: ['*'],
+            returning: true,
             where: {
               uid: this.uid,
             },
