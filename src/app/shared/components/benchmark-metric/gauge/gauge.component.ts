@@ -11,10 +11,11 @@ export class GaugeComponent implements OnInit {
   @Input() private maxRank: number = 10000000;
   @Input() public currentRank: number = null;
 
-  public padding = this.maxRank / 10;
+  public padding: number;
   public gauge: Highcharts.Options;
 
   ngOnInit() {
+    this.padding = this.maxRank / 10;
     this.gauge = {
       chart: {
         type: 'bar',
