@@ -19,6 +19,11 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+  }, {
+    tableName: 'BenchmarksPay',
+    schema: 'cqc',
+    createdAt: false,
+    updatedAt: false
   });
 
   BenchmarksPay.associate = (models) => {
@@ -34,25 +39,15 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  BenchmarksPay.getRankings = async function (establishmentId) {
+  BenchmarksPay.getComparisonGroupRankings = async function (establishmentId) {
     const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
     return await this.findAll({
       where: {
         CssrID: cssr,
-      },
-      include: [
-        {
-          model: sequelize.models.services,
-          as: 'BenchmarkToService',
-          include: [
-            {
-              model: sequelize.models.establishment,
-              where: { id: establishmentId },
-              as: 'establishments',
-            },
-          ],
-        },
-      ],
+        EstablishmentFK: {
+          [sequelize.Op.not]: [establishmentId]
+        }
+      }
     });
   };
 

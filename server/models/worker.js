@@ -1194,21 +1194,10 @@ module.exports = function (sequelize, DataTypes) {
       },
     });
   };
-  Worker.careworkersWithHourlyPayCount = async function (establishmentId) {
-    return this.count({
-      where: {
-        establishmentFk: establishmentId,
-        MainJobFkValue: 10,
-        archived: false,
-        AnnualHourlyPayValue: 'Hourly',
-        AnnualHourlyPayRate: {
-          [sequelize.Op.not]: null,
-        },
-      },
-    });
-  };
-  Worker.careworkersTotalHourlyPaySum = async function (establishmentId) {
-    return this.sum('AnnualHourlyPayRate', {
+
+  Worker.averageHourlyPay = async function (establishmentId) {
+    return this.findOne({
+      attributes: [[sequelize.fn('avg', sequelize.col('AnnualHourlyPayRate')), 'amount']],
       where: {
         MainJobFkValue: 10,
         archived: false,
@@ -1218,8 +1207,9 @@ module.exports = function (sequelize, DataTypes) {
         },
         establishmentFk: establishmentId,
       },
-    });
-  };
+      raw: true
+    })
+  }
 
   Worker.retrieveEstablishmentFluJabs = async function (establishmentId) {
     return await this.findAll({

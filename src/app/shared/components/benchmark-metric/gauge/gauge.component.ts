@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import * as Highcharts from 'highcharts';
 
 @Component({
@@ -11,10 +11,31 @@ export class GaugeComponent implements OnInit {
   @Input() private maxRank: number = 10000000;
   @Input() public currentRank: number = null;
 
+  public loaded: boolean = false;
   public padding: number;
   public gauge: Highcharts.Options;
 
   ngOnInit() {
+    if (this.maxRank && this.currentRank) {
+      this.setOptions();
+    } else {
+      //this.emptyChartOptions = this.builder.buildEmptyChartOptions(this.altDescription);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      Object.keys(changes).includes('maxRank') &&
+      this.maxRank &&
+      Object.keys(changes).includes('currentRank') &&
+      this.currentRank
+    ) {
+      this.setOptions();
+    }
+  }
+
+  private setOptions() {
+    this.loaded = true;
     this.padding = this.maxRank / 10;
     this.gauge = {
       chart: {

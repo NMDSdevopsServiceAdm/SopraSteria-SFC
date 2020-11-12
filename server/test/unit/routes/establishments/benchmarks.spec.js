@@ -11,13 +11,13 @@ describe('benchmarks', () => {
   describe('pay', () => {
     it('should return the correct calculation', async () => {
       const establishmentId = 123;
-      sinon.stub(models.worker, 'careworkersWithHourlyPayCount').returns(100);
-      sinon.stub(models.worker, 'careworkersTotalHourlyPaySum').returns(50);
+
+      sinon.stub(models.worker,'averageHourlyPay').returns({ amount: 50.00 })
 
       const json = await benchmarks.pay(establishmentId);
       const expectedJSON = {
         workplaceValue: {
-          value: 50,
+          value: 5000,
           hasValue: true,
         },
         comparisonGroup: {
@@ -41,8 +41,8 @@ describe('benchmarks', () => {
 
     it('should return the correct state message when there is no workplace value', async () => {
       const establishmentId = 123;
-      sinon.stub(models.worker, 'careworkersWithHourlyPayCount').returns(null);
-      sinon.stub(models.worker, 'careworkersTotalHourlyPaySum').returns(null);
+
+      sinon.stub(models.worker,'averageHourlyPay').returns({ amount: null })
 
       const json = await benchmarks.pay(establishmentId);
       const expectedJson = {

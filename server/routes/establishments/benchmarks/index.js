@@ -75,18 +75,19 @@ const buildMetric = (metricValue) => {
 };
 
 const pay = async (establishmentId, benchmarkComparisonGroup) => {
-  const careworkersWithHourlyPayCount = await models.worker.careworkersWithHourlyPayCount(establishmentId);
-  let averagePaidAmount = 0;
+  let value = 0;
   let stateMessage = '';
-  if (careworkersWithHourlyPayCount > 0) {
-    let paidAmount = await models.worker.careworkersTotalHourlyPaySum(establishmentId);
-    averagePaidAmount = (paidAmount * 100) / careworkersWithHourlyPayCount;
+
+  const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
+  if (averageHourlyPay.amount !== null) {
+    value = parseInt(averageHourlyPay.amount * 100);
   } else {
     stateMessage = 'no-workers';
   }
+
   const json = {
     workplaceValue: {
-      value: averagePaidAmount,
+      value,
       hasValue: stateMessage.length === 0,
     },
     ...buildComparisonGroupMetrics('pay', benchmarkComparisonGroup),
