@@ -1,12 +1,7 @@
 'use strict';
 const config = require('../../../config/config');
-const s3 = new (require('aws-sdk').S3)({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
-
 const { buStates } = require('./states');
-const { saveResponse } = require('./s3');
+const { s3, Bucket, saveResponse } = require('./s3');
 
 const signedUrlGet = async (req, res) => {
   try {

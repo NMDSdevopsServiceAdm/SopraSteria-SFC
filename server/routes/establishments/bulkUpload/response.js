@@ -1,10 +1,6 @@
 'use strict';
-const config = require('../../../config/config');
 
-const s3 = new (require('aws-sdk').S3)({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
+const { s3, Bucket } = require('./s3');
 
 const responseGet = (req, res) => {
   const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;

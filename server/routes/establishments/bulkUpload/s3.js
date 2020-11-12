@@ -120,6 +120,8 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
 };
 
 module.exports = {
+  s3,
+  Bucket,
   uploadAsJSON,
   saveResponse,
   downloadContent,

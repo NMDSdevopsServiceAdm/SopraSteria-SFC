@@ -4,11 +4,6 @@ const config = require('../../../config/config');
 const timerLog = require('../../../utils/timerLog');
 const moment = require('moment');
 
-const s3 = new (require('aws-sdk').S3)({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
-
 const BUDI = require('../../../models/BulkImport/BUDI').BUDI;
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
 
@@ -22,6 +17,8 @@ const { User } = require('../../../models/classes/user');
 const { Worker } = require('../../../models/classes/worker');
 const { Training } = require('../../../models/classes/training');
 const { Qualification } = require('../../../models/classes/qualification');
+
+const { s3, Bucket, saveResponse, uploadAsJSON, downloadContent } = require('./s3');
 const { buStates } = require('./states');
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
@@ -97,8 +94,6 @@ const restoreExistingEntities = async (
     throw err;
   }
 };
-
-const { saveResponse, uploadAsJSON, downloadContent } = require('./s3');
 
 const loadWorkerQualifications = async (
   lineValidator,

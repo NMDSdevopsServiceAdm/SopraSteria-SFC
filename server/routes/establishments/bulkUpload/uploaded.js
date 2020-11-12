@@ -1,18 +1,12 @@
 'use strict';
 const csv = require('csvtojson');
 const config = require('../../../config/config');
-const s3 = new (require('aws-sdk').S3)({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
-
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
-
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
 const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Worker;
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 
-const { saveResponse, uploadAsJSON, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
+const { s3, Bucket, saveResponse, uploadAsJSON, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
 const { buStates } = require('./states');
 
 const uploadedGet = async (req, res) => {

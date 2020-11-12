@@ -1,10 +1,6 @@
 'use strict';
-const config = require('../../../config/config');
-const s3 = new (require('aws-sdk').S3)({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
 
+const { s3, Bucket, saveResponse } = require('./s3');
 const { buStates } = require('./states');
 
 const getFileName = (reportType) => {
@@ -38,8 +34,6 @@ const printLine = (readable, reportType, errors, sep) => {
     });
   });
 };
-
-const { saveResponse } = require('./s3');
 
 const downloadContent = async (key, size, lastModified) => {
   try {
