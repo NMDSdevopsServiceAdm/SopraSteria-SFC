@@ -1,16 +1,8 @@
 'use strict';
-const config = require('../../../config/config');
 const dbModels = require('../../../models');
 const timerLog = require('../../../utils/timerLog');
 const { acquireLock } = require('./lock');
-
-const s3 = new (require('aws-sdk').S3)({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
-
 const { sendCountToSlack } = require('./slack');
-
 const { Establishment } = require('../../../models/classes/establishment');
 const { User } = require('../../../models/classes/user');
 
@@ -31,99 +23,7 @@ const buStates = [
   return acc;
 }, Object.create(null));
 
-const saveResponse = async (req, res, statusCode, body, headers) => {
-  if (!Number.isInteger(statusCode) || statusCode < 100) {
-    statusCode = 500;
-  }
-
-  return s3
-    .putObject({
-      Bucket,
-      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-      Body: JSON.stringify({
-        url: req.url,
-        startTime: req.startTime,
-        endTime: new Date().toISOString(),
-        responseCode: statusCode,
-        responseBody: body,
-        responseHeaders: typeof headers === 'object' ? headers : undefined,
-      }),
-    })
-    .promise();
-};
-
-const downloadContent = async (key, size, lastModified) => {
-  try {
-    const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
-
-    return await s3
-      .getObject({
-        Bucket,
-        Key: key,
-      })
-      .promise()
-      .then((objData) => ({
-        key,
-        data: objData.Body.toString(),
-        filename: key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3],
-        username: objData.Metadata.username,
-        size,
-        lastModified,
-      }));
-  } catch (err) {
-    console.error(`api/establishment/bulkupload/downloadFile: ${key})\n`, err);
-    throw new Error(`Failed to download S3 object: ${key}`);
-  }
-};
-
-const purgeBulkUploadS3Objects = async (establishmentId) => {
-  // drop all in latest
-  const listParams = {
-    Bucket,
-    Prefix: `${establishmentId}/latest/`,
-  };
-
-  const latestObjects = await s3.listObjects(listParams).promise();
-  const deleteKeys = [];
-
-  latestObjects.Contents.forEach((myFile) => {
-    const ignoreRoot = /.*\/$/;
-    if (!ignoreRoot.test(myFile.Key)) {
-      deleteKeys.push({
-        Key: myFile.Key,
-      });
-    }
-  });
-
-  listParams.Prefix = `${establishmentId}/intermediary/`;
-  const intermediaryObjects = await s3.listObjects(listParams).promise();
-  intermediaryObjects.Contents.forEach((myFile) => {
-    deleteKeys.push({
-      Key: myFile.Key,
-    });
-  });
-
-  listParams.Prefix = `${establishmentId}/validation/`;
-  const validationObjects = await s3.listObjects(listParams).promise();
-  validationObjects.Contents.forEach((myFile) => {
-    deleteKeys.push({
-      Key: myFile.Key,
-    });
-  });
-
-  if (deleteKeys.length > 0) {
-    // now delete the objects in one go
-    await s3
-      .deleteObjects({
-        Bucket,
-        Delete: {
-          Objects: deleteKeys,
-          Quiet: true,
-        },
-      })
-      .promise();
-  }
-};
+const { saveResponse, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment

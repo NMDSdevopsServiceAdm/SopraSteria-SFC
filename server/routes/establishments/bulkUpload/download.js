@@ -2,12 +2,6 @@
 const config = require('../../../config/config');
 const models = require('../../../models');
 const { acquireLock } = require('./lock');
-
-const s3 = new (require('aws-sdk').S3)({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
-
 const { Establishment } = require('../../../models/classes/establishment');
 const { User } = require('../../../models/classes/user');
 
@@ -32,26 +26,7 @@ const buStates = [
   return acc;
 }, Object.create(null));
 
-const saveResponse = async (req, res, statusCode, body, headers) => {
-  if (!Number.isInteger(statusCode) || statusCode < 100) {
-    statusCode = 500;
-  }
-
-  return s3
-    .putObject({
-      Bucket,
-      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-      Body: JSON.stringify({
-        url: req.url,
-        startTime: req.startTime,
-        endTime: new Date().toISOString(),
-        responseCode: statusCode,
-        responseBody: body,
-        responseHeaders: typeof headers === 'object' ? headers : undefined,
-      }),
-    })
-    .promise();
-};
+const { saveResponse } = require('./s3');
 
 const determineMaxQuals = async (primaryEstablishmentId) => {
   return models.sequelize.query('select cqc.maxQualifications(:givenPrimaryEstablishment);', {

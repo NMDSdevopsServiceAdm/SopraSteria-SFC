@@ -22,26 +22,7 @@ const buStates = [
   return acc;
 }, Object.create(null));
 
-const saveResponse = async (req, res, statusCode, body, headers) => {
-  if (!Number.isInteger(statusCode) || statusCode < 100) {
-    statusCode = 500;
-  }
-
-  return s3
-    .putObject({
-      Bucket,
-      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-      Body: JSON.stringify({
-        url: req.url,
-        startTime: req.startTime,
-        endTime: new Date().toISOString(),
-        responseCode: statusCode,
-        responseBody: body,
-        responseHeaders: typeof headers === 'object' ? headers : undefined,
-      }),
-    })
-    .promise();
-};
+const { saveResponse } = require('./s3');
 
 const signedUrlGet = async (req, res) => {
   try {
