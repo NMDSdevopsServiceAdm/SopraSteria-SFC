@@ -85,7 +85,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
         type: [
           {
             name: 'required',
-            message: 'Enter a full name',
+            message: 'Enter full name',
           },
           {
             name: 'maxlength',

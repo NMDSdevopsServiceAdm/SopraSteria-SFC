@@ -139,7 +139,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
         type: [
           {
             name: 'required',
-            message: 'Enter your password',
+            message: 'Enter a password',
           },
           {
             name: 'pattern',
@@ -153,11 +153,11 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
         type: [
           {
             name: 'required',
-            message: 'Confirm your password',
+            message: 'Enter the password again',
           },
           {
             name: 'notMatched',
-            message: 'The password you entered does not match. Enter the same password',
+            message: 'Confirmation password does not match the password you entered',
           },
         ],
       },

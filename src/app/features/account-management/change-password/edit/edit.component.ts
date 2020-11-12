@@ -113,11 +113,11 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
         type: [
           {
             name: 'required',
-            message: 'Confirm the new password',
+            message: 'Enter the new password again',
           },
           {
             name: 'notMatched',
-            message: 'Confirmation needs to be the same as the new password',
+            message: 'Confirmation password does not match the new password you entered',
           },
         ],
       },

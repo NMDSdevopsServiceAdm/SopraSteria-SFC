@@ -161,13 +161,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
 
         if (currentTypeLimits[req.body.role] + 1 > limits[req.body.role]) {
-          return res
-            .status(400)
-            .send(
-              `Select 'Read only' for this user (this workplace already has the maximum ${escape(
-                limits[req.body.role],
-              )} '${escape(req.body.role)}' users)`,
-            );
+          return res.status(400).send('You cannot select this permission for this user');
         }
       }
 
@@ -418,13 +412,7 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 
   if (currentTypeLimits[req.body.role] + 1 > limits[req.body.role]) {
     console.error('/add/establishment/:id - Invalid request');
-    return res
-      .status(400)
-      .send(
-        `Select 'Read only' for this user (this workplace already has the maximum ${escape(
-          limits[req.body.role],
-        )} '${escape(req.body.role)}' users)`,
-      );
+    return res.status(400).send('You cannot select this permission for this user');
   }
 
   // use the User properties to load (includes validation)

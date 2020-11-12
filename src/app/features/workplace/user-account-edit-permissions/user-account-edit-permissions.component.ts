@@ -85,7 +85,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 400,
-        message: 'Cannot update user permissions as too many of that role already exist.',
+        message: `You cannot change this users permissions`,
       },
     ];
   }

@@ -80,7 +80,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
         type: [
           {
             name: 'required',
-            message: 'Please enter your password',
+            message: 'Enter a password',
           },
           {
             name: 'pattern',
@@ -98,7 +98,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
           },
           {
             name: 'notMatched',
-            message: 'Confirmation needs to be the same as the new password',
+            message: 'Confirmation password does not match the password you entered',
           },
         ],
       },

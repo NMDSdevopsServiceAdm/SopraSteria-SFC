@@ -100,7 +100,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
         type: [
           {
             name: 'required',
-            message: 'Enter a security answer',
+            message: 'Enter the answer to the security question',
           },
           {
             name: 'maxlength',
