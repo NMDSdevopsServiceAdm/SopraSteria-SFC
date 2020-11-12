@@ -1,23 +1,7 @@
 'use strict';
 const uuid = require('uuid');
 const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = require('../../../data/bulkUploadLock');
-
-const buStates = [
-  'READY',
-  'DOWNLOADING',
-  'UPLOADING',
-  'UPLOADED',
-  'VALIDATING',
-  'FAILED',
-  'WARNINGS',
-  'PASSED',
-  'COMPLETING',
-  'UNKNOWN',
-].reduce((acc, item) => {
-  acc[item] = item;
-
-  return acc;
-}, Object.create(null));
+const { buStates } = require('./states');
 
 // Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic

@@ -5,22 +5,7 @@ const s3 = new (require('aws-sdk').S3)({
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
-const buStates = [
-  'READY',
-  'DOWNLOADING',
-  'UPLOADING',
-  'UPLOADED',
-  'VALIDATING',
-  'FAILED',
-  'WARNINGS',
-  'PASSED',
-  'COMPLETING',
-  'UNKNOWN',
-].reduce((acc, item) => {
-  acc[item] = item;
-
-  return acc;
-}, Object.create(null));
+const { buStates } = require('./states');
 
 const getFileName = (reportType) => {
   switch (reportType) {

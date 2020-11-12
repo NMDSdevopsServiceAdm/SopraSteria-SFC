@@ -8,23 +8,7 @@ const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establ
 const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Worker;
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 
-const buStates = [
-  'READY',
-  'DOWNLOADING',
-  'UPLOADING',
-  'UPLOADED',
-  'VALIDATING',
-  'FAILED',
-  'WARNINGS',
-  'PASSED',
-  'COMPLETING',
-  'UNKNOWN',
-].reduce((acc, item) => {
-  acc[item] = item;
-
-  return acc;
-}, Object.create(null));
-
+const { buStates } = require('./states');
 const { saveResponse } = require('./s3');
 
 const determineMaxQuals = async (primaryEstablishmentId) => {

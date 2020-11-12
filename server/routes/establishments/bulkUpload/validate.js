@@ -22,23 +22,7 @@ const { User } = require('../../../models/classes/user');
 const { Worker } = require('../../../models/classes/worker');
 const { Training } = require('../../../models/classes/training');
 const { Qualification } = require('../../../models/classes/qualification');
-
-const buStates = [
-  'READY',
-  'DOWNLOADING',
-  'UPLOADING',
-  'UPLOADED',
-  'VALIDATING',
-  'FAILED',
-  'WARNINGS',
-  'PASSED',
-  'COMPLETING',
-  'UNKNOWN',
-].reduce((acc, item) => {
-  acc[item] = item;
-
-  return acc;
-}, Object.create(null));
+const { buStates } = require('./states');
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment

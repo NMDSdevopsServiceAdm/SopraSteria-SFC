@@ -6,23 +6,6 @@ const s3 = new (require('aws-sdk').S3)({
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
-const buStates = [
-  'READY',
-  'DOWNLOADING',
-  'UPLOADING',
-  'UPLOADED',
-  'VALIDATING',
-  'FAILED',
-  'WARNINGS',
-  'PASSED',
-  'COMPLETING',
-  'UNKNOWN',
-].reduce((acc, item) => {
-  acc[item] = item;
-
-  return acc;
-}, Object.create(null));
-
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
 
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
@@ -30,6 +13,7 @@ const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Wor
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 
 const { saveResponse, uploadAsJSON, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
+const { buStates } = require('./states');
 
 const uploadedGet = async (req, res) => {
   try {

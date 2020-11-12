@@ -4,24 +4,7 @@ const timerLog = require('../../../utils/timerLog');
 const { sendCountToSlack } = require('./slack');
 const { Establishment } = require('../../../models/classes/establishment');
 const { User } = require('../../../models/classes/user');
-
-const buStates = [
-  'READY',
-  'DOWNLOADING',
-  'UPLOADING',
-  'UPLOADED',
-  'VALIDATING',
-  'FAILED',
-  'WARNINGS',
-  'PASSED',
-  'COMPLETING',
-  'UNKNOWN',
-].reduce((acc, item) => {
-  acc[item] = item;
-
-  return acc;
-}, Object.create(null));
-
+const { buStates } = require('./states');
 const { saveResponse, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
