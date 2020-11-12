@@ -13,7 +13,6 @@ const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').
 
 const postcodes = require('../../../models/postcodes');
 const { Establishment } = require('../../../models/classes/establishment');
-const { User } = require('../../../models/classes/user');
 const { Worker } = require('../../../models/classes/worker');
 const { Training } = require('../../../models/classes/training');
 const { Qualification } = require('../../../models/classes/qualification');
@@ -21,79 +20,7 @@ const { Qualification } = require('../../../models/classes/qualification');
 const { s3, Bucket, saveResponse, uploadAsJSON, downloadContent } = require('./s3');
 const { buStates } = require('./states');
 
-// for the given user, restores all establishment and worker entities only from the DB, associating the workers
-//  back to the establishment
-// the "onlyMine" parameter is used to remove those subsidiary establishments where the parent is not the owner
-const restoreExistingEntities = async (
-  loggedInUsername,
-  primaryEstablishmentId,
-  isParent,
-  assocationLevel = 1,
-  onlyMine = false,
-  keepAlive = () => {},
-) => {
-  try {
-    const completionBulkUploadStatus = 'COMPLETE';
-    const thisUser = new User(primaryEstablishmentId);
-    await thisUser.restore(null, loggedInUsername, false);
-
-    keepAlive('begin restore entities'); // keep connection alive
-
-    // gets a list of "my establishments", which if a parent, includes all known subsidaries too, and this "parent's" access permissions to those subsidaries
-    const myEstablishments = await thisUser.myEstablishments(isParent, null);
-
-    keepAlive('establishments retrieved'); // keep connection alive
-
-    // having got this list of establishments, now need to fully restore each establishment as entities.
-    //  using an object adding entities by a known key to make lookup comparisions easier.
-    const currentEntities = [];
-    const restoreEntityPromises = [];
-
-    // first add the primary establishment entity
-    const primaryEstablishment = new Establishment(loggedInUsername, completionBulkUploadStatus);
-    currentEntities.push(primaryEstablishment);
-
-    restoreEntityPromises.push(
-      primaryEstablishment.restore(myEstablishments.primary.uid, false, true, assocationLevel).then((data) => {
-        keepAlive('establishment restored', myEstablishments.primary.uid); // keep connection alive
-
-        return data;
-      }),
-    );
-
-    if (
-      myEstablishments.subsidaries &&
-      myEstablishments.subsidaries.establishments &&
-      Array.isArray(myEstablishments.subsidaries.establishments)
-    ) {
-      myEstablishments.subsidaries.establishments = myEstablishments.subsidaries.establishments.filter(
-        (est) => est.ustatus !== 'PENDING',
-      );
-      myEstablishments.subsidaries.establishments.forEach((thisSubsidairy) => {
-        if (!onlyMine || (onlyMine && thisSubsidairy.dataOwner === 'Parent')) {
-          const newSub = new Establishment(loggedInUsername, completionBulkUploadStatus);
-
-          currentEntities.push(newSub);
-
-          restoreEntityPromises.push(
-            newSub.restore(thisSubsidairy.uid, false, true, assocationLevel).then((data) => {
-              keepAlive('sub establishment restored', thisSubsidairy.uid); // keep connection alive
-
-              return data;
-            }),
-          );
-        }
-      });
-    }
-
-    await Promise.all(restoreEntityPromises);
-
-    return currentEntities;
-  } catch (err) {
-    console.error('/restoreExistingEntities: ERR: ', err.message);
-    throw err;
-  }
-};
+const { restoreExistingEntities } = require('./entities');
 
 const loadWorkerQualifications = async (
   lineValidator,
