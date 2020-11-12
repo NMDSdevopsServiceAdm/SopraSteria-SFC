@@ -1,5 +1,5 @@
 'use strict';
-const dbModels = require('../../../models');
+const models = require('../../../models');
 const timerLog = require('../../../utils/timerLog');
 const { sendCountToSlack } = require('./slack');
 const { Establishment } = require('../../../models/classes/establishment');
@@ -312,7 +312,7 @@ const completePost = async (req, res) => {
       let completeCommitTransactionTime = null;
       try {
         // all creates, updates and deletes (archive) are done in one transaction to ensure database integrity
-        await dbModels.sequelize.transaction(async (t) => {
+        await models.sequelize.transaction(async (t) => {
           // first create the new establishments - in sequence
           const starterNewPromise = Promise.resolve(null);
           await validationDiferenceReport.new.reduce(
