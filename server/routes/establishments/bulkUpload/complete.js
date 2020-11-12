@@ -1,7 +1,6 @@
 'use strict';
 const dbModels = require('../../../models');
 const timerLog = require('../../../utils/timerLog');
-const { acquireLock } = require('./lock');
 const { sendCountToSlack } = require('./slack');
 const { Establishment } = require('../../../models/classes/establishment');
 const { User } = require('../../../models/classes/user');
@@ -457,6 +456,7 @@ const completePost = async (req, res) => {
   }
 };
 
+const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
 router.route('/complete').post(acquireLock.bind(null, completePost, buStates.COMPLETING));

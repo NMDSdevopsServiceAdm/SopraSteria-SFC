@@ -1,7 +1,5 @@
 'use strict';
 const csv = require('csvtojson');
-const express = require('express');
-const router = express.Router();
 const config = require('../../../config/config');
 const timerLog = require('../../../utils/timerLog');
 const moment = require('moment');
@@ -24,10 +22,6 @@ const { User } = require('../../../models/classes/user');
 const { Worker } = require('../../../models/classes/worker');
 const { Training } = require('../../../models/classes/training');
 const { Qualification } = require('../../../models/classes/qualification');
-
-// Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
-// This function can't be an express middleware as it needs to run both before and after the regular logic
-const { acquireLock } = require('./lock');
 
 const buStates = [
   'READY',
@@ -1458,6 +1452,9 @@ const validatePut = async (req, res) => {
     await saveResponse(req, res, 503, {});
   }
 };
+
+const { acquireLock } = require('./lock');
+const router = require('express').Router();
 
 router.route('/').put(acquireLock.bind(null, validatePut, buStates.VALIDATING));
 

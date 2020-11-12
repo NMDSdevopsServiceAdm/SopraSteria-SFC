@@ -5,8 +5,6 @@ const s3 = new (require('aws-sdk').S3)({
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
-const { acquireLock } = require('./lock');
-
 const buStates = [
   'READY',
   'DOWNLOADING',
@@ -244,6 +242,7 @@ const reportGet = async (req, res) => {
   }
 };
 
+const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
 router.route('/report/:reportType').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));

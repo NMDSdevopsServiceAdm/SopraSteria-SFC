@@ -1,7 +1,6 @@
 'use strict';
 const config = require('../../../config/config');
 const models = require('../../../models');
-const { acquireLock } = require('./lock');
 const { Establishment } = require('../../../models/classes/establishment');
 const { User } = require('../../../models/classes/user');
 
@@ -245,6 +244,7 @@ const downloadGet = async (req, res) => {
   }
 };
 
+const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
 router.route('/:downloadType').get(acquireLock.bind(null, downloadGet, buStates.DOWNLOADING));
