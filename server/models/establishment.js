@@ -1,4 +1,6 @@
 /* jshint indent: 2 */
+const moment = require('moment');
+
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
     'establishment',
@@ -878,7 +880,7 @@ module.exports = function (sequelize, DataTypes) {
         postcode: postcode.postcode,
       },
     });
-    if (cssr && cssr.theAuthority && cssr.theAuthority.id){
+    if (cssr && cssr.theAuthority && cssr.theAuthority.id) {
       cssr = cssr.theAuthority.id;
     } else {
       cssr = await sequelize.models.cssr.getIdFromDistrict(postcode.postcode);
@@ -956,6 +958,47 @@ module.exports = function (sequelize, DataTypes) {
               attributes: ['username', 'status'],
             },
           ],
+        },
+      ],
+    });
+  };
+  Establishment.deleteReportData = async function () {
+    const updateDate = moment.subtract(6, 'months');
+
+    return await this.findAll({
+      attributes: [
+        'id',
+        'uid',
+        'NameValue',
+        'nmdsId',
+        'isRegulated',
+        'isParent',
+        'address1',
+        'address2',
+        'town',
+        'county',
+        'postcode',
+        'locationId',
+        'dataOwner',
+        'updated',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
+      ],
+      where: {
+        updated: {
+          [sequelize.Op.lt]: updateDate,
+        },
+      },
+      order: [['NameValue', 'ASC']],
+      include: [
+        {
+          model: sequelize.models.worker,
+          attributes: ['establishmentFK', 'updated'],
+          where: {
+            updated: {
+              [sequelize.Op.lt]: updateDate,
+            },
+          },
         },
       ],
     });
