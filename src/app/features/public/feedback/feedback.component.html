@@ -12,16 +12,12 @@
       <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              Feedback
-            </h1>
+            <h1 class="govuk-fieldset__heading">Feedback</h1>
           </legend>
 
           <div class="govuk-character-count">
             <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('doingWhat').errors">
-              <label class="govuk-label govuk-label--m" for="doingWhat">
-                What were you trying to do?
-              </label>
+              <label class="govuk-label govuk-label--m" for="doingWhat"> What were you trying to do? </label>
               <span *ngIf="submitted" id="doingWhat-error" class="govuk-error-message">
                 <span class="govuk-visually-hidden">Error:</span>
                 <ng-container *ngIf="form.get('doingWhat').hasError('required')">
@@ -48,9 +44,7 @@
 
           <div class="govuk-character-count">
             <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('tellUs').errors">
-              <label class="govuk-label govuk-label--m" for="tellUs">
-                What would you like to tell us about?
-              </label>
+              <label class="govuk-label govuk-label--m" for="tellUs"> What would you like to tell us about? </label>
               <span *ngIf="submitted" id="tellUs-error" class="govuk-error-message">
                 <span class="govuk-visually-hidden">Error:</span>
                 <ng-container *ngIf="form.get('tellUs').hasError('required')">
@@ -72,15 +66,11 @@
             <app-character-count [max]="tellUsCharactersLimit" [control]="form.get('tellUs')"></app-character-count>
           </div>
 
-          <h3 class="govuk-heading-m">If you would like us to respond to your feedback, enter your details below.</h3>
+          <h3 class="govuk-heading-m">If you would like us to respond to your feedback, enter your details below</h3>
 
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('fullname').errors">
-            <label class="govuk-label" for="fullname">
-              Full name
-            </label>
-            <span id="fullname-hint" class="govuk-hint">
-              Optional
-            </span>
+            <label class="govuk-label" for="fullname"> Full name </label>
+            <span id="fullname-hint" class="govuk-hint"> Optional </span>
             <span *ngIf="submitted" id="fullname-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
               <ng-container *ngIf="form.get('fullname').hasError('maxlength')">
@@ -99,12 +89,8 @@
           </div>
 
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('email').errors">
-            <label class="govuk-label" for="email">
-              Email address
-            </label>
-            <span id="email-hint" class="govuk-hint">
-              Optional
-            </span>
+            <label class="govuk-label" for="email"> Email address </label>
+            <span id="email-hint" class="govuk-hint"> Optional </span>
             <span *ngIf="submitted" id="email-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
               <ng-container *ngIf="form.get('email').hasError('email')">
@@ -128,9 +114,7 @@
           </div>
         </fieldset>
 
-        <button type="submit" class="govuk-button">
-          Send
-        </button>
+        <button type="submit" class="govuk-button">Send</button>
       </form>
     </ng-container>
 
