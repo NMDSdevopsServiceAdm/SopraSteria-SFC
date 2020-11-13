@@ -1366,3 +1366,6 @@ router.route('/').put(acquireLock.bind(null, validatePut, buStates.VALIDATING));
 
 module.exports = router;
 module.exports.validateEstablishmentCsv = validateEstablishmentCsv;
+module.exports.checkPartTimeSalary = checkPartTimeSalary;
+module.exports.checkDuplicateWorkerID = checkDuplicateWorkerID;
+module.exports.checkDuplicateLocations = checkDuplicateLocations;

@@ -227,3 +227,4 @@ const router = require('express').Router();
 router.route('/report/:reportType').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
 
 module.exports = router;
+module.exports.printLine = printLine;

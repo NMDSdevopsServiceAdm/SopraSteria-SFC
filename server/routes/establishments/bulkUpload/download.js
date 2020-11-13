@@ -160,3 +160,4 @@ const router = require('express').Router();
 router.route('/:downloadType').get(acquireLock.bind(null, downloadGet, buStates.DOWNLOADING));
 
 module.exports = router;
+module.exports.exportToCsv = exportToCsv;
