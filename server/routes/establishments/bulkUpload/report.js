@@ -1,6 +1,6 @@
 'use strict';
 
-const { s3, Bucket, saveResponse } = require('./s3');
+const { downloadContent, saveResponse } = require('./s3');
 const { buStates } = require('./states');
 
 const getFileName = (reportType) => {
@@ -33,30 +33,6 @@ const printLine = (readable, reportType, errors, sep) => {
       }
     });
   });
-};
-
-const downloadContent = async (key, size, lastModified) => {
-  try {
-    const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
-
-    return await s3
-      .getObject({
-        Bucket,
-        Key: key,
-      })
-      .promise()
-      .then((objData) => ({
-        key,
-        data: objData.Body.toString(),
-        filename: key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3],
-        username: objData.Metadata.username,
-        size,
-        lastModified,
-      }));
-  } catch (err) {
-    console.error(`api/establishment/bulkupload/downloadFile: ${key})\n`, err);
-    throw new Error(`Failed to download S3 object: ${key}`);
-  }
 };
 
 const reportGet = async (req, res) => {
