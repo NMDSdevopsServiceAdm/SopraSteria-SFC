@@ -224,7 +224,7 @@ const reportGet = async (req, res) => {
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
-router.route('/report/:reportType').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
+router.route('/:reportType').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
 
 module.exports = router;
 module.exports.printLine = printLine;
