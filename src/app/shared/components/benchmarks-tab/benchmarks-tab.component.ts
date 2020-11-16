@@ -1,8 +1,9 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BenchmarksResponse } from '@core/model/benchmarks.model';
+import { BenchmarksResponse, MetricsContent, Tile } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
-import { jsPDF } from 'jspdf';
+import { PdfService } from '@core/services/pdf.service';
+import { CloneObjectUtil } from '@core/utils/cloneObject-util';
 import { Subscription } from 'rxjs';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
@@ -18,185 +19,55 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
 
-  public tilesData: BenchmarksResponse = {
-    tiles: {
-      pay: {
-        workplaceValue:
-        {
-          value: 0,
-          hasValue: false
-        },
-        comparisonGroup:
-        {
-          value: 0,
-          hasValue: false
-        }
-      },
-      sickness: {
-        workplaceValue:
-        {
-          value: 0,
-          hasValue: false
-        },
-        comparisonGroup:
-        {
-          value: 0,
-          hasValue: false
-        }
-      },
-      qualifications: {
-        workplaceValue:
-        {
-          value: 0,
-          hasValue: false
-        },
-        comparisonGroup:
-        {
-          value: 0,
-          hasValue: false
-        }
-      },
-      turnover: {
-        workplaceValue:
-        {
-          value: 0,
-          hasValue: false
-        },
-        comparisonGroup:
-        {
-          value: 0,
-          hasValue: false
-        }
-      }
-    },
-    meta: {
-      workplaces: 0,
-      staff: 0
-    }
-  };
-  private elref: ElementRef<any>;
-  public doc: jsPDF;
+  public payContent = MetricsContent.Pay;
+  public turnoverContent = MetricsContent.Turnover;
+  public qualificationsContent = MetricsContent.Qualifications;
+  public sicknessContent = MetricsContent.Sickness;
+
+  public tilesData: BenchmarksResponse;
+
   constructor(
     private benchmarksService: BenchmarksService,
     private elRef: ElementRef,
-  ) {
-    this.elref = elRef;
-  }
+    private pdfService: PdfService,
+  ) {}
 
   ngOnInit() {
     this.subscriptions.add(
-      this.benchmarksService.getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications']).subscribe(
-        (data) => {
+      this.benchmarksService
+        .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
+        .subscribe((data) => {
           if (data) {
             this.tilesData = data;
           }
-        }
-      ))
-  }
-
-  public formatPercent(data) {
-    return Math.round(data * 100) + '%';
-  }
-  public formatPay(data) {
-    return '£' + (Number(data) / 100).toFixed(2);
+        }),
+    );
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 
-  private createSpacer(width: number, space: number) {
-    const spacer = document.createElement('div');
-    spacer.style.width = `${width}px`;
-    spacer.style.height = `${space}px`;
-    return spacer;
+  get payTile(): Tile {
+    return this.tilesData?.tiles?.pay;
   }
 
-  private getHeight(element) {
-      element.style.visibility = 'hidden';
-      document.body.appendChild(element);
-      const height = element.offsetHeight + 0;
-      document.body.removeChild(element);
-      element.style.visibility = 'visible';
-      return height;
+  get turnoverTile(): Tile {
+    return this.tilesData?.tiles?.turnover;
+  }
+
+  get sicknessTile(): Tile {
+    return this.tilesData?.tiles?.sickness;
+  }
+
+  get qualificationsTile(): Tile {
+    return this.tilesData?.tiles?.qualifications;
   }
 
   public async downloadAsPDF($event: Event) {
     $event.preventDefault();
     try {
-      this.doc = new jsPDF('p', 'pt', 'a4');
-      const ptToPx = 1.3333333333;
-      const a4heightpx = this.doc.internal.pageSize.getHeight() * ptToPx;
-      const scale = 0.5;
-      const width = 1000;
-      const spacing = 50;
-      const widthHtml = width * scale;
-      const x = (this.doc.internal.pageSize.getWidth() - widthHtml) / 2;
-      const y = 20;
-      const ypx = (y * ptToPx / scale);
-      const html2canvas = {
-        scale,
-        width,
-        windowWidth: width
-      };
-      const html = document.createElement('div');
-
-      html.style.width = `${width}px`;
-      html.style.display = 'block';
-      html.append(this.benchmarksService.header.nativeElement.cloneNode(true));
-      html.append(this.createSpacer(width, spacing));
-      html.append(this.benchmarksService.workplaceTitle.nativeElement.cloneNode(true));
-      html.append(this.createSpacer(width, spacing));
-      html.append(this.elRef.nativeElement.cloneNode(true));
-      const footer = this.benchmarksService.footer.nativeElement.cloneNode(true);
-      const govuklogo = document.createElement('div');
-      govuklogo.className = 'department-of-health-logo__crest';
-      govuklogo.style.borderLeft = '2px solid #00ad93';
-      govuklogo.style.paddingLeft = '5px';
-      const govukimage = document.createElement('img');
-      govukimage.src = '/assets/images/govuk-crest.png';
-      govukimage.alt= 'Department of Health & Social Care';
-      govukimage.style.height = '25px';
-      govukimage.style.width = 'auto';
-      govukimage.style.float = 'left';
-      const govuktext = document.createElement('span');
-      govuktext.className = 'department-of-health-logo__name';
-      govuktext.innerHTML = '<br clear="left">Department<br>of Health &<br>Social Care';
-      govuklogo.append(govukimage);
-      govuklogo.append(govuktext);
-      footer.append(govuklogo);
-      const footerPosition = a4heightpx - (this.getHeight(html) * scale) - ((this.getHeight(footer) * scale) + ypx);
-      html.append(this.createSpacer(width, footerPosition));
-      html.append(footer.cloneNode(true));
-      html.append(this.createSpacer(width, ypx * 2));
-      html.append(this.benchmarksService.header.nativeElement.cloneNode(true));
-      html.append(this.createSpacer(width, spacing));
-      const aboutDataHtml = this.benchmarksService.aboutData.nativeElement.cloneNode(true);
-      const allUl = aboutDataHtml.getElementsByTagName('ul');
-      for (let ul of allUl) {
-        ul.style.listStyle = 'none';
-        ul.style.paddingLeft = '0';
-      }
-      const allLi = aboutDataHtml.getElementsByTagName('li');
-      for (let li of allLi) {
-        li.textContent = '- ' + li.textContent
-      }
-      html.append(aboutDataHtml);
-      const footerPg2Position = (a4heightpx * 2) - (this.getHeight(html) * scale) - ((this.getHeight(footer) * scale) - (ypx * 2));
-      html.append(this.createSpacer(width, footerPg2Position));
-      html.append(footer.cloneNode(true));
-      await this.doc.html(html, {
-        x,
-        y,
-        html2canvas
-      });
-      if (this.doc.getNumberOfPages() > 2) {
-        for (let i = this.doc.getNumberOfPages(); i > 2; i--) {
-          this.doc.deletePage(i);
-        }
-      }
-      this.doc.save('benchmarks.pdf');
-      return this.doc;
+      return await this.pdfService.BuildBenchmarksPdf(this.elRef, this.aboutData.aboutData, this.workplace);
     } catch (error) {
       console.error(error);
     }

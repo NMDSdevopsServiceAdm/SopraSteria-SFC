@@ -66,7 +66,7 @@ async function sendMessages(locationIds, startdate, enddate) {
       "endDate": enddate
     };
     try {
-      const sqsReq = await sqs.sendMessage({
+      await sqs.sendMessage({
         MessageBody: JSON.stringify(location),
         QueueUrl
       }).promise();

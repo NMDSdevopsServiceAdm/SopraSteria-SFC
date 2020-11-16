@@ -18,7 +18,7 @@ export class DataSharingComponent extends Question {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -63,7 +63,7 @@ export class DataSharingComponent extends Question {
       shareWith.push(DataSharingOptions.LOCAL);
     }
 
-    if (this.establishment && !shareWith.length) {
+    if ((this.establishment && !shareWith.length) || !localAuthorities) {
       this.establishment.localAuthorities = [];
     }
 
@@ -75,15 +75,16 @@ export class DataSharingComponent extends Question {
     };
   }
 
-  protected updateEstablishment(props) {
+  protected updateEstablishment(props): void {
     this.subscriptions.add(
-      this.establishmentService
-        .updateDataSharing(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateDataSharing(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
   }
 
-  protected onSuccess() {
+  protected onSuccess(): void {
     const { localAuthorities } = this.form.get('shareWith').value;
 
     this.nextRoute = localAuthorities

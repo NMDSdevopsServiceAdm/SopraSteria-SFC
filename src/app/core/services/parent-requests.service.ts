@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ParentRequests } from '@core/model/parent-requests.model';
 import { Observable } from 'rxjs';
-import { ApprovalRequest } from '@core/model/approval-request.model';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -20,8 +19,7 @@ export class ParentRequestsService {
   }
 
   public parentStatusRequested(establishmentId: number): Observable<boolean> {
-    return this.getParentRequestByEstablishmentId(establishmentId)
-      .pipe(map(result => result != null));
+    return this.getParentRequestByEstablishmentId(establishmentId).pipe(map((result) => result != null));
   }
 
   public parentApproval(data: object) {

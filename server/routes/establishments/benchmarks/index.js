@@ -1,6 +1,19 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../../models');
+const clonedeep = require('lodash.clonedeep');
+
+const comparisonJson = {
+  value: 0,
+  hasValue: false,
+  stateMessage: 'no-data',
+};
+
+const comparisonGroupsJson = {
+  comparisonGroup: clonedeep(comparisonJson),
+  goodCqc: clonedeep(comparisonJson),
+  lowTurnover: clonedeep(comparisonJson),
+};
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -8,154 +21,160 @@ router.route('/').get(async (req, res) => {
 
   try {
     let benchmarkComparisonGroup = await models.establishment.getBenchmarkData(establishmentId);
-    benchmarkComparisonGroup = benchmarkComparisonGroup.mainService ? benchmarkComparisonGroup.mainService.benchmarksData[0] : null;
+    benchmarkComparisonGroup = benchmarkComparisonGroup.mainService
+      ? benchmarkComparisonGroup.mainService.benchmarksData[0]
+      : null;
     let reply = {
       tiles: {},
-      meta: {}
+      meta: {},
     };
-    if (tiles.includes('pay')) reply.tiles.pay = await pay(establishmentId);
-    if (tiles.includes('sickness')) reply.tiles.sickness = await sickness(establishmentId);
-    if (tiles.includes('qualifications')) reply.tiles.qualifications = await qualifications(establishmentId);
-    if (tiles.includes('turnover')) reply.tiles.turnover = await turnover(establishmentId);
+    if (tiles.includes('pay')) reply.tiles.pay = await pay(establishmentId, benchmarkComparisonGroup);
+    if (tiles.includes('sickness')) reply.tiles.sickness = await sickness(establishmentId, benchmarkComparisonGroup);
+    if (tiles.includes('qualifications'))
+      reply.tiles.qualifications = await qualifications(establishmentId, benchmarkComparisonGroup);
+    if (tiles.includes('turnover')) reply.tiles.turnover = await turnover(establishmentId, benchmarkComparisonGroup);
 
-    reply = await comparisonGroupData(reply, benchmarkComparisonGroup);
-    reply = await getMetaData(reply, benchmarkComparisonGroup);
+    reply.meta = await getMetaData(benchmarkComparisonGroup);
     return res.status(200).json(reply);
   } catch (err) {
     console.error(err);
     return res.status(503).send();
   }
 });
-const getMetaData = async (reply,benchmarkComparisonGroup) => {
-  if (!benchmarkComparisonGroup) {
-    reply.meta.workplaces = 0;
-    reply.meta.staff = 0;
-    return reply;
+
+const getMetaData = async (benchmarkComparisonGroup) => {
+  return {
+    workplaces: benchmarkComparisonGroup ? benchmarkComparisonGroup.workplaces : 0,
+    staff: benchmarkComparisonGroup ? benchmarkComparisonGroup.staff : 0,
+    lastUpdated: await models.dataImports.benchmarksLastUpdated(),
+  };
+};
+
+const buildComparisonGroupMetrics = (key, comparisonGroups) => {
+  const comparisonGroupMetrics = clonedeep(comparisonGroupsJson);
+  if (comparisonGroups) {
+    comparisonGroupMetrics.comparisonGroup = buildMetric(comparisonGroups[key]);
+    comparisonGroupMetrics.goodCqc = buildMetric(comparisonGroups[`${key}GoodCqc`]);
+    comparisonGroupMetrics.lowTurnover = buildMetric(comparisonGroups[`${key}LowTurnover`]);
+    comparisonGroupMetrics.staff = comparisonGroups[`${key}Staff`];
+    comparisonGroupMetrics.workplaces = comparisonGroups[`${key}Workplaces`];
   }
-  reply.meta.workplaces = benchmarkComparisonGroup.workplaces;
-  reply.meta.staff = benchmarkComparisonGroup.staff;
-  return reply;
-
+  return comparisonGroupMetrics;
 };
-const comparisonGroupData = async (reply, benchmarkComparisonGroup) => {
-  Object.keys(reply.tiles).map(key => {
-    if (!benchmarkComparisonGroup) {
-      reply.tiles[key].comparisonGroup.value = 0;
-      reply.tiles[key].comparisonGroup.hasValue = false;
-      reply.tiles[key].comparisonGroup.stateMessage = 'no-data';
-    } else {
-      reply.tiles[key].comparisonGroup.value = benchmarkComparisonGroup[key] ? benchmarkComparisonGroup[key] : 0;
-      reply.tiles[key].comparisonGroup.hasValue =  benchmarkComparisonGroup[key] !== null  ;
-      if (!reply.tiles[key].comparisonGroup.hasValue) {
-        reply.tiles[key].comparisonGroup.stateMessage = 'no-data';
-      }
-    }
-  });
-  return reply;
-};
-const pay = async (establishmentId) => {
 
+const buildMetric = (metricValue) => {
+  const comparisonGroup = clonedeep(comparisonJson);
+  comparisonGroup.value = metricValue ? parseFloat(metricValue) : 0;
+  comparisonGroup.hasValue = metricValue !== null;
+  if (comparisonGroup.hasValue) {
+    delete comparisonGroup.stateMessage;
+  }
+  return comparisonGroup;
+};
+
+const pay = async (establishmentId, benchmarkComparisonGroup) => {
   const careworkersWithHourlyPayCount = await models.worker.careworkersWithHourlyPayCount(establishmentId);
   let averagePaidAmount = 0;
   let stateMessage = '';
   if (careworkersWithHourlyPayCount > 0) {
     let paidAmount = await models.worker.careworkersTotalHourlyPaySum(establishmentId);
-    averagePaidAmount = (paidAmount*100) / careworkersWithHourlyPayCount;
+    averagePaidAmount = (paidAmount * 100) / careworkersWithHourlyPayCount;
   } else {
     stateMessage = 'no-workers';
   }
   const json = {
     workplaceValue: {
       value: averagePaidAmount,
-      hasValue: stateMessage.length === 0
+      hasValue: stateMessage.length === 0,
     },
-    comparisonGroup: {
-      value: 0,
-      hasValue: false
-    }
+    ...buildComparisonGroupMetrics('pay', benchmarkComparisonGroup),
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
-const turnoverGetData = async (establishmentId) => {
 
+const turnoverGetData = async (establishmentId) => {
   const establishment = await models.establishment.turnOverData(establishmentId);
   const workerCount = await models.worker.countForEstablishment(establishmentId);
-  if (!establishment || establishment.NumberOfStaffValue === 0 ||
-    workerCount !== establishment.NumberOfStaffValue) {
+  if (!establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue) {
     return { percentOfPermTemp: 0, stateMessage: 'no-workers' };
   }
 
-  if (establishment.LeaversValue === 'Don\'t know' || !establishment.LeaversValue) {
+  if (establishment.LeaversValue === "Don't know" || !establishment.LeaversValue) {
     return { percentOfPermTemp: 0, stateMessage: 'no-data' };
   }
 
   const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
   const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
 
-  if (permTemptCount === 0 ){
-    return { percentOfPermTemp: 0 , stateMessage: 'no-permTemp' };
+  if (permTemptCount === 0) {
+    return { percentOfPermTemp: 0, stateMessage: 'no-permTemp' };
   }
   if (establishment.LeaversValue === 'None') {
-    return { percentOfPermTemp: 0,stateMessage: '' };
+    return { percentOfPermTemp: 0, stateMessage: '' };
   }
-  const percentOfPermTemp = (leavers / permTemptCount);
+  const percentOfPermTemp = leavers / permTemptCount;
   if (percentOfPermTemp > 9.95) {
     return { percentOfPermTemp: 0, stateMessage: 'check-data' };
   }
   return { percentOfPermTemp, stateMessage: '' };
 };
-const turnover = async (establishmentId) => {
+
+const turnover = async (establishmentId, benchmarkComparisonGroup) => {
   const { percentOfPermTemp, stateMessage } = await turnoverGetData(establishmentId);
   const json = {
     workplaceValue: {
       value: percentOfPermTemp,
-      hasValue: stateMessage.length === 0
+      hasValue: stateMessage.length === 0,
     },
-    comparisonGroup: {
-      value: 0,
-      hasValue: false
-    }
+    ...buildComparisonGroupMetrics('turnover', benchmarkComparisonGroup),
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
-const qualifications = async (establishmentId) => {
-  const noquals = await models.worker.specificJobsAndSocialCareQuals(establishmentId, models.services.careProvidingStaff);
-  const quals = await models.worker.specificJobsAndNoSocialCareQuals(establishmentId, models.services.careProvidingStaff);
+
+const qualifications = async (establishmentId, benchmarkComparisonGroup) => {
+  const noquals = await models.worker.specificJobsAndSocialCareQuals(
+    establishmentId,
+    models.services.careProvidingStaff,
+  );
+  const quals = await models.worker.specificJobsAndNoSocialCareQuals(
+    establishmentId,
+    models.services.careProvidingStaff,
+  );
   const denominator = noquals + quals;
   let percentOfHigherQuals = 0;
   let stateMessage = '';
   if (denominator > 0) {
-    let higherQualCount =  await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
-    percentOfHigherQuals = (higherQualCount / denominator);
+    let higherQualCount = await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
+    percentOfHigherQuals = higherQualCount / denominator;
   } else {
     stateMessage = 'no-workers';
   }
   const json = {
     workplaceValue: {
       value: percentOfHigherQuals,
-      hasValue: stateMessage.length === 0
+      hasValue: stateMessage.length === 0,
     },
-    comparisonGroup: {
-      value: 0,
-      hasValue: false
-    }
+    ...buildComparisonGroupMetrics('qualifications', benchmarkComparisonGroup),
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
-const sickness = async (establishmentId) => {
+
+const sickness = async (establishmentId, benchmarkComparisonGroup) => {
   const whereClause = { DaysSickValue: 'Yes', archived: false };
   const establishmentWorkers = await models.establishment.workers(establishmentId, whereClause, ['DaysSickDays']);
   let averageSickDays = 0;
   let stateMessage = '';
   if (establishmentWorkers) {
     let sickness = 0;
-    await Promise.all(establishmentWorkers.workers.map(async worker => {
-      sickness = sickness + Number(worker.DaysSickDays);
-      return sickness;
-    }));
+    await Promise.all(
+      establishmentWorkers.workers.map(async (worker) => {
+        sickness = sickness + Number(worker.DaysSickDays);
+        return sickness;
+      }),
+    );
     averageSickDays = Math.round(sickness / establishmentWorkers.workers.length);
   } else {
     stateMessage = 'no-workers';
@@ -163,20 +182,18 @@ const sickness = async (establishmentId) => {
   const json = {
     workplaceValue: {
       value: averageSickDays,
-      hasValue: stateMessage.length === 0
+      hasValue: stateMessage.length === 0,
     },
-    comparisonGroup: {
-      value: 0,
-      hasValue: false
-    }
+    ...buildComparisonGroupMetrics('sickness', benchmarkComparisonGroup),
   };
   if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
+
 module.exports = router;
 module.exports.pay = pay;
 module.exports.sickness = sickness;
 module.exports.qualifications = qualifications;
 module.exports.turnover = turnover;
-module.exports.comparisonGroupData = comparisonGroupData;
+module.exports.buildComparisonGroupMetrics = buildComparisonGroupMetrics;
 module.exports.getMetaData = getMetaData;

@@ -1,23 +1,23 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
-import { render, within } from '@testing-library/angular';
-import { By } from '@angular/platform-browser';
+import { WorkerService } from '@core/services/worker.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockUserService } from '@core/test-utils/MockUserService';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { HttpClient } from '@angular/common/http';
-import { Router, RouterModule } from '@angular/router';
-import { UserService } from '@core/services/user.service';
-import { MockUserService } from '@core/test-utils/MockUserService';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { StartComponent } from '../../workplace/start/start.component';
 import { WorkplaceRoutingModule } from '../../workplace/workplace-routing.module';
 import { WorkplaceModule } from '../../workplace/workplace.module';
-import { StartComponent } from '../../workplace/start/start.component';
-
 import { HomeTabComponent } from './home-tab.component';
 
 
@@ -36,6 +36,10 @@ describe('HomeTabComponent', () => {
         HomeTabComponent,
       ],
       providers: [
+        {
+          provide: WorkerService,
+          useClass: MockWorkerService
+        },
         {
           provide: WindowRef,
           useClass: WindowRef
@@ -73,14 +77,28 @@ describe('HomeTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should show flu jab when can add worker', async () => {
+    const { component } = await setup();
+    component.fixture.componentInstance.canEditEstablishment = true;
+    component.fixture.detectChanges()
+
+    expect(component.queryByTestId('flu-jab'));
+  });
+  it('should not show flu jab when cant add worker', async () => {
+    const { component } = await setup();
+    component.fixture.componentInstance.canEditEstablishment = false;
+    component.fixture.detectChanges()
+
+    expect(component.queryByTestId('flu-jab')).toBeNull();
+  });
   it('has Add Workplace Information', async () => {
     // Arrange
     const { component } = await setup();
 
     // Act
-    const link = component.getByTestId("add-workplace-info");
+    const link = component.getByTestId('add-workplace-info');
 
     // Assert
-    expect(link.innerHTML).toContain("Add workplace information");
+    expect(link.innerHTML).toContain('Add workplace information');
   });
 });

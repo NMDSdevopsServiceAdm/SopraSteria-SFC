@@ -1,23 +1,23 @@
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { BackService } from '@core/services/back.service';
-import { Component } from '@angular/core';
-import { CreateUsername } from '@features/account/create-username/create-username';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
 import { RegistrationService } from '@core/services/registration.service';
-import { Router } from '@angular/router';
+import { CreateUsernameDirective } from '@features/account/create-username/create-username';
 
 @Component({
   selector: 'app-create-username',
   templateUrl: './create-username.component.html',
 })
-export class CreateUsernameComponent extends CreateUsername {
+export class CreateUsernameComponent extends CreateUsernameDirective {
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, registrationService, router);
   }
@@ -43,7 +43,7 @@ export class CreateUsernameComponent extends CreateUsername {
         if (loginCredentials) {
           this.preFillForm(loginCredentials);
         }
-      })
+      }),
     );
   }
 

@@ -5,9 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServiceComponent,
-} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
@@ -46,14 +44,13 @@ import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.c
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
+import { HighchartsChartModule } from 'highcharts-angular';
 import { MomentModule } from 'ngx-moment';
 
-import { SentryErrorHandler} from './SentryErrorHandler.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import {
-  MigratedUserTermsConditionsComponent,
-} from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { SentryErrorHandler } from './SentryErrorHandler.component';
 
 @NgModule({
   declarations: [
@@ -86,6 +83,7 @@ import {
     CommonModule,
     HttpClientModule,
     MomentModule,
+    HighchartsChartModule,
     ReactiveFormsModule,
     SharedModule,
     RouterModule,
@@ -106,7 +104,7 @@ import {
     QualificationService,
     RecruitmentService,
     RegistrationService,
-    { provide: ErrorHandler, useClass: SentryErrorHandler},
+    { provide: ErrorHandler, useClass: SentryErrorHandler },
     TrainingService,
     WindowRef,
     WorkerService,

@@ -6,9 +6,9 @@ import { spy } from 'sinon';
 import { of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WindowRef } from '@core/services/window.ref';
-import { Observable } from 'rxjs/Observable';
 
 import { ParentRequestComponent } from './parent-request.component';
+import { HttpResponse } from '@angular/common/http';
 
 const testParentRequestId = 9999;
 const testParentRequestUuid = '360c62a1-2e20-410d-a72b-9d4100a11f4e';
@@ -50,7 +50,7 @@ describe('ParentRequestComponent', () => {
           uid: testEstablishmentUid
         },
       }
-    };
+    } as HttpResponse<any>;
     const getNewEstablishmentId = spyOn(component.fixture.componentInstance.switchWorkplaceService, 'getNewEstablishmentId').and.returnValue(of(swappedEstablishmentData));
     const workplace = { uid: testEstablishmentUid };
     parentRequest.username = testUsername;
@@ -217,11 +217,11 @@ describe('ParentRequestComponent', () => {
     const { component, modalConfirmationDialog } = await clickFirstApproveButton();
     const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
     spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.returnValue(of({}));
-    
+
     // Act
     within(modalConfirmationDialog).getByText(modalApproveText).click();
-    component.fixture.detectChanges(); 
-    
+    component.fixture.detectChanges();
+
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
       type: 'success',
@@ -234,11 +234,11 @@ describe('ParentRequestComponent', () => {
     const { component, modalConfirmationDialog } = await clickFirstRejectButton();
     const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
     spyOn(component.fixture.componentInstance.parentRequestsService, 'parentApproval').and.returnValue(of({}));
-    
+
     // Act
     within(modalConfirmationDialog).getByText(modalRejectText).click();
-    component.fixture.detectChanges(); 
-    
+    component.fixture.detectChanges();
+
     // Assert
     expect(addAlert).toHaveBeenCalledWith({
       type: 'success',
@@ -264,7 +264,7 @@ describe('ParentRequestComponent', () => {
   it('should clear permissions when switching to new workplace', async () => {
     const { component } = await setupForSwitchWorkplace();
     const clearPermissions = spyOn(component.fixture.componentInstance.switchWorkplaceService.permissionsService, 'clearPermissions').and.callThrough();
-    
+
     // Act
     component.getByText(testOrgname).click();
     component.fixture.detectChanges();
@@ -276,7 +276,7 @@ describe('ParentRequestComponent', () => {
   it('should change auth tokens when switching to new workplace', async () => {
     const { component, authToken } = await setupForSwitchWorkplace();
     const setPreviousToken = spyOn(component.fixture.componentInstance.switchWorkplaceService.authService, 'setPreviousToken').and.callThrough();
-    
+
     // Act
     component.getByText(testOrgname).click();
     component.fixture.detectChanges();
@@ -288,7 +288,7 @@ describe('ParentRequestComponent', () => {
 
   it('should swap establishments when switching to new workplace', async () => {
     const { component, getNewEstablishmentId } = await setupForSwitchWorkplace();
-    
+
     // Act
     component.getByText(testOrgname).click();
     component.fixture.detectChanges();

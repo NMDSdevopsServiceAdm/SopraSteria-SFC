@@ -1,5 +1,6 @@
+/*eslint @typescript-eslint/no-empty-function: ["error", { allow: ['methods'] }]*/
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EMAIL_PATTERN, PHONE_PATTERN } from '@core/constants/constants';
@@ -11,7 +12,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
+export abstract class AccountDetailsDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
@@ -31,7 +32,7 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
       name: 'email',
     },
     {
-      label: 'Contact phone number',
+      label: 'Phone number',
       name: 'phone',
     },
   ];
@@ -84,11 +85,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter full name.',
+            message: 'Enter full name',
           },
           {
             name: 'maxlength',
-            message: 'Full name must be no longer than 120 characters.',
+            message: 'Full name must be 120 characters or fewer',
           },
         ],
       },
@@ -97,11 +98,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter job title.',
+            message: 'Enter a job title',
           },
           {
             name: 'maxlength',
-            message: 'Job title must be no longer than 120 characters.',
+            message: 'Job title must be 120 characters or fewer',
           },
         ],
       },
@@ -110,15 +111,15 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter email address.',
+            message: 'Enter an email address',
           },
           {
             name: 'maxlength',
-            message: 'Email address must be no longer than 120 characters.',
+            message: 'Email address must be 120 characters or fewer',
           },
           {
             name: 'pattern',
-            message: 'Please enter a valid email address.',
+            message: 'Enter the email address in the correct format, like name@example.com',
           },
         ],
       },
@@ -127,11 +128,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter contact phone number.',
+            message: 'Enter a phone number',
           },
           {
             name: 'pattern',
-            message: 'Invalid contact phone number.',
+            message: 'Enter the phone number like 01632 960 001, 07700 900 982 or +44 0808 157 0192',
           },
         ],
       },
@@ -142,11 +143,11 @@ export class AccountDetails implements OnInit, OnDestroy, AfterViewInit {
     this.serverErrorsMap = [
       {
         name: 404,
-        message: 'User not found or does not belong to the given establishment.',
+        message: 'User not found or does not belong to the given establishment',
       },
       {
         name: 400,
-        message: 'Unable to create user.',
+        message: 'Unable to create user',
       },
     ];
   }

@@ -16,9 +16,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
-import {
-  UserAccountChangePrimaryDialogComponent,
-} from '../user-account-change-primary-dialog/user-account-change-primary-dialog.component';
+import { UserAccountChangePrimaryDialogComponent } from '../user-account-change-primary-dialog/user-account-change-primary-dialog.component';
 
 @Component({
   selector: 'app-user-account-edit-permissions',
@@ -53,7 +51,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private userService: UserService,
     private alertService: AlertService,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
   ) {
     this.user = this.route.snapshot.data.user;
     this.workplace = this.route.parent.snapshot.data.establishment;
@@ -64,7 +62,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
         this.workplace.uid === this.route.snapshot.data.primaryWorkplace.uid
           ? ['/dashboard']
           : ['/workplace', this.workplace.uid],
-      fragment: 'user-accounts',
+      fragment: 'users',
     };
   }
 
@@ -87,7 +85,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 400,
-        message: 'Cannot update user permissions as too many of that role already exist.',
+        message: `You cannot change this users permissions`,
       },
     ];
   }
@@ -97,7 +95,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
       workplaceUid: this.workplace.uid,
       currentUserUid: this.user.uid,
     });
-    dialog.afterClosed.subscribe(userFullname => {
+    dialog.afterClosed.subscribe((userFullname) => {
       if (userFullname) {
         const { role } = this.form.value;
         this.save(role, false, userFullname);
@@ -131,19 +129,19 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.userService.updateUserDetails(this.workplace.uid, this.user.uid, { ...this.user, ...props }).subscribe(
-        data => {
+        (data) => {
           this.router.navigate(['/workplace', this.workplace.uid, 'user', this.user.uid], {
-            fragment: 'user-accounts',
+            fragment: 'users',
           });
           if (data.isPrimary) {
             name = this.user.fullname;
           }
           if (name) {
-            this.alertService.addAlert({ type: 'success', message: `${name} is the new primary user` });
+            this.alertService.addAlert({ type: 'success', message: `${name} is the new primary user.` });
           }
         },
-        error => this.onError(error)
-      )
+        (error) => this.onError(error),
+      ),
     );
   }
 

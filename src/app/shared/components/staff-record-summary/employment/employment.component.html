@@ -1,9 +1,7 @@
 <h2 class="govuk-heading-m">Employment details</h2>
 <dl class="govuk-summary-list asc-summarylist-border-top govuk-!-margin-bottom-0">
   <div class="govuk-summary-list__row" *ngIf="displayYearArrived">
-    <dt class="govuk-summary-list__key">
-      Year arrived in the UK
-    </dt>
+    <dt class="govuk-summary-list__key">Year arrived in the UK</dt>
     <dd class="govuk-summary-list__value">
       {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
     </dd>
@@ -13,18 +11,14 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.yearArrived">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.yearArrived"> Change </ng-container>
         <span class="govuk-visually-hidden"> year arrived in UK</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Date started
-    </dt>
+    <dt class="govuk-summary-list__key">Date started</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.mainJobStartDate">
         {{ worker.mainJobStartDate ? mainStartDate : '-' }}
@@ -36,18 +30,14 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.mainJobStartDate">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.mainJobStartDate"> Change </ng-container>
         <span class="govuk-visually-hidden"> job start date</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row" *ngIf="displayMentalHealthProfessional">
-    <dt class="govuk-summary-list__key">
-      Approved Mental Health Professional
-    </dt>
+    <dt class="govuk-summary-list__key">Approved Mental Health Professional</dt>
     <dd class="govuk-summary-list__value">
       {{ worker.approvedMentalHealthWorker | closedEndedAnswer }}
     </dd>
@@ -57,25 +47,17 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.approvedMentalHealthWorker">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.approvedMentalHealthWorker"> Change </ng-container>
         <span class="govuk-visually-hidden"> approved mental health professional</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Other job roles
-    </dt>
+    <dt class="govuk-summary-list__key">Other job roles</dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="!worker.otherJobs">
-        -
-      </ng-container>
-      <ng-container *ngIf="worker.otherJobs?.value === 'No'">
-        No
-      </ng-container>
+      <ng-container *ngIf="!worker.otherJobs"> - </ng-container>
+      <ng-container *ngIf="worker.otherJobs?.value === 'No'"> No </ng-container>
       <ng-container *ngIf="worker.otherJobs?.value === 'Yes'">
         <ul class="govuk-list govuk-!-margin-bottom-0">
           <li *ngFor="let otherJob of worker.otherJobs.jobs">
@@ -95,20 +77,16 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.otherJobs">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.otherJobs"> Change </ng-container>
         <span class="govuk-visually-hidden"> other job roles</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
-    <dt class="govuk-summary-list__key">
-      Nursing and Midwifery Council Category
-    </dt>
+    <dt class="govuk-summary-list__key">Nursing and Midwifery Council Category</dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.registeredNurse || '-' }}
+      {{ (worker.registeredNurse | nursingCategoriesText) || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('nursing-category')" (click)="setReturn()">
@@ -116,39 +94,40 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.registeredNurse">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.registeredNurse"> Change </ng-container>
         <span class="govuk-visually-hidden"> nursing and midwifery council category</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
-    <dt class="govuk-summary-list__key">
-      Nurse specialism in current role
-    </dt>
+    <dt class="govuk-summary-list__key">Nurse specialisms in current role</dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.nurseSpecialism?.specialism | closedEndedAnswer }}
+      <ng-container *ngIf="!worker.nurseSpecialisms"> - </ng-container>
+      <ng-container *ngIf="worker.nurseSpecialisms?.value === 'No'"> Not using any of their specialisms </ng-container>
+      <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Don\'t know'"> Don't know </ng-container>
+      <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Yes'">
+        <ul class="govuk-list govuk-!-margin-bottom-0">
+          <li *ngFor="let specialism of worker.nurseSpecialisms.specialisms">
+            <span>{{ specialism.specialism | nursingSpecialismsText }}</span>
+          </li>
+        </ul>
+      </ng-container>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('nursing-specialism')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.registeredNurse">
+        <ng-container *ngIf="!worker.nurseSpecialisms">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.registeredNurse">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.nurseSpecialisms"> Change </ng-container>
         <span class="govuk-visually-hidden"> nursing and midwifery council category</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Recruited from
-    </dt>
+    <dt class="govuk-summary-list__key">Recruited from</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.recruitedFrom">
         {{
@@ -164,18 +143,14 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.recruitedFrom">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.recruitedFrom"> Change </ng-container>
         <span class="govuk-visually-hidden"> recruited from</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Worked in adult social care
-    </dt>
+    <dt class="govuk-summary-list__key">Worked in adult social care</dt>
     <dd class="govuk-summary-list__value">
       {{
         worker.socialCareStartDate?.year
@@ -189,18 +164,14 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.socialCareStartDate">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.socialCareStartDate"> Change </ng-container>
         <span class="govuk-visually-hidden"> adult social care date</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row" *ngIf="displayDaysSickness">
-    <dt class="govuk-summary-list__key">
-      Sickness in last 12 months
-    </dt>
+    <dt class="govuk-summary-list__key">Sickness in last 12 months</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.daysSick">
         {{ worker.daysSick | workerDays | openEndedAnswer }}
@@ -212,18 +183,14 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.daysSick">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.daysSick"> Change </ng-container>
         <span class="govuk-visually-hidden"> days of sickness</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Zero hours contract
-    </dt>
+    <dt class="govuk-summary-list__key">Zero hours contract</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.zeroHoursContract">
         {{ worker.zeroHoursContract || '-' | closedEndedAnswer }}
@@ -235,18 +202,14 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.zeroHoursContract">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.zeroHoursContract"> Change </ng-container>
         <span class="govuk-visually-hidden"> contract with zero hours</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row" *ngIf="displayAverageWeeklyHours">
-    <dt class="govuk-summary-list__key">
-      Average weekly working hours
-    </dt>
+    <dt class="govuk-summary-list__key">Average weekly working hours</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.weeklyHoursAverage">
         {{
@@ -262,18 +225,14 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.weeklyHoursAverage">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.weeklyHoursAverage"> Change </ng-container>
         <span class="govuk-visually-hidden"> average weekly working hours</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row" *ngIf="displayWeeklyContractedHours">
-    <dt class="govuk-summary-list__key">
-      Contracted weekly hours
-    </dt>
+    <dt class="govuk-summary-list__key">Contracted weekly hours</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.weeklyHoursContracted">
         {{
@@ -289,18 +248,14 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.weeklyHoursContracted">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.weeklyHoursContracted"> Change </ng-container>
         <span class="govuk-visually-hidden"> contracted weekly hours</span>
       </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Salary
-    </dt>
+    <dt class="govuk-summary-list__key">Salary</dt>
 
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.annualHourlyPay">
@@ -313,9 +268,7 @@
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="worker.annualHourlyPay">
-          Change
-        </ng-container>
+        <ng-container *ngIf="worker.annualHourlyPay"> Change </ng-container>
         <span class="govuk-visually-hidden"> salary</span>
       </a>
     </dd>

@@ -1,10 +1,8 @@
 const express = require('express');
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['LocalIdentifier'];
-const User = require('../../models/classes/user').User;
-const models = require('../../models');
 
 /*
     New endpoint `[GET]/[PUT] api/establishment/:eid/localIdentifier` - to retrieve and update the property "localIdentifier".
@@ -16,7 +14,8 @@ const models = require('../../models');
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
-  const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+  const showHistory =
+    req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
   const showHistoryTime = req.query.history === 'timeline' ? true : false;
   const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
 
@@ -24,7 +23,18 @@ router.route('/').get(async (req, res) => {
 
   try {
     if (await thisEstablishment.restore(establishmentId, showHistory)) {
-      return res.status(200).json(thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, filteredProperties));
+      return res
+        .status(200)
+        .json(
+          thisEstablishment.toJSON(
+            showHistory,
+            showPropertyHistoryOnly,
+            showHistoryTime,
+            false,
+            false,
+            filteredProperties,
+          ),
+        );
     } else {
       return res.status(404).send('Not Found');
     }
@@ -35,7 +45,8 @@ router.route('/').get(async (req, res) => {
       null,
       err,
       null,
-      `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
+      `Failed to retrieve Establishment with id/uid: ${establishmentId}`,
+    );
 
     console.error('establishment::localIdentifier GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
@@ -48,9 +59,8 @@ router.route('/').post(async (req, res) => {
 
   try {
     if (await thisEstablishment.restore(establishmentId)) {
-
       const isValidEstablishment = await thisEstablishment.load({
-        localIdentifier: req.body.localIdentifier
+        localIdentifier: req.body.localIdentifier,
       });
 
       if (isValidEstablishment) {
@@ -60,22 +70,24 @@ router.route('/').post(async (req, res) => {
       } else {
         return res.status(400).send('Unexpected Input.');
       }
-
     } else {
       return res.status(404).send('Not Found');
     }
   } catch (err) {
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error("Establishment::localidentifier POST: ", err.message);
+      console.error('Establishment::localidentifier POST: ', err.message);
       return res.status(400).send(err.safe);
-    } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException && err.message == 'Duplicate LocalIdentifier') {
-      console.error("Establishment::localidentifier POST: ", err.message);
+    } else if (
+      err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException &&
+      err.message == 'Duplicate LocalIdentifier'
+    ) {
+      console.error('Establishment::localidentifier POST: ', err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error("Establishment::localidentifier POST: ", err.message);
+      console.error('Establishment::localidentifier POST: ', err.message);
       return res.status(503).send(err.safe);
     } else {
-      console.error("Unexpected exception: ", err);
+      console.error('Unexpected exception: ', err);
       return res.status(503).send(err.safe);
     }
   }
@@ -84,7 +96,6 @@ router.route('/').post(async (req, res) => {
 // a workaround to allow updating all local identifiers for all given establishments in one transaction
 router.route('/').put(async (req, res) => {
   const establishmentId = req.establishmentId;
-  const isParent = req.isParent;
   const username = req.username;
 
   // validate input
@@ -109,17 +120,16 @@ router.route('/').put(async (req, res) => {
         updatedBy: req.username,
         localIdentifiers: updatedUids,
       });
-
     } else {
       return res.status(404).send('Not Found');
     }
   } catch (err) {
     if (err.name && err.name === 'SequelizeUniqueConstraintError') {
-      if(err.parent.constraint && ( err.parent.constraint === 'establishment_LocalIdentifier_unq')){
-          return res.status(400).send({duplicateValue: err.fields.LocalIdentifierValue});
+      if (err.parent.constraint && err.parent.constraint === 'establishment_LocalIdentifier_unq') {
+        return res.status(400).send({ duplicateValue: err.fields.LocalIdentifierValue });
       }
     }
-    console.error("Establishment::localidentifier PUT: ", err.message);
+    console.error('Establishment::localidentifier PUT: ', err.message);
     return res.status(503).send(err.message);
   }
 });

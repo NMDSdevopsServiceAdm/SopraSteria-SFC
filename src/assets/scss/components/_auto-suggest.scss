@@ -27,16 +27,16 @@
 .govuk-auto-suggest > ul::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
-  background-color: govuk-colour('grey-3');
+  background-color: govuk-colour('light-grey');
 }
 
 .govuk-auto-suggest > ul::-webkit-scrollbar {
   width: 9px;
-  background-color: govuk-colour('grey-2');
+  background-color: govuk-colour('mid-grey');
 }
 
 .govuk-auto-suggest > ul::-webkit-scrollbar-thumb {
   border-radius: 8px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: govuk-colour('grey-1');
+  background-color: govuk-colour('dark-grey');
 }

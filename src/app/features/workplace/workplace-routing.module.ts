@@ -5,28 +5,30 @@ import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
+import { MetricsContent } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
-import {
-  UserAccountEditDetailsComponent,
-} from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
+import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
+import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
+import { BenchmarksMetricComponent } from '@shared/components/benchmarks-tab/metric/metric.component';
 
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
-import {
-  DataSharingWithLocalAuthoritiesComponent,
-} from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
+import { DataSharingWithLocalAuthoritiesComponent } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
+import { FluJabComponent } from './flu-jab/flu-jab.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
@@ -37,17 +39,12 @@ import { ServicesCapacityComponent } from './services-capacity/services-capacity
 import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
-import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-import {
-  UserAccountEditPermissionsComponent,
-} from './user-account-edit-permissions/user-account-edit-permissions.component';
-import { VacanciesComponent } from './vacancies/vacancies.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
-import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
+import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
+import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewAllMandatoryTrainingComponent } from './view-all-mandatory-trainings/view-all-mandatory-training.component';
-import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
-import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
-
+import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const routes: Routes = [
   {
@@ -277,6 +274,15 @@ const routes: Routes = [
         },
       },
       {
+        path: 'flu-jab',
+        component: FluJabComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Flu Jab',
+        },
+      },
+      {
         path: 'success',
         component: SuccessComponent,
         canActivate: [RoleGuard],
@@ -295,12 +301,13 @@ const routes: Routes = [
         },
       },
       {
-        path: 'user/saved',
+        path: 'user/saved/:useruid',
         canActivate: [CheckPermissionsGuard],
         component: UserAccountSavedComponent,
+        resolve: { user: UserAccountResolver },
         data: {
           permissions: ['canAddUser'],
-          title: 'User Account Saved',
+          title: 'User has been added',
         },
       },
       {
@@ -336,7 +343,7 @@ const routes: Routes = [
       },
       {
         path: 'staff-record',
-        loadChildren: () => import('@features/workers/workers.module').then(m => m.WorkersModule),
+        loadChildren: () => import('@features/workers/workers.module').then((m) => m.WorkersModule),
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canViewWorker'],
@@ -345,12 +352,62 @@ const routes: Routes = [
       },
       {
         path: 'training-and-qualifications-record',
-        loadChildren: () => import('@features/workers/workers.module').then(m => m.WorkersModule),
+        loadChildren: () => import('@features/workers/workers.module').then((m) => m.WorkersModule),
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canViewWorker'],
           title: 'Training and qualifications record',
         },
+      },
+      {
+        path: 'benchmarks',
+        children: [
+          {
+            path: 'about-the-data',
+            component: BenchmarksAboutTheDataComponent,
+            canActivate: [CheckPermissionsGuard],
+            data: {
+              title: 'About the data',
+              permissions: ['canViewBenchmarks'],
+            },
+          },
+          {
+            path: 'pay',
+            component: BenchmarksMetricComponent,
+            canActivate: [CheckPermissionsGuard],
+            data: {
+              ...MetricsContent.Pay,
+              permissions: ['canViewBenchmarks'],
+            },
+          },
+          {
+            path: 'turnover',
+            component: BenchmarksMetricComponent,
+            canActivate: [CheckPermissionsGuard],
+            data: {
+              ...MetricsContent.Turnover,
+              permissions: ['canViewBenchmarks'],
+            },
+          },
+          {
+            path: 'qualifications',
+            component: BenchmarksMetricComponent,
+            canActivate: [CheckPermissionsGuard],
+            data: {
+              ...MetricsContent.Qualifications,
+              permissions: ['canViewBenchmarks'],
+            },
+          },
+          {
+            path: 'sickness',
+            component: BenchmarksMetricComponent,
+            canActivate: [CheckPermissionsGuard],
+            data: {
+              ...MetricsContent.Sickness,
+              permissions: ['canViewBenchmarks'],
+            },
+          },
+        ],
       },
     ],
   },

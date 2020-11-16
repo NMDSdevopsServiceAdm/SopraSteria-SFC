@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InsetTextComponent } from './inset-text.component';
+import { InsetTextComponent, Status } from './inset-text.component';
 
 describe('InsetTextComponent', () => {
   let component: InsetTextComponent;

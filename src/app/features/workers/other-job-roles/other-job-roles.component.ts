@@ -146,7 +146,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
     } else if (this.workerService.hasJobRole(this.worker, 27)) {
       this.next = this.getRoutePath('mental-health-professional');
     } else {
-      this.next = this.getRoutePath('national-insurance-number');
+      this.next = this.getRoutePath('flu-jab');
     }
   }
 

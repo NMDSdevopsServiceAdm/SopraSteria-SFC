@@ -1,9 +1,10 @@
-import { OnDestroy, OnInit } from '@angular/core';
+import { Directive, OnDestroy, OnInit } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { Subscription } from 'rxjs';
 
+@Directive()
 export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
   public flow: string;
   public locationAddress: LocationAddress;

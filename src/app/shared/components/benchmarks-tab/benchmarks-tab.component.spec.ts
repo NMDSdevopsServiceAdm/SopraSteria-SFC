@@ -3,10 +3,10 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchmarks-tab.component';
 
 import { Establishment } from '../../../../mockdata/establishment';
-
 
 describe('BenchmarksTabComponent', () => {
   let component: BenchmarksTabComponent;
@@ -16,7 +16,7 @@ describe('BenchmarksTabComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [],
-      providers: [{ provide: BenchmarksService, useClass: MockBenchmarksService }]
+      providers: [{ provide: BenchmarksService, useClass: MockBenchmarksService }],
     }).compileComponents();
   }));
 
@@ -30,43 +30,54 @@ describe('BenchmarksTabComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
   it('should be able to build with only part of the data', () => {
     const tileData = {
-      tiles:{
+      tiles: {
         pay: {
-          workplaceValue:
-            {
-              value: 10,
-              hasValue: false
-            },
-          comparisonGroup:
-            {
-              value: 0,
-              hasValue: false
-            }
+          workplaceValue: {
+            value: 10,
+            hasValue: false,
+          },
+          comparisonGroup: {
+            value: 0,
+            hasValue: false,
+          },
+          goodCqc: {
+            value: 0,
+            hasValue: false,
+          },
+          lowTurnover: {
+            value: 0,
+            hasValue: false,
+          },
         },
-    },
-      meta:{
+      },
+      meta: {
         workplaces: 10,
-        staff: 100
-      }
-  };
+        staff: 100,
+        updated: null,
+      },
+    };
     component.tilesData = tileData;
     fixture.detectChanges();
 
     expect(component).toBeTruthy();
   });
+
   it('should format Pay data correctly', () => {
-    const paydata = component.formatPay(512.345);
+    const paydata = FormatUtil.formatMoney(512.345);
     expect(paydata).toBe('£5.12');
   });
+
   it('should format percent data correctly', () => {
-    const percentData = component.formatPercent(0.357894767643573);
+    const percentData = FormatUtil.formatPercent(0.357894767643573);
     expect(percentData).toBe('36%');
   });
+
   it('should download a pdf', async () => {
     const event = new Event('click');
-    const pdfDownload= spyOn(component, 'downloadAsPDF').and.callThrough();
+    const pdfDownload = spyOn(component, 'downloadAsPDF').and.callThrough();
     const downloadPDF = await component.downloadAsPDF(event);
     expect(pdfDownload).toHaveBeenCalled();
     expect(downloadPDF.getNumberOfPages()).toEqual(2);

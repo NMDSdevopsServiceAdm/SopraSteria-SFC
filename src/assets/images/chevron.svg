@@ -1,5 +1,5 @@
 <svg width="10" height="18" xmlns="http://www.w3.org/2000/svg">
-  <g transform="translate(-1)" fill="#979797" fill-rule="nonzero">
+  <g transform="translate(-1)" fill="#b1b4b6" fill-rule="nonzero">
     <rect transform="rotate(45 6 5.5)" y="4" width="12" height="3" rx="1.5"/>
     <rect transform="rotate(-45 6 12.5)" y="11" width="12" height="3" rx="1.5"/>
   </g>

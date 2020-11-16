@@ -9,7 +9,6 @@
  * TO NOTE - Qualification is a simplified representation of User, Worker and Establishment; it does not have any managed properties or auditing.
  */
 const uuid = require('uuid');
-const moment = require('moment');
 
 // database models
 const models = require('../index');
@@ -195,7 +194,7 @@ class Qualification extends EntityValidator {
 
     if (!qualifications || !Array.isArray(qualifications)) {
       this._validations.push(
-        new ValidationMessage(ValidationMessage.ERROR, 100, 'Failed to get all training categories', ['Qualification'])
+        new ValidationMessage(ValidationMessage.ERROR, 100, 'Failed to get all training categories', ['Qualification']),
       );
 
       this._log(Qualification.LOG_ERROR, 'Failed to get all training categories');
@@ -214,13 +213,13 @@ class Qualification extends EntityValidator {
             ValidationMessage.ERROR,
             101,
             'qualification.id or qualification.title and qualification.level must exist',
-            ['Qualification']
-          )
+            ['Qualification'],
+          ),
         );
 
         this._log(
           Qualification.LOG_ERROR,
-          'qualification failed validation: qualification.id or qualification.title and qualification.level must exist'
+          'qualification failed validation: qualification.id or qualification.title and qualification.level must exist',
         );
         returnStatus = false;
       }
@@ -231,19 +230,19 @@ class Qualification extends EntityValidator {
             ValidationMessage.ERROR,
             102,
             `qualification.id (${document.qualification.id}) must be an integer`,
-            ['Qualification']
-          )
+            ['Qualification'],
+          ),
         );
         this._log(
           Qualification.LOG_ERROR,
-          `qualification failed validation: qualification.id (${document.qualification.id}) must be an integer`
+          `qualification failed validation: qualification.id (${document.qualification.id}) must be an integer`,
         );
         returnStatus = false;
       }
       let foundQualification = null;
       if (document.qualification.id) {
         foundQualification = qualifications.find(
-          thisQualification => thisQualification.id === document.qualification.id
+          (thisQualification) => thisQualification.id === document.qualification.id,
         );
       }
       if (!foundQualification) {
@@ -252,12 +251,12 @@ class Qualification extends EntityValidator {
             ValidationMessage.ERROR,
             104,
             `qualification.id(${document.qualification.id}) or qualification.title (${document.qualification.title}) and qualification.level (${document.qualification.level}) must exist`,
-            ['Qualification']
-          )
+            ['Qualification'],
+          ),
         );
         this._log(
           Qualification.LOG_ERROR,
-          `qualification failed validation: qualification.id(${document.qualification.id}) or qualification.title (${document.qualification.title}) and qualification.level (${document.qualification.level}) must exist`
+          `qualification failed validation: qualification.id(${document.qualification.id}) or qualification.title (${document.qualification.title}) and qualification.level (${document.qualification.level}) must exist`,
         );
         returnStatus = false;
       } else {
@@ -285,12 +284,12 @@ class Qualification extends EntityValidator {
             ValidationMessage.WARNING,
             110,
             `(${document.year}) must be an integer, must be <= this year (${CURRENT_YEAR}) and not more than ${MAX_AGE} years ago`,
-            ['Year']
-          )
+            ['Year'],
+          ),
         );
         this._log(
           Qualification.LOG_ERROR,
-          `year failed validation: year (${document.year}) must be an integer, must be <= this year (${CURRENT_YEAR}) and not more than ${MAX_AGE} years ago`
+          `year failed validation: year (${document.year}) must be an integer, must be <= this year (${CURRENT_YEAR}) and not more than ${MAX_AGE} years ago`,
         );
         returnStatus = false;
       }
@@ -308,9 +307,9 @@ class Qualification extends EntityValidator {
         this._validations.push(
           new ValidationMessage(ValidationMessage.WARNING, 120, `validation: MAX length (${MAX_LENGTH} characters)`, [
             'Notes',
-          ])
+          ]),
         );
-        this._log(Qualification.LOG_ERROR, 'notes failed validation: MAX length (${MAX_LENGTH} characters)');
+        this._log(Qualification.LOG_ERROR, `notes failed validation: MAX length (${MAX_LENGTH} characters)`);
         returnStatus = false;
       }
 
@@ -408,7 +407,7 @@ class Qualification extends EntityValidator {
 
           // need to create the Training record only
           //  in one transaction
-          await models.sequelize.transaction(async t => {
+          await models.sequelize.transaction(async (t) => {
             // the saving of an Training record can be initiated within
             //  an external transaction
             const thisTransaction = externalTransaction ? externalTransaction : t;
@@ -446,7 +445,7 @@ class Qualification extends EntityValidator {
         const updatedTimestamp = new Date();
 
         // need to update the existing Qualification record only within a single transaction
-        await models.sequelize.transaction(async t => {
+        await models.sequelize.transaction(async (t) => {
           // the saving of an Qualification record can be initiated within
           //  an external transaction
           const thisTransaction = externalTransaction ? externalTransaction : t;
@@ -512,7 +511,7 @@ class Qualification extends EntityValidator {
     if (!this._establishmentId || !this._workerUid) {
       this._log(
         Qualification.LOG_ERROR,
-        'Failed to restore Qualification record with unknown worker id and establishment id'
+        'Failed to restore Qualification record with unknown worker id and establishment id',
       );
       throw new Error('Failed to restore');
     }
@@ -578,7 +577,7 @@ class Qualification extends EntityValidator {
     if (this._workerUid === null || this._establishmentId === null) {
       this._log(
         Qualification.LOG_ERROR,
-        'Cannot delete a qualification record having unknown establishment uid or worker uid'
+        'Cannot delete a qualification record having unknown establishment uid or worker uid',
       );
       throw new Error('Failed to delete');
     }
@@ -658,7 +657,7 @@ class Qualification extends EntityValidator {
     });
 
     if (fetchResults) {
-      fetchResults.forEach(thisRecord => {
+      fetchResults.forEach((thisRecord) => {
         allQualificationRecords.push({
           uid: thisRecord.uid,
           qualification: {
@@ -744,7 +743,7 @@ class Qualification extends EntityValidator {
     const currentSetOfWorkerQuals = [];
 
     if (currentSetOfWorkerQualsResults && Array.isArray(currentSetOfWorkerQualsResults)) {
-      currentSetOfWorkerQualsResults.forEach(thisQual => {
+      currentSetOfWorkerQualsResults.forEach((thisQual) => {
         currentSetOfWorkerQuals.push(thisQual.qualificationFk);
       });
     }
@@ -762,7 +761,7 @@ class Qualification extends EntityValidator {
     });
 
     if (qualifications && Array.isArray(qualifications)) {
-      return qualifications.map(thisQual => {
+      return qualifications.map((thisQual) => {
         return {
           id: thisQual.id,
           title: thisQual.title,
@@ -775,19 +774,19 @@ class Qualification extends EntityValidator {
     }
   }
 
-/**
- * Function used to get all qualification counts for a worker id
- * @param {number} establishmentId
- * @param {object} workerRecords
- * @return {array} Modified worker records while adding qualifications count for each worker object
- */
-  static async getQualsCounts(establishmentId, workerRecords){
-    if(workerRecords.length !== 0){
-      for(let i = 0; i < workerRecords.length; i++){
+  /**
+   * Function used to get all qualification counts for a worker id
+   * @param {number} establishmentId
+   * @param {object} workerRecords
+   * @return {array} Modified worker records while adding qualifications count for each worker object
+   */
+  static async getQualsCounts(establishmentId, workerRecords) {
+    if (workerRecords.length !== 0) {
+      for (let i = 0; i < workerRecords.length; i++) {
         const allQualRecords = await Qualification.fetch(establishmentId, workerRecords[i].uid);
-        if(allQualRecords && allQualRecords.qualifications.length > 0){
+        if (allQualRecords && allQualRecords.qualifications.length > 0) {
           workerRecords[i].qualificationCount = allQualRecords.qualifications.length;
-        }else{
+        } else {
           workerRecords[i].qualificationCount = 0;
         }
       }

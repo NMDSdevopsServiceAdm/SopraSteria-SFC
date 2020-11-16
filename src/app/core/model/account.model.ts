@@ -9,6 +9,7 @@ export interface CreateAccountRequest {
 }
 
 export interface CreateAccountResponse {
+  uid: string;
   establishmentId: number;
   establishmentUid: string;
   message: string;

@@ -36,14 +36,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('date-of-birth');
-
-    if (this.workerService.hasJobRole(this.worker, 27)) {
-      this.previous = this.getRoutePath('mental-health-professional');
-    } else if (this.workerService.hasJobRole(this.worker, 23)) {
-      this.previous = this.getRoutePath('nursing-specialism');
-    } else {
-      this.previous = this.getRoutePath('other-job-roles');
-    }
+    this.previous = this.getRoutePath('flu-jab');
   }
 
   public setupFormErrorsMap(): void {

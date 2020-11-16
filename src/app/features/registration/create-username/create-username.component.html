@@ -12,18 +12,12 @@
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">User account</span>
-          <h1 class="govuk-fieldset__heading">
-            Create a username and password
-          </h1>
+          <h1 class="govuk-fieldset__heading">Create a username and password</h1>
         </legend>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUsername.errors">
-          <label class="govuk-label" for="username">
-            Username
-          </label>
-          <span id="username-hint" class="govuk-hint">
-            You will use this to sign in. It should be unique to you.
-          </span>
+          <label class="govuk-label" for="username"> Username </label>
+          <span id="username-hint" class="govuk-hint"> You will use this to sign in. It should be unique to you. </span>
           <span *ngIf="submitted && getUsername.errors" id="username-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFirstErrorMessage('username') }}
@@ -40,11 +34,9 @@
 
         <div [formGroupName]="'passwordGroup'">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPassword.errors">
-            <label class="govuk-label" for="createPasswordInput">
-              Password
-            </label>
+            <label class="govuk-label" for="createPasswordInput"> Password </label>
             <span id="createPasswordInput-hint" class="govuk-hint">
-              This must be at least 8 characters, contain one uppercase and one lowercase letter and a number.
+              Must be at least 8 characters long and have uppercase letters, lowercase letters and numbers.
             </span>
             <span
               *ngIf="submitted && getPassword.errors"
@@ -66,9 +58,7 @@
           </div>
 
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getConfirmPassword.errors">
-            <label class="govuk-label" for="confirmPasswordInput">
-              Confirm password
-            </label>
+            <label class="govuk-label" for="confirmPasswordInput"> Confirm password </label>
             <span
               *ngIf="submitted && getConfirmPassword.errors"
               id="passwordGroup-confirmPasswordInput-error"

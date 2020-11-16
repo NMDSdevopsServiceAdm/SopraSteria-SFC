@@ -8,15 +8,15 @@
 
     &::-webkit-progress-bar {
       background: transparent;
-      border: 2px solid govuk-colour("grey-1");
+      border: 2px solid govuk-colour("dark-grey");
     }
 
     /* IE10 */
-    color: $funGreen;
+    color: govuk-colour("green");
 
     &::-webkit-progress-value,
     &::-moz-progress-bar {
-      background: $funGreen;
+      background: govuk-colour("green");
     }
   }
 }
