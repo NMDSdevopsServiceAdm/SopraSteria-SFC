@@ -4,17 +4,19 @@ const models = require('../../../../models');
 const calculateRank = require('../../../../utils/benchmarksUtils').calculateRank;
 
 const pay = async function(establishmentId) {
-  const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
-  if (averageHourlyPay.amount === null) {
-    return {
-      hasValue: false,
-      stateMessage: 'no-pay'
-    }
-  }
-
   const comparisonGroupRankings = await models.benchmarksPay.getComparisonGroupRankings(establishmentId);
   if (comparisonGroupRankings.length === 0) {
     return {
+      hasValue: false,
+      stateMessage: 'no-comparison-data'
+    }
+  }
+  const maxRank = comparisonGroupRankings.length + 1;
+
+  const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
+  if (averageHourlyPay.amount === null) {
+    return {
+      maxRank,
       hasValue: false,
       stateMessage: 'no-data'
     }
@@ -23,7 +25,6 @@ const pay = async function(establishmentId) {
   const payAsInteger = parseInt(averageHourlyPay.amount * 100);
   const payRankings = comparisonGroupRankings.map(r => r.pay);
   const currentRank = calculateRank(payAsInteger, payRankings);
-  const maxRank = comparisonGroupRankings.length + 1;
 
   return {
     currentRank,

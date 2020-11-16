@@ -19,6 +19,12 @@
   </div>
 </div>
 
-<app-gauge [maxRank]="maxRank" [currentRank]="currentRank">
-  <ng-container your-rank>Your workplace is ranked {{ currentRank }} in your comparison group.</ng-container>
+<app-gauge #gauge>
+  <ng-container your-rank>
+    <app-ranking-content
+      [currentRank]="currentRank"
+      [stateMessage]="rankStateMessage"
+      [hasValue]="rankHasValue"
+    ></app-ranking-content>
+  </ng-container>
 </app-gauge>

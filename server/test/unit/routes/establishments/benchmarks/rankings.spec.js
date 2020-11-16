@@ -17,7 +17,7 @@ describe('rankings', () => {
 
       const result = await rankings.pay(establishmentId);
 
-      expect(result.stateMessage).to.equal('no-data');
+      expect(result.stateMessage).to.equal('no-comparison-data');
     })
 
     it('should be response with stateMessage no-pay when workplace has no pay data', async () => {
@@ -28,7 +28,7 @@ describe('rankings', () => {
 
       const result = await rankings.pay(establishmentId);
 
-      expect(result.stateMessage).to.equal('no-pay');
+      expect(result.stateMessage).to.equal('no-data');
     })
 
     it('should be response with hasValue true when pay and comparison group are available', async () => {

@@ -1,9 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Data } from '@angular/router';
 import { BenchmarksResponse, Metric, NoData, RankingsResponse, Tile } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { GaugeComponent } from '@shared/components/benchmark-metric/gauge/gauge.component';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 
@@ -23,8 +24,12 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   public numberOfStaff: number;
   public numberOfWorkplaces: number;
   public lastUpdated: Date;
+
   public currentRank: number;
-  public maxRank: number;
+  public rankStateMessage: string;
+  public rankHasValue: boolean;
+
+  @ViewChild('gauge') gauge: GaugeComponent;
 
   constructor(
     private benchmarksService: BenchmarksService,
@@ -74,8 +79,10 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   };
 
   handleRankingsResponse = (rankings: RankingsResponse): void => {
+    this.gauge.load(rankings.maxRank, rankings.currentRank);
     this.currentRank = rankings.currentRank;
-    this.maxRank = rankings.maxRank;
+    this.rankStateMessage = rankings.stateMessage;
+    this.rankHasValue = rankings.hasValue;
   };
 
   ngOnDestroy(): void {
