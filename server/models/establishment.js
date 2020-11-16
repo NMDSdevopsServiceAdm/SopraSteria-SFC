@@ -963,16 +963,17 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
   Establishment.deleteReportData = async function () {
-    const updateDate = moment.subtract(6, 'months');
+    console.log('deleteReportData');
 
+    const updateDate = moment.subtract(6, 'months');
+    console.log('updateDATE ' + updateDate);
     return await this.findAll({
       attributes: [
-        'id',
         'uid',
         'NameValue',
         'nmdsId',
         'isRegulated',
-        'isParent',
+        [sequelize.literal("CASE WHEN \"IsParent\" = true THEN 'Yes' ELSE 'No' END"), 'IsParent'],
         'address1',
         'address2',
         'town',
@@ -983,24 +984,20 @@ module.exports = function (sequelize, DataTypes) {
         'updated',
         'EmployerTypeValue',
         'EmployerTypeOther',
+        'MainServiceFKValue',
       ],
       where: {
         updated: {
           [sequelize.Op.lt]: updateDate,
         },
       },
-      order: [['NameValue', 'ASC']],
-      include: [
-        {
-          model: sequelize.models.worker,
-          attributes: ['establishmentFK', 'updated'],
-          where: {
-            updated: {
-              [sequelize.Op.lt]: updateDate,
-            },
-          },
-        },
-      ],
+      // order: [['NameValue', 'ASC']],
+      // include: [
+      //   {
+      //     model: sequelize.models.worker,
+      //     attributes: [sequelize.fn('MAX', sequelize.col('updated'))],
+      //   },
+      // ],
     });
   };
 
