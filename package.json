@@ -23,8 +23,7 @@
     "db:migration:generate": "sequelize migration:generate",
     "db:migrate": "sequelize db:migrate",
     "db:migrate:undo": "sequelize db:migrate:undo",
-    "cf:migrate": "node ./bin/cf-migrate.js",
-    "postinstall": "ngcc"
+    "cf:migrate": "node ./bin/cf-migrate.js"
   },
   "private": true,
   "dependencies": {
