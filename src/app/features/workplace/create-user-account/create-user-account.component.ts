@@ -61,7 +61,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
       type: [
         {
           name: 'required',
-          message: 'Please specify permissions for the new account.',
+          message: 'Select a permission',
         },
       ],
     });

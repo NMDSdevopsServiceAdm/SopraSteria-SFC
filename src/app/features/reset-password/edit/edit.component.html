@@ -11,18 +11,14 @@
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">
-            Reset password
-          </h1>
+          <h1 class="govuk-fieldset__heading">Reset password</h1>
         </legend>
 
         <div [formGroupName]="'passwordGroup'">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPasswordInput.errors">
-            <label class="govuk-label" for="createPasswordInput">
-              Password
-            </label>
+            <label class="govuk-label" for="createPasswordInput"> Password </label>
             <span id="createPasswordInput-hint" class="govuk-hint">
-              This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
+              Must be at least 8 characters long and have uppercase letters, lowercase letters and numbers.
             </span>
             <span *ngIf="submitted" id="createPasswordInput-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
@@ -48,9 +44,7 @@
             class="govuk-form-group govuk-!-margin-bottom-8"
             [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors"
           >
-            <label class="govuk-label" for="confirmPasswordInput">
-              Confirm password
-            </label>
+            <label class="govuk-label" for="confirmPasswordInput"> Confirm password </label>
             <span *ngIf="submitted" id="confirmPasswordInput-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
               <span
@@ -72,9 +66,7 @@
         </div>
       </fieldset>
 
-      <button type="submit" class="govuk-button">
-        Save new password
-      </button>
+      <button type="submit" class="govuk-button">Save new password</button>
     </form>
 
     <div class="govuk-grid-row">

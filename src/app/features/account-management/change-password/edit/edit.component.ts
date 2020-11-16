@@ -41,7 +41,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
     private fb: FormBuilder,
     private userService: UserService,
     private passwordResetService: PasswordResetService,
-    private errorSummaryService: ErrorSummaryService
+    private errorSummaryService: ErrorSummaryService,
   ) {}
 
   // Get old password
@@ -70,7 +70,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
           ],
           confirmPasswordInput: ['', [Validators.required]],
         },
-        { validator: CustomValidators.matchInputValues }
+        { validator: CustomValidators.matchInputValues },
       ),
     });
 
@@ -90,7 +90,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
         type: [
           {
             name: 'required',
-            message: 'Please enter your old password.',
+            message: 'Enter the old password',
           },
         ],
       },
@@ -99,11 +99,12 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
         type: [
           {
             name: 'required',
-            message: 'Please enter your new password.',
+            message: 'Enter a new password',
           },
           {
             name: 'pattern',
-            message: 'Invalid password.',
+            message:
+              'New password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
           },
         ],
       },
@@ -112,11 +113,11 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
         type: [
           {
             name: 'required',
-            message: 'Please enter and confirm your new password.',
+            message: 'Enter the new password again',
           },
           {
             name: 'notMatched',
-            message: 'Confirm password does not match.',
+            message: 'Confirmation password does not match the new password you entered',
           },
         ],
       },
@@ -137,14 +138,14 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private resetPassword(data: object): void {
+  private resetPassword(data): void {
     this.subscriptions.add(
       this.passwordResetService.changePassword(data).subscribe(
         () => this.resetPasswordEvent.emit(),
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
-      )
+        },
+      ),
     );
   }
 

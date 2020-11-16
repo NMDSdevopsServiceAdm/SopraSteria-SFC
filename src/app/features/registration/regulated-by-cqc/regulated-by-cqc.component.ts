@@ -6,13 +6,13 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { RegulatedByCQC } from '@features/workplace-find-and-select/regulated-by-cqc/regulated-by-cqc';
+import { RegulatedByCQCDirective } from '@features/workplace-find-and-select/regulated-by-cqc/regulated-by-cqc';
 
 @Component({
   selector: 'app-regulated-by-cqc',
   templateUrl: './regulated-by-cqc.component.html',
 })
-export class RegulatedByCqcComponent extends RegulatedByCQC implements AfterViewInit {
+export class RegulatedByCqcComponent extends RegulatedByCQCDirective implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   constructor(
     private registrationService: RegistrationService,
@@ -21,7 +21,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC implements AfterView
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
     protected route: ActivatedRoute,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, locationService, route, router);
   }
