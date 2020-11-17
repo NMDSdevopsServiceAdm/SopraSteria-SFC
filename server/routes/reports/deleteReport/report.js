@@ -9,7 +9,6 @@ const headers = [
   'Address',
   'Postcode',
   'NMDS ID',
-  'Telephone',
   'Establishment ID',
   'Region',
   'LA area',
@@ -20,8 +19,37 @@ const headers = [
   'Due to be deleted date',
 ];
 
+const formatAddress = (address1, address2, address3, town, county) => {
+  // returns concatenated address
+  return [address1, address2, address3, town, county]
+    .reduce((arr, part) => {
+      if (part) {
+        arr.push(part);
+      }
+      return arr;
+    }, [])
+    .join(', ');
+};
+
 const generateDeleteReport = async (req, res) => {
-  console.log('generateDeleteReport');
+  const formatData = async (rawData) => {
+    const updateDate = moment().subtract(1, 'months');
+    return rawData.filter((establishment) => {
+      if (moment(establishment.updated).isSameOrAfter(updateDate)) {
+        console.log(establishment.updated + ' is deleted as its earlier than ' + updateDate);
+      }
+      let workers;
+      if (establishment.workers.length === 0) {
+        workers = true;
+      } else {
+        workers = moment(establishment.workers[0].updated).isSameOrAfter(updateDate);
+      }
+      return moment(establishment.updated).isSameOrAfter(updateDate) || workers;
+    });
+  };
+  const formatBool = (input) => {
+    return input ? 'yes' : 'no';
+  };
   const createBlueHeader = () => {
     const headerFont = {
       name: 'Arial',
@@ -69,19 +97,42 @@ const generateDeleteReport = async (req, res) => {
     }
   };
 
-  const fillData = () => {
+  const fillData = async () => {
     let row = 9;
     let rowStyle = '';
+    if (!reportData || reportData.length === 0) {
+      return;
+    }
+
     reportData.forEach((establishment) => {
+      if (establishment.Parent) {
+        console.log(establishment);
+        return;
+      }
+      const parentName = establishment.Parent ? establishment.Parent.name : '';
+      const cssr = models.cssr.getfromPostcode(establishment.postcode);
+      const address = formatAddress(
+        establishment.address,
+        establishment.address2,
+        establishment.address3,
+        establishment.town,
+        establishment.county,
+      );
       WS1.addRow(
         [
           '',
-          establishment.nameOrId,
-          establishment.address,
+          establishment.NameValue,
+          address,
           establishment.postcode,
-          establishment.nmdsid,
-          '',
-          establishment.establishmentId,
+          establishment.nmdsId,
+          establishment.id,
+          cssr.region || '',
+          cssr.localAuthority || '',
+          establishment.mainService.name,
+          establishment.EmployerTypeValue,
+          formatBool(establishment.isRegulated),
+          parentName,
+          moment(establishment.updated).add(1, 'months').format('DD-MM-YYYY'),
         ],
         rowStyle,
       );
@@ -89,20 +140,18 @@ const generateDeleteReport = async (req, res) => {
         // format the first Row, after that exeljs can copy it
         let currentColumn = 'B';
         for (var i = 0; i < 13; i++) {
-          const currentCell = WS1.getCell(currentColumn + '8');
+          const currentCell = WS1.getCell(currentColumn + '9');
           currentCell.border = fullBorder;
           currentCell.alignment = { vertical: 'top', horizontal: 'center' };
           currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1);
         }
-        rowStyle = 'i';
+        rowStyle = 'i+';
       }
     });
   };
+  const rawData = await models.establishment.generateDeleteReportData();
+  const reportData = await formatData(rawData);
 
-  const reportData = await models.establishment.deleteReportData;
-  console.log('REPORTDATA');
-
-  console.log(JSON.stringify(reportData));
   // const options = {
   //   filename: './streamed-workbook.xlsx',
   //   useStyles: true,
