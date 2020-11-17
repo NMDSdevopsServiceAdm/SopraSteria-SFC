@@ -1,5 +1,4 @@
 /* jshint indent: 2 */
-const moment = require('moment');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -962,42 +961,45 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
-  Establishment.deleteReportData = async function () {
-    console.log('deleteReportData');
-
-    const updateDate = moment.subtract(6, 'months');
-    console.log('updateDATE ' + updateDate);
+  Establishment.generateDeleteReportData = async function () {
     return await this.findAll({
       attributes: [
         'uid',
+        'id',
         'NameValue',
         'nmdsId',
         'isRegulated',
-        [sequelize.literal("CASE WHEN \"IsParent\" = true THEN 'Yes' ELSE 'No' END"), 'IsParent'],
         'address1',
         'address2',
+        'address3',
         'town',
         'county',
         'postcode',
         'locationId',
-        'dataOwner',
         'updated',
         'EmployerTypeValue',
         'EmployerTypeOther',
-        'MainServiceFKValue',
       ],
-      where: {
-        updated: {
-          [sequelize.Op.lt]: updateDate,
+      order: [['NameValue', 'ASC']],
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['id', 'uid'],
+          order: [['updated', 'DESC']],
         },
-      },
-      // order: [['NameValue', 'ASC']],
-      // include: [
-      //   {
-      //     model: sequelize.models.worker,
-      //     attributes: [sequelize.fn('MAX', sequelize.col('updated'))],
-      //   },
-      // ],
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name'],
+        },
+        {
+          model: sequelize.models.establishment,
+          as: 'Parent',
+          attributes: [['NameValue', 'parentName']],
+          required: false,
+        },
+      ],
     });
   };
 
