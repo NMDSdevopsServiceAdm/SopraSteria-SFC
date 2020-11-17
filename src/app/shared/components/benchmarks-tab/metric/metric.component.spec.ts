@@ -27,7 +27,18 @@ const noPayTileData = {
   lowTurnover: { value: null, hasValue: false },
 };
 
-const getBenchmarksMetricComponent = async (componentProperties = {}) => {
+const payRankingData = {
+  currentRank: 2,
+  maxRank: 3,
+  hasValue: true,
+};
+
+const noPayRankingData = {
+  hasValue: false,
+  stateMessage: 'no-data',
+};
+
+const getBenchmarksMetricComponent = async () => {
   return render(BenchmarksMetricComponent, {
     imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BenchmarksModule],
     providers: [
@@ -48,11 +59,10 @@ const getBenchmarksMetricComponent = async (componentProperties = {}) => {
         },
       },
     ],
-    componentProperties,
   });
 };
 
-const setup = (pay) => {
+const setup = (payTile, payRanking) => {
   const establishmentUid = TestBed.inject(EstablishmentService).establishment.uid;
   const metric = 'pay';
 
@@ -61,9 +71,12 @@ const setup = (pay) => {
   const req = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/?tiles=${metric}`);
   req.flush({
     tiles: {
-      pay,
+      pay: payTile,
     },
   });
+
+  const req2 = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/rankings/${metric}`);
+  req2.flush(payRanking);
 };
 
 describe('BenchmarksMetricComponent', () => {
@@ -73,15 +86,13 @@ describe('BenchmarksMetricComponent', () => {
   });
 
   it('should create a barchart with workplace benchmarks data', async () => {
-    const { fixture, getByText } = await getBenchmarksMetricComponent({
-      benchmarks: payTileData,
-    });
+    const { fixture, getByText } = await getBenchmarksMetricComponent();
 
-    setup(payTileData);
+    setup(payTileData, noPayRankingData);
 
     fixture.detectChanges();
 
-    const yourWorkplace = getByText('£10.00');
+    const yourWorkplace = getByText('£12.00');
     const comparisonGroup = getByText('£11.00');
     const goodCqc = getByText('£12.00');
     const lowTurnover = getByText('£9.00');
@@ -93,11 +104,9 @@ describe('BenchmarksMetricComponent', () => {
   });
 
   it('should create a barchart messages when no benchmarks data available', async () => {
-    const { fixture, getByText } = await getBenchmarksMetricComponent({
-      benchmarks: noPayTileData,
-    });
+    const { fixture, getByText } = await getBenchmarksMetricComponent();
 
-    setup(noPayTileData);
+    setup(noPayTileData, noPayRankingData);
 
     fixture.detectChanges();
     await fixture.whenStable();
@@ -108,4 +117,21 @@ describe('BenchmarksMetricComponent', () => {
     expect(noYourWorkplaceDataMessage).toBeTruthy();
     expect(noComparisonGroupsDataMessage).toBeTruthy();
   });
+
+  /*it('should create a gauge with workplace rankings data', async () => {
+    const { fixture, getByText } = await getBenchmarksMetricComponent();
+
+    setup(noPayTileData, payRankingData);
+
+    fixture.detectChanges();
+
+    fixture.whenStable()
+    //const lowestRank = getByText('3Lowest ranking');
+    //const highestRank = getByText('Highest ranking 1');
+    const currentRank = getByText('Highest ranking 1');
+
+    //expect(lowestRank).toBeTruthy();
+    //expect(highestRank).toBeTruthy();
+    expect(currentRank).toBeTruthy();
+  });*/
 });

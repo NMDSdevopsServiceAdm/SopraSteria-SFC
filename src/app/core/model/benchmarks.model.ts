@@ -28,6 +28,13 @@ export interface BenchmarkValue {
   hasValue: boolean;
 }
 
+export interface RankingsResponse {
+  currentRank: number;
+  maxRank: number;
+  hasValue: boolean;
+  stateMessage?: string;
+}
+
 export enum Metric {
   'pay',
   'turnover',
