@@ -1,16 +1,15 @@
-module.exports.calculateRank = function(score, otherScores) {
+module.exports.calculateRank = function (score, otherScores) {
   if (!score) {
     return null;
   }
-  let rank = 1;
-  if (otherScores) {
-    otherScores = otherScores.sort((a, b) => b - a);
-    for (let i = 0; i < otherScores.length; i++) {
-      if (score >= otherScores[i]) {
-        break;
-      }
-      rank++;
-    }
+  if (!otherScores) {
+    return 1;
   }
-  return rank;
-}
+
+  otherScores.sort((a, b) => b - a);
+  let i = 0;
+  while (score < otherScores[i] && i < otherScores.length) {
+    i++;
+  }
+  return i + 1;
+};
