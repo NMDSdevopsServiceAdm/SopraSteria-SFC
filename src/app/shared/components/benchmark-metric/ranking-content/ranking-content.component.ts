@@ -3,7 +3,6 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-ranking-content',
   templateUrl: './ranking-content.component.html',
-  styleUrls: ['./ranking-content.component.scss'],
 })
 export class RankingContentComponent {
   @Input() set hasValue(value: boolean) {
