@@ -97,7 +97,7 @@ const pay = async (establishmentId, benchmarkComparisonGroup) => {
 };
 
 const turnoverGetData = async (establishmentId) => {
-  const establishment = await models.establishment.turnOverData(establishmentId);
+  const establishment = await models.establishment.turnoverData(establishmentId);
   const workerCount = await models.worker.countForEstablishment(establishmentId);
   if (!establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue) {
     return { percentOfPermTemp: 0, stateMessage: 'no-workers' };

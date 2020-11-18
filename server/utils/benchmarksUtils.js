@@ -1,4 +1,16 @@
-module.exports.calculateRank = function (score, otherScores) {
+module.exports.calculateRankDesc = function (score, otherScores) {
+  const sort = (scores) => scores.sort((a, b) => b - a);
+  const compare = (a, b) => a < b;
+  return calculateRank(score, otherScores, sort, compare);
+};
+
+module.exports.calculateRankAsc = function (score, otherScores) {
+  const sort = (scores) => scores.sort((a, b) => a - b);
+  const compare = (a, b) => a > b;
+  return calculateRank(score, otherScores, sort, compare);
+};
+
+function calculateRank(score, otherScores, sort, compare) {
   if (!score) {
     return null;
   }
@@ -6,10 +18,10 @@ module.exports.calculateRank = function (score, otherScores) {
     return 1;
   }
 
-  otherScores.sort((a, b) => b - a);
+  sort(otherScores);
   let i = 0;
-  while (score < otherScores[i] && i < otherScores.length) {
+  while (compare(score, otherScores[i]) && i < otherScores.length) {
     i++;
   }
   return i + 1;
-};
+}

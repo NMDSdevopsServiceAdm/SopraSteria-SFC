@@ -764,7 +764,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.turnOverData = function (establishmentId) {
+  Establishment.turnoverData = function (establishmentId) {
     return this.findByPk(establishmentId, {
       attributes: ['id', 'NumberOfStaffValue', 'LeaversValue'],
     });
