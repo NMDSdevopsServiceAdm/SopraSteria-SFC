@@ -19,7 +19,7 @@ const pay = async function (establishmentId) {
     return {
       maxRank,
       hasValue: false,
-      stateMessage: 'no-data',
+      stateMessage: 'no-pay-data',
     };
   }
 
@@ -44,8 +44,9 @@ const turnover = async function (establishmentId) {
   }
 
   const maxRank = comparisonGroupRankings.length + 1;
+  const establishment = await models.establishment.turnoverData(establishmentId);
 
-  const noWorkersOrLeavers = await workplaceHasNoWorkersOrLeaves(establishmentId, maxRank);
+  const noWorkersOrLeavers = await workplaceHasNoWorkersOrLeaves(establishment, establishmentId, maxRank);
   if (noWorkersOrLeavers) {
     return noWorkersOrLeavers;
   }
@@ -59,13 +60,23 @@ const turnover = async function (establishmentId) {
     };
   }
 
+  if (establishment.LeaversValue === 'None') {
+    return {
+      currentRank: 1,
+      maxRank,
+      hasValue: true,
+      stateMessage: '',
+    };
+  }
+
   const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
+
   const percentOfPermTemp = leavers / permTemptCount;
   if (percentOfPermTemp > 9.95) {
     return {
       maxRank,
       hasValue: false,
-      stateMessage: 'check-data',
+      stateMessage: 'incorrect-turnover',
     };
   }
 
@@ -79,24 +90,23 @@ const turnover = async function (establishmentId) {
   };
 };
 
-const workplaceHasNoWorkersOrLeaves = async function (establishmentId, maxRank) {
-  const establishment = await models.establishment.turnoverData(establishmentId);
+const workplaceHasNoWorkersOrLeaves = async function (establishment, establishmentId, maxRank) {
   const workerCount = await models.worker.countForEstablishment(establishmentId);
   if (!establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue) {
     return {
       maxRank,
       hasValue: false,
-      stateMessage: 'no-workers',
+      stateMessage: 'mismatch-workers',
     };
   }
 
-  //if (establishment.LeaversValue === "Don't know" || !establishment.LeaversValue) {
+  if (establishment.LeaversValue === "Don't know" || !establishment.LeaversValue) {
     return {
       maxRank,
       hasValue: false,
       stateMessage: 'no-leavers',
     };
-  //}
+  }
 
   return false;
 };

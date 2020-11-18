@@ -82,7 +82,7 @@ const pay = async (establishmentId, benchmarkComparisonGroup) => {
   if (averageHourlyPay.amount !== null) {
     value = parseInt(averageHourlyPay.amount * 100);
   } else {
-    stateMessage = 'no-workers';
+    stateMessage = 'no-pay-data';
   }
 
   const json = {
@@ -100,25 +100,25 @@ const turnoverGetData = async (establishmentId) => {
   const establishment = await models.establishment.turnoverData(establishmentId);
   const workerCount = await models.worker.countForEstablishment(establishmentId);
   if (!establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue) {
-    return { percentOfPermTemp: 0, stateMessage: 'no-workers' };
+    return { percentOfPermTemp: 0, stateMessage: 'mismatch-workers' };
   }
 
   if (establishment.LeaversValue === "Don't know" || !establishment.LeaversValue) {
-    return { percentOfPermTemp: 0, stateMessage: 'no-data' };
+    return { percentOfPermTemp: 0, stateMessage: 'no-leavers' };
   }
 
   const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
   const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
 
   if (permTemptCount === 0) {
-    return { percentOfPermTemp: 0, stateMessage: 'no-permTemp' };
+    return { percentOfPermTemp: 0, stateMessage: 'no-perm-or-temp' };
   }
   if (establishment.LeaversValue === 'None') {
     return { percentOfPermTemp: 0, stateMessage: '' };
   }
   const percentOfPermTemp = leavers / permTemptCount;
   if (percentOfPermTemp > 9.95) {
-    return { percentOfPermTemp: 0, stateMessage: 'check-data' };
+    return { percentOfPermTemp: 0, stateMessage: 'incorrect-turnover' };
   }
   return { percentOfPermTemp, stateMessage: '' };
 };
@@ -152,7 +152,7 @@ const qualifications = async (establishmentId, benchmarkComparisonGroup) => {
     let higherQualCount = await models.worker.benchmarkQualsCount(establishmentId, models.services.careProvidingStaff);
     percentOfHigherQuals = higherQualCount / denominator;
   } else {
-    stateMessage = 'no-workers';
+    stateMessage = 'no-qualifications-data';
   }
   const json = {
     workplaceValue: {
@@ -180,7 +180,7 @@ const sickness = async (establishmentId, benchmarkComparisonGroup) => {
     );
     averageSickDays = Math.round(sickness / establishmentWorkers.workers.length);
   } else {
-    stateMessage = 'no-workers';
+    stateMessage = 'no-sickness-data';
   }
   const json = {
     workplaceValue: {

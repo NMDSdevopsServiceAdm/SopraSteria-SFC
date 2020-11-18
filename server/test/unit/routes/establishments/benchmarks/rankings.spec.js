@@ -28,7 +28,7 @@ describe('rankings', () => {
 
       const result = await rankings.pay(establishmentId);
 
-      expect(result.stateMessage).to.equal('no-data');
+      expect(result.stateMessage).to.equal('no-pay-data');
     });
 
     it('should be response with hasValue true when pay and comparison group are available', async () => {
@@ -86,7 +86,7 @@ describe('rankings', () => {
 
       const result = await rankings.turnover(establishmentId);
 
-      expect(result.stateMessage).to.equal('no-workers');
+      expect(result.stateMessage).to.equal('mismatch-workers');
     });
 
     it('should be response with stateMessage no-workers when staff count does not match workplace', async () => {
@@ -99,7 +99,7 @@ describe('rankings', () => {
 
       const result = await rankings.turnover(establishmentId);
 
-      expect(result.stateMessage).to.equal('no-workers');
+      expect(result.stateMessage).to.equal('mismatch-workers');
     });
 
     it('should be response with stateMessage no-leavers when workplace has no leavers', async () => {
@@ -141,7 +141,7 @@ describe('rankings', () => {
 
       const result = await rankings.turnover(establishmentId);
 
-      expect(result.stateMessage).to.equal('check-data');
+      expect(result.stateMessage).to.equal('incorrect-turnover');
     });
 
     it('should be response with hasValue true when turnover and comparison group are available', async () => {
@@ -187,6 +187,21 @@ describe('rankings', () => {
       const result = await rankings.turnover(establishmentId);
 
       expect(result.currentRank).to.equal(2);
+    });
+
+    it('should be response with currentRank 1 when leavers value is 0', async () => {
+      sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2, LeaversValue: 'None' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(2);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(2);
+      sinon.stub(models.establishmentJobs, 'leaversForEstablishment').returns(1);
+      sinon.stub(models.benchmarksTurnover, 'getComparisonGroupRankings').returns([
+        { CssrID: 123, MainServiceFK: 1, turnover: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, turnover: 0.6, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.turnover(establishmentId);
+
+      expect(result.currentRank).to.equal(1);
     });
   });
 });
