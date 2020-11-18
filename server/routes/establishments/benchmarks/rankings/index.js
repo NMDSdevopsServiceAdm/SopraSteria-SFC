@@ -90,13 +90,13 @@ const workplaceHasNoWorkersOrLeaves = async function (establishmentId, maxRank) 
     };
   }
 
-  if (establishment.LeaversValue === "Don't know" || !establishment.LeaversValue) {
+  //if (establishment.LeaversValue === "Don't know" || !establishment.LeaversValue) {
     return {
       maxRank,
       hasValue: false,
       stateMessage: 'no-leavers',
     };
-  }
+  //}
 
   return false;
 };

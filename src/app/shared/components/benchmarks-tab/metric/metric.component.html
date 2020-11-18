@@ -21,18 +21,11 @@
 
 <app-gauge #gauge>
   <ng-container your-rank>
-    <ng-container *ngIf="showRank; else noRank">
-      <p class="govuk-!-font-size-27">Your workplace is ranked {{ rank }} in your comparison group.</p>
-    </ng-container>
-    <ng-template #noRank>
-      <p class="govuk-!-font-size-27">
-        {{ cannotShowRankMessage }}
-      </p>
-    </ng-template>
-    <!-- <app-ranking-content
+    <app-ranking-content
       [currentRank]="currentRank"
       [stateMessage]="rankStateMessage"
       [hasValue]="rankHasValue"
-    ></app-ranking-content> -->
+      [noData]="noData"
+    ></app-ranking-content>
   </ng-container>
 </app-gauge>

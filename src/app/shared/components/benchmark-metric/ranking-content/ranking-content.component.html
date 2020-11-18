@@ -1,12 +1,11 @@
 <ng-container *ngIf="showRank; else noRank">
   <p class="govuk-!-font-size-27">Your workplace is ranked {{ rank }} in your comparison group.</p>
 </ng-container>
-<ng-template [ngSwitch]="state" #noRank>
-  <p *ngSwitchCase="'no-data'" class="govuk-!-font-size-27">
-    You've not added any data about hourly pay yet. We cannot show where you rank.
-  </p>
-  <p *ngSwitchCase="'no-comparison-data'" class="govuk-!-font-size-27">
+<ng-template #noRank>
+  <p class="govuk-!-font-size-27">{{ message }} We cannot show where you rank.</p>
+</ng-template>
+<ng-template #noComparisonData>
+  <p class="govuk-!-font-size-27">
     We do not have enough data to show this comparison yet. Your workplace cannot be ranked without a comparison group.
   </p>
-  <p *ngSwitchDefault class="govuk-!-font-size-27">&nbsp;</p>
 </ng-template>
