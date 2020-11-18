@@ -69,7 +69,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   };
 
   handleBenchmarksResponse = (benchmarks: BenchmarksResponse): void => {
-    this.tile = benchmarks.tiles[Metric[this.type]];
+    this.tile = benchmarks[Metric[this.type]];
     this.metaDataAvailable = Boolean(benchmarks.meta && this.tile.workplaces && this.tile.staff);
     if (this.metaDataAvailable) {
       this.numberOfWorkplaces = this.tile.workplaces;

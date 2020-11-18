@@ -20,7 +20,7 @@ describe('rankings', () => {
       expect(result.stateMessage).to.equal('no-comparison-data');
     });
 
-    it('should be response with stateMessage no-data when workplace has no pay data', async () => {
+    it('should be response with stateMessage no-pay-data when workplace has no pay data', async () => {
       sinon.stub(models.worker, 'averageHourlyPay').returns({ amount: null });
       sinon
         .stub(models.benchmarksPay, 'getComparisonGroupRankings')
@@ -76,7 +76,7 @@ describe('rankings', () => {
       expect(result.stateMessage).to.equal('no-comparison-data');
     });
 
-    it('should be response with stateMessage no-workers when workplace has no staff records', async () => {
+    it('should be response with stateMessage mismatch-workers when workplace has no staff records', async () => {
       sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 0 });
       sinon.stub(models.worker, 'countForEstablishment').returns(0);
       sinon.stub(models.benchmarksTurnover, 'getComparisonGroupRankings').returns([
@@ -89,7 +89,7 @@ describe('rankings', () => {
       expect(result.stateMessage).to.equal('mismatch-workers');
     });
 
-    it('should be response with stateMessage no-workers when staff count does not match workplace', async () => {
+    it('should be response with stateMessage mismatch-workers when staff count does not match workplace', async () => {
       sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2 });
       sinon.stub(models.worker, 'countForEstablishment').returns(0);
       sinon.stub(models.benchmarksTurnover, 'getComparisonGroupRankings').returns([
@@ -129,7 +129,7 @@ describe('rankings', () => {
       expect(result.stateMessage).to.equal('no-perm-or-temp');
     });
 
-    it('should be response with stateMessage check-data when turnover is too high', async () => {
+    it('should be response with stateMessage incorrect-turnover when turnover is too high', async () => {
       sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
       sinon.stub(models.worker, 'countForEstablishment').returns(2);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(1);

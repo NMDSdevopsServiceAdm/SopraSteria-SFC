@@ -1,12 +1,12 @@
-<span class="govuk-caption-xl">Benchmarks</span>
-<h1 class="govuk-heading-xl">{{ title }}</h1>
+<span class="govuk-caption-l">Benchmarks</span>
+<h1 class="govuk-heading-l">{{ title }}</h1>
 <app-barchart [type]="type" [tile]="tile" [noData]="noData">
   <ng-container metric-desc>{{ description }}</ng-container>
 </app-barchart>
 
 <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-5" />
 
-<div class="govuk-grid-row">
+<div class="govuk-grid-row govuk-!-margin-bottom-9">
   <div class="govuk-grid-column-two-thirds">
     <p *ngIf="metaDataAvailable; else noMetaData">
       <strong>Your comparison group</strong> for {{ title | lowercase }} is {{ numberOfStaff | number }} staff from

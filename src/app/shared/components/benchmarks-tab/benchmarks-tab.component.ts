@@ -49,19 +49,19 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   }
 
   get payTile(): Tile {
-    return this.tilesData?.tiles?.pay;
+    return this.tilesData?.pay;
   }
 
   get turnoverTile(): Tile {
-    return this.tilesData?.tiles?.turnover;
+    return this.tilesData?.turnover;
   }
 
   get sicknessTile(): Tile {
-    return this.tilesData?.tiles?.sickness;
+    return this.tilesData?.sickness;
   }
 
   get qualificationsTile(): Tile {
-    return this.tilesData?.tiles?.qualifications;
+    return this.tilesData?.qualifications;
   }
 
   public async downloadAsPDF($event: Event) {

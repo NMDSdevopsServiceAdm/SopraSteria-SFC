@@ -11,7 +11,7 @@ module.exports.calculateRankAsc = function (score, otherScores) {
 };
 
 function calculateRank(score, otherScores, sort, compare) {
-  if (!score) {
+  if (score === null || score === undefined) {
     return null;
   }
   if (!otherScores) {

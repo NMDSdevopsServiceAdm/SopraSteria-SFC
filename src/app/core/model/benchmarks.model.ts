@@ -1,12 +1,10 @@
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 export interface BenchmarksResponse {
-  tiles: {
-    pay?: Tile;
-    sickness?: Tile;
-    qualifications?: Tile;
-    turnover?: Tile;
-  };
+  pay?: Tile;
+  sickness?: Tile;
+  qualifications?: Tile;
+  turnover?: Tile;
   meta: Meta;
 }
 export interface Meta {

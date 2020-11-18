@@ -42,10 +42,10 @@ export class BarchartOptionsBuilder {
       type: 'category',
       labels: {
         align: 'left',
-        x: -100,
+        x: -110,
         useHTML: true,
         style: {
-          width: 200,
+          width: 220,
         },
         formatter: this.formatLabel(),
       },
@@ -123,7 +123,7 @@ export class BarchartOptionsBuilder {
   private formatLabel(): Highcharts.AxisLabelsFormatterCallbackFunction {
     return function () {
       const bold = this.isFirst ? 'govuk-!-font-weight-bold' : 'govuk-!-font-weight-regular';
-      return '<span class="govuk-body ' + bold + '">' + this.value + '</span>';
+      return '<span class="govuk-body govuk-!-font-size-19 govuk-!-font-weight-bold">' + this.value + '</span>';
     };
   }
 

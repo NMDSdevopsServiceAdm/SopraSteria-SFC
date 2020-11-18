@@ -21,7 +21,7 @@ const payTileData = {
 };
 
 const noPayTileData = {
-  workplaceValue: { value: null, hasValue: false, stateMessage: 'no-workers' },
+  workplaceValue: { value: null, hasValue: false, stateMessage: 'no-pay-data' },
   comparisonGroup: { value: null, hasValue: false },
   goodCqc: { value: null, hasValue: false },
   lowTurnover: { value: null, hasValue: false },
@@ -70,9 +70,7 @@ const setup = (payTile, payRanking) => {
 
   const req = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/?tiles=${metric}`);
   req.flush({
-    tiles: {
-      pay: payTile,
-    },
+    pay: payTile,
   });
 
   const req2 = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/rankings/${metric}`);
@@ -92,7 +90,7 @@ describe('BenchmarksMetricComponent', () => {
 
     fixture.detectChanges();
 
-    const yourWorkplace = getByText('£12.00');
+    const yourWorkplace = getByText('£10.00');
     const comparisonGroup = getByText('£11.00');
     const goodCqc = getByText('£12.00');
     const lowTurnover = getByText('£9.00');
@@ -111,7 +109,7 @@ describe('BenchmarksMetricComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    const noYourWorkplaceDataMessage = getByText(MetricsContent.Pay.noData['no-workers']);
+    const noYourWorkplaceDataMessage = getByText(MetricsContent.Pay.noData['no-pay-data']);
     const noComparisonGroupsDataMessage = getByText('We do not have enough data to show these comparisons yet.');
 
     expect(noYourWorkplaceDataMessage).toBeTruthy();
