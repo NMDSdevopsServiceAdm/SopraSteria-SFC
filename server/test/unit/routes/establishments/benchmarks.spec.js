@@ -12,7 +12,7 @@ describe('benchmarks', () => {
     it('should return the correct calculation', async () => {
       const establishmentId = 123;
 
-      sinon.stub(models.worker,'averageHourlyPay').returns({ amount: 50.00 })
+      sinon.stub(models.worker, 'averageHourlyPay').returns({ amount: 50.0 });
 
       const json = await benchmarks.pay(establishmentId);
       const expectedJSON = {
@@ -42,14 +42,14 @@ describe('benchmarks', () => {
     it('should return the correct state message when there is no workplace value', async () => {
       const establishmentId = 123;
 
-      sinon.stub(models.worker,'averageHourlyPay').returns({ amount: null })
+      sinon.stub(models.worker, 'averageHourlyPay').returns({ amount: null });
 
       const json = await benchmarks.pay(establishmentId);
       const expectedJson = {
         workplaceValue: {
           value: 0,
           hasValue: false,
-          stateMessage: 'no-workers',
+          stateMessage: 'no-pay-data',
         },
         comparisonGroup: {
           value: 0,
@@ -128,7 +128,7 @@ describe('benchmarks', () => {
         workplaceValue: {
           value: 0,
           hasValue: false,
-          stateMessage: 'no-workers',
+          stateMessage: 'no-sickness-data',
         },
         comparisonGroup: {
           value: 0,
@@ -191,7 +191,7 @@ describe('benchmarks', () => {
         workplaceValue: {
           value: 0,
           hasValue: false,
-          stateMessage: 'no-workers',
+          stateMessage: 'no-qualifications-data',
         },
         comparisonGroup: {
           value: 0,
@@ -216,7 +216,7 @@ describe('benchmarks', () => {
     it('should return the correct calculation', async () => {
       const establishmentId = 123;
       sinon
-        .stub(models.establishment, 'turnOverData')
+        .stub(models.establishment, 'turnoverData')
         .returns({ id: '2', NumberOfStaffValue: 3, LeaversValue: 'With Jobs' });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
       sinon.stub(models.worker, 'countForEstablishment').returns(3);
@@ -248,7 +248,7 @@ describe('benchmarks', () => {
     it('should return the 0% if there are no new leavers', async () => {
       const establishmentId = 123;
       sinon
-        .stub(models.establishment, 'turnOverData')
+        .stub(models.establishment, 'turnoverData')
         .returns({ id: '2', NumberOfStaffValue: 3, LeaversValue: 'None' });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
       sinon.stub(models.worker, 'countForEstablishment').returns(3);
@@ -277,9 +277,9 @@ describe('benchmarks', () => {
       };
       expect(json).to.deep.equal(expectedJSON);
     });
-    it('should return no-permtemp are currently no perm or temp workers', async () => {
+    it('should return no-perm-or-temp are currently no perm or temp workers', async () => {
       const establishmentId = 123;
-      sinon.stub(models.establishment, 'turnOverData').returns({ id: '2', NumberOfStaffValue: 3, LeaversValue: '5' });
+      sinon.stub(models.establishment, 'turnoverData').returns({ id: '2', NumberOfStaffValue: 3, LeaversValue: '5' });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(0);
       sinon.stub(models.worker, 'countForEstablishment').returns(3);
       sinon.stub(models.establishmentJobs, 'leaversForEstablishment').returns(1);
@@ -288,7 +288,7 @@ describe('benchmarks', () => {
         workplaceValue: {
           value: 0,
           hasValue: false,
-          stateMessage: 'no-permTemp',
+          stateMessage: 'no-perm-or-temp',
         },
         comparisonGroup: {
           value: 0,
@@ -308,9 +308,9 @@ describe('benchmarks', () => {
       };
       expect(json).to.deep.equal(expectedJSON);
     });
-    it('should return no-data if  leavers isnt filled out', async () => {
+    it('should return no-leavers if leavers isnt filled out', async () => {
       const establishmentId = 123;
-      sinon.stub(models.establishment, 'turnOverData').returns({ id: '2', NumberOfStaffValue: 3 });
+      sinon.stub(models.establishment, 'turnoverData').returns({ id: '2', NumberOfStaffValue: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
       sinon.stub(models.worker, 'countForEstablishment').returns(3);
       sinon.stub(models.establishmentJobs, 'leaversForEstablishment').returns(1);
@@ -319,7 +319,7 @@ describe('benchmarks', () => {
         workplaceValue: {
           value: 0,
           hasValue: false,
-          stateMessage: 'no-data',
+          stateMessage: 'no-leavers',
         },
         comparisonGroup: {
           value: 0,
@@ -339,10 +339,10 @@ describe('benchmarks', () => {
       };
       expect(json).to.deep.equal(expectedJSON);
     });
-    it('should return the no-data when LeaversValue Dont know', async () => {
+    it('should return the no-leavers when LeaversValue Dont know', async () => {
       const establishmentId = 123;
       sinon
-        .stub(models.establishment, 'turnOverData')
+        .stub(models.establishment, 'turnoverData')
         .returns({ id: '2', NumberOfStaffValue: 3, LeaversValue: "Don't know" });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
       sinon.stub(models.worker, 'countForEstablishment').returns(3);
@@ -352,7 +352,7 @@ describe('benchmarks', () => {
         workplaceValue: {
           value: 0,
           hasValue: false,
-          stateMessage: 'no-data',
+          stateMessage: 'no-leavers',
         },
         comparisonGroup: {
           value: 0,
@@ -375,7 +375,7 @@ describe('benchmarks', () => {
     it('should return 0 when LeaversValue None', async () => {
       const establishmentId = 123;
       sinon
-        .stub(models.establishment, 'turnOverData')
+        .stub(models.establishment, 'turnoverData')
         .returns({ id: '2', NumberOfStaffValue: 3, LeaversValue: 'None' });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
       sinon.stub(models.worker, 'countForEstablishment').returns(3);
@@ -404,10 +404,10 @@ describe('benchmarks', () => {
       };
       expect(json).to.deep.equal(expectedJSON);
     });
-    it('should return the check-data when calculation > 9.95', async () => {
+    it('should return the incorrect-turnover when calculation > 9.95', async () => {
       const establishmentId = 123;
       sinon
-        .stub(models.establishment, 'turnOverData')
+        .stub(models.establishment, 'turnoverData')
         .returns({ id: '2', NumberOfStaffValue: 3, LeaversValue: 'With Jobs' });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
       sinon.stub(models.worker, 'countForEstablishment').returns(3);
@@ -417,7 +417,7 @@ describe('benchmarks', () => {
         workplaceValue: {
           value: 0,
           hasValue: false,
-          stateMessage: 'check-data',
+          stateMessage: 'incorrect-turnover',
         },
         goodCqc: {
           hasValue: false,
@@ -437,10 +437,10 @@ describe('benchmarks', () => {
       };
       expect(json).to.deep.equal(expectedJSON);
     });
-    it('should return the no-workers when NumberOfStaffValue = 0', async () => {
+    it('should return the mismatch-workers when NumberOfStaffValue = 0', async () => {
       const establishmentId = 123;
       sinon
-        .stub(models.establishment, 'turnOverData')
+        .stub(models.establishment, 'turnoverData')
         .returns({ id: '2', NumberOfStaffValue: 0, LeaversValue: 'With Jobs' });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
       sinon.stub(models.worker, 'countForEstablishment').returns(3);
@@ -450,7 +450,7 @@ describe('benchmarks', () => {
         workplaceValue: {
           value: 0,
           hasValue: false,
-          stateMessage: 'no-workers',
+          stateMessage: 'mismatch-workers',
         },
         comparisonGroup: {
           value: 0,
@@ -471,9 +471,9 @@ describe('benchmarks', () => {
       expect(json).to.deep.equal(expectedJSON);
     });
   });
-  it('should return the no-workers when NumberOfStaffValue isnt equal to countForEstablishment', async () => {
+  it('should return the mismatch-workers when NumberOfStaffValue isnt equal to countForEstablishment', async () => {
     const establishmentId = 123;
-    sinon.stub(models.establishment, 'turnOverData').returns(
+    sinon.stub(models.establishment, 'turnoverData').returns(
       { id: '2', NumberOfStaffValue: 10, LeaversValue: 'With Jobs' }, // NumberOfStaffValue 10  countForEstablishment: 3
     );
     sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
@@ -484,7 +484,7 @@ describe('benchmarks', () => {
       workplaceValue: {
         value: 0,
         hasValue: false,
-        stateMessage: 'no-workers',
+        stateMessage: 'mismatch-workers',
       },
       goodCqc: {
         hasValue: false,
