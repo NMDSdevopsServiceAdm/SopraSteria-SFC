@@ -13,15 +13,6 @@
           WDF Summary Report
         </a>
       </li>
-      <li *ngIf="isAdmin" class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
-        <a
-          href="/download/{{ now | date: 'yyyy-MM-dd' }}-delete-report.csv"
-          class="govuk-body-m"
-          (click)="downloadDeleteReport($event)"
-        >
-          Delete Report
-        </a>
-      </li>
       <li class="govuk-!-margin-right-8 govuk-!-margin-bottom-0">
         <a class="govuk-body-m" [routerLink]="['workplace', primaryWorkplace.uid, 'wdf']">
           {{ isParent ? 'View my workplace' : 'Workforce Development Fund' }}
@@ -72,6 +63,20 @@
             (click)="downloadLocalAuthorityAdminReport($event)"
             >Download admin report</a
           >
+        </li>
+      </ul>
+    </ng-container>
+    <ng-container *ngIf="canRunLocalAuthorityReport || isAdmin">
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-6">Other Admin Reports</h2>
+      <ul class="govuk-list govuk-list--inline govuk-list--download">
+        <li *ngIf="isAdmin" class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
+          <a
+            href="/download/{{ now | date: 'yyyy-MM-dd' }}-delete-report.csv"
+            class="govuk-body-m"
+            (click)="downloadDeleteReport($event)"
+          >
+            Download delete report
+          </a>
         </li>
       </ul>
     </ng-container>

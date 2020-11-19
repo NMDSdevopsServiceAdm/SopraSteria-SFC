@@ -996,7 +996,7 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.establishment,
           as: 'Parent',
-          attributes: [['NameValue', 'parentName']],
+          attributes: ['NameValue'],
           required: false,
         },
       ],
