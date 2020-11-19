@@ -67,6 +67,74 @@ describe('rankings', () => {
     });
   });
 
+  describe('qualifications', () => {
+    it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon.stub(models.benchmarksQualifications, 'getComparisonGroupRankings').returns([]);
+
+      const result = await rankings.qualifications(establishmentId);
+
+      expect(result.stateMessage).to.equal('no-comparison-data');
+    });
+
+    it('should be response with stateMessage no-qualifications-data when workplace has no qualifications data', async () => {
+      sinon
+        .stub(models.worker, 'countSocialCareQualificationsAndNoQualifications')
+        .returns({ quals: 0, noQuals: 0, lvl2Quals: 0 });
+
+      sinon.stub(models.benchmarksQualifications, 'getComparisonGroupRankings').returns([
+        { CssrID: 123, MainServiceFK: 1, qualifications: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, turnover: 0.6, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.qualifications(establishmentId);
+
+      expect(result.stateMessage).to.equal('no-qualifications-data');
+    });
+
+    it('should be response with hasValue true when qualifications and comparison group are available', async () => {
+      sinon
+        .stub(models.worker, 'countSocialCareQualificationsAndNoQualifications')
+        .returns({ quals: 1, noQuals: 1, lvl2Quals: 1 });
+      sinon.stub(models.benchmarksQualifications, 'getComparisonGroupRankings').returns([
+        { CssrID: 123, MainServiceFK: 1, qualifications: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, qualifications: 0.6, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.qualifications(establishmentId);
+
+      expect(result.hasValue).to.equal(true);
+    });
+
+    it('should be response with maxRank equal to number of comparison group rankings + current establishment', async () => {
+      sinon
+        .stub(models.worker, 'countSocialCareQualificationsAndNoQualifications')
+        .returns({ quals: 1, noQuals: 1, lvl2Quals: 1 });
+      sinon.stub(models.benchmarksQualifications, 'getComparisonGroupRankings').returns([
+        { CssrID: 123, MainServiceFK: 1, qualifications: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, qualifications: 0.6, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.qualifications(establishmentId);
+
+      expect(result.maxRank).to.equal(3);
+    });
+
+    it('should be response with currentRank against comparison group rankings', async () => {
+      sinon
+        .stub(models.worker, 'countSocialCareQualificationsAndNoQualifications')
+        .returns({ quals: 1, noQuals: 1, lvl2Quals: 1 });
+
+      sinon.stub(models.benchmarksQualifications, 'getComparisonGroupRankings').returns([
+        { CssrID: 123, MainServiceFK: 1, qualifications: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, qualifications: 0.6, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.qualifications(establishmentId);
+
+      expect(result.currentRank).to.equal(2);
+    });
+  });
+
   describe('turnover', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
       sinon.stub(models.benchmarksTurnover, 'getComparisonGroupRankings').returns([]);

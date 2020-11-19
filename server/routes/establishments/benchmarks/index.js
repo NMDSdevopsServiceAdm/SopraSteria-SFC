@@ -3,7 +3,7 @@ const router = express.Router({ mergeParams: true });
 const models = require('../../../models');
 const clonedeep = require('lodash.clonedeep');
 const rankings = require('./rankings');
-const getTurnover = require('./benchmarksService').getTurnover;
+const { getPay, getQualifications, getTurnover } = require('./benchmarksService');
 
 const comparisonJson = {
   value: 0,
@@ -17,33 +17,20 @@ const comparisonGroupsJson = {
   lowTurnover: clonedeep(comparisonJson),
 };
 
-router.use('/rankings', rankings);
+const getTiles = async (establishmentId, tiles) => {
+  let benchmarkComparisonGroup = await models.benchmarks.getBenchmarkData(establishmentId);
+  let reply = {
+    meta: {},
+  };
+  if (tiles.includes('pay')) reply.pay = await pay(establishmentId, benchmarkComparisonGroup);
+  if (tiles.includes('sickness')) reply.sickness = await sickness(establishmentId, benchmarkComparisonGroup);
+  if (tiles.includes('qualifications'))
+    reply.qualifications = await qualifications(establishmentId, benchmarkComparisonGroup);
+  if (tiles.includes('turnover')) reply.turnover = await turnover(establishmentId, benchmarkComparisonGroup);
 
-router.route('/').get(async (req, res) => {
-  const establishmentId = req.establishmentId;
-  const tiles = req.query.tiles ? req.query.tiles.split(',') : [];
-
-  try {
-    let benchmarkComparisonGroup = await models.establishment.getBenchmarkData(establishmentId);
-    benchmarkComparisonGroup = benchmarkComparisonGroup.mainService
-      ? benchmarkComparisonGroup.mainService.benchmarksData[0]
-      : null;
-    let reply = {
-      meta: {},
-    };
-    if (tiles.includes('pay')) reply.pay = await pay(establishmentId, benchmarkComparisonGroup);
-    if (tiles.includes('sickness')) reply.sickness = await sickness(establishmentId, benchmarkComparisonGroup);
-    if (tiles.includes('qualifications'))
-      reply.qualifications = await qualifications(establishmentId, benchmarkComparisonGroup);
-    if (tiles.includes('turnover')) reply.turnover = await turnover(establishmentId, benchmarkComparisonGroup);
-
-    reply.meta = await getMetaData(benchmarkComparisonGroup);
-    return res.status(200).json(reply);
-  } catch (err) {
-    console.error(err);
-    return res.status(503).send();
-  }
-});
+  reply.meta = await getMetaData(benchmarkComparisonGroup);
+  return reply;
+};
 
 const getMetaData = async (benchmarkComparisonGroup) => {
   return {
@@ -55,58 +42,21 @@ const getMetaData = async (benchmarkComparisonGroup) => {
 
 const pay = async (establishmentId, benchmarkComparisonGroup) => {
   async function payTileLogic(establishmentId) {
-    let value = 0;
-    let stateMessage = '';
-    const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
-    if (averageHourlyPay.amount !== null) {
-      value = parseInt(averageHourlyPay.amount * 100);
-    } else {
-      stateMessage = 'no-pay-data';
-    }
+    const { value, stateMessage } = await getPay(establishmentId);
     return {
-      value,
-      stateMessage,
+      value: value ? value : 0,
+      stateMessage: stateMessage ? stateMessage : '',
     };
   }
   return await buildTile(establishmentId, benchmarkComparisonGroup, 'pay', payTileLogic);
 };
 
-const turnover = async (establishmentId, benchmarkComparisonGroup) => {
-  async function turnoverTileLogic(establishmentId) {
-    const { percentOfPermTemp, stateMessage } = await getTurnover(establishmentId);
-    return {
-      value: percentOfPermTemp ? percentOfPermTemp : 0,
-      stateMessage: stateMessage ? stateMessage : '',
-    };
-  }
-  return await buildTile(establishmentId, benchmarkComparisonGroup, 'turnover', turnoverTileLogic);
-};
-
 const qualifications = async (establishmentId, benchmarkComparisonGroup) => {
   async function qualificationsTileLogic(establishmentId) {
-    const noquals = await models.worker.specificJobsAndSocialCareQuals(
-      establishmentId,
-      models.services.careProvidingStaff,
-    );
-    const quals = await models.worker.specificJobsAndNoSocialCareQuals(
-      establishmentId,
-      models.services.careProvidingStaff,
-    );
-    const denominator = noquals + quals;
-    let percentOfHigherQuals = 0;
-    let stateMessage = '';
-    if (denominator > 0) {
-      let higherQualCount = await models.worker.benchmarkQualsCount(
-        establishmentId,
-        models.services.careProvidingStaff,
-      );
-      percentOfHigherQuals = higherQualCount / denominator;
-    } else {
-      stateMessage = 'no-qualifications-data';
-    }
+    const { value, stateMessage } = await getQualifications(establishmentId);
     return {
-      value: percentOfHigherQuals,
-      stateMessage,
+      value: value ? value : 0,
+      stateMessage: stateMessage ? stateMessage : '',
     };
   }
   return await buildTile(establishmentId, benchmarkComparisonGroup, 'qualifications', qualificationsTileLogic);
@@ -136,6 +86,17 @@ const sickness = async (establishmentId, benchmarkComparisonGroup) => {
     };
   }
   return await buildTile(establishmentId, benchmarkComparisonGroup, 'sickness', sicknessTileLogic);
+};
+
+const turnover = async (establishmentId, benchmarkComparisonGroup) => {
+  async function turnoverTileLogic(establishmentId) {
+    const { value, stateMessage } = await getTurnover(establishmentId);
+    return {
+      value: value ? value : 0,
+      stateMessage: stateMessage ? stateMessage : '',
+    };
+  }
+  return await buildTile(establishmentId, benchmarkComparisonGroup, 'turnover', turnoverTileLogic);
 };
 
 const buildTile = async (establishmentId, benchmarkComparisonGroup, key, buildTileCallback) => {
@@ -172,6 +133,20 @@ const buildMetric = (metricValue) => {
   }
   return comparisonGroup;
 };
+
+router.route('/').get(async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+    const tiles = req.query.tiles ? req.query.tiles.split(',') : [];
+    const reply = await getTiles(establishmentId, tiles);
+    return res.status(200).json(reply);
+  } catch (err) {
+    console.error(err);
+    return res.status(503).send();
+  }
+});
+
+router.use('/rankings', rankings);
 
 module.exports = router;
 module.exports.pay = pay;

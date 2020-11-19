@@ -60,6 +60,11 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'id',
       as: 'establishments',
     });
+    Services.hasMany(models.establishment, {
+      foreignKey: 'MainServiceFKValue',
+      sourceKey: 'id',
+      as: 'establishmentsMainService',
+    });
     Services.hasMany(models.benchmarks, {
       foreignKey: 'MainServiceFK',
       sourceKey: 'reportingID',
