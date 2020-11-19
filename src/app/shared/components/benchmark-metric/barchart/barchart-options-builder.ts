@@ -122,7 +122,6 @@ export class BarchartOptionsBuilder {
 
   private formatLabel(): Highcharts.AxisLabelsFormatterCallbackFunction {
     return function () {
-      const bold = this.isFirst ? 'govuk-!-font-weight-bold' : 'govuk-!-font-weight-regular';
       return '<span class="govuk-body govuk-!-font-size-19 govuk-!-font-weight-bold">' + this.value + '</span>';
     };
   }

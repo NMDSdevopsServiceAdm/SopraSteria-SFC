@@ -13,7 +13,7 @@ import { map, mergeMap, tap } from 'rxjs/operators';
   templateUrl: './metric.component.html',
 })
 export class BenchmarksMetricComponent implements OnInit, OnDestroy {
-  private subscription: Subscription = new Subscription();
+  private subscriptions: Subscription = new Subscription();
 
   public type: Metric;
   public title: string;
@@ -41,22 +41,20 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const establishmentUid = this.establishmentService.establishment.uid;
 
-    this.subscription.add(
-      this.route.data
-        .pipe(
-          tap(this.setRouteData),
-          map((data) => (this.type = data.type as Metric)),
-          mergeMap(() => this.benchmarksService.getTileData(establishmentUid, [Metric[this.type]])),
-        )
+    const dataObservable$ = this.route.data.pipe(
+      tap(this.setRouteData),
+      map((data) => (this.type = data.type as Metric)),
+    );
+
+    this.subscriptions.add(
+      dataObservable$
+        .pipe(mergeMap(() => this.benchmarksService.getTileData(establishmentUid, [Metric[this.type]])))
         .subscribe(this.handleBenchmarksResponse),
     );
 
-    this.subscription.add(
-      this.route.data
-        .pipe(
-          map((data) => (this.type = data.type as Metric)),
-          mergeMap(() => this.benchmarksService.getRankingData(establishmentUid, Metric[this.type])),
-        )
+    this.subscriptions.add(
+      dataObservable$
+        .pipe(mergeMap(() => this.benchmarksService.getRankingData(establishmentUid, Metric[this.type])))
         .subscribe(this.handleRankingsResponse),
     );
   }
@@ -86,6 +84,6 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   };
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 }

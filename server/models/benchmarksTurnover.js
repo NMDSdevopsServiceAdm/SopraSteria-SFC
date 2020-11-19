@@ -1,5 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-  const BenchmarksPay = sequelize.define(
+  const BenchmarksTurnover = sequelize.define(
     'benchmarksTurnover',
     {
       CssrID: {
@@ -30,20 +30,20 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  BenchmarksPay.associate = (models) => {
-    BenchmarksPay.belongsTo(models.services, {
+  BenchmarksTurnover.associate = (models) => {
+    BenchmarksTurnover.belongsTo(models.services, {
       foreignKey: 'MainServiceFK',
       targetKey: 'reportingID',
       as: 'BenchmarkToService',
     });
-    BenchmarksPay.belongsTo(models.establishment, {
+    BenchmarksTurnover.belongsTo(models.establishment, {
       foreignKey: 'EstablishmentFK',
       targetKey: 'id',
       as: 'benchmarkEstablishment',
     });
   };
 
-  BenchmarksPay.getComparisonGroupRankings = async function (establishmentId) {
+  BenchmarksTurnover.getComparisonGroupRankings = async function (establishmentId) {
     const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
     return await this.findAll({
       where: {
@@ -55,5 +55,5 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  return BenchmarksPay;
+  return BenchmarksTurnover;
 };

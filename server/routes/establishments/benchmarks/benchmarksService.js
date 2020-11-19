@@ -3,9 +3,9 @@ const models = require('../../../models');
 const getTurnover = async function (establishmentId) {
   const establishment = await models.establishment.turnoverData(establishmentId);
 
-  const noWorkersOrLeavers = await workplaceHasNoWorkersOrLeaves(establishment, establishmentId);
-  if (noWorkersOrLeavers) {
-    return noWorkersOrLeavers;
+  const staffNumberIncorrectOrLeaversUnknown = await checkStaffNumberAndLeavers(establishmentId, establishment);
+  if (staffNumberIncorrectOrLeaversUnknown) {
+    return staffNumberIncorrectOrLeaversUnknown;
   }
 
   const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
@@ -35,7 +35,7 @@ const getTurnover = async function (establishmentId) {
   };
 };
 
-const workplaceHasNoWorkersOrLeaves = async function (establishment, establishmentId) {
+const checkStaffNumberAndLeavers = async function (establishmentId, establishment) {
   const workerCount = await models.worker.countForEstablishment(establishmentId);
   if (!establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue) {
     return {
