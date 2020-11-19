@@ -147,7 +147,7 @@ export class BarchartOptionsBuilder {
   private addEmptyStates(noData: string): Highcharts.ChartLoadCallbackFunction {
     return function () {
       const categoryWidth = this.plotWidth / this.xAxis[0].series[0].data.length;
-      let width = categoryWidth - 40;
+      let width = categoryWidth - 30;
 
       this.series[0].points.forEach((point, index) => {
         if (point.y === null && (index === 0 || index === 1 || this.series[0].points[index - 1]?.y !== null)) {
@@ -165,7 +165,7 @@ export class BarchartOptionsBuilder {
             message = noData;
           }
 
-          const offset = point.x * categoryWidth + width / 2 + 20;
+          const offset = point.x * categoryWidth + width / 2 + 10;
           const text = this.renderer
             .text('<span class="govuk-body no-data">' + message + '</span>', -999, -999, true)
             .css({
