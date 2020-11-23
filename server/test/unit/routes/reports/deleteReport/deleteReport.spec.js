@@ -39,7 +39,7 @@ describe('/server/routes/reports/deleteReport/report', () => {
       );
     });
 
-    describe('formatData()', () => {
+    describe('filterData()', () => {
       it('should return only the none updated establishments', async () => {
         const rawData = [rawDataBuilder(), rawDataBuilder(), rawDataBuilder()];
         rawData[0].updated = moment().subtract(deleteReport.monthsWithoutUpdate, 'months').toISOString(); // Out of Date
@@ -50,7 +50,7 @@ describe('/server/routes/reports/deleteReport/report', () => {
           .subtract(deleteReport.monthsWithoutUpdate - 10, 'months')
           .toISOString(); // In Date
 
-        const result = await deleteReport.formatData(rawData);
+        const result = await deleteReport.filterData(rawData);
         expect(result.length).to.equal(1);
       });
       it('should return only the none updated establishments and workers', async () => {
@@ -79,7 +79,7 @@ describe('/server/routes/reports/deleteReport/report', () => {
           },
         ]; // In Date
 
-        const result = await deleteReport.formatData(rawData);
+        const result = await deleteReport.filterData(rawData);
 
         expect(result.length).to.equal(1);
         expect(result[0].id).to.deep.equal(rawData[0].id);

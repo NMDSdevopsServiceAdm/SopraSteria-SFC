@@ -4,6 +4,8 @@ const moment = require('moment');
 const express = require('express');
 const router = express.Router();
 
+const concatenateAddress = require('../../../utils/concatenateAddress').concatenateAddress;
+
 const headers = [
   'Establishment Name',
   'Address',
@@ -21,18 +23,7 @@ const headers = [
 const lastColumn = String.fromCharCode('B'.charCodeAt(0) + headers.length);
 const monthsWithoutUpdate = 20;
 
-const formatAddress = (address1, address2, address3, town, county) => {
-  // returns concatenated address
-  return [address1, address2, address3, town, county]
-    .reduce((arr, part) => {
-      if (part) {
-        arr.push(part);
-      }
-      return arr;
-    }, [])
-    .join(', ');
-};
-const formatData = async (rawData) => {
+const filterData = async (rawData) => {
   const updateDate = moment().subtract(monthsWithoutUpdate, 'months');
   return rawData.filter((establishment) => {
     let workers;
@@ -125,7 +116,7 @@ const generateDeleteReport = async (req, res) => {
         la = laData[establishment.id].theAuthority.localAuthority;
       }
 
-      const address = formatAddress(
+      const address = concatenateAddress(
         establishment.address,
         establishment.address2,
         establishment.address3,
@@ -166,7 +157,7 @@ const generateDeleteReport = async (req, res) => {
   };
 
   const rawData = await models.establishment.generateDeleteReportData();
-  const establishmentsData = await formatData(rawData);
+  const establishmentsData = await filterData(rawData);
   const laData = await addCSSRData(establishmentsData);
 
   let workbook = new ExcelJS.Workbook();
@@ -183,7 +174,7 @@ const generateDeleteReport = async (req, res) => {
   autofitColumns(WS1);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', 'attachment; filename=' + 'deleteReport.xlsx');
+  res.setHeader('Content-Disposition', 'attachment; filename=' + moment().format('DD-MM-YYYY') + '-deleteReport.xlsx');
 
   return workbook.xlsx.write(res).then(function () {
     res.status(200).end();
@@ -238,5 +229,5 @@ function autofitColumns(ws) {
 
 module.exports = router;
 module.exports.generateDeleteReport = generateDeleteReport;
-module.exports.formatData = formatData;
+module.exports.filterData = filterData;
 module.exports.monthsWithoutUpdate = monthsWithoutUpdate;

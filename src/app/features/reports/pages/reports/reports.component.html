@@ -71,7 +71,7 @@
       <ul class="govuk-list govuk-list--inline govuk-list--download">
         <li *ngIf="isAdmin" class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
           <a
-            href="/download/{{ now | date: 'yyyy-MM-dd' }}-delete-report.csv"
+            href="/download/{{ now | date: 'dd-MM-YYYY' }}-delete-report.xlsx"
             class="govuk-body-m"
             (click)="downloadDeleteReport($event)"
           >
