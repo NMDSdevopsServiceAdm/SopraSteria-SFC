@@ -41,7 +41,7 @@
     "@auth0/angular-jwt": "^5.0.1",
     "@sentry/apm": "^5.19.2",
     "@sentry/browser": "^5.19.2",
-    "@sentry/node": "^5.27.3",
+    "@sentry/node": "^5.27.4",
     "ajv": "^6.12.6",
     "angulartics2": "^7.5.2",
     "aws-sdk": "^2.712.0",
