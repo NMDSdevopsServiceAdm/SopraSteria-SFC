@@ -3,7 +3,7 @@ const router = express.Router({ mergeParams: true });
 const models = require('../../../models');
 const clonedeep = require('lodash.clonedeep');
 const rankings = require('./rankings');
-const { getPay, getQualifications, getTurnover } = require('./benchmarksService');
+const { getPay, getQualifications, getSickness, getTurnover } = require('./benchmarksService');
 
 const comparisonJson = {
   value: 0,
@@ -41,74 +41,32 @@ const getMetaData = async (benchmarkComparisonGroup) => {
 };
 
 const pay = async (establishmentId, benchmarkComparisonGroup) => {
-  async function payTileLogic(establishmentId) {
-    const { value, stateMessage } = await getPay(establishmentId);
-    return {
-      value: value ? value : 0,
-      stateMessage: stateMessage ? stateMessage : '',
-    };
-  }
-  return await buildTile(establishmentId, benchmarkComparisonGroup, 'pay', payTileLogic);
+  return await buildTile(establishmentId, benchmarkComparisonGroup, 'pay', getPay);
 };
 
 const qualifications = async (establishmentId, benchmarkComparisonGroup) => {
-  async function qualificationsTileLogic(establishmentId) {
-    const { value, stateMessage } = await getQualifications(establishmentId);
-    return {
-      value: value ? value : 0,
-      stateMessage: stateMessage ? stateMessage : '',
-    };
-  }
-  return await buildTile(establishmentId, benchmarkComparisonGroup, 'qualifications', qualificationsTileLogic);
+  return await buildTile(establishmentId, benchmarkComparisonGroup, 'qualifications', getQualifications);
 };
 
 const sickness = async (establishmentId, benchmarkComparisonGroup) => {
-  async function sicknessTileLogic(establishmentId) {
-    const whereClause = { DaysSickValue: 'Yes', archived: false };
-    const establishmentWorkers = await models.establishment.workers(establishmentId, whereClause, ['DaysSickDays']);
-    let averageSickDays = 0;
-    let stateMessage = '';
-    if (establishmentWorkers) {
-      let sickness = 0;
-      await Promise.all(
-        establishmentWorkers.workers.map(async (worker) => {
-          sickness = sickness + Number(worker.DaysSickDays);
-          return sickness;
-        }),
-      );
-      averageSickDays = Math.round(sickness / establishmentWorkers.workers.length);
-    } else {
-      stateMessage = 'no-sickness-data';
-    }
-    return {
-      value: averageSickDays,
-      stateMessage,
-    };
-  }
-  return await buildTile(establishmentId, benchmarkComparisonGroup, 'sickness', sicknessTileLogic);
+  return await buildTile(establishmentId, benchmarkComparisonGroup, 'sickness', getSickness);
 };
 
 const turnover = async (establishmentId, benchmarkComparisonGroup) => {
-  async function turnoverTileLogic(establishmentId) {
-    const { value, stateMessage } = await getTurnover(establishmentId);
-    return {
-      value: value ? value : 0,
-      stateMessage: stateMessage ? stateMessage : '',
-    };
-  }
-  return await buildTile(establishmentId, benchmarkComparisonGroup, 'turnover', turnoverTileLogic);
+  return await buildTile(establishmentId, benchmarkComparisonGroup, 'turnover', getTurnover);
 };
 
-const buildTile = async (establishmentId, benchmarkComparisonGroup, key, buildTileCallback) => {
-  const { value, stateMessage } = await buildTileCallback(establishmentId);
+const buildTile = async (establishmentId, benchmarkComparisonGroup, key, getMetricCallback) => {
+  const { value, stateMessage } = await getMetricCallback(establishmentId);
+  const hasValue = !stateMessage || stateMessage.length === 0;
   const json = {
     workplaceValue: {
-      value,
-      hasValue: stateMessage.length === 0,
+      value: value ? value : 0,
+      hasValue,
     },
     ...buildComparisonGroupMetrics(key, benchmarkComparisonGroup),
   };
-  if (stateMessage.length) json.workplaceValue.stateMessage = stateMessage;
+  if (!hasValue) json.workplaceValue.stateMessage = stateMessage;
   return json;
 };
 
@@ -150,8 +108,8 @@ router.use('/rankings', rankings);
 
 module.exports = router;
 module.exports.pay = pay;
-module.exports.sickness = sickness;
 module.exports.qualifications = qualifications;
+module.exports.sickness = sickness;
 module.exports.turnover = turnover;
 module.exports.buildComparisonGroupMetrics = buildComparisonGroupMetrics;
 module.exports.getMetaData = getMetaData;

@@ -17,16 +17,30 @@ const getQualifications = async function (establishmentId) {
     models.services.careProvidingStaff,
   );
   const denominator = qualifications.noQuals + qualifications.quals;
-  let percentOfHigherQuals = 0;
-  if (denominator > 0) {
-    percentOfHigherQuals = qualifications.lvl2Quals / denominator;
+  if (denominator <= 0) {
     return {
-      value: percentOfHigherQuals,
+      stateMessage: 'no-qualifications-data',
     };
   }
 
+  const percentOfHigherQuals = qualifications.lvl2Quals / denominator;
   return {
-    stateMessage: 'no-qualifications-data',
+    value: percentOfHigherQuals,
+  };
+};
+
+const getSickness = async function (establishmentId) {
+  const whereClause = { DaysSickValue: 'Yes', archived: false };
+  const establishmentWorkers = await models.establishment.workers(establishmentId, whereClause, ['DaysSickDays']);
+  if (!establishmentWorkers) {
+    return {
+      stateMessage: 'no-sickness-data',
+    };
+  }
+  const sickness = establishmentWorkers.workers.map((worker) => Number(worker.DaysSickDays)).reduce((a, b) => a + b);
+  const averageSickDays = Math.round(sickness / establishmentWorkers.workers.length);
+  return {
+    value: averageSickDays,
   };
 };
 
@@ -83,5 +97,6 @@ const checkStaffNumberAndLeavers = async function (establishmentId, establishmen
 };
 
 module.exports.getPay = getPay;
-module.exports.getTurnover = getTurnover;
 module.exports.getQualifications = getQualifications;
+module.exports.getSickness = getSickness;
+module.exports.getTurnover = getTurnover;
