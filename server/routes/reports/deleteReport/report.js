@@ -19,6 +19,7 @@ const headers = [
   'Due to be deleted date',
 ];
 const lastColumn = String.fromCharCode('B'.charCodeAt(0) + headers.length);
+const monthsWithoutUpdate = 20;
 
 const formatAddress = (address1, address2, address3, town, county) => {
   // returns concatenated address
@@ -31,23 +32,37 @@ const formatAddress = (address1, address2, address3, town, county) => {
     }, [])
     .join(', ');
 };
+const formatData = async (rawData) => {
+  const updateDate = moment().subtract(monthsWithoutUpdate, 'months');
+  return rawData.filter((establishment) => {
+    let workers;
+    if (establishment.workers.length === 0) {
+      workers = true;
+    } else {
+      workers = moment(establishment.workers[0].updated).isSameOrBefore(updateDate);
+    }
+    // console.log(workers + " --- " + moment(establishment.updated).isSameOrBefore(updateDate) );
+    return moment(establishment.updated).isSameOrBefore(updateDate) && workers;
+  });
+};
 
 const generateDeleteReport = async (req, res) => {
-  const formatData = async (rawData) => {
-    const updateDate = moment().subtract(3, 'months');
-    return rawData.filter((establishment) => {
-      if (moment(establishment.updated).isSameOrAfter(updateDate)) {
-        console.log(establishment.updated + ' is deleted as its earlier than ' + updateDate);
-      }
-      let workers;
-      if (establishment.workers.length === 0) {
-        workers = true;
-      } else {
-        workers = moment(establishment.workers[0].updated).isSameOrAfter(updateDate);
-      }
-      return moment(establishment.updated).isSameOrAfter(updateDate) || workers;
-    });
+  const fullBorder = {
+    top: { style: 'thin' },
+    left: { style: 'thin' },
+    bottom: { style: 'thin' },
+    right: { style: 'thin' },
   };
+  const addCSSRData = async (establishmentsData) => {
+    const result = {};
+    await Promise.all(
+      establishmentsData.map(async (establishment) => {
+        result[establishment.id] = await models.pcodedata.getCssrFromPostcode(establishment.postcode);
+      }),
+    );
+    return result;
+  };
+
   const formatBool = (input) => {
     return input ? 'yes' : 'no';
   };
@@ -64,21 +79,17 @@ const generateDeleteReport = async (req, res) => {
       fgColor: { argb: '282c84' },
     };
 
-    //  creating headers
     WS1.mergeCells('B4:' + lastColumn + '4');
     WS1.getCell('B4').value = 'Date Run: ' + moment().format('DD/MM/YYYY');
     WS1.getCell('B4').font = headerFont;
     WS1.getCell('B4').fill = headerStyle;
     WS1.getCell('B4').border = fullBorder;
 
-    // WS1.getRow(4).commit();
-
     WS1.mergeCells('B6:' + lastColumn + '6');
     WS1.getCell('B6').value = 'All establishments due to be deleted within the next four months';
     WS1.getCell('B6').font = headerFont;
     WS1.getCell('B6').fill = headerStyle;
     WS1.getCell('B6').border = fullBorder;
-    //WS1.getRow(6).commit();
   };
   const createTableHeader = () => {
     const headerFont = {
@@ -98,8 +109,8 @@ const generateDeleteReport = async (req, res) => {
     }
   };
 
-  const fillData = (reportData) => {
-    let row = 9;
+  const fillData = (reportData, laData) => {
+    let firstRow = true;
     let rowStyle = '';
     if (!reportData || reportData.length === 0) {
       return;
@@ -107,6 +118,12 @@ const generateDeleteReport = async (req, res) => {
 
     reportData.forEach((establishment) => {
       const parentName = establishment.Parent ? establishment.Parent.NameValue : '';
+      let region = '';
+      let la = '';
+      if (laData[establishment.id] && laData[establishment.id].theAuthority) {
+        region = laData[establishment.id].theAuthority.region;
+        la = laData[establishment.id].theAuthority.localAuthority;
+      }
 
       const address = formatAddress(
         establishment.address,
@@ -123,17 +140,17 @@ const generateDeleteReport = async (req, res) => {
           establishment.postcode,
           establishment.nmdsId,
           establishment.id,
-          null, //cssr.region || '',
-          null, //cssr.localAuthority || '',
+          region,
+          la,
           establishment.mainService.name,
           establishment.EmployerTypeValue,
           formatBool(establishment.isRegulated),
           parentName,
-          moment(establishment.updated).add(3, 'months').format('DD-MM-YYYY'),
+          moment(establishment.updated).add(monthsWithoutUpdate, 'months').format('DD-MM-YYYY'),
         ],
         rowStyle,
       );
-      if (row === 9) {
+      if (firstRow) {
         // format the first Row, after that exeljs can copy it
         let currentColumn = 'B';
         for (var i = 0; i < headers.length; i++) {
@@ -143,27 +160,16 @@ const generateDeleteReport = async (req, res) => {
           currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1);
         }
         rowStyle = 'i+';
+        firstRow = false;
       }
     });
   };
+
   const rawData = await models.establishment.generateDeleteReportData();
   const establishmentsData = await formatData(rawData);
-  //reportDataWithCssr = await addCssrData(establishmentsData);
+  const laData = await addCSSRData(establishmentsData);
 
-  // const options = {
-  //   filename: './streamed-workbook.xlsx',
-  //   useStyles: true,
-  //   useSharedStrings: true
-  // };
-  //const workbook = new Excel.stream.xlsx.WorkbookWriter(options);
   let workbook = new ExcelJS.Workbook();
-
-  const fullBorder = {
-    top: { style: 'thin' },
-    left: { style: 'thin' },
-    bottom: { style: 'thin' },
-    right: { style: 'thin' },
-  };
 
   workbook.creator = 'Skills-For-Care';
   workbook.properties.date1904 = true;
@@ -173,61 +179,64 @@ const generateDeleteReport = async (req, res) => {
   createBlueHeader();
   createTableHeader();
 
-  fillData(establishmentsData);
-  //WS1.commit();
-  //autofitColumns(WS1);
-  WS1.getColumn(1).width = 0.7;
+  fillData(establishmentsData, laData);
+  autofitColumns(WS1);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', 'attachment; filename=' + 'deleteReport.xlsx');
-  //workbook.commit();
 
   return workbook.xlsx.write(res).then(function () {
     res.status(200).end();
   });
 };
-// function eachColumnInRange(ws, col1, col2, cb) {
-//   for (let c = col1; c <= col2; c++) {
-//     let col = ws.getColumn(c);
-//     cb(col);
-//   }
-// }
-// function autofitColumns(ws) {
-//   eachColumnInRange(ws, 8, 8, (column) => {
-//     let maxWidth = 40;
-//     column.eachCell((cell) => {
-//       if (!cell.isMerged && cell.value) {
-//         // doesn't handle merged cells
-//
-//         let text = '';
-//         if (typeof cell.value != 'object') {
-//           // string, number, ...
-//           text = cell.value.toString();
-//         } else if (cell.value.richText) {
-//           // richText
-//           text = cell.value.richText.reduce((text, obj) => text + obj.text.toString(), '');
-//         }
-//
-//         // handle new lines -> don't forget to set wrapText: true
-//         let values = text.split(/[\n\r]+/);
-//
-//         for (let value of values) {
-//           let width = value.length;
-//
-//           if (cell.font && cell.font.bold) {
-//             width *= 1.08; // bolding increases width
-//           }
-//
-//           maxWidth = Math.max(maxWidth, width);
-//         }
-//       }
-//     });
-//
-//     maxWidth += 0.71; // compensate for observed reduction
-//     maxWidth += 1; // buffer space
-//
-//     column.width = maxWidth;
-//   });
-// }
+
+function eachColumnInRange(ws, col1, col2, cb) {
+  for (let c = col1; c <= col2; c++) {
+    let col = ws.getColumn(c);
+    cb(col);
+  }
+}
+
+function autofitColumns(ws) {
+  eachColumnInRange(ws, 8, 8, (column) => {
+    let maxWidth = 40;
+    column.eachCell((cell) => {
+      if (!cell.isMerged && cell.value) {
+        // doesn't handle merged cells
+
+        let text = '';
+        if (typeof cell.value != 'object') {
+          // string, number, ...
+          text = cell.value.toString();
+        } else if (cell.value.richText) {
+          // richText
+          text = cell.value.richText.reduce((text, obj) => text + obj.text.toString(), '');
+        }
+
+        // handle new lines -> don't forget to set wrapText: true
+        let values = text.split(/[\n\r]+/);
+
+        for (let value of values) {
+          let width = value.length;
+
+          if (cell.font && cell.font.bold) {
+            width *= 1.08; // bolding increases width
+          }
+
+          maxWidth = Math.max(maxWidth, width);
+        }
+      }
+    });
+
+    maxWidth += 0.71; // compensate for observed reduction
+    maxWidth += 1; // buffer space
+
+    column.width = maxWidth;
+  });
+  ws.getColumn(1).width = 0.7;
+}
+
 module.exports = router;
 module.exports.generateDeleteReport = generateDeleteReport;
+module.exports.formatData = formatData;
+module.exports.monthsWithoutUpdate = monthsWithoutUpdate;

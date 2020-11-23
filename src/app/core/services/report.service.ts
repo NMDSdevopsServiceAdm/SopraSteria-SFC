@@ -33,7 +33,6 @@ export class ReportService {
     });
   }
   public getDeleteReport(): Observable<HttpResponse<Blob>> {
-    console.log('calling getDeleteReport');
     return this.http.get<Blob>(`/api/reports/delete/new`, {
       observe: 'response',
       responseType: 'blob' as 'json',
