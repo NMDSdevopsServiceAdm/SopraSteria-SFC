@@ -32,7 +32,6 @@ const filterData = async (rawData) => {
     } else {
       workers = moment(establishment.workers[0].updated).isSameOrBefore(updateDate);
     }
-    // console.log(workers + " --- " + moment(establishment.updated).isSameOrBefore(updateDate) );
     return moment(establishment.updated).isSameOrBefore(updateDate) && workers;
   });
 };
