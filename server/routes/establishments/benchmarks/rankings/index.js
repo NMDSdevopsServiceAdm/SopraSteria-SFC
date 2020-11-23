@@ -3,22 +3,21 @@ const router = express.Router({ mergeParams: true });
 const models = require('../../../../models');
 const calculateRankDesc = require('../../../../utils/benchmarksUtils').calculateRankDesc;
 const calculateRankAsc = require('../../../../utils/benchmarksUtils').calculateRankAsc;
-const getTurnover = require('../benchmarksService').getTurnover;
+const { getPay, getQualifications, getTurnover } = require('../benchmarksService');
 
 const getPayRanking = async function (establishmentId) {
   async function payRankingLogic(establishmentId, maxRank, comparisonGroupRankings) {
-    const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
-    if (averageHourlyPay.amount === null) {
+    const pay = await getPay(establishmentId);
+    if (pay.stateMessage) {
       return {
         maxRank,
         hasValue: false,
-        stateMessage: 'no-pay-data',
+        ...pay,
       };
     }
 
-    const payAsInteger = parseInt(averageHourlyPay.amount * 100);
     const payRankings = comparisonGroupRankings.map((r) => r.pay);
-    const currentRank = calculateRankDesc(payAsInteger, payRankings);
+    const currentRank = calculateRankDesc(pay.value, payRankings);
 
     return {
       currentRank,
@@ -30,10 +29,37 @@ const getPayRanking = async function (establishmentId) {
   return await getComparisonGroupAndRanking(establishmentId, models.benchmarksPay, payRankingLogic);
 };
 
+const getQualificationsRanking = async function (establishmentId) {
+  async function qualificationsRankingLogic(establishmentId, maxRank, comparisonGroupRankings) {
+    const qualifications = await getQualifications(establishmentId);
+    if (qualifications.stateMessage) {
+      return {
+        maxRank,
+        hasValue: false,
+        ...qualifications,
+      };
+    }
+
+    const qualificationsRankings = comparisonGroupRankings.map((r) => parseFloat(r.qualifications));
+    const currentRank = calculateRankDesc(qualifications.value, qualificationsRankings);
+
+    return {
+      maxRank,
+      currentRank,
+      hasValue: true,
+    };
+  }
+
+  return await getComparisonGroupAndRanking(
+    establishmentId,
+    models.benchmarksQualifications,
+    qualificationsRankingLogic,
+  );
+};
+
 const getTurnoverRanking = async function (establishmentId) {
   async function turnoverRankingLogic(establishmentId, maxRank, comparisonGroupRankings) {
     const turnover = await getTurnover(establishmentId);
-
     if (turnover.stateMessage) {
       return {
         maxRank,
@@ -43,7 +69,7 @@ const getTurnoverRanking = async function (establishmentId) {
     }
 
     const turnoverRankings = comparisonGroupRankings.map((r) => parseFloat(r.turnover));
-    const currentRank = calculateRankAsc(turnover.percentOfPermTemp, turnoverRankings);
+    const currentRank = calculateRankAsc(turnover.value, turnoverRankings);
 
     return {
       maxRank,
@@ -76,6 +102,14 @@ router.route('/pay').get(async (req, res) => {
   res.status(200).json(responseData);
 });
 
+router.route('/qualifications').get(async (req, res) => {
+  const establishmentId = req.establishmentId;
+
+  const responseData = await getQualificationsRanking(establishmentId);
+
+  res.status(200).json(responseData);
+});
+
 router.route('/turnover').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
@@ -86,4 +120,5 @@ router.route('/turnover').get(async (req, res) => {
 
 module.exports = router;
 module.exports.pay = getPayRanking;
+module.exports.qualifications = getQualificationsRanking;
 module.exports.turnover = getTurnoverRanking;

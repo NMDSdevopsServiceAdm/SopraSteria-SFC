@@ -152,10 +152,9 @@ describe('benchmarks', () => {
   describe('qualifications', () => {
     it('should return the correct calculation', async () => {
       const establishmentId = 123;
-      sinon.stub(models.worker, 'specificJobsAndSocialCareQuals').returns(2);
-      sinon.stub(models.worker, 'specificJobsAndNoSocialCareQuals').returns(4);
-      sinon.stub(models.worker, 'benchmarkQualsCount').returns(3);
-
+      sinon
+        .stub(models.worker, 'countSocialCareQualificationsAndNoQualifications')
+        .returns({ quals: 2, noQuals: 4, lvl2Quals: 3 });
       const json = await benchmarks.qualifications(establishmentId);
       const expectedJSON = {
         workplaceValue: {
@@ -183,9 +182,9 @@ describe('benchmarks', () => {
 
     it('should return the correct state message when there is no workplace value', async () => {
       const establishmentId = 123;
-      sinon.stub(models.worker, 'specificJobsAndSocialCareQuals').returns(0);
-      sinon.stub(models.worker, 'specificJobsAndNoSocialCareQuals').returns(0);
-      sinon.stub(models.worker, 'benchmarkQualsCount').returns(null);
+      sinon
+        .stub(models.worker, 'countSocialCareQualificationsAndNoQualifications')
+        .returns({ quals: 0, noQuals: 0, lvl2Quals: 0 });
       const json = await benchmarks.qualifications(establishmentId);
       const expectedJson = {
         workplaceValue: {

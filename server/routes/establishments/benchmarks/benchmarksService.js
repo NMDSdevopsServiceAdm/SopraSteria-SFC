@@ -1,5 +1,35 @@
 const models = require('../../../models');
 
+const getPay = async function (establishmentId) {
+  const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
+  if (averageHourlyPay.amount === null) {
+    return {
+      stateMessage: 'no-pay-data',
+    };
+  }
+
+  return { value: parseInt(averageHourlyPay.amount * 100) };
+};
+
+const getQualifications = async function (establishmentId) {
+  const qualifications = await models.worker.countSocialCareQualificationsAndNoQualifications(
+    establishmentId,
+    models.services.careProvidingStaff,
+  );
+  const denominator = qualifications.noQuals + qualifications.quals;
+  let percentOfHigherQuals = 0;
+  if (denominator > 0) {
+    percentOfHigherQuals = qualifications.lvl2Quals / denominator;
+    return {
+      value: percentOfHigherQuals,
+    };
+  }
+
+  return {
+    stateMessage: 'no-qualifications-data',
+  };
+};
+
 const getTurnover = async function (establishmentId) {
   const establishment = await models.establishment.turnoverData(establishmentId);
 
@@ -17,7 +47,7 @@ const getTurnover = async function (establishmentId) {
 
   if (establishment.LeaversValue === 'None') {
     return {
-      percentOfPermTemp: 0,
+      value: 0,
     };
   }
 
@@ -31,7 +61,7 @@ const getTurnover = async function (establishmentId) {
   }
 
   return {
-    percentOfPermTemp,
+    value: percentOfPermTemp,
   };
 };
 
@@ -52,4 +82,6 @@ const checkStaffNumberAndLeavers = async function (establishmentId, establishmen
   return false;
 };
 
+module.exports.getPay = getPay;
 module.exports.getTurnover = getTurnover;
+module.exports.getQualifications = getQualifications;
