@@ -83,7 +83,7 @@ describe('rankings', () => {
 
       sinon.stub(models.benchmarksQualifications, 'getComparisonGroupRankings').returns([
         { CssrID: 123, MainServiceFK: 1, qualifications: 0.4, EstablishmentFK: 456 },
-        { CssrID: 123, MainServiceFK: 1, turnover: 0.6, EstablishmentFK: 789 },
+        { CssrID: 123, MainServiceFK: 1, qualifications: 0.6, EstablishmentFK: 789 },
       ]);
 
       const result = await rankings.qualifications(establishmentId);
@@ -130,6 +130,65 @@ describe('rankings', () => {
       ]);
 
       const result = await rankings.qualifications(establishmentId);
+
+      expect(result.currentRank).to.equal(2);
+    });
+  });
+
+  describe('sickness', () => {
+    it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon.stub(models.benchmarksSickness, 'getComparisonGroupRankings').returns([]);
+
+      const result = await rankings.sickness(establishmentId);
+
+      expect(result.stateMessage).to.equal('no-comparison-data');
+    });
+
+    it('should be response with stateMessage no-sickness-data when workplace has no sickness data', async () => {
+      sinon.stub(models.establishment, 'workers').returns(null);
+
+      sinon.stub(models.benchmarksSickness, 'getComparisonGroupRankings').returns([
+        { CssrID: 123, MainServiceFK: 1, sickness: 3, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, sickness: 7, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.sickness(establishmentId);
+
+      expect(result.stateMessage).to.equal('no-sickness-data');
+    });
+
+    it('should be response with hasValue true when sickness and comparison group are available', async () => {
+      sinon.stub(models.establishment, 'workers').returns({ workers: [{ DaysSickDays: 3 }, { DaysSickDays: 7 }] });
+      sinon.stub(models.benchmarksSickness, 'getComparisonGroupRankings').returns([
+        { CssrID: 123, MainServiceFK: 1, sickness: 3, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, sickness: 7, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.sickness(establishmentId);
+
+      expect(result.hasValue).to.equal(true);
+    });
+
+    it('should be response with maxRank equal to number of comparison group rankings + current establishment', async () => {
+      sinon.stub(models.establishment, 'workers').returns({ workers: [{ DaysSickDays: 3 }, { DaysSickDays: 7 }] });
+      sinon.stub(models.benchmarksSickness, 'getComparisonGroupRankings').returns([
+        { CssrID: 123, MainServiceFK: 1, sickness: 3, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, sickness: 7, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.sickness(establishmentId);
+
+      expect(result.maxRank).to.equal(3);
+    });
+
+    it('should be response with currentRank against comparison group rankings', async () => {
+      sinon.stub(models.establishment, 'workers').returns({ workers: [{ DaysSickDays: 3 }, { DaysSickDays: 7 }] });
+      sinon.stub(models.benchmarksSickness, 'getComparisonGroupRankings').returns([
+        { CssrID: 123, MainServiceFK: 1, sickness: 3, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, sickness: 7, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.sickness(establishmentId);
 
       expect(result.currentRank).to.equal(2);
     });

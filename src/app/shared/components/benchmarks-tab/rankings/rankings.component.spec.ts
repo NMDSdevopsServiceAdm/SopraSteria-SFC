@@ -83,53 +83,17 @@ describe('BenchmarksRankingsComponent', () => {
     httpTestingController.verify();
   });
 
-  it('should create a barchart with workplace benchmarks data', async () => {
-    const { fixture, getByText } = await getBenchmarksRankingsComponent();
+  fit('should create a page with all 4 ranking components', async () => {
+    const { fixture, getByText, getAllByText } = await getBenchmarksRankingsComponent();
 
-    setup(payTileData, noPayRankingData);
+    const pay = getAllByText('Pay');
+    const sickness = getAllByText('Sickness');
+    const turnover = getAllByText('Turnover');
+    const qualifications = getAllByText('Qualifications');
 
-    fixture.detectChanges();
-
-    const yourWorkplace = getByText('£10.00');
-    const comparisonGroup = getByText('£11.00');
-    const goodCqc = getByText('£12.00');
-    const lowTurnover = getByText('£9.00');
-
-    expect(yourWorkplace).toBeTruthy();
-    expect(comparisonGroup).toBeTruthy();
-    expect(goodCqc).toBeTruthy();
-    expect(lowTurnover).toBeTruthy();
+    expect(pay).toBeTruthy();
+    expect(sickness).toBeTruthy();
+    expect(turnover).toBeTruthy();
+    expect(qualifications).toBeTruthy();
   });
-
-  it('should create a barchart messages when no benchmarks data available', async () => {
-    const { fixture, getByText } = await getBenchmarksRankingsComponent();
-
-    setup(noPayTileData, noPayRankingData);
-
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    const noYourWorkplaceDataMessage = getByText(MetricsContent.Pay.noData['no-pay-data']);
-    const noComparisonGroupsDataMessage = getByText('We do not have enough data to show these comparisons yet.');
-
-    expect(noYourWorkplaceDataMessage).toBeTruthy();
-    expect(noComparisonGroupsDataMessage).toBeTruthy();
-  });
-
-  /*it('should create a gauge with workplace rankings data', async () => {
-    const { fixture, getByText } = await getBenchmarksMetricComponent();
-
-    setup(noPayTileData, payRankingData);
-
-    fixture.detectChanges();
-
-    fixture.whenStable()
-    //const lowestRank = getByText('3Lowest ranking');
-    //const highestRank = getByText('Highest ranking 1');
-    const currentRank = getByText('Highest ranking 1');
-
-    //expect(lowestRank).toBeTruthy();
-    //expect(highestRank).toBeTruthy();
-    expect(currentRank).toBeTruthy();
-  });*/
 });

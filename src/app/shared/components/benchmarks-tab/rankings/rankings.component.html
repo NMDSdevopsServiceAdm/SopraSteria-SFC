@@ -12,7 +12,40 @@
   </div>
 </div>
 
-<app-gauge #gauge>
+<app-gauge #payGauge>
+  <ng-container your-rank>
+    <app-ranking-content
+      [currentRank]="currentRank"
+      [stateMessage]="rankStateMessage"
+      [hasValue]="rankHasValue"
+      [noData]="noData"
+    ></app-ranking-content>
+  </ng-container>
+</app-gauge>
+
+<app-gauge #turnoverGauge>
+  <ng-container your-rank>
+    <app-ranking-content
+      [currentRank]="currentRank"
+      [stateMessage]="rankStateMessage"
+      [hasValue]="rankHasValue"
+      [noData]="noData"
+    ></app-ranking-content>
+  </ng-container>
+</app-gauge>
+
+<app-gauge #sicknessGauge>
+  <ng-container your-rank>
+    <app-ranking-content
+      [currentRank]="currentRank"
+      [stateMessage]="rankStateMessage"
+      [hasValue]="rankHasValue"
+      [noData]="noData"
+    ></app-ranking-content>
+  </ng-container>
+</app-gauge>
+
+<app-gauge #qualificationsGauge>
   <ng-container your-rank>
     <app-ranking-content
       [currentRank]="currentRank"
