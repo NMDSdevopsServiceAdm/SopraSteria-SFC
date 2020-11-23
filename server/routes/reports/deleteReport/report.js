@@ -4,6 +4,7 @@ const moment = require('moment');
 const express = require('express');
 const router = express.Router();
 
+const excelUtils = require('../../../utils/excelUtils');
 const concatenateAddress = require('../../../utils/concatenateAddress').concatenateAddress;
 
 const headers = [
@@ -63,22 +64,17 @@ const generateDeleteReport = async (req, res) => {
       bold: true,
       color: { argb: 'FFFFFF' },
     };
-    const headerStyle = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: '282c84' },
-    };
 
     WS1.mergeCells('B4:' + lastColumn + '4');
     WS1.getCell('B4').value = 'Date Run: ' + moment().format('DD/MM/YYYY');
     WS1.getCell('B4').font = headerFont;
-    WS1.getCell('B4').fill = headerStyle;
+    WS1.getCell('B4').fill = excelUtils.blueBackground;
     WS1.getCell('B4').border = fullBorder;
 
     WS1.mergeCells('B6:' + lastColumn + '6');
     WS1.getCell('B6').value = 'All establishments due to be deleted within the next four months';
     WS1.getCell('B6').font = headerFont;
-    WS1.getCell('B6').fill = headerStyle;
+    WS1.getCell('B6').fill = excelUtils.blueBackground;
     WS1.getCell('B6').border = fullBorder;
   };
   const createTableHeader = () => {
@@ -170,7 +166,8 @@ const generateDeleteReport = async (req, res) => {
   createTableHeader();
 
   fillData(establishmentsData, laData);
-  autofitColumns(WS1);
+  excelUtils.autoFitColumns(WS1);
+  WS1.getColumn(1).width = 0.7;
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', 'attachment; filename=' + moment().format('DD-MM-YYYY') + '-deleteReport.xlsx');
@@ -179,52 +176,6 @@ const generateDeleteReport = async (req, res) => {
     res.status(200).end();
   });
 };
-
-function eachColumnInRange(ws, col1, col2, cb) {
-  for (let c = col1; c <= col2; c++) {
-    let col = ws.getColumn(c);
-    cb(col);
-  }
-}
-
-function autofitColumns(ws) {
-  eachColumnInRange(ws, 8, 8, (column) => {
-    let maxWidth = 40;
-    column.eachCell((cell) => {
-      if (!cell.isMerged && cell.value) {
-        // doesn't handle merged cells
-
-        let text = '';
-        if (typeof cell.value != 'object') {
-          // string, number, ...
-          text = cell.value.toString();
-        } else if (cell.value.richText) {
-          // richText
-          text = cell.value.richText.reduce((text, obj) => text + obj.text.toString(), '');
-        }
-
-        // handle new lines -> don't forget to set wrapText: true
-        let values = text.split(/[\n\r]+/);
-
-        for (let value of values) {
-          let width = value.length;
-
-          if (cell.font && cell.font.bold) {
-            width *= 1.08; // bolding increases width
-          }
-
-          maxWidth = Math.max(maxWidth, width);
-        }
-      }
-    });
-
-    maxWidth += 0.71; // compensate for observed reduction
-    maxWidth += 1; // buffer space
-
-    column.width = maxWidth;
-  });
-  ws.getColumn(1).width = 0.7;
-}
 
 module.exports = router;
 module.exports.generateDeleteReport = generateDeleteReport;
