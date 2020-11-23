@@ -76,7 +76,7 @@
     "moment-timezone": "^0.5.32",
     "morgan": "^1.10.0",
     "ngx-moment": "^3.5.0",
-    "notifications-node-client": "^4.8.0",
+    "notifications-node-client": "^5.0.1",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "pg": "^8.2.1",
