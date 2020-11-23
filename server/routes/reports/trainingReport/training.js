@@ -25,8 +25,6 @@ const trainingsSheetName = path.join('xl', 'worksheets', 'sheet2.xml');
 const sharedStringsName = path.join('xl', 'sharedStrings.xml');
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 
-const debuglog = () => {};
-
 const trainingCounts = {
   expiredTrainingCount: 0,
   expiringTrainingCount: 0,
@@ -42,7 +40,6 @@ const trainingCounts = {
 let expiredWorkerTrainings = [];
 let expiringWorkerTrainings = [];
 let missingMandatoryTrainingRecords = [];
-let expiredOrExpiringWorkerRecords = [];
 
 const parseXML = (fileContent) =>
   cheerio.load(fileContent, {
@@ -106,8 +103,6 @@ const putStringTemplate = (sheetDoc, stringsDoc, sst, sharedStringsUniqueCount, 
  * @return {Object} All training report data
  */
 const getReportData = async (date, thisEstablishment) => {
-  debuglog('training excel report data started:', thisEstablishment);
-
   return {
     date: date.toISOString(),
     trainings: await getTrainingReportData(thisEstablishment),
@@ -272,14 +267,8 @@ const getTrainingReportData = async (establishmentId) => {
     missingMandatoryTrainingRecords = missingMandatoryTrainingRecords.filter(
       (item) => item.missingMandatoryTrainingCount !== 0,
     );
-    let expiredOrExpiringWorkerIds = new Set(expiredWorkerTrainings.map((d) => d.ID));
-    expiredOrExpiringWorkerRecords = [
-      ...expiredWorkerTrainings,
-      ...expiringWorkerTrainings.filter((d) => !expiredOrExpiringWorkerIds.has(d.ID)),
-    ];
-  } else {
-    expiredOrExpiringWorkerRecords = [];
   }
+
   return trainingData;
 };
 
@@ -437,8 +426,6 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
  * @return {Document} overviewSheet
  */
 const updateOverviewSheet = (overviewSheet, sharedStrings, sst, sharedStringsUniqueCount, sharedStringsCount) => {
-  debuglog('updating overview sheet');
-
   const putString = putStringTemplate.bind(
     null,
     overviewSheet,
@@ -608,7 +595,6 @@ const updateOverviewSheet = (overviewSheet, sharedStrings, sst, sharedStringsUni
 
   // update the cell values
   for (let row = 0; row < missingMandatoryTrainingRecords.length; row++) {
-    debuglog('updating training sheet', row);
     const rowType = row === missingMandatoryTrainingRecords.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
 
     for (let column = 0; column < 4; column++) {
@@ -712,7 +698,6 @@ const updateOverviewSheet = (overviewSheet, sharedStrings, sst, sharedStringsUni
 
   // update the cell values
   for (let row = 0; row < expiringWorkerTrainings.length; row++) {
-    debuglog('updating training sheet', row);
     const rowType = row === expiringWorkerTrainings.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
 
     for (let column = 0; column < 4; column++) {
@@ -787,7 +772,6 @@ const updateOverviewSheet = (overviewSheet, sharedStrings, sst, sharedStringsUni
 
   // update the cell values
   for (let row = 0; row < expiredWorkerTrainings.length; row++) {
-    debuglog('updating training sheet', row);
     const rowType = row === expiredWorkerTrainings.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
 
     for (let column = 0; column < 10; column++) {
@@ -837,8 +821,6 @@ const updateOverviewSheet = (overviewSheet, sharedStrings, sst, sharedStringsUni
     currentRow = currentRow.next();
   }
 
-  debuglog('overview updated');
-
   return overviewSheet;
 };
 /**
@@ -859,8 +841,6 @@ const updateTrainingsSheet = (
   sharedStringsUniqueCount,
   sharedStringsCount,
 ) => {
-  debuglog('updating trainings sheet');
-
   const putString = putStringTemplate.bind(
     null,
     trainingsSheet,
@@ -903,8 +883,6 @@ const updateTrainingsSheet = (
 
   // update the cell values
   for (let row = 0; row < trainingArray.length; row++) {
-    debuglog('updating training sheet', row);
-
     const rowType = row === trainingArray.length - 1 ? 'TRNLAST' : 'TRNREGULAR';
 
     for (let column = 0; column < 9; column++) {
@@ -975,8 +953,6 @@ const updateTrainingsSheet = (
     currentRow = currentRow.next();
   }
 
-  debuglog('trainings updated');
-
   return trainingsSheet;
 };
 /**
@@ -1000,17 +976,12 @@ const getReport = async (date, thisEstablishment) => {
 
     let overviewSheet, trainingsSheet, sharedStrings;
 
-    debuglog('iterating filesystem', thePath);
-
     walker.on('file', (root, fileStats, next) => {
       const pathName = root.replace(thePath, '').replace('\\', '/').replace(/^\//, '');
       const zipPath = pathName === '' ? fileStats.name : path.join(pathName, fileStats.name);
       const readPath = path.join(thePath, zipPath);
-      debuglog('file found', readPath);
 
       fs.readFile(`${readPath}`, (err, fileContent) => {
-        debuglog('content read', zipPath);
-
         if (!err) {
           switch (zipPath) {
             case overviewSheetName:
@@ -1044,8 +1015,6 @@ const getReport = async (date, thisEstablishment) => {
     });
 
     walker.on('end', () => {
-      debuglog('all files read');
-
       if (sharedStrings) {
         const sst = sharedStrings('sst');
 
@@ -1084,8 +1053,6 @@ const getReport = async (date, thisEstablishment) => {
         // add the updated shared strings to the zip
         outputZip.file(sharedStringsName, sharedStrings.xml());
       }
-
-      debuglog('training report: creating zip file');
 
       resolve(outputZip);
     });

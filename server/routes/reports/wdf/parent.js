@@ -39,8 +39,6 @@ const establishmentsSheetName = path.join('xl', 'worksheets', 'sheet2.xml');
 const workersSheetName = path.join('xl', 'worksheets', 'sheet3.xml');
 const sharedStringsName = path.join('xl', 'sharedStrings.xml');
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
-// const debuglog = console.log.bind(console);
-const debuglog = () => {};
 
 const buStates = ['READY', 'DOWNLOADING', 'FAILED', 'WARNINGS', 'PASSED', 'COMPLETING'].reduce((acc, item) => {
   acc[item] = item;
@@ -93,8 +91,6 @@ const putStringTemplate = (sheetDoc, stringsDoc, sst, sharedStringsUniqueCount, 
 };
 
 const getReportData = async (date, thisEstablishment) => {
-  debuglog('wdf parent excel report data started:', thisEstablishment);
-
   return {
     date: date.toISOString(),
     parentName: thisEstablishment.name,
@@ -260,7 +256,7 @@ const getWorkersReportData = async (establishmentId) => {
     }
   });
 
-  workersArray.forEach((value, key) => {
+  workersArray.forEach((value) => {
     if (value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know") {
       value.QualificationInSocialCare = 'N/A';
     }
@@ -562,8 +558,6 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
 };
 
 const updateOverviewSheet = (overviewSheet, reportData, sharedStrings, sst, sharedStringsUniqueCount) => {
-  debuglog('updating overview sheet');
-
   const putString = putStringTemplate.bind(null, overviewSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   // set headers
@@ -632,8 +626,6 @@ const updateOverviewSheet = (overviewSheet, reportData, sharedStrings, sst, shar
 
   // update the cell values
   for (let row = 0; row < reportData.establishments.length; row++) {
-    debuglog('updating overview', row);
-
     const rowType = row === reportData.establishments.length - 1 ? 'OVRLAST' : 'OVRREGULAR';
     // let nextSibling = {};
 
@@ -737,8 +729,6 @@ const updateOverviewSheet = (overviewSheet, reportData, sharedStrings, sst, shar
     currentRow = currentRow.next();
   }
 
-  debuglog('overview updated');
-
   return overviewSheet;
 };
 
@@ -750,8 +740,6 @@ const updateEstablishmentsSheet = (
   sharedStringsUniqueCount,
   thisEstablishment,
 ) => {
-  debuglog('updating establishments sheet');
-
   const putString = putStringTemplate.bind(null, establishmentsSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   // set headers
@@ -802,8 +790,6 @@ const updateEstablishmentsSheet = (
 
   // update the cell values
   for (let row = 0; row < establishmentArray.length; row++) {
-    debuglog('updating establishment', row);
-
     const rowType = row === establishmentArray.length - 1 ? 'ESTLAST' : 'ESTREGULAR';
 
     for (let column = 0; column < 17; column++) {
@@ -929,14 +915,10 @@ const updateEstablishmentsSheet = (
     currentRow = currentRow.next();
   }
 
-  debuglog('establishments updated');
-
   return establishmentsSheet;
 };
 
 const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, sharedStringsUniqueCount) => {
-  debuglog('updating workers sheet');
-
   const putString = putStringTemplate.bind(null, workersSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   // set headers
@@ -974,8 +956,6 @@ const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, shared
 
   // update the cell values
   for (let row = 0; row < reportData.workers.length; row++) {
-    debuglog('updating worker', row);
-
     const rowType = row === reportData.workers.length - 1 ? 'WKRLAST' : 'WKRREGULAR';
 
     for (let column = 0; column < 19; column++) {
@@ -1157,8 +1137,6 @@ const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, shared
     currentRow = currentRow.next();
   }
 
-  debuglog('workers updated');
-
   return workersSheet;
 };
 
@@ -1176,17 +1154,12 @@ const getReport = async (date, thisEstablishment) => {
 
     let overviewSheet, establishmentsSheet, workersSheet, sharedStrings;
 
-    debuglog('iterating filesystem', thePath);
-
     walker.on('file', (root, fileStats, next) => {
       const pathName = root.replace(thePath, '').replace('\\', '/').replace(/^\//, '');
       const zipPath = pathName === '' ? fileStats.name : path.join(pathName, fileStats.name);
       const readPath = path.join(thePath, zipPath);
-      debuglog('file found', readPath);
 
       fs.readFile(`${readPath}`, (err, fileContent) => {
-        debuglog('content read', zipPath);
-
         if (!err) {
           switch (zipPath) {
             case overviewSheetName:
@@ -1226,8 +1199,6 @@ const getReport = async (date, thisEstablishment) => {
     });
 
     walker.on('end', async () => {
-      debuglog('all files read');
-
       if (sharedStrings) {
         const sst = sharedStrings('sst');
 
@@ -1279,8 +1250,6 @@ const getReport = async (date, thisEstablishment) => {
         // add the updated shared strings to the zip
         outputZip.file(sharedStringsName, sharedStrings.xml());
       }
-
-      debuglog('wdf parent report: creating zip file');
 
       resolve(outputZip);
     });
@@ -1359,7 +1328,9 @@ const acquireLock = async function (logic, newState, req, res) {
   // run whatever the original logic was
   try {
     await logic(req, res);
-  } catch (e) {}
+  } catch (e) {
+    console.error(e);
+  }
 
   // release the lock
   await releaseLock(req, null, null, nextState);
@@ -1388,7 +1359,7 @@ const signedUrlGet = async (req, res) => {
     await saveResponse(req, res, 200, {
       urls: s3.getSignedUrl('putObject', {
         Bucket,
-        Key: `${establishmentId}/latest/${moment(date).format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`,
+        Key: `${establishmentId}/latest/${moment().format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`,
         ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         Metadata: {
           username: String(req.username),

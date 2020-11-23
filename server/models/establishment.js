@@ -764,7 +764,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.turnOverData = function (establishmentId) {
+  Establishment.turnoverData = function (establishmentId) {
     return this.findByPk(establishmentId, {
       attributes: ['id', 'NumberOfStaffValue', 'LeaversValue'],
     });
@@ -854,29 +854,6 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         id: establishmentId,
       },
-    });
-  };
-
-  Establishment.getBenchmarkData = async function (establishmentId) {
-    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
-    return await this.findOne({
-      attributes: ['id'],
-      where: { id: establishmentId },
-      include: [
-        {
-          model: sequelize.models.services,
-          as: 'mainService',
-          include: [
-            {
-              model: sequelize.models.benchmarks,
-              where: {
-                CssrID: cssr,
-              },
-              as: 'benchmarksData',
-            },
-          ],
-        },
-      ],
     });
   };
 

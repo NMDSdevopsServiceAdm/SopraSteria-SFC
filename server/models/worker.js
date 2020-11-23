@@ -957,7 +957,7 @@ module.exports = function (sequelize, DataTypes) {
       RegisteredNurseValue: {
         type: DataTypes.ENUM,
         allowNull: true,
-        values: ['Adult nurse', 'Mental health nurse', 'Learning disabiliies', `Children's nurse`, 'Enrolled nurse'],
+        values: ['Adult nurse', 'Mental health nurse', 'Learning disabiliies', "Children's nurse", 'Enrolled nurse'],
         field: '"RegisteredNurseValue"',
       },
       RegisteredNurseSavedAt: {
@@ -1158,40 +1158,50 @@ module.exports = function (sequelize, DataTypes) {
       },
     });
   };
-  Worker.specificJobsAndNoSocialCareQuals = async function (establishmentId, jobArray) {
-    return this.count({
+  Worker.countSocialCareQualificationsAndNoQualifications = async function (establishmentId, jobArray) {
+    return this.findOne({
+      attributes: [
+        [
+          sequelize.cast(
+            sequelize.fn(
+              'SUM',
+              sequelize.literal(
+                'CASE WHEN "QualificationInSocialCareValue" = \'Yes\' AND "SocialCareQualificationFKValue" NOT IN (10) THEN 1 ELSE 0 END',
+              ),
+            ),
+            'int',
+          ),
+          'quals',
+        ],
+        [
+          sequelize.cast(
+            sequelize.fn(
+              'SUM',
+              sequelize.literal('CASE WHEN "QualificationInSocialCareValue" = \'No\' THEN 1 ELSE 0 END'),
+            ),
+            'int',
+          ),
+          'noQuals',
+        ],
+        [
+          sequelize.cast(
+            sequelize.fn(
+              'SUM',
+              sequelize.literal(
+                'CASE WHEN "QualificationInSocialCareValue" = \'Yes\' AND "SocialCareQualificationFKValue" NOT IN (10) AND "SocialCareQualificationFKValue" > 2 THEN 1 ELSE 0 END',
+              ),
+            ),
+            'int',
+          ),
+          'lvl2Quals',
+        ],
+      ],
       where: {
         establishmentFk: establishmentId,
         MainJobFkValue: jobArray,
         archived: false,
-        QualificationInSocialCareValue: 'No',
       },
-    });
-  };
-  Worker.specificJobsAndSocialCareQuals = async function (establishmentId, jobArray) {
-    return this.count({
-      where: {
-        establishmentFk: establishmentId,
-        MainJobFkValue: jobArray,
-        archived: false,
-        QualificationInSocialCareValue: 'Yes',
-        SocialCareQualificationFkValue: {
-          [sequelize.Op.not]: [10],
-        },
-      },
-    });
-  };
-  Worker.benchmarkQualsCount = async function (establishmentId, jobArray) {
-    return this.count({
-      where: {
-        establishmentFk: establishmentId,
-        MainJobFkValue: jobArray,
-        archived: false,
-        SocialCareQualificationFkValue: {
-          [sequelize.Op.gt]: 2,
-          [sequelize.Op.not]: [10],
-        },
-      },
+      raw: true,
     });
   };
 
@@ -1207,9 +1217,9 @@ module.exports = function (sequelize, DataTypes) {
         },
         establishmentFk: establishmentId,
       },
-      raw: true
-    })
-  }
+      raw: true,
+    });
+  };
 
   Worker.retrieveEstablishmentFluJabs = async function (establishmentId) {
     return await this.findAll({

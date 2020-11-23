@@ -18,9 +18,6 @@ const staffRecordsSheetName = path.join('xl', 'worksheets', 'sheet2.xml');
 const sharedStringsName = path.join('xl', 'sharedStrings.xml');
 const isNumberRegex = /^[0-9]+(\.[0-9]+)?$/;
 
-//const debuglog = console.log.bind(console);
-const debuglog = () => {};
-
 const reportLock = require('../../../utils/fileLock');
 //XML DOM manipulation helper functions
 const parseXML = (fileContent) =>
@@ -110,9 +107,9 @@ const identifyLocalAuthority = async (postcode) => {
 
   // must escape the string to prevent SQL injection
   const fuzzyCssrIdMatch = await models.sequelize.query(
-    `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(
+    `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like '${escape(
       firstHalfOfPostcode,
-    )}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR"`,
+    )}%' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR"`,
     {
       type: models.sequelize.QueryTypes.SELECT,
     },
@@ -143,10 +140,8 @@ const LAReport = {
       type: models.sequelize.QueryTypes.SELECT,
     };
 
-    debuglog('LA user report data started:', params);
-
     const runReport = await models.sequelize.query(
-      `select cqc.localAuthorityReport(:givenEstablishmentId, :givenFromDate, :givenToDate);`,
+      'select cqc.localAuthorityReport(:givenEstablishmentId, :givenFromDate, :givenToDate);',
       params,
     );
 
@@ -203,8 +198,6 @@ const LAReport = {
     if (reportWorkers && Array.isArray(reportWorkers)) {
       reportData.workers = reportWorkers;
     }
-
-    debuglog('LA user report data finished:', params, reportData.establishments.length, reportData.workers.length);
 
     return reportData;
   },
@@ -523,8 +516,6 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
 };
 
 const updateWorkplacesSheet = (workplacesSheet, reportData, sharedStrings, sst, sharedStringsUniqueCount) => {
-  debuglog('updating workplaces sheet');
-
   const putString = putStringTemplate.bind(null, workplacesSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   //set headers
@@ -583,8 +574,6 @@ const updateWorkplacesSheet = (workplacesSheet, reportData, sharedStrings, sst, 
 
   //update the cell values
   for (let row = 0; row < reportData.establishments.length; row++) {
-    debuglog('updating establishment', row);
-
     const rowType = row === 0 ? 'ESTFIRST' : row === reportData.establishments.length - 1 ? 'ESTLAST' : 'ESTREGULAR';
 
     for (let column = 0; column < 24; column++) {
@@ -898,8 +887,6 @@ const updateWorkplacesSheet = (workplacesSheet, reportData, sharedStrings, sst, 
   //update totals
   const rowType = 'ESTTOTAL';
   for (let column = 0; column < 24; column++) {
-    debuglog('updating establishment totals');
-
     const columnText = String.fromCharCode(column + 65);
 
     const cellToChange = workplacesSheet(`c[r='${columnText}12']`);
@@ -1026,8 +1013,6 @@ const updateWorkplacesSheet = (workplacesSheet, reportData, sharedStrings, sst, 
     }
   }
 
-  debuglog('establishments updated');
-
   return workplacesSheet;
 };
 
@@ -1051,8 +1036,6 @@ const redIifMissing = (putString, cellToChange, value, columnText, rowType, colu
 };
 
 const updateStaffRecordsSheet = (staffRecordsSheet, reportData, sharedStrings, sst, sharedStringsUniqueCount) => {
-  debuglog('updating staff sheet');
-
   const putString = putStringTemplate.bind(null, staffRecordsSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   putString(staffRecordsSheet("c[r='B5']"), moment(reportData.date).format('DD/MM/YYYY'));
@@ -1097,8 +1080,6 @@ const updateStaffRecordsSheet = (staffRecordsSheet, reportData, sharedStrings, s
 
   //update the cell values
   for (let row = 0; row < reportData.workers.length; row++) {
-    debuglog('updating worker', row);
-
     const rowType = row === reportData.workers.length - 1 ? 'WORKERLAST' : 'WORKERREGULAR';
 
     for (let column = 0; column < 18; column++) {
@@ -1270,8 +1251,6 @@ const updateStaffRecordsSheet = (staffRecordsSheet, reportData, sharedStrings, s
     currentRow = currentRow.next();
   }
 
-  debuglog('workers updated');
-
   return staffRecordsSheet;
 };
 
@@ -1288,18 +1267,12 @@ const getReport = async (date, thisEstablishment) => {
 
     let workplacesSheet, staffRecordsSheet, sharedStrings;
 
-    debuglog('iterating filesystem', thePath);
-
     walker.on('file', (root, fileStats, next) => {
       const pathName = root.replace(thePath, '').replace('\\', '/').replace(/^\//, '');
       const zipPath = pathName === '' ? fileStats.name : path.join(pathName, fileStats.name);
       const readPath = path.join(thePath, zipPath);
 
-      debuglog('file found', readPath);
-
       fs.readFile(`${readPath}`, (err, fileContent) => {
-        debuglog('content read', zipPath);
-
         if (!err) {
           switch (zipPath) {
             case workplacesSheetName:
@@ -1333,8 +1306,6 @@ const getReport = async (date, thisEstablishment) => {
     });
 
     walker.on('end', () => {
-      debuglog('all files read');
-
       if (sharedStrings) {
         const sst = sharedStrings('sst');
 
@@ -1372,8 +1343,6 @@ const getReport = async (date, thisEstablishment) => {
         //add the updated shared strings to the zip
         outputZip.file(sharedStringsName, sharedStrings.xml());
       }
-
-      debuglog('LA user report: creating zip file');
 
       resolve(outputZip);
     });
