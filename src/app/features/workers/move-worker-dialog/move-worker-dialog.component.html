@@ -10,14 +10,10 @@
   <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" autocomplete="off">
     <fieldset class="govuk-fieldset">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-        <h1 class="govuk-fieldset__heading">
-          Find the workplace to move to
-        </h1>
+        <h1 class="govuk-fieldset__heading">Find the workplace to move to</h1>
       </legend>
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-        <label class="govuk-label" for="workplaceNameOrPostCode">
-          Enter a workplace name or postcode
-        </label>
+        <label class="govuk-label" for="workplaceNameOrPostCode"> Enter a workplace name or postcode </label>
         <span
           *ngIf="submitted && form.get('workplaceNameOrPostCode').invalid"
           id="workplaceNameOrPostCode-error"
@@ -36,7 +32,7 @@
 
       <p *ngIf="form.valid">
         <strong
-          >You are about to move {{ data.worker.nameOrId }} {{ form.get('workplaceNameOrPostCode').value }}.</strong
+          >You're about to move {{ data.worker.nameOrId }} {{ form.get('workplaceNameOrPostCode').value }}.</strong
         >
       </p>
     </fieldset>

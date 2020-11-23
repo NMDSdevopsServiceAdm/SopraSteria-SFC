@@ -71,5 +71,36 @@ module.exports = function (sequelize, DataTypes) {
     }
   };
 
+  CSSR.getCSSR = async (establishmentId) => {
+    const postcode = await sequelize.models.establishment.findOne({
+      attributes: ['postcode', 'id'],
+      where: { id: establishmentId },
+    });
+    if (!postcode) {
+      return {};
+    }
+    let cssr = await sequelize.models.pcodedata.findOne({
+      attributes: ['uprn', 'postcode'],
+      include: [
+        {
+          model: sequelize.models.cssr,
+          attributes: ['id'],
+          as: 'theAuthority',
+        },
+      ],
+      where: {
+        postcode: postcode.postcode,
+      },
+    });
+    if (cssr && cssr.theAuthority && cssr.theAuthority.id) {
+      cssr = cssr.theAuthority.id;
+    } else {
+      cssr = await CSSR.getIdFromDistrict(postcode.postcode);
+      if (!cssr) {
+        return {};
+      }
+    }
+    return cssr;
+  };
   return CSSR;
 };

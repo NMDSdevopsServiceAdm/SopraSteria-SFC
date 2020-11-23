@@ -8,57 +8,57 @@ let ALL_CAPACITIES = null;
 let ALL_UTILISATIONS = null;
 
 class BUDI {
-  static async initialize () {
+  static async initialize() {
     const cssrFetch = await dbmodels.cssr.findAll({
       attributes: ['id', 'name'],
       group: ['id', 'name'],
-      order: [
-        ['id', 'ASC']
-      ]
+      order: [['id', 'ASC']],
     });
 
     if (Array.isArray(cssrFetch)) {
-      ALL_CSSRS = cssrFetch.map(thisCssr => {
+      ALL_CSSRS = cssrFetch.map((thisCssr) => {
         return {
           custodianCode: thisCssr.id,
-          name: thisCssr.name
+          name: thisCssr.name,
         };
       });
     }
 
     const capacitiesFetch = await dbmodels.serviceCapacity.findAll({
-      order: [
-        ['id', 'ASC']
-      ]
+      order: [['id', 'ASC']],
     });
 
     if (Array.isArray(capacitiesFetch)) {
       ALL_CAPACITIES = capacitiesFetch
-        .filter(thisCapacity => thisCapacity.type === 'Capacity')
-        .map(thisCapacity => {
+        .filter((thisCapacity) => thisCapacity.type === 'Capacity')
+        .map((thisCapacity) => {
           return {
             serviceCapacityId: thisCapacity.id,
-            serviceId: thisCapacity.serviceId
+            serviceId: thisCapacity.serviceId,
           };
         });
 
       ALL_UTILISATIONS = capacitiesFetch
-        .filter(thisCapacity => thisCapacity.type === 'Utilisation')
-        .map(thisCapacity => {
+        .filter((thisCapacity) => thisCapacity.type === 'Utilisation')
+        .map((thisCapacity) => {
           return {
             serviceCapacityId: thisCapacity.id,
-            serviceId: thisCapacity.serviceId
+            serviceId: thisCapacity.serviceId,
           };
         });
     }
   }
 
-  static get TO_ASC () { return 100; }
-  static get FROM_ASC () { return 200; }
+  static get TO_ASC() {
+    return 100;
+  }
+  static get FROM_ASC() {
+    return 200;
+  }
 
   // maps services (main/other)
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static services (direction, originalCode) {
+  static services(direction, originalCode) {
     const fixedMapping = [
       { ASC: 24, BUDI: 1 },
       { ASC: 25, BUDI: 2 },
@@ -95,21 +95,21 @@ class BUDI {
       { ASC: 15, BUDI: 52 },
       { ASC: 16, BUDI: 72 },
       { ASC: 36, BUDI: 60 },
-      { ASC: 14, BUDI: 75 }
+      { ASC: 14, BUDI: 75 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisService => thisService.BUDI === originalCode);
+      const found = fixedMapping.find((thisService) => thisService.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisService => thisService.ASC === originalCode);
+    const found = fixedMapping.find((thisService) => thisService.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
   // maps service users
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static serviceUsers (direction, originalCode) {
+  static serviceUsers(direction, originalCode) {
     const fixedMapping = [
       { ASC: 1, BUDI: 1 },
       { ASC: 2, BUDI: 2 },
@@ -133,21 +133,21 @@ class BUDI {
       { ASC: 20, BUDI: 18 },
       { ASC: 21, BUDI: 19 },
       { ASC: 22, BUDI: 20 },
-      { ASC: 23, BUDI: 21 }
+      { ASC: 23, BUDI: 21 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisService => thisService.BUDI === originalCode);
+      const found = fixedMapping.find((thisService) => thisService.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisService => thisService.ASC === originalCode);
+    const found = fixedMapping.find((thisService) => thisService.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
   // maps job roles
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static jobRoles (direction, originalCode) {
+  static jobRoles(direction, originalCode) {
     const fixedMapping = [
       { ASC: 26, BUDI: 1 },
       { ASC: 15, BUDI: 2 },
@@ -177,61 +177,61 @@ class BUDI {
       { ASC: 7, BUDI: 39 },
       { ASC: 8, BUDI: 40 },
       { ASC: 9, BUDI: 41 },
-      { ASC: 6, BUDI: 42 }
+      { ASC: 6, BUDI: 42 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisJob => thisJob.BUDI === originalCode);
+      const found = fixedMapping.find((thisJob) => thisJob.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisJob => thisJob.ASC === originalCode);
+    const found = fixedMapping.find((thisJob) => thisJob.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
   // maps contract type (permanent, temp, volunteer)
-  static contractType (direction, originalCode) {
+  static contractType(direction, originalCode) {
     const fixedMapping = [
       { ASC: 'Permanent', BUDI: 1 },
       { ASC: 'Temporary', BUDI: 2 },
       { ASC: 'Pool/Bank', BUDI: 3 },
       { ASC: 'Agency', BUDI: 4 },
-      { ASC: 'Other', BUDI: 7 } // multiple values mapping to Other; 7 needs to be first in list for the export
+      { ASC: 'Other', BUDI: 7 }, // multiple values mapping to Other; 7 needs to be first in list for the export
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisType => thisType.BUDI === originalCode);
+      const found = fixedMapping.find((thisType) => thisType.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisType => thisType.ASC === originalCode);
+    const found = fixedMapping.find((thisType) => thisType.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
   // maps establishment employer type (private, local authority, volunteer, et al)
-  static establishmentType (direction, originalCode) {
+  static establishmentType(direction, originalCode) {
     const fixedMapping = [
       { ASC: 'Local Authority (adult services)', BUDI: 1 },
       { ASC: 'Local Authority (generic/other)', BUDI: 3 },
       { ASC: 'Private Sector', BUDI: 6 },
       { ASC: 'Voluntary / Charity', BUDI: 7 },
-      { ASC: 'Other', BUDI: 8 }
+      { ASC: 'Other', BUDI: 8 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisTrainingCategory => thisTrainingCategory.BUDI === originalCode);
+      const found = fixedMapping.find((thisTrainingCategory) => thisTrainingCategory.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisType => thisType.ASC === originalCode);
+    const found = fixedMapping.find((thisType) => thisType.ASC === originalCode);
     return found ? found.BUDI : 8;
   }
 
   // maps Local Authority (CSSR)
-  static localAuthority (direction, originalCode) {
+  static localAuthority(direction, originalCode) {
     if (direction === BUDI.TO_ASC) {
       // lookup against all known CSSRs using the given original code as index
-      return ALL_CSSRS.find(thisCssr => thisCssr.custodianCode === originalCode);
+      return ALL_CSSRS.find((thisCssr) => thisCssr.custodianCode === originalCode);
     }
 
     // ASC WDS local authority is an object where "custodianCode" is the Local Authority integer
@@ -239,38 +239,18 @@ class BUDI {
   }
 
   // maps reasons for leaving - one to one mapping (no ASC WDS reasons for leaving)
-  static reasonsForLeaving (direction, originalCode) {
-    const fixedMapping = [
-      { ASC: 1, BUDI: 21 },
-      { ASC: 2, BUDI: 22 },
-      { ASC: 3, BUDI: 23 },
-      { ASC: 4, BUDI: 24 },
-      { ASC: 5, BUDI: 25 },
-      { ASC: 6, BUDI: 26 },
-      { ASC: 7, BUDI: 27 },
-      { ASC: 8, BUDI: 28 },
-      { ASC: 9, BUDI: 29 }
-    ];
-
-    // TODO - the above mappings are incorrect; awaiting for Maria's/Jackie's return
-    // if (direction === BUDI.TO_ASC) {
-    //   const found = fixedMapping.find(thisReason => thisReason.BUDI === originalCode);
-    //   return found ? found.ASC : null;
-    // } else {
-    //   const found = fixedMapping.find(thisReason => thisReason.ASC === originalCode)
-    //   return found ? found.BUDI : null;
-    // }
+  static reasonsForLeaving(direction, originalCode) {
     return originalCode;
   }
 
   // destination on  leaving - one to one mapping (no ASC WDS destinations on leaving)
-  static destinationOnLeaving (direction, originalCode) {
+  static destinationOnLeaving(direction, originalCode) {
     return originalCode;
   }
 
   // maps training roles
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static trainingCategory (direction, originalCode) {
+  static trainingCategory(direction, originalCode) {
     const fixedMapping = [
       { ASC: 8, BUDI: 1 },
       { ASC: 10, BUDI: 2 },
@@ -308,21 +288,21 @@ class BUDI {
       { ASC: 5, BUDI: 37 },
       { ASC: 30, BUDI: 38 },
       { ASC: 1, BUDI: 39 },
-      { ASC: 34, BUDI: 40 }
+      { ASC: 34, BUDI: 40 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisTrainingCategory => thisTrainingCategory.BUDI === originalCode);
+      const found = fixedMapping.find((thisTrainingCategory) => thisTrainingCategory.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisTrainingCategory => thisTrainingCategory.ASC === originalCode);
+    const found = fixedMapping.find((thisTrainingCategory) => thisTrainingCategory.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
   // maps ethnicity
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static ethnicity (direction, originalCode) {
+  static ethnicity(direction, originalCode) {
     const fixedMapping = [
       { ASC: 1, BUDI: 31 },
       { ASC: 3, BUDI: 32 },
@@ -342,21 +322,21 @@ class BUDI {
       { ASC: 17, BUDI: 46 },
       { ASC: 18, BUDI: 47 },
       { ASC: 19, BUDI: 98 },
-      { ASC: 2, BUDI: 99 }
+      { ASC: 2, BUDI: 99 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisEthnicity => thisEthnicity.BUDI === originalCode);
+      const found = fixedMapping.find((thisEthnicity) => thisEthnicity.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisEthnicity => thisEthnicity.ASC === originalCode);
+    const found = fixedMapping.find((thisEthnicity) => thisEthnicity.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
   // maps nationality
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static nationality (direction, originalCode) {
+  static nationality(direction, originalCode) {
     const fixedMapping = [
       { ASC: 1, BUDI: 4 },
       { ASC: 2, BUDI: 8 },
@@ -596,21 +576,21 @@ class BUDI {
       { ASC: 60, BUDI: 534 },
       { ASC: 60, BUDI: 535 },
       { ASC: 109, BUDI: 995 },
-      { ASC: 60, BUDI: 531 }
+      { ASC: 60, BUDI: 531 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisNationality => thisNationality.BUDI === originalCode);
+      const found = fixedMapping.find((thisNationality) => thisNationality.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisNationality => thisNationality.ASC === originalCode);
+    const found = fixedMapping.find((thisNationality) => thisNationality.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
   // maps country of birth
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static country (direction, originalCode) {
+  static country(direction, originalCode) {
     const fixedMapping = [
       { ASC: 1, BUDI: 4 },
       { ASC: 3, BUDI: 8 },
@@ -860,21 +840,21 @@ class BUDI {
       { ASC: 262, BUDI: 535 },
       { ASC: 263, BUDI: 995 },
       { ASC: 264, BUDI: 534 },
-      { ASC: 265, BUDI: 531 }
+      { ASC: 265, BUDI: 531 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisCountry => thisCountry.BUDI === originalCode);
+      const found = fixedMapping.find((thisCountry) => thisCountry.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisCountry => thisCountry.ASC === originalCode);
+    const found = fixedMapping.find((thisCountry) => thisCountry.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
   // maps recruitment source
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static recruitment (direction, originalCode) {
+  static recruitment(direction, originalCode) {
     const fixedMapping = [
       { BUDI: 1, ASC: 1 },
       { BUDI: 2, ASC: 2 },
@@ -885,21 +865,21 @@ class BUDI {
       { BUDI: 12, ASC: 8 },
       { BUDI: 15, ASC: 10 },
       { BUDI: 17, ASC: 4 },
-      { BUDI: 18, ASC: 9 }
+      { BUDI: 18, ASC: 9 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisSource => thisSource.BUDI === originalCode);
+      const found = fixedMapping.find((thisSource) => thisSource.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisSource => thisSource.ASC === originalCode);
+    const found = fixedMapping.find((thisSource) => thisSource.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
   // maps nursing specialist
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static nursingSpecialist (direction, originalCode) {
+  static nursingSpecialist(direction, originalCode) {
     const fixedMapping = [
       { BUDI: 1, ASC: 1 },
       { BUDI: 2, ASC: 2 },
@@ -908,15 +888,15 @@ class BUDI {
       { BUDI: 5, ASC: 5 },
       { BUDI: 6, ASC: 6 },
       { BUDI: 7, ASC: 7 },
-      { BUDI: 8, ASC: 8 }
+      { BUDI: 8, ASC: 8 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisSpecialist => thisSpecialist.BUDI === originalCode);
+      const found = fixedMapping.find((thisSpecialist) => thisSpecialist.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisSpecialist => thisSpecialist.ASC === originalCode);
+    const found = fixedMapping.find((thisSpecialist) => thisSpecialist.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
@@ -935,7 +915,7 @@ class BUDI {
 
   // maps (highest) qualification levels
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
-  static qualificationLevels (direction, originalCode) {
+  static qualificationLevels(direction, originalCode) {
     const fixedMapping = [
       { BUDI: 0, ASC: 1 },
       { BUDI: 1, ASC: 2 },
@@ -946,20 +926,20 @@ class BUDI {
       { BUDI: 6, ASC: 7 },
       { BUDI: 7, ASC: 8 },
       { BUDI: 8, ASC: 9 },
-      { BUDI: 999, ASC: 10 }
+      { BUDI: 999, ASC: 10 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisSpecialist => thisSpecialist.BUDI === originalCode);
+      const found = fixedMapping.find((thisSpecialist) => thisSpecialist.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisSpecialist => thisSpecialist.ASC === originalCode);
+    const found = fixedMapping.find((thisSpecialist) => thisSpecialist.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
   // maps qualification types
-  static qualifications (direction, originalCode) {
+  static qualifications(direction, originalCode) {
     const fixedMapping = [
       { BUDI: 1, ASC: 97 },
       { BUDI: 2, ASC: 98 },
@@ -1087,22 +1067,22 @@ class BUDI {
       { BUDI: 309, ASC: 130 },
       { BUDI: 312, ASC: 131 },
       { BUDI: 313, ASC: 132 },
-      { BUDI: 311, ASC: 133 }
+      { BUDI: 311, ASC: 133 },
     ];
 
     if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisQualification => thisQualification.BUDI === originalCode);
+      const found = fixedMapping.find((thisQualification) => thisQualification.BUDI === originalCode);
       return found ? found.ASC : null;
     }
 
-    const found = fixedMapping.find(thisQualification => thisQualification.ASC === originalCode);
+    const found = fixedMapping.find((thisQualification) => thisQualification.ASC === originalCode);
     return found ? found.BUDI : null;
   }
 
-  static capacity (direction, originalCode) {
+  static capacity(direction, originalCode) {
     if (Array.isArray(ALL_CAPACITIES)) {
       // capacities are assumed to be the first question for a given service id (originalCode)
-      const foundCapacity = ALL_CAPACITIES.find(thisCapacity => thisCapacity.serviceId === originalCode);
+      const foundCapacity = ALL_CAPACITIES.find((thisCapacity) => thisCapacity.serviceId === originalCode);
 
       // foundCapacity will be undefined if not found
       if (typeof foundCapacity !== 'undefined') {
@@ -1113,9 +1093,9 @@ class BUDI {
     return null;
   }
 
-  static utilisation (direction, originalCode) {
+  static utilisation(direction, originalCode) {
     if (Array.isArray(ALL_UTILISATIONS)) {
-      const foundUtilisation = ALL_UTILISATIONS.find(thisCapacity => thisCapacity.serviceId === originalCode);
+      const foundUtilisation = ALL_UTILISATIONS.find((thisCapacity) => thisCapacity.serviceId === originalCode);
 
       // foundUtilisation will be undefined if not found
       if (typeof foundUtilisation !== 'undefined') {
@@ -1126,9 +1106,9 @@ class BUDI {
     return null;
   }
 
-  static serviceFromCapacityId (serviceCapacityId) {
+  static serviceFromCapacityId(serviceCapacityId) {
     if (Array.isArray(ALL_CAPACITIES)) {
-      const foundCapacity = ALL_CAPACITIES.find(thisCapacity => thisCapacity.serviceCapacityId === serviceCapacityId);
+      const foundCapacity = ALL_CAPACITIES.find((thisCapacity) => thisCapacity.serviceCapacityId === serviceCapacityId);
 
       // foundCapacity will be undefined if not found
       if (typeof foundCapacity !== 'undefined') {
@@ -1139,9 +1119,11 @@ class BUDI {
     return null;
   }
 
-  static serviceFromUtilisationId (serviceCapacityId) {
+  static serviceFromUtilisationId(serviceCapacityId) {
     if (Array.isArray(ALL_UTILISATIONS)) {
-      const foundCapacity = ALL_UTILISATIONS.find(thisCapacity => thisCapacity.serviceCapacityId === serviceCapacityId);
+      const foundCapacity = ALL_UTILISATIONS.find(
+        (thisCapacity) => thisCapacity.serviceCapacityId === serviceCapacityId,
+      );
 
       // foundCapacity will be undefined if not found
       if (typeof foundCapacity !== 'undefined') {
@@ -1157,7 +1139,7 @@ class BUDI {
 if (dbmodels.status.ready) {
   BUDI.initialize()
     .then()
-    .catch(err => {
+    .catch((err) => {
       console.error('Failed to initialise BUDI: ', err);
     });
 } else {
@@ -1165,7 +1147,7 @@ if (dbmodels.status.ready) {
     // initialising BUDI
     BUDI.initialize()
       .then()
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to initialise BUDI: ', err);
       });
   });

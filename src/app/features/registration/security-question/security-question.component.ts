@@ -5,19 +5,19 @@ import { SecurityDetails } from '@core/model/security-details.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { SecurityQuestion } from '@features/account/security-question/security-question';
+import { SecurityQuestionDirective } from '@features/account/security-question/security-question';
 
 @Component({
   selector: 'app-security-question',
   templateUrl: './security-question.component.html',
 })
-export class SecurityQuestionComponent extends SecurityQuestion {
+export class SecurityQuestionComponent extends SecurityQuestionDirective {
   constructor(
     private registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, router);
   }
@@ -30,12 +30,11 @@ export class SecurityQuestionComponent extends SecurityQuestion {
 
   protected setupSubscription(): void {
     this.subscriptions.add(
-      this.registrationService.securityDetails$
-        .subscribe((securityDetails: SecurityDetails) => {
-          if (securityDetails) {
-            this.preFillForm(securityDetails);
-          }
-        })
+      this.registrationService.securityDetails$.subscribe((securityDetails: SecurityDetails) => {
+        if (securityDetails) {
+          this.preFillForm(securityDetails);
+        }
+      }),
     );
   }
 

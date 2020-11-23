@@ -1,33 +1,43 @@
-import { Component, Directive, Input, OnDestroy, OnInit } from '@angular/core';
-
-@Directive({
-  selector: 'your-workplace'
-})
-export class YourWorkplaceDirective {}
-@Directive({
-  selector: 'comparison-group'
-})
-export class ComparisonGroupDirective {}
+import { Component, Input } from '@angular/core';
+import { Metric, MetricsContent, Tile } from '@core/model/benchmarks.model';
+import { BenchmarksUtil } from '@core/utils/benchmarks-util';
 
 @Component({
   selector: 'app-benchmark-tile',
   templateUrl: './benchmark-tile.component.html',
   styleUrls: ['./benchmark-tile.component.scss'],
 })
-export class BenchmarkTileComponent implements OnInit, OnDestroy {
-  @Input() public title: string;
-  @Input() public description: string;
-  @Input() public showYourWorkplace: boolean;
-  @Input() public showComparisonGroup: boolean;
-  constructor(
-  ) {
+export class BenchmarkTileComponent {
+  @Input() public content: MetricsContent;
+  @Input() public tile: Tile;
+
+  public metrics = Metric;
+
+  get title() {
+    return this.content?.title;
   }
 
-  ngOnInit() {
-
+  get description() {
+    return this.content?.description;
   }
 
-  ngOnDestroy() {
+  get workplaceHasValue(): boolean {
+    return BenchmarksUtil.hasValue(this.tile, (tile) => tile.workplaceValue);
+  }
 
+  get workplaceValue(): number {
+    return BenchmarksUtil.value(this.tile, (tile) => tile.workplaceValue);
+  }
+
+  get comparisonGroupHasValue(): boolean {
+    return BenchmarksUtil.hasValue(this.tile, (tile) => tile.comparisonGroup);
+  }
+
+  get comparisonGroupValue(): number {
+    return BenchmarksUtil.value(this.tile, (tile) => tile.comparisonGroup);
+  }
+
+  get noDataMessage() {
+    return this.content.noData[this.tile?.workplaceValue?.stateMessage];
   }
 }

@@ -1,18 +1,16 @@
-@import '~src/assets/scss/partials/colors';
-
 .govuk-file-validate-status--validating {
-  background: $jaffa;
+  background: govuk-colour("orange");
 }
 
 .govuk-file-validate-status--pass,
 .govuk-file-validate-status--fail {
-  color: $white;
+  color: govuk-colour("white");
 }
 
 .govuk-file-validate-status--pass {
-  background: $funGreen;
+  background: govuk-colour("green");
 }
 
 .govuk-file-validate-status--fail {
-  background: $shiraz;
+  background: govuk-colour("red");
 }

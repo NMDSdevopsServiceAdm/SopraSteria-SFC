@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
@@ -63,7 +62,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     this.prefill();
 
     this.subscriptions.add(
-      this.form.get('vacanciesKnown').valueChanges.subscribe(value => {
+      this.form.get('vacanciesKnown').valueChanges.subscribe((value) => {
         while (this.vacanciesArray.length > 1) {
           this.vacanciesArray.removeAt(1);
         }
@@ -99,13 +98,13 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       this.jobService
         .getJobs()
         .pipe(take(1))
-        .subscribe(jobs => (this.jobs = jobs)),
+        .subscribe((jobs) => (this.jobs = jobs)),
     );
   }
 
   private prefill(): void {
     if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
-      this.establishment.vacancies.forEach(vacancy =>
+      this.establishment.vacancies.forEach((vacancy) =>
         this.vacanciesArray.push(this.createVacancyControl(vacancy.jobId, vacancy.total)),
       );
     } else {
@@ -153,9 +152,9 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
   public selectableJobs(index): Job[] {
     return this.jobs.filter(
-      job =>
+      (job) =>
         !this.vacanciesArray.controls.some(
-          vacancy =>
+          (vacancy) =>
             vacancy !== this.vacanciesArray.controls[index] && parseInt(vacancy.get('jobRole').value, 10) === job.id,
         ),
     );
@@ -186,7 +185,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
     if (this.vacanciesArray.length) {
       return {
-        vacancies: this.vacanciesArray.value.map(vacancy => ({
+        vacancies: this.vacanciesArray.value.map((vacancy) => ({
           jobId: parseInt(vacancy.jobRole, 10),
           total: vacancy.total,
         })),
@@ -199,8 +198,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
       this.establishmentService.updateJobs(this.establishment.uid, props).subscribe(
-        data => this._onSuccess(data),
-        error => this.onError(error),
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
       ),
     );
   }

@@ -1,0 +1,31 @@
+<span class="govuk-caption-l">Benchmarks</span>
+<h1 class="govuk-heading-l">{{ title }}</h1>
+<app-barchart [type]="type" [tile]="tile" [noData]="noData">
+  <ng-container metric-desc>{{ description }}</ng-container>
+</app-barchart>
+
+<hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-5" />
+
+<div class="govuk-grid-row govuk-!-margin-bottom-9">
+  <div class="govuk-grid-column-two-thirds">
+    <p *ngIf="metaDataAvailable; else noMetaData">
+      <strong>Your comparison group</strong> for {{ title | lowercase }} is {{ numberOfStaff | number }} staff from
+      {{ numberOfWorkplaces }} workplaces providing the same main service as you in your local authority. Your
+      comparison group data and ranking was last updated {{ lastUpdated | date: 'd MMMM yyyy' }}.
+    </p>
+    <ng-template #noMetaData>
+      <p><strong>Your comparison group</strong> information is not available.</p>
+    </ng-template>
+  </div>
+</div>
+
+<app-gauge #gauge>
+  <ng-container your-rank>
+    <app-ranking-content
+      [currentRank]="currentRank"
+      [stateMessage]="rankStateMessage"
+      [hasValue]="rankHasValue"
+      [noData]="noData"
+    ></app-ranking-content>
+  </ng-container>
+</app-gauge>

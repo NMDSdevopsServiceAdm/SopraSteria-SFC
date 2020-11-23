@@ -21,7 +21,7 @@ $error_row_padding: $govuk-gutter-half;
 }
 
 .govuk-error-table__row {
-  border: $error_border_size solid $shiraz;
+  border: $error_border_size solid $govuk-error-colour;
 
   &--no-border {
     border: none;
@@ -55,7 +55,7 @@ $error_row_padding: $govuk-gutter-half;
     }
     &:after {
       width: $error_border_size;
-      background: $shiraz;
+      background: $govuk-error-colour;
       left: $error_row_indent;
     }
   }
@@ -76,7 +76,7 @@ $error_row_padding: $govuk-gutter-half;
     position: absolute;
     left: ($error_border_size - 1) * -1;
     width: $error_border_size;
-    background: $shiraz;
+    background: $govuk-error-colour;
     height: 100%;
   }
 }

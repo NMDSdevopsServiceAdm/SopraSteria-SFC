@@ -14,12 +14,12 @@ const routes: Routes = [
   {
     path: 'change-password',
     component: ChangePasswordComponent,
-    data: { title: 'Your password' },
+    data: { title: 'Password' },
   },
   {
     path: 'change-user-security',
     component: ChangeUserSecurityComponent,
-    data: { title: 'Your security question' },
+    data: { title: 'Security question' },
   },
   {
     path: 'change-your-details',

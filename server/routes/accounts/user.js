@@ -12,7 +12,6 @@ const usernameCheck = require('../../utils/security/usernameValidation').isUsern
 
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
-const uuid = require('uuid');
 const linkSubToParent = require('../../data/linkToParent');
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
@@ -97,7 +96,7 @@ const getUser = async (req, res) => {
       null,
       err,
       null,
-      `Failed to retrieve user with uid: ${userId}`
+      `Failed to retrieve user with uid: ${userId}`,
     );
 
     console.error('user::GET/:userId - failed', thisError.message);
@@ -162,7 +161,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
 
         if (currentTypeLimits[req.body.role] + 1 > limits[req.body.role]) {
-          return res.status(400).send(`Cannot create new account as ${req.body.role} account type limit reached`);
+          return res.status(400).send('You cannot select this permission for this user');
         }
       }
 
@@ -234,7 +233,7 @@ router.route('/resetPassword').post(async (req, res) => {
     });
 
     if (loginResponse && loginResponse.username === req.username && loginResponse.user.id) {
-      await models.sequelize.transaction(async t => {
+      await models.sequelize.transaction(async (t) => {
         // login account found - update the passowrd, reset invalid attempts
         const passwordHash = await bcrypt.hashSync(givenPassword, bcrypt.genSaltSync(10), null);
         loginResponse.update(
@@ -243,7 +242,7 @@ router.route('/resetPassword').post(async (req, res) => {
             invalidAttempt: 0,
             passwdLastChanged: new Date(),
           },
-          { transaction: t }
+          { transaction: t },
         );
 
         // and crfeate an audit event
@@ -266,7 +265,7 @@ router.route('/resetPassword').post(async (req, res) => {
               uuid: req.resetUuid,
             },
             transaction: t,
-          }
+          },
         );
       });
     } else {
@@ -318,9 +317,9 @@ router.route('/changePassword').post(async (req, res) => {
 
     if (login && login.username === req.username && login.user.id) {
       // now authenticate the given current password
-      login.comparePassword(currentPassword, null, false, async (err, isMatch, rehashTribal) => {
+      login.comparePassword(currentPassword, null, false, async (err, isMatch) => {
         if (isMatch && !err) {
-          await models.sequelize.transaction(async t => {
+          await models.sequelize.transaction(async (t) => {
             // login account found - update the passowrd, reset invalid attempts
             const passwordHash = await bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10), null);
             login.update(
@@ -329,7 +328,7 @@ router.route('/changePassword').post(async (req, res) => {
                 invalidAttempt: 0,
                 passwdLastChanged: new Date(),
               },
-              { transaction: t }
+              { transaction: t },
             );
 
             // and crfeate an audit event
@@ -348,7 +347,7 @@ router.route('/changePassword').post(async (req, res) => {
           console.error('User /changePassword failed authentication on current password');
 
           // failed authentication
-          await models.sequelize.transaction(async t => {
+          await models.sequelize.transaction(async (t) => {
             const maxNumberOfFailedAttempts = 10;
 
             // increment the number of failed attempts by one
@@ -413,7 +412,7 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 
   if (currentTypeLimits[req.body.role] + 1 > limits[req.body.role]) {
     console.error('/add/establishment/:id - Invalid request');
-    return res.status(400).send(`Cannot create new account as ${req.body.role} account type limit reached`);
+    return res.status(400).send('You cannot select this permission for this user');
   }
 
   // use the User properties to load (includes validation)
@@ -465,7 +464,6 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 router.use('/:uid/resend-activation', Authorization.isAuthorised);
 router.route('/:uid/resend-activation').post(async (req, res) => {
   const userId = req.params.uid;
-  const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
 
   // validating user id - must be a V4 UUID
@@ -476,8 +474,6 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
   } else {
     return res.status(400).send();
   }
-
-  const thisUser = new User.User(establishmentId);
 
   try {
     const passTokenResults = await models.addUserTracking.findOne({
@@ -499,7 +495,7 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
       const thisUser = new User.User();
       if (await thisUser.restore(passTokenResults.user.uid, null, null)) {
         let trackingUUID = '';
-        await models.sequelize.transaction(async t => {
+        await models.sequelize.transaction(async (t) => {
           trackingUUID = await thisUser.trackNewUser(req.username, t, expiresTTLms);
         });
         let response = {};
@@ -560,7 +556,7 @@ router.route('/validateAddUser').post(async (req, res) => {
           JWTexpiryInMinutes,
           passTokenResults.user.uid,
           passTokenResults.user.FullNameValue,
-          givenUuid
+          givenUuid,
         );
 
         res.set({
@@ -622,7 +618,7 @@ router.route('/establishment/:id/:userid').delete(async (req, res) => {
       null,
       err,
       null,
-      `Failed to delete User with id/uid: ${userId}`
+      `Failed to delete User with id/uid: ${userId}`,
     );
 
     console.error('User::DELETE - failed', thisError.message);
@@ -769,11 +765,11 @@ router.route('/my/notifications').get(async (req, res) => {
     });
   }
 });
- /**
-   * Method will fetch the notification details.
-   * @param notification
-   */
-const getNotificationDetails = async notification => {
+/**
+ * Method will fetch the notification details.
+ * @param notification
+ */
+const getNotificationDetails = async (notification) => {
   let notificationDetailsParams = {
     typeUid: notification.typeUid,
   };
@@ -788,20 +784,19 @@ const getNotificationDetails = async notification => {
   return notificationDetails;
 };
 
-const addTypeContent = async notification => {
+const addTypeContent = async (notification) => {
   notification.typeContent = {};
 
   switch (notification.type) {
-    case 'OWNERCHANGE':
+    case 'OWNERCHANGE': {
       const subQuery = await ownershipChangeRequests.getOwnershipNotificationDetails({
         ownerChangeRequestUid: notification.typeUid,
       });
       if (subQuery.length === 1) {
         if (subQuery[0].createdByUserUID) {
-          let params = subQuery[0].createdByUserUID;
           const requestorName = await notifications.getRequesterName(notification.createdByUserUID);
           if (requestorName) {
-            subQuery.forEach(function(element) {
+            subQuery.forEach(function (element) {
               element.requestorName = requestorName[0].NameValue;
             });
           }
@@ -811,7 +806,7 @@ const addTypeContent = async notification => {
           };
           let rejectionReason = await ownershipChangeRequests.getUpdatedOwnershipRequest(rejectionReasonParam);
           if (rejectionReason.length === 1 && rejectionReason[0].approvalStatus === 'DENIED') {
-            subQuery.forEach(function(element) {
+            subQuery.forEach(function (element) {
               element.rejectionReason = rejectionReason[0].approvalReason;
             });
           }
@@ -819,32 +814,32 @@ const addTypeContent = async notification => {
         notification.typeContent = subQuery[0];
       }
       break;
-
-    case 'LINKTOPARENTREQUEST':
+    }
+    case 'LINKTOPARENTREQUEST': {
       let fetchNotificationDetails = await getNotificationDetails(notification);
       if (fetchNotificationDetails) {
         fetchNotificationDetails[0].requestorName = fetchNotificationDetails[0].subEstablishmentName;
         notification.typeContent = fetchNotificationDetails[0];
       }
       break;
-
-    case 'LINKTOPARENTAPPROVED':
+    }
+    case 'LINKTOPARENTAPPROVED': {
       let fetchApprovedNotificationDetails = await getNotificationDetails(notification);
       if (fetchApprovedNotificationDetails) {
         fetchApprovedNotificationDetails[0].requestorName = fetchApprovedNotificationDetails[0].parentEstablishmentName;
         notification.typeContent = fetchApprovedNotificationDetails[0];
       }
       break;
-
-    case 'LINKTOPARENTREJECTED':
+    }
+    case 'LINKTOPARENTREJECTED': {
       let fetchRejectNotificationDetails = await getNotificationDetails(notification);
       if (fetchRejectNotificationDetails) {
         fetchRejectNotificationDetails[0].requestorName = fetchRejectNotificationDetails[0].parentEstablishmentName;
         notification.typeContent = fetchRejectNotificationDetails[0];
       }
       break;
-
-    case 'DELINKTOPARENT':
+    }
+    case 'DELINKTOPARENT': {
       let deLinkNotificationDetails = await notifications.getRequesterName(notification.createdByUserUID);
       if (deLinkNotificationDetails) {
         let deLinkParentDetails = await notifications.getDeLinkParentDetails(notification.typeUid);
@@ -857,15 +852,16 @@ const addTypeContent = async notification => {
         }
       }
       break;
-
-    case 'BECOMEAPARENT':
+    }
+    case 'BECOMEAPARENT': {
       let becomeAParentNotificationDetails = await models.Approvals.findbyUuid(notification.typeUid);
       if (becomeAParentNotificationDetails) {
         notification.typeContent = {
-          status: becomeAParentNotificationDetails.Status
+          status: becomeAParentNotificationDetails.Status,
         };
       }
       break;
+    }
   }
 
   delete notification.typeUid;
@@ -886,10 +882,10 @@ router.route('/my/notifications/:notificationUid').get(async (req, res) => {
 
     await addTypeContent(notification[0]);
     // this will fetch notification receiver name
-    if ((notification[0].type === 'OWNERCHANGE')) {
+    if (notification[0].type === 'OWNERCHANGE') {
       const notificationReciever = await ownershipChangeRequests.getNotificationRecieverName(params);
       if (notificationReciever.length === 1) {
-        notification.forEach(element => {
+        notification.forEach((element) => {
           element.recieverName = notificationReciever[0].NameValue;
         });
       }
@@ -1028,7 +1024,7 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
     establishment.isParent,
     req.username,
     'Admin',
-    thisUser.user.uid
+    thisUser.user.uid,
   );
   var date = new Date().getTime();
   date += loginTokenTTL * 60 * 1000;
@@ -1046,7 +1042,7 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
     'Admin',
     establishment,
     req.username,
-    new Date(date).toISOString()
+    new Date(date).toISOString(),
   );
 
   return res

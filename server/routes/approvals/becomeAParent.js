@@ -19,7 +19,7 @@ const validateBecomeAParentRequest = async (req, res, next) => {
       });
     }
 
-    const canRequestToBecomeAParent = await models.Approvals.canRequestToBecomeAParent(req.establishment.id)
+    const canRequestToBecomeAParent = await models.Approvals.canRequestToBecomeAParent(req.establishment.id);
     if (canRequestToBecomeAParent === false) {
       return res.status(422).json({
         message: 'There is already an existing Become a Parent request.',
@@ -33,7 +33,7 @@ const validateBecomeAParentRequest = async (req, res, next) => {
     console.error(err);
 
     res.status(500).json({
-      'message': 'Something went wrong validating the Become a Parent request.',
+      message: 'Something went wrong validating the Become a Parent request.',
     });
   }
 };
