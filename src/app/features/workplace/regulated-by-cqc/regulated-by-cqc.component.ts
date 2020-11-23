@@ -7,13 +7,13 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { RegulatedByCQC } from '@features/workplace-find-and-select/regulated-by-cqc/regulated-by-cqc';
+import { RegulatedByCQCDirective } from '@features/workplace-find-and-select/regulated-by-cqc/regulated-by-cqc';
 
 @Component({
   selector: 'app-regulated-by-cqc',
   templateUrl: './regulated-by-cqc.component.html',
 })
-export class RegulatedByCqcComponent extends RegulatedByCQC {
+export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
   constructor(
     private workplaceService: WorkplaceService,
     protected backService: BackService,
@@ -22,7 +22,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
     protected locationService: LocationService,
     protected route: ActivatedRoute,
     protected router: Router,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
   ) {
     super(backService, errorSummaryService, formBuilder, locationService, route, router);
   }

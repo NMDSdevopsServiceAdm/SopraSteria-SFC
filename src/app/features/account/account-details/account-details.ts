@@ -85,11 +85,11 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
         type: [
           {
             name: 'required',
-            message: 'Please enter full name.',
+            message: 'Enter full name',
           },
           {
             name: 'maxlength',
-            message: 'Full name must be no longer than 120 characters.',
+            message: 'Full name must be 120 characters or fewer',
           },
         ],
       },
@@ -98,11 +98,11 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
         type: [
           {
             name: 'required',
-            message: 'Please enter job title.',
+            message: 'Enter a job title',
           },
           {
             name: 'maxlength',
-            message: 'Job title must be no longer than 120 characters.',
+            message: 'Job title must be 120 characters or fewer',
           },
         ],
       },
@@ -111,15 +111,15 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
         type: [
           {
             name: 'required',
-            message: 'Please enter email address.',
+            message: 'Enter an email address',
           },
           {
             name: 'maxlength',
-            message: 'Email address must be no longer than 120 characters.',
+            message: 'Email address must be 120 characters or fewer',
           },
           {
             name: 'pattern',
-            message: 'Please enter a valid email address.',
+            message: 'Enter the email address in the correct format, like name@example.com',
           },
         ],
       },
@@ -128,11 +128,11 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
         type: [
           {
             name: 'required',
-            message: 'Please enter phone number.',
+            message: 'Enter a phone number',
           },
           {
             name: 'pattern',
-            message: 'Invalid phone number.',
+            message: 'Enter the phone number like 01632 960 001, 07700 900 982 or +44 0808 157 0192',
           },
         ],
       },
@@ -143,11 +143,11 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
     this.serverErrorsMap = [
       {
         name: 404,
-        message: 'User not found or does not belong to the given establishment.',
+        message: 'User not found or does not belong to the given establishment',
       },
       {
         name: 400,
-        message: 'Unable to create user.',
+        message: 'Unable to create user',
       },
     ];
   }

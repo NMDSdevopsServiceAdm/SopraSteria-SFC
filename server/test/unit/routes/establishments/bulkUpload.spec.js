@@ -9,7 +9,16 @@ const slack = require('../../../../utils/slack/slack-logger');
 const dbmodels = require('../../../../models');
 sinon.stub(dbmodels.status, 'ready').value(false);
 
-const bulkUpload = require('../../../../routes/establishments/bulkUpload');
+const { printLine } = require('../../../../routes/establishments/bulkUpload/report');
+const {
+  validateEstablishmentCsv,
+  checkDuplicateLocations,
+  checkDuplicateWorkerID,
+  checkPartTimeSalary,
+} = require('../../../../routes/establishments/bulkUpload/validate');
+const { exportToCsv } = require('../../../../routes/establishments/bulkUpload/download');
+const { sendCountToSlack } = require('../../../../routes/establishments/bulkUpload/slack');
+
 const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments');
 const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers');
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
@@ -38,7 +47,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       };
       const sep = ';';
       const reportType = 'training';
-      bulkUpload.printLine(readable, reportType, errors, sep);
+      printLine(readable, reportType, errors, sep);
       expect(readable.length).equals(2);
       expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
       expect(readable[1]).to.eql(
@@ -52,7 +61,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       };
       const sep = ';';
       const reportType = 'establishments';
-      bulkUpload.printLine(readable, reportType, errors, sep);
+      printLine(readable, reportType, errors, sep);
       expect(readable.length).equals(2);
       expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
       expect(readable[1]).to.eql(
@@ -66,7 +75,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       };
       const sep = ';';
       const reportType = 'workers';
-      bulkUpload.printLine(readable, reportType, errors, sep);
+      printLine(readable, reportType, errors, sep);
       expect(readable.length).equals(2);
       expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
       expect(readable[1]).to.eql(
@@ -95,7 +104,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
       });
 
-      await bulkUpload.checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
+      await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
 
       expect(csvEstablishmentSchemaErrors.length).equals(1);
       expect(csvEstablishmentSchemaErrors[0]).to.eql({
@@ -139,7 +148,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber, []);
       });
 
-      await bulkUpload.checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors);
+      await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors);
 
       expect(csvEstablishmentSchemaErrors.length).equals(2);
       expect(csvEstablishmentSchemaErrors[0]).to.eql({
@@ -181,7 +190,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
       });
 
-      await bulkUpload.checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
+      await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
 
       expect(csvEstablishmentSchemaErrors.length).equals(0);
     });
@@ -204,7 +213,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
       });
 
-      await bulkUpload.checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, [
+      await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, [
         { localIdentifier: 'Workplace 2', locationId: '1-12345678' },
       ]);
 
@@ -258,7 +267,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           : null;
 
         if (
-          bulkUpload.checkDuplicateWorkerID(
+          checkDuplicateWorkerID(
             myWorkers[1],
             allKeys,
             changeKeyNoWhitespace,
@@ -326,7 +335,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(1);
       expect(csvWorkerSchemaErrors[0]).to.eql({
@@ -375,7 +384,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       console.log(csvWorkerSchemaErrors);
       expect(csvWorkerSchemaErrors.length).equals(0);
@@ -414,7 +423,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(0);
     });
@@ -453,7 +462,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(0);
     });
@@ -492,7 +501,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(0);
     });
@@ -541,7 +550,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(2);
       expect(csvWorkerSchemaErrors[0]).to.eql({
@@ -622,7 +631,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return 'omar3';
       });
 
-      await bulkUpload.validateEstablishmentCsv(
+      await validateEstablishmentCsv(
         {
           LOCALESTID: 'omar3',
           STATUS: 'NEW',
@@ -796,7 +805,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         true,
       );
 
-      await bulkUpload.exportToCsv(
+      await exportToCsv(
         '',
         [establishment],
         'foo',
@@ -851,7 +860,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         true,
       );
 
-      await bulkUpload.exportToCsv(
+      await exportToCsv(
         '',
         [establishment],
         'foo',
@@ -910,7 +919,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       sinon.stub(Establishment.prototype, 'restore');
 
       const spy = sinon.spy(slack, 'info');
-      await bulkUpload.sendCountToSlack(username, primaryId, differenceReport);
+      await sendCountToSlack(username, primaryId, differenceReport);
 
       expect(spy.called).to.deep.equal(true);
     });
@@ -930,7 +939,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       sinon.stub(Establishment.prototype, 'restore');
 
       const spy = sinon.spy(slack, 'info');
-      await bulkUpload.sendCountToSlack(username, primaryId, differenceReport);
+      await sendCountToSlack(username, primaryId, differenceReport);
 
       expect(spy.called).to.deep.equal(false);
     });

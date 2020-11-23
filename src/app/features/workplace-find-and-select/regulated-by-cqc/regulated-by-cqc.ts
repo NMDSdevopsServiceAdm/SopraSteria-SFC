@@ -1,5 +1,6 @@
+/*eslint @typescript-eslint/no-empty-function: ["error", { allow: ['methods'] }]*/
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -12,7 +13,7 @@ import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
 
 @Directive()
-export class RegulatedByCQC implements OnInit, OnDestroy, AfterViewInit {
+export class RegulatedByCQCDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   protected flow: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
@@ -111,7 +112,7 @@ export class RegulatedByCQC implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please specify if you are regulated by CQC.',
+            message: `Please specify if you're regulated by CQC.`,
           },
         ],
       },

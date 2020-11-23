@@ -4,7 +4,7 @@
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
     <fieldset class="govuk-fieldset">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-        <h1 id="dialogHeading" class="govuk-fieldset__heading">Select the new primary user.</h1>
+        <h1 id="dialogHeading" class="govuk-fieldset__heading">Select the new primary user</h1>
       </legend>
       <span *ngIf="submitted && form.get('user').invalid" id="user-error" class="govuk-error-message">
         <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('user') }}

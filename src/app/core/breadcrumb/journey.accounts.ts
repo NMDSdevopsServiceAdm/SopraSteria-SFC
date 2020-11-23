@@ -16,7 +16,7 @@ export const accountJourney: JourneyRoute = {
       path: Path.ACCOUNT_DETAILS,
       children: [
         {
-          title: 'Your details',
+          title: 'Name, job title and contact',
           path: Path.YOUR_DETAILS,
         },
         {

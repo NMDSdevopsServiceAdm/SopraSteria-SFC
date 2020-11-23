@@ -161,9 +161,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
 
         if (currentTypeLimits[req.body.role] + 1 > limits[req.body.role]) {
-          return res
-            .status(400)
-            .send(`Cannot create new account as ${escape(req.body.role)} account type limit reached`);
+          return res.status(400).send('You cannot select this permission for this user');
         }
       }
 
@@ -319,7 +317,7 @@ router.route('/changePassword').post(async (req, res) => {
 
     if (login && login.username === req.username && login.user.id) {
       // now authenticate the given current password
-      login.comparePassword(currentPassword, null, false, async (err, isMatch, rehashTribal) => {
+      login.comparePassword(currentPassword, null, false, async (err, isMatch) => {
         if (isMatch && !err) {
           await models.sequelize.transaction(async (t) => {
             // login account found - update the passowrd, reset invalid attempts
@@ -414,7 +412,7 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 
   if (currentTypeLimits[req.body.role] + 1 > limits[req.body.role]) {
     console.error('/add/establishment/:id - Invalid request');
-    return res.status(400).send(`Cannot create new account as ${escape(req.body.role)} account type limit reached`);
+    return res.status(400).send('You cannot select this permission for this user');
   }
 
   // use the User properties to load (includes validation)
@@ -790,7 +788,7 @@ const addTypeContent = async (notification) => {
   notification.typeContent = {};
 
   switch (notification.type) {
-    case 'OWNERCHANGE':
+    case 'OWNERCHANGE': {
       const subQuery = await ownershipChangeRequests.getOwnershipNotificationDetails({
         ownerChangeRequestUid: notification.typeUid,
       });
@@ -816,32 +814,32 @@ const addTypeContent = async (notification) => {
         notification.typeContent = subQuery[0];
       }
       break;
-
-    case 'LINKTOPARENTREQUEST':
+    }
+    case 'LINKTOPARENTREQUEST': {
       let fetchNotificationDetails = await getNotificationDetails(notification);
       if (fetchNotificationDetails) {
         fetchNotificationDetails[0].requestorName = fetchNotificationDetails[0].subEstablishmentName;
         notification.typeContent = fetchNotificationDetails[0];
       }
       break;
-
-    case 'LINKTOPARENTAPPROVED':
+    }
+    case 'LINKTOPARENTAPPROVED': {
       let fetchApprovedNotificationDetails = await getNotificationDetails(notification);
       if (fetchApprovedNotificationDetails) {
         fetchApprovedNotificationDetails[0].requestorName = fetchApprovedNotificationDetails[0].parentEstablishmentName;
         notification.typeContent = fetchApprovedNotificationDetails[0];
       }
       break;
-
-    case 'LINKTOPARENTREJECTED':
+    }
+    case 'LINKTOPARENTREJECTED': {
       let fetchRejectNotificationDetails = await getNotificationDetails(notification);
       if (fetchRejectNotificationDetails) {
         fetchRejectNotificationDetails[0].requestorName = fetchRejectNotificationDetails[0].parentEstablishmentName;
         notification.typeContent = fetchRejectNotificationDetails[0];
       }
       break;
-
-    case 'DELINKTOPARENT':
+    }
+    case 'DELINKTOPARENT': {
       let deLinkNotificationDetails = await notifications.getRequesterName(notification.createdByUserUID);
       if (deLinkNotificationDetails) {
         let deLinkParentDetails = await notifications.getDeLinkParentDetails(notification.typeUid);
@@ -854,8 +852,8 @@ const addTypeContent = async (notification) => {
         }
       }
       break;
-
-    case 'BECOMEAPARENT':
+    }
+    case 'BECOMEAPARENT': {
       let becomeAParentNotificationDetails = await models.Approvals.findbyUuid(notification.typeUid);
       if (becomeAParentNotificationDetails) {
         notification.typeContent = {
@@ -863,6 +861,7 @@ const addTypeContent = async (notification) => {
         };
       }
       break;
+    }
   }
 
   delete notification.typeUid;
