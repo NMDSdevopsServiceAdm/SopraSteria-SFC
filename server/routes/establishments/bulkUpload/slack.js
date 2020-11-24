@@ -2,14 +2,14 @@
 const slack = require('../../../utils/slack/slack-logger');
 const { Establishment } = require('../../../models/classes/establishment');
 
-const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validationDiferenceReport) => {
+const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validationDifferenceReport) => {
   const thisEstablishment = new Establishment(theLoggedInUser);
 
   await thisEstablishment.restore(primaryEstablishmentId, false);
 
   let workerCount = 0;
-  if (validationDiferenceReport.new && validationDiferenceReport.new.length > 0) {
-    validationDiferenceReport.new.map((est) => {
+  if (validationDifferenceReport.new && validationDifferenceReport.new.length > 0) {
+    validationDifferenceReport.new.map((est) => {
       if (est.workers && est.workers.new) {
         workerCount = workerCount + est.workers.new.length;
       }
@@ -18,8 +18,8 @@ const sendCountToSlack = async (theLoggedInUser, primaryEstablishmentId, validat
       }
     });
   }
-  if (validationDiferenceReport.updated && validationDiferenceReport.updated.length > 0) {
-    validationDiferenceReport.updated.map((est) => {
+  if (validationDifferenceReport.updated && validationDifferenceReport.updated.length > 0) {
+    validationDifferenceReport.updated.map((est) => {
       if (est.workers && est.workers.new) {
         workerCount = workerCount + est.workers.new.length;
       }
