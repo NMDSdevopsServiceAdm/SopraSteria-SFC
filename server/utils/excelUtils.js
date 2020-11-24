@@ -14,10 +14,9 @@ function eachColumnInRange(ws, col1, col2, cb) {
 exports.autoFitColumns = function (ws, headerRow) {
   eachColumnInRange(ws, 2, 13, (column) => {
     let maxWidth = 40;
-    let headerCellWidth = 0;
+    let headerCellWidth = [];
     const cellsWidth = [];
     column.eachCell((cell) => {
-      console.log(cell.row);
       if (!cell.isMerged && cell.value) {
         // doesn't handle merged cells
 
@@ -43,15 +42,14 @@ exports.autoFitColumns = function (ws, headerRow) {
           width = Math.min(maxWidth, width);
           cellsWidth.push(width);
           if (cell.row === headerRow) {
-            headerCellWidth = width;
+            headerCellWidth.push(width);
           }
         }
       }
     });
 
     let mean = cellsWidth.reduce((acc, val) => acc + val, 0) / cellsWidth.length;
-    //   console.log(JSON.stringify(cellsWidth) + " === " + mean);
-    let endWidth = Math.max(headerCellWidth, mean);
+    let endWidth = Math.max(Math.max(...headerCellWidth), mean);
     endWidth += 0.71; // compensate for observed reduction
     endWidth += 1; // buffer space
     column.width = endWidth;

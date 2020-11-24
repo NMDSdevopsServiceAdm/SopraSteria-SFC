@@ -166,7 +166,7 @@ const generateDeleteReport = async (req, res) => {
   createTableHeader();
 
   fillData(establishmentsData, laData);
-  excelUtils.autoFitColumns(WS1);
+  excelUtils.autoFitColumns(WS1, 8);
   WS1.getColumn(1).width = 0.7;
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
