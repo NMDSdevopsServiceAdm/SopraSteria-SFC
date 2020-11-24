@@ -2,12 +2,13 @@
   Your workplace is ranked {{ rank }} in your comparison group.
 </p>
 <ng-template #noRank>
-  <p class="govuk-!-font-size-27 govuk-!-margin-bottom-8" *ngIf="showNoRankMessage; else noComparisonData">
-    {{ message }} We cannot show where you rank.
-  </p>
-</ng-template>
-<ng-template #noComparisonData>
-  <p class="govuk-!-font-size-27 govuk-!-margin-bottom-8">
-    We do not have enough data to show this comparison yet. Your workplace cannot be ranked without a comparison group.
+  <p class="govuk-body govuk-!-margin-bottom-8" [ngClass]="{ 'govuk-!-font-size-27': !smallText }">
+    <ng-container *ngIf="showNoRankMessage; else noComparisonData"
+      >{{ message }} We cannot show where you rank.</ng-container
+    >
+    <ng-template #noComparisonData>
+      We do not have enough data to show this comparison yet. Your workplace cannot be ranked without a comparison
+      group.
+    </ng-template>
   </p>
 </ng-template>

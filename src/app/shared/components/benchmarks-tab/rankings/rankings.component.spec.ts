@@ -11,6 +11,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { BenchmarksRankingsComponent } from '@shared/components/benchmarks-tab/rankings/rankings.component';
 import { render } from '@testing-library/angular';
+import * as moment from 'moment';
 import { of } from 'rxjs';
 
 const payTileData = {
@@ -37,6 +38,8 @@ const noPayRankingData = {
   hasValue: false,
   stateMessage: 'no-data',
 };
+
+const metrics: string[] = ['Pay', 'Turnover', 'Sickness', 'Qualifications'];
 
 const getBenchmarksRankingsComponent = async () => {
   return render(BenchmarksRankingsComponent, {
@@ -77,23 +80,74 @@ const setup = (payTile, payRanking) => {
   req2.flush(payRanking);
 };
 
-describe('BenchmarksRankingsComponent', () => {
+fdescribe('BenchmarksRankingsComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
   });
 
-  fit('should create a page with all 4 ranking components', async () => {
-    const { fixture, getByText, getAllByText } = await getBenchmarksRankingsComponent();
+  it('should create a page with all 4 titles', async () => {
+    const { fixture, getAllByText } = await getBenchmarksRankingsComponent();
 
-    const pay = getAllByText('Pay');
-    const sickness = getAllByText('Sickness');
-    const turnover = getAllByText('Turnover');
-    const qualifications = getAllByText('Qualifications');
+    metrics.forEach((metric: string) => {
+      const content = getAllByText(MetricsContent[metric].title);
+      expect(content).toBeTruthy();
+    });
+  });
 
-    expect(pay).toBeTruthy();
-    expect(sickness).toBeTruthy();
-    expect(turnover).toBeTruthy();
-    expect(qualifications).toBeTruthy();
+  it('should show your comparison group and last updated info', async () => {
+    const { fixture, getByText } = await getBenchmarksRankingsComponent();
+
+    fixture.componentInstance.metaDataAvailable = true;
+    fixture.componentInstance.lastUpdated = moment('2020-11-24').toDate();
+    fixture.detectChanges();
+
+    const comparisonGroupText = getByText('Your comparison group');
+    const lastUpdated = getByText('and ranking was last updated 24 November 2020.');
+
+    expect(comparisonGroupText).toBeTruthy();
+    expect(lastUpdated).toBeTruthy();
+  });
+
+  it('should show your comparison group not available', async () => {
+    const { fixture, getByText } = await getBenchmarksRankingsComponent();
+
+    fixture.componentInstance.metaDataAvailable = false;
+    fixture.detectChanges();
+
+    const comparisonGroupText = getByText('Your comparison group');
+    const notAvailable = getByText('information is not available.');
+
+    expect(comparisonGroupText).toBeTruthy();
+    expect(notAvailable).toBeTruthy();
+  });
+
+  it('should show your comparison group not available', async () => {
+    const { fixture, getByText } = await getBenchmarksRankingsComponent();
+
+    fixture.componentInstance.metaDataAvailable = false;
+    fixture.detectChanges();
+
+    const comparisonGroupText = getByText('Your comparison group');
+    const notAvailable = getByText('information is not available.');
+
+    expect(comparisonGroupText).toBeTruthy();
+    expect(notAvailable).toBeTruthy();
+  });
+  it('should show description of metric', async () => {
+    const { fixture, getByText } = await getBenchmarksRankingsComponent();
+
+    metrics.forEach((metric: string) => {
+      const content = getByText(MetricsContent[metric].description);
+      expect(content).toBeTruthy();
+    });
+  });
+  it('should show tile info in the title', async () => {
+    const { fixture, getByText } = await getBenchmarksRankingsComponent();
+
+    metrics.forEach((metric: string) => {
+      const content = getByText(MetricsContent[metric].description);
+      expect(content).toBeTruthy();
+    });
   });
 });

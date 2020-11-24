@@ -21,6 +21,8 @@ export class RankingContentComponent {
 
   @Input() noData: NoData;
 
+  @Input() smallText = false;
+
   public get message(): string {
     return this.noData[this.state];
   }
