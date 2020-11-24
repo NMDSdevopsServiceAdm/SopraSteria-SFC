@@ -13,7 +13,6 @@ import { Subscription } from 'rxjs';
 export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
-  public metrics: string[] = ['Pay', 'Turnover', 'Sickness', 'Qualifications'];
   public metricContent = MetricsContent;
   public type: Metric;
   public title: string;
