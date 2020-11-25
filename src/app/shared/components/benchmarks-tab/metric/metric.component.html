@@ -21,11 +21,6 @@
 
 <app-gauge #gauge>
   <ng-container your-rank>
-    <app-ranking-content
-      [currentRank]="currentRank"
-      [stateMessage]="rankStateMessage"
-      [hasValue]="rankHasValue"
-      [noData]="noData"
-    ></app-ranking-content>
+    <app-ranking-content [content]="rankingContent"></app-ranking-content>
   </ng-container>
 </app-gauge>

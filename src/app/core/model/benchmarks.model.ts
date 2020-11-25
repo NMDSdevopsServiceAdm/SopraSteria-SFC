@@ -30,7 +30,14 @@ export interface RankingsResponse {
   currentRank: number;
   maxRank: number;
   hasValue: boolean;
-  stateMessage?: string;
+  stateMessage: string;
+}
+
+export interface AllRankingsResponse {
+  pay: RankingsResponse;
+  qualifications: RankingsResponse;
+  sickness: RankingsResponse;
+  turnover: RankingsResponse;
 }
 
 export enum Metric {

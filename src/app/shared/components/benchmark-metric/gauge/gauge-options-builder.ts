@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { merge } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 
 @Injectable({
   providedIn: 'root',
@@ -127,8 +127,9 @@ export class GaugeOptionsBuilder {
         enabled: false,
       },
     };
+    var options = cloneDeep(this.defaultOptions);
 
-    return merge(this.defaultOptions, source);
+    return merge(options, source);
   }
 
   private formatLabel(max: number): Highcharts.AxisLabelsFormatterCallbackFunction {

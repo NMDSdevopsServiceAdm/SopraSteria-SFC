@@ -4,6 +4,7 @@ import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { GaugeComponent } from '@shared/components/benchmark-metric/gauge/gauge.component';
+import { RankingContent } from '@shared/components/benchmark-metric/ranking-content/ranking-content.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -24,9 +25,13 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
   public tilesData: BenchmarksResponse;
 
   @ViewChild('payGauge') payGauge: GaugeComponent;
+  payContent: RankingContent;
   @ViewChild('turnoverGauge') turnoverGauge: GaugeComponent;
+  turnoverContent: RankingContent;
   @ViewChild('sicknessGauge') sicknessGauge: GaugeComponent;
+  sicknessContent: RankingContent;
   @ViewChild('qualificationsGauge') qualificationsGauge: GaugeComponent;
+  qualificationsContent: RankingContent;
 
   constructor(
     private benchmarksService: BenchmarksService,
@@ -45,8 +50,29 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
         .subscribe((data) => {
           if (data) {
             this.tilesData = data;
+            if (data.meta) {
+              this.metaDataAvailable = true;
+              this.lastUpdated = data.meta.lastUpdated;
+            }
           }
         }),
+    );
+
+    this.subscriptions.add(
+      this.benchmarksService.getAllRankingData(establishmentUid).subscribe((data) => {
+        this.payGauge.load(data.pay.maxRank, data.pay.currentRank);
+        this.payContent = { ...data.pay, smallText: true, noData: MetricsContent.Pay.noData };
+        this.turnoverGauge.load(data.turnover.maxRank, data.turnover.currentRank);
+        this.turnoverContent = { ...data.turnover, smallText: true, noData: MetricsContent.Turnover.noData };
+        this.sicknessGauge.load(data.sickness.maxRank, data.sickness.currentRank);
+        this.sicknessContent = { ...data.sickness, smallText: true, noData: MetricsContent.Sickness.noData };
+        this.qualificationsGauge.load(data.qualifications.maxRank, data.qualifications.currentRank);
+        this.qualificationsContent = {
+          ...data.qualifications,
+          smallText: true,
+          noData: MetricsContent.Qualifications.noData,
+        };
+      }),
     );
   }
 

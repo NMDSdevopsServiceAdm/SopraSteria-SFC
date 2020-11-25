@@ -10,13 +10,9 @@ import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
-import {
-  SelectMainServiceCqcConfirmComponent,
-} from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
-import {
-  UserAccountEditDetailsComponent,
-} from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
+import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
@@ -29,9 +25,7 @@ import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
-import {
-  DataSharingWithLocalAuthoritiesComponent,
-} from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
+import { DataSharingWithLocalAuthoritiesComponent } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
@@ -48,9 +42,7 @@ import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-import {
-  UserAccountEditPermissionsComponent,
-} from './user-account-edit-permissions/user-account-edit-permissions.component';
+import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewAllMandatoryTrainingComponent } from './view-all-mandatory-trainings/view-all-mandatory-training.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
@@ -370,62 +362,12 @@ const routes: Routes = [
       },
       {
         path: 'benchmarks',
-        children: [
-          {
-            path: 'about-the-data',
-            component: BenchmarksAboutTheDataComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              title: 'About the data',
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-          {
-            path: 'rankings',
-            component: BenchmarksRankingsComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              title: 'Rankings',
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-          {
-            path: 'pay',
-            component: BenchmarksMetricComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              ...MetricsContent.Pay,
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-          {
-            path: 'turnover',
-            component: BenchmarksMetricComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              ...MetricsContent.Turnover,
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-          {
-            path: 'qualifications',
-            component: BenchmarksMetricComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              ...MetricsContent.Qualifications,
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-          {
-            path: 'sickness',
-            component: BenchmarksMetricComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              ...MetricsContent.Sickness,
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-        ],
+        loadChildren: () =>
+          import('@shared/components/benchmarks-tab/benchmarks.module').then((m) => m.BenchmarksModule),
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canViewBenchmarks'],
+        },
       },
     ],
   },
