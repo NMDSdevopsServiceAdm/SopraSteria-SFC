@@ -4,12 +4,21 @@ exports.blueBackground = {
   fgColor: { argb: '282c84' },
 };
 
+exports.fullBorder = {
+  top: { style: 'thin' },
+  left: { style: 'thin' },
+  bottom: { style: 'thin' },
+  right: { style: 'thin' },
+};
 function eachColumnInRange(ws, col1, col2, cb) {
   for (let c = col1; c <= col2; c++) {
     let col = ws.getColumn(c);
     cb(col);
   }
 }
+exports.formatBool = (input) => {
+  return input ? 'yes' : 'no';
+};
 
 exports.autoFitColumns = function (ws, headerRow) {
   eachColumnInRange(ws, 2, 13, (column) => {
