@@ -2,7 +2,13 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../../../models');
 const { calculateRankDesc, calculateRankAsc } = require('../../../../utils/benchmarksUtils');
-const { getPay, getQualifications, getSickness, getTurnover } = require('../benchmarksService');
+const {
+  getPay,
+  getQualifications,
+  getSickness,
+  getTurnover,
+  getComparisonGroupRankings,
+} = require('../benchmarksService');
 
 const getPayRanking = async function (establishmentId) {
   return await getComparisonGroupAndCalculateRanking(
@@ -51,7 +57,7 @@ const getComparisonGroupAndCalculateRanking = async function (
   mapComparisonGroupCallback,
   calculateRankingCallback,
 ) {
-  const comparisonGroupRankings = await benchmarksModel.getComparisonGroupRankings(establishmentId);
+  const comparisonGroupRankings = await getComparisonGroupRankings(establishmentId, benchmarksModel);
   if (comparisonGroupRankings.length === 0) {
     return {
       hasValue: false,
