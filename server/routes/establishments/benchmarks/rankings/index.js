@@ -100,6 +100,27 @@ router.route('/turnover').get(async (req, res) => {
   await getResponse(req, res, getTurnoverRanking);
 });
 
+router.route('/').get(async (req, res) => {
+  const establishmentId = req.establishmentId;
+
+  const promises = [
+    { metric: 'pay', f: getPayRanking },
+    { metric: 'qualifications', f: getQualificationsRanking },
+    { metric: 'sickness', f: getSicknessRanking },
+    { metric: 'turnover', f: getTurnoverRanking },
+  ]
+
+  const responseData = await Promise.all(promises.map(async promise => {
+    const data = await promise.f(establishmentId);
+    return { metric: promise.metric, data }
+  }));
+
+  res.status(200).json(responseData.reduce((obj, item) => {
+    obj[item.metric] = item.data;
+    return obj;
+  }, {}));
+});
+
 const getResponse = async function (req, res, getRankingCallback) {
   const establishmentId = req.establishmentId;
 

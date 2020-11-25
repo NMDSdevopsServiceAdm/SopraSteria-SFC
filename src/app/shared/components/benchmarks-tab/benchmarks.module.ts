@@ -5,17 +5,21 @@ import { RouterModule } from '@angular/router';
 import { FormatMoneyPipe } from '@shared/pipes/format-money.pipe';
 import { FormatPercentPipe } from '@shared/pipes/format-percent.pipe';
 import { SharedModule } from '@shared/shared.module';
+import { HighchartsChartModule } from 'highcharts-angular';
 
-import { BenchmarksMetricModule } from '../benchmark-metric/benchmark-metric.module';
+import { BarchartComponent } from '../benchmark-metric/barchart/barchart.component';
+import { GaugeComponent } from '../benchmark-metric/gauge/gauge.component';
+import { RankingContentComponent } from '../benchmark-metric/ranking-content/ranking-content.component';
 import { BenchmarkTileComponent } from '../benchmark-tile/benchmark-tile.component';
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
+import { BenchmarksRoutingModule } from './benchmarks-routing.module';
 import { BenchmarksTabComponent } from './benchmarks-tab.component';
 import { ComparisonGroupHeaderComponent } from './comparison-group-header/comparison-group-header.component';
 import { BenchmarksMetricComponent } from './metric/metric.component';
 import { BenchmarksRankingsComponent } from './rankings/rankings.component';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, OverlayModule, BenchmarksMetricModule, SharedModule],
+  imports: [CommonModule, RouterModule, OverlayModule, HighchartsChartModule, SharedModule, BenchmarksRoutingModule],
   declarations: [
     BenchmarksAboutTheDataComponent,
     BenchmarksMetricComponent,
@@ -23,6 +27,9 @@ import { BenchmarksRankingsComponent } from './rankings/rankings.component';
     BenchmarkTileComponent,
     BenchmarksTabComponent,
     ComparisonGroupHeaderComponent,
+    GaugeComponent,
+    BarchartComponent,
+    RankingContentComponent,
     FormatMoneyPipe,
     FormatPercentPipe,
   ],
@@ -33,6 +40,9 @@ import { BenchmarksRankingsComponent } from './rankings/rankings.component';
     BenchmarkTileComponent,
     BenchmarksTabComponent,
     ComparisonGroupHeaderComponent,
+    GaugeComponent,
+    BarchartComponent,
+    RankingContentComponent,
     FormatMoneyPipe,
     FormatPercentPipe,
   ],
