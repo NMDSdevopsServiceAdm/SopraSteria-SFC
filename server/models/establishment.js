@@ -910,6 +910,47 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+  Establishment.generateDeleteReportData = async function () {
+    return await this.findAll({
+      attributes: [
+        'uid',
+        'id',
+        'NameValue',
+        'nmdsId',
+        'isRegulated',
+        'address1',
+        'address2',
+        'address3',
+        'town',
+        'county',
+        'postcode',
+        'locationId',
+        'updated',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
+      ],
+      order: [['NameValue', 'ASC']],
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['id', 'uid'],
+          order: [['updated', 'DESC']],
+        },
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name'],
+        },
+        {
+          model: sequelize.models.establishment,
+          as: 'Parent',
+          attributes: ['NameValue'],
+          required: false,
+        },
+      ],
+    });
+  };
 
   return Establishment;
 };
