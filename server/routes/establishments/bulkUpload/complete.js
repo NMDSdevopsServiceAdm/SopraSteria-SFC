@@ -159,7 +159,7 @@ const completePost = async (req, res) => {
 
     try {
       const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId, keepAlive);
-      const validationDiferenceReportDownloaded = await downloadContent(
+      const validationDifferenceReportDownloaded = await downloadContent(
         `${primaryEstablishmentId}/validation/difference.report.json`,
         null,
         null,
@@ -168,7 +168,7 @@ const completePost = async (req, res) => {
 
         return data;
       });
-      const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
+      const validationDifferenceReport = JSON.parse(validationDifferenceReportDownloaded.data);
 
       const restoredOnLoadStateTime = new Date();
       timerLog(
@@ -188,7 +188,7 @@ const completePost = async (req, res) => {
         await models.sequelize.transaction(async (t) => {
           // first create the new establishments - in sequence
           const starterNewPromise = Promise.resolve(null);
-          await validationDiferenceReport.new.reduce(
+          await validationDifferenceReport.new.reduce(
             (p, thisNewEstablishment) =>
               p.then(() =>
                 completeNewEstablishment(
@@ -212,7 +212,7 @@ const completePost = async (req, res) => {
 
           // now update the updated
           const starterUpdatedPromise = Promise.resolve(null);
-          await validationDiferenceReport.updated.reduce(
+          await validationDifferenceReport.updated.reduce(
             (p, thisUpdatedEstablishment) =>
               p.then(() =>
                 completeUpdateEstablishment(
@@ -235,7 +235,7 @@ const completePost = async (req, res) => {
 
           // and finally, delete the deleted
           const starterDeletedPromise = Promise.resolve(null);
-          await validationDiferenceReport.deleted.reduce(
+          await validationDifferenceReport.deleted.reduce(
             (p, thisDeletedEstablishment) =>
               p.then(() =>
                 completeDeleteEstablishment(
@@ -283,7 +283,7 @@ const completePost = async (req, res) => {
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);
         timerLog('CHECKPOINT - BU COMPLETE - overall', completeStartTime, completeEndTime);
 
-        await sendCountToSlack(theLoggedInUser, primaryEstablishmentId, validationDiferenceReport);
+        await sendCountToSlack(theLoggedInUser, primaryEstablishmentId, validationDifferenceReport);
 
         await saveResponse(req, res, 200, {});
       } catch (err) {

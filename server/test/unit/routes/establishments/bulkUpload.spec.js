@@ -10,12 +10,20 @@ const dbmodels = require('../../../../models');
 sinon.stub(dbmodels.status, 'ready').value(false);
 
 const { printLine } = require('../../../../routes/establishments/bulkUpload/report');
+
 const {
   validateEstablishmentCsv,
-  checkDuplicateLocations,
-  checkDuplicateWorkerID,
-  checkPartTimeSalary,
-} = require('../../../../routes/establishments/bulkUpload/validate');
+} = require('../../../../routes/establishments/bulkUpload/validate/validateEstablishmentCsv');
+const {
+  validateDuplicateLocations,
+} = require('../../../../routes/establishments/bulkUpload/validate/validateDuplicateLocations');
+const {
+  validateDuplicateWorkerID,
+} = require('../../../../routes/establishments/bulkUpload/validate/validateDuplicateWorkerID');
+const {
+  validatePartTimeSalary,
+} = require('../../../../routes/establishments/bulkUpload/validate/validatePartTimeSalary');
+
 const { exportToCsv } = require('../../../../routes/establishments/bulkUpload/download');
 const { sendCountToSlack } = require('../../../../routes/establishments/bulkUpload/slack');
 
@@ -84,7 +92,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
     });
   });
 
-  describe('checkDuplicateLocations', () => {
+  describe('validateDuplicateLocations', () => {
     it('can check for duplicate location IDs', async () => {
       const csvEstablishmentSchemaErrors = [];
       const myEstablishments = [
@@ -104,7 +112,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
       });
 
-      await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
+      await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
 
       expect(csvEstablishmentSchemaErrors.length).equals(1);
       expect(csvEstablishmentSchemaErrors[0]).to.eql({
@@ -148,7 +156,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber, []);
       });
 
-      await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors);
+      await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors);
 
       expect(csvEstablishmentSchemaErrors.length).equals(2);
       expect(csvEstablishmentSchemaErrors[0]).to.eql({
@@ -190,7 +198,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
       });
 
-      await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
+      await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
 
       expect(csvEstablishmentSchemaErrors.length).equals(0);
     });
@@ -213,7 +221,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
       });
 
-      await checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, [
+      await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, [
         { localIdentifier: 'Workplace 2', locationId: '1-12345678' },
       ]);
 
@@ -230,7 +238,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
     });
   });
 
-  describe('checkDuplicateWorkerID()', () => {
+  describe('validateDuplicateWorkerID()', () => {
     it('errors when CHGUNIQUEWRKID is not unique', async () => {
       const csvWorkerSchemaErrors = [];
       const allWorkersByKey = {};
@@ -267,7 +275,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           : null;
 
         if (
-          checkDuplicateWorkerID(
+          validateDuplicateWorkerID(
             myWorkers[1],
             allKeys,
             changeKeyNoWhitespace,
@@ -299,7 +307,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
     });
   });
-  describe('checkPartTimeSalary()', () => {
+  describe('validatePartTimeSalary()', () => {
     // FTE / PTE : Full / Part Time Employee . FTE > 36 hours a week, PTE < 37
     it('errors when one worker has the same salary as a FTE but works PTE', async () => {
       const csvWorkerSchemaErrors = [];
@@ -335,7 +343,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(1);
       expect(csvWorkerSchemaErrors[0]).to.eql({
@@ -384,7 +392,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       console.log(csvWorkerSchemaErrors);
       expect(csvWorkerSchemaErrors.length).equals(0);
@@ -423,7 +431,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(0);
     });
@@ -462,7 +470,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(0);
     });
@@ -501,7 +509,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(0);
     });
@@ -550,7 +558,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(2);
       expect(csvWorkerSchemaErrors[0]).to.eql({
