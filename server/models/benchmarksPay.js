@@ -1,30 +1,34 @@
 module.exports = function (sequelize, DataTypes) {
-  const BenchmarksPay = sequelize.define('benchmarksPay', {
-    CssrID: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
+  const BenchmarksPay = sequelize.define(
+    'benchmarksPay',
+    {
+      CssrID: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+      },
+      MainServiceFK: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+      },
+      pay: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'Pay',
+      },
+      EstablishmentFK: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
-    MainServiceFK: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
+    {
+      tableName: 'BenchmarksPay',
+      schema: 'cqc',
+      createdAt: false,
+      updatedAt: false,
     },
-    pay: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      field: 'Pay',
-    },
-    EstablishmentFK: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-  }, {
-    tableName: 'BenchmarksPay',
-    schema: 'cqc',
-    createdAt: false,
-    updatedAt: false
-  });
+  );
 
   BenchmarksPay.associate = (models) => {
     BenchmarksPay.belongsTo(models.services, {
@@ -45,9 +49,9 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         CssrID: cssr,
         EstablishmentFK: {
-          [sequelize.Op.not]: [establishmentId]
-        }
-      }
+          [sequelize.Op.not]: [establishmentId],
+        },
+      },
     });
   };
 

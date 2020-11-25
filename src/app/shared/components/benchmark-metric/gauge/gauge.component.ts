@@ -10,7 +10,7 @@ import { GaugeOptionsBuilder } from './gauge-options-builder';
 export class GaugeComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;
 
-  public loaded: boolean = false;
+  public loaded = false;
   public options: Highcharts.Options;
   public emptyOptions: Highcharts.Options;
 
