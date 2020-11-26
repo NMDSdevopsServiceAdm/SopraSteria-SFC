@@ -1,5 +1,5 @@
 <div class="govuk-grid-row">
-  <div [ngClass]="{ 'govuk-grid-column-two-thirds-from-desktop': !smallText, 'govuk-grid-column-full': smallText }">
+  <div [ngClass]="{ 'govuk-grid-column-full': !smallText, 'govuk-grid-column-two-thirds-from-desktop': smallText }">
     <p [ngClass]="{ 'govuk-!-font-size-27': !smallText }" *ngIf="showRank; else noRank">
       Your workplace is ranked {{ rank }} in your comparison group.
     </p>
