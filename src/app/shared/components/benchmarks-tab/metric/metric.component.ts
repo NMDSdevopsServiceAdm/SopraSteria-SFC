@@ -78,12 +78,6 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
 
   handleRankingsResponse = (rankings: RankingsResponse): void => {
     this.rankings = rankings;
-    this.rankings = {
-      currentRank: 1,
-      maxRank: 10,
-      hasValue: true,
-      stateMessage: '',
-    };
     this.rankingContent = { ...this.rankings, noData: this.noData };
   };
 
