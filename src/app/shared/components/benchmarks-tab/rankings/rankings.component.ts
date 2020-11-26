@@ -68,13 +68,6 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
     );
   }
 
-  /*handleRankingsResponse = (rankings: RankingsResponse): void => {
-    this.gauge.load(rankings.maxRank, rankings.currentRank);
-    this.currentRank = rankings.currentRank;
-    this.rankStateMessage = rankings.stateMessage;
-    this.rankHasValue = rankings.hasValue;
-  };*/
-
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
