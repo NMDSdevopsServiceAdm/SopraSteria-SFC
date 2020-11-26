@@ -12,73 +12,67 @@
 </div>
 
 <h2 class="govuk-heading-m">
-  {{ metricContent['Pay'].title }}
-  <span *ngIf="tilesData.pay.workplaceValue.hasValue">: {{ tilesData.pay.workplaceValue.value | formatMoney }}</span>
+  {{ metricContent['Pay'].title
+  }}<span *ngIf="tilesData.pay.workplaceValue.hasValue">: {{ tilesData.pay.workplaceValue.value | formatMoney }}</span>
 </h2>
 <p>{{ metricContent['Pay'].description }}</p>
-<app-gauge #payGauge>
+<app-gauge *ngIf="rankings.pay" [maxRank]="rankings.pay.maxRank" [currentRank]="rankings.pay.currentRank">
   <ng-container your-rank>
-    <app-ranking-content [content]="payContent"></app-ranking-content>
+    <app-ranking-content *ngIf="payContent" [content]="payContent"></app-ranking-content>
   </ng-container>
 </app-gauge>
 
 <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-9" />
 
-<!-- <h2 class="govuk-heading-m">
-  {{ metricContent['Turnover'].title }}
-  <span *ngIf="tilesData.turnover.workplaceValue.hasValue"
+<h2 class="govuk-heading-m">
+  {{ metricContent['Turnover'].title
+  }}<span *ngIf="tilesData.turnover.workplaceValue.hasValue"
     >: {{ tilesData.turnover.workplaceValue.value | formatPercent }}</span
   >
 </h2>
 <p>{{ metricContent['Turnover'].description }}</p>
-<app-gauge #turnoverGauge>
+<app-gauge
+  *ngIf="rankings.turnover"
+  [maxRank]="rankings.turnover.maxRank"
+  [currentRank]="rankings.turnover.currentRank"
+>
   <ng-container your-rank>
-    <app-ranking-content
-      [currentRank]=""
-      [stateMessage]=""
-      [hasValue]=""
-      [noData]=""
-      [smallText]="true"
-    ></app-ranking-content>
+    <app-ranking-content *ngIf="turnoverContent" [content]="turnoverContent"></app-ranking-content>
   </ng-container>
 </app-gauge>
 
 <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-9" />
 
 <h2 class="govuk-heading-m">
-  {{ metricContent['Sickness'].title }}
-  <span *ngIf="tilesData.sickness.workplaceValue.hasValue">: {{ tilesData.sickness.workplaceValue.value }} Days</span>
+  {{ metricContent['Sickness'].title
+  }}<span *ngIf="tilesData.sickness.workplaceValue.hasValue">: {{ tilesData.sickness.workplaceValue.value }} Days</span>
 </h2>
 <p>{{ metricContent['Sickness'].description }}</p>
-<app-gauge #sicknessGauge>
+<app-gauge
+  *ngIf="rankings.sickness"
+  [maxRank]="rankings.sickness.maxRank"
+  [currentRank]="rankings.sickness.currentRank"
+>
   <ng-container your-rank>
-    <app-ranking-content
-      [currentRank]=""
-      [stateMessage]=""
-      [hasValue]=""
-      [noData]=""
-      [smallText]="true"
-    ></app-ranking-content>
+    <app-ranking-content *ngIf="sicknessContent" [content]="sicknessContent"></app-ranking-content>
   </ng-container>
 </app-gauge>
 
 <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-9" />
 
 <h2 class="govuk-heading-m">
-  {{ metricContent['Qualifications'].title }}
-  <span *ngIf="tilesData.qualifications.workplaceValue.hasValue"
+  {{ metricContent['Qualifications'].title
+  }}<span *ngIf="tilesData.qualifications.workplaceValue.hasValue"
     >: {{ tilesData.qualifications.workplaceValue.value | formatPercent }}</span
   >
 </h2>
 <p>{{ metricContent['Qualifications'].description }}</p>
-<app-gauge #qualificationsGauge>
+<app-gauge
+  *ngIf="rankings.qualifications"
+  [maxRank]="rankings.qualifications.maxRank"
+  [currentRank]="rankings.qualifications.currentRank"
+>
   <ng-container your-rank>
-    <app-ranking-content
-      [currentRank]=""
-      [stateMessage]=""
-      [hasValue]=""
-      [noData]=""
-      [smallText]="true"
-    ></app-ranking-content>
+    <app-ranking-content *ngIf="qualificationsContent" [content]="qualificationsContent"></app-ranking-content>
   </ng-container>
-</app-gauge> -->
+</app-gauge>

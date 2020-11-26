@@ -1,6 +1,6 @@
 <span class="govuk-caption-l">Benchmarks</span>
 <h1 class="govuk-heading-l">{{ title }}</h1>
-<app-barchart [type]="type" [tile]="tile" [noData]="noData">
+<app-barchart *ngIf="tile" [type]="type" [tile]="tile" [noData]="noData">
   <ng-container metric-desc>{{ description }}</ng-container>
 </app-barchart>
 
@@ -19,8 +19,8 @@
   </div>
 </div>
 
-<app-gauge #gauge>
+<app-gauge *ngIf="rankings" [maxRank]="rankings.maxRank" [currentRank]="rankings.currentRank">
   <ng-container your-rank>
-    <app-ranking-content [content]="rankingContent"></app-ranking-content>
+    <app-ranking-content *ngIf="rankingContent" [content]="rankingContent"></app-ranking-content>
   </ng-container>
 </app-gauge>

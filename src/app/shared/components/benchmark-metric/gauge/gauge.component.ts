@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
+
 import { GaugeOptionsBuilder } from './gauge-options-builder';
 
 @Component({
@@ -10,6 +11,9 @@ import { GaugeOptionsBuilder } from './gauge-options-builder';
 export class GaugeComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;
 
+  @Input() maxRank: number;
+  @Input() currentRank: number;
+
   public loaded = false;
   public options: Highcharts.Options;
   public emptyOptions: Highcharts.Options;
@@ -17,11 +21,6 @@ export class GaugeComponent implements OnInit {
   constructor(private builder: GaugeOptionsBuilder) {}
 
   ngOnInit() {
-    this.emptyOptions = this.builder.buildEmptyChartOptions();
-  }
-
-  load(maxRank: number, currentRank: number) {
-    this.options = this.builder.buildChartOptions(maxRank, currentRank);
-    this.loaded = true;
+    this.options = this.builder.buildChartOptions(this.maxRank, this.currentRank);
   }
 }

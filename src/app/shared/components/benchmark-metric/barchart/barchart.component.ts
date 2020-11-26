@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Metric, NoData, Tile } from '@core/model/benchmarks.model';
 import * as Highcharts from 'highcharts';
 
@@ -9,7 +9,7 @@ import { BarchartOptionsBuilder } from './barchart-options-builder';
   templateUrl: './barchart.component.html',
   styleUrls: ['./barchart.component.scss'],
 })
-export class BarchartComponent implements OnInit, OnChanges {
+export class BarchartComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;
 
   @Input() tile: Tile = null;
@@ -25,20 +25,6 @@ export class BarchartComponent implements OnInit, OnChanges {
   constructor(private builder: BarchartOptionsBuilder) {}
 
   ngOnInit() {
-    if (this.tile) {
-      this.setOptions();
-    } else {
-      this.emptyChartOptions = this.builder.buildEmptyChartOptions(this.altDescription);
-    }
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (Object.keys(changes).includes('tile') && this.tile) {
-      this.setOptions();
-    }
-  }
-
-  private setOptions() {
     this.options = this.builder.buildChartOptions(
       this.tile,
       this.type,

@@ -25,6 +25,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   public numberOfStaff: number;
   public numberOfWorkplaces: number;
   public lastUpdated: Date;
+  public rankings: RankingsResponse;
 
   public rankingContent: RankingContent;
 
@@ -76,8 +77,14 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   };
 
   handleRankingsResponse = (rankings: RankingsResponse): void => {
-    this.gauge.load(rankings.maxRank, rankings.currentRank);
-    this.rankingContent = { ...rankings, noData: this.noData };
+    this.rankings = rankings;
+    this.rankings = {
+      currentRank: 1,
+      maxRank: 10,
+      hasValue: true,
+      stateMessage: '',
+    };
+    this.rankingContent = { ...this.rankings, noData: this.noData };
   };
 
   ngOnDestroy(): void {
