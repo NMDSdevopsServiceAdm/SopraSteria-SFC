@@ -1,10 +1,9 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Data } from '@angular/router';
 import { BenchmarksResponse, Metric, NoData, RankingsResponse, Tile } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { GaugeComponent } from '@shared/components/benchmark-metric/gauge/gauge.component';
 import { RankingContent } from '@shared/components/benchmark-metric/ranking-content/ranking-content.component';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
@@ -26,10 +25,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   public numberOfWorkplaces: number;
   public lastUpdated: Date;
   public rankings: RankingsResponse;
-
   public rankingContent: RankingContent;
-
-  @ViewChild('gauge') gauge: GaugeComponent;
 
   constructor(
     private benchmarksService: BenchmarksService,
@@ -37,6 +33,10 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
   ) {}
+
+  get metric(): string {
+    return Metric[this.type];
+  }
 
   ngOnInit(): void {
     const establishmentUid = this.establishmentService.establishment.uid;

@@ -1,4 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { AllRankingsResponse, BenchmarksResponse, Metric, MetricsContent, NoData, Tile } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -30,15 +32,36 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
 
   constructor(
     private benchmarksService: BenchmarksService,
+    private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit(): void {
     const establishmentUid = this.establishmentService.establishment.uid;
-    /*const establishmentUid = this.establishmentService.establishment.uid;
+    let journey: JourneyType;
+    this.route.fragment.subscribe((fragment: string) => {
+      switch (Metric[fragment]) {
+        case Metric.pay: {
+          journey = JourneyType.BENCHMARK_RANKINGS_PAY;
+          break;
+        }
+        case Metric.turnover: {
+          journey = JourneyType.BENCHMARK_RANKINGS_TURNOVER;
+          break;
+        }
+        case Metric.sickness: {
+          journey = JourneyType.BENCHMARK_RANKINGS_SICKNESS;
+          break;
+        }
+        case Metric.qualifications: {
+          journey = JourneyType.BENCHMARK_RANKINGS_QUALIFICATIONS;
+          break;
+        }
+      }
+    });
 
-    this.benchmarksService.getRankingData(establishmentUid, Metric[this.type]);*/
+    this.breadcrumbService.show(journey);
     this.subscriptions.add(
       this.benchmarksService
         .getTileData(establishmentUid, ['sickness', 'turnover', 'pay', 'qualifications'])

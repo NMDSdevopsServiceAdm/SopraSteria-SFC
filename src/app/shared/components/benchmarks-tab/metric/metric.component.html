@@ -24,3 +24,6 @@
     <app-ranking-content *ngIf="rankingContent" [content]="rankingContent"></app-ranking-content>
   </ng-container>
 </app-gauge>
+<hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" />
+
+<p><a [routerLink]="['..', 'rankings']" [fragment]="metric">View your other rankings</a></p>
