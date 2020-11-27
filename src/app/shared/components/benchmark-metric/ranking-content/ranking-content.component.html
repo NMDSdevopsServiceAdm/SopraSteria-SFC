@@ -3,7 +3,7 @@
 </p>
 <ng-template #noRank>
   <p class="govuk-!-font-size-27 govuk-!-margin-bottom-8" *ngIf="showNoRankMessage; else noComparisonData">
-    {{ message }} We cannot show where you rank.
+    <span [innerHTML]="message"></span> We cannot show where you rank.
   </p>
 </ng-template>
 <ng-template #noComparisonData>
