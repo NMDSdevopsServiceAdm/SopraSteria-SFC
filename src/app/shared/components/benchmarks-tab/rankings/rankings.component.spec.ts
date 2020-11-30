@@ -4,15 +4,18 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MetricsContent } from '@core/model/benchmarks.model';
+import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { BenchmarksRankingsComponent } from '@shared/components/benchmarks-tab/rankings/rankings.component';
 import { render } from '@testing-library/angular';
 import * as moment from 'moment';
-import { of } from 'rxjs';
+import { Observable } from 'rxjs/Rx';
 
 const payTileData = {
   workplaceValue: { value: 1000, hasValue: true },
@@ -50,16 +53,18 @@ const getBenchmarksRankingsComponent = async () => {
         useClass: MockEstablishmentService,
       },
       {
+        provide: BenchmarksService,
+        useClass: MockBenchmarksService,
+      },
+      {
         provide: BreadcrumbService,
         useClass: MockBreadcrumbService,
       },
       {
         provide: ActivatedRoute,
-        useValue: {
-          data: of({
-            ...MetricsContent.Pay,
-          }),
-        },
+        useValue: new MockActivatedRoute({
+          fragment: Observable.from('pay'),
+        }),
       },
     ],
   });
@@ -80,7 +85,7 @@ const setup = (payTile, payRanking) => {
   req2.flush(payRanking);
 };
 
-fdescribe('BenchmarksRankingsComponent', () => {
+describe('BenchmarksRankingsComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
@@ -103,7 +108,7 @@ fdescribe('BenchmarksRankingsComponent', () => {
     fixture.detectChanges();
 
     const comparisonGroupText = getByText('Your comparison group');
-    const lastUpdated = getByText('and ranking was last updated 24 November 2020.');
+    const lastUpdated = getByText('data and ranking was last updated 24 November 2020.');
 
     expect(comparisonGroupText).toBeTruthy();
     expect(lastUpdated).toBeTruthy();

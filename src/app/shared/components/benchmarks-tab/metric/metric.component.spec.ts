@@ -6,6 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { MetricsContent } from '@core/model/benchmarks.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
@@ -52,11 +53,11 @@ const getBenchmarksMetricComponent = async () => {
       },
       {
         provide: ActivatedRoute,
-        useValue: {
+        useValue: new MockActivatedRoute({
           data: of({
             ...MetricsContent.Pay,
           }),
-        },
+        }),
       },
     ],
   });

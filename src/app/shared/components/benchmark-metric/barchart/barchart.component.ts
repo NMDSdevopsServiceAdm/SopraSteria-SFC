@@ -28,7 +28,7 @@ export class BarchartComponent implements OnInit {
     this.options = this.builder.buildChartOptions(
       this.tile,
       this.type,
-      this.noData[this.tile.workplaceValue?.stateMessage],
+      this.noData[this.tile?.workplaceValue?.stateMessage],
       this.altDescription,
     );
     this.loaded = true;
