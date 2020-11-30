@@ -108,10 +108,10 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       );
     }
 
-    if (!this.workplace?.employerType) {
+    if (!this?.workplace?.employerType) {
       window.dataLayer.push({
         firstTimeLogin: true,
-        workplaceID: this.workplace.nmdsId,
+        workplaceID: this?.workplace?.nmdsId ? this.workplace.nmdsId : null,
       });
     }
   }
