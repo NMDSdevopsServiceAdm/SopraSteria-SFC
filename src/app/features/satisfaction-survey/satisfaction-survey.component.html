@@ -3,7 +3,7 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters-from-desktop">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+      <div class="govuk-form-group">
         <fieldset class="govuk-fieldset govuk-!-margin-bottom-5">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
             Did you do everything you wanted to do on ASC-WDS today?
@@ -41,23 +41,20 @@
               id="conditional-didYouDoEverything-some"
             >
               <div class="govuk-form-group">
-                <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="500">
+                <div class="govuk-character-count">
                   <div class="govuk-form-group">
-                    <label class="govuk-label govuk-!-font-weight-bold" for="with-hint">
+                    <label class="govuk-label govuk-!-font-weight-bold" for="didYouDoEverything-text-some">
                       What stopped you doing everything? (optional)
                     </label>
                     <textarea
-                      class="govuk-textarea govuk-js-character-count"
-                      id="with-hint"
-                      name="with-hint"
+                      class="govuk-textarea"
+                      id="didYouDoEverythingText-some"
+                      name="didYouDoEverythingText"
                       rows="5"
-                      aria-describedby="with-hint-info with-hint-hint"
                     ></textarea>
                   </div>
-                  <div id="with-hint-info" class="govuk-hint govuk-character-count__message" aria-live="polite">
-                    500 characters remaining
-                  </div>
-                  <p id="with-hint-hint">
+                  <div class="govuk-hint">500 characters remaining</div>
+                  <p>
                     Please do not include any personal information. For example, names or National Insurance numbers.
                   </p>
                 </div>
@@ -84,21 +81,18 @@
               <div class="govuk-form-group">
                 <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="500">
                   <div class="govuk-form-group">
-                    <label class="govuk-label govuk-!-font-weight-bold" for="with-hint">
+                    <label class="govuk-label govuk-!-font-weight-bold" for="didYouDoEverything-text-no">
                       What stopped you doing anything? (optional)
                     </label>
                     <textarea
-                      class="govuk-textarea govuk-js-character-count"
-                      id="with-hint"
-                      name="with-hint"
+                      class="govuk-textarea"
+                      id="didYouDoEverythingText-no"
+                      name="didYouDoEverythingText"
                       rows="5"
-                      aria-describedby="with-hint-info with-hint-hint"
                     ></textarea>
                   </div>
-                  <div id="with-hint-info" class="govuk-hint govuk-character-count__message" aria-live="polite">
-                    500 characters remaining
-                  </div>
-                  <p id="with-hint-hint">
+                  <div class="govuk-hint">500 characters remaining</div>
+                  <p>
                     Please do not include any personal information. For example, names or National Insurance numbers.
                   </p>
                 </div>
@@ -173,4 +167,6 @@
       </div>
     </div>
   </div>
+
+  <button type="submit" class="govuk-button">Send feedback</button>
 </form>
