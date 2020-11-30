@@ -11,6 +11,7 @@ import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { BenchmarksRankingsComponent } from '@shared/components/benchmarks-tab/rankings/rankings.component';
 import { render } from '@testing-library/angular';
@@ -22,6 +23,27 @@ const payTileData = {
   comparisonGroup: { value: 1100, hasValue: true },
   goodCqc: { value: 1200, hasValue: true },
   lowTurnover: { value: 900, hasValue: true },
+};
+
+const turnoverTileData = {
+  workplaceValue: { value: 1.1, hasValue: true },
+  comparisonGroup: { value: 0.9, hasValue: true },
+  goodCqc: { value: 0.8, hasValue: true },
+  lowTurnover: { value: 1, hasValue: true },
+};
+
+const sicknessTileData = {
+  workplaceValue: { value: 8, hasValue: true },
+  comparisonGroup: { value: 9, hasValue: true },
+  goodCqc: { value: 19, hasValue: true },
+  lowTurnover: { value: 1, hasValue: true },
+};
+
+const qualificationsTileData = {
+  workplaceValue: { value: 1.2, hasValue: true },
+  comparisonGroup: { value: 0.1, hasValue: true },
+  goodCqc: { value: 0.9, hasValue: true },
+  lowTurnover: { value: 1.2, hasValue: true },
 };
 
 const noPayTileData = {
@@ -85,7 +107,7 @@ const setup = (payTile, payRanking) => {
   req2.flush(payRanking);
 };
 
-describe('BenchmarksRankingsComponent', () => {
+fdescribe('BenchmarksRankingsComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
@@ -147,12 +169,91 @@ describe('BenchmarksRankingsComponent', () => {
       expect(content).toBeTruthy();
     });
   });
-  it('should show tile info in the title', async () => {
+  it('should show tile info for pay in the title', async () => {
     const { fixture, getByText } = await getBenchmarksRankingsComponent();
 
-    metrics.forEach((metric: string) => {
-      const content = getByText(MetricsContent[metric].description);
-      expect(content).toBeTruthy();
+    fixture.componentInstance.tilesData.pay = payTileData;
+    fixture.detectChanges();
+
+    const content = getByText(`: ${FormatUtil.formatMoney(payTileData.workplaceValue.value)}`);
+    expect(content).toBeTruthy();
+  });
+  it('should show tile info for turnover in the title', async () => {
+    const { fixture, getByText } = await getBenchmarksRankingsComponent();
+
+    fixture.componentInstance.tilesData.turnover = turnoverTileData;
+    fixture.detectChanges();
+
+    const content = getByText(`: ${FormatUtil.formatPercent(turnoverTileData.workplaceValue.value)}`);
+    expect(content).toBeTruthy();
+  });
+  it('should show tile info for sickness in the title', async () => {
+    const { fixture, getByText } = await getBenchmarksRankingsComponent();
+
+    fixture.componentInstance.tilesData.sickness = sicknessTileData;
+    fixture.detectChanges();
+
+    const content = getByText(`: ${sicknessTileData.workplaceValue.value} Days`);
+    expect(content).toBeTruthy();
+  });
+  it('should show tile info for qualifications in the title', async () => {
+    const { fixture, getByText } = await getBenchmarksRankingsComponent();
+
+    fixture.componentInstance.tilesData.qualifications = qualificationsTileData;
+    fixture.detectChanges();
+
+    const content = getByText(`: ${FormatUtil.formatPercent(qualificationsTileData.workplaceValue.value)}`);
+    expect(content).toBeTruthy();
+  });
+
+  it('should not show tile info for sickness in the title if hasValue is false', async () => {
+    const { queryAllByText } = await getBenchmarksRankingsComponent();
+
+    const content = queryAllByText(`Days`);
+    expect(content.length).toEqual(0);
+  });
+  it('should create 4 gauges with workplace rankings data', async () => {
+    const { fixture, queryAllByTestId } = await getBenchmarksRankingsComponent();
+
+    fixture.whenStable();
+
+    const lowestRank = queryAllByTestId('lowest');
+
+    lowestRank.forEach((lowestRankElem) => {
+      const content = lowestRankElem.textContent;
+      const maxRanks = [];
+
+      const rank = parseInt(content.split('Lowest')[0]);
+
+      maxRanks.push(fixture.componentInstance.rankings.pay.maxRank);
+      maxRanks.push(fixture.componentInstance.rankings.turnover.maxRank);
+      maxRanks.push(fixture.componentInstance.rankings.sickness.maxRank);
+      maxRanks.push(fixture.componentInstance.rankings.qualifications.maxRank);
+
+      expect(maxRanks.includes(rank)).toBeTruthy();
+
+      expect(content).toContain('Lowest ranking');
     });
+
+    const highestRank = queryAllByTestId('highest');
+    const currentRank = queryAllByTestId('currentrank');
+
+    currentRank.forEach((currentRankElem) => {
+      const content = currentRankElem.textContent;
+      const currentRanks = [];
+
+      const rank = parseInt(content);
+
+      currentRanks.push(fixture.componentInstance.rankings.pay.currentRank);
+      currentRanks.push(fixture.componentInstance.rankings.turnover.currentRank);
+      currentRanks.push(fixture.componentInstance.rankings.sickness.currentRank);
+      currentRanks.push(fixture.componentInstance.rankings.qualifications.currentRank);
+
+      expect(currentRanks.includes(rank)).toBeTruthy();
+    });
+
+    expect(lowestRank.length).toEqual(4);
+    expect(highestRank.length).toEqual(4);
+    expect(currentRank.length).toEqual(4);
   });
 });
