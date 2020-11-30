@@ -5,27 +5,29 @@ import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
-import { MetricsContent } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
-import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import {
+  SelectMainServiceCqcConfirmComponent,
+} from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
-import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
+import {
+  UserAccountEditDetailsComponent,
+} from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
-import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
-import { BenchmarksMetricComponent } from '@shared/components/benchmarks-tab/metric/metric.component';
-import { BenchmarksRankingsComponent } from '@shared/components/benchmarks-tab/rankings/rankings.component';
 
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
-import { DataSharingWithLocalAuthoritiesComponent } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
+import {
+  DataSharingWithLocalAuthoritiesComponent,
+} from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
@@ -42,7 +44,9 @@ import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
+import {
+  UserAccountEditPermissionsComponent,
+} from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewAllMandatoryTrainingComponent } from './view-all-mandatory-trainings/view-all-mandatory-training.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
