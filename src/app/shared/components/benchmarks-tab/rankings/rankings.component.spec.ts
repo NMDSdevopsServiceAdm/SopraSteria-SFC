@@ -107,7 +107,7 @@ const setup = (payTile, payRanking) => {
   req2.flush(payRanking);
 };
 
-fdescribe('BenchmarksRankingsComponent', () => {
+describe('BenchmarksRankingsComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
