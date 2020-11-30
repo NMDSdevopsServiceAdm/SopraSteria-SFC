@@ -29,7 +29,7 @@
                 <ng-container *ngSwitchDefault>{{ workplaceValue | formatPercent }}</ng-container>
               </ng-container>
             </ng-container>
-            <ng-template #yourEmpty>{{ noDataMessage }}</ng-template>
+            <ng-template #yourEmpty><span [innerHTML]="noDataMessage"></span></ng-template>
           </p>
         </div>
         <div class="govuk-grid-column-full govuk-grid-column-one-half-from-desktop">

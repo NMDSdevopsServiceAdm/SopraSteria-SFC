@@ -87,7 +87,7 @@ export class MetricsContent {
       noData: {
         'mismatch-workers': 'For this to show, there must be a staff record for every staff member.',
         'no-leavers': "You've not added any data about leavers yet.",
-        'incorrect-turnover': 'Your turnover seems to be over 999%, please contact us.',
+        'incorrect-turnover': 'Your turnover seems to be over 999%, <a href="/contact-us">please contact us.</a>',
         'no-perm-or-temp': 'You need records for permanent or temporary staff to see turnover.',
       },
       type: Metric.turnover,
