@@ -200,7 +200,12 @@ export class PdfService {
     element.style.visibility = 'visible';
     return height;
   }
-  private resolveComponent<T extends PdfComponent>(componentType: Type<T>, callback) {
+  private resolveComponent<T extends PdfComponent>(
+    componentType: Type<T>,
+    callback: (c: ComponentRef<T>) => void = () => {
+      return;
+    },
+  ) {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
     const component = componentFactory.create(this.injector);
     callback(component);
