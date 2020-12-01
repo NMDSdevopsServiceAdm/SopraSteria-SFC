@@ -103,22 +103,19 @@ router.route('/turnover').get(async (req, res) => {
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
-  const promises = [
-    { metric: 'pay', f: getPayRanking },
-    { metric: 'qualifications', f: getQualificationsRanking },
-    { metric: 'sickness', f: getSicknessRanking },
-    { metric: 'turnover', f: getTurnoverRanking },
-  ]
+  const pay = await getPayRanking(establishmentId);
+  const turnover = await getTurnoverRanking(establishmentId);
+  const sickness = await getSicknessRanking(establishmentId);
+  const qualifications = await getQualificationsRanking(establishmentId);
 
-  const responseData = await Promise.all(promises.map(async promise => {
-    const data = await promise.f(establishmentId);
-    return { metric: promise.metric, data }
-  }));
+  const data = {
+    pay,
+    turnover,
+    sickness,
+    qualifications,
+  };
 
-  res.status(200).json(responseData.reduce((obj, item) => {
-    obj[item.metric] = item.data;
-    return obj;
-  }, {}));
+  res.status(200).json(data);
 });
 
 const getResponse = async function (req, res, getRankingCallback) {
