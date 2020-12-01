@@ -30,7 +30,14 @@ export interface RankingsResponse {
   currentRank: number;
   maxRank: number;
   hasValue: boolean;
-  stateMessage?: string;
+  stateMessage: string;
+}
+
+export interface AllRankingsResponse {
+  pay: RankingsResponse;
+  qualifications: RankingsResponse;
+  sickness: RankingsResponse;
+  turnover: RankingsResponse;
 }
 
 export enum Metric {
@@ -54,6 +61,7 @@ export interface NoData {
 export class MetricsContent {
   title: string;
   description: string;
+  tileDescription: string;
   noData: NoData;
   type: Metric;
   journey: JourneyType;
@@ -62,6 +70,7 @@ export class MetricsContent {
     return {
       title: 'Pay',
       description: 'Average hourly pay for a care worker.',
+      tileDescription: 'Average hourly pay for a care worker.',
       noData: {
         'no-pay-data': "You've not added any data about hourly pay yet.",
       },
@@ -73,7 +82,8 @@ export class MetricsContent {
   static get Turnover(): MetricsContent {
     return {
       title: 'Turnover',
-      description: 'Staff (permanent and temps) left in the last 12 months.',
+      description: 'Staff (on permanent and temporary contracts) who left in the last 12 months.',
+      tileDescription: 'Staff (permanent and temps) left in the last 12 months.',
       noData: {
         'mismatch-workers': 'For this to show, there must be a staff record for every staff member.',
         'no-leavers': "You've not added any data about leavers yet.",
@@ -89,6 +99,7 @@ export class MetricsContent {
     return {
       title: 'Sickness',
       description: 'Average days each worker was off in the last 12 months.',
+      tileDescription: 'Average days each worker was off in the last 12 months.',
       noData: {
         'no-sickness-data': "You've not added any data about sickness yet.",
       },
@@ -101,6 +112,7 @@ export class MetricsContent {
     return {
       title: 'Qualifications',
       description: 'Care-providing staff with a relevant level 2 or above.',
+      tileDescription: 'Care-providing staff with a relevant level 2 or above.',
       noData: {
         'no-qualifications-data': "You've not added any data about social care qualifications yet.",
       },

@@ -42,6 +42,7 @@ import { LogoutComponent } from '@features/logout/logout.component';
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
+import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { HighchartsChartModule } from 'highcharts-angular';
@@ -87,6 +88,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     ReactiveFormsModule,
     SharedModule,
     RouterModule,
+    BenchmarksModule,
   ],
   providers: [
     AuthGuard,

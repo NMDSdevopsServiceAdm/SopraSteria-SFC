@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { merge } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 
 @Injectable({
   providedIn: 'root',
@@ -55,7 +55,9 @@ export class GaugeOptionsBuilder {
           padding: 0,
           useHTML: true,
           formatter: function () {
-            return '<span class="govuk-heading-xl govuk-!-margin-bottom-2">' + this.y + '</span>';
+            return (
+              '<span data-testid="currentrank" class="govuk-heading-xl govuk-!-margin-bottom-2">' + this.y + '</span>'
+            );
           },
           crop: false,
           overflow: 'allow',
@@ -127,8 +129,9 @@ export class GaugeOptionsBuilder {
         enabled: false,
       },
     };
+    const options = cloneDeep(this.defaultOptions);
 
-    return merge(this.defaultOptions, source);
+    return merge(options, source);
   }
 
   private formatLabel(max: number): Highcharts.AxisLabelsFormatterCallbackFunction {
@@ -141,7 +144,7 @@ export class GaugeOptionsBuilder {
       }
       if (this.value === 1) {
         return (
-          '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-right-2">' +
+          '<span data-testid="highest" class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-right-2">' +
           'Highest ranking ' +
           '<span class="govuk-!-font-weight-bold govuk-!-margin-left-4">' +
           value +
@@ -150,7 +153,7 @@ export class GaugeOptionsBuilder {
       }
       if (this.value < 0) return;
       return (
-        '<span class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-left-2">' +
+        '<span data-testid="lowest" class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-left-2">' +
         '<span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
         value +
         '</span>Lowest ranking</span>'

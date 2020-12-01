@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Data } from '@angular/router';
 import { BenchmarksResponse, Metric, NoData, RankingsResponse, Tile } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { GaugeComponent } from '@shared/components/benchmark-metric/gauge/gauge.component';
+import { RankingContent } from '@shared/components/benchmark-metric/ranking-content/ranking-content.component';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 
@@ -24,12 +24,8 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   public numberOfStaff: number;
   public numberOfWorkplaces: number;
   public lastUpdated: Date;
-
-  public currentRank: number;
-  public rankStateMessage: string;
-  public rankHasValue: boolean;
-
-  @ViewChild('gauge') gauge: GaugeComponent;
+  public rankings: RankingsResponse;
+  public rankingContent: RankingContent;
 
   constructor(
     private benchmarksService: BenchmarksService,
@@ -37,6 +33,10 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
   ) {}
+
+  get metric(): string {
+    return Metric[this.type];
+  }
 
   ngOnInit(): void {
     const establishmentUid = this.establishmentService.establishment.uid;
@@ -77,10 +77,8 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   };
 
   handleRankingsResponse = (rankings: RankingsResponse): void => {
-    this.gauge.load(rankings.maxRank, rankings.currentRank);
-    this.currentRank = rankings.currentRank;
-    this.rankStateMessage = rankings.stateMessage;
-    this.rankHasValue = rankings.hasValue;
+    this.rankings = rankings;
+    this.rankingContent = { ...this.rankings, noData: this.noData };
   };
 
   ngOnDestroy(): void {
