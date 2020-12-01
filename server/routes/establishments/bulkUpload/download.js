@@ -102,7 +102,6 @@ const downloadGet = async (req, res) => {
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
   const isParent = req.isParent;
-  console.log(await models.establishment.downloadEstablishments(primaryEstablishmentId));
 
   const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training'];
   const downloadType = req.params.downloadType;

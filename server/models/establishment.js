@@ -1,5 +1,3 @@
-const { Op } = require('sequelize');
-
 /* jshint indent: 2 */
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -951,80 +949,6 @@ module.exports = function (sequelize, DataTypes) {
           required: false,
         },
       ],
-    });
-  };
-
-  Establishment.downloadEstablishments = async function (establishmentId) {
-    // 'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
-    //   'PERMCQC,PERMLA,SHARELA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
-    //   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS';
-    return await this.findAll({
-      attributes: [
-        'NameValue',
-        'address1',
-        'address2',
-        'address3',
-        'town',
-        'postcode',
-        'EmployerTypeValue',
-        'EmployerTypeOther',
-        'shareWithCQC',
-        'shareWithLA',
-        sequelize.literal('CASE WHEN "establishment"."IsRegulated" = \'Yes\' THEN 2 ELSE 0 END', 'isRegulated'),
-        'provId',
-        'locationId',
-        'NumberOfStaffValue',
-      ],
-      order: [['NameValue', 'ASC']],
-      where: {
-        [Op.or]: [
-          {
-            id: establishmentId,
-          },
-          {
-            parentId: establishmentId,
-          },
-        ],
-      },
-      include: [
-        {
-          model: sequelize.models.establishment,
-          attributes: ['id', 'uid', 'nmdsId'],
-          as: 'Parent',
-          required: false,
-        },
-        {
-          model: sequelize.models.services,
-          attributes: ['reportingID'],
-          as: 'mainService',
-        },
-        {
-          model: sequelize.models.services,
-          attributes: ['reportingID'],
-          as: 'otherServices',
-        },
-        {
-          model: sequelize.models.serviceUsers,
-          // attributes: ['serviceUserId', 'other'],
-          as: 'serviceUsers',
-        },
-        {
-          model: sequelize.models.establishmentCapacity,
-          attributes: ['serviceCapacityId', 'answer'],
-          as: 'capacity',
-        },
-        {
-          model: sequelize.models.establishmentJobs,
-          attributes: ['jobId', 'type', 'total'],
-          as: 'jobs',
-        },
-        {
-          model: sequelize.models.establishmentLocalAuthority,
-          attributes: ['cssrId'],
-          as: 'localAuthorities',
-        },
-      ],
-      raw: true,
     });
   };
 
