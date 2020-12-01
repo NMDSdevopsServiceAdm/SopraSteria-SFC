@@ -7,7 +7,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { GaugeComponent } from '@shared/components/benchmark-metric/gauge/gauge.component';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
-import { PdfService } from '@core/services/pdf.service';
+import { PdfService, ReportType } from '@core/services/pdf.service';
 import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
 import { Establishment } from '@core/model/establishment.model';
 
@@ -33,7 +33,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   public rankStateMessage: string;
   public rankHasValue: boolean;
 
-  // @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
+  @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
   @ViewChild('gauge') gauge: GaugeComponent;
 
   constructor(
@@ -46,8 +46,8 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const workplace = this.establishmentService.establishment;
-    const establishmentUid = workplace.uid;
+    this.workplace = this.establishmentService.establishment;
+    const establishmentUid = this.workplace.uid;
 
     const dataObservable$ = this.route.data.pipe(
       tap(this.setRouteData),
@@ -94,8 +94,12 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     $event.preventDefault();
 
     try {
-      console.log('trying');
-      return await this.pdfService.BuildBenchmarksPdf(this.elRef, null, this.workplace);
+      return await this.pdfService.BuildBenchmarksPdf(
+        this.elRef,
+        this.aboutData.aboutData,
+        this.workplace,
+        ReportType.pay,
+      );
     } catch (error) {
       console.error(error);
     }
