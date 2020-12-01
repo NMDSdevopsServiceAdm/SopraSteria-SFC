@@ -45,7 +45,7 @@
     "ajv": "^6.12.6",
     "angulartics2": "^7.5.2",
     "aws-sdk": "^2.712.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.0",
     "bcrypt-nodejs": "0.0.3",
     "cheerio": "^1.0.0-rc.3",
     "compression": "^1.7.4",
