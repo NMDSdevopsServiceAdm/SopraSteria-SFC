@@ -84,11 +84,13 @@ const buildComparisonGroupMetrics = (key, comparisonGroups) => {
 
 const buildMetric = (metricValue) => {
   const comparisonGroup = clonedeep(comparisonJson);
-  comparisonGroup.value = metricValue ? parseFloat(metricValue) : 0;
-  comparisonGroup.hasValue = metricValue !== null;
+  comparisonGroup.value = metricValue !== undefined && metricValue !== null ? parseFloat(metricValue) : 0;
+  console.log(metricValue);
+  comparisonGroup.hasValue = metricValue !== undefined && metricValue !== null;
   if (comparisonGroup.hasValue) {
     delete comparisonGroup.stateMessage;
   }
+  console.log(comparisonGroup);
   return comparisonGroup;
 };
 
