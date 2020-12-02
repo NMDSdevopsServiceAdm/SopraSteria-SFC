@@ -39,6 +39,36 @@ describe('benchmarks', () => {
       expect(json).to.deep.equal(expectedJSON);
     });
 
+    it('should return the correct calculation when parsing', async () => {
+      const establishmentId = 123;
+
+      sinon.stub(models.worker, 'averageHourlyPay').returns({ amount: '9.2000000000000000' });
+
+      const json = await benchmarks.pay(establishmentId);
+      const expectedJSON = {
+        workplaceValue: {
+          value: 920,
+          hasValue: true,
+        },
+        comparisonGroup: {
+          value: 0,
+          hasValue: false,
+          stateMessage: 'no-data',
+        },
+        goodCqc: {
+          hasValue: false,
+          stateMessage: 'no-data',
+          value: 0,
+        },
+        lowTurnover: {
+          hasValue: false,
+          stateMessage: 'no-data',
+          value: 0,
+        },
+      };
+      expect(json).to.deep.equal(expectedJSON);
+    });
+
     it('should return the correct state message when there is no workplace value', async () => {
       const establishmentId = 123;
 
