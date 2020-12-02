@@ -9,7 +9,7 @@ const getPay = async function (establishmentId) {
     };
   }
 
-  return { value: parseInt(averageHourlyPay.amount * 100) };
+  return { value: (parseFloat(averageHourlyPay.amount) * 100).toFixed(0) };
 };
 
 const getQualifications = async function (establishmentId) {
