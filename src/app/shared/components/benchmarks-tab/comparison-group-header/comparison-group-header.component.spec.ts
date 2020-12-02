@@ -6,7 +6,7 @@ import {
   ComparisonGroupHeaderComponent,
 } from '@shared/components/benchmarks-tab/comparison-group-header/comparison-group-header.component';
 
-fdescribe('ComparisonGroupHeaderComponent', () => {
+describe('ComparisonGroupHeaderComponent', () => {
   let component: ComparisonGroupHeaderComponent;
   let fixture: ComponentFixture<ComparisonGroupHeaderComponent>;
 
