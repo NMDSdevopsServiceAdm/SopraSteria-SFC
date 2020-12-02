@@ -15,7 +15,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
-
+// eslint-disable-next-line max-len
 import { UserAccountChangePrimaryDialogComponent } from '../user-account-change-primary-dialog/user-account-change-primary-dialog.component';
 
 @Component({

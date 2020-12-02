@@ -8,9 +8,8 @@ describe('RankingContentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RankingContentComponent ]
-    })
-    .compileComponents();
+      declarations: [RankingContentComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

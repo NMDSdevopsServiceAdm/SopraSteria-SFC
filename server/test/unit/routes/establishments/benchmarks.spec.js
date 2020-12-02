@@ -558,6 +558,19 @@ describe('benchmarks', () => {
 
       expect(json.comparisonGroup).to.deep.equal(expectedJson);
     });
+    it('should return the correct state message when there is no comparison group value', async () => {
+      const benchmarkComparisonGroup = {};
+
+      const json = benchmarks.buildComparisonGroupMetrics('pay', benchmarkComparisonGroup);
+
+      const expectedJson = {
+        value: 0,
+        hasValue: false,
+        stateMessage: 'no-data',
+      };
+
+      expect(json.comparisonGroup).to.deep.equal(expectedJson);
+    });
   });
   describe('getMetaData', () => {
     it('should return the correct meta Data', async () => {
