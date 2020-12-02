@@ -36,3 +36,6 @@ bulkupload:
     timeout: 600
 sentry:
   sample_rate: 0.0
+satisfactionSurvey:
+  timeSpan: 2
+  unit: m

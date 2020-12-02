@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+
 module.exports = function(sequelize, DataTypes) {
   const UserAudit = sequelize.define('userAudit', {
     id: {
@@ -26,7 +28,7 @@ module.exports = function(sequelize, DataTypes) {
     type: {
       type: DataTypes.ENUM,
       allowNull: false,
-      values: ['created', 'updated', 'saved', 'changed', 'passwdReset', 'loginSuccess', 'loginFailed', 'loginWhileLocked'],
+      values: ['created', 'updated', 'saved', 'changed', 'passwdReset', 'loginSuccess', 'loginFailed', 'loginWhileLocked', 'login', 'logout'],
       field: '"EventType"'
     },
     property : {
@@ -45,6 +47,42 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false,    // intentionally keeping these false; updated timestamp will be managed within the Worker business model not this DB model
   });
+
+  UserAudit.associate = (models) => {
+    UserAudit.belongsTo(models.user, {
+      foreignKey : 'userFk',
+      targetKey: 'id',
+      as: 'user'
+    })
+  }
+
+  UserAudit.countLogouts = async function(establishmentId, fromDate) {
+    return await this.count({
+      where: {
+        when: {
+          [Op.gte]: fromDate
+        },
+        type: 'logout'
+      },
+      include: [
+        {
+          model: sequelize.models.user,
+          attributes: ["id"],
+          as: 'user',
+          include: [
+            {
+              model: sequelize.models.establishment,
+              attributes: ["id"],
+              where: {
+                id: establishmentId
+              }
+            }
+          ]
+        }
+      ],
+      raw: true
+    })
+  }
 
   return UserAudit;
 };
