@@ -3,7 +3,6 @@ import { BenchmarksResponse, MetricsContent, Tile } from '@core/model/benchmarks
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService, ReportType } from '@core/services/pdf.service';
-import { CloneObjectUtil } from '@core/utils/cloneObject-util';
 import { Subscription } from 'rxjs';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';

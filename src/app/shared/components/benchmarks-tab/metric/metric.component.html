@@ -13,7 +13,7 @@
     Download Benchmarks PDF (89KB, 2 pages)
   </span>
 </a>
-<app-barchart [type]="type" [tile]="tile" [noData]="noData">
+<app-barchart *ngIf="tile" [type]="type" [tile]="tile" [noData]="noData">
   <ng-container metric-desc>{{ description }}</ng-container>
 </app-barchart>
 
@@ -32,14 +32,14 @@
   </div>
 </div>
 
-<app-gauge #gauge>
+<app-gauge *ngIf="rankings" [maxRank]="rankings.maxRank" [currentRank]="rankings.currentRank">
   <ng-container your-rank>
-    <app-ranking-content
-      [currentRank]="currentRank"
-      [stateMessage]="rankStateMessage"
-      [hasValue]="rankHasValue"
-      [noData]="noData"
-    ></app-ranking-content>
+    <app-ranking-content *ngIf="rankingContent" [content]="rankingContent"></app-ranking-content>
   </ng-container>
 </app-gauge>
+
 <app-benchmarks-about-the-data #aboutData class="util__hidden" [workplace]="workplace"></app-benchmarks-about-the-data>
+
+<hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" />
+
+<p><a [routerLink]="['..', 'rankings']" [fragment]="metric">View your other rankings</a></p>

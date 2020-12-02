@@ -1,8 +1,3 @@
 <ng-content select="[your-rank]"></ng-content>
 
-<ng-container *ngIf="loaded; else loading">
-  <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
-</ng-container>
-<ng-template #loading>
-  <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="emptyOptions"></highcharts-chart>
-</ng-template>
+<highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>

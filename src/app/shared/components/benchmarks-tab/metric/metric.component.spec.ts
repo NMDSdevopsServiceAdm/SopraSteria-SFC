@@ -6,6 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { MetricsContent } from '@core/model/benchmarks.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
@@ -52,11 +53,11 @@ const getBenchmarksMetricComponent = async () => {
       },
       {
         provide: ActivatedRoute,
-        useValue: {
+        useValue: new MockActivatedRoute({
           data: of({
             ...MetricsContent.Pay,
           }),
-        },
+        }),
       },
     ],
   });
@@ -116,20 +117,40 @@ describe('BenchmarksMetricComponent', () => {
     expect(noComparisonGroupsDataMessage).toBeTruthy();
   });
 
-  /*it('should create a gauge with workplace rankings data', async () => {
-    const { fixture, getByText } = await getBenchmarksMetricComponent();
+  it('should create a gauges with workplace rankings data', async () => {
+    const { fixture, queryAllByTestId } = await getBenchmarksMetricComponent();
 
     setup(noPayTileData, payRankingData);
 
     fixture.detectChanges();
 
-    fixture.whenStable()
-    //const lowestRank = getByText('3Lowest ranking');
-    //const highestRank = getByText('Highest ranking 1');
-    const currentRank = getByText('Highest ranking 1');
+    fixture.whenStable();
 
-    //expect(lowestRank).toBeTruthy();
-    //expect(highestRank).toBeTruthy();
-    expect(currentRank).toBeTruthy();
-  });*/
+    const lowestRank = queryAllByTestId('lowest');
+
+    lowestRank.forEach((lowestRankElem) => {
+      const content = lowestRankElem.textContent;
+
+      const rank = parseInt(content.split('Lowest')[0]);
+
+      expect(payRankingData.maxRank === rank).toBeTruthy();
+
+      expect(content).toContain('Lowest ranking');
+    });
+
+    const highestRank = queryAllByTestId('highest');
+    const currentRank = queryAllByTestId('currentrank');
+
+    currentRank.forEach((currentRankElem) => {
+      const content = currentRankElem.textContent;
+
+      const rank = parseInt(content);
+
+      expect(payRankingData.currentRank === rank).toBeTruthy();
+    });
+
+    expect(lowestRank.length).toEqual(1);
+    expect(highestRank.length).toEqual(1);
+    expect(currentRank.length).toEqual(1);
+  });
 });

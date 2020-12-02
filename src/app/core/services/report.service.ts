@@ -32,6 +32,12 @@ export class ReportService {
       responseType: 'blob' as 'json',
     });
   }
+  public getDeleteReport(): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/reports/delete/new`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
 
   public getLocalAuthorityReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
     return this.checkLockStatus(
