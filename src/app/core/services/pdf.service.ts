@@ -110,13 +110,13 @@ export class PdfService {
     const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
 
     const svgElements = html.getElementsByClassName('highcharts-root');
-    console.log(svgElements);
 
-    //  replace all svgs with a temp canvas
-    console.log('Getting charts');
-    console.log(Highcharts.charts);
-    Highcharts.charts.forEach(async function (chart) {
-      const svg = await chart.getSVG({
+    for (const chart of Highcharts.charts) {
+      if (!chart) {
+        continue;
+      }
+
+      const svg = chart.getSVG({
         exporting: {
           sourceWidth: chart.chartWidth,
           sourceHeight: chart.chartHeight,
@@ -126,42 +126,39 @@ export class PdfService {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
 
-      const v = await Canvg.fromString(ctx, svg.toString());
+      // xml = (new XMLSerializer()).serializeToString(svg);
+      const v = await Canvg.from(ctx, svg);
       await v.render();
 
-      const el = html.getElementById(chart.container.id);
-      console.log(el);
-      console.log(canvas.toDataURL());
+      // const el = html.querySelector(`#${chart.container.id}`);
+      // el.replaceWith(canvas);
+    }
 
-      el.replaceWith(canvas);
+    await svgElements.forEach(async function (svg) {
+      try {
+        let xml;
 
-      // await svgElements.forEach(async function(svg) {
-      //     try {
-      //       var xml;
-      //
-      //       const canvas = document.createElement("canvas");
-      //       canvas.className = "screenShotTempCanvas";
-      //       let ctx = canvas.getContext('2d');
-      //
-      //       xml = (new XMLSerializer()).serializeToString(chart.getSVG);
-      //      // console.log(xml);
-      //
-      //       // Removing the name space as IE throws an error
-      //       xml = xml.replace(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/, '');
-      //       console.log(ctx);
-      //       // ctx.canvas.
-      //       let v = await Canvg.from(ctx, xml);
-      //       await v.render();
-      //       console.log("CANVAS")
-      //       console.log(v);
-      //
-      //       svg.parentNode.insertBefore(canvas, svg.nextSibling)
-      //       svg.remove();
-      //
-      //     }catch(err){
-      //       console.log(err)
-      //
-      //     }
+        const canvas = document.createElement('canvas');
+        canvas.className = 'screenShotTempCanvas';
+        const ctx = canvas.getContext('2d');
+
+        xml = new XMLSerializer().serializeToString(svg);
+        // console.log(xml);
+
+        // Removing the name space as IE throws an error
+        xml = xml.replace(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/, '');
+        console.log(ctx);
+        // ctx.canvas.
+        const v = await Canvg.from(ctx, xml);
+        await v.render();
+        console.log('CANVAS');
+        console.log(v);
+
+        svg.parentNode.insertBefore(canvas, svg.nextSibling);
+        svg.remove();
+      } catch (err) {
+        console.log(err);
+      }
     });
 
     const html2canvas = {
