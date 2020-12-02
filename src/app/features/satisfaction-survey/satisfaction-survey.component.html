@@ -13,7 +13,6 @@
               <input
                 class="govuk-radios__input"
                 id="didYouDoEverything-yes"
-                name="didYouDoEverything"
                 formControlName="didYouDoEverything"
                 type="radio"
                 value="Yes"
@@ -26,7 +25,6 @@
               <input
                 class="govuk-radios__input"
                 id="didYouDoEverything-some"
-                name="didYouDoEverything"
                 formControlName="didYouDoEverything"
                 type="radio"
                 value="Some"
@@ -43,13 +41,13 @@
               <div class="govuk-form-group">
                 <div class="govuk-character-count">
                   <div class="govuk-form-group">
-                    <label class="govuk-label govuk-!-font-weight-bold" for="didYouDoEverything-text-some">
+                    <label class="govuk-label govuk-!-font-weight-bold" for="didYouDoEverythingAdditionalAnswer-some">
                       What stopped you doing everything? (optional)
                     </label>
                     <textarea
                       class="govuk-textarea"
-                      id="didYouDoEverythingText-some"
-                      name="didYouDoEverythingText"
+                      id="didYouDoEverythingAdditionalAnswer-some"
+                      formControlName="didYouDoEverythingAdditionalAnswer"
                       rows="5"
                     ></textarea>
                   </div>
@@ -64,7 +62,6 @@
               <input
                 class="govuk-radios__input"
                 id="didYouDoEverything-no"
-                name="didYouDoEverything"
                 formControlName="didYouDoEverything"
                 type="radio"
                 value="No"
@@ -81,13 +78,13 @@
               <div class="govuk-form-group">
                 <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="500">
                   <div class="govuk-form-group">
-                    <label class="govuk-label govuk-!-font-weight-bold" for="didYouDoEverything-text-no">
+                    <label class="govuk-label govuk-!-font-weight-bold" for="didYouDoEverythingAdditionalAnswer-no">
                       What stopped you doing anything? (optional)
                     </label>
                     <textarea
                       class="govuk-textarea"
-                      id="didYouDoEverythingText-no"
-                      name="didYouDoEverythingText"
+                      id="didYouDoEverythingAdditionalAnswer-no"
+                      formControlName="didYouDoEverythingAdditionalAnswer"
                       rows="5"
                     ></textarea>
                   </div>
@@ -108,7 +105,6 @@
             <input
               class="govuk-radios__input"
               id="howDidYouFeel-verySatisfied"
-              name="howDidYouFeel"
               formControlName="howDidYouFeel"
               type="radio"
               value="Very satisfied"
@@ -119,7 +115,6 @@
             <input
               class="govuk-radios__input"
               id="howDidYouFeel-satisfied"
-              name="howDidYouFeel"
               formControlName="howDidYouFeel"
               type="radio"
               value="Satisfied"
@@ -130,7 +125,6 @@
             <input
               class="govuk-radios__input"
               id="howDidYouFeel-neither"
-              name="howDidYouFeel"
               formControlName="howDidYouFeel"
               type="radio"
               value="Neither"
@@ -143,7 +137,6 @@
             <input
               class="govuk-radios__input"
               id="howDidYouFeel-dissatisfied"
-              name="howDidYouFeel"
               formControlName="howDidYouFeel"
               type="radio"
               value="Dissatisfied"
@@ -154,7 +147,6 @@
             <input
               class="govuk-radios__input"
               id="howDidYouFeel-veryDissatisfied"
-              name="howDidYouFeel"
               formControlName="howDidYouFeel"
               type="radio"
               value="Very dissatisfied"

@@ -27,12 +27,12 @@ export class MockAuthService extends AuthService {
 
   constructor(
     http: HttpClient,
-    private mockRouter: Router,
+    router: Router,
     establishmentService: EstablishmentService,
     userService: UserService,
     permissionsService: PermissionsService,
   ) {
-    super(http, mockRouter, establishmentService, userService, permissionsService);
+    super(http, router, establishmentService, userService, permissionsService);
   }
 
   public getPreviousToken(): any {
@@ -43,8 +43,12 @@ export class MockAuthService extends AuthService {
     return this._isAuthenticated;
   }
 
-  public logout(): void {
-    this.mockRouter.navigate(['logged-out']);
+  protected unauthenticate(): void {
+    // do nothing.
+  }
+
+  protected setPreviousUser(): void {
+    // do nothing.
   }
 
   public logoutWithoutRouting(): void {

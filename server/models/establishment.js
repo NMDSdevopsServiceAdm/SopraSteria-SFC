@@ -816,6 +816,27 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+
+  Establishment.findByUid = function (uid) {
+    return this.findOne({
+      where: {
+        uid: uid,
+        archived: false,
+      },
+      attributes: [
+        'id',
+        'ustatus',
+        'locationId',
+        'provId',
+        'isRegulated',
+        'isParent',
+        'parentId',
+        'NameValue',
+        'nmdsId',
+      ],
+    });
+  };
+
   Establishment.closeLock = async function (LockHeldTitle, establishmentId) {
     return await this.update(
       {
