@@ -3,11 +3,8 @@ import { Establishment } from '@core/model/establishment.model';
 import { PdfFooterComponent } from '@features/pdf/footer/pdf-footer.component';
 import { PdfHeaderComponent } from '@features/pdf/header/pdf-header.component';
 import { PdfWorkplaceTitleComponent } from '@features/pdf/workplace-title/pdf-workplace-title.component';
-import { jsPDF } from 'jspdf';
 import Canvg from 'canvg';
-import * as Highcharts from 'highcharts';
-import exporting from 'highcharts/modules/exporting';
-exporting(Highcharts);
+import { jsPDF } from 'jspdf';
 
 export interface PdfComponent {
   content: ElementRef;
@@ -46,7 +43,6 @@ export class PdfService {
     workplace: Establishment,
     reportType: ReportType,
   ) {
-    console.log(reportType);
     const doc = new jsPDF('p', 'pt', 'a4');
     const ptToPx = 1.3333333333;
     const a4heightpx = doc.internal.pageSize.getHeight() * ptToPx;
@@ -100,66 +96,42 @@ export class PdfService {
     html.append(this.createSpacer(width, footerPg2Position));
     html.append(footer.cloneNode(true));
 
+    await this.convertCharts(html);
+
     await this.saveHtmlToPdf(reportParams[reportType].reportName, doc, html, y, scale, width);
 
     return doc;
   }
 
+  private async convertCharts(html: HTMLElement) {
+    const charts = html.getElementsByClassName('highcharts-container');
+
+    await charts.forEach(async function (chart) {
+      const svgs = chart.querySelectorAll('svg');
+      await svgs.forEach(async (svg) => {
+        try {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          let xml = new XMLSerializer().serializeToString(svg);
+          // Removing the name space as IE throws an error
+          xml = xml.replace(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/, '');
+
+          const v = await Canvg.from(ctx, xml);
+          await v.render();
+
+          svg.parentNode.insertBefore(canvas, svg.nextSibling);
+          svg.remove();
+        } catch (err) {
+          console.log(err);
+        }
+      });
+    });
+  }
+
   private async saveHtmlToPdf(filename, doc, html, y, scale, width) {
     const widthHtml = width * scale;
     const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
-
-    const svgElements = html.getElementsByClassName('highcharts-root');
-
-    for (const chart of Highcharts.charts) {
-      if (!chart) {
-        continue;
-      }
-
-      const svg = chart.getSVG({
-        exporting: {
-          sourceWidth: chart.chartWidth,
-          sourceHeight: chart.chartHeight,
-        },
-      });
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      // xml = (new XMLSerializer()).serializeToString(svg);
-      const v = await Canvg.from(ctx, svg);
-      await v.render();
-
-      // const el = html.querySelector(`#${chart.container.id}`);
-      // el.replaceWith(canvas);
-    }
-
-    await svgElements.forEach(async function (svg) {
-      try {
-        let xml;
-
-        const canvas = document.createElement('canvas');
-        canvas.className = 'screenShotTempCanvas';
-        const ctx = canvas.getContext('2d');
-
-        xml = new XMLSerializer().serializeToString(svg);
-        // console.log(xml);
-
-        // Removing the name space as IE throws an error
-        xml = xml.replace(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/, '');
-        console.log(ctx);
-        // ctx.canvas.
-        const v = await Canvg.from(ctx, xml);
-        await v.render();
-        console.log('CANVAS');
-        console.log(v);
-
-        svg.parentNode.insertBefore(canvas, svg.nextSibling);
-        svg.remove();
-      } catch (err) {
-        console.log(err);
-      }
-    });
 
     const html2canvas = {
       scale,
@@ -184,8 +156,10 @@ export class PdfService {
 
   private createSpacer(width: number, space: number) {
     const spacer = document.createElement('div');
+
     spacer.style.width = `${width}px`;
     spacer.style.height = `${space}px`;
+
     return spacer;
   }
 
@@ -205,7 +179,9 @@ export class PdfService {
   ) {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
     const component = componentFactory.create(this.injector);
+
     callback(component);
+
     return component.instance.content.nativeElement;
   }
 }
