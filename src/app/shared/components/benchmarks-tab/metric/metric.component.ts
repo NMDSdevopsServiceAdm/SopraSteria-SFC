@@ -9,6 +9,7 @@ import { PdfService } from '@core/services/pdf.service';
 import { GaugeComponent } from '@shared/components/benchmark-metric/gauge/gauge.component';
 import { RankingContent } from '@shared/components/benchmark-metric/ranking-content/ranking-content.component';
 import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
+import { jsPDF } from 'jspdf';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 
@@ -95,7 +96,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     this.rankings = rankings;
     this.rankingContent = { ...this.rankings, noData: this.noData };
   };
-  public async downloadAsPDF($event: Event): Promise<void> {
+  public async downloadAsPDF($event: Event): Promise<jsPDF> {
     $event.preventDefault();
 
     try {
