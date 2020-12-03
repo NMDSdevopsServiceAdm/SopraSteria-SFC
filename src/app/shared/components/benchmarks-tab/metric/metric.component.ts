@@ -5,7 +5,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { PdfService, ReportType } from '@core/services/pdf.service';
+import { PdfService } from '@core/services/pdf.service';
 import { GaugeComponent } from '@shared/components/benchmark-metric/gauge/gauge.component';
 import { RankingContent } from '@shared/components/benchmark-metric/ranking-content/ranking-content.component';
 import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
@@ -99,13 +99,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     $event.preventDefault();
 
     try {
-      await this.pdfService.BuildBenchmarksPdf(
-        this.elRef,
-        this.aboutData.aboutData,
-        this.workplace,
-        ReportType.metric,
-        `${Metric[this.type]}.pdf`,
-      );
+      return await this.pdfService.BuildMetricsPdf(this.elRef, this.workplace, `${Metric[this.type]}.pdf`);
     } catch (error) {
       console.error(error);
     }
