@@ -66,11 +66,12 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public async downloadAsPDF($event: Event) {
     $event.preventDefault();
     try {
-      return await this.pdfService.BuildBenchmarksPdf(
+      await this.pdfService.BuildBenchmarksPdf(
         this.elRef,
         this.aboutData.aboutData,
         this.workplace,
         ReportType.dashboard,
+        'Benchmarks.pdf',
       );
     } catch (error) {
       console.error(error);

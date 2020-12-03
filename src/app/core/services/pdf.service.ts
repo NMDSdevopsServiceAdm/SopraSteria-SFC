@@ -11,30 +11,51 @@ export interface PdfComponent {
 }
 
 export enum ReportType {
-  dashboard,
-  pay,
-  turnover,
-  sickness,
-  qualifications,
+  dashboard = 'dashboard',
+  metric = 'metric',
+}
+
+interface ReportInterface {
+  footer(number): number;
 }
 
 const reportParams = {
-  0: {
-    reportName: 'Benchmarks.pdf',
-    footer1: 380,
-    footer2: 480,
-  },
-  1: {
-    reportName: 'Benchmarks-Pay.pdf',
-    footer1: 540,
-    footer2: 380,
-  },
+  dashboard: {
+    footer: (page) => {
+      switch (page) {
+        case 1:
+          return 380;
+        case 2:
+          return 480;
+      }
+    },
+  } as ReportInterface,
+  metric: {
+    footer: (page) => {
+      switch (page) {
+        case 1:
+          return 540;
+        case 2:
+          return 380;
+      }
+    },
+  } as ReportInterface,
 };
 
 @Injectable({
   providedIn: 'root',
 })
 export class PdfService {
+  public doc = new jsPDF('p', 'pt', 'a4');
+  public ptToPx = 1.3333333333;
+  public scale = 0.5;
+  public width = 1000;
+  public spacing = 50;
+  public y = 20;
+  public ypx = (this.y * this.ptToPx) / this.scale;
+
+  public a4heightpx = this.doc.internal.pageSize.getHeight() * this.ptToPx;
+
   constructor(private componentFactoryResolver: ComponentFactoryResolver, private injector: Injector) {}
 
   public async BuildBenchmarksPdf(
@@ -42,94 +63,123 @@ export class PdfService {
     aboutData: ElementRef,
     workplace: Establishment,
     reportType: ReportType,
-  ) {
-    const doc = new jsPDF('p', 'pt', 'a4');
-    const ptToPx = 1.3333333333;
-    const a4heightpx = doc.internal.pageSize.getHeight() * ptToPx;
-    const scale = 0.5;
-    const width = 1000;
-    const spacing = 50;
-    const y = 20;
-    const ypx = (y * ptToPx) / scale;
+    fileName,
+  ): Promise<void> {
+    const report = reportParams[reportType];
     const html = document.createElement('div');
 
-    html.style.width = `${width}px`;
+    html.style.width = `${this.width}px`;
     html.style.display = 'block';
 
+    // Page 1
+    let pageNum = 1;
+    this.appendHeader(html);
+    this.appendWorkplaceTitle(html, workplace);
+    this.appendElRef(html, elRef);
+    this.appendFooter(html, report, pageNum);
+
+    // Page 2
+    pageNum = 2;
+    this.appendHeader(html);
+    this.appendAboutData(html, aboutData);
+    this.appendFooter(html, report, pageNum);
+
+    await this.convertCharts(html);
+    await this.saveHtmlToPdf(fileName, this.doc, html, this.y, this.scale, this.width);
+  }
+
+  private appendElRef(html: HTMLElement, elRef: ElementRef): void {
+    html.append(elRef.nativeElement.cloneNode(true));
+  }
+
+  private appendHeader(html: HTMLElement): void {
     const header = this.resolveComponent(PdfHeaderComponent);
+
+    html.append(header.cloneNode(true));
+    html.append(this.createSpacer(this.width, this.spacing));
+  }
+
+  private appendFooter(html, report, pageNum): void {
+    const calcFooterPosition = (html: ElementRef, report: ReportInterface, pageNum: number) => {
+      const footerPosition = report.footer(pageNum);
+
+      switch (pageNum) {
+        case 1: {
+          return this.a4heightpx - this.getHeight(html) * this.scale - (footerPosition * this.scale + this.ypx);
+        }
+        case 2: {
+          return this.a4heightpx * 2 - this.getHeight(html) * this.scale - (footerPosition * this.scale - this.ypx * 2);
+        }
+      }
+    };
+
     const footer = this.resolveComponent(PdfFooterComponent);
+    const footerPosition = calcFooterPosition(html, report, pageNum);
+
+    html.append(this.createSpacer(this.width, footerPosition));
+    html.append(footer.cloneNode(true));
+    html.append(this.createSpacer(this.width, this.ypx * 2));
+  }
+
+  private appendWorkplaceTitle(html, workplace): void {
     const workplaceTitle = this.resolveComponent(PdfWorkplaceTitleComponent, (c) => {
       c.instance.workplace = workplace;
       c.changeDetectorRef.detectChanges();
     });
 
-    html.append(header.cloneNode(true));
-    html.append(this.createSpacer(width, spacing));
-
     html.append(workplaceTitle.cloneNode(true));
-    html.append(this.createSpacer(width, spacing));
+    html.append(this.createSpacer(this.width, this.spacing));
+  }
 
-    html.append(elRef.nativeElement.cloneNode(true));
-
-    const footerPosition = a4heightpx - this.getHeight(html) * scale - (reportParams[reportType].footer1 * scale + ypx);
-    html.append(this.createSpacer(width, footerPosition));
-    html.append(footer.cloneNode(true));
-    html.append(this.createSpacer(width, ypx * 2));
-
-    html.append(header.cloneNode(true));
-
-    html.append(this.createSpacer(width, spacing));
-
+  private appendAboutData(html: HTMLElement, aboutData: ElementRef): void {
     const aboutDataHtml = aboutData.nativeElement.cloneNode(true);
+
     const allUl = aboutDataHtml.getElementsByTagName('ul');
     for (const ul of allUl) {
       ul.style.listStyle = 'none';
       ul.style.paddingLeft = '0';
     }
+
     const allLi = aboutDataHtml.getElementsByTagName('li');
     for (const li of allLi) {
       li.textContent = '- ' + li.textContent;
     }
+
     html.append(aboutDataHtml);
-    const footerPg2Position =
-      a4heightpx * 2 - this.getHeight(html) * scale - (reportParams[reportType].footer2 * scale - ypx * 2);
-    html.append(this.createSpacer(width, footerPg2Position));
-    html.append(footer.cloneNode(true));
-
-    await this.convertCharts(html);
-
-    await this.saveHtmlToPdf(reportParams[reportType].reportName, doc, html, y, scale, width);
-
-    return doc;
   }
 
-  private async convertCharts(html: HTMLElement) {
-    const charts = html.getElementsByClassName('highcharts-container');
+  private async convertCharts(html: HTMLElement): Promise<void> {
+    const charts = Array.from(html.getElementsByClassName('highcharts-container'));
 
-    await charts.forEach(async function (chart) {
-      const svgs = chart.querySelectorAll('svg');
-      await svgs.forEach(async (svg) => {
-        try {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
+    charts.forEach(
+      async (chart): Promise<void> => {
+        const svgs = Array.from(chart.querySelectorAll('svg'));
 
-          let xml = new XMLSerializer().serializeToString(svg);
-          // Removing the name space as IE throws an error
-          xml = xml.replace(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/, '');
+        svgs.forEach(
+          async (svg): Promise<void> => {
+            try {
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
 
-          const v = await Canvg.from(ctx, xml);
-          await v.render();
+              let xml = new XMLSerializer().serializeToString(svg);
+              // Removing the name space as IE throws an error
+              xml = xml.replace(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/, '');
 
-          svg.parentNode.insertBefore(canvas, svg.nextSibling);
-          svg.remove();
-        } catch (err) {
-          console.log(err);
-        }
-      });
-    });
+              const v = await Canvg.from(ctx, xml);
+              await v.render();
+
+              svg.parentNode.insertBefore(canvas, svg.nextSibling);
+              svg.remove();
+            } catch (err) {
+              console.log(err);
+            }
+          },
+        );
+      },
+    );
   }
 
-  private async saveHtmlToPdf(filename, doc, html, y, scale, width) {
+  private async saveHtmlToPdf(filename, doc, html, y, scale, width): Promise<void> {
     const widthHtml = width * scale;
     const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
 
@@ -154,7 +204,7 @@ export class PdfService {
     doc.save(filename);
   }
 
-  private createSpacer(width: number, space: number) {
+  private createSpacer(width: number, space: number): HTMLDivElement {
     const spacer = document.createElement('div');
 
     spacer.style.width = `${width}px`;
@@ -163,7 +213,7 @@ export class PdfService {
     return spacer;
   }
 
-  private getHeight(element) {
+  private getHeight(element): number {
     element.style.visibility = 'hidden';
     document.body.appendChild(element);
     const height = element.offsetHeight + 0;
@@ -171,17 +221,18 @@ export class PdfService {
     element.style.visibility = 'visible';
     return height;
   }
+
   private resolveComponent<T extends PdfComponent>(
     componentType: Type<T>,
     callback: (c: ComponentRef<T>) => void = () => {
       return;
     },
-  ) {
+  ): HTMLElement {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
     const component = componentFactory.create(this.injector);
 
     callback(component);
 
-    return component.instance.content.nativeElement;
+    return component.instance.content.nativeElement as HTMLElement;
   }
 }

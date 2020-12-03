@@ -1,18 +1,25 @@
-<span class="govuk-caption-l">Benchmarks</span>
-<h1 class="govuk-heading-l">{{ title }}</h1>
-<a
-  class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
-  role="button"
-  draggable="false"
-  href="/benchmarks.pdf"
-  data-html2canvas-ignore
-  data-testid="download-button"
-  (click)="downloadAsPDF($event)"
->
-  <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
-    Download Benchmarks PDF (89KB, 2 pages)
-  </span>
-</a>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <span class="govuk-caption-l">Benchmarks</span>
+    <h1 class="govuk-heading-l">{{ title }}</h1>
+  </div>
+  <div class="govuk-grid-column-one-half govuk-!-padding-top-7">
+    <a
+      class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+      role="button"
+      draggable="false"
+      href="javascript:void(0);"
+      data-html2canvas-ignore
+      data-testid="download-button"
+      (click)="downloadAsPDF($event)"
+    >
+      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+        Download {{ title }} PDF (89KB, 2 pages)
+      </span>
+    </a>
+  </div>
+</div>
+
 <app-barchart *ngIf="tile" [type]="type" [tile]="tile" [noData]="noData">
   <ng-container metric-desc>{{ description }}</ng-container>
 </app-barchart>

@@ -95,15 +95,16 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     this.rankings = rankings;
     this.rankingContent = { ...this.rankings, noData: this.noData };
   };
-  public async downloadAsPDF($event: Event) {
+  public async downloadAsPDF($event: Event): Promise<void> {
     $event.preventDefault();
 
     try {
-      return await this.pdfService.BuildBenchmarksPdf(
+      await this.pdfService.BuildBenchmarksPdf(
         this.elRef,
         this.aboutData.aboutData,
         this.workplace,
-        ReportType.pay,
+        ReportType.metric,
+        `${Metric[this.type]}.pdf`,
       );
     } catch (error) {
       console.error(error);
