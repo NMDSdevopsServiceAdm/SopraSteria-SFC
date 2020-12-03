@@ -26,7 +26,8 @@ export class SatisfactionSurveyComponent {
   ) {
     this.form = formBuilder.group({
       didYouDoEverything: null,
-      didYouDoEverythingAdditionalAnswer: [null, Validators.maxLength(this.didYouDoEverythingMaxLength)],
+      whatStoppedYouDoingEverything: [null, Validators.maxLength(this.didYouDoEverythingMaxLength)],
+      whatStoppedYouDoingAnything: [null, Validators.maxLength(this.didYouDoEverythingMaxLength)],
       howDidYouFeel: null,
     });
 
@@ -35,7 +36,7 @@ export class SatisfactionSurveyComponent {
     this.setupFormErrorsMap();
   }
 
-  onSubmit(): void {
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -44,10 +45,40 @@ export class SatisfactionSurveyComponent {
       return;
     }
 
-    this.http.post('/api/satisfactionSurvey', { establishmentId: this.wid, ...this.form.value }).subscribe(
+    const survey = this.buildSatisfactionSurveyBody(this.form.value);
+
+    this.http.post('/api/satisfactionSurvey', survey).subscribe(
       () => this.navigateToLogin(),
       (err) => this.navigateToLogin(),
     );
+  }
+
+  private buildSatisfactionSurveyBody(formValue) {
+    return {
+      establishmentId: this.wid,
+      didYouDoEverything: formValue.didYouDoEverything,
+      didYouDoEverythingAdditionalAnswer: this.getAdditionalAnswer(formValue),
+      howDidYouFeel: formValue.howDidYouFeel,
+    };
+  }
+
+  private getAdditionalAnswer(formValue) {
+    if (formValue.didYouDoEverything == 'Some') {
+      return formValue.whatStoppedYouDoingEverything;
+    }
+    if (formValue.didYouDoEverything == 'No') {
+      return formValue.whatStoppedYouDoingAnything;
+    }
+    return null;
+  }
+
+  public didYouDoEverythingChanged() {
+    this.form.patchValue({ whatStoppedYouDoingEverything: null, whatStoppedYouDoingAnything: null });
+  }
+
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   private navigateToLogin(): void {
@@ -55,16 +86,16 @@ export class SatisfactionSurveyComponent {
   }
 
   private setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'didYouDoEverythingAdditionalAnswer',
+    this.formErrorsMap = ['whatStoppedYouDoingEverything', 'whatStoppedYouDoingAnything'].map((item) => {
+      return {
+        item: item,
         type: [
           {
             name: 'maxlength',
             message: `What stopped you must be ${this.didYouDoEverythingMaxLength} characters or fewer`,
           },
         ],
-      },
-    ];
+      };
+    });
   }
 }

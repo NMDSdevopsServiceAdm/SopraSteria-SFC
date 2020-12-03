@@ -44,13 +44,14 @@ describe('SatisfactionSurveyComponent', () => {
 
       if (fillInSurvey) {
         fireEvent.click(getElementById('#didYouDoEverything-no'));
-        userEvent.type(getElementById('#didYouDoEverythingAdditionalAnswer-no'), 'answer');
+        userEvent.type(getElementById('#whatStoppedYouDoingAnything'), 'answer');
         fireEvent.click(getElementById('#howDidYouFeel-neither'));
       }
 
       const submit = getByRole('button');
       fireEvent.click(submit);
       const req = TestBed.inject(HttpTestingController).expectOne('/api/satisfactionSurvey');
+      req.flush({});
 
       function getElementById(id) {
         return fixture.debugElement.query(By.css(id)).nativeElement;

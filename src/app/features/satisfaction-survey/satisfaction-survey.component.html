@@ -7,7 +7,7 @@
     <div class="govuk-grid-column-three-quarters-from-desktop">
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset govuk-!-margin-bottom-5">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s govuk-!-margin-bottom-5">
             Did you do everything you wanted to do on ASC-WDS today?
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
@@ -18,6 +18,7 @@
                 formControlName="didYouDoEverything"
                 type="radio"
                 value="Yes"
+                (change)="didYouDoEverythingChanged()"
               />
               <label for="didYouDoEverything-yes" class="govuk-label govuk-radios__label">
                 Yes, I did everything I wanted to do
@@ -30,6 +31,7 @@
                 formControlName="didYouDoEverything"
                 type="radio"
                 value="Some"
+                (change)="didYouDoEverythingChanged()"
               />
               <label for="didYouDoEverything-some" class="govuk-label govuk-radios__label">
                 I did some of what I wanted to do, but not everything
@@ -42,35 +44,34 @@
             >
               <div
                 class="govuk-form-group"
-                [class.govuk-form-group--error]="submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid"
+                [class.govuk-form-group--error]="submitted && form.get('whatStoppedYouDoingEverything').invalid"
               >
                 <div class="govuk-character-count">
                   <div class="govuk-form-group">
-                    <label class="govuk-label govuk-!-font-weight-bold" for="didYouDoEverythingAdditionalAnswer-some">
+                    <label class="govuk-label govuk-!-font-weight-bold" for="whatStoppedYouDoingEverything">
                       What stopped you doing everything? (optional)
                     </label>
                     <span
-                      *ngIf="submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid"
-                      id="didYouDoEverythingAdditionalAnswer-error"
+                      *ngIf="submitted && form.get('whatStoppedYouDoingEverything').invalid"
+                      id="whatStoppedYouDoingEverything-error"
                       class="govuk-error-message"
                     >
-                      <span class="govuk-visually-hidden">Error:</span> What stopped you must be 500 characters or fewer
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ getFirstErrorMessage('whatStoppedYouDoingEverything') }}
                     </span>
                     <textarea
                       class="govuk-textarea"
-                      [class.govuk-textarea--error]="
-                        submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid
-                      "
-                      id="didYouDoEverythingAdditionalAnswer-some"
-                      formControlName="didYouDoEverythingAdditionalAnswer"
+                      [class.govuk-textarea--error]="submitted && form.get('whatStoppedYouDoingEverything').invalid"
+                      id="whatStoppedYouDoingEverything"
+                      formControlName="whatStoppedYouDoingEverything"
                       rows="5"
                     ></textarea>
                   </div>
                   <app-character-count
-                    [control]="form.get('didYouDoEverythingAdditionalAnswer')"
+                    [control]="form.get('whatStoppedYouDoingEverything')"
                     [max]="didYouDoEverythingMaxLength"
                   ></app-character-count>
-                  <p>
+                  <p class="govuk-!-margin-top-5">
                     Please do not include any personal information. For example, names or National Insurance numbers.
                   </p>
                 </div>
@@ -83,6 +84,7 @@
                 formControlName="didYouDoEverything"
                 type="radio"
                 value="No"
+                (change)="didYouDoEverythingChanged()"
               />
               <label for="didYouDoEverything-no" class="govuk-label govuk-radios__label">
                 No, I did not do anything that I wanted to do
@@ -95,35 +97,34 @@
             >
               <div
                 class="govuk-form-group"
-                [class.govuk-form-group--error]="submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid"
+                [class.govuk-form-group--error]="submitted && form.get('whatStoppedYouDoingAnything').invalid"
               >
-                <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="500">
+                <div class="govuk-character-count">
                   <div class="govuk-form-group">
-                    <label class="govuk-label govuk-!-font-weight-bold" for="didYouDoEverythingAdditionalAnswer-no">
+                    <label class="govuk-label govuk-!-font-weight-bold" for="whatStoppedYouDoingAnything">
                       What stopped you doing anything? (optional)
                     </label>
                     <span
-                      *ngIf="submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid"
-                      id="didYouDoEverythingAdditionalAnswer-error"
+                      *ngIf="submitted && form.get('whatStoppedYouDoingAnything').invalid"
+                      id="whatStoppedYouDoingAnything-error"
                       class="govuk-error-message"
                     >
-                      <span class="govuk-visually-hidden">Error:</span> What stopped you must be 500 characters or fewer
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ getFirstErrorMessage('whatStoppedYouDoingAnything') }}
                     </span>
                     <textarea
                       class="govuk-textarea"
-                      [class.govuk-textarea--error]="
-                        submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid
-                      "
-                      id="didYouDoEverythingAdditionalAnswer-no"
-                      formControlName="didYouDoEverythingAdditionalAnswer"
+                      [class.govuk-textarea--error]="submitted && form.get('whatStoppedYouDoingAnything').invalid"
+                      id="whatStoppedYouDoingAnything"
+                      formControlName="whatStoppedYouDoingAnything"
                       rows="5"
                     ></textarea>
                   </div>
                   <app-character-count
-                    [control]="form.get('didYouDoEverythingAdditionalAnswer')"
+                    [control]="form.get('whatStoppedYouDoingAnything')"
                     [max]="didYouDoEverythingMaxLength"
                   ></app-character-count>
-                  <p>
+                  <p class="govuk-!-margin-top-5">
                     Please do not include any personal information. For example, names or National Insurance numbers.
                   </p>
                 </div>
@@ -132,7 +133,7 @@
           </div>
         </fieldset>
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s govuk-!-margin-bottom-5">
             Overall, how did you feel about your experience of ASC-WDS today?
           </legend>
           <div class="govuk-radios__item">
