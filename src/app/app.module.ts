@@ -30,6 +30,7 @@ import { QualificationService } from '@core/services/qualification.service';
 import { RecruitmentService } from '@core/services/recruitment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { TrainingService } from '@core/services/training.service';
+import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
@@ -110,6 +111,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     TrainingService,
     WindowRef,
     WorkerService,
+    { provide: WindowToken, useFactory: windowProvider },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpInterceptor,
