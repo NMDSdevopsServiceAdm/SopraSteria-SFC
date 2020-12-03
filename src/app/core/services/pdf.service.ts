@@ -46,15 +46,12 @@ const reportParams = {
   providedIn: 'root',
 })
 export class PdfService {
-  public doc = new jsPDF('p', 'pt', 'a4');
   public ptToPx = 1.3333333333;
   public scale = 0.5;
   public width = 1000;
   public spacing = 50;
   public y = 20;
   public ypx = (this.y * this.ptToPx) / this.scale;
-
-  public a4heightpx = this.doc.internal.pageSize.getHeight() * this.ptToPx;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver, private injector: Injector) {}
 
@@ -65,6 +62,7 @@ export class PdfService {
     reportType: ReportType,
     fileName,
   ): Promise<void> {
+    const doc = new jsPDF('p', 'pt', 'a4');
     const report = reportParams[reportType];
     const html = document.createElement('div');
 
@@ -76,16 +74,20 @@ export class PdfService {
     this.appendHeader(html);
     this.appendWorkplaceTitle(html, workplace);
     this.appendElRef(html, elRef);
-    this.appendFooter(html, report, pageNum);
+    this.appendFooter(doc, html, report, pageNum);
 
-    // Page 2
-    pageNum = 2;
-    this.appendHeader(html);
-    this.appendAboutData(html, aboutData);
-    this.appendFooter(html, report, pageNum);
+    if (reportType == 'dashboard') {
+      html.append(this.createSpacer(this.width, this.ypx * 2));
+
+      // Page 2
+      pageNum = 2;
+      this.appendHeader(html);
+      this.appendAboutData(html, aboutData);
+      this.appendFooter(doc, html, report, pageNum);
+    }
 
     await this.convertCharts(html);
-    await this.saveHtmlToPdf(fileName, this.doc, html, this.y, this.scale, this.width);
+    await this.saveHtmlToPdf(fileName, doc, html, this.y, this.scale, this.width);
   }
 
   private appendElRef(html: HTMLElement, elRef: ElementRef): void {
@@ -99,16 +101,17 @@ export class PdfService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendFooter(html, report, pageNum): void {
+  private appendFooter(doc, html, report, pageNum): void {
     const calcFooterPosition = (html: ElementRef, report: ReportInterface, pageNum: number) => {
+      const a4heightpx = doc.internal.pageSize.getHeight() * this.ptToPx;
       const footerPosition = report.footer(pageNum);
 
       switch (pageNum) {
         case 1: {
-          return this.a4heightpx - this.getHeight(html) * this.scale - (footerPosition * this.scale + this.ypx);
+          return a4heightpx - this.getHeight(html) * this.scale - (footerPosition * this.scale + this.ypx);
         }
         case 2: {
-          return this.a4heightpx * 2 - this.getHeight(html) * this.scale - (footerPosition * this.scale - this.ypx * 2);
+          return a4heightpx * 2 - this.getHeight(html) * this.scale - (footerPosition * this.scale - this.ypx * 2);
         }
       }
     };
@@ -118,7 +121,6 @@ export class PdfService {
 
     html.append(this.createSpacer(this.width, footerPosition));
     html.append(footer.cloneNode(true));
-    html.append(this.createSpacer(this.width, this.ypx * 2));
   }
 
   private appendWorkplaceTitle(html, workplace): void {
