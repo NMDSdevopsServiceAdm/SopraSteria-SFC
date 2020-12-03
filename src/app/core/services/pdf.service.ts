@@ -20,7 +20,7 @@ export class PdfService {
   public y = 20;
   public ypx = (this.y * this.ptToPx) / this.scale;
 
-  constructor(protected componentFactoryResolver: ComponentFactoryResolver, protected injector: Injector) {}
+  constructor(private componentFactoryResolver: ComponentFactoryResolver, private injector: Injector) {}
 
   public async BuildMetricsPdf(elRef: ElementRef, workplace: Establishment, fileName: string): Promise<jsPDF> {
     const { doc, html } = this.getNewDoc();
@@ -72,7 +72,7 @@ export class PdfService {
     return doc;
   }
 
-  protected getNewDoc() {
+  private getNewDoc() {
     const doc = new jsPDF('p', 'pt', 'a4');
     const html = document.createElement('div');
 
@@ -82,25 +82,25 @@ export class PdfService {
     return { doc, html };
   }
 
-  protected appendElRef(html: HTMLElement, elRef: ElementRef): void {
+  private appendElRef(html: HTMLElement, elRef: ElementRef): void {
     html.append(elRef.nativeElement.cloneNode(true));
   }
 
-  protected appendHeader(html: HTMLElement): void {
+  private appendHeader(html: HTMLElement): void {
     const header = this.resolveComponent(PdfHeaderComponent);
 
     html.append(header.cloneNode(true));
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  protected appendFooter(html, footerPosition): void {
+  private appendFooter(html, footerPosition): void {
     const footer = this.resolveComponent(PdfFooterComponent);
 
     html.append(this.createSpacer(this.width, footerPosition));
     html.append(footer.cloneNode(true));
   }
 
-  protected calcFooterPosition = (doc, html: HTMLDivElement, footerPosition: number, pageNum: number) => {
+  private calcFooterPosition = (doc, html: HTMLDivElement, footerPosition: number, pageNum: number) => {
     const a4heightpx = doc.internal.pageSize.getHeight() * this.ptToPx;
 
     switch (pageNum) {
@@ -113,7 +113,7 @@ export class PdfService {
     }
   };
 
-  protected appendWorkplaceTitle(html, workplace): void {
+  private appendWorkplaceTitle(html, workplace): void {
     const workplaceTitle = this.resolveComponent(PdfWorkplaceTitleComponent, (c) => {
       c.instance.workplace = workplace;
       c.changeDetectorRef.detectChanges();
@@ -123,12 +123,12 @@ export class PdfService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  protected appendAboutData(html: HTMLElement, aboutData: ElementRef): void {
+  private appendAboutData(html: HTMLElement, aboutData: ElementRef): void {
     const aboutDataHtml = aboutData.nativeElement.cloneNode(true);
     html.append(aboutDataHtml);
   }
 
-  protected async convertListItems(html: HTMLElement) {
+  private async convertListItems(html: HTMLElement) {
     const allUl = Array.from(html.getElementsByTagName('ul'));
     for (const ul of allUl) {
       ul.style.listStyle = 'none';
@@ -141,7 +141,7 @@ export class PdfService {
     }
   }
 
-  protected async convertCharts(html: HTMLElement): Promise<void> {
+  private async convertCharts(html: HTMLElement): Promise<void> {
     const charts = Array.from(html.getElementsByClassName('highcharts-container'));
 
     charts.forEach(
@@ -172,7 +172,7 @@ export class PdfService {
     );
   }
 
-  protected async saveHtmlToPdf(filename, doc, html, y, scale, width): Promise<void> {
+  private async saveHtmlToPdf(filename, doc, html, y, scale, width): Promise<void> {
     await this.convertCharts(html);
     await this.convertListItems(html);
 
@@ -200,7 +200,7 @@ export class PdfService {
     doc.save(filename);
   }
 
-  protected createSpacer(width: number, space: number): HTMLDivElement {
+  private createSpacer(width: number, space: number): HTMLDivElement {
     const spacer = document.createElement('div');
 
     spacer.style.width = `${width}px`;
@@ -209,7 +209,7 @@ export class PdfService {
     return spacer;
   }
 
-  protected getHeight(element): number {
+  private getHeight(element): number {
     element.style.visibility = 'hidden';
     document.body.appendChild(element);
     const height = element.offsetHeight + 0;
@@ -218,7 +218,7 @@ export class PdfService {
     return height;
   }
 
-  protected resolveComponent<T extends PdfComponent>(
+  private resolveComponent<T extends PdfComponent>(
     componentType: Type<T>,
     callback: (c: ComponentRef<T>) => void = () => {
       return;
