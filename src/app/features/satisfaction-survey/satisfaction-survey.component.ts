@@ -44,7 +44,13 @@ export class SatisfactionSurveyComponent {
       return;
     }
 
-    this.http.post('/api/satisfactionSurvey', { establishmentId: this.wid, ...this.form.value }).subscribe();
+    this.http.post('/api/satisfactionSurvey', { establishmentId: this.wid, ...this.form.value }).subscribe(
+      () => this.navigateToLogin(),
+      (err) => this.navigateToLogin(),
+    );
+  }
+
+  private navigateToLogin(): void {
     this.router.navigate(['/login']);
   }
 

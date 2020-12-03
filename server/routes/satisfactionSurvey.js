@@ -19,7 +19,7 @@ router.route('/').post(async function (req, res) {
   try {
     await submitSurvey(req.body);
 
-    return res.status(200).send();
+    return res.status(201).send();
   } catch (err) {
     return res.status(500).send();
   }

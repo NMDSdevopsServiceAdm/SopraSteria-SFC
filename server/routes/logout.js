@@ -5,8 +5,8 @@ const moment = require('moment');
 const Authorization = require('../utils/security/isAuthenticated');
 const config = require('../config/config');
 
-const logout = async function(username) {
-  const { registrationId, user  } = await models.login.findByUsername(username);
+const logout = async function (username) {
+  const { registrationId, user } = await models.login.findByUsername(username);
 
   const auditEvent = {
     userFk: registrationId,
@@ -15,7 +15,9 @@ const logout = async function(username) {
   };
   await models.userAudit.create(auditEvent);
 
-  const fromDate = moment().subtract(config.get('satisfactionSurvey.timeSpan'), config.get('satisfactionSurvey.unit')).toDate();
+  const fromDate = moment()
+    .subtract(config.get('satisfactionSurvey.timeSpan'), config.get('satisfactionSurvey.unit'))
+    .toDate();
 
   const logouts = await models.userAudit.countLogouts(user.establishmentId, fromDate);
   const submissions = await models.satisfactionSurvey.countSubmissions(user.establishmentId, fromDate);
@@ -23,15 +25,19 @@ const logout = async function(username) {
   const showSurvey = logouts <= 3 && submissions == 0;
 
   return { showSurvey };
-}
+};
 
-router.use('/', Authorization.isAuthorised)
+router.use('/', Authorization.isAuthorised);
 router.post('/', async (req, res) => {
-  const username = req.username;
+  try {
+    const username = req.username;
 
-  const response = await logout(username);
+    const response = await logout(username);
 
-  res.status(200).json(response);
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(500).send();
+  }
 });
 
 module.exports = router;

@@ -797,31 +797,19 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.findbyId = function (id) {
-    return this.findOne({
-      where: {
-        id: id,
-        archived: false,
-      },
-      attributes: [
-        'id',
-        'ustatus',
-        'locationId',
-        'provId',
-        'isRegulated',
-        'isParent',
-        'parentId',
-        'NameValue',
-        'nmdsId',
-      ],
-    });
+  Establishment.findbyId = async function (id) {
+    return await this.find({ id });
   };
 
-  Establishment.findByUid = function (uid) {
-    return this.findOne({
+  Establishment.findByUid = async function (uid) {
+    return await this.find({ uid });
+  };
+
+  Establishment.find = async function (where) {
+    return await this.findOne({
       where: {
-        uid: uid,
         archived: false,
+        ...where,
       },
       attributes: [
         'id',

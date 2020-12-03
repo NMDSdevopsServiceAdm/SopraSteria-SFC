@@ -63,7 +63,7 @@ describe('SatisfactionSurveyComponent', () => {
       TestBed.inject(HttpTestingController).verify();
     });
 
-    it('should submit without filling in the survey', async () => {
+    it('should submit survey without filling in the answers', async () => {
       const { req } = await setup(false);
 
       expect(req.request.body).toEqual({
@@ -82,7 +82,7 @@ describe('SatisfactionSurveyComponent', () => {
       });
     });
 
-    it('should submit with survey answers', async () => {
+    it('should submit survey with the answers', async () => {
       const { req } = await setup(true);
 
       expect(req.request.body).toEqual({
