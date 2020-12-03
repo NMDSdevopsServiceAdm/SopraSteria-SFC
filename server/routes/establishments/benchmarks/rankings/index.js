@@ -1,88 +1,63 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../../../models');
-const calculateRankDesc = require('../../../../utils/benchmarksUtils').calculateRankDesc;
-const calculateRankAsc = require('../../../../utils/benchmarksUtils').calculateRankAsc;
-const { getPay, getQualifications, getTurnover } = require('../benchmarksService');
+const { calculateRankDesc, calculateRankAsc } = require('../../../../utils/benchmarksUtils');
+const {
+  getPay,
+  getQualifications,
+  getSickness,
+  getTurnover,
+  getComparisonGroupRankings,
+} = require('../benchmarksService');
 
 const getPayRanking = async function (establishmentId) {
-  async function payRankingLogic(establishmentId, maxRank, comparisonGroupRankings) {
-    const pay = await getPay(establishmentId);
-    if (pay.stateMessage) {
-      return {
-        maxRank,
-        hasValue: false,
-        ...pay,
-      };
-    }
-
-    const payRankings = comparisonGroupRankings.map((r) => r.pay);
-    const currentRank = calculateRankDesc(pay.value, payRankings);
-
-    return {
-      currentRank,
-      maxRank,
-      hasValue: true,
-    };
-  }
-
-  return await getComparisonGroupAndRanking(establishmentId, models.benchmarksPay, payRankingLogic);
+  return await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    models.benchmarksPay,
+    getPay,
+    (r) => r.pay,
+    calculateRankDesc,
+  );
 };
 
 const getQualificationsRanking = async function (establishmentId) {
-  async function qualificationsRankingLogic(establishmentId, maxRank, comparisonGroupRankings) {
-    const qualifications = await getQualifications(establishmentId);
-    if (qualifications.stateMessage) {
-      return {
-        maxRank,
-        hasValue: false,
-        ...qualifications,
-      };
-    }
-
-    const qualificationsRankings = comparisonGroupRankings.map((r) => parseFloat(r.qualifications));
-    const currentRank = calculateRankDesc(qualifications.value, qualificationsRankings);
-
-    return {
-      maxRank,
-      currentRank,
-      hasValue: true,
-    };
-  }
-
-  return await getComparisonGroupAndRanking(
+  return await getComparisonGroupAndCalculateRanking(
     establishmentId,
     models.benchmarksQualifications,
-    qualificationsRankingLogic,
+    getQualifications,
+    (r) => parseFloat(r.qualifications),
+    calculateRankDesc,
+  );
+};
+
+const getSicknessRanking = async function (establishmentId) {
+  return await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    models.benchmarksSickness,
+    getSickness,
+    (r) => parseInt(r.sickness),
+    calculateRankAsc,
   );
 };
 
 const getTurnoverRanking = async function (establishmentId) {
-  async function turnoverRankingLogic(establishmentId, maxRank, comparisonGroupRankings) {
-    const turnover = await getTurnover(establishmentId);
-    if (turnover.stateMessage) {
-      return {
-        maxRank,
-        hasValue: false,
-        ...turnover,
-      };
-    }
-
-    const turnoverRankings = comparisonGroupRankings.map((r) => parseFloat(r.turnover));
-    const currentRank = calculateRankAsc(turnover.value, turnoverRankings);
-
-    return {
-      maxRank,
-      currentRank,
-      hasValue: true,
-    };
-  }
-
-  return await getComparisonGroupAndRanking(establishmentId, models.benchmarksTurnover, turnoverRankingLogic);
+  return await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    models.benchmarksTurnover,
+    getTurnover,
+    (r) => parseFloat(r.turnover),
+    calculateRankAsc,
+  );
 };
 
-const getComparisonGroupAndRanking = async function (establishmentId, benchmarksModel, getRankingCallback) {
-  const comparisonGroupRankings = await benchmarksModel.getComparisonGroupRankings(establishmentId);
+const getComparisonGroupAndCalculateRanking = async function (
+  establishmentId,
+  benchmarksModel,
+  getMetricCallback,
+  mapComparisonGroupCallback,
+  calculateRankingCallback,
+) {
+  const comparisonGroupRankings = await getComparisonGroupRankings(establishmentId, benchmarksModel);
   if (comparisonGroupRankings.length === 0) {
     return {
       hasValue: false,
@@ -90,35 +65,69 @@ const getComparisonGroupAndRanking = async function (establishmentId, benchmarks
     };
   }
   const maxRank = comparisonGroupRankings.length + 1;
+  const metric = await getMetricCallback(establishmentId);
+  if (metric.stateMessage) {
+    return {
+      maxRank,
+      hasValue: false,
+      ...metric,
+    };
+  }
 
-  return await getRankingCallback(establishmentId, maxRank, comparisonGroupRankings);
+  const rankings = comparisonGroupRankings.map(mapComparisonGroupCallback);
+  const currentRank = await calculateRankingCallback(metric.value, rankings);
+
+  return {
+    maxRank,
+    currentRank,
+    hasValue: true,
+  };
 };
 
 router.route('/pay').get(async (req, res) => {
-  const establishmentId = req.establishmentId;
-
-  const responseData = await getPayRanking(establishmentId);
-
-  res.status(200).json(responseData);
+  await getResponse(req, res, getPayRanking);
 });
 
 router.route('/qualifications').get(async (req, res) => {
-  const establishmentId = req.establishmentId;
+  await getResponse(req, res, getQualificationsRanking);
+});
 
-  const responseData = await getQualificationsRanking(establishmentId);
-
-  res.status(200).json(responseData);
+router.route('/sickness').get(async (req, res) => {
+  await getResponse(req, res, getSicknessRanking);
 });
 
 router.route('/turnover').get(async (req, res) => {
+  await getResponse(req, res, getTurnoverRanking);
+});
+
+router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
-  const responseData = await getTurnoverRanking(establishmentId);
+  const pay = await getPayRanking(establishmentId);
+  const turnover = await getTurnoverRanking(establishmentId);
+  const sickness = await getSicknessRanking(establishmentId);
+  const qualifications = await getQualificationsRanking(establishmentId);
+
+  const data = {
+    pay,
+    turnover,
+    sickness,
+    qualifications,
+  };
+
+  res.status(200).json(data);
+});
+
+const getResponse = async function (req, res, getRankingCallback) {
+  const establishmentId = req.establishmentId;
+
+  const responseData = await getRankingCallback(establishmentId);
 
   res.status(200).json(responseData);
-});
+};
 
 module.exports = router;
 module.exports.pay = getPayRanking;
 module.exports.qualifications = getQualificationsRanking;
+module.exports.sickness = getSicknessRanking;
 module.exports.turnover = getTurnoverRanking;

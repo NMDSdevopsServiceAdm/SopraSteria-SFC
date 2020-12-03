@@ -797,11 +797,19 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.findbyId = function (id) {
-    return this.findOne({
+  Establishment.findbyId = async function (id) {
+    return await this.find({ id });
+  };
+
+  Establishment.findByUid = async function (uid) {
+    return await this.find({ uid });
+  };
+
+  Establishment.find = async function (where) {
+    return await this.findOne({
       where: {
-        id: id,
         archived: false,
+        ...where,
       },
       attributes: [
         'id',
@@ -816,6 +824,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+
   Establishment.closeLock = async function (LockHeldTitle, establishmentId) {
     return await this.update(
       {
@@ -906,6 +915,47 @@ module.exports = function (sequelize, DataTypes) {
               attributes: ['username', 'status'],
             },
           ],
+        },
+      ],
+    });
+  };
+  Establishment.generateDeleteReportData = async function () {
+    return await this.findAll({
+      attributes: [
+        'uid',
+        'id',
+        'NameValue',
+        'nmdsId',
+        'isRegulated',
+        'address1',
+        'address2',
+        'address3',
+        'town',
+        'county',
+        'postcode',
+        'locationId',
+        'updated',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
+      ],
+      order: [['NameValue', 'ASC']],
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['id', 'uid'],
+          order: [['updated', 'DESC']],
+        },
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name'],
+        },
+        {
+          model: sequelize.models.establishment,
+          as: 'Parent',
+          attributes: ['NameValue'],
+          required: false,
         },
       ],
     });

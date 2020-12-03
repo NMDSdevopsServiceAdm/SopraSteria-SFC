@@ -141,6 +141,7 @@ module.exports = function (sequelize, DataTypes) {
 
   Benchmarks.getBenchmarkData = async function (establishmentId) {
     const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
+    if (!cssr) return {};
     return await this.findOne({
       where: {
         CssrID: cssr,
