@@ -106,18 +106,27 @@ export class AuthService {
   }
 
   public logout(): void {
-    this.http.post<any>(`/api/logout`, {}).subscribe((data) => {
-      const wid = this.establishmentService.establishment.uid;
-      this.setPreviousUser();
-      this.unauthenticate();
-      if (data.showSurvey) {
-        this.router.navigate(['/satisfaction-survey'], {
-          queryParams: { wid },
-        });
-      } else {
-        this.router.navigate(['/logged-out']);
-      }
-    });
+    this.http.post<any>(`/api/logout`, {}).subscribe(
+      (data) => {
+        this.logoutWithSurvey(data.showSurvey);
+      },
+      (error) => {
+        this.logoutWithSurvey(false);
+      },
+    );
+  }
+
+  private logoutWithSurvey(showSurvey: boolean): void {
+    const wid = this.establishmentService.establishment.uid;
+    this.setPreviousUser();
+    this.unauthenticate();
+    if (showSurvey) {
+      this.router.navigate(['/satisfaction-survey'], {
+        queryParams: { wid },
+      });
+    } else {
+      this.router.navigate(['/logged-out']);
+    }
   }
 
   public logoutWithoutRouting(): void {

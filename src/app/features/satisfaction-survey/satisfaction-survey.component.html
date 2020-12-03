@@ -1,3 +1,5 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
 <h1 class="govuk-heading-l">Satisfaction survey</h1>
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
@@ -38,20 +40,36 @@
               [class.govuk-radios__conditional--hidden]="form.get('didYouDoEverything').value !== 'Some'"
               id="conditional-didYouDoEverything-some"
             >
-              <div class="govuk-form-group">
+              <div
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid"
+              >
                 <div class="govuk-character-count">
                   <div class="govuk-form-group">
                     <label class="govuk-label govuk-!-font-weight-bold" for="didYouDoEverythingAdditionalAnswer-some">
                       What stopped you doing everything? (optional)
                     </label>
+                    <span
+                      *ngIf="submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid"
+                      id="didYouDoEverythingAdditionalAnswer-error"
+                      class="govuk-error-message"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span> What stopped you must be 500 characters or fewer
+                    </span>
                     <textarea
                       class="govuk-textarea"
+                      [class.govuk-textarea--error]="
+                        submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid
+                      "
                       id="didYouDoEverythingAdditionalAnswer-some"
                       formControlName="didYouDoEverythingAdditionalAnswer"
                       rows="5"
                     ></textarea>
                   </div>
-                  <div class="govuk-hint">500 characters remaining</div>
+                  <app-character-count
+                    [control]="form.get('didYouDoEverythingAdditionalAnswer')"
+                    [max]="didYouDoEverythingMaxLength"
+                  ></app-character-count>
                   <p>
                     Please do not include any personal information. For example, names or National Insurance numbers.
                   </p>
@@ -75,20 +93,36 @@
               [class.govuk-radios__conditional--hidden]="form.get('didYouDoEverything').value !== 'No'"
               id="conditional-didYouDoEverything-no"
             >
-              <div class="govuk-form-group">
+              <div
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid"
+              >
                 <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="500">
                   <div class="govuk-form-group">
                     <label class="govuk-label govuk-!-font-weight-bold" for="didYouDoEverythingAdditionalAnswer-no">
                       What stopped you doing anything? (optional)
                     </label>
+                    <span
+                      *ngIf="submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid"
+                      id="didYouDoEverythingAdditionalAnswer-error"
+                      class="govuk-error-message"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span> What stopped you must be 500 characters or fewer
+                    </span>
                     <textarea
                       class="govuk-textarea"
+                      [class.govuk-textarea--error]="
+                        submitted && form.get('didYouDoEverythingAdditionalAnswer').invalid
+                      "
                       id="didYouDoEverythingAdditionalAnswer-no"
                       formControlName="didYouDoEverythingAdditionalAnswer"
                       rows="5"
                     ></textarea>
                   </div>
-                  <div class="govuk-hint">500 characters remaining</div>
+                  <app-character-count
+                    [control]="form.get('didYouDoEverythingAdditionalAnswer')"
+                    [max]="didYouDoEverythingMaxLength"
+                  ></app-character-count>
                   <p>
                     Please do not include any personal information. For example, names or National Insurance numbers.
                   </p>
