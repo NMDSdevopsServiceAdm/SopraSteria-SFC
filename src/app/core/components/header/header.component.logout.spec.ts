@@ -110,7 +110,7 @@ describe('HeaderComponent', () => {
       setup(true);
 
       const router = TestBed.inject(Router);
-      const establishmentId = TestBed.inject(EstablishmentService).establishment.uid;
+      const establishmentId = TestBed.inject(EstablishmentService).establishmentId;
 
       expect(router.url).toBe(`/satisfaction-survey?wid=${establishmentId}`);
     }));
