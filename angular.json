@@ -52,7 +52,8 @@
               "@babel/runtime/helpers/inherits",
               "@babel/runtime/helpers/toConsumableArray",
               "@babel/runtime/helpers/get",
-              "@babel/runtime/regenerator"
+              "@babel/runtime/regenerator",
+              "@babel/runtime-corejs3"
             ]
           },
           "configurations": {
