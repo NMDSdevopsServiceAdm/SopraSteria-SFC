@@ -106,6 +106,12 @@ export class AuthService {
   }
 
   public logout(): void {
+    this.setPreviousUser();
+    this.unauthenticate();
+    this.router.navigate(['/logged-out']);
+  }
+
+  public logoutByUser(): void {
     this.http.post<any>(`/api/logout`, {}).subscribe(
       (data) => {
         this.logoutWithSurvey(data.showSurvey);
@@ -117,7 +123,7 @@ export class AuthService {
   }
 
   private logoutWithSurvey(showSurvey: boolean): void {
-    const wid = this.establishmentService.establishment.uid;
+    const wid = this.establishmentService.establishmentId;
     this.setPreviousUser();
     this.unauthenticate();
     if (showSurvey) {
