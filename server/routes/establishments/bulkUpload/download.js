@@ -9,6 +9,8 @@ const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').
 const { buStates } = require('./states');
 const { saveResponse } = require('./s3');
 
+const NEWLINE = '\r\n';
+
 const determineMaxQuals = async (primaryEstablishmentId) => {
   return models.sequelize.query('select cqc.maxQualifications(:givenPrimaryEstablishment);', {
     replacements: {
@@ -89,6 +91,14 @@ const exportToCsv = async (
   }
 };
 
+const establishmentCsv = async (establishments, responseSend) => {
+  responseSend(EstablishmentCsvValidator.headers());
+
+  establishments.map((establishment) => {
+    console.log(establishment.toJSON());
+    responseSend(NEWLINE + EstablishmentCsvValidator.toCSV(establishment));
+  });
+};
 // TODO: Note, regardless of which download type is requested, the way establishments, workers and training
 // entities are restored, it is easy enough to create all three exports every time. Ideally the CSV content should
 // be prepared and uploaded to S3, and then signed URLs returned for the browsers to download directly, thus not
@@ -97,12 +107,9 @@ const downloadGet = async (req, res) => {
   // manage the request timeout
   req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
 
-  const NEWLINE = '\r\n';
-
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
   const isParent = req.isParent;
-  console.log(await models.establishment.downloadEstablishments(primaryEstablishmentId));
 
   const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training'];
   const downloadType = req.params.downloadType;
@@ -119,16 +126,33 @@ const downloadGet = async (req, res) => {
 
   if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
     try {
-      const maxQuals = await determineMaxQuals(primaryEstablishmentId);
-      await exportToCsv(
-        NEWLINE,
-        // only restore those subs that this primary establishment owns
-        await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true),
-        primaryEstablishmentId,
-        downloadType,
-        maxQuals,
-        responseSend,
-      );
+      switch (downloadType) {
+        case 'establishments': {
+          console.log('Downloading establishments');
+          const establishments = await models.establishment.downloadEstablishments(primaryEstablishmentId);
+          establishmentCsv(establishments, responseSend);
+          break;
+        }
+        default: {
+          const maxQuals = await determineMaxQuals(primaryEstablishmentId);
+          await exportToCsv(
+            NEWLINE,
+            // only restore those subs that this primary establishment owns
+            await restoreExistingEntities(
+              theLoggedInUser,
+              primaryEstablishmentId,
+              isParent,
+              ENTITY_RESTORE_LEVEL,
+              true,
+            ),
+            primaryEstablishmentId,
+            downloadType,
+            maxQuals,
+            responseSend,
+          );
+          break;
+        }
+      }
 
       await saveResponse(req, res, 200, responseText.join(''), {
         'Content-Type': 'text/csv',

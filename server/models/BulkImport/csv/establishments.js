@@ -2651,107 +2651,62 @@ class Establishment {
 
   // takes the given establishment entity and writes it out to CSV string (one line)
   static toCSV(entity) {
+    console.log(entity);
     // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
     const columns = [];
-    columns.push(csvQuote(entity.localIdentifier)); // todo - this will be local identifier
+    columns.push(csvQuote(entity.LocalIdentifierValue)); // todo - this will be local identifier
     columns.push('UNCHECKED');
-    columns.push(csvQuote(entity.name));
+    columns.push(csvQuote(entity.NameValue));
     columns.push(csvQuote(entity.address1));
     columns.push(csvQuote(entity.address2));
     columns.push(csvQuote(entity.address3));
     columns.push(csvQuote(entity.town));
-    columns.push(entity.postcode);
+    columns.push(csvQuote(entity.postcode));
+    columns.push(entity.EmployerTypeValue ? BUDI.establishmentType(BUDI.FROM_ASC, entity.EmployerTypeValue) : '');
+    columns.push(csvQuote(entity.employerTypeOther));
 
-    let employerType = '';
-    let employerTypeOther = '';
-    if (entity.employerType) {
-      employerType = BUDI.establishmentType(BUDI.FROM_ASC, entity.employerType.value);
+    columns.push(entity.shareWithCQC ? 1 : 0);
+    columns.push(entity.shareWithLA ? 1 : 0);
 
-      if (entity.employerType.other) {
-        employerTypeOther = csvQuote(entity.employerType.other);
-      }
-    }
-    columns.push(employerType);
-    columns.push(employerTypeOther);
-
-    // share with CQC/LA, LAs sharing with
-    const shareWith = entity.shareWith;
-    const shareWithLA = entity.shareWithLA;
-    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('CQC') ? 1 : 0);
-    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? 1 : 0);
-    columns.push(
-      shareWith &&
-        shareWith.enabled &&
-        shareWith.with.includes('Local Authority') &&
-        shareWithLA &&
-        Array.isArray(shareWithLA)
-        ? shareWithLA.map((thisLA) => thisLA.cssrId).join(';')
-        : '',
-    );
+    const localAuthorities = entity.localAuthorities.map((localAuthority) => localAuthority.cssrId);
+    console.log(localAuthorities.join(';'));
+    columns.push(localAuthorities.join(';'));
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);
     columns.push(entity.isRegulated ? entity.provId : '');
     columns.push(entity.isRegulated ? entity.locationId : '');
 
+    const services = entity.otherServices;
+    services.unshift(entity.mainService);
     // main service - this is mandatory in ASC WDS so no need to check for it being available or not
-    const mainService = entity.mainService;
-    const budiMappedMainService = BUDI.services(BUDI.FROM_ASC, mainService.id);
-    columns.push(budiMappedMainService);
+    columns.push(entity.mainService.reportingID);
+    columns.push(services.map((service) => service.reportingID).join(';'));
 
-    // all services - this is main service and other services
-    const otherServices = entity.otherServices && Array.isArray(entity.otherServices) ? entity.otherServices : [];
-    otherServices.unshift(mainService);
-    columns.push(otherServices.map((thisService) => BUDI.services(BUDI.FROM_ASC, thisService.id)).join(';'));
+    const capacities = [];
+    const utilisations = [];
 
-    // capacities and utilisations - these are semi colon delimited in the order of ALLSERVICES (so main service and other services) - empty if not a capacity or a utilisation
-    const entityCapacities = Array.isArray(entity.capacities)
-      ? entity.capacities.map((thisCap) => {
-          const isCapacity = BUDI.serviceFromCapacityId(thisCap.reference.id);
-          const isUtilisation = BUDI.serviceFromUtilisationId(thisCap.reference.id);
+    services.map((service) => {
+      const capacity = entity.capacity.find(
+        (capacity) => capacity.reference.service.id === service.id && capacity.reference.type === 'Capacity',
+      );
+      const utilisation = entity.capacity.find(
+        (capacity) => capacity.reference.service.id === service.id && capacity.reference.type === 'Utilisation',
+      );
+      console.log(capacity);
+      capacities.push(capacity && capacity.answer ? capacity.answer : '');
+      utilisations.push(utilisation && utilisation.answer ? utilisation.answer : '');
+    });
 
-          return {
-            isUtilisation: isUtilisation !== null,
-            isCapacity: isCapacity !== null,
-            serviceId: isCapacity !== null ? isCapacity : isUtilisation,
-            answer: thisCap.answer,
-          };
-        })
-      : [];
-
-    // for CSV output, the capacities need to be separated from utilisations
-
-    // the capacities must be written out in the same sequence of semi-colon delimited values as ALLSERVICES
-    columns.push(
-      otherServices
-        .map((thisService) => {
-          // capacities only
-          const matchedCapacityForGivenService = entityCapacities.find(
-            (thisCap) => thisCap.isCapacity && thisCap.serviceId === thisService.id,
-          );
-          return matchedCapacityForGivenService ? matchedCapacityForGivenService.answer : '';
-        })
-        .join(';'),
-    );
-
-    columns.push(
-      otherServices
-        .map((thisService) => {
-          // capacities only
-          const matchedUtilisationForGivenService = entityCapacities.find(
-            (thisCap) => thisCap.isUtilisation && thisCap.serviceId === thisService.id,
-          );
-          return matchedUtilisationForGivenService ? matchedUtilisationForGivenService.answer : '';
-        })
-        .join(';'),
-    );
+    columns.push(capacities.join(';'));
+    columns.push(utilisations.join(';'));
 
     // all service "other" descriptions
-    columns.push(
-      otherServices
-        .map((thisService) => (thisService.other && thisService.other.length > 0 ? thisService.other : ''))
-        .join(';'),
-    );
+    // columns.push(
+    //   otherServices
+    //     .map((thisService) => (thisService.other && thisService.other.length > 0 ? thisService.other : ''))
+    //     .join(';'),
+    // );
 
     // service users and their 'other' descriptions
     const serviceUsers = Array.isArray(entity.serviceUsers) ? entity.serviceUsers : [];

@@ -960,6 +960,8 @@ module.exports = function (sequelize, DataTypes) {
     //   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS';
     return await this.findAll({
       attributes: [
+        'LocalIdentifierValue',
+        'id',
         'NameValue',
         'address1',
         'address2',
@@ -968,23 +970,25 @@ module.exports = function (sequelize, DataTypes) {
         'postcode',
         'EmployerTypeValue',
         'EmployerTypeOther',
+        'isRegulated',
         'shareWithCQC',
         'shareWithLA',
-        sequelize.literal('CASE WHEN "establishment"."IsRegulated" = \'Yes\' THEN 2 ELSE 0 END', 'isRegulated'),
         'provId',
         'locationId',
         'NumberOfStaffValue',
       ],
-      order: [['NameValue', 'ASC']],
       where: {
         [Op.or]: [
           {
             id: establishmentId,
+            dataOwner: 'Workplace',
           },
           {
             parentId: establishmentId,
+            dataOwner: 'Parent',
           },
         ],
+        archived: false,
       },
       include: [
         {
@@ -995,12 +999,12 @@ module.exports = function (sequelize, DataTypes) {
         },
         {
           model: sequelize.models.services,
-          attributes: ['reportingID'],
+          attributes: ['id', 'reportingID'],
           as: 'mainService',
         },
         {
           model: sequelize.models.services,
-          attributes: ['reportingID'],
+          attributes: ['id', 'reportingID'],
           as: 'otherServices',
         },
         {
@@ -1010,8 +1014,22 @@ module.exports = function (sequelize, DataTypes) {
         },
         {
           model: sequelize.models.establishmentCapacity,
-          attributes: ['serviceCapacityId', 'answer'],
+          attributes: ['id', 'serviceCapacityId', 'answer'],
           as: 'capacity',
+          include: [
+            {
+              model: sequelize.models.serviceCapacity,
+              as: 'reference',
+              attributes: ['id', 'question', 'type'],
+              include: [
+                {
+                  model: sequelize.models.services,
+                  attributes: ['id', 'reportingID'],
+                  as: 'service',
+                },
+              ],
+            },
+          ],
         },
         {
           model: sequelize.models.establishmentJobs,
@@ -1024,7 +1042,7 @@ module.exports = function (sequelize, DataTypes) {
           as: 'localAuthorities',
         },
       ],
-      raw: true,
+      logging: console.log,
     });
   };
 
