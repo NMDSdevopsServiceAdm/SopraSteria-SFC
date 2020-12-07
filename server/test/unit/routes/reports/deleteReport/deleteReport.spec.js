@@ -81,7 +81,7 @@ describe('/server/routes/reports/deleteReport/report', () => {
 
         const result = await deleteReport.filterData(rawData);
 
-        expect(result.length).to.equal(1);
+        expect(result.length).to.equal(2);
         expect(result[0].id).to.deep.equal(rawData[0].id);
       });
     });
