@@ -49,3 +49,6 @@ locks:
 public:
   download:
     baseurl: https://sfc-public-staging.s3.eu-west-2.amazonaws.com/public/download
+satisfactionSurvey:
+  timeSpan: 5
+  unit: m

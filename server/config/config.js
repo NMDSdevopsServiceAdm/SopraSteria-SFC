@@ -493,6 +493,18 @@ const config = convict({
       env: 'HONEYCOMB_WRITE_KEY',
     },
   },
+  satisfactionSurvey: {
+    timeSpan: {
+      doc: 'The amount of time to look back and see whether the survey should be shown',
+      format: Number,
+      default: 90
+    },
+    unit: {
+      doc: 'The unit of time to use (e.g days in moment format)',
+      format: String,
+      default: 'd'
+    }
+  }
 });
 
 // Load environment dependent configuration

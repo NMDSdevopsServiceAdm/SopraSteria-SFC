@@ -20,6 +20,7 @@ module.exports = function (sequelize, DataTypes) {
       EstablishmentFK: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
       },
     },
     {
@@ -40,18 +41,6 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'EstablishmentFK',
       targetKey: 'id',
       as: 'benchmarkEstablishment',
-    });
-  };
-
-  BenchmarksQualifications.getComparisonGroupRankings = async function (establishmentId) {
-    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
-    return await this.findAll({
-      where: {
-        CssrID: cssr,
-        EstablishmentFK: {
-          [sequelize.Op.not]: [establishmentId],
-        },
-      },
     });
   };
 

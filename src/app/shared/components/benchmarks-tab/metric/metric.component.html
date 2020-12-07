@@ -1,6 +1,6 @@
 <span class="govuk-caption-l">Benchmarks</span>
 <h1 class="govuk-heading-l">{{ title }}</h1>
-<app-barchart [type]="type" [tile]="tile" [noData]="noData">
+<app-barchart *ngIf="tile" [type]="type" [tile]="tile" [noData]="noData">
   <ng-container metric-desc>{{ description }}</ng-container>
 </app-barchart>
 
@@ -19,13 +19,11 @@
   </div>
 </div>
 
-<app-gauge #gauge>
+<app-gauge *ngIf="rankings" [maxRank]="rankings.maxRank" [currentRank]="rankings.currentRank">
   <ng-container your-rank>
-    <app-ranking-content
-      [currentRank]="currentRank"
-      [stateMessage]="rankStateMessage"
-      [hasValue]="rankHasValue"
-      [noData]="noData"
-    ></app-ranking-content>
+    <app-ranking-content *ngIf="rankingContent" [content]="rankingContent"></app-ranking-content>
   </ng-container>
 </app-gauge>
+<hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" />
+
+<p><a [routerLink]="['..', 'rankings']" [fragment]="metric">View your other rankings</a></p>

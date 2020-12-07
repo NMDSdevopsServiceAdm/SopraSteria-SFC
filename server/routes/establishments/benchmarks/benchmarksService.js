@@ -1,4 +1,5 @@
 const models = require('../../../models');
+const { Op } = require('sequelize');
 
 const getPay = async function (establishmentId) {
   const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
@@ -8,7 +9,7 @@ const getPay = async function (establishmentId) {
     };
   }
 
-  return { value: parseInt(averageHourlyPay.amount * 100) };
+  return { value: parseFloat((parseFloat(averageHourlyPay.amount) * 100).toFixed(0)) };
 };
 
 const getQualifications = async function (establishmentId) {
@@ -96,7 +97,41 @@ const checkStaffNumberAndLeavers = async function (establishmentId, establishmen
   return false;
 };
 
+const getComparisonGroupRankings = async function (establishmentId, benchmarksModel) {
+  const cssr = await models.cssr.getCSSR(establishmentId);
+  if (!cssr) return [];
+  return await benchmarksModel.findAll({
+    attributes: { exclude: ['CssrID', 'MainServiceFK'] },
+    where: {
+      CssrID: cssr,
+      EstablishmentFK: {
+        [Op.not]: [establishmentId],
+      },
+    },
+    include: [
+      {
+        attributes: ['id', 'reportingID'],
+        model: models.services,
+        as: 'BenchmarkToService',
+        include: [
+          {
+            attributes: ['id'],
+            model: models.establishment,
+            where: {
+              id: establishmentId,
+            },
+            as: 'establishmentsMainService',
+            required: true,
+          },
+        ],
+        required: true,
+      },
+    ],
+  });
+};
+
 module.exports.getPay = getPay;
 module.exports.getQualifications = getQualifications;
 module.exports.getSickness = getSickness;
 module.exports.getTurnover = getTurnover;
+module.exports.getComparisonGroupRankings = getComparisonGroupRankings;

@@ -34,7 +34,9 @@
                 "output": "./assets/"
               }
             ],
-            "styles": ["./src/styles.scss"],
+            "styles": [
+              "./src/styles.scss"
+            ],
             "allowedCommonJsDependencies": [
               "@babel",
               "raf",
@@ -122,13 +124,21 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "styles": ["src/styles.scss"],
+            "styles": [
+              "src/styles.scss"
+            ],
             "scripts": [],
-            "assets": ["src/favicon.ico", "src/assets"]
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ]
           }
         }
       }
     }
   },
-  "defaultProject": "ng-sfc-v2"
+  "defaultProject": "ng-sfc-v2",
+  "cli": {
+    "analytics": "21e74f90-72c7-4823-a125-19baa6f3668d"
+  }
 }
