@@ -95,7 +95,7 @@
     "typescript": "^4.0.5",
     "ua-parser-js": "^0.7.22",
     "url-parse": "^1.4.7",
-    "uuid": "^3.4.0",
+    "uuid": "^8.3.1",
     "walk": "^2.3.14",
     "winston": "^3.3.3",
     "xss-clean": "^0.1.1",
