@@ -1,10 +1,15 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Data } from '@angular/router';
 import { BenchmarksResponse, Metric, NoData, RankingsResponse, Tile } from '@core/model/benchmarks.model';
+import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PdfService } from '@core/services/pdf.service';
+import { GaugeComponent } from '@shared/components/benchmark-metric/gauge/gauge.component';
 import { RankingContent } from '@shared/components/benchmark-metric/ranking-content/ranking-content.component';
+import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
+import { jsPDF } from 'jspdf';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 
@@ -24,6 +29,14 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   public numberOfStaff: number;
   public numberOfWorkplaces: number;
   public lastUpdated: Date;
+  public workplace: Establishment;
+  public currentRank: number;
+  public rankStateMessage: string;
+  public rankHasValue: boolean;
+
+  @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
+  @ViewChild('gauge') gauge: GaugeComponent;
+
   public rankings: RankingsResponse;
   public rankingContent: RankingContent;
 
@@ -32,6 +45,8 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
+    private pdfService: PdfService,
+    private elRef: ElementRef,
   ) {}
 
   get metric(): string {
@@ -39,7 +54,8 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const establishmentUid = this.establishmentService.establishment.uid;
+    this.workplace = this.establishmentService.establishment;
+    const establishmentUid = this.workplace.uid;
 
     const dataObservable$ = this.route.data.pipe(
       tap(this.setRouteData),
@@ -80,7 +96,15 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     this.rankings = rankings;
     this.rankingContent = { ...this.rankings, noData: this.noData };
   };
+  public async downloadAsPDF($event: Event): Promise<jsPDF> {
+    $event.preventDefault();
 
+    try {
+      return await this.pdfService.BuildMetricsPdf(this.elRef, this.workplace, `${Metric[this.type]}.pdf`);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }

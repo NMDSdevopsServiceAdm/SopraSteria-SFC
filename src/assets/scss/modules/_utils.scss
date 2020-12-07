@@ -15,7 +15,7 @@
 }
 
 .govuk-util__light-bg {
-  background: govuk-colour("light-grey");
+  background: govuk-colour('light-grey');
 }
 
 .govuk-util__relative-top-1 {
@@ -47,11 +47,11 @@
 }
 
 .govuk-util__list-record {
-  border-bottom: solid 1px govuk-colour("mid-grey");
+  border-bottom: solid 1px govuk-colour('mid-grey');
   padding: govuk-spacing(4) 0;
 
   &:first-child {
-    border-top: solid 1px govuk-colour("mid-grey");
+    border-top: solid 1px govuk-colour('mid-grey');
   }
 }
 
@@ -94,6 +94,6 @@
 .govuk-max-width {
   max-width: calc(100vh - 274px);
 }
-.asc-font-19{
+.asc-font-19 {
   @include govuk-font($size: 19);
 }
