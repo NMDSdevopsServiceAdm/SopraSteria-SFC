@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { fakeAsync, tick, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -52,7 +52,7 @@ async function renderHeaderComponent(isAdmin: boolean) {
 }
 
 function advance(): void {
-  flush();
+  tick(50);
   component.fixture.detectChanges();
 }
 
@@ -66,7 +66,7 @@ async function navigateToHome() {
 
 let component: RenderResult<TestRootComponent>;
 
-fdescribe('HeaderComponent', () => {
+describe('HeaderComponent', () => {
   function setup(showSurvey, callApi = true) {
     const { getByText } = component;
     fireEvent.click(getByText('Logout'));
@@ -87,7 +87,7 @@ fdescribe('HeaderComponent', () => {
     TestBed.inject(HttpTestingController).verify();
   });
 
-  describe('logging out', () => {
+  fdescribe('logging out', () => {
     beforeEach(async () => {
       await renderHeaderComponent(false);
       navigateToHome();
