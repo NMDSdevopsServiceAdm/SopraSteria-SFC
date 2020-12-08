@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -9,7 +9,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
   selector: 'app-satisfaction-survey',
   templateUrl: './satisfaction-survey.component.html',
 })
-export class SatisfactionSurveyComponent {
+export class SatisfactionSurveyComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   private wid: string;
   public form: FormGroup;
@@ -34,6 +34,9 @@ export class SatisfactionSurveyComponent {
     route.queryParams.subscribe((params) => (this.wid = params.wid));
 
     this.setupFormErrorsMap();
+  }
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   public onSubmit(): void {

@@ -56,6 +56,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public signOut(event): void {
     event.preventDefault();
     this.idleService.clear();
-    this.authService.logoutByUser();
+    if (this.isAdminUser()) {
+      this.authService.logout();
+    } else {
+      this.authService.logoutByUser();
+    }
   }
 }
