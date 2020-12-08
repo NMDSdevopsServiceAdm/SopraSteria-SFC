@@ -18,8 +18,8 @@ import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satis
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, RenderResult } from '@testing-library/angular';
 
-const getHeaderComponent = async () => {
-  return render(TestRootComponent, {
+async function renderHeaderComponent(isAdmin: boolean) {
+  component = await render(TestRootComponent, {
     imports: [
       FormsModule,
       ReactiveFormsModule,
@@ -35,7 +35,7 @@ const getHeaderComponent = async () => {
     providers: [
       {
         provide: UserService,
-        useFactory: MockUserService.factory(0, false),
+        useFactory: MockUserService.factory(0, isAdmin),
         deps: [HttpClient],
       },
       {
@@ -49,24 +49,36 @@ const getHeaderComponent = async () => {
       },
     ],
   });
-};
+}
+
+function advance(): void {
+  flush();
+  component.fixture.detectChanges();
+}
+
+async function navigateToHome() {
+  fakeAsync(async () => {
+    const router = TestBed.inject(Router);
+    router.navigate(['/']);
+    advance();
+  })();
+}
 
 let component: RenderResult<TestRootComponent>;
 
-describe('HeaderComponent', () => {
-  function advance(): void {
-    flush();
-    component.fixture.detectChanges();
-  }
-
-  function setup(showSurvey) {
+fdescribe('HeaderComponent', () => {
+  function setup(showSurvey, callApi = true) {
     const { getByText } = component;
     fireEvent.click(getByText('Logout'));
 
-    const req = TestBed.inject(HttpTestingController).expectOne('/api/logout');
-    req.flush({
-      showSurvey,
-    });
+    if (callApi) {
+      const req = TestBed.inject(HttpTestingController).expectOne('/api/logout');
+      req.flush({
+        showSurvey,
+      });
+    } else {
+      TestBed.inject(HttpTestingController).expectNone('/api/logout');
+    }
 
     advance();
   }
@@ -75,17 +87,12 @@ describe('HeaderComponent', () => {
     TestBed.inject(HttpTestingController).verify();
   });
 
-  beforeEach(async () => {
-    component = await getHeaderComponent();
-  });
-
-  beforeEach(fakeAsync(async () => {
-    const router = TestBed.inject(Router);
-    router.navigate(['/']);
-    advance();
-  }));
-
   describe('logging out', () => {
+    beforeEach(async () => {
+      await renderHeaderComponent(false);
+      navigateToHome();
+    });
+
     it('should navigate to the signed out page when show survey is false', fakeAsync(async () => {
       const { getByText } = component;
 
@@ -113,6 +120,23 @@ describe('HeaderComponent', () => {
       const establishmentId = TestBed.inject(EstablishmentService).establishmentId;
 
       expect(router.url).toBe(`/satisfaction-survey?wid=${establishmentId}`);
+    }));
+  });
+
+  describe('logging out as admin', () => {
+    beforeEach(async () => {
+      await renderHeaderComponent(true);
+      navigateToHome();
+    });
+
+    it('should not navigate to the satisfaction survey when user is admin', fakeAsync(async () => {
+      const { getByText } = component;
+
+      setup(true, false);
+
+      const signedOut = getByText('You have been signed out.');
+
+      expect(signedOut).toBeTruthy();
     }));
   });
 });
