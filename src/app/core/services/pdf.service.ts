@@ -9,6 +9,12 @@ import { jsPDF } from 'jspdf';
 export interface PdfComponent {
   content: ElementRef;
 }
+
+export interface Pages {
+  current: number;
+  total: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -26,13 +32,17 @@ export class PdfService {
     const { doc, html } = this.getNewDoc();
 
     // Page 1
-    const pageNum = 1;
+    const pages = {
+      current: 1,
+      total: 1,
+    };
+
     this.appendHeader(html);
     this.appendWorkplaceTitle(html, workplace);
     this.appendElRef(html, elRef);
 
-    const footerPosition = this.calcFooterPosition(doc, html, 540, pageNum);
-    this.appendFooter(html, footerPosition);
+    const footerPosition = this.calcFooterPosition(doc, html, 580, pages);
+    this.appendFooter(html, footerPosition, pages);
 
     await this.saveHtmlToPdf(fileName, doc, html, this.y, this.scale, this.width);
 
@@ -48,23 +58,27 @@ export class PdfService {
     const { doc, html } = this.getNewDoc();
 
     // Page 1
-    let pageNum = 1;
+    const page = {
+      current: 1,
+      total: 2,
+    };
+
     this.appendHeader(html);
     this.appendWorkplaceTitle(html, workplace);
     this.appendElRef(html, elRef);
 
-    let footerPosition = this.calcFooterPosition(doc, html, 380, pageNum);
-    this.appendFooter(html, footerPosition);
+    let footerPosition = this.calcFooterPosition(doc, html, 380, page);
+    this.appendFooter(html, footerPosition, page);
 
     html.append(this.createSpacer(this.width, this.ypx * 2));
 
     // Page 2
-    pageNum = 2;
+    page.current = 2;
     this.appendHeader(html);
     this.appendAboutData(html, aboutData);
 
-    footerPosition = this.calcFooterPosition(doc, html, 480, pageNum);
-    this.appendFooter(html, footerPosition);
+    footerPosition = this.calcFooterPosition(doc, html, 480, page);
+    this.appendFooter(html, footerPosition, page);
 
     await this.convertCharts(html);
     await this.saveHtmlToPdf(fileName, doc, html, this.y, this.scale, this.width);
@@ -93,17 +107,20 @@ export class PdfService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendFooter(html, footerPosition): void {
-    const footer = this.resolveComponent(PdfFooterComponent);
+  private appendFooter(html, footerPosition, pages: Pages): void {
+    const footer = this.resolveComponent(PdfFooterComponent, (c) => {
+      c.instance.pages = pages;
+      c.changeDetectorRef.detectChanges();
+    });
 
     html.append(this.createSpacer(this.width, footerPosition));
     html.append(footer.cloneNode(true));
   }
 
-  private calcFooterPosition = (doc, html: HTMLDivElement, footerPosition: number, pageNum: number) => {
+  private calcFooterPosition = (doc, html: HTMLDivElement, footerPosition: number, pages: Pages) => {
     const a4heightpx = doc.internal.pageSize.getHeight() * this.ptToPx;
 
-    switch (pageNum) {
+    switch (pages.current) {
       case 1: {
         return a4heightpx - this.getHeight(html) * this.scale - (footerPosition * this.scale + this.ypx);
       }
