@@ -31,7 +31,7 @@ export class PdfService {
     this.appendWorkplaceTitle(html, workplace);
     this.appendElRef(html, elRef);
 
-    const footerPosition = this.calcFooterPosition(doc, html, 540, pageNum);
+    const footerPosition = this.calcFooterPosition(doc, html, 580, pageNum);
     this.appendFooter(html, footerPosition);
 
     await this.saveHtmlToPdf(fileName, doc, html, this.y, this.scale, this.width);
