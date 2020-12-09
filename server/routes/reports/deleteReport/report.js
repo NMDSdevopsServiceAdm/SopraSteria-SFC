@@ -23,17 +23,18 @@ const headers = [
 ];
 const lastColumn = String.fromCharCode('B'.charCodeAt(0) + headers.length);
 const monthsWithoutUpdate = 20;
+const monthsToBeDelete = 24;
 
 const filterData = async (rawData) => {
   const updateDate = moment().subtract(monthsWithoutUpdate, 'months');
   return rawData.filter((establishment) => {
     let workers;
     if (establishment.workers.length === 0) {
-      workers = true;
+      workers = false;
     } else {
       workers = moment(establishment.workers[0].updated).isSameOrBefore(updateDate);
     }
-    return moment(establishment.updated).isSameOrBefore(updateDate) && workers;
+    return moment(establishment.updated).isSameOrBefore(updateDate) || workers;
   });
 };
 
@@ -121,7 +122,7 @@ const fillData = (reportData, laData, WS1) => {
         establishment.EmployerTypeValue,
         excelUtils.formatBool(establishment.isRegulated),
         parentName,
-        moment(establishment.updated).add(monthsWithoutUpdate, 'months').format('DD-MM-YYYY'),
+        moment(establishment.updated).add(monthsToBeDelete, 'months').format('DD-MM-YYYY'),
       ],
       rowStyle,
     );

@@ -1,5 +1,5 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
@@ -11,19 +11,39 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { WindowToken } from '@core/services/window';
 import { WorkerService } from '@core/services/worker.service';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
-import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import {
+  CancelDataOwnerDialogComponent,
+} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import {
+  ChangeDataOwnerDialogComponent,
+} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import {
+  LinkToParentCancelDialogComponent,
+} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import {
+  LinkToParentRemoveDialogComponent,
+} from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
-// eslint-disable-next-line max-len
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import {
+  SetDataPermissionDialogComponent,
+} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dataLayer: any;
+  }
+}
+
+window.dataLayer = window.dataLayer || {};
 @Component({
   selector: 'app-home-tab',
   templateUrl: './home-tab.component.html',
@@ -65,9 +85,10 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private router: Router,
     private establishmentService: EstablishmentService,
+    @Inject(WindowToken) private window: Window,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.user = this.userService.loggedInUser;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.setPermissionLinks();
@@ -87,6 +108,16 @@ export class HomeTabComponent implements OnInit, OnDestroy {
           this.setPermissionLinks();
         }),
       );
+    }
+
+    if (!this?.workplace?.employerType) {
+      this.window.dataLayer.push({
+        firstTimeLogin: true,
+        workplaceID: this?.workplace?.nmdsId ? this.workplace.nmdsId : null,
+      });
+      this.window.dataLayer.push({
+        event: 'firstLogin',
+      });
     }
   }
 

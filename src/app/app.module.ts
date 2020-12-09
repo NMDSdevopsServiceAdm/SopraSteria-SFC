@@ -30,6 +30,7 @@ import { QualificationService } from '@core/services/qualification.service';
 import { RecruitmentService } from '@core/services/recruitment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { TrainingService } from '@core/services/training.service';
+import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
@@ -52,6 +53,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +74,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     ResetPasswordConfirmationComponent,
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
+    SatisfactionSurveyComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
@@ -110,6 +113,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     TrainingService,
     WindowRef,
     WorkerService,
+    { provide: WindowToken, useFactory: windowProvider },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpInterceptor,
