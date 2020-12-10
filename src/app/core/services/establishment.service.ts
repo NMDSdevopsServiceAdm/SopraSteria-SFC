@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, isDevMode } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   allMandatoryTrainingCategories,
   CancelOwnerShip,
@@ -45,7 +45,7 @@ interface EmployerTypeRequest {
 }
 
 interface MainServiceRequest {
-  cqc: boolean,
+  cqc: boolean;
   mainService: {
     id: number;
     name: string;
@@ -98,7 +98,7 @@ export class EstablishmentService {
       return this._establishment$.asObservable();
     }
     return this.getEstablishment(this.establishmentId.toString()).pipe(
-      tap(establishment => {
+      tap((establishment) => {
         this.setState(establishment);
       }),
     );
@@ -122,16 +122,8 @@ export class EstablishmentService {
   }
 
   public get establishmentId() {
-    if (this._establishmentId) {
-      return this._establishmentId;
-    }
-
-    this._establishmentId = localStorage.getItem('establishmentId');
-
-    if (isDevMode()) {
-      if (!this._establishmentId) {
-        throw new TypeError('No establishmentId in local storage!');
-      }
+    if (!this._establishmentId) {
+      this._establishmentId = localStorage.getItem('establishmentId');
     }
 
     return this._establishmentId;
@@ -146,7 +138,7 @@ export class EstablishmentService {
     const params = new HttpParams().set('all', 'true');
     return this.http
       .get<AllServicesResponse>(`/api/establishment/${establishmentId}/services`, { params })
-      .pipe(map(res => res.allOtherServices));
+      .pipe(map((res) => res.allOtherServices));
   }
 
   public get returnTo(): URLStructure {
@@ -176,7 +168,7 @@ export class EstablishmentService {
   }
 
   getStaff(establishmentuid: string) {
-    return this.http.get<any>(`/api/establishment/${establishmentuid}/staff`).pipe(map(res => res.numberOfStaff));
+    return this.http.get<any>(`/api/establishment/${establishmentuid}/staff`).pipe(map((res) => res.numberOfStaff));
   }
 
   postStaff(workplaceUid: string, numberOfStaff: number) {
