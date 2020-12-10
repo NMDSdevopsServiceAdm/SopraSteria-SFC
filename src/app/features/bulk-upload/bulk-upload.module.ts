@@ -9,6 +9,7 @@ import { BulkUploadRoutingModule } from '@features/bulk-upload/bulk-upload-routi
 import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
 import { StaffReferencesPageComponent } from '@features/bulk-upload/staff-references-page/staff-references-page.component';
 import { SharedModule } from '@shared/shared.module';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
 import { CheckWorkplaceReferencesComponent } from './check-workplace-references/check-workplace-references.component';
@@ -25,7 +26,7 @@ import { UploadedFilesListComponent } from './uploaded-files-list/uploaded-files
 import { WorkplaceReferencesPageComponent } from './workplace-references-page/workplace-references-page.component';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, BulkUploadRoutingModule, OverlayModule],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, BulkUploadRoutingModule, OverlayModule, NgxDropzoneModule],
   declarations: [
     BulkUploadPageComponent,
     CheckWorkplaceReferencesComponent,
