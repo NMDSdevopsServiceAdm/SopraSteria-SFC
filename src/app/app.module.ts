@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { ErrorHandler, NgModule } from '@angular/core';
+import { ErrorHandler, isDevMode, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
@@ -54,11 +54,10 @@ import { AppComponent } from './app.component';
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
-import { environment } from 'src/environments/environment';
 import { DevelopmentRoutingModule } from './development-routing.module';
 
 const developmentModules = [];
-if (!environment.production) {
+if (isDevMode()) {
   developmentModules.push(DevelopmentRoutingModule);
 }
 
