@@ -43,6 +43,7 @@ import { WorkplaceReferencesPageComponent } from './workplace-references-page/wo
     StaffReferencesPageComponent,
     ReferencesCreatedPageComponent,
   ],
+  exports: [CheckWorkplaceReferencesComponent, DownloadDataFilesComponent, UploadDataFilesComponent],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
 export class BulkUploadModule {}
