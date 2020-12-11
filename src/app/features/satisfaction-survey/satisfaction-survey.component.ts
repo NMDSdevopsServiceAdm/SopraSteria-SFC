@@ -11,7 +11,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 })
 export class SatisfactionSurveyComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  private wid: string;
+  private uid: string;
   public form: FormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
@@ -31,7 +31,7 @@ export class SatisfactionSurveyComponent implements AfterViewInit {
       howDidYouFeel: null,
     });
 
-    route.queryParams.subscribe((params) => (this.wid = params.wid));
+    route.queryParams.subscribe((params) => (this.uid = params.uid));
 
     this.setupFormErrorsMap();
   }
@@ -58,7 +58,7 @@ export class SatisfactionSurveyComponent implements AfterViewInit {
 
   private buildSatisfactionSurveyBody(formValue) {
     return {
-      establishmentId: this.wid,
+      userId: this.uid,
       didYouDoEverything: formValue.didYouDoEverything,
       didYouDoEverythingAdditionalAnswer: this.getAdditionalAnswer(formValue),
       howDidYouFeel: formValue.howDidYouFeel,

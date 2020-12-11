@@ -3,11 +3,11 @@ const router = express.Router();
 const models = require('../models');
 
 const submitSurvey = async function (survey) {
-  const establishment = await models.establishment.findByUid(survey.establishmentId);
+  const user = await models.user.findByUUID(survey.userId);
 
-  if (establishment) {
+  if (user) {
     await models.satisfactionSurvey.create({
-      establishmentFk: establishment.id,
+      userFk: user.id,
       didYouDoEverything: survey.didYouDoEverything,
       didYouDoEverythingAdditionalAnswer: survey.didYouDoEverythingAdditionalAnswer,
       howDidYouFeel: survey.howDidYouFeel,

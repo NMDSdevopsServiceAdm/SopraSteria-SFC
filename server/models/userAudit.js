@@ -70,30 +70,15 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  UserAudit.countLogouts = async function (establishmentId, fromDate) {
+  UserAudit.countLogouts = async function (userFk, fromDate) {
     return await this.count({
       where: {
         when: {
           [Op.gte]: fromDate,
         },
         type: 'logout',
-      },
-      include: [
-        {
-          model: sequelize.models.user,
-          attributes: ['id'],
-          as: 'user',
-          include: [
-            {
-              model: sequelize.models.establishment,
-              attributes: ['id'],
-              where: {
-                id: establishmentId,
-              },
-            },
-          ],
-        },
-      ],
+        userFk
+      }
     });
   };
 
