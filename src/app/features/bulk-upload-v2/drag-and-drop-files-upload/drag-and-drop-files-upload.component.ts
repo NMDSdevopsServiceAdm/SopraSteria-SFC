@@ -97,7 +97,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
     this.bulkUploadService.resetBulkUpload();
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target[`files`]);
-    this.fileUpload.setValidators(CustomValidators.checkFiles);
+    this.fileUpload.setValidators(CustomValidators.checkBulkUploadFiles);
     this.fileUpload.updateValueAndValidity();
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
     this.filesUploaded = false;

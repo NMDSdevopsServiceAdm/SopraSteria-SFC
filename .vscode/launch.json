@@ -33,6 +33,20 @@
               "DB_PASS": "TBC"
             },
             "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v10.15.3/bin/node"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }
