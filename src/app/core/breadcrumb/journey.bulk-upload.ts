@@ -14,7 +14,6 @@ export const bulkUploadJourney: JourneyRoute = {
         {
           title: 'About bulk upload',
           path: Path.ABOUT_BULK_UPLOAD,
-          children: [],
         },
       ],
     },

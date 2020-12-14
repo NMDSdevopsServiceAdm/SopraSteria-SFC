@@ -36,6 +36,8 @@
       warnings in an error report.
     </p>
     <p>A bulk upload is only complete once all errors have been fixed.</p>
-    <button type="submit" class="govuk-button govuk-!-margin-top-6" (click)="return()">Return to bulk upload</button>
+    <a role="button" draggable="false" class="govuk-button govuk-!-margin-top-6" [routerLink]="['/bulk-upload']">
+      Return to bulk upload
+    </a>
   </div>
 </div>
