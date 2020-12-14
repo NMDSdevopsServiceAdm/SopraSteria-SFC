@@ -2,7 +2,7 @@ import { HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { Roles } from '@core/model/roles.enum';
+import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -33,11 +33,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private reportsService: ReportService,
     private userService: UserService,
     private permissionsService: PermissionsService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.REPORTS);
-    this.isAdmin = [Roles.Admin].includes(this.userService.loggedInUser.role);
+    this.isAdmin = this.authService.isAdmin;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.subscriptions.add(
       this.establishmentService.establishment$.pipe(take(1)).subscribe((workplace) => {
