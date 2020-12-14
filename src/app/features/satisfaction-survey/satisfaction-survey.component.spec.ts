@@ -30,7 +30,7 @@ const getSatisfactionSurveyComponent = async () => {
       {
         provide: ActivatedRoute,
         useValue: {
-          queryParams: of({ wid: 'workplace-uid' }),
+          queryParams: of({ wid: 'workplace-uid', uid: 'user-uid' }),
         },
       },
     ],
@@ -69,6 +69,7 @@ describe('SatisfactionSurveyComponent', () => {
 
       expect(req.request.body).toEqual({
         establishmentId: 'workplace-uid',
+        userId: 'user-uid',
         didYouDoEverything: null,
         didYouDoEverythingAdditionalAnswer: null,
         howDidYouFeel: null,
@@ -88,6 +89,7 @@ describe('SatisfactionSurveyComponent', () => {
 
       expect(req.request.body).toEqual({
         establishmentId: 'workplace-uid',
+        userId: 'user-uid',
         didYouDoEverything: 'No',
         didYouDoEverythingAdditionalAnswer: 'answer',
         howDidYouFeel: 'Neither',

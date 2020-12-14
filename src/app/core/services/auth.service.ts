@@ -124,11 +124,12 @@ export class AuthService {
 
   private logoutWithSurvey(showSurvey: boolean): void {
     const uid = this.userService.loggedInUser.uid;
+    const wid = this.establishmentService.establishmentId;
     this.setPreviousUser();
     this.unauthenticate();
     if (showSurvey) {
       this.router.navigate(['/satisfaction-survey'], {
-        queryParams: { uid },
+        queryParams: { wid, uid },
       });
     } else {
       this.router.navigate(['/logged-out']);
