@@ -87,7 +87,7 @@ describe('HeaderComponent', () => {
     TestBed.inject(HttpTestingController).verify();
   });
 
-  fdescribe('logging out', () => {
+  describe('logging out', () => {
     beforeEach(async () => {
       await renderHeaderComponent(false);
       navigateToHome();
