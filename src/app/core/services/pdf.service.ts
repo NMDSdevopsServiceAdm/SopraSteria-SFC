@@ -41,10 +41,10 @@ export class PdfService {
     this.appendWorkplaceTitle(html, workplace);
     this.appendElRef(html, elRef);
 
-    const footerPosition = this.calcFooterPosition(doc, html, 580, pages);
+    const footerPosition = this.calcFooterPosition(doc, html, 560, pages);
     this.appendFooter(html, footerPosition, pages);
 
-    await this.saveHtmlToPdf(fileName, doc, html, this.y, this.scale, this.width);
+    await this.saveHtmlToPdf(fileName, doc, html, this.scale, this.width);
 
     return doc;
   }
@@ -81,7 +81,7 @@ export class PdfService {
     this.appendFooter(html, footerPosition, page);
 
     await this.convertCharts(html);
-    await this.saveHtmlToPdf(fileName, doc, html, this.y, this.scale, this.width);
+    await this.saveHtmlToPdf(fileName, doc, html, this.scale, this.width);
 
     return doc;
   }
@@ -103,6 +103,7 @@ export class PdfService {
   private appendHeader(html: HTMLElement): void {
     const header = this.resolveComponent(PdfHeaderComponent);
 
+    html.append(this.createSpacer(this.width, 20));
     html.append(header.cloneNode(true));
     html.append(this.createSpacer(this.width, this.spacing));
   }
@@ -189,12 +190,13 @@ export class PdfService {
     );
   }
 
-  private async saveHtmlToPdf(filename, doc, html, y, scale, width): Promise<void> {
+  private async saveHtmlToPdf(filename, doc: jsPDF, html, scale, width): Promise<void> {
     await this.convertCharts(html);
     await this.convertListItems(html);
 
     const widthHtml = width * scale;
     const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
+    const y = 0;
 
     const html2canvas = {
       scale,
