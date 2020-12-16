@@ -79,12 +79,11 @@ const addCSSRData = async (establishmentsData) => {
   return result;
 };
 const getLastUpdate = (establishment) => {
-  if (establishment.workers.length > 0) {
-    if (moment(establishment.updated).isAfter(moment(establishment.workers[0].updated))) {
-      return establishment.updated;
-    } else {
-      return establishment.workers[0].updated;
-    }
+  if (establishment.workers.length === 0) {
+    return establishment.updated;
+  }
+  if (moment(establishment.workers[0].updated).isAfter(establishment.updated)) {
+    return establishment.workers[0].updated;
   }
   return establishment.updated;
 };
