@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -9,8 +9,9 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
   selector: 'app-satisfaction-survey',
   templateUrl: './satisfaction-survey.component.html',
 })
-export class SatisfactionSurveyComponent {
+export class SatisfactionSurveyComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
+  private uid: string;
   private wid: string;
   public form: FormGroup;
   public submitted = false;
@@ -31,9 +32,15 @@ export class SatisfactionSurveyComponent {
       howDidYouFeel: null,
     });
 
-    route.queryParams.subscribe((params) => (this.wid = params.wid));
+    route.queryParams.subscribe((params) => {
+      this.uid = params.uid;
+      this.wid = params.wid;
+    });
 
     this.setupFormErrorsMap();
+  }
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   public onSubmit(): void {
@@ -55,6 +62,7 @@ export class SatisfactionSurveyComponent {
 
   private buildSatisfactionSurveyBody(formValue) {
     return {
+      userId: this.uid,
       establishmentId: this.wid,
       didYouDoEverything: formValue.didYouDoEverything,
       didYouDoEverythingAdditionalAnswer: this.getAdditionalAnswer(formValue),

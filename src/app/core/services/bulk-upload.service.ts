@@ -45,16 +45,17 @@ export class BulkUploadService {
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
+  protected endpoint: string = 'uploaded';
 
   constructor(
     private http: HttpClient,
     private establishmentService: EstablishmentService,
-    private userService: UserService
+    private userService: UserService,
   ) {}
 
   public get workPlaceReferences$() {
     return this.userService.getEstablishments().pipe(
-      map(response => {
+      map((response) => {
         const references = [];
         if (response.primary) {
           references.push(response.primary);
@@ -64,9 +65,9 @@ export class BulkUploadService {
         }
         return references;
       }),
-      tap(references => {
+      tap((references) => {
         this.setWorkplaceReferences(references);
-      })
+      }),
     );
   }
 
@@ -86,10 +87,10 @@ export class BulkUploadService {
     return this.checkLockStatus(
       () =>
         this.http.post<BulkUploadLock>(
-          `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/uploaded`,
-          payload
+          `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/${this.endpoint}`,
+          payload,
         ),
-      undefined
+      undefined,
     );
   }
 
@@ -106,32 +107,32 @@ export class BulkUploadService {
 
   public preValidateFiles(workplaceUid: string): Observable<ValidatedFile[]> {
     return this.checkLockStatus(
-      () => this.http.put<ValidatedFile[]>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`, null),
-      undefined
+      () => this.http.put<ValidatedFile[]>(`/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}`, null),
+      undefined,
     );
   }
 
   public getUploadedFiles(workplaceUid: string): Observable<ValidatedFile[]> {
     return this.checkLockStatus(
-      () => this.http.get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`),
-      undefined
-    ).pipe(map(response => response.files));
+      () => this.http.get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}`),
+      undefined,
+    ).pipe(map((response) => response.files));
   }
 
   public getUploadedFileSignedURL(workplaceUid: string, key: string): Observable<string> {
     return this.checkLockStatus(
       () =>
         this.http.get<UploadedFilesRequestToDownloadResponse>(
-          `/api/establishment/${workplaceUid}/bulkupload/uploaded/${key}`
+          `/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}/${key}`,
         ),
-      undefined
-    ).pipe(map(response => response.file.signedUrl));
+      undefined,
+    ).pipe(map((response) => response.file.signedUrl));
   }
 
   public validateFiles(workplaceUid: string): Observable<ValidatedFilesResponse> {
     return this.checkLockStatus(
       () => this.http.put<ValidatedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/validate`, null),
-      undefined
+      undefined,
     );
   }
 
@@ -141,7 +142,7 @@ export class BulkUploadService {
       {
         observe: 'response',
         responseType: 'blob' as 'json',
-      }
+      },
     );
   }
 
@@ -170,7 +171,7 @@ export class BulkUploadService {
       {
         observe: 'response',
         responseType: 'blob' as 'json',
-      }
+      },
     );
   }
 
@@ -209,6 +210,10 @@ export class BulkUploadService {
             message: 'The selected files must be in CSV or ZIP format.',
           },
           {
+            name: 'csvfiletype',
+            message: 'The selected files must be in CSV format.',
+          },
+          {
             name: 'prevalidation',
             message: 'Please ensure you have included a workplace and staff file and your headings are correct.',
           },
@@ -245,7 +250,7 @@ export class BulkUploadService {
         .pipe(
           map((request: any) => {
             requestId = request.requestId;
-          })
+          }),
         )
         .pipe(
           // Run serperate function to get the current lock status
@@ -254,20 +259,31 @@ export class BulkUploadService {
               .pipe(startWith(0))
               .pipe(
                 concatMap(() =>
-                  from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`))
-                )
-              )
-          )
+                  from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`)),
+                ),
+              ),
+          ),
         )
-        .pipe(filter(state => state.bulkUploadLockHeld === false))
+        .pipe(filter((state) => state.bulkUploadLockHeld === false))
         .pipe(take(1))
         .pipe(
           concatMap(() =>
             from(
-              this.http.get<any>(`/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`, httpOptions)
-            )
-          )
+              this.http.get<any>(
+                `/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`,
+                httpOptions,
+              ),
+            ),
+          ),
         )
     );
+  }
+}
+
+@Injectable()
+export class BulkUploadServiceV2 extends BulkUploadService {
+  constructor(http: HttpClient, establishmentService: EstablishmentService, userService: UserService) {
+    super(http, establishmentService, userService);
+    this.endpoint = 'uploadFiles';
   }
 }
