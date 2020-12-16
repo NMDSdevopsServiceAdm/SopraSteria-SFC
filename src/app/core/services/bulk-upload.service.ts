@@ -45,7 +45,7 @@ export class BulkUploadService {
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
-  protected endpoint: string = 'uploaded';
+  protected endpoint = 'uploaded';
 
   constructor(
     private http: HttpClient,

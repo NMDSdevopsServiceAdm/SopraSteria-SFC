@@ -5,7 +5,7 @@ const { MetaData } = require('../../../models/BulkImport/csv/metaData');
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
 const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Worker;
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
-
+// eslint-disable-next-line no-unused-vars
 const { s3, Bucket, saveResponse, uploadAsJSON, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
 const { buStates } = require('./states');
 
@@ -77,10 +77,7 @@ const uploadedPost = async (req, res) => {
   const username = req.username;
   const uploadedFiles = req.body.files;
 
-  if (
-    !uploadedFiles ||
-    !Array.isArray(uploadedFiles)
-  ) {
+  if (!uploadedFiles || !Array.isArray(uploadedFiles)) {
     await saveResponse(req, res, 400, {});
     return;
   }
