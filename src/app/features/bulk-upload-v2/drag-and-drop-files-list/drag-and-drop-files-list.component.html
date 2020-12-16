@@ -59,7 +59,7 @@
         </td>
         <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
           {{
-            file.uploaded ? (file.uploaded | date: 'd MMM yyyy, hh:mm') + (file.uploaded | date: 'a' | lowercase) : '-'
+            file.uploaded ? (file.uploaded | date: 'd MMM yyyy, h:mm') + (file.uploaded | date: 'a' | lowercase) : '-'
           }}
           <!--<app-file-validate-status [status]="file.status"></app-file-validate-status>-->
         </td>
@@ -72,8 +72,6 @@
 </table>
 
 <ng-container *ngIf="!preValidationError && !validationComplete">
-  <p role="status">The files must be validated before completing the upload.</p>
-
   <button type="button" class="govuk-button govuk-!-margin-top-2" (click)="validateFiles()">Validate files</button>
 </ng-container>
 

@@ -1,5 +1,14 @@
 import { HttpEventType } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnInit,
+  Output,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
@@ -26,7 +35,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   @ViewChild('drop') drop: NgxDropzoneComponent;
   public form: FormGroup;
   public filesUploading = false;
-  public filesUploaded = false;
+  @Output() public filesUploaded: EventEmitter<boolean> = new EventEmitter<boolean>();
   public submitted = false;
   public selectedFiles: File[];
   public bulkUploadStatus: string;
@@ -72,7 +81,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
         .getUploadedFiles(this.establishmentService.primaryWorkplace.uid)
         .subscribe((response: ValidatedFile[]) => {
           if (response.length) {
-            this.filesUploaded = true;
+            this.filesUploaded.emit(true);
             this.bulkUploadService.uploadedFiles$.next(response);
           }
           this.checkForPreValidationError();
@@ -208,7 +217,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
         () => {
           this.bulkUploadService.preValidateFiles$.next(true);
           this.filesUploading = false;
-          this.filesUploaded = true;
+          this.filesUploaded.emit(true);
         },
       );
   }

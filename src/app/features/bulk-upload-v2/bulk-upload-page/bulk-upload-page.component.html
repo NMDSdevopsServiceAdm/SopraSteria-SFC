@@ -19,30 +19,15 @@
     </details>
     <p><b>Download your current data</b> and update the records in those CSV files before you do the bulk upload.</p>
     <p>You can <b>download codes and guidance</b> to use as references for how to update the records in your files.</p>
-    <h1 class="govuk-heading-l">
-      <span *ngIf="establishment?.name" class="govuk-caption-xl">{{ establishment?.name }}</span>
-      Bulk upload V2
-    </h1>
-    <p>Bulk upload is used to add and edit large quantities of staff, workplace and training information.</p>
+
+    <div class="govuk-util__block">
+      <h2 class="govuk-heading-m">Select your files</h2>
+
+      <app-drag-and-drop-files-upload (filesUploaded)="filesUploaded($event)"></app-drag-and-drop-files-upload>
+    </div>
   </div>
-</div>
 
-<div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <ol class="govuk-list govuk-list--number govuk-!-margin-top-8 govuk-!-padding-left-5">
-      <li class="govuk-!-padding-left-5 govuk-!-font-size-24 govuk-!-padding-bottom-6 govuk-util__bold">
-        <app-check-workplace-references class="govuk-util__block"></app-check-workplace-references>
-      </li>
-      <li class="govuk-!-padding-left-5 govuk-!-font-size-24 govuk-!-padding-bottom-6 govuk-util__bold">
-        <app-download-data-files class="govuk-util__block"></app-download-data-files>
-      </li>
-      <li class="govuk-!-padding-left-5 govuk-!-font-size-24 govuk-!-padding-bottom-6 govuk-util__bold">
-        <div class="govuk-util__block">
-          <h2 class="govuk-heading-m">Select your files</h2>
-
-          <app-drag-and-drop-files-upload></app-drag-and-drop-files-upload>
-        </div>
-      </li>
-    </ol>
+    <app-drag-and-drop-files-list *ngIf="showFilesList"></app-drag-and-drop-files-list>
   </div>
 </div>
