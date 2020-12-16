@@ -28,13 +28,7 @@ const monthsToBeDelete = 24;
 const filterData = async (rawData) => {
   const updateDate = moment().subtract(monthsWithoutUpdate, 'months');
   return rawData.filter((establishment) => {
-    let workers;
-    if (establishment.workers.length === 0) {
-      workers = false;
-    } else {
-      workers = moment(establishment.workers[0].updated).isSameOrBefore(updateDate);
-    }
-    return moment(establishment.updated).isSameOrBefore(updateDate) || workers;
+    return moment(getLastUpdate(establishment)).isSameOrBefore(updateDate);
   });
 };
 
@@ -84,7 +78,16 @@ const addCSSRData = async (establishmentsData) => {
   );
   return result;
 };
-
+const getLastUpdate = (establishment) => {
+  if (establishment.workers.length > 0) {
+    if (moment(establishment.updated).isAfter(moment(establishment.workers[0].updated))) {
+      return establishment.updated;
+    } else {
+      return establishment.workers[0].updated;
+    }
+  }
+  return establishment.updated;
+};
 const fillData = (reportData, laData, WS1) => {
   let firstRow = true;
   let rowStyle = '';
@@ -122,7 +125,7 @@ const fillData = (reportData, laData, WS1) => {
         establishment.EmployerTypeValue,
         excelUtils.formatBool(establishment.isRegulated),
         parentName,
-        moment(establishment.updated).add(monthsToBeDelete, 'months').format('DD-MM-YYYY'),
+        moment(getLastUpdate(establishment)).add(monthsToBeDelete, 'months').format('DD-MM-YYYY'),
       ],
       rowStyle,
     );
@@ -171,3 +174,4 @@ module.exports = router;
 module.exports.generateDeleteReport = generateDeleteReport;
 module.exports.filterData = filterData;
 module.exports.monthsWithoutUpdate = monthsWithoutUpdate;
+module.exports.getLastUpdate = getLastUpdate;
