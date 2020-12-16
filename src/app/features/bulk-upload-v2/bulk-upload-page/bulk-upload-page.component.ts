@@ -5,7 +5,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { combineLatest, Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-bulk-upload-page',
   templateUrl: './bulk-upload-page.component.html',
-  providers: [I18nPluralPipe],
+  providers: [I18nPluralPipe, { provide: BulkUploadService, useClass: BulkUploadServiceV2 }],
 })
 export class BulkUploadPageV2Component implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

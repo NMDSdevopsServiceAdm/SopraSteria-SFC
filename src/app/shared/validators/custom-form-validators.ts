@@ -94,4 +94,39 @@ export class CustomValidators extends Validators {
 
     return null;
   }
+
+  static checkBulkUploadFiles(c: AbstractControl): { [key: string]: boolean } | null {
+    const errors: ValidationErrors = {};
+    const maxFileSize = 20971520;
+
+    if (c.value == null || c.value.length === 0) {
+      return null;
+    }
+
+    const files = Array.from(c.value);
+
+    files.forEach((file: File) => {
+      if (file.size > maxFileSize) {
+        errors[`filesize`] = true;
+        return;
+      }
+    });
+
+    files.forEach((file: File) => {
+      const parts: Array<string> = file.name.split('.');
+      const fileExtension: string = parts[parts.length - 1].toUpperCase();
+
+      if (fileExtension !== 'CSV') {
+        errors[`csvfiletype`] = true;
+        return;
+      }
+    });
+
+    if (Object.keys(errors).length) {
+      c.setErrors(errors);
+      return errors;
+    }
+
+    return null;
+  }
 }

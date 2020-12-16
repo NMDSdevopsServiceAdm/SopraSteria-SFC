@@ -19,7 +19,7 @@ const routes: Routes = [
     children: [
       {
         path: 'bulk-upload',
-        loadChildren: () => import('@features/bulk-upload/v2/bulk-upload.module').then((m) => m.BulkUploadV2Module),
+        loadChildren: () => import('@features/bulk-upload-v2/bulk-upload.module').then((m) => m.BulkUploadV2Module),
         data: {
           title: 'Bulk Upload',
         },

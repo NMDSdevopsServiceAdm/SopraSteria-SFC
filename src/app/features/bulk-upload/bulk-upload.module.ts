@@ -45,7 +45,21 @@ import { AboutBulkUploadComponent } from '@features/bulk-upload/v2/about-bulk-up
     ReferencesCreatedPageComponent,
     AboutBulkUploadComponent,
   ],
-  exports: [CheckWorkplaceReferencesComponent, DownloadDataFilesComponent, UploadDataFilesComponent],
+  exports: [
+    CheckWorkplaceReferencesComponent,
+    DownloadDataFilesComponent,
+    FilesUploadComponent,
+    FilesUploadProgressComponent,
+    FileValidateStatusComponent,
+    SelectedFilesListComponent,
+    UploadedFilesListComponent,
+    UploadWarningDialogComponent,
+    ReportDownloadLinkComponent,
+    BulkUploadStartPageComponent,
+    WorkplaceReferencesPageComponent,
+    StaffReferencesPageComponent,
+    ReferencesCreatedPageComponent,
+  ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
 export class BulkUploadModule {}

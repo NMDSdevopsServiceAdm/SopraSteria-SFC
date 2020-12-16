@@ -5,11 +5,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { DialogService } from '@core/services/dialog.service';
-import { BulkUploadV2RoutingModule } from '@features/bulk-upload/v2/bulk-upload-routing.module';
+import { BulkUploadV2RoutingModule } from '@features/bulk-upload-v2/bulk-upload-routing.module';
 import { SharedModule } from '@shared/shared.module';
-import { BulkUploadModule } from '../bulk-upload.module';
+import { BulkUploadModule } from '../bulk-upload/bulk-upload.module';
 
 import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.component';
+import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 
 @NgModule({
   imports: [
@@ -20,7 +21,7 @@ import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.c
     BulkUploadModule,
     OverlayModule,
   ],
-  declarations: [BulkUploadPageV2Component],
+  declarations: [BulkUploadPageV2Component, DragAndDropFilesUploadComponent],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
 export class BulkUploadV2Module {}
