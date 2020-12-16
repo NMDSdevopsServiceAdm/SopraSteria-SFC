@@ -50,7 +50,6 @@ import { WorkplaceReferencesPageComponent } from './workplace-references-page/wo
     FilesUploadProgressComponent,
     FileValidateStatusComponent,
     SelectedFilesListComponent,
-    UploadedFilesListComponent,
     UploadWarningDialogComponent,
     ReportDownloadLinkComponent,
     BulkUploadStartPageComponent,

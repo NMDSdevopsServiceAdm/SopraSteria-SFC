@@ -14,6 +14,7 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { filter } from 'lodash';
 import { combineLatest, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { NgxDropzoneComponent } from 'ngx-dropzone';
 
 @Component({
   selector: 'app-drag-and-drop-files-upload',
@@ -22,6 +23,7 @@ import { tap } from 'rxjs/operators';
 })
 export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
+  @ViewChild('drop') drop: NgxDropzoneComponent;
   public form: FormGroup;
   public filesUploading = false;
   public filesUploaded = false;
@@ -33,6 +35,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   private bytesUploaded: number[] = [];
   private subscriptions: Subscription = new Subscription();
   private uploadSubscription$: Subscription;
+  public files: File[] = [];
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -92,7 +95,19 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
     return this.form.get('fileUpload');
   }
 
-  public onFilesSelection($event: Event): void {
+  onSelect(event) {
+    console.log(event);
+    this.selectedFiles = event.addedFiles;
+    this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
+    this.getPresignedUrls();
+  }
+
+  onRemove(event) {
+    console.log(event);
+    this.files.splice(this.files.indexOf(event), 1);
+  }
+
+  /*public onFilesSelection($event: Event): void {
     this.stopPolling = true;
     this.bulkUploadService.resetBulkUpload();
     const target = $event.target || $event.srcElement;
@@ -105,7 +120,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
     if (this.submitted) {
       this.bulkUploadService.exposeForm$.next(this.form);
     }
-  }
+  }*/
 
   private getPresignedUrlsRequest(): PresignedUrlsRequest {
     const request: PresignedUrlsRequest = { files: [] };
@@ -191,7 +206,6 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
         null,
         () => this.cancelUpload(),
         () => {
-          this.resetFileInputElement();
           this.bulkUploadService.preValidateFiles$.next(true);
           this.filesUploading = false;
           this.filesUploaded = true;
@@ -199,12 +213,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
       );
   }
 
-  private resetFileInputElement(): void {
-    this.renderer.selectRootElement('#fileUpload').value = '';
-  }
-
-  public removeFiles(): void {
-    this.resetFileInputElement();
+  /*public removeFiles(): void {
     this.fileUpload.setValidators(Validators.required);
     this.form.reset();
     this.submitted = false;
@@ -214,7 +223,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
     if (this.submitted) {
       this.bulkUploadService.exposeForm$.next(this.form);
     }
-  }
+  }*/
 
   public cancelUpload(): void {
     this.filesUploading = false;
