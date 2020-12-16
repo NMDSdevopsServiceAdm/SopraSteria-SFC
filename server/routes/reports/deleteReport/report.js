@@ -117,7 +117,7 @@ const fillData = (reportData, laData, WS1) => {
         establishment.NameValue,
         address,
         establishment.postcode,
-        establishment.nmdsId,
+        establishment.nmdsId.trim(),
         establishment.id,
         region,
         la,
@@ -125,7 +125,7 @@ const fillData = (reportData, laData, WS1) => {
         establishment.EmployerTypeValue,
         excelUtils.formatBool(establishment.isRegulated),
         parentName,
-        moment(getLastUpdate(establishment)).add(monthsToBeDelete, 'months').format('DD-MM-YYYY'),
+        new Date(moment(getLastUpdate(establishment)).add(monthsToBeDelete, 'months').format('MM-DD-YYYY')),
       ],
       rowStyle,
     );
