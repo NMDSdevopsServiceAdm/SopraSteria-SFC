@@ -8,7 +8,7 @@ import { BulkUploadPageV2Component } from '@features/bulk-upload-v2/bulk-upload-
 import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
 import { ReferencesCreatedPageComponent } from '@features/bulk-upload/references-created-page/references-created-page.component';
 import { StaffReferencesPageComponent } from '@features/bulk-upload/staff-references-page/staff-references-page.component';
-import { AboutBulkUploadComponent } from '@features/bulk-upload/v2/about-bulk-upload/about-bulk-upload.component';
+import { AboutBulkUploadComponent } from '@features/bulk-upload-v2/about-bulk-upload/about-bulk-upload.component';
 
 const routes: Routes = [
   {
