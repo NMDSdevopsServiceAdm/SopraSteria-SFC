@@ -354,7 +354,7 @@ const editWorker = async (req, res) => {
 router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);
 
 // deletes given worker id
-router.route('/:workerId').delete(async (req, res) => {
+const deleteWorker = async (req, res) => {
   const workerId = req.params.workerId;
   const establishmentId = req.establishmentId;
 
@@ -400,7 +400,9 @@ router.route('/:workerId').delete(async (req, res) => {
       return res.status(500).send();
     }
   }
-});
+};
+
+router.route('/:workerId').delete(hasPermission('canDeleteWorker'), deleteWorker);
 
 module.exports = router;
 module.exports.editWorker = editWorker;
