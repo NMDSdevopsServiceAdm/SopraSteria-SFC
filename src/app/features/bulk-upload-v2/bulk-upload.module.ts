@@ -13,6 +13,7 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.component';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
+import { BulkUploadSidebarComponent } from './bulk-upload-sidebar/bulk-upload-sidebar.component';
 
 @NgModule({
   imports: [
@@ -24,7 +25,12 @@ import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-a
     OverlayModule,
     NgxDropzoneModule,
   ],
-  declarations: [BulkUploadPageV2Component, DragAndDropFilesUploadComponent, DragAndDropFilesListComponent],
+  declarations: [
+    BulkUploadPageV2Component,
+    DragAndDropFilesUploadComponent,
+    DragAndDropFilesListComponent,
+    BulkUploadSidebarComponent,
+  ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
 export class BulkUploadV2Module {}
