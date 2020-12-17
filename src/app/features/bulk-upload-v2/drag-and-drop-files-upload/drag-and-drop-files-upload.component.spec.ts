@@ -1,20 +1,81 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { BrowserModule, By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { render } from '@testing-library/angular';
+import { BulkUploadV2Module } from '../bulk-upload.module';
 
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload.component';
 
 describe('DragAndDropFilesUploadComponent', () => {
-  let component: DragAndDropFilesUploadComponent;
-  let fixture: ComponentFixture<DragAndDropFilesUploadComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  const getDragAndDropFilesUploadComponent = async () => {
+    return await render(DragAndDropFilesUploadComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadV2Module],
+      providers: [
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
+      ],
       declarations: [DragAndDropFilesUploadComponent],
-    }).compileComponents();
+    });
+  };
+
+  const setup = async () => {
+    const { fixture } = await getDragAndDropFilesUploadComponent();
+    const component = fixture.componentInstance;
+    const fileInput = fixture.debugElement.query(By.css('#drag-and-drop input'));
+
+    const triggerFileInput = () => {
+      fileInput.triggerEventHandler('change', {
+        target: {
+          files: {
+            item: () => {
+              return new File(['some file content'], 'worker.csv');
+            },
+            length: 1,
+          },
+        },
+        preventDefault: () => {
+          // dummy function
+        },
+        stopPropagation: () => {
+          // dummy function
+        },
+      });
+    };
+
+    const http = TestBed.inject(HttpTestingController);
+
+    return { fixture, component, triggerFileInput, http };
+  };
+
+  describe('ngx dropzone', () => {
+    it('should dispatch event to handler on component', async () => {
+      const { component, triggerFileInput } = await setup();
+
+      spyOn(component, 'onSelect');
+
+      triggerFileInput();
+
+      expect(component.onSelect).toHaveBeenCalled();
+    });
   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DragAndDropFilesUploadComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  describe('file upload', () => {
+    afterEach(() => {
+      TestBed.inject(HttpTestingController).verify();
+    });
+
+    it('should post the files to be uploaded', async () => {
+      const { triggerFileInput, http } = await setup();
+
+      triggerFileInput();
+
+      const establishmentId = TestBed.inject(EstablishmentService).establishmentId;
+      http.expectOne(`/api/establishment/${establishmentId}/bulkupload/uploadFiles`);
+      http.expectOne(`/api/establishment//bulkupload/uploadFiles`);
+    });
   });
 });

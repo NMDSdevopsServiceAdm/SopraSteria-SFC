@@ -39,7 +39,6 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
     this.setupUploadValidationErrors();
     this.setupSubscription();
     this.bulkUploadService.setReturnTo(null);
-    console.log('V2');
   }
 
   public setupFormErrorsMap(): void {
@@ -77,7 +76,6 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
   }
 
   public filesUploaded(value: boolean): void {
-    console.log(value);
     this.showFilesList = value;
   }
 

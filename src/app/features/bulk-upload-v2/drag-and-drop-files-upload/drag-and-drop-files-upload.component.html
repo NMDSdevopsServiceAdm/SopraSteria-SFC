@@ -5,6 +5,7 @@
       <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('fileUpload') }}
     </span>
     <ngx-dropzone
+      id="drag-and-drop"
       (change)="onSelect($event)"
       [maxFileSize]="20000000"
       accept=".csv"

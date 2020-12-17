@@ -1,15 +1,6 @@
 import { HttpEventType } from '@angular/common/http';
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  OnInit,
-  Output,
-  Renderer2,
-  ViewChild,
-} from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
@@ -19,11 +10,9 @@ import {
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { filter } from 'lodash';
 import { combineLatest, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { NgxDropzoneComponent } from 'ngx-dropzone';
 
 @Component({
   selector: 'app-drag-and-drop-files-upload',
@@ -164,6 +153,8 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
       this.bytesUploaded.push(0);
 
       const filteredItem = filter(response, ['filename', file.name])[0];
+      console.log('jm');
+      console.log(filteredItem);
       request.push({
         file,
         signedUrl: filteredItem.signedUrl,

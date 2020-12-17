@@ -32,19 +32,19 @@
           [class.govuk-error-table__cell]="file.errors"
           [class.govuk-!-padding-left-6]="file.errors"
         >
-          <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-2">
+          <p class="govuk-!-margin-bottom-0">
             <a href="/bulk-upload/download/{{ encodeUrl(file.filename) }}" (click)="downloadFile($event, file.key)">
               {{ file.filename }}
             </a>
           </p>
-          <p *ngIf="file.warnings" class="govuk-!-margin-bottom-1 govuk-!-margin-top-2">
+          <p *ngIf="file.warnings" class="govuk-!-margin-bottom-0">
             <strong class="govuk__flex">
               <img class="govuk-!-margin-right-2" src="/assets/images/flag-orange.svg" alt="" />
               {{ file.warnings }}
               {{ file.warnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }}
             </strong>
           </p>
-          <p *ngIf="displayDownloadReportLink(file)" class="govuk-!-margin-bottom-0 govuk-!-margin-top-2">
+          <p *ngIf="displayDownloadReportLink(file)" class="govuk-!-margin-bottom-0">
             <app-report-download-link [fileType]="file.fileType"></app-report-download-link>
           </p>
         </td>
