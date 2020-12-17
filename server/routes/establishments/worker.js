@@ -143,7 +143,6 @@ router.route('/').get(async (req, res) => {
   }
 });
 
-// Update all worker ids in one transaction
 router.route('/localIdentifier').put(async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
