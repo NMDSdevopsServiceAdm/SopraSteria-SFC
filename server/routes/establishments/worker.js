@@ -234,7 +234,7 @@ const viewWorker = async (req, res) => {
 router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
 
 // creates new worker
-router.route('/').post(async (req, res) => {
+const createWorker = async (req, res) => {
   const establishmentId = req.establishmentId;
   const newWorker = new Workers.Worker(establishmentId);
 
@@ -274,7 +274,9 @@ router.route('/').post(async (req, res) => {
     console.error('Worker POST: unexpected exception: ', err);
     return res.status(503).send();
   }
-});
+};
+
+router.route('/').post(hasPermission('canAddWorker'), createWorker);
 
 const editWorker = async (req, res) => {
   const workerId = req.params.workerId;
@@ -347,10 +349,9 @@ const editWorker = async (req, res) => {
     return res.send(err);
   }
 };
+
 // updates given worker id
-router.route('/:workerId').put(async (req, res) => {
-  await editWorker(req, res);
-});
+router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);
 
 // deletes given worker id
 router.route('/:workerId').delete(async (req, res) => {
