@@ -11,6 +11,7 @@ import { BulkUploadModule } from '../bulk-upload/bulk-upload.module';
 
 import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.component';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
+import { BulkUploadSidebarComponent } from '@features/bulk-upload-v2/bulk-upload-sidebar/bulk-upload-sidebar.component';
 
 @NgModule({
   imports: [
@@ -21,7 +22,7 @@ import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/dr
     BulkUploadModule,
     OverlayModule,
   ],
-  declarations: [BulkUploadPageV2Component, DragAndDropFilesUploadComponent],
+  declarations: [BulkUploadSidebarComponent, BulkUploadPageV2Component, DragAndDropFilesUploadComponent],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
 export class BulkUploadV2Module {}
