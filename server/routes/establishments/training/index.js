@@ -6,7 +6,7 @@ const router = express.Router({ mergeParams: true });
 const Training = require('../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../models/classes/mandatoryTraining').MandatoryTraining;
 
-const { hasPermission } = require('../../utils/security/hasPermission');
+const { hasPermission } = require('../../../utils/security/hasPermission');
 
 // NOTE - the Worker route uses middleware to validate the given worker id against the known establishment
 //        prior to all training endpoints, thus ensuring we this necessary rigidity on Establishment/Worker relationship

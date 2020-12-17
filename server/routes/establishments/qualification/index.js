@@ -7,7 +7,7 @@ const Qualification = require('../../../models/classes/qualification').Qualifica
 const QualificationDuplicateException = require('../../../models/classes/qualification')
   .QualificationDuplicateException;
 
-const { hasPermission } = require('../../utils/security/hasPermission');
+const { hasPermission } = require('../../../utils/security/hasPermission');
 
 // NOTE - the Worker route uses middleware to validate the given worker id against the known establishment
 //        prior to all qualification endpoints, thus ensuring we this necessary rigidity on Establishment/Worker relationship
