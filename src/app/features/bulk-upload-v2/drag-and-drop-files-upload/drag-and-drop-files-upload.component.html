@@ -4,7 +4,14 @@
     <span *ngIf="form.invalid && submitted" id="fileUpload-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('fileUpload') }}
     </span>
-    <ngx-dropzone (change)="onSelect($event)" [maxFileSize]="20000000" class="govuk-drag-and-drop" #drop>
+    <ngx-dropzone
+      (change)="onSelect($event)"
+      [maxFileSize]="20000000"
+      accept=".csv"
+      disableClick="true"
+      class="govuk-drag-and-drop"
+      #drop
+    >
       <span class="govuk-body">Drag and drop your CSV files here or </span>
       <button
         class="govuk-button govuk-button--secondary govuk-!-margin-bottom-4 govuk-!-margin-left-2"
@@ -17,10 +24,3 @@
 
   <app-selected-files-list *ngIf="!filesUploaded"></app-selected-files-list>
 </form>
-
-<div class="govuk-grid-row" *ngIf="filesUploading">
-  <div class="govuk-grid-column-full">
-    <div role="status" class="govuk-util__normal govuk-!-font-size-19 govuk-util__inline-block">Files uploading</div>
-    <app-progress [value]="progress" max="100" class="govuk-!-margin-right-8 govuk-!-margin-left-8"></app-progress>
-  </div>
-</div>

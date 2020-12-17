@@ -32,7 +32,6 @@ import { NgxDropzoneComponent } from 'ngx-dropzone';
 })
 export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  @ViewChild('drop') drop: NgxDropzoneComponent;
   public form: FormGroup;
   public filesUploading = false;
   @Output() public filesUploaded: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -44,14 +43,12 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   private bytesUploaded: number[] = [];
   private subscriptions: Subscription = new Subscription();
   private uploadSubscription$: Subscription;
-  public files: File[] = [];
 
   constructor(
     private bulkUploadService: BulkUploadService,
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
-    private renderer: Renderer2,
   ) {}
 
   ngOnInit() {
@@ -71,7 +68,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      fileUpload: [null, Validators.required],
+      fileUpload: null,
     });
   }
 
@@ -105,31 +102,14 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   }
 
   onSelect(event) {
-    console.log(event);
     this.selectedFiles = event.addedFiles;
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
     this.getPresignedUrls();
   }
 
   onRemove(event) {
-    console.log(event);
-    this.files.splice(this.files.indexOf(event), 1);
+    this.selectedFiles.splice(this.selectedFiles.indexOf(event), 1);
   }
-
-  /*public onFilesSelection($event: Event): void {
-    this.stopPolling = true;
-    this.bulkUploadService.resetBulkUpload();
-    const target = $event.target || $event.srcElement;
-    this.selectedFiles = Array.from(target[`files`]);
-    this.fileUpload.setValidators(CustomValidators.checkBulkUploadFiles);
-    this.fileUpload.updateValueAndValidity();
-    this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
-    this.filesUploaded = false;
-
-    if (this.submitted) {
-      this.bulkUploadService.exposeForm$.next(this.form);
-    }
-  }*/
 
   private getPresignedUrlsRequest(): PresignedUrlsRequest {
     const request: PresignedUrlsRequest = { files: [] };
@@ -221,18 +201,6 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
         },
       );
   }
-
-  /*public removeFiles(): void {
-    this.fileUpload.setValidators(Validators.required);
-    this.form.reset();
-    this.submitted = false;
-    this.selectedFiles = [];
-    this.bulkUploadService.selectedFiles$.next(null);
-
-    if (this.submitted) {
-      this.bulkUploadService.exposeForm$.next(this.form);
-    }
-  }*/
 
   public cancelUpload(): void {
     this.filesUploading = false;
