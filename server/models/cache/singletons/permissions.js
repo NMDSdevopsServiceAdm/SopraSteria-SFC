@@ -301,21 +301,6 @@ class PermissionCache {
   static async initialize() {}
 
   static async myPermissions(req) {
-    const thisEstablishment = new Establishment.Establishment(req.username);
-    try {
-      await thisEstablishment.restore(req.establishmentId);
-    } catch (error) {
-      throw new Error(error);
-    }
-    const becomeAParentRequest = await models.Approvals.findOne({
-      where: {
-        EstablishmentID: req.establishmentId,
-        Status: 'Pending',
-        ApprovalType: 'BecomeAParent',
-      },
-      order: [['createdAt', 'DESC']],
-    });
-
     const estabType = this.getEstablishmentType(req.establishment);
     let permissions = [];
     const isLoggedInAsParent = req.isParent;
@@ -392,6 +377,14 @@ class PermissionCache {
         });
       });
     }
+
+    const thisEstablishment = new Establishment.Establishment(req.username);
+    try {
+      await thisEstablishment.restore(req.establishmentId);
+    } catch (error) {
+      throw new Error(error);
+    }
+    const becomeAParentRequest = await models.Approvals.becomeAParentRequests(req.establishmentId);
 
     const permissionLevels = theirPermissions.map((permission) => {
       if (permission.code === 'canLinkToParent') {
