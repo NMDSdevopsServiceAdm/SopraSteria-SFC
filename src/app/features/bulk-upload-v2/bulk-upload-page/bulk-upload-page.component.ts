@@ -23,6 +23,7 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
   public uploadValidationErrors: Array<ErrorDefinition>;
   public serverError: string;
   public showErrorSummary: boolean;
+  public showFilesList: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -72,6 +73,10 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
         }
       }),
     );
+  }
+
+  public filesUploaded(value: boolean): void {
+    this.showFilesList = value;
   }
 
   /**

@@ -4,39 +4,24 @@
     <span *ngIf="form.invalid && submitted" id="fileUpload-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('fileUpload') }}
     </span>
-    <input
-      class="govuk-file-upload"
-      [class.govuk-file-upload--error]="form.invalid && submitted"
-      id="fileUpload"
-      name="fileUpload"
-      type="file"
-      [formControlName]="'fileUpload'"
-      (change)="onFilesSelection($event)"
-      multiple
-    />
+    <ngx-dropzone
+      id="drag-and-drop"
+      (change)="onSelect($event)"
+      [maxFileSize]="20000000"
+      accept=".csv"
+      disableClick="true"
+      class="govuk-drag-and-drop"
+      #drop
+    >
+      <span class="govuk-body">Drag and drop your CSV files here or </span>
+      <button
+        class="govuk-button govuk-button--secondary govuk-!-margin-bottom-4 govuk-!-margin-left-2"
+        (click)="drop.showFileSelector()"
+      >
+        Select files
+      </button>
+    </ngx-dropzone>
   </div>
 
   <app-selected-files-list *ngIf="!filesUploaded"></app-selected-files-list>
-
-  <div class="govuk-!-margin-top-6" *ngIf="!filesUploading && !filesUploaded">
-    <button type="submit" class="govuk-button">Upload files</button>
-
-    <button
-      *ngIf="selectedFiles?.length"
-      type="button"
-      class="govuk-button govuk-button--link govuk-!-margin-left-8"
-      (click)="removeFiles()"
-    >
-      Remove files
-    </button>
-  </div>
 </form>
-
-<div class="govuk-grid-row" *ngIf="filesUploading">
-  <div class="govuk-grid-column-full">
-    <div role="status" class="govuk-util__normal govuk-!-font-size-19 govuk-util__inline-block">Files uploading</div>
-    <app-progress [value]="progress" max="100" class="govuk-!-margin-right-8 govuk-!-margin-left-8"></app-progress>
-  </div>
-</div>
-
-<app-uploaded-files-list *ngIf="filesUploaded"></app-uploaded-files-list>

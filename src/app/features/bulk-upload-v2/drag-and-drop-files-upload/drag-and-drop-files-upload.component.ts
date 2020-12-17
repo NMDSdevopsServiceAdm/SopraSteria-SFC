@@ -1,6 +1,6 @@
 import { HttpEventType } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
@@ -10,7 +10,6 @@ import {
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { filter } from 'lodash';
 import { combineLatest, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -24,7 +23,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public filesUploading = false;
-  public filesUploaded = false;
+  @Output() public filesUploaded: EventEmitter<boolean> = new EventEmitter<boolean>();
   public submitted = false;
   public selectedFiles: File[];
   public bulkUploadStatus: string;
@@ -39,7 +38,6 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
-    private renderer: Renderer2,
   ) {}
 
   ngOnInit() {
@@ -59,7 +57,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      fileUpload: [null, Validators.required],
+      fileUpload: null,
     });
   }
 
@@ -69,7 +67,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
         .getUploadedFiles(this.establishmentService.primaryWorkplace.uid)
         .subscribe((response: ValidatedFile[]) => {
           if (response.length) {
-            this.filesUploaded = true;
+            this.filesUploaded.emit(true);
             this.bulkUploadService.uploadedFiles$.next(response);
           }
           this.checkForPreValidationError();
@@ -92,19 +90,14 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
     return this.form.get('fileUpload');
   }
 
-  public onFilesSelection($event: Event): void {
-    this.stopPolling = true;
-    this.bulkUploadService.resetBulkUpload();
-    const target = $event.target || $event.srcElement;
-    this.selectedFiles = Array.from(target[`files`]);
-    this.fileUpload.setValidators(CustomValidators.checkBulkUploadFiles);
-    this.fileUpload.updateValueAndValidity();
+  onSelect(event) {
+    this.selectedFiles = event.addedFiles;
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
-    this.filesUploaded = false;
+    this.getPresignedUrls();
+  }
 
-    if (this.submitted) {
-      this.bulkUploadService.exposeForm$.next(this.form);
-    }
+  onRemove(event) {
+    this.selectedFiles.splice(this.selectedFiles.indexOf(event), 1);
   }
 
   private getPresignedUrlsRequest(): PresignedUrlsRequest {
@@ -160,6 +153,8 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
       this.bytesUploaded.push(0);
 
       const filteredItem = filter(response, ['filename', file.name])[0];
+      console.log('jm');
+      console.log(filteredItem);
       request.push({
         file,
         signedUrl: filteredItem.signedUrl,
@@ -191,29 +186,11 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
         null,
         () => this.cancelUpload(),
         () => {
-          this.resetFileInputElement();
           this.bulkUploadService.preValidateFiles$.next(true);
           this.filesUploading = false;
-          this.filesUploaded = true;
+          this.filesUploaded.emit(true);
         },
       );
-  }
-
-  private resetFileInputElement(): void {
-    this.renderer.selectRootElement('#fileUpload').value = '';
-  }
-
-  public removeFiles(): void {
-    this.resetFileInputElement();
-    this.fileUpload.setValidators(Validators.required);
-    this.form.reset();
-    this.submitted = false;
-    this.selectedFiles = [];
-    this.bulkUploadService.selectedFiles$.next(null);
-
-    if (this.submitted) {
-      this.bulkUploadService.exposeForm$.next(this.form);
-    }
   }
 
   public cancelUpload(): void {
