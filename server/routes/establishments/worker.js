@@ -19,6 +19,8 @@ const TrainingRoutes = require('./training');
 const QualificationRoutes = require('./qualification');
 const MandatoryTrainingRoutes = require('./mandatoryTraining');
 
+const { hasPermission } = require('../../utils/security/hasPermission');
+
 // this middleware validates a worker against known establishment ID
 const validateWorker = async (req, res, next) => {
   const workerId = req.params.workerId;
@@ -187,9 +189,7 @@ router.route('/localIdentifier').put(async (req, res) => {
   }
 });
 
-// gets requested worker id
-// optional parameter - "history" must equal 1
-router.route('/:workerId').get(async (req, res) => {
+const viewWorker = async (req, res) => {
   const workerId = req.params.workerId;
   const establishmentId = req.establishmentId;
   const showHistory =
@@ -227,7 +227,11 @@ router.route('/:workerId').get(async (req, res) => {
     console.error('worker::GET/:workerId - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
-});
+};
+
+// gets requested worker id
+// optional parameter - "history" must equal 1
+router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
 
 // creates new worker
 router.route('/').post(async (req, res) => {
