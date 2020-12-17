@@ -3,10 +3,11 @@ const { PermissionCache } = require('../../../../../models/cache/singletons/perm
 const buildUser = require('../../../../factories/user');
 const sinon = require('sinon');
 const { Establishment } = require('../../../../../models/classes/establishment');
-
+const models = require('../../../../../models/');
 describe.only('Permissions Cache', () => {
   beforeEach(() => {
     sinon.stub(Establishment.prototype, 'restore');
+    sinon.stub(models.Approvals, 'findOne');
     sinon.stub(Establishment.prototype, 'mainService').value({
       id: 8,
     });
