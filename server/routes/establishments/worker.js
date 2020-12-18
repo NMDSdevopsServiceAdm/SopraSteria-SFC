@@ -329,7 +329,8 @@ const updateLocalIdentifiers = async (req, res) => {
 
 router.route('/').get(hasPermission('canViewWorker'), viewAllWorkers);
 router.route('/').post(hasPermission('canAddWorker'), createWorker);
-router.route('/localIdentifier').put(updateLocalIdentifiers);
+
+router.route('/localIdentifier').put(hasPermission('canBulkUpload'), updateLocalIdentifiers);
 
 router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
 router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);
