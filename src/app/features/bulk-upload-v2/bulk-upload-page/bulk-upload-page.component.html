@@ -1,0 +1,36 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Bulk upload</h1>
+    <details class="govuk-details" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text"> Who should do bulk uploads? </span>
+      </summary>
+      <div class="govuk-details__text">
+        <p>
+          Bulk upload lets you add large amounts of workforce data in the Adult Social Care Workforce Data Set, without
+          the need to add that data manually.
+        </p>
+        <p>
+          Skills for Care recommend bulk uploads for local authorities and large private or voluntary employers who need
+          to add data for subsidiary workplaces.
+        </p>
+        <p>Individual workplaces with fewer than 50 staff members often find it easier to add their data manually.</p>
+      </div>
+    </details>
+    <p><b>Download your current data</b> and update the records in those CSV files before you do the bulk upload.</p>
+    <p>You can <b>download codes and guidance</b> to use as references for how to update the records in your files.</p>
+
+    <div class="govuk-util__block">
+      <h2 class="govuk-heading-m">Select your files</h2>
+
+      <app-drag-and-drop-files-upload (filesUploaded)="filesUploaded($event)"></app-drag-and-drop-files-upload>
+    </div>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <app-bulk-upload-sidebar class="govuk-util__block"></app-bulk-upload-sidebar>
+  </div>
+
+  <div class="govuk-grid-column-full">
+    <app-drag-and-drop-files-list *ngIf="showFilesList"></app-drag-and-drop-files-list>
+  </div>
+</div>

@@ -18,8 +18,8 @@ export class BenchmarkTileComponent {
     return this.content?.title;
   }
 
-  get description() {
-    return this.content?.description;
+  get tileDescription() {
+    return this.content?.tileDescription;
   }
 
   get workplaceHasValue(): boolean {

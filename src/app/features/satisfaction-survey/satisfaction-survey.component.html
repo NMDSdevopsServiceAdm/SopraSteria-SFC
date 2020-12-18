@@ -1,0 +1,211 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<h1 class="govuk-heading-l">Satisfaction survey</h1>
+
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters-from-desktop">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset govuk-!-margin-bottom-5">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s govuk-!-margin-bottom-5">
+            Did you do everything you wanted to do on ASC-WDS today?
+          </legend>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="didYouDoEverything-yes"
+                name="didYouDoEverything"
+                formControlName="didYouDoEverything"
+                type="radio"
+                value="Yes"
+                (change)="didYouDoEverythingChanged()"
+              />
+              <label for="didYouDoEverything-yes" class="govuk-label govuk-radios__label">
+                Yes, I did everything I wanted to do
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="didYouDoEverything-some"
+                name="didYouDoEverything"
+                formControlName="didYouDoEverything"
+                type="radio"
+                value="Some"
+                (change)="didYouDoEverythingChanged()"
+              />
+              <label for="didYouDoEverything-some" class="govuk-label govuk-radios__label">
+                I did some of what I wanted to do, but not everything
+              </label>
+            </div>
+            <div
+              class="govuk-radios__conditional govuk-radios__conditional--hidden"
+              [class.govuk-radios__conditional--hidden]="form.get('didYouDoEverything').value !== 'Some'"
+              id="conditional-didYouDoEverything-some"
+            >
+              <div
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="submitted && form.get('whatStoppedYouDoingEverything').invalid"
+              >
+                <div class="govuk-character-count">
+                  <div class="govuk-form-group">
+                    <label class="govuk-label govuk-!-font-weight-bold" for="whatStoppedYouDoingEverything">
+                      What stopped you doing everything? (optional)
+                    </label>
+                    <span
+                      *ngIf="submitted && form.get('whatStoppedYouDoingEverything').invalid"
+                      id="whatStoppedYouDoingEverything-error"
+                      class="govuk-error-message"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ getFirstErrorMessage('whatStoppedYouDoingEverything') }}
+                    </span>
+                    <textarea
+                      class="govuk-textarea"
+                      [class.govuk-textarea--error]="submitted && form.get('whatStoppedYouDoingEverything').invalid"
+                      id="whatStoppedYouDoingEverything"
+                      name="whatStoppedYouDoingEverything"
+                      formControlName="whatStoppedYouDoingEverything"
+                      rows="5"
+                    ></textarea>
+                  </div>
+                  <app-character-count
+                    [control]="form.get('whatStoppedYouDoingEverything')"
+                    [max]="didYouDoEverythingMaxLength"
+                  ></app-character-count>
+                  <p class="govuk-!-margin-top-5">
+                    Please do not include any personal information. For example, names or National Insurance numbers.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="didYouDoEverything-no"
+                name="didYouDoEverything"
+                formControlName="didYouDoEverything"
+                type="radio"
+                value="No"
+                (change)="didYouDoEverythingChanged()"
+              />
+              <label for="didYouDoEverything-no" class="govuk-label govuk-radios__label">
+                No, I did not do anything that I wanted to do
+              </label>
+            </div>
+            <div
+              class="govuk-radios__conditional govuk-radios__conditional--hidden"
+              [class.govuk-radios__conditional--hidden]="form.get('didYouDoEverything').value !== 'No'"
+              id="conditional-didYouDoEverything-no"
+            >
+              <div
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="submitted && form.get('whatStoppedYouDoingAnything').invalid"
+              >
+                <div class="govuk-character-count">
+                  <div class="govuk-form-group">
+                    <label class="govuk-label govuk-!-font-weight-bold" for="whatStoppedYouDoingAnything">
+                      What stopped you doing anything? (optional)
+                    </label>
+                    <span
+                      *ngIf="submitted && form.get('whatStoppedYouDoingAnything').invalid"
+                      id="whatStoppedYouDoingAnything-error"
+                      class="govuk-error-message"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ getFirstErrorMessage('whatStoppedYouDoingAnything') }}
+                    </span>
+                    <textarea
+                      class="govuk-textarea"
+                      [class.govuk-textarea--error]="submitted && form.get('whatStoppedYouDoingAnything').invalid"
+                      id="whatStoppedYouDoingAnything"
+                      name="whatStoppedYouDoingAnything"
+                      formControlName="whatStoppedYouDoingAnything"
+                      rows="5"
+                    ></textarea>
+                  </div>
+                  <app-character-count
+                    [control]="form.get('whatStoppedYouDoingAnything')"
+                    [max]="didYouDoEverythingMaxLength"
+                  ></app-character-count>
+                  <p class="govuk-!-margin-top-5">
+                    Please do not include any personal information. For example, names or National Insurance numbers.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s govuk-!-margin-bottom-5">
+            Overall, how did you feel about your experience of ASC-WDS today?
+          </legend>
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="howDidYouFeel-verySatisfied"
+              name="howDidYouFeel"
+              formControlName="howDidYouFeel"
+              type="radio"
+              value="Very satisfied"
+            />
+            <label for="howDidYouFeel-verySatisfied" class="govuk-label govuk-radios__label"> Very satisfied </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="howDidYouFeel-satisfied"
+              name="howDidYouFeel"
+              formControlName="howDidYouFeel"
+              type="radio"
+              value="Satisfied"
+            />
+            <label for="howDidYouFeel-satisfied" class="govuk-label govuk-radios__label"> Satisfied </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="howDidYouFeel-neither"
+              name="howDidYouFeel"
+              formControlName="howDidYouFeel"
+              type="radio"
+              value="Neither"
+            />
+            <label for="howDidYouFeel-neither" class="govuk-label govuk-radios__label">
+              Neither satisfied or dissatisfied
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="howDidYouFeel-dissatisfied"
+              name="howDidYouFeel"
+              formControlName="howDidYouFeel"
+              type="radio"
+              value="Dissatisfied"
+            />
+            <label for="howDidYouFeel-dissatisfied" class="govuk-label govuk-radios__label"> Dissatisfied </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="howDidYouFeel-veryDissatisfied"
+              name="howDidYouFeel"
+              formControlName="howDidYouFeel"
+              type="radio"
+              value="Very dissatisfied"
+            />
+            <label for="howDidYouFeel-veryDissatisfied" class="govuk-label govuk-radios__label">
+              Very dissatisfied
+            </label>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="govuk-button">Send feedback</button>
+</form>

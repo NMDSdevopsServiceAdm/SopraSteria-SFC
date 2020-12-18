@@ -3,7 +3,6 @@ import { BenchmarksResponse, MetricsContent, Tile } from '@core/model/benchmarks
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService } from '@core/services/pdf.service';
-import { CloneObjectUtil } from '@core/utils/cloneObject-util';
 import { Subscription } from 'rxjs';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
@@ -67,7 +66,12 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public async downloadAsPDF($event: Event) {
     $event.preventDefault();
     try {
-      return await this.pdfService.BuildBenchmarksPdf(this.elRef, this.aboutData.aboutData, this.workplace);
+      return await this.pdfService.BuildBenchmarksPdf(
+        this.elRef,
+        this.aboutData.aboutData,
+        this.workplace,
+        'Benchmarks.pdf',
+      );
     } catch (error) {
       console.error(error);
     }

@@ -5,7 +5,6 @@ import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
-import { MetricsContent } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
@@ -17,8 +16,6 @@ import { UserAccountSavedComponent } from '@features/workplace/user-account-save
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
-import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
-import { BenchmarksMetricComponent } from '@shared/components/benchmarks-tab/metric/metric.component';
 
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
@@ -361,53 +358,12 @@ const routes: Routes = [
       },
       {
         path: 'benchmarks',
-        children: [
-          {
-            path: 'about-the-data',
-            component: BenchmarksAboutTheDataComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              title: 'About the data',
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-          {
-            path: 'pay',
-            component: BenchmarksMetricComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              ...MetricsContent.Pay,
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-          {
-            path: 'turnover',
-            component: BenchmarksMetricComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              ...MetricsContent.Turnover,
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-          {
-            path: 'qualifications',
-            component: BenchmarksMetricComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              ...MetricsContent.Qualifications,
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-          {
-            path: 'sickness',
-            component: BenchmarksMetricComponent,
-            canActivate: [CheckPermissionsGuard],
-            data: {
-              ...MetricsContent.Sickness,
-              permissions: ['canViewBenchmarks'],
-            },
-          },
-        ],
+        loadChildren: () =>
+          import('@shared/components/benchmarks-tab/benchmarks.module').then((m) => m.BenchmarksModule),
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canViewBenchmarks'],
+        },
       },
     ],
   },

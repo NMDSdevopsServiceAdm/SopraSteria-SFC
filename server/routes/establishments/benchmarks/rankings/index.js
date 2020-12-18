@@ -100,6 +100,24 @@ router.route('/turnover').get(async (req, res) => {
   await getResponse(req, res, getTurnoverRanking);
 });
 
+router.route('/').get(async (req, res) => {
+  const establishmentId = req.establishmentId;
+
+  const pay = await getPayRanking(establishmentId);
+  const turnover = await getTurnoverRanking(establishmentId);
+  const sickness = await getSicknessRanking(establishmentId);
+  const qualifications = await getQualificationsRanking(establishmentId);
+
+  const data = {
+    pay,
+    turnover,
+    sickness,
+    qualifications,
+  };
+
+  res.status(200).json(data);
+});
+
 const getResponse = async function (req, res, getRankingCallback) {
   const establishmentId = req.establishmentId;
 

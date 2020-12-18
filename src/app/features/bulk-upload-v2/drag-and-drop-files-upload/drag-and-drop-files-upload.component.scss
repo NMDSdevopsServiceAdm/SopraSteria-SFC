@@ -1,0 +1,20 @@
+.govuk-drag-and-drop {
+  border: none !important;
+  border-radius: 0px;
+  outline: 3px dashed #0b0c0c;
+  padding: 0px 40px;
+  transition: outline-offset 0.1s ease-in-out, background-color 0.1s linear;
+}
+
+.ngx-dz-hovered {
+  background-color: #b1b4b6;
+  outline-color: #6f777b;
+}
+
+.govuk-drag-and-drop span {
+  margin-bottom: 0px !important;
+}
+
+.govuk-drag-and-drop button {
+  margin-bottom: 0px !important;
+}

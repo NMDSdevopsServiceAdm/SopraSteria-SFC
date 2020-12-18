@@ -77,7 +77,7 @@ module.exports = function (sequelize, DataTypes) {
       where: { id: establishmentId },
     });
     if (!postcode) {
-      return {};
+      return false;
     }
     let cssr = await sequelize.models.pcodedata.findOne({
       attributes: ['uprn', 'postcode'],
@@ -97,7 +97,7 @@ module.exports = function (sequelize, DataTypes) {
     } else {
       cssr = await CSSR.getIdFromDistrict(postcode.postcode);
       if (!cssr) {
-        return {};
+        return false;
       }
     }
     return cssr;

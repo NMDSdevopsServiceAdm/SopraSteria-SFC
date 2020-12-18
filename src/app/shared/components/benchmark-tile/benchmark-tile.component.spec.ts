@@ -22,6 +22,7 @@ describe('BenchmarkTileComponent', () => {
     component.content = {
       title: 'Test title',
       description: 'Test description',
+      tileDescription: 'Test description',
       noData: {},
       type: Metric.pay,
       journey: JourneyType.BENCHMARK_METRIC_PAY,

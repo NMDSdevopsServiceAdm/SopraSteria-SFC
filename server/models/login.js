@@ -117,5 +117,20 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Login.findByUsername = async function(username) {
+    return await this.findOne({
+      attributes: ['registrationId', 'username'],
+      where: {
+        username
+      },
+      include: [
+        {
+          model: sequelize.models.user,
+          attributes: ['establishmentId']
+        }
+      ]
+    })
+  }
+
   return Login;
 };

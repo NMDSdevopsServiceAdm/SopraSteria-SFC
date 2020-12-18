@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BenchmarkValue, Metric, Tile } from '@core/model/benchmarks.model';
 import { FormatUtil } from '@core/utils/format-util';
-import { merge } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,7 @@ export class BarchartOptionsBuilder {
   private defaultOptions: Highcharts.Options = {
     chart: {
       type: 'column',
-      margin: [30, 0, 100, 0],
+      margin: [40, 0, 100, 0],
       scrollablePlotArea: {
         minWidth: 960,
       },
@@ -102,7 +102,8 @@ export class BarchartOptionsBuilder {
       ],
     };
 
-    return merge(this.defaultOptions, source);
+    const options = cloneDeep(this.defaultOptions);
+    return merge(options, source);
   }
 
   public buildEmptyChartOptions(altDescription: string): Highcharts.Options {
