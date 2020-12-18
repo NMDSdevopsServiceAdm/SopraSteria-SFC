@@ -18,14 +18,15 @@ import { filter, findIndex } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { UploadWarningDialogComponent } from '../upload-warning-dialog/upload-warning-dialog.component';
+import { UploadWarningDialogComponent } from '@features/bulk-upload/upload-warning-dialog/upload-warning-dialog.component';
 
 @Component({
-  selector: 'app-uploaded-files-list',
-  templateUrl: './uploaded-files-list.component.html',
+  selector: 'app-drag-and-drop-files-list',
+  templateUrl: './drag-and-drop-files-list.component.html',
+  styleUrls: ['./drag-and-drop-files-list.component.scss'],
   providers: [I18nPluralPipe],
 })
-export class UploadedFilesListComponent implements OnInit, OnDestroy {
+export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public bulkUploadFileTypeEnum = BulkUploadFileType;
   public preValidationError: boolean;

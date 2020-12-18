@@ -1,0 +1,27 @@
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="form.invalid && submitted">
+    <label class="govuk-label govuk-visually-hidden" for="fileUpload"> Drag and drop files </label>
+    <span *ngIf="form.invalid && submitted" id="fileUpload-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('fileUpload') }}
+    </span>
+    <ngx-dropzone
+      id="drag-and-drop"
+      (change)="onSelect($event)"
+      [maxFileSize]="20000000"
+      accept=".csv"
+      disableClick="true"
+      class="govuk-drag-and-drop"
+      #drop
+    >
+      <span class="govuk-body">Drag and drop your CSV files here or </span>
+      <button
+        class="govuk-button govuk-button--secondary govuk-!-margin-bottom-4 govuk-!-margin-left-2"
+        (click)="drop.showFileSelector()"
+      >
+        Select files
+      </button>
+    </ngx-dropzone>
+  </div>
+
+  <app-selected-files-list *ngIf="!filesUploaded"></app-selected-files-list>
+</form>

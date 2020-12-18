@@ -10,7 +10,7 @@ export class BarchartOptionsBuilder {
   private defaultOptions: Highcharts.Options = {
     chart: {
       type: 'column',
-      margin: [30, 0, 100, 0],
+      margin: [40, 0, 100, 0],
       scrollablePlotArea: {
         minWidth: 960,
       },

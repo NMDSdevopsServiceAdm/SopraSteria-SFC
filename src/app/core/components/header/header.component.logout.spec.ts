@@ -87,7 +87,7 @@ describe('HeaderComponent', () => {
     TestBed.inject(HttpTestingController).verify();
   });
 
-  fdescribe('logging out', () => {
+  describe('logging out', () => {
     beforeEach(async () => {
       await renderHeaderComponent(false);
       navigateToHome();
@@ -118,8 +118,9 @@ describe('HeaderComponent', () => {
 
       const router = TestBed.inject(Router);
       const establishmentId = TestBed.inject(EstablishmentService).establishmentId;
+      const userId = TestBed.inject(UserService).loggedInUser.uid;
 
-      expect(router.url).toBe(`/satisfaction-survey?wid=${establishmentId}`);
+      expect(router.url).toBe(`/satisfaction-survey?wid=${establishmentId}&uid=${userId}`);
     }));
   });
 
