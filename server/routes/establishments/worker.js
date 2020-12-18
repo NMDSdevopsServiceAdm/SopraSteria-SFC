@@ -21,59 +21,6 @@ const MandatoryTrainingRoutes = require('./mandatoryTraining');
 
 const { hasPermission } = require('../../utils/security/hasPermission');
 
-// this middleware validates a worker against known establishment ID
-const validateWorker = async (req, res, next) => {
-  const workerId = req.params.workerId;
-  const establishmentId = req.establishmentId;
-
-  if (req.role !== 'Admin') {
-    // if the request for this worker is by a user associated with parent, and the requested establishment is
-    //  not their primary establishment, then they must have been granted "staff" level permission to access the worker
-    if (req.establishmentId !== req.establishment.id) {
-      // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
-      if (!req.parentIsOwner && (req.dataPermissions === null || req.dataPermissions !== 'Workplace and Staff')) {
-        console.error(`Parent not permitted to access Worker with id: ${workerId}`);
-        return res.status(403).send({
-          message: `Parent not permitted to access Worker with id: ${workerId ? workerId : 'not applicable'}`,
-        });
-      }
-
-      // more so, if the parent is not the owner, then only read access is allow
-      if (!req.parentIsOwner && req.method !== 'GET') {
-        return res.status(403).send({
-          message: `Parent not permitted to update Worker with id: ${workerId ? workerId : 'not applicable'}`,
-        });
-      }
-    }
-
-    if (req.role === 'Read') {
-      return res.status(401).send({ message: 'Not permitted' });
-    }
-  }
-
-  if (workerId && workerId !== 'localIdentifier') {
-    // validating worker id - must be a V4 UUID
-    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-    if (!uuidRegex.test(workerId.toUpperCase())) return res.status(410).send('Unexpected worker id');
-
-    const thisWorker = new Workers.Worker(establishmentId);
-
-    try {
-      if (await thisWorker.restore(workerId, false)) {
-        next();
-      } else {
-        // not found worker
-        return res.status(404).send('Not Found');
-      }
-    } catch (err) {
-      console.error('worker::validateWorker - failed', err);
-      return res.status(503).send();
-    }
-  } else {
-    next();
-  }
-};
-
 const viewWorker = async (req, res) => {
   const workerId = req.params.workerId;
   const establishmentId = req.establishmentId;
@@ -384,14 +331,13 @@ router.route('/').get(hasPermission('canViewWorker'), viewAllWorkers);
 router.route('/').post(hasPermission('canAddWorker'), createWorker);
 router.route('/localIdentifier').put(updateLocalIdentifiers);
 
-router.use('/:workerId', validateWorker);
 router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
 router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);
 router.route('/:workerId').delete(hasPermission('canDeleteWorker'), deleteWorker);
 
-router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
-router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
-router.use('/:workerId/mandatoryTraining', [validateWorker, MandatoryTrainingRoutes]);
+router.use('/:workerId/training', TrainingRoutes);
+router.use('/:workerId/qualification', QualificationRoutes);
+router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);
 
 module.exports = router;
 module.exports.editWorker = editWorker;
