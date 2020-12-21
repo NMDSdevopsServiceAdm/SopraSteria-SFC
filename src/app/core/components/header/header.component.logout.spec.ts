@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { fakeAsync, tick, TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -87,7 +87,7 @@ describe('HeaderComponent', () => {
     TestBed.inject(HttpTestingController).verify();
   });
 
-  fdescribe('logging out', () => {
+  describe('logging out', () => {
     beforeEach(async () => {
       await renderHeaderComponent(false);
       navigateToHome();
