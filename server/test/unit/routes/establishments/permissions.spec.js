@@ -7,15 +7,17 @@ const { permissions, permissionsCheck } = require('../../../../routes/establishm
 const { Establishment } = require('../../../../models/classes/establishment');
 const buildUser = require('../../../factories/user');
 const { establishmentBuilder } = require('../../../factories/models');
-const { Establishment } = require('../../../../models/classes/establishment');
+
 
 describe('permissions route', () => {
   const user = buildUser();
   user.created = {
-    toJSON: () => {},
+    toJSON: () => {
+    }
   };
   user.updated = {
-    toJSON: () => {},
+    toJSON: () => {
+    }
   };
 
   beforeEach(() => {
@@ -29,10 +31,10 @@ describe('permissions route', () => {
   afterEach(() => {
     sinon.restore();
   });
-  function createReq() {
+  function createReq(){
     const req = httpMocks.createRequest({
       method: 'GET',
-      url: `/api/establishment/${user.establishmentId}/permissions`,
+      url: `/api/establishment/${user.establishmentId}/permissions`
     });
     req.username = user.username;
     req.establishmentId = user.establishmentId;
@@ -41,7 +43,7 @@ describe('permissions route', () => {
     req.isParent = user.isParent;
     req.establishment = {
       id: user.establishmentId,
-      uid: user.establishment.uid,
+      uid: user.establishment.uid
     };
     return req;
   }
