@@ -21,10 +21,19 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
+import { ViewMyWorkplacesComponent } from '../view-my-workplaces/view-my-workplaces.component';
+
 describe('view-workplace', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
     const component = await render(ViewWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        SharedModule,
+        RouterModule,
+        RouterTestingModule.withRoutes([
+          { path: 'workplace/view-all-workplaces', component: ViewMyWorkplacesComponent },
+        ]),
+        HttpClientTestingModule,
+      ],
       declarations: [],
       providers: [
         {
