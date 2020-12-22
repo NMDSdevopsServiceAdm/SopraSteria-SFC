@@ -29,7 +29,7 @@ router.route('/').post(async (req, res) => {
       let checkAlreadyRequestedLinkToParent = await linkSubToParent.checkAlreadyRequestedLinkToParent(params);
       if (checkAlreadyRequestedLinkToParent.length) {
         return res.status(400).send({
-          message: `Link to parent is already requested for posted establishment id`,
+          message: 'Link to parent is already requested for posted establishment id',
         });
       }
       let parentEstablishmentId = await thisEstablishment.fetchParentDetails(params.parentWorkplaceUId);
@@ -59,6 +59,14 @@ router.route('/').post(async (req, res) => {
                   console.error('Invalid notification UUID');
                   return res.status(400).send();
                 }
+                let notificationParams = {
+                  notificationUid: params.notificationUid,
+                  type: 'LINKTOPARENTREQUEST',
+                  typeUid: params.linkToParentUID,
+                  recipientUserUid: getRecipientUserDetails[i].UserUID,
+                  userUid: params.userUid,
+                };
+                await notifications.insertNewNotification(notificationParams);
               }
               return res.status(201).send(lastLinkToParentRequest[0]);
             }
@@ -108,7 +116,7 @@ router.route('/cancel').post(async (req, res) => {
           let cancelLinkToParent = await linkSubToParent.updatedLinkToParent(params);
           if (!cancelLinkToParent.length) {
             return res.status(400).send({
-              message: `Unable to cancel this request.`,
+              message: 'Unable to cancel this request.',
             });
           } else {
             let saveLinkToParentRequested = await thisEstablishment.updateLinkToParentRequested(
