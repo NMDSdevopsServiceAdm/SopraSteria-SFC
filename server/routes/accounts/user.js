@@ -147,6 +147,11 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         return res.status(401).send();
       }
 
+      if (req.role === 'Read' && req.body.role !== 'Read') {
+        console.error('User tried to upgrade their own permissions');
+        return res.status(403).send();
+      }
+
       if (req.body.role && thisUser.userRole !== req.body.role) {
         if (!(req.body.role == 'Edit' || req.body.role == 'Read')) {
           return res.status(400).send('Invalid request');
