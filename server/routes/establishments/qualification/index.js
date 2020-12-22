@@ -7,6 +7,8 @@ const Qualification = require('../../../models/classes/qualification').Qualifica
 const QualificationDuplicateException = require('../../../models/classes/qualification')
   .QualificationDuplicateException;
 
+const { hasPermission } = require('../../../utils/security/hasPermission');
+
 // NOTE - the Worker route uses middleware to validate the given worker id against the known establishment
 //        prior to all qualification endpoints, thus ensuring we this necessary rigidity on Establishment/Worker relationship
 //        for qualification records.
@@ -14,7 +16,7 @@ const QualificationDuplicateException = require('../../../models/classes/qualifi
 // returns a list of all qualification records for the given worker UID
 // Inherits the security middleware declared in the Worker route for qualification.
 // Inheirts the "workerUid" parameter declared in the Worker route for qualification.
-router.route('/').get(async (req, res) => {
+const listAllQuals = async (req, res) => {
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
@@ -26,11 +28,11 @@ router.route('/').get(async (req, res) => {
     console.error('Qualification::root - failed', err);
     return res.status(503).send(`Failed to get Qualification Records for Worker having uid: ${escape(workerUid)}`);
   }
-});
+};
 
 // returns the set of qualifications that are available to the given worker; this all qualifications except those
 //  already consumed by this worker
-router.route('/available').get(async (req, res) => {
+const availableQuals = async (req, res) => {
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
@@ -56,10 +58,11 @@ router.route('/available').get(async (req, res) => {
       .status(503)
       .send(`Failed to get available Qualification (Types) for Worker having uid: ${escape(workerUid)}`);
   }
-});
+};
+
 
 // gets requested qualification record using the qualification uid
-router.route('/:qualificationUid').get(async (req, res) => {
+const getQualification = async (req, res) => {
   const establishmentId = req.establishmentId;
   const qualificationUid = req.params.qualificationUid;
   const workerUid = req.params.workerId;
@@ -77,10 +80,11 @@ router.route('/:qualificationUid').get(async (req, res) => {
     console.error(err);
     return res.status(503).send();
   }
-});
+};
+
 
 // creates given qualification record for the 'given' worker by UID
-router.route('/').post(async (req, res) => {
+const addQualification = async (req, res) => {
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
 
@@ -109,10 +113,10 @@ router.route('/').post(async (req, res) => {
 
     return res.status(503).send();
   }
-});
+};
 
 // updates requested qualification record using the qualification uid
-router.route('/:qualificationUid').put(async (req, res) => {
+const updateQualification = async (req, res) => {
   const establishmentId = req.establishmentId;
   const qualificationUid = req.params.qualificationUid;
   const workerUid = req.params.workerId;
@@ -152,10 +156,10 @@ router.route('/:qualificationUid').put(async (req, res) => {
 
     return res.status(503).send();
   }
-});
+};
 
 // deletes requested qualification record using the qualification uid
-router.route('/:qualificationUid').delete(async (req, res) => {
+const deleteQualification = async (req, res) => {
   const establishmentId = req.establishmentId;
   const qualificationUid = req.params.qualificationUid;
   const workerUid = req.params.workerId;
@@ -185,6 +189,14 @@ router.route('/:qualificationUid').delete(async (req, res) => {
     console.error(err);
     return res.status(503).send();
   }
-});
+};
+
+router.use('/', hasPermission('canAddWorker'));
+router.route('/').get(listAllQuals);
+router.route('/available').get(availableQuals);
+router.route('/:qualificationUid').get(getQualification);
+router.route('/').post(addQualification);
+router.route('/:qualificationUid').put(updateQualification);
+router.route('/:qualificationUid').delete(deleteQualification);
 
 module.exports = router;
