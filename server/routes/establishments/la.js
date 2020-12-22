@@ -321,6 +321,6 @@ router.route('/').get(hasPermission('canViewEstablishment'), getLAs);
 router.route('/').post(hasPermission('canEditEstablishment'), updateLAs);
 // These don't look to be used so could be removed
 router.route('/alt').get(hasPermission('canEditEstablishment'), getAltLA);
-router.route('/alt').post(hasPermission('canEditEstablishment'), getAltLA);
+router.route('/alt').post(hasPermission('canEditEstablishment'), updateAltLA);
 
 module.exports = router;
