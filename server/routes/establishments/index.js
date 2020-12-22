@@ -33,9 +33,6 @@ const FluJab = require('./fluJab');
 const Workers = require('./workers');
 const Benchmarks = require('./benchmarks');
 
-const Approve = require('./approve');
-const Reject = require('./reject');
-
 const OTHER_MAX_LENGTH = 120;
 
 const responseErrors = {
@@ -61,10 +58,6 @@ class RegistrationException {
     return `${this.errCode}: ${this.errMessage}`;
   }
 }
-
-// approve/reject establishment (registration) requires an elevated privilede - override the authentication middleware before the default middleware
-router.use('/:id/approve', Authorization.isAuthorisedRegistrationApproval, Approve);
-router.use('/:id/reject', Authorization.isAuthorisedRegistrationApproval, Reject);
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
