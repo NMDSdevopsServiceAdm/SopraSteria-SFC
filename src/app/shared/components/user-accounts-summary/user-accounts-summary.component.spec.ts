@@ -19,10 +19,8 @@ import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 
-fdescribe('UserAccountsSummaryComponent', () => {
+describe('UserAccountsSummaryComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
-    const component: UserAccountsSummaryComponent;
-
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -56,8 +54,7 @@ fdescribe('UserAccountsSummaryComponent', () => {
       ],
     });
     const fixture = TestBed.createComponent(UserAccountsSummaryComponent);
-    component = fixture.componentInstance;
-
+    const component: UserAccountsSummaryComponent = fixture.componentInstance;
     return {
       component,
       fixture,
@@ -69,21 +66,26 @@ fdescribe('UserAccountsSummaryComponent', () => {
     fixture.componentInstance.workplace = Establishment;
     expect(component).toBeTruthy();
   });
-
   it('should still show Add User if existing user doesnt have a name', async () => {
     const { component, fixture } = await setup();
 
     fixture.componentInstance.workplace = Establishment;
+    fixture.componentInstance.workplace.uid = '4698f4a4-ab82-4906-8b0e-3f4972375927';
+
     component.ngOnInit();
     expect(component.users.length).toEqual(1);
     expect(component.canAddUser).toBeTruthy();
   });
-  it('should still show Add User if existing user doesnt have a name', async () => {
+
+  it('should not be able to add user if 3 edit users exist', async () => {
     const { component, fixture } = await setup();
 
     fixture.componentInstance.workplace = Establishment;
+    fixture.componentInstance.workplace.uid = 'overLimit';
+    fixture.componentInstance.workplace.isParent = false;
+
     component.ngOnInit();
-    expect(component.users.length).toEqual(1);
-    expect(component.canAddUser).toBeTruthy();
+    expect(component.users.length).toEqual(6);
+    expect(component.canAddUser).toBeFalsy();
   });
 });
