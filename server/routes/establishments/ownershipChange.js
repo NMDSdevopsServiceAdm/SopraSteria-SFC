@@ -5,7 +5,6 @@ const Establishment = require('../../models/classes/establishment');
 const notifications = require('../../data/notifications');
 const ownership = require('../../data/ownership');
 const { hasPermission } = require('../../utils/security/hasPermission');
-const { get } = require('../../config/config');
 
 // POST request for ownership change request
 const ownershipChangeRequest = async (req, res) => {
