@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../models');
 const isAuthorised = require('../../utils/security/isAuthenticated').isAuthorised;
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const validateBecomeAParentRequest = async (req, res, next) => {
   try {
@@ -44,7 +45,9 @@ const becomeAParentEndpoint = async (req, res) => {
   res.send(becomeAParentRequest);
 };
 
-router.route('/').post([isAuthorised, validateBecomeAParentRequest, becomeAParentEndpoint]);
+router
+  .route('/')
+  .post([isAuthorised, hasPermission('canEditEstablishment'), validateBecomeAParentRequest, becomeAParentEndpoint]);
 
 module.exports = router;
 module.exports.validateBecomeAParentRequest = validateBecomeAParentRequest;
