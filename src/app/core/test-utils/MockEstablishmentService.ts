@@ -2,12 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { EstablishmentService, getLastBulkUploadedResponse } from '@core/services/establishment.service';
 import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockEstablishmentService extends EstablishmentService {
-
   private share: any = { enabled: false, with: [] };
 
   public static factory(newShare: any) {
@@ -49,7 +48,7 @@ export class MockEstablishmentService extends EstablishmentService {
       postcode: 'mock establishment postcode',
       primaryAuthority: undefined,
       serviceUsers: [],
-      share: {enabled: this.share.enabled, with: this.share.with},
+      share: { enabled: this.share.enabled, with: this.share.with },
       starters: undefined,
       totalLeavers: 0,
       totalStarters: 0,
@@ -58,19 +57,23 @@ export class MockEstablishmentService extends EstablishmentService {
       uid: 'mocked-uid',
       updated: undefined,
       updatedBy: 'mock establishment updatedBy',
-      vacancies: undefined
+      vacancies: undefined,
     };
   }
 
   public get returnTo(): URLStructure {
     return {
       url: ['/dashboard'],
-      fragment: 'workplace'
+      fragment: 'workplace',
     };
   }
 
   public get establishmentId(): string {
     return '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
+  }
+
+  public getLastBulkUploaded(establishmentId): Observable<getLastBulkUploadedResponse> {
+    return of({ lastBulkUploaded: '2020-09-24T08:23:03.927Z' } as getLastBulkUploadedResponse);
   }
 
   get primaryWorkplace(): Establishment {
@@ -96,7 +99,7 @@ export class MockEstablishmentService extends EstablishmentService {
       serviceUsers: [],
       share: {
         enabled: false,
-        with: []
+        with: [],
       },
       starters: undefined,
       totalLeavers: 0,
@@ -106,7 +109,7 @@ export class MockEstablishmentService extends EstablishmentService {
       uid: '',
       updated: undefined,
       updatedBy: '',
-      vacancies: undefined
+      vacancies: undefined,
     };
   }
 }
