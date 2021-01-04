@@ -23,29 +23,15 @@
     <ng-container *ngFor="let file of uploadedFiles">
       <tr *ngIf="file.errors">
         <td class="govuk-error-table__message-cell" colspan="5">
-          <p class="govuk-error-message govuk-error-table__message" [innerText]="getErrorMessage(file)"></p>
+          <app-file-error-message [error]="1" [warning]="1"></app-file-error-message>
         </td>
       </tr>
-      <tr [id]="getFileId(file)" class="govuk-table__row" [class.govuk-error-table__row]="file.errors">
-        <td
-          class="govuk-table__cell govuk-table__cell--file-name"
-          [class.govuk-error-table__cell]="file.errors"
-          [class.govuk-!-padding-left-6]="file.errors"
-        >
+      <tr [id]="getFileId(file)" class="govuk-table__row">
+        <td class="govuk-table__cell govuk-table__cell--file-name">
           <p class="govuk-!-margin-bottom-0">
             <a href="/bulk-upload/download/{{ encodeUrl(file.filename) }}" (click)="downloadFile($event, file.key)">
               {{ file.filename }}
             </a>
-          </p>
-          <p *ngIf="file.warnings" class="govuk-!-margin-bottom-0">
-            <strong class="govuk__flex">
-              <img class="govuk-!-margin-right-2" src="/assets/images/flag-orange.svg" alt="" />
-              {{ file.warnings }}
-              {{ file.warnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }}
-            </strong>
-          </p>
-          <p *ngIf="displayDownloadReportLink(file)" class="govuk-!-margin-bottom-0">
-            <app-report-download-link [fileType]="file.fileType"></app-report-download-link>
           </p>
         </td>
         <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">

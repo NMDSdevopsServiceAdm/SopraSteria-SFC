@@ -1,0 +1,13 @@
+<p class="govuk-error-message">
+  There
+  <ng-container [ngPlural]="this.error">
+    <ng-template ngPluralCase="=1">is {{ this.error }} error </ng-template>
+    <ng-template ngPluralCase="other">are {{ this.error }} errors </ng-template>
+  </ng-container>
+  and
+  <ng-container [ngPlural]="this.warning">
+    <ng-template ngPluralCase="=1">{{ this.warning }} warning </ng-template>
+    <ng-template ngPluralCase="other">{{ this.warning }} warnings </ng-template>
+  </ng-container>
+  in this file.
+</p>
