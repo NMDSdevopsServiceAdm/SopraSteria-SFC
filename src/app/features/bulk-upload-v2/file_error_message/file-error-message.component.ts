@@ -1,5 +1,5 @@
 import { I18nPluralPipe } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 
 @Component({
