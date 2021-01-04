@@ -21,6 +21,7 @@ const Jobs = require('./jobs');
 const LA = require('./la');
 const Worker = require('./worker');
 const BulkUpload = require('./bulkUpload');
+const LastBulkUploaded = require('./lastBulkUploaded');
 const LocalIdentifier = require('./localIdentifier');
 const LocalIdentifiers = require('./localIdentifiers');
 const Permissions = require('./permissions');
@@ -80,6 +81,8 @@ router.use('/:id/jobs', Jobs);
 router.use('/:id/localAuthorities', LA);
 router.use('/:id/worker', Worker);
 router.use('/:id/bulkupload', BulkUpload);
+router.use('/:id/lastBulkUploaded', LastBulkUploaded);
+
 router.use('/:id/localIdentifier', LocalIdentifier);
 router.use('/:id/localIdentifiers', LocalIdentifiers);
 router.use('/:id/permissions', Permissions);

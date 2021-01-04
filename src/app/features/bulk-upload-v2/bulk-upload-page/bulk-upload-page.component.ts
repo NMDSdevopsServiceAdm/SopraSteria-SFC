@@ -7,7 +7,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { EstablishmentService, getLastBulkUploadedResponse } from '@core/services/establishment.service';
 import { combineLatest, Subscription } from 'rxjs';
 
 @Component({
@@ -24,6 +24,7 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
   public serverError: string;
   public showErrorSummary: boolean;
   public showFilesList: boolean;
+  public lastBulkUploaded: getLastBulkUploadedResponse;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -35,7 +36,17 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
     this.establishment = this.establishmentService.primaryWorkplace;
-    this.setupFormErrorsMap();
+    this.subscriptions.add(
+      this.establishmentService.getLastBulkUploaded(this.establishment.uid).subscribe(
+        (lastBulkUploaded: getLastBulkUploadedResponse) => {
+          this.lastBulkUploaded = lastBulkUploaded;
+          console.log(JSON.stringify(lastBulkUploaded));
+        },
+        (_) => {
+          this.lastBulkUploaded = null;
+        },
+      ),
+    );
     this.setupUploadValidationErrors();
     this.setupSubscription();
     this.bulkUploadService.setReturnTo(null);
