@@ -40,7 +40,6 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
       this.establishmentService.getLastBulkUploaded(this.establishment.uid).subscribe(
         (lastBulkUploaded: getLastBulkUploadedResponse) => {
           this.lastBulkUploaded = lastBulkUploaded;
-          console.log(JSON.stringify(lastBulkUploaded));
         },
         (_) => {
           this.lastBulkUploaded = null;
