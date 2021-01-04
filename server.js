@@ -226,6 +226,10 @@ app.use('/api/satisfactionSurvey', [cacheMiddleware.nocache, satisfactionSurvey]
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
 
+app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
+  res.sendFile(path.join(__dirname, 'loaderio-63e80cd3c669177f22e9ec997ea2594d.txt'));
+});
+
 app.get('*', function (req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
 });

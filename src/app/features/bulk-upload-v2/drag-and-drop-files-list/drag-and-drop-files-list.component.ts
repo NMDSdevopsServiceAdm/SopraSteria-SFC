@@ -181,7 +181,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
             this.bulkUploadService.serverError$.next(response.message);
           } else {
             this.router.navigate(['/dashboard']);
-            this.alertService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
+            this.alertService.addAlert({ type: 'success', message: 'The bulk upload is complete.' });
           }
         },
         (response) => {
