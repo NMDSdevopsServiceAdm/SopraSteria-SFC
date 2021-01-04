@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Bulk upload</h1>
-    <p *ngIf="this.lastBulkUploaded?.lastBulkUploaded">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">Bulk upload</h1>
+    <p class="govuk-!-font-size-16" *ngIf="this.lastBulkUploaded?.lastBulkUploaded">
       Last bulk upload {{ this.lastBulkUploaded?.lastBulkUploaded | date: 'd MMMM y' }}
     </p>
 
