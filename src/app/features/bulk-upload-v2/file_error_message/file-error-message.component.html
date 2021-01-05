@@ -7,8 +7,9 @@
       <ng-template ngPluralCase="other">are {{ this.error }} errors </ng-template>
     </ng-container>
     <ng-container *ngIf="this.warning" [ngPlural]="this.warning">
-      <ng-template ngPluralCase="=1"> and {{ this.warning }} warning </ng-template>
-      <ng-template ngPluralCase="other"> and {{ this.warning }} warnings </ng-template> </ng-container
+      and {{ this.warning }}
+      <ng-template ngPluralCase="=1"> warning </ng-template>
+      <ng-template ngPluralCase="other"> warnings </ng-template> </ng-container
     >in this file.
   </p>
 </div>
