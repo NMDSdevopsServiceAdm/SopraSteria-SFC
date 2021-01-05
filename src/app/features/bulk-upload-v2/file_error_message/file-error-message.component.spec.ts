@@ -26,12 +26,20 @@ describe('FileErrorMessage', () => {
     const p: HTMLElement = component.fixture.nativeElement.querySelector('p');
     expect(p.innerText).toContain('There is 1 error and 1 warning in this file.');
   });
-  it('should puralise the error message', async () => {
+  it('should pluralize the error message', async () => {
     const component = await setup();
     component.fixture.componentInstance.warning = 3;
     component.fixture.componentInstance.error = 5;
     component.fixture.detectChanges(true);
     const p: HTMLElement = component.fixture.nativeElement.querySelector('p');
     expect(p.innerText).toContain('There are 5 errors and 3 warnings in this file.');
+  });
+  it('should only show the error part when there are no warnings', async () => {
+    const component = await setup();
+    component.fixture.componentInstance.warning = 0;
+    component.fixture.componentInstance.error = 5;
+    component.fixture.detectChanges(true);
+    const p: HTMLElement = component.fixture.nativeElement.querySelector('p');
+    expect(p.innerText).toContain('There are 5 errors.');
   });
 });
