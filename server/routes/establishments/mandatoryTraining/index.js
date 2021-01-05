@@ -6,11 +6,12 @@ const router = express.Router({mergeParams: true});
 
 const MandatoryTraining = require('../../../models/classes/mandatoryTraining').MandatoryTraining;
 
+const { hasPermission } = require('../../../utils/security/hasPermission');
 
 /**
  * Handle GET request for getting all saved mandatory training
  */
-router.route('/').get(async (req, res) => {
+const getMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
   try{
     const allMandatoryTrainingRecords = await MandatoryTraining.fetch(establishmentId);
@@ -19,12 +20,12 @@ router.route('/').get(async (req, res) => {
     console.error(err);
     return res.status(503).send();
   }
-});
+};
 
 /**
  * Handle GET request for getting all saved mandatory training for view all mandatory training
  */
-router.route('/all').get(async (req, res) => {
+const getAllMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
   try{
     const allMandatoryTrainingRecords = await MandatoryTraining.fetchAllMandatoryTrainings(establishmentId);
@@ -33,13 +34,14 @@ router.route('/all').get(async (req, res) => {
     console.error(err);
     return res.status(503).send();
   }
-});
+};
+
 
 
 /**
  * Handle POST request for creating new mandatory training
  */
-router.route('/').post(async (req, res) => {
+const editMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
 
   const thisMandatoryTrainingRecord = new MandatoryTraining(establishmentId);
@@ -59,6 +61,11 @@ router.route('/').post(async (req, res) => {
     console.error(err);
     return res.status(503).send();
   }
-});
+};
+
+router.use('/', hasPermission('canAddWorker'));
+router.route('/').get(getMandatoryTraining);
+router.route('/all').get(getAllMandatoryTraining);
+router.route('/').post(editMandatoryTraining);
 
 module.exports = router;

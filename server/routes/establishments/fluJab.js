@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../models');
 const FluJabTransformer = require('../../transformers/fluJabTransformer').FluJabTransformer;
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const workplaceFluJabs = async function (req, res) {
   try {
@@ -14,7 +15,7 @@ const workplaceFluJabs = async function (req, res) {
   }
 }
 
-router.route('/').get(workplaceFluJabs);
+router.route('/').get(hasPermission('canEditWorker'), workplaceFluJabs);
 
 module.exports = router;
 module.exports.workplaceFluJabs = workplaceFluJabs;
