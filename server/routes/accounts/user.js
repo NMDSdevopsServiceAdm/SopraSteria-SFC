@@ -9,6 +9,7 @@ const isLocal = require('../../utils/security/isLocalTest').isLocal;
 const bcrypt = require('bcrypt-nodejs');
 const generateJWT = require('../../utils/security/generateJWT');
 const usernameCheck = require('../../utils/security/usernameValidation').isUsernameValid;
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
@@ -19,9 +20,9 @@ const notifications = require('../../data/notifications');
 const ownershipChangeRequests = require('../../data/ownership');
 
 // default route
-router.route('/').get(async (req, res) => {
+const return200 = async (req, res) => {
   res.status(200).send();
-});
+};
 
 const responseErrors = {
   invalidUsername: {
@@ -31,8 +32,7 @@ const responseErrors = {
 };
 
 // returns a list of all users for the given establishment
-router.get('/establishment/:id', Authorization.hasAuthorisedEstablishment);
-router.route('/establishment/:id').get(async (req, res) => {
+const listAllUsers = async (req, res) => {
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const establishmentId = req.establishmentId;
 
@@ -46,7 +46,7 @@ router.route('/establishment/:id').get(async (req, res) => {
     console.error('user::establishment - failed', err);
     return res.status(503).send(`Failed to get users for establishment having id: ${establishmentId}`);
   }
-});
+};
 
 const getUser = async (req, res) => {
   let userId;
@@ -104,21 +104,15 @@ const getUser = async (req, res) => {
   }
 };
 
-router.use('/me', Authorization.isAuthorised);
-router.route('/me').get(async (req, res) => {
+const getMe = async (req, res) => {
   getUser(req, res);
-});
+};
 
 // gets requested user id or username - using the establishment id extracted for authorised token
 // optional parameter - "history" must equal 1
-router.get('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
-router.route('/establishment/:id/:userId').get(async (req, res) => {
-  getUser(req, res);
-});
 
 // updates a user with given uid or username
-router.put('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishmentAllowAllRoles);
-router.route('/establishment/:id/:userId').put(async (req, res) => {
+const updateUser = async (req, res) => {
   const userId = req.params.userId;
   const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
@@ -205,11 +199,10 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
       return res.status(503).send(err.safe);
     }
   }
-});
+};
 
 // resets a user's password - must have Authoization header and must be a valid password reset JWT
-router.use('/resetPassword', Authorization.isAuthorisedPasswdReset);
-router.route('/resetPassword').post(async (req, res) => {
+const resetPassword = async (req, res) => {
   const givenPassword = escape(req.body.password);
 
   if (givenPassword === 'undefined') {
@@ -286,11 +279,10 @@ router.route('/resetPassword').post(async (req, res) => {
     console.error('User /resetPassword failed', err);
     return res.status(503).send();
   }
-});
+};
 
 // changes a user's password - must have Authoization header and must be a valid login JWT; authenticates the current password before setting new password
-router.use('/changePassword', Authorization.isAuthorised);
-router.route('/changePassword').post(async (req, res) => {
+const changePassword = async (req, res) => {
   const currentPassword = escape(req.body.currentPassword);
   const newPassword = escape(req.body.newPassword);
 
@@ -389,11 +381,10 @@ router.route('/changePassword').post(async (req, res) => {
     console.error('User /changePassword failed', err);
     return res.status(503).send();
   }
-});
+};
 
 // registers (part add) a new user
-router.use('/add/establishment/:id', Authorization.hasAuthorisedEstablishment);
-router.route('/add/establishment/:id').post(async (req, res) => {
+const partAddUser = async (req, res) => {
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
@@ -466,12 +457,10 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 
     console.error('Unexpected exception: ', err);
   }
-});
+};
 
 // Resend activation link
-
-router.use('/:uid/resend-activation', Authorization.isAuthorised);
-router.route('/:uid/resend-activation').post(async (req, res) => {
+const resendActivationLink = async (req, res) => {
   const userId = req.params.uid;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
 
@@ -520,10 +509,10 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
   } catch (err) {
     return res.status(503).send(err.safe);
   }
-});
+};
 
 // validates (part add) a new user - not authentication middleware
-router.route('/validateAddUser').post(async (req, res) => {
+const finishAddUser = async (req, res) => {
   if (!req.body.uuid) {
     console.error('No UUID');
     return res.status(400).send();
@@ -590,10 +579,9 @@ router.route('/validateAddUser').post(async (req, res) => {
     console.error('/add/validateAddUser - failed: ', err);
     return res.status(503).send();
   }
-});
+};
 
-router.delete('/establishment/:id/:userid', Authorization.hasAuthorisedEstablishment);
-router.route('/establishment/:id/:userid').delete(async (req, res) => {
+const deleteUser = async (req, res) => {
   const userId = req.params.userid;
 
   const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -633,11 +621,10 @@ router.route('/establishment/:id/:userid').delete(async (req, res) => {
     console.error('User::DELETE - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
-});
+};
 
 // registers (full add) a new user - authentication middleware is specific to add user token
-router.use('/add', Authorization.isAuthorisedAddUser);
-router.route('/add').post(async (req, res) => {
+const addUser = async (req, res) => {
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const addUserUUID = req.addUserUUID;
 
@@ -722,13 +709,12 @@ router.route('/add').post(async (req, res) => {
 
     console.error('Unexpected exception: ', err);
   }
-});
+};
 
 // returns the set of establishments associated with this (as given by JWT) user
 // their primary establishment always exists and is awlays returned.
 // If, this user has Edit authority and their primary establishment is a parent, then this aslo returns all the subs.
-router.use('/my/establishments', Authorization.isAuthorised);
-router.route('/my/establishments').get(async (req, res) => {
+const listEstablishments = async (req, res) => {
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
@@ -744,11 +730,10 @@ router.route('/my/establishments').get(async (req, res) => {
     console.error('/user/my/establishments: ERR: ', err.message);
     return res.status(503).send({}); // intentionally an empty JSON response
   }
-});
+};
 
 // Lists the notifications for the logged in (as given by JWT) user
-router.use('/my/notifications', Authorization.isAuthorised);
-router.route('/my/notifications').get(async (req, res) => {
+const listNotifications = async (req, res) => {
   try {
     //pull the user's uuid out of JWT
     const params = {
@@ -773,7 +758,8 @@ router.route('/my/notifications').get(async (req, res) => {
       message: e.message,
     });
   }
-});
+};
+
 /**
  * Method will fetch the notification details.
  * @param notification
@@ -876,7 +862,7 @@ const addTypeContent = async (notification) => {
   delete notification.typeUid;
 };
 
-router.route('/my/notifications/:notificationUid').get(async (req, res) => {
+const getNotification = async (req, res) => {
   try {
     const params = {
       userUid: req.userUid, // pull the user's uuid out of JWT
@@ -906,9 +892,9 @@ router.route('/my/notifications/:notificationUid').get(async (req, res) => {
       message: e.message,
     });
   }
-});
+};
 
-router.route('/my/notifications/:notificationUid').post(async (req, res) => {
+const readNotification = async (req, res) => {
   try {
     if (req.body.isViewed !== true) {
       return res.status(400).send({
@@ -937,7 +923,7 @@ router.route('/my/notifications/:notificationUid').post(async (req, res) => {
       message: e.message,
     });
   }
-});
+};
 
 router.use('/swap/establishment/notification/:nmsdId', Authorization.isAdmin);
 router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) => {
@@ -967,8 +953,7 @@ router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) =>
   }
 });
 
-router.use('/swap/establishment/:id', Authorization.isAdmin);
-router.route('/swap/establishment/:id').post(async (req, res) => {
+const swapEstablishment = async (req, res) => {
   const newEstablishmentId = req.params.id;
 
   const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -1058,6 +1043,36 @@ router.route('/swap/establishment/:id').post(async (req, res) => {
     .set({ Authorization: 'Bearer ' + token })
     .status(200)
     .json(response);
-});
+};
+
+router.route('/').get(return200);
+router
+  .route('/establishment/:id')
+  .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewListOfUsers'), listAllUsers);
+router
+  .route('/establishment/:id/:userId')
+  .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewUser'), getUser);
+router
+  .route('/establishment/:id/:userId')
+  .put(Authorization.hasAuthorisedEstablishmentAllowAllRoles, hasPermission('canEditUser'), updateUser);
+router
+  .route('/establishment/:id/:userid')
+  .delete(Authorization.hasAuthorisedEstablishment, hasPermission('canDeleteUser'), deleteUser);
+router.route('/me').get(Authorization.isAuthorised, getMe);
+router.route('/resetPassword').post(Authorization.isAuthorisedPasswdReset, resetPassword);
+router.route('/changePassword').post(Authorization.isAuthorised, changePassword);
+router
+  .route('/add/establishment/:id')
+  .post(Authorization.hasAuthorisedEstablishment, hasPermission('canAddUser'), partAddUser);
+router.route('/:uid/resend-activation').post(Authorization.isAuthorised, resendActivationLink);
+router.route('/validateAddUser').post(finishAddUser);
+router.route('/add').post(Authorization.isAuthorisedAddUser, hasPermission('canAddUser'), addUser);
+router.route('/my/establishments').get(Authorization.isAuthorised, listEstablishments);
+
+router.use('/my/notifications', Authorization.isAuthorised);
+router.route('/my/notifications').get(listNotifications);
+router.route('/my/notifications/:notificationUid').get(getNotification);
+router.route('/my/notifications/:notificationUid').post(readNotification);
+router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
 
 module.exports = router;

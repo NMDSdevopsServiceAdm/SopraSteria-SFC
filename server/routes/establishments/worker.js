@@ -19,177 +19,9 @@ const TrainingRoutes = require('./training');
 const QualificationRoutes = require('./qualification');
 const MandatoryTrainingRoutes = require('./mandatoryTraining');
 
-// this middleware validates a worker against known establishment ID
-const validateWorker = async (req, res, next) => {
-  const workerId = req.params.workerId;
-  const establishmentId = req.establishmentId;
+const { hasPermission } = require('../../utils/security/hasPermission');
 
-  if (req.role !== 'Admin') {
-    // if the request for this worker is by a user associated with parent, and the requested establishment is
-    //  not their primary establishment, then they must have been granted "staff" level permission to access the worker
-    if (req.establishmentId !== req.establishment.id) {
-      // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
-      if (!req.parentIsOwner && (req.dataPermissions === null || req.dataPermissions !== 'Workplace and Staff')) {
-        console.error(`Parent not permitted to access Worker with id: ${workerId}`);
-        return res.status(403).send({
-          message: `Parent not permitted to access Worker with id: ${workerId ? workerId : 'not applicable'}`,
-        });
-      }
-
-      // more so, if the parent is not the owner, then only read access is allow
-      if (!req.parentIsOwner && req.method !== 'GET') {
-        return res.status(403).send({
-          message: `Parent not permitted to update Worker with id: ${workerId ? workerId : 'not applicable'}`,
-        });
-      }
-    }
-
-    if (req.role === 'Read') {
-      return res.status(401).send({ message: 'Not permitted' });
-    }
-  }
-
-  if (workerId && workerId !== 'localIdentifier') {
-    // validating worker id - must be a V4 UUID
-    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-    if (!uuidRegex.test(workerId.toUpperCase())) return res.status(410).send('Unexpected worker id');
-
-    const thisWorker = new Workers.Worker(establishmentId);
-
-    try {
-      if (await thisWorker.restore(workerId, false)) {
-        next();
-      } else {
-        // not found worker
-        return res.status(404).send('Not Found');
-      }
-    } catch (err) {
-      console.error('worker::validateWorker - failed', err);
-      return res.status(503).send();
-    }
-  } else {
-    next();
-  }
-};
-
-const allowAll = (req, res, next) => {
-  next();
-};
-router.use('/total', allowAll);
-router.route('/total').get(async (req, res) => {
-  const establishmentId = req.establishmentId;
-
-  try {
-    const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
-    return res.status(200).json({
-      total: allTheseWorkers.length,
-    });
-  } catch (err) {
-    console.error('worker::GET:total - failed', err);
-    return res.status(503).send('Failed to get total workers for establishment having id: ' + establishmentId);
-  }
-});
-
-router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
-router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
-router.use('/:workerId/mandatoryTraining', [validateWorker, MandatoryTrainingRoutes]);
-
-router.use('/:workerId', validateWorker);
-router.use('/', validateWorker);
-
-// gets all workers
-router.route('/').get(async (req, res) => {
-  const establishmentId = req.establishmentId;
-
-  try {
-    let trainingAlert;
-    let allTheseWorkers = await Workers.Worker.fetch(establishmentId);
-    if (allTheseWorkers && allTheseWorkers.length) {
-      const updateTrainingRecords = await Training.getAllRequiredCounts(establishmentId, allTheseWorkers);
-      if (updateTrainingRecords) {
-        const updateQualsRecords = await Qualification.getQualsCounts(establishmentId, updateTrainingRecords);
-        if (updateQualsRecords) {
-          if (updateQualsRecords.length > 0) {
-            const expiriedTrainingCountFlag =
-              updateQualsRecords.filter((worker) => worker.expiredTrainingCount > 0).length || 0;
-            const expiringTrainingCountFlag =
-              updateQualsRecords.filter((worker) => worker.expiringTrainingCount > 0).length || 0;
-            const missingMandatoryTrainingCountFlag =
-              updateQualsRecords.filter((worker) => worker.missingMandatoryTrainingCount > 0).length || 0;
-            if (expiriedTrainingCountFlag > 0 || missingMandatoryTrainingCountFlag > 0) {
-              trainingAlert = 2;
-            } else if (expiringTrainingCountFlag > 0) {
-              trainingAlert = 1;
-            } else {
-              trainingAlert = 0;
-            }
-          } else {
-            trainingAlert = 0;
-          }
-          if (updateQualsRecords.length > 0) {
-            updateQualsRecords[0].trainingAlert = trainingAlert;
-          }
-          return res.status(200).json({
-            workers: updateQualsRecords,
-          });
-        }
-      }
-    }
-  } catch (err) {
-    console.error('worker::GET:all - failed', err);
-    return res.status(503).send('Failed to get workers for establishment having id: ' + establishmentId);
-  }
-});
-
-// Update all worker ids in one transaction
-router.route('/localIdentifier').put(async (req, res) => {
-  const establishmentId = req.establishmentId;
-  const username = req.username;
-
-  // validate input
-  const givenLocalIdentifiers = req.body.localIdentifiers;
-  if (!givenLocalIdentifiers || !Array.isArray(givenLocalIdentifiers)) {
-    return res.status(400).send({});
-  }
-
-  const thisEstablishment = new Establishment.Establishment(username);
-
-  try {
-    // as a minimum for security purposes, we restore the user's primary establishment
-    if (await thisEstablishment.restore(establishmentId)) {
-      const updatedUids = await Workers.Worker.bulkUpdateLocalIdentifiers(
-        username,
-        establishmentId,
-        givenLocalIdentifiers,
-      );
-
-      const updatedTimestamp = new Date();
-      return res.status(200).json({
-        id: thisEstablishment.id,
-        uid: thisEstablishment.uid,
-        name: thisEstablishment.name,
-        updated: updatedTimestamp.toISOString(),
-        updatedBy: req.username,
-        localIdentifiers: updatedUids,
-      });
-    } else {
-      return res.status(404).send('Not Found');
-    }
-  } catch (err) {
-    if (err.name && err.name === 'SequelizeUniqueConstraintError') {
-      if (err.parent.constraint && err.parent.constraint === 'worker_LocalIdentifier_unq') {
-        console.error('Worker::localidentifier PUT: ', err.message);
-        return res.status(400).send({ duplicateValue: err.fields.LocalIdentifierValue });
-      }
-    }
-    console.log(err);
-    return res.status(503).send(err.message);
-  }
-});
-
-// gets requested worker id
-// optional parameter - "history" must equal 1
-router.route('/:workerId').get(async (req, res) => {
+const viewWorker = async (req, res) => {
   const workerId = req.params.workerId;
   const establishmentId = req.establishmentId;
   const showHistory =
@@ -227,10 +59,10 @@ router.route('/:workerId').get(async (req, res) => {
     console.error('worker::GET/:workerId - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
-});
+};
 
 // creates new worker
-router.route('/').post(async (req, res) => {
+const createWorker = async (req, res) => {
   const establishmentId = req.establishmentId;
   const newWorker = new Workers.Worker(establishmentId);
 
@@ -270,7 +102,7 @@ router.route('/').post(async (req, res) => {
     console.error('Worker POST: unexpected exception: ', err);
     return res.status(503).send();
   }
-});
+};
 
 const editWorker = async (req, res) => {
   const workerId = req.params.workerId;
@@ -343,13 +175,9 @@ const editWorker = async (req, res) => {
     return res.send(err);
   }
 };
-// updates given worker id
-router.route('/:workerId').put(async (req, res) => {
-  await editWorker(req, res);
-});
 
 // deletes given worker id
-router.route('/:workerId').delete(async (req, res) => {
+const deleteWorker = async (req, res) => {
   const workerId = req.params.workerId;
   const establishmentId = req.establishmentId;
 
@@ -395,7 +223,122 @@ router.route('/:workerId').delete(async (req, res) => {
       return res.status(500).send();
     }
   }
+};
+
+router.route('/total').get(async (req, res) => {
+  const establishmentId = req.establishmentId;
+
+  try {
+    const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+    return res.status(200).json({
+      total: allTheseWorkers.length,
+    });
+  } catch (err) {
+    console.error('worker::GET:total - failed', err);
+    return res.status(503).send('Failed to get total workers for establishment having id: ' + establishmentId);
+  }
 });
+
+const viewAllWorkers = async (req, res) => {
+  const establishmentId = req.establishmentId;
+
+  try {
+    let trainingAlert;
+    let allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+    if (allTheseWorkers && allTheseWorkers.length) {
+      const updateTrainingRecords = await Training.getAllRequiredCounts(establishmentId, allTheseWorkers);
+      if (updateTrainingRecords) {
+        const updateQualsRecords = await Qualification.getQualsCounts(establishmentId, updateTrainingRecords);
+        if (updateQualsRecords) {
+          if (updateQualsRecords.length > 0) {
+            const expiriedTrainingCountFlag =
+              updateQualsRecords.filter((worker) => worker.expiredTrainingCount > 0).length || 0;
+            const expiringTrainingCountFlag =
+              updateQualsRecords.filter((worker) => worker.expiringTrainingCount > 0).length || 0;
+            const missingMandatoryTrainingCountFlag =
+              updateQualsRecords.filter((worker) => worker.missingMandatoryTrainingCount > 0).length || 0;
+            if (expiriedTrainingCountFlag > 0 || missingMandatoryTrainingCountFlag > 0) {
+              trainingAlert = 2;
+            } else if (expiringTrainingCountFlag > 0) {
+              trainingAlert = 1;
+            } else {
+              trainingAlert = 0;
+            }
+          } else {
+            trainingAlert = 0;
+          }
+          if (updateQualsRecords.length > 0) {
+            updateQualsRecords[0].trainingAlert = trainingAlert;
+          }
+          return res.status(200).json({
+            workers: updateQualsRecords,
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error('worker::GET:all - failed', err);
+    return res.status(503).send('Failed to get workers for establishment having id: ' + establishmentId);
+  }
+};
+
+const updateLocalIdentifiers = async (req, res) => {
+  const establishmentId = req.establishmentId;
+  const username = req.username;
+
+  // validate input
+  const givenLocalIdentifiers = req.body.localIdentifiers;
+  if (!givenLocalIdentifiers || !Array.isArray(givenLocalIdentifiers)) {
+    return res.status(400).send({});
+  }
+
+  const thisEstablishment = new Establishment.Establishment(username);
+
+  try {
+    // as a minimum for security purposes, we restore the user's primary establishment
+    if (await thisEstablishment.restore(establishmentId)) {
+      const updatedUids = await Workers.Worker.bulkUpdateLocalIdentifiers(
+        username,
+        establishmentId,
+        givenLocalIdentifiers,
+      );
+
+      const updatedTimestamp = new Date();
+      return res.status(200).json({
+        id: thisEstablishment.id,
+        uid: thisEstablishment.uid,
+        name: thisEstablishment.name,
+        updated: updatedTimestamp.toISOString(),
+        updatedBy: req.username,
+        localIdentifiers: updatedUids,
+      });
+    } else {
+      return res.status(404).send('Not Found');
+    }
+  } catch (err) {
+    if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+      if (err.parent.constraint && err.parent.constraint === 'worker_LocalIdentifier_unq') {
+        console.error('Worker::localidentifier PUT: ', err.message);
+        return res.status(400).send({ duplicateValue: err.fields.LocalIdentifierValue });
+      }
+    }
+    console.log(err);
+    return res.status(503).send(err.message);
+  }
+};
+
+router.route('/').get(hasPermission('canViewWorker'), viewAllWorkers);
+router.route('/').post(hasPermission('canAddWorker'), createWorker);
+
+router.route('/localIdentifier').put(hasPermission('canBulkUpload'), updateLocalIdentifiers);
+
+router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
+router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);
+router.route('/:workerId').delete(hasPermission('canDeleteWorker'), deleteWorker);
+
+router.use('/:workerId/training', TrainingRoutes);
+router.use('/:workerId/qualification', QualificationRoutes);
+router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);
 
 module.exports = router;
 module.exports.editWorker = editWorker;

@@ -4,6 +4,7 @@ const router = express.Router();
 const slack = require('../../utils/slack/slack-logger');
 const sns = require('../../aws/sns');
 const Authorization = require('../../utils/security/isAuthenticated');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
@@ -33,9 +34,6 @@ const FluJab = require('./fluJab');
 const Workers = require('./workers');
 const Benchmarks = require('./benchmarks');
 
-const Approve = require('./approve');
-const Reject = require('./reject');
-
 const OTHER_MAX_LENGTH = 120;
 
 const responseErrors = {
@@ -61,10 +59,6 @@ class RegistrationException {
     return `${this.errCode}: ${this.errMessage}`;
   }
 }
-
-// approve/reject establishment (registration) requires an elevated privilede - override the authentication middleware before the default middleware
-router.use('/:id/approve', Authorization.isAuthorisedRegistrationApproval, Approve);
-router.use('/:id/reject', Authorization.isAuthorisedRegistrationApproval, Reject);
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -92,7 +86,7 @@ router.use('/:id/fluJab', FluJab);
 router.use('/:id/workers', Workers);
 router.use('/:id/benchmarks', Benchmarks);
 
-router.route('/:id').post(async (req, res) => {
+const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {
     delete req.body.locationId;
   }
@@ -247,11 +241,11 @@ router.route('/:id').post(async (req, res) => {
       message: err.errMessage,
     });
   }
-});
+};
 
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
-router.route('/:id').get(async (req, res) => {
+const getEstablishment = async (req, res) => {
   const establishmentId = req.params.id;
 
   const showHistory =
@@ -309,9 +303,9 @@ router.route('/:id').get(async (req, res) => {
     console.error('establishment::GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
-});
+};
 
-router.route('/:id').delete(async (req, res) => {
+const deleteEstablishment = async (req, res) => {
   const establishmentId = req.params.id;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
@@ -337,9 +331,9 @@ router.route('/:id').delete(async (req, res) => {
     console.error('establishment::DELETE/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
-});
+};
 
-router.route('/:id').put(async (req, res) => {
+const updateEstablishment = async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
@@ -372,6 +366,12 @@ router.route('/:id').put(async (req, res) => {
     console.error('Worker PUT: ', err);
     return res.status(503).send({});
   }
-});
+};
+
+
+router.route('/:id').get(hasPermission('canViewEstablishment'), getEstablishment);
+router.route('/:id').post(hasPermission('canAddEstablishment'), addEstablishment);
+router.route('/:id').put(hasPermission('canEditEstablishment'), updateEstablishment);
+router.route('/:id').delete(hasPermission('canDeleteEstablishment'), deleteEstablishment);
 
 module.exports = router;
