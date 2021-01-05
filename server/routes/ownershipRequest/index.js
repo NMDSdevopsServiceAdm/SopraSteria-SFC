@@ -6,10 +6,10 @@ const Establishment = require('../../models/classes/establishment');
 const ownership = require('../../data/ownership');
 const notifications = require('../../data/notifications');
 const Authorization = require('../../utils/security/isAuthenticated');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
-router.use('/:id', Authorization.isAuthorised);
 // PUT request for ownership change request approve/reject
-router.route('/:id').put(async (req, res) => {
+const ownershipRequest = async (req, res) => {
   try {
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
     const approvalStatusArr = ['APPROVED', 'DENIED'];
@@ -66,15 +66,15 @@ router.route('/:id').put(async (req, res) => {
             dataPermissions: 'Workplace and Staff',
           };
           let ownershipRequesterId = await ownership.getownershipRequesterId(req.establishment.id);
-        if(ownershipRequesterId && ownershipRequesterId[0].IsParent === false &&  ownershipRequesterId[0].ParentID) {
-          owershipRequesterEsatblishmentId = ownershipRequesterId[0].ParentID;
-          objToUpdate.dataOwner = 'Parent';
-        } else {
-          owershipRequesterEsatblishmentId = checkOwnerChangeRequest[0].subEstablishmentID;
-        }
+          if (ownershipRequesterId && ownershipRequesterId[0].IsParent === false && ownershipRequesterId[0].ParentID) {
+            owershipRequesterEsatblishmentId = ownershipRequesterId[0].ParentID;
+            objToUpdate.dataOwner = 'Parent';
+          } else {
+            owershipRequesterEsatblishmentId = checkOwnerChangeRequest[0].subEstablishmentID;
+          }
           requesterUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(
             owershipRequesterEsatblishmentId,
-            objToUpdate
+            objToUpdate,
           );
         } else {
           requesterUpdate = true;
@@ -91,7 +91,7 @@ router.route('/:id').put(async (req, res) => {
             recieverUpdate = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(
               req.establishment.id,
               objToUpdate,
-              true
+              true,
             );
           } else {
             let recieverEstablishmentDetails = new Establishment.Establishment(req.username);
@@ -130,7 +130,7 @@ router.route('/:id').put(async (req, res) => {
                     subEstablishmentId: params.subEstablishmentId,
                     approvalStatus: req.body.approvalStatus,
                     rejectionReason: req.body.rejectionReason,
-                    userUid: req.userUid
+                    userUid: req.userUid,
                   };
                   let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
                   let updateOwnershipRequest = await ownership.updateOwnershipRequest(clearOwnershipParam);
@@ -153,6 +153,8 @@ router.route('/:id').put(async (req, res) => {
     console.error('/ownershipRequest/:id: ERR: ', e.message);
     return res.status(503).send({});
   }
-});
+};
+
+router.route('/:id').put(Authorization.isAuthorised, hasPermission('canEditEstablishment'), ownershipRequest);
 
 module.exports = router;

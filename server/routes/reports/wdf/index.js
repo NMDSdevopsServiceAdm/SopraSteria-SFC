@@ -4,6 +4,8 @@ const router = express.Router();
 
 // security
 const isAuthorisedEstablishment = require('../../../utils/security/isAuthenticated').hasAuthorisedEstablishment;
+const { hasPermission } = require('../../../utils/security/hasPermission');
+
 const isLocal = require('../../../utils/security/isLocalTest').isLocal;
 
 // all user functionality is encapsulated
@@ -13,7 +15,7 @@ const parentReport = require('./parent');
 
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
-router.use('/establishment/:id', isAuthorisedEstablishment);
+router.use('/establishment/:id', isAuthorisedEstablishment, hasPermission('canViewWdfSummaryReport'));
 router.route('/establishment/:id').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
@@ -50,7 +52,11 @@ router.route('/establishment/:id').get(async (req, res) => {
 });
 
 // gets the parent wdf report in excel xlsx spreadsheet format
-router.use('/establishment/:id/parent', [isAuthorisedEstablishment, parentReport]);
+router.use('/establishment/:id/parent', [
+  isAuthorisedEstablishment,
+  hasPermission('canViewWdfSummaryReport'),
+  parentReport,
+]);
 
 router.route('/establishment/:id/override').get(async (req, res) => {
   let effectiveFrom = null;
