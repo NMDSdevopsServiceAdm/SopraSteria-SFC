@@ -3,12 +3,12 @@
   <p class="govuk-error-message govuk-!-margin-bottom-0">
     There
     <ng-container [ngPlural]="this.error">
-      <ng-template ngPluralCase="=1">is {{ this.error }} error</ng-template>
-      <ng-template ngPluralCase="other">are {{ this.error }} errors</ng-template>
+      <ng-template ngPluralCase="=1">is {{ this.error }} error </ng-template>
+      <ng-template ngPluralCase="other">are {{ this.error }} errors </ng-template>
     </ng-container>
     <ng-container *ngIf="this.warning" [ngPlural]="this.warning">
-      <ng-template ngPluralCase="=1"> and {{ this.warning }} warning in this file</ng-template>
-      <ng-template ngPluralCase="other"> and {{ this.warning }} warnings in this file</ng-template> </ng-container
-    >.
+      <ng-template ngPluralCase="=1"> and {{ this.warning }} warning </ng-template>
+      <ng-template ngPluralCase="other"> and {{ this.warning }} warnings </ng-template> </ng-container
+    >in this file.
   </p>
 </div>
