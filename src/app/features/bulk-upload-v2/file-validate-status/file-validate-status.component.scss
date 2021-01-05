@@ -1,0 +1,20 @@
+@import '~govuk-frontend/govuk/base';
+
+.govuk-file-validate-status--success {
+  color: govuk-colour('green');
+  margin-bottom: govuk-spacing(0) !important;
+  margin-top: govuk-spacing(2) !important;
+  @include govuk-typography-weight-bold(true);
+}
+
+.govuk-file-validate-status--success a {
+  margin-left: govuk-spacing(2) !important;
+  @include govuk-typography-weight-regular(true);
+}
+
+.govuk-file-validate-status--success::before {
+  content: url('/assets/images/tick-icon.svg');
+  margin-right: govuk-spacing(2) !important;
+  position: relative;
+  top: 3px !important;
+}

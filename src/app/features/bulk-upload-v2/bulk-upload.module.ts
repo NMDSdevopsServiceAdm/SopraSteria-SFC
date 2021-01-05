@@ -14,6 +14,7 @@ import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.c
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
 import { BulkUploadSidebarComponent } from './bulk-upload-sidebar/bulk-upload-sidebar.component';
+import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
 
 @NgModule({
   imports: [
@@ -30,6 +31,7 @@ import { BulkUploadSidebarComponent } from './bulk-upload-sidebar/bulk-upload-si
     DragAndDropFilesUploadComponent,
     DragAndDropFilesListComponent,
     BulkUploadSidebarComponent,
+    FileValidateStatusComponent,
   ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })

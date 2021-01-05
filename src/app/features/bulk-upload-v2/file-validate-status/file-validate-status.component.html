@@ -1,0 +1,13 @@
+<p
+  *ngIf="file.status === statusEnum.Pass"
+  [class.govuk-file-validate-status--success]="file.status === statusEnum.Pass"
+>
+  <ng-container *ngIf="file.warnings; else noWarnings"
+    ><span
+      >This file has passed, but there {{ file.warnings | i18nPlural: { '=1': 'is', other: 'are' } }}
+      {{ file.warnings }} {{ file.warnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }}.
+    </span>
+    <a href="#">View warnings</a>
+  </ng-container>
+  <ng-template #noWarnings>This file has passed.</ng-template>
+</p>
