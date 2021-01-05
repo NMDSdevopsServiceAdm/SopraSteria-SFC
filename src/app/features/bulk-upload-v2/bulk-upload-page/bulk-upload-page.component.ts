@@ -46,6 +46,7 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
         },
       ),
     );
+    this.setupFormErrorsMap();
     this.setupUploadValidationErrors();
     this.setupSubscription();
     this.bulkUploadService.setReturnTo(null);
