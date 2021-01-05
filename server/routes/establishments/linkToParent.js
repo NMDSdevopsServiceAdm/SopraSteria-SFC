@@ -5,8 +5,9 @@ const Establishment = require('../../models/classes/establishment');
 const uuid = require('uuid');
 const linkSubToParent = require('../../data/linkToParent');
 const notifications = require('../../data/notifications');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
-router.route('/').post(async (req, res) => {
+const linkToParent = async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
   const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -77,12 +78,12 @@ router.route('/').post(async (req, res) => {
     console.error('Error occured: ', err);
     return res.status(503).send({});
   }
-});
+};
 
 /**
  * Route will cancel link to Parent Request.
  */
-router.route('/cancel').post(async (req, res) => {
+const cancelLinkToParent = async (req, res) => {
   try {
     const thisEstablishment = new Establishment.Establishment(req.username);
     if (req.body.approvalStatus === undefined || req.body.approvalStatus !== 'CANCELLED') {
@@ -131,12 +132,12 @@ router.route('/cancel').post(async (req, res) => {
     console.error(' /establishment/:id/linkToParent/cancel : ERR: ', e.message);
     return res.status(503).send({}); //intentionally an empty JSON response
   }
-});
+};
 
 /**
  * Route will Approve/Reject link to Parent Request.
  */
-router.route('/action').put(async (req, res) => {
+const actionLinkToParent = async (req, res) => {
   const thisEstablishment = new Establishment.Establishment(req.username);
   try {
     if (await thisEstablishment.restore(req.establishmentId)) {
@@ -220,12 +221,13 @@ router.route('/action').put(async (req, res) => {
     console.error('/establishment/:id/linkToParent/action : ERR: ', e.message);
     return res.status(503).send({});
   }
-});
+};
 
 /**
  * Route will De link link Parent from the sub.
  */
-router.route('/delink').put(async (req, res) => {
+
+const delink = async (req, res) => {
   try {
     const thisEstablishment = new Establishment.Establishment(req.username);
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -285,6 +287,11 @@ router.route('/delink').put(async (req, res) => {
     console.error(' /establishment/:id/linkToParent/delink : ERR: ', e.message);
     return res.status(503).send({}); //intentionally an empty JSON response
   }
-});
+};
+
+router.route('/').post(hasPermission('canEditEstablishment'), linkToParent);
+router.route('/cancel').post(hasPermission('canEditEstablishment'), cancelLinkToParent);
+router.route('/action').put(hasPermission('canEditEstablishment'), actionLinkToParent);
+router.route('/delink').put(hasPermission('canEditEstablishment'), delink);
 
 module.exports = router;

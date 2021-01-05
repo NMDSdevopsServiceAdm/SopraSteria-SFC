@@ -1,7 +1,10 @@
 'use strict';
 
+const { hasPermission } = require('../../../utils/security/hasPermission');
+
 const router = require('express').Router();
 
+router.use('/', hasPermission('canBulkUpload'));
 router.use('/signedUrl', require('./signedUrl'));
 router.use('/uploaded', require('./uploaded'));
 router.use('/download', require('./download'));

@@ -16,7 +16,9 @@ const { hasPermission } = require('../../../utils/security/hasPermission');
 // returns a list of all qualification records for the given worker UID
 // Inherits the security middleware declared in the Worker route for qualification.
 // Inheirts the "workerUid" parameter declared in the Worker route for qualification.
+
 const viewQualifications = async (req, res) => {
+
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
@@ -32,6 +34,7 @@ const viewQualifications = async (req, res) => {
 
 // returns the set of qualifications that are available to the given worker; this all qualifications except those
 //  already consumed by this worker
+
 const availableQualifications = async (req, res) => {
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const establishmentId = req.establishmentId;

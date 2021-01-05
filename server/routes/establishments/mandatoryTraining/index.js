@@ -11,6 +11,7 @@ const { hasPermission } = require('../../../utils/security/hasPermission');
 /**
  * Handle GET request for getting all saved mandatory training
  */
+
 const viewMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
   try {
@@ -39,6 +40,7 @@ const viewAllMandatoryTraining = async (req, res) => {
 /**
  * Handle POST request for creating new mandatory training
  */
+
 const createMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
 

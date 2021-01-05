@@ -8,11 +8,20 @@ const router = express.Router({ mergeParams: true });
 const Establishment = require('../../models/classes/establishment');
 const { correctCapacities } = require('../../utils/correctCapacities');
 const { correctServices } = require('../../utils/correctServices');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
-const filteredProperties = ['Name', 'MainServiceFK', 'OtherServices', 'CapacityServices', 'ShareData', 'IsRegulated', 'LocationId'];
+const filteredProperties = [
+  'Name',
+  'MainServiceFK',
+  'OtherServices',
+  'CapacityServices',
+  'ShareData',
+  'IsRegulated',
+  'LocationId',
+];
 
 // gets current employer type for the known establishment
-router.route('/').get(async (req, res) => {
+const getMainService = async (req, res) => {
   const establishmentId = req.establishmentId;
 
   const showHistory =
@@ -55,9 +64,9 @@ router.route('/').get(async (req, res) => {
     console.error('establishment::mainService GET/:eID - failed', thisError.message);
     return res.status(503).json(thisError.safe);
   }
-});
+};
 
-router.route('/').post(async (req, res) => {
+const updateMainService = async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
@@ -84,7 +93,7 @@ router.route('/').post(async (req, res) => {
       console.error('Unexpected exception: ', err);
     }
   }
-});
+};
 
 async function changeMainService(res, establishment, cqc, mainService, username) {
   // TODO: JSON validation
@@ -155,6 +164,9 @@ async function setMainService(req, res, establishment) {
     return changeMainService(res, establishment, cqc, mainService, username);
   }
 }
+
+router.route('/').get(hasPermission('canViewEstablishment'), getMainService);
+router.route('/').post(hasPermission('canEditEstablishment'), updateMainService);
 
 module.exports = router;
 module.exports.setMainService = setMainService;
