@@ -1,9 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
-import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { render } from '@testing-library/angular';
-import { BulkUploadV2Module } from '../bulk-upload.module';
 
 import { FileErrorMessageComponent } from './file-error-message.component';
 
