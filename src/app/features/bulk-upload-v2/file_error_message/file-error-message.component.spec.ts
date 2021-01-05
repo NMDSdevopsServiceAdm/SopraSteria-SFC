@@ -40,6 +40,6 @@ describe('FileErrorMessage', () => {
     component.fixture.componentInstance.error = 5;
     component.fixture.detectChanges(true);
     const p: HTMLElement = component.fixture.nativeElement.querySelector('p');
-    expect(p.innerText).toContain('There are 5 errors.');
+    expect(p.innerText).toContain('There are 5 errors in this file.');
   });
 });
