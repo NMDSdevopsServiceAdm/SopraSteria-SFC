@@ -65,7 +65,7 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
 };
 
 // gets requested training record using the training uid
-const getTrainingRecord = async (req, res) => {
+const viewTrainingRecord = async (req, res) => {
   const establishmentId = req.establishmentId;
   const trainingUid = req.params.trainingUid;
   const workerUid = req.params.workerId;
@@ -86,7 +86,7 @@ const getTrainingRecord = async (req, res) => {
 };
 
 // creates given training record for the 'given' worker by UID
-const addTrainingRecord = async (req, res) => {
+const createTrainingRecord = async (req, res) => {
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
 
@@ -181,12 +181,11 @@ const deleteTrainingRecord = async (req, res) => {
   }
 };
 
-router.use('/', hasPermission('canAddWorker'));
-router.route('/').get(getTrainingListWithMissingMandatoryTraining);
-router.route('/:trainingUid').get(getTrainingRecord);
-router.route('/').post(addTrainingRecord);
-router.route('/:trainingUid').put(updateTrainingRecord);
-router.route('/:trainingUid').delete(deleteTrainingRecord);
+router.route('/').get(hasPermission('canViewWorker'), getTrainingListWithMissingMandatoryTraining);
+router.route('/').post(hasPermission('canEditWorker'), createTrainingRecord);
+router.route('/:trainingUid').get(hasPermission('canViewWorker'), viewTrainingRecord);
+router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTrainingRecord);
+router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);
 
 module.exports = router;
 module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
