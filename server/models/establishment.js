@@ -919,15 +919,6 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
-  Establishment.lastBulkUploaded = async function (establishmentId) {
-    return await this.findOne({
-      attributes: ['lastBulkUploaded'],
-      where: {
-        id: establishmentId,
-      },
-    });
-  };
-
   Establishment.generateDeleteReportData = async function () {
     return await this.findAll({
       attributes: [
