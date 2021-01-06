@@ -40,8 +40,6 @@ const errorReport = async (req, res) => {
       },
     };
 
-    console.log(report);
-
     await saveResponse(req, res, 200, report);
   } catch (error) {
     await saveResponse(req, res, 404);
