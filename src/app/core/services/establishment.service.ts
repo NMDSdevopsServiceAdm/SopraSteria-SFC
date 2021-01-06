@@ -23,9 +23,6 @@ interface EstablishmentApiResponse {
   id: number;
   name: string;
 }
-export interface getLastBulkUploadedResponse {
-  lastBulkUploaded: string;
-}
 
 interface ShareOptionsResponse extends EstablishmentApiResponse {
   share: SharingOptionsModel;
@@ -142,9 +139,6 @@ export class EstablishmentService {
     return this.http
       .get<AllServicesResponse>(`/api/establishment/${establishmentId}/services`, { params })
       .pipe(map((res) => res.allOtherServices));
-  }
-  public getLastBulkUploaded(establishmentId): Observable<getLastBulkUploadedResponse> {
-    return this.http.get<getLastBulkUploadedResponse>(`/api/establishment/${establishmentId}/lastBulkUploaded`);
   }
 
   public get returnTo(): URLStructure {
