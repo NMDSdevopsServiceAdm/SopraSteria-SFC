@@ -46,7 +46,7 @@
         </div>
       </div>
     </app-details> -->
-    <ng-container *ngIf="canRunLocalAuthorityReport || isAdmin">
+    <ng-container *ngIf="canRunLocalAuthorityReport">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-6">Local Authority Progress</h2>
       <ul class="govuk-list govuk-list--inline govuk-list--download">
         <li *ngIf="canRunLocalAuthorityReport">
@@ -66,10 +66,10 @@
         </li>
       </ul>
     </ng-container>
-    <ng-container *ngIf="canRunLocalAuthorityReport || isAdmin">
+    <ng-container *ngIf="isAdmin">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-6">Other Admin Reports</h2>
       <ul class="govuk-list govuk-list--inline govuk-list--download">
-        <li *ngIf="isAdmin" class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
+        <li class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
           <a
             href="/download/{{ now | date: 'dd-MM-YYYY' }}-delete-report.xlsx"
             class="govuk-body-m"

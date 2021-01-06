@@ -4,12 +4,12 @@ const AUTH_HEADER = 'authorization';
 const thisIss = config.get('jwt.iss');
 const models = require('../../models');
 
-exports.getTokenSecret = () => {
+const getTokenSecret = () => {
   return config.get('jwt.secret');
 };
 
 // this util middleware will block if the given request is not authorised
-exports.isAuthorised = (req, res, next) => {
+const isAuthorised = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
@@ -40,7 +40,7 @@ exports.isAuthorised = (req, res, next) => {
   }
 };
 
-authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
+const authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
   try {
     const token = getToken(req.headers[AUTH_HEADER]);
     const Token_Secret = config.get('jwt.secret');
@@ -60,12 +60,12 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
         // must provide the establishment ID/UID
         if (!claim.EstblishmentId || isNaN(parseInt(claim.EstblishmentId))) {
           console.error('hasAuthorisedEstablishment - missing establishment id parameter');
-          return res.status(400).send(`Unknown Establishment ID`);
+          return res.status(400).send('Unknown Establishment ID');
         }
         const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
         if (!claim.EstablishmentUID || !uuidV4Regex.test(claim.EstablishmentUID)) {
           console.error('hasAuthorisedEstablishment - missing establishment uid parameter');
-          return res.status(400).send(`Unknown Establishment UID`);
+          return res.status(400).send('Unknown Establishment UID');
         }
 
         // the given parameter could be a UUID or integer - first authorised against known primary establishment
@@ -131,7 +131,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
             }
 
             if (roleCheck && req.method !== 'GET' && claim.role == 'Read') {
-              return res.status(403).send({ message: `Not permitted` });
+              return res.status(403).send({ message: 'Not permitted' });
             }
 
             req.establishmentId = referencedEstablishment.id;
@@ -178,7 +178,7 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
           // gets here and all is authorised
 
           if (roleCheck && req.method !== 'GET' && claim.role == 'Read') {
-            return res.status(403).send({ message: `Not permitted` });
+            return res.status(403).send({ message: 'Not permitted' });
           }
 
           req.username = claim.sub;
@@ -245,15 +245,15 @@ authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
   }
 };
 
-exports.hasAuthorisedEstablishmentAllowAllRoles = async (req, res, next) => {
+const hasAuthorisedEstablishmentAllowAllRoles = async (req, res, next) => {
   authorisedEstablishmentPermissionCheck(req, res, next, false);
 };
 
-exports.hasAuthorisedEstablishment = async (req, res, next) => {
+const hasAuthorisedEstablishment = async (req, res, next) => {
   authorisedEstablishmentPermissionCheck(req, res, next, true);
 };
 
-getToken = function (headers) {
+const getToken = function (headers) {
   if (headers) {
     let token = headers;
 
@@ -265,7 +265,7 @@ getToken = function (headers) {
   return null;
 };
 
-exports.isAuthorisedPasswdReset = (req, res, next) => {
+const isAuthorisedPasswdReset = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
@@ -293,7 +293,7 @@ exports.isAuthorisedPasswdReset = (req, res, next) => {
   }
 };
 
-exports.isAuthorisedAddUser = (req, res, next) => {
+const isAuthorisedAddUser = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
@@ -318,7 +318,7 @@ exports.isAuthorisedAddUser = (req, res, next) => {
   }
 };
 
-exports.isAuthorisedInternalAdminApp = (req, res, next) => {
+const isAuthorisedInternalAdminApp = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
@@ -337,7 +337,7 @@ exports.isAuthorisedInternalAdminApp = (req, res, next) => {
   }
 };
 
-exports.isAdmin = (req, res, next) => {
+const isAdmin = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
@@ -366,7 +366,7 @@ exports.isAdmin = (req, res, next) => {
   }
 };
 
-exports.isAuthorisedRegistrationApproval = (req, res, next) => {
+const isAuthorisedRegistrationApproval = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
@@ -385,7 +385,7 @@ exports.isAuthorisedRegistrationApproval = (req, res, next) => {
   }
 };
 
-exports.isAdminOrOnDemandReporting = (req, res, next) => {
+const isAdminOrOnDemandReporting = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
@@ -414,3 +414,17 @@ exports.isAdminOrOnDemandReporting = (req, res, next) => {
     res.status(401).send('isAdminOrOnDemandReporting - Requires authorisation');
   }
 };
+
+const can = (res, req, next, permission) => {};
+
+exports.getTokenSecret = getTokenSecret;
+exports.isAuthorised = isAuthorised;
+exports.hasAuthorisedEstablishmentAllowAllRoles = hasAuthorisedEstablishmentAllowAllRoles;
+exports.hasAuthorisedEstablishment = hasAuthorisedEstablishment;
+exports.isAuthorisedPasswdReset = isAuthorisedPasswdReset;
+exports.isAuthorisedAddUser = isAuthorisedAddUser;
+exports.isAuthorisedInternalAdminApp = isAuthorisedInternalAdminApp;
+exports.isAdmin = isAdmin;
+exports.isAuthorisedRegistrationApproval = isAuthorisedRegistrationApproval;
+exports.isAdminOrOnDemandReporting = isAdminOrOnDemandReporting;
+exports.can = can;

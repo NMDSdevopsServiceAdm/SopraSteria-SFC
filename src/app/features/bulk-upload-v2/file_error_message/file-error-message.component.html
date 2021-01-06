@@ -1,0 +1,16 @@
+<div *ngIf="this.error" class="govuk__flex govuk__align-items-center">
+  <img class="govuk-!-margin-right-2" src="../../../../assets/images/cross-icon.svg" alt="" />
+  <p class="govuk-error-message govuk-!-margin-bottom-0">
+    There
+    <ng-container [ngPlural]="this.error">
+      <ng-template ngPluralCase="=1">is {{ this.error }} error </ng-template>
+      <ng-template ngPluralCase="other">are {{ this.error }} errors </ng-template>
+    </ng-container>
+    <ng-container *ngIf="this.warning" [ngPlural]="this.warning">
+      and {{ this.warning }}
+      <ng-template ngPluralCase="=1"> warning </ng-template>
+      <ng-template ngPluralCase="other"> warnings </ng-template>
+    </ng-container>
+    in this file.
+  </p>
+</div>

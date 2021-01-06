@@ -11,9 +11,9 @@
   </thead>
   <tbody class="govuk-table__body">
     <ng-container *ngFor="let file of uploadedFiles">
-      <tr *ngIf="validationComplete">
-        <td colspan="5">
-          <app-file-validate-status [file]="file"></app-file-validate-status>
+      <tr *ngIf="file.errors && file.warnings">
+        <td class="govuk-error-table__message-cell" colspan="5">
+          <app-file-error-message [error]="file.errors" [warning]="file.warnings"></app-file-error-message>
         </td>
       </tr>
       <tr [id]="getFileId(file)" class="govuk-table__row">

@@ -1,8 +1,12 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Bulk upload</h1>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">Bulk upload</h1>
+    <p class="govuk-!-font-size-16 govuk-!-margin-bottom-6" *ngIf="this.establishment?.lastBulkUploaded">
+      Last bulk upload {{ this.establishment.lastBulkUploaded | date: 'd MMMM y' }}
+    </p>
+
     <details class="govuk-details" data-module="govuk-details">
-      <summary class="govuk-details__summary">
+      <summary class="govuk-details__summary govuk-!-margin-bottom-0">
         <span class="govuk-details__summary-text"> Who should do bulk uploads? </span>
       </summary>
       <div class="govuk-details__text">
