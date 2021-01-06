@@ -10,36 +10,26 @@ const getErrorWarningArray = (report, type) => {
     .filter((msg) => (type === 'error' ? filterErrors(msg) : filterWarnings(msg)))
     .sort((a, b) => a.lineNumber - b.lineNumber)
     .map((item) => {
+      const { lineNumber, name, source, ...uniqueInfo } = item;
       const errWarn = {
-        lineNumber: item.lineNumber,
-        name: item.name,
-        source: item.source,
+        lineNumber,
+        name,
+        source,
       };
-      const resItem =
+      const existingCode =
         type === 'error'
           ? result.find((res) => res.errCode === item.errCode)
           : result.find((res) => res.warnCode === item.warnCode);
-      if (resItem) {
-        resItem.items.push(errWarn);
+
+      if (existingCode) {
+        existingCode.items.push(errWarn);
       } else {
-        type === 'error'
-          ? result.push({
-              errCode: item.errCode,
-              error: item.error,
-              errType: item.errType,
-              origin: item.origin,
-              items: [errWarn],
-            })
-          : result.push({
-              warnCode: item.warnCode,
-              warning: item.warning,
-              warnType: item.warnType,
-              origin: item.origin,
-              items: [errWarn],
-            });
+        result.push({
+          ...uniqueInfo,
+          items: [errWarn],
+        });
       }
     });
-  console.log(result);
 
   return result;
 };
