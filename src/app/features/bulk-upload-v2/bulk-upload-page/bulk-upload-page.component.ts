@@ -24,7 +24,6 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
   public serverError: string;
   public showErrorSummary: boolean;
   public showFilesList: boolean;
-  public lastBulkUploaded: string;
 
   constructor(
     private establishmentService: EstablishmentService,

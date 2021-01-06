@@ -17,7 +17,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { BulkUploadPageV2Component } from '@features/bulk-upload-v2/bulk-upload-page/bulk-upload-page.component';
 
 describe('BulkUploadPageV2Component', () => {
-  async function setup(isAdmin = true, subsidiaries = 0) {
+  async function setup() {
     const component = await render(BulkUploadPageV2Component, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [HomeTabComponent],
@@ -58,12 +58,14 @@ describe('BulkUploadPageV2Component', () => {
   });
   it('should show last bulk upload date in first P', async () => {
     const { component } = await setup();
+    component.fixture.componentInstance.establishment.lastBulkUploaded = '2021-01-04T14:42:03.540Z';
+    component.fixture.detectChanges(true);
     const p: HTMLElement = component.fixture.nativeElement.querySelector('p');
-    expect(p.innerText).toEqual('Last bulk upload 24 September 2020');
+    expect(p.innerText).toEqual('Last bulk upload 4 January 2021');
   });
   it('should NOT show last bulk upload date in first P when no bulk upload date', async () => {
     const { component } = await setup();
-    component.fixture.componentInstance.lastBulkUploaded = null;
+    component.fixture.componentInstance.establishment.lastBulkUploaded = null;
     component.fixture.detectChanges(true);
     const p: HTMLElement = component.fixture.nativeElement.querySelector('p');
     expect(p.innerText).not.toContain('Last bulk upload');
