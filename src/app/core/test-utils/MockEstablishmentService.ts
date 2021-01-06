@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
-import { EstablishmentService, getLastBulkUploadedResponse } from '@core/services/establishment.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { Observable, of } from 'rxjs';
 
 @Injectable()
@@ -70,10 +70,6 @@ export class MockEstablishmentService extends EstablishmentService {
 
   public get establishmentId(): string {
     return '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
-  }
-
-  public getLastBulkUploaded(establishmentId): Observable<getLastBulkUploadedResponse> {
-    return of({ lastBulkUploaded: '2020-09-24T08:23:03.927Z' } as getLastBulkUploadedResponse);
   }
 
   get primaryWorkplace(): Establishment {

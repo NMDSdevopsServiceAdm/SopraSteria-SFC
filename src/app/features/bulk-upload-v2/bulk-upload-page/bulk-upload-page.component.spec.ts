@@ -1,5 +1,4 @@
 import { render } from '@testing-library/angular';
-import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { SharedModule } from '@shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
