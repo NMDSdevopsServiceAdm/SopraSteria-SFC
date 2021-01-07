@@ -1,16 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorReport } from '@core/model/bulk-upload.model';
-import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-error-page',
   templateUrl: './error-page.component.html',
-  providers: [{ provide: BulkUploadService, useClass: BulkUploadServiceV2 }],
 })
 export class ErrorPageComponent implements OnInit, OnDestroy {
   public errorReport: ErrorReport;
+  public numberOfErrorsAndWarnings: NumberOfErrorsAndWarnings;
   private subscriptions: Subscription = new Subscription();
 
   constructor(private bulkuploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
@@ -28,7 +28,40 @@ export class ErrorPageComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkuploadService.errorReport(workplaceId).subscribe((errorReport: ErrorReport) => {
         this.errorReport = errorReport;
+        this.getNumberOfErrorsAndWarnings();
       }),
     );
   }
+
+  private getNumberOfErrorsAndWarnings() {
+    this.numberOfErrorsAndWarnings = {
+      establishments: {
+        errors: this.errorReport.establishments.errors.length,
+        warnings: this.errorReport.establishments.warnings.length,
+      },
+      workers: {
+        errors: this.errorReport.workers.errors.length,
+        warnings: this.errorReport.workers.warnings.length,
+      },
+      training: {
+        errors: this.errorReport.training.errors.length,
+        warnings: this.errorReport.training.warnings.length,
+      },
+    };
+  }
+}
+
+export interface NumberOfErrorsAndWarnings {
+  establishments: {
+    errors: number;
+    warnings: number;
+  };
+  workers: {
+    errors: number;
+    warnings: number;
+  };
+  training: {
+    errors: number;
+    warnings: number;
+  };
 }
