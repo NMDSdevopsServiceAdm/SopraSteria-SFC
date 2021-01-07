@@ -10,8 +10,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 @Injectable()
 export class MockAuthService extends AuthService {
   private _isAuthenticated = false;
+  private _isAdmin = false;
 
-  public static factory(isAuthenticated = false) {
+  public static factory(isAuthenticated = false, isAdmin = false) {
     return (
       httpClient: HttpClient,
       router: Router,
@@ -21,6 +22,7 @@ export class MockAuthService extends AuthService {
     ) => {
       const service = new MockAuthService(httpClient, router, establishmentService, userService, permissionsService);
       service._isAuthenticated = isAuthenticated;
+      service._isAdmin = isAdmin;
       return service;
     };
   }
@@ -53,6 +55,10 @@ export class MockAuthService extends AuthService {
 
   public logoutWithoutRouting(): void {
     // do nothing.
+  }
+
+  public get isAdmin(): boolean {
+    return this._isAdmin;
   }
 
   public get token() {

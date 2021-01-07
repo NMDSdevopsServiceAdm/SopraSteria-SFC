@@ -40,7 +40,7 @@ async function renderHeaderComponent(isAdmin: boolean) {
       },
       {
         provide: AuthService,
-        useFactory: MockAuthService.factory(true),
+        useFactory: MockAuthService.factory(true, isAdmin),
         deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
       },
       {
