@@ -11,11 +11,7 @@ const getErrorWarningArray = (report, type) => {
     .sort((a, b) => a.lineNumber - b.lineNumber)
     .map((item) => {
       const { lineNumber, name, source, ...uniqueInfo } = item;
-      const errWarn = {
-        lineNumber,
-        name,
-        source,
-      };
+      const errWarn = { lineNumber, name, source };
       const existingCode =
         type === 'error'
           ? result.find((res) => res.errCode === item.errCode)
