@@ -1,4 +1,4 @@
-<table class="govuk-table" [class.govuk-error-table]="hasErrors" [class.govuk-!-margin-top-6]="!validationComplete">
+<table class="govuk-table govuk-!-margin-top-6" [class.govuk-error-table]="hasErrors">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">File name</th>
@@ -11,9 +11,9 @@
   </thead>
   <tbody class="govuk-table__body">
     <ng-container *ngFor="let file of uploadedFiles">
-      <tr *ngIf="file.errors && file.warnings">
-        <td class="govuk-error-table__message-cell" colspan="5">
-          <app-file-error-message [error]="file.errors" [warning]="file.warnings"></app-file-error-message>
+      <tr *ngIf="validationComplete">
+        <td colspan="5">
+          <app-file-validate-status [warnings]="file.warnings" [errors]="file.errors"></app-file-validate-status>
         </td>
       </tr>
       <tr [id]="getFileId(file)" class="govuk-table__row">
@@ -54,8 +54,6 @@
   <p *ngIf="hasErrors" role="status">
     Review the <strong>{{ totalErrors }}</strong> errors.
   </p>
-
-  <p *ngIf="!hasWarnings && !hasErrors" role="status">You need to complete the upload to import the data.</p>
 
   <button
     *ngIf="!hasErrors"

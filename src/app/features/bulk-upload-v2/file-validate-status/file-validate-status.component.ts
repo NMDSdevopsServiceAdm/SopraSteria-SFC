@@ -1,13 +1,12 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { FileValidateStatus, ValidatedFile } from '@core/model/bulk-upload.model';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-file-validate-status',
   templateUrl: './file-validate-status.component.html',
   styleUrls: ['./file-validate-status.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: true,
 })
 export class FileValidateStatusComponent {
-  public statusEnum = FileValidateStatus;
-  @Input() public file: ValidatedFile;
+  @Input() public warnings: number;
+  @Input() public errors: number;
 }

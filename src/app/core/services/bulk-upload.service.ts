@@ -146,6 +146,12 @@ export class BulkUploadService {
     );
   }
 
+  public getBulkUploadStatus(establishmentUid: string): Observable<string> {
+    return this.http
+      .get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`)
+      .pipe(map((status) => status.bulkUploadState));
+  }
+
   public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
     return this.http.get<NullLocalIdentifiersResponse>(`/api/establishment/${workplaceUid}/localIdentifiers`);
   }

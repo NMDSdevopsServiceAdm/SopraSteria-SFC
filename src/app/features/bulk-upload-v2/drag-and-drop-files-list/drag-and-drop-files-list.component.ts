@@ -63,12 +63,20 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         }
       }),
     );
+    this.subscriptions.add(
+      this.bulkUploadService.getBulkUploadStatus(this.establishmentService.primaryWorkplace.uid).subscribe((state) => {
+        if (['PASSED', 'WARNINGS', 'FAILED'].includes(state)) {
+          this.validationComplete = true;
+        }
+      }),
+    );
   }
 
   private preValidateFilesSubscription(): void {
     this.subscriptions.add(
       this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
         if (preValidateFiles) {
+          this.validationComplete = false;
           this.preValidateFiles();
         }
       }),
