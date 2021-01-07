@@ -75,6 +75,34 @@ export interface ValidatedFile {
   username: string;
   deleted?: number;
 }
+export interface ErrorReportError {
+  origin: string;
+  lineNumber: number;
+  errCode: number;
+  errType: string;
+  source: string;
+  name: string;
+  error: string;
+}
+
+export interface ErrorReportWarning {
+  origin: string;
+  lineNumber: number;
+  warnCode: number;
+  warnType: string;
+  source: string;
+  name: string;
+  warning: string;
+}
+export interface ErrorReportErrorsWarnings {
+  errors: ErrorReportError[];
+  warnings: ErrorReportWarning[];
+}
+export interface ErrorReport {
+  establishments: ErrorReportErrorsWarnings;
+  workers: ErrorReportErrorsWarnings;
+  training: ErrorReportErrorsWarnings;
+}
 
 export type ValidatedFileType = 'Establishment' | 'Training' | 'Worker';
 

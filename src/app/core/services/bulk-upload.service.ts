@@ -5,6 +5,7 @@ import {
   BulkUploadFileType,
   BulkUploadLock,
   BulkUploadStatus,
+  ErrorReport,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
@@ -180,6 +181,16 @@ export class BulkUploadService {
       observe: 'body',
       responseType: 'json',
     });
+  }
+
+  public errorReport(workplaceUid: string): Observable<ErrorReport> {
+    return this.checkLockStatus(
+      () => this.http.get<ErrorReport>(`/api/establishment/${workplaceUid}/bulkupload/errorReport`),
+      {
+        observe: 'response',
+        responseType: 'json',
+      },
+    ).pipe(map((response) => response.body));
   }
 
   public resetBulkUpload(): void {
