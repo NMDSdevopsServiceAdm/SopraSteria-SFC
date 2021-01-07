@@ -51,10 +51,6 @@
 </ng-container>
 
 <ng-container *ngIf="validationComplete">
-  <p *ngIf="hasErrors" role="status">
-    Review the <strong>{{ totalErrors }}</strong> errors.
-  </p>
-
   <button
     *ngIf="!hasErrors"
     type="button"

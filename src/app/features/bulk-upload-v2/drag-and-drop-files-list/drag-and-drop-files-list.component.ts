@@ -60,6 +60,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       this.bulkUploadService.uploadedFiles$.subscribe((uploadedFiles: ValidatedFile[]) => {
         if (uploadedFiles) {
           this.uploadedFiles = uploadedFiles;
+          this.totalErrors = this.uploadedFiles.map((f) => f.errors).reduce((p, c) => c + p);
         }
       }),
     );
@@ -139,6 +140,8 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   }
 
   public validateFiles(): void {
+    this.totalErrors = 0;
+    this.totalWarnings = 0;
     this.uploadedFiles.map((file: ValidatedFile) => (file.status = FileValidateStatus.Validating));
 
     this.subscriptions.add(
