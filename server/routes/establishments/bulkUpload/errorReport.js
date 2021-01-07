@@ -12,31 +12,26 @@ const errorReport = async (req, res) => {
   const trainingReportURI = `${req.establishmentId}/validation/training.validation.json`;
 
   try {
-    const establishmentsReportDownload = await s3.downloadContent(establishmentsReportURI);
-    const workerReportDownload = await s3.downloadContent(workersReportURI);
-    const trainingReportDownload = await s3.downloadContent(trainingReportURI);
+    const estReportDownload = await s3.downloadContent(establishmentsReportURI);
+    const wrkReportDownload = await s3.downloadContent(workersReportURI);
+    const trainReportDownload = await s3.downloadContent(trainingReportURI);
 
-    const establishmentsReport =
-      establishmentsReportDownload && establishmentsReportDownload.data
-        ? JSON.parse(establishmentsReportDownload.data)
-        : [];
-    const workersReport =
-      workerReportDownload && workerReportDownload.data ? JSON.parse(workerReportDownload.data) : [];
-    const trainingReport =
-      trainingReportDownload && trainingReportDownload.data ? JSON.parse(trainingReportDownload.data) : [];
+    const estReport = estReportDownload && estReportDownload.data ? JSON.parse(estReportDownload.data) : [];
+    const wrkReport = wrkReportDownload && wrkReportDownload.data ? JSON.parse(wrkReportDownload.data) : [];
+    const trainReport = trainReportDownload && trainReportDownload.data ? JSON.parse(trainReportDownload.data) : [];
 
     const report = {
       establishments: {
-        errors: getErrorWarningArray(establishmentsReport, 'error'),
-        warnings: getErrorWarningArray(establishmentsReport, 'warning'),
+        errors: getErrorWarningArray(estReport, 'error'),
+        warnings: getErrorWarningArray(estReport, 'warning'),
       },
       workers: {
-        errors: getErrorWarningArray(workersReport, 'error'),
-        warnings: getErrorWarningArray(workersReport, 'warning'),
+        errors: getErrorWarningArray(wrkReport, 'error'),
+        warnings: getErrorWarningArray(wrkReport, 'warning'),
       },
       training: {
-        errors: getErrorWarningArray(trainingReport, 'error'),
-        warnings: getErrorWarningArray(trainingReport, 'warning'),
+        errors: getErrorWarningArray(trainReport, 'error'),
+        warnings: getErrorWarningArray(trainReport, 'warning'),
       },
     };
 
