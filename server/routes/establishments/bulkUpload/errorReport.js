@@ -2,7 +2,7 @@
 
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
-const { downloadContent, saveResponse } = require('./s3');
+const s3 = require('./s3');
 const { buStates } = require('./states');
 const { getErrorWarningArray } = require('../../../utils/errorWarningArray');
 
@@ -12,9 +12,9 @@ const errorReport = async (req, res) => {
   const trainingReportURI = `${req.establishmentId}/validation/training.validation.json`;
 
   try {
-    const establishmentsReportDownload = await downloadContent(establishmentsReportURI);
-    const workerReportDownload = await downloadContent(workersReportURI);
-    const trainingReportDownload = await downloadContent(trainingReportURI);
+    const establishmentsReportDownload = await s3.downloadContent(establishmentsReportURI);
+    const workerReportDownload = await s3.downloadContent(workersReportURI);
+    const trainingReportDownload = await s3.downloadContent(trainingReportURI);
 
     const establishmentsReport =
       establishmentsReportDownload && establishmentsReportDownload.data
@@ -26,7 +26,7 @@ const errorReport = async (req, res) => {
       trainingReportDownload && trainingReportDownload.data ? JSON.parse(trainingReportDownload.data) : [];
 
     const report = {
-      estabishments: {
+      establishments: {
         errors: getErrorWarningArray(establishmentsReport, 'error'),
         warnings: getErrorWarningArray(establishmentsReport, 'warning'),
       },
@@ -40,9 +40,9 @@ const errorReport = async (req, res) => {
       },
     };
 
-    await saveResponse(req, res, 200, report);
+    await s3.saveResponse(req, res, 200, report);
   } catch (error) {
-    await saveResponse(req, res, 404);
+    await s3.saveResponse(req, res, 404);
     throw new Error(error);
   }
 };
@@ -50,3 +50,4 @@ const errorReport = async (req, res) => {
 router.route('/').get(acquireLock.bind(null, errorReport, buStates.DOWNLOADING));
 
 module.exports = router;
+module.exports.errorReport = errorReport;
