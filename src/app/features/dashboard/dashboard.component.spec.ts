@@ -20,6 +20,7 @@ import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.componen
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
+const sinon = require('sinon');
 
 const MockWindow = {
   dataLayer: {
@@ -30,6 +31,10 @@ const MockWindow = {
 };
 
 describe('DashboardComponent', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
   async function setup(isAdmin = true, subsidiaries = 0) {
     const component = await render(DashboardComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -123,6 +128,9 @@ describe('DashboardComponent', () => {
 
     it('should not display a Delete Workplace link if the workplace has subsidiaries', async () => {
       const { component } = await setup(true, 1);
+      console.log(component.fixture.componentInstance.canDeleteEstablishment);
+
+      console.log(component.fixture.componentInstance.subsidiaryCount);
 
       expect(component.queryByText('Delete Workplace')).toBeNull();
     });
