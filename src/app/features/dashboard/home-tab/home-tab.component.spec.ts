@@ -112,7 +112,7 @@ describe('HomeTabComponent', () => {
     expect(link.innerHTML).toContain('Add workplace information');
     expect(link.getAttribute('href')).toContain('start');
   });
-  fit('Add staff banner has correct title', async () => {
+  it('Add staff banner has correct title', async () => {
     // Arrange
     const { component } = await setup();
     // Act
