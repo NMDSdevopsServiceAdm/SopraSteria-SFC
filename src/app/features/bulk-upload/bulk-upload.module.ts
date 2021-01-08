@@ -50,7 +50,6 @@ import { AboutBulkUploadComponent } from '@features/bulk-upload-v2/about-bulk-up
     DownloadDataFilesComponent,
     FilesUploadComponent,
     FilesUploadProgressComponent,
-    FileValidateStatusComponent,
     SelectedFilesListComponent,
     UploadWarningDialogComponent,
     ReportDownloadLinkComponent,
