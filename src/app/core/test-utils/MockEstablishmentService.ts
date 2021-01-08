@@ -7,7 +7,6 @@ import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockEstablishmentService extends EstablishmentService {
-
   private share: any = { enabled: false, with: [] };
 
   public static factory(newShare: any) {
@@ -49,7 +48,7 @@ export class MockEstablishmentService extends EstablishmentService {
       postcode: 'mock establishment postcode',
       primaryAuthority: undefined,
       serviceUsers: [],
-      share: {enabled: this.share.enabled, with: this.share.with},
+      share: { enabled: this.share.enabled, with: this.share.with },
       starters: undefined,
       totalLeavers: 0,
       totalStarters: 0,
@@ -58,14 +57,14 @@ export class MockEstablishmentService extends EstablishmentService {
       uid: 'mocked-uid',
       updated: undefined,
       updatedBy: 'mock establishment updatedBy',
-      vacancies: undefined
+      vacancies: undefined,
     };
   }
 
   public get returnTo(): URLStructure {
     return {
       url: ['/dashboard'],
-      fragment: 'workplace'
+      fragment: 'workplace',
     };
   }
 
@@ -96,7 +95,7 @@ export class MockEstablishmentService extends EstablishmentService {
       serviceUsers: [],
       share: {
         enabled: false,
-        with: []
+        with: [],
       },
       starters: undefined,
       totalLeavers: 0,
@@ -106,7 +105,7 @@ export class MockEstablishmentService extends EstablishmentService {
       uid: '',
       updated: undefined,
       updatedBy: '',
-      vacancies: undefined
+      vacancies: undefined,
     };
   }
 }

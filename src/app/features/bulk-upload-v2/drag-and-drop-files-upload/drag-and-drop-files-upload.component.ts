@@ -134,17 +134,6 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
     );
   }
 
-  public onSubmit(): void {
-    this.submitted = true;
-    this.bulkUploadService.exposeForm$.next(this.form);
-
-    if (this.form.valid) {
-      this.getPresignedUrls();
-    } else {
-      this.errorSummaryService.scrollToErrorSummary();
-    }
-  }
-
   private prepForUpload(response: PresignedUrlResponseItem[]): void {
     this.bytesUploaded = [];
     const request: UploadFileRequestItem[] = [];
@@ -153,8 +142,6 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
       this.bytesUploaded.push(0);
 
       const filteredItem = filter(response, ['filename', file.name])[0];
-      console.log('jm');
-      console.log(filteredItem);
       request.push({
         file,
         signedUrl: filteredItem.signedUrl,
