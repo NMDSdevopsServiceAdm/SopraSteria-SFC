@@ -2,8 +2,9 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { render } from '@testing-library/angular';
 
@@ -17,7 +18,7 @@ fdescribe('ErrorPageComponent', () => {
       declarations: [ErrorPageComponent],
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
-        { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
+        { provide: BulkUploadService, useClass: MockBulkUploadService },
       ],
     });
   };
@@ -41,34 +42,52 @@ fdescribe('ErrorPageComponent', () => {
     expect(title).toBeTruthy();
   });
 
-  it('should show a table with the correct amount of errors', async () => {
+  fit('should show a table with the correct amount of errors - establishments - 1', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    fixture.detectChanges();
+
+    const errorCount = getByTestId('errorCount');
+    expect(errorCount.textContent).toBe('1');
+  });
+
+  it('should show a table with the correct amount of warnings - workers - 2', async () => {
     const { component, getByTestId } = await setup();
 
     component.errorReport = {
       establishments: {
-        errors: [
-          {
-            errCode: 1100,
-            errType: 'ERROR',
-            error: 'WE HAVE AN ERROR',
-            origin: 'Establishment',
-            lineNumber: 2,
-            source: '',
-            name: 'SKILLS FOR CARE',
-          },
-        ],
+        errors: [],
         warnings: [],
       },
       workers: {
         errors: [],
-        warnings: [],
+        warnings: [
+          {
+            warnCode: 1100,
+            warnType: 'WARNING',
+            warning: 'WE HAVE A WARNING',
+            origin: 'Worker',
+            lineNumber: 2,
+            source: '',
+            name: 'SKILLS FOR CARE',
+          },
+          {
+            warnCode: 1500,
+            warnType: 'WARNING',
+            warning: 'WE HAVE ANOTHER WARNING',
+            origin: 'Worker',
+            lineNumber: 5,
+            source: '',
+            name: 'SKILLS FOR CARE',
+          },
+        ],
       },
       training: {
         errors: [],
         warnings: [],
       },
     };
-    const errorCount = getByTestId('errorCount');
-    expect(errorCount.textContent).toBe('1');
+    const errorCount = getByTestId('warningCount');
+    expect(errorCount.textContent).toBe('2');
   });
 });

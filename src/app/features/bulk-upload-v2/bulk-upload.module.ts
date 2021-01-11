@@ -6,6 +6,7 @@ import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolv
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { BulkUploadV2RoutingModule } from '@features/bulk-upload-v2/bulk-upload-routing.module';
+import { FileErrorMessageComponent } from '@features/bulk-upload-v2/file_error_message/file-error-message.component';
 import { SharedModule } from '@shared/shared.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 
@@ -16,6 +17,7 @@ import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-a
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/error-summary.component';
+import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
 
 @NgModule({
   imports: [
@@ -34,6 +36,8 @@ import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/erro
     BulkUploadSidebarComponent,
     ErrorPageComponent,
     BulkUploadErrorSummaryComponent,
+    FileErrorMessageComponent,
+    FileValidateStatusComponent,
   ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })

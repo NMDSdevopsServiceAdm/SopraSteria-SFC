@@ -147,6 +147,12 @@ export class BulkUploadService {
     );
   }
 
+  public getBulkUploadStatus(establishmentUid: string): Observable<string> {
+    return this.http
+      .get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`)
+      .pipe(map((status) => status.bulkUploadState));
+  }
+
   public getBUReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/errorReport/report`, {
       observe: 'response',
