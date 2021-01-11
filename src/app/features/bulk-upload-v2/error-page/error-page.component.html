@@ -8,5 +8,43 @@
       Use this error report to correct the errors in your data files before you select them again for a bulk upload.
     </p>
     <app-bu-error-summary [numberOfErrorsAndWarnings]="numberOfErrorsAndWarnings"></app-bu-error-summary>
+
+    <table *ngIf="errorReport.establishments.errors" class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Errors</th>
+          <th scope="col" class="govuk-table__header">Workplaces</th>
+          <th scope="col" class="govuk-table__header">&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row" *ngFor="let err of errorReport.establishments.errors">
+          <td class="govuk-table__cell">{{ err.error }}</td>
+          <td class="govuk-table__cell">
+            {{ err.items.length }}
+          </td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table *ngIf="errorReport.establishments.warnings" class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Warnings</th>
+          <th scope="col" class="govuk-table__header">Workplaces</th>
+          <th scope="col" class="govuk-table__header">&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row" *ngFor="let err of errorReport.establishments.warnings">
+          <td class="govuk-table__cell">{{ err.warning }}</td>
+          <td class="govuk-table__cell">
+            {{ err.items.length }}
+          </td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
