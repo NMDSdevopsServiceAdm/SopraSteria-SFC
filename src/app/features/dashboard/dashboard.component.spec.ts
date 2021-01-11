@@ -59,7 +59,8 @@ describe('DashboardComponent', () => {
         },
         {
           provide: AuthService,
-          useClass: MockAuthService,
+          useFactory: MockAuthService.factory(true, isAdmin),
+          deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
         { provide: WindowToken, useValue: MockWindow },
       ],
