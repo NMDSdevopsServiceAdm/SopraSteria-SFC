@@ -5,7 +5,7 @@ const router = require('express').Router();
 const s3 = require('./s3');
 const { buStates } = require('./states');
 const { getErrorWarningArray } = require('../../../utils/errorWarningArray');
-
+const { EstablishmentFileHeaders } = require('../../../models/BulkImport/csv/establishments');
 const excelJS = require('exceljs');
 const moment = require('moment');
 // const excelUtils = require('../../../../utils/excelUtils');
@@ -18,6 +18,8 @@ const reportHeaders = [
   { header: 'Line number', key: 'lineNumber' },
   { header: 'Error message', key: 'errorMessage' },
 ];
+
+const allFileHeaders = [];
 
 const dummyData = {
   establishments: {
@@ -109,23 +111,40 @@ const createTableHeader = (currentWorksheet) => {
     currentWorksheet.columns = reportHeaders;
     return;
   }
-  const filtedArray = reportHeaders.filter(function (col) {
+  const filteredArray = reportHeaders.filter(function (col) {
     return col.key !== 'staff';
   });
-  currentWorksheet.columns = filtedArray;
+  currentWorksheet.columns = filteredArray;
 };
 
+const generateHeaderArray = () => {
+  console.log('***********************');
+
+  const workerHeaders = EstablishmentFileHeaders.split(',');
+  allFileHeaders.push(workerHeaders);
+  console.log(allFileHeaders);
+};
+const getColumnName = (errorMessage) => {
+  const wordsArray = errorMessage.split(' ');
+  wordsArray.filter(function (word) {
+    return allFileHeaders.find(word);
+  });
+  console.log(wordsArray);
+
+  return wordsArray.join('/');
+};
 const fillData = (WS, errorData) => {
   if (!errorData || (errorData.errors.length === 0 && errorData.warnings.length === 0)) {
     return;
   }
 
   errorData.errors.forEach((data) => {
+    const columnName = getColumnName(data.error);
     data.items.forEach((item) => {
       WS.addRow({
         type: 'ERROR',
         workplace: item.name,
-        columnHeader: data.errType,
+        columnHeader: columnName,
         lineNumber: item.lineNumber,
         errorMessage: data.error,
       });
@@ -134,8 +153,11 @@ const fillData = (WS, errorData) => {
 };
 
 const generateBUReport = async (req, res) => {
+  console.log('***********************');
+
   // const rawData = await models.establishment.generateDeleteReportData();
   // const establishmentsData = await filterData(rawData);
+  generateHeaderArray();
   const data = dummyData;
   let workbook = new excelJS.Workbook();
 

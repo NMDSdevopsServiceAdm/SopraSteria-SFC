@@ -2897,3 +2897,4 @@ class Establishment {
 }
 
 module.exports.Establishment = Establishment;
+module.exports.EstablishmentFileHeaders = _headers_v1;
