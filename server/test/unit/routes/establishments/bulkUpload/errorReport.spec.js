@@ -11,7 +11,7 @@ const {
   trainingErrorsWarnings,
   establishmentErrorWarnings,
 } = require('../../../mockdata/bulkUpload');
-describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
+describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
   afterEach(() => {
     sinon.restore();
   });

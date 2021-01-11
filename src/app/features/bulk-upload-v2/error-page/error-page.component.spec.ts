@@ -11,7 +11,7 @@ import { render } from '@testing-library/angular';
 import { BulkUploadV2Module } from '../bulk-upload.module';
 import { ErrorPageComponent } from './error-page.component';
 
-fdescribe('ErrorPageComponent', () => {
+describe('ErrorPageComponent', () => {
   const getErrorPageComponent = async () => {
     return await render(ErrorPageComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadV2Module],
@@ -42,52 +42,23 @@ fdescribe('ErrorPageComponent', () => {
     expect(title).toBeTruthy();
   });
 
-  fit('should show a table with the correct amount of errors - establishments - 1', async () => {
+  it('should show a table with the correct amount of errors - establishments - 1', async () => {
     const { component, fixture, getByTestId } = await setup();
 
     fixture.detectChanges();
+    const errorReport = component.errorReport;
+    const establishmentsErrorCount = getByTestId('establishmentsErrorCount');
+    const establishmentsWarningCount = getByTestId('establishmentsWarningCount');
+    const workersErrorCount = getByTestId('workersErrorCount');
+    const workersWarningCount = getByTestId('workersWarningCount');
+    const trainingErrorCount = getByTestId('trainingErrorCount');
+    const trainingWarningCount = getByTestId('trainingWarningCount');
 
-    const errorCount = getByTestId('errorCount');
-    expect(errorCount.textContent).toBe('1');
-  });
-
-  it('should show a table with the correct amount of warnings - workers - 2', async () => {
-    const { component, getByTestId } = await setup();
-
-    component.errorReport = {
-      establishments: {
-        errors: [],
-        warnings: [],
-      },
-      workers: {
-        errors: [],
-        warnings: [
-          {
-            warnCode: 1100,
-            warnType: 'WARNING',
-            warning: 'WE HAVE A WARNING',
-            origin: 'Worker',
-            lineNumber: 2,
-            source: '',
-            name: 'SKILLS FOR CARE',
-          },
-          {
-            warnCode: 1500,
-            warnType: 'WARNING',
-            warning: 'WE HAVE ANOTHER WARNING',
-            origin: 'Worker',
-            lineNumber: 5,
-            source: '',
-            name: 'SKILLS FOR CARE',
-          },
-        ],
-      },
-      training: {
-        errors: [],
-        warnings: [],
-      },
-    };
-    const errorCount = getByTestId('warningCount');
-    expect(errorCount.textContent).toBe('2');
+    expect(establishmentsErrorCount.textContent).toContain(errorReport.establishments.errors.length.toString());
+    expect(establishmentsWarningCount.textContent).toContain(errorReport.establishments.warnings.length.toString());
+    expect(workersErrorCount.textContent).toContain(errorReport.workers.errors.length.toString());
+    expect(workersWarningCount.textContent).toContain(errorReport.workers.warnings.length.toString());
+    expect(trainingErrorCount.textContent).toContain(errorReport.training.errors.length.toString());
+    expect(trainingWarningCount.textContent).toContain(errorReport.training.warnings.length.toString());
   });
 });

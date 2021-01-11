@@ -5,62 +5,50 @@ import { Observable, of } from 'rxjs';
 
 const { build, fake } = require('@jackfranklin/test-data-bot');
 
-// const benchmarksResponseBuilder = build('BenchmarksResponse', {
-//   fields: {
-//   },
-// });
-// const allRankingsResponseBuilder = build('AllRankingsResponse', {
-//   fields: {
-//     pay: {
-//       currentRank: fake((f) => f.random.number({ min: 1, max: 100 })),
-//       maxRank: fake((f) => f.random.number({ min: 2, max: 100 })),
-//       hasValue: true,
-//       stateMessage: '',
-//     },
-//     turnover: {
-//       currentRank: fake((f) => f.random.number({ min: 1, max: 100 })),
-//       maxRank: fake((f) => f.random.number({ min: 2, max: 100 })),
-//       hasValue: true,
-//       stateMessage: '',
-//     },
-//     sickness: {
-//       currentRank: fake((f) => f.random.number({ min: 1, max: 100 })),
-//       maxRank: fake((f) => f.random.number({ min: 2, max: 100 })),
-//       hasValue: true,
-//       stateMessage: '',
-//     },
-//     qualifications: {
-//       currentRank: fake((f) => f.random.number({ min: 1, max: 100 })),
-//       maxRank: fake((f) => f.random.number({ min: 2, max: 100 })),
-//       hasValue: true,
-//       stateMessage: '',
-//     },
-//   },
-// });
+const bulkUploadErrorResponseBuilder = build('ErrorReportError', {
+  fields: {
+    errCode: fake((f) => f.random.number({ min: 1000, max: 9999 })),
+    errType: 'ERROR',
+    error: fake((f) => f.lorem.sentence()),
+    origin: 'Establishment',
+    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
+    source: '',
+    name: 'SKILLS FOR CARE',
+  },
+});
+
+const bulkUploadWarningResponseBuilder = build('ErrorReportWarning', {
+  fields: {
+    warnCode: fake((f) => f.random.number({ min: 1000, max: 9999 })),
+    warnType: 'ERROR',
+    warning: fake((f) => f.lorem.sentence()),
+    origin: 'Establishment',
+    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
+    source: '',
+    name: 'SKILLS FOR CARE',
+  },
+});
+
+const getErrorsWarnings = () => {
+  const errWarn = {
+    errors: [],
+    warnings: [],
+  };
+  const timesToRunErrors = Math.random() * 100;
+  const timesToRunWarnings = Math.random() * 100;
+  for (let i = 0; i < timesToRunErrors; i++) {
+    errWarn.errors.push(bulkUploadErrorResponseBuilder());
+  }
+  for (let i = 0; i < timesToRunWarnings; i++) {
+    errWarn.warnings.push(bulkUploadWarningResponseBuilder());
+  }
+  return errWarn;
+};
 
 const errorReport = {
-  establishments: {
-    errors: [
-      {
-        errCode: 1100,
-        errType: 'ERROR',
-        error: 'WE HAVE AN ERROR',
-        origin: 'Establishment',
-        lineNumber: 2,
-        source: '',
-        name: 'SKILLS FOR CARE',
-      },
-    ],
-    warnings: [],
-  },
-  workers: {
-    errors: [],
-    warnings: [],
-  },
-  training: {
-    errors: [],
-    warnings: [],
-  },
+  establishments: getErrorsWarnings(),
+  workers: getErrorsWarnings(),
+  training: getErrorsWarnings(),
 };
 
 @Injectable()

@@ -104,6 +104,21 @@ export interface ErrorReport {
   training: ErrorReportErrorsWarnings;
 }
 
+export interface NumberOfErrorsAndWarnings {
+  establishments: {
+    errors: number;
+    warnings: number;
+  };
+  workers: {
+    errors: number;
+    warnings: number;
+  };
+  training: {
+    errors: number;
+    warnings: number;
+  };
+}
+
 export type ValidatedFileType = 'Establishment' | 'Training' | 'Worker';
 
 export type ReportTypeRequestItem = 'establishments' | 'training' | 'workers';
