@@ -6,6 +6,9 @@ const s3 = require('./s3');
 const { buStates } = require('./states');
 const { getErrorWarningArray } = require('../../../utils/errorWarningArray');
 const { EstablishmentFileHeaders } = require('../../../models/BulkImport/csv/establishments');
+const { WorkersFileHeaders } = require('../../../models/BulkImport/csv/workers');
+const { TrainingFileHeaders } = require('../../../models/BulkImport/csv/training');
+
 const excelJS = require('exceljs');
 const moment = require('moment');
 // const excelUtils = require('../../../../utils/excelUtils');
@@ -19,7 +22,7 @@ const reportHeaders = [
   { header: 'Error message', key: 'errorMessage' },
 ];
 
-const allFileHeaders = [];
+let allFileHeaders = [];
 
 const dummyData = {
   establishments: {
@@ -63,8 +66,30 @@ const dummyData = {
       },
     ],
   },
-  workers: { errors: [], warnings: [] },
-  training: { errors: [], warnings: [] },
+  workers: {
+    errors: [
+      {
+        origin: 'Workers',
+        errCode: 1110,
+        errType: 'LOCATION_ID_ERROR',
+        error: 'LOCATIONID has not been supplied',
+        items: [{ lineNumber: 2, name: 'cotton', source: '', worker: 'Justin' }],
+      },
+    ],
+    warnings: [],
+  },
+  training: {
+    errors: [
+      {
+        origin: 'Training',
+        errCode: 1110,
+        errType: 'LOCATION_ID_ERROR',
+        error: 'LOCATIONID has not been supplied',
+        items: [{ lineNumber: 2, name: 'cotton', source: '', worker: 'Justin' }],
+      },
+    ],
+    warnings: [],
+  },
 };
 
 const errorReport = async (req, res) => {
@@ -106,32 +131,27 @@ const errorReport = async (req, res) => {
 const createTableHeader = (currentWorksheet) => {
   const headerRow = currentWorksheet.getRow(1);
   headerRow.font = { bold: true, name: 'Calibri' };
+  currentWorksheet.columns = reportHeaders;
 
-  if (currentWorksheet.name !== 'Workplace') {
-    currentWorksheet.columns = reportHeaders;
-    return;
+  if (currentWorksheet.name === 'Workplace') {
+    currentWorksheet.spliceColumns(3, 1);
   }
-  const filteredArray = reportHeaders.filter(function (col) {
-    return col.key !== 'staff';
-  });
-  currentWorksheet.columns = filteredArray;
 };
 
 const generateHeaderArray = () => {
-  console.log('***********************');
-
-  const workerHeaders = EstablishmentFileHeaders.split(',');
-  allFileHeaders.push(workerHeaders);
-  console.log(allFileHeaders);
+  allFileHeaders = allFileHeaders.concat(EstablishmentFileHeaders.split(','));
+  allFileHeaders = allFileHeaders.concat(WorkersFileHeaders.split(','));
+  allFileHeaders = allFileHeaders.concat(TrainingFileHeaders.split(','));
 };
+
 const getColumnName = (errorMessage) => {
   const wordsArray = errorMessage.split(' ');
-  wordsArray.filter(function (word) {
-    return allFileHeaders.find(word);
-  });
-  console.log(wordsArray);
 
-  return wordsArray.join('/');
+  const result = wordsArray.filter((word) => {
+    return allFileHeaders.includes(word);
+  });
+
+  return result.join('/');
 };
 const fillData = (WS, errorData) => {
   if (!errorData || (errorData.errors.length === 0 && errorData.warnings.length === 0)) {
@@ -139,22 +159,30 @@ const fillData = (WS, errorData) => {
   }
 
   errorData.errors.forEach((data) => {
-    const columnName = getColumnName(data.error);
-    data.items.forEach((item) => {
-      WS.addRow({
-        type: 'ERROR',
-        workplace: item.name,
-        columnHeader: columnName,
-        lineNumber: item.lineNumber,
-        errorMessage: data.error,
-      });
+    printRow(WS, data, 'ERROR');
+  });
+  errorData.warnings.forEach((data) => {
+    printRow(WS, data, 'WARNING');
+  });
+};
+
+const printRow = (WS, data, type) => {
+  const text = type === 'WARNING' ? data.warning : data.error;
+  const columnName = getColumnName(text);
+  data.items.forEach((item) => {
+    const workerID = item.worker ? item.worker : null;
+    WS.addRow({
+      type: type,
+      workplace: item.name,
+      staff: workerID,
+      columnHeader: columnName,
+      lineNumber: item.lineNumber,
+      errorMessage: text,
     });
   });
 };
 
 const generateBUReport = async (req, res) => {
-  console.log('***********************');
-
   // const rawData = await models.establishment.generateDeleteReportData();
   // const establishmentsData = await filterData(rawData);
   generateHeaderArray();
@@ -173,6 +201,8 @@ const generateBUReport = async (req, res) => {
   createTableHeader(trainingSheet);
 
   fillData(workplaceSheet, data.establishments);
+  fillData(staffSheet, data.workers);
+  fillData(trainingSheet, data.training);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader(
@@ -185,7 +215,7 @@ const generateBUReport = async (req, res) => {
 };
 
 router.route('/').get(acquireLock.bind(null, errorReport, buStates.DOWNLOADING));
-router.route('/report').post(generateBUReport);
+router.route('/report').get(generateBUReport);
 
 module.exports = router;
 module.exports.errorReport = errorReport;
