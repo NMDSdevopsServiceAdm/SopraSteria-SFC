@@ -22,13 +22,6 @@
           </div>
         </div>
       </app-inset-text>
-      <ng-container *ngIf="!updateStaffRecords">
-        <app-inset-text [color]="'todo'">
-          <a [routerLink]="['/workplace', workplace.uid, 'flu-jab']" data-testid="flu-jab" (click)="setReturnFluJab()">
-            Who's had a flu vaccination since 1 September 2020?
-          </a>
-        </app-inset-text>
-      </ng-container>
     </ng-container>
     <div *ngIf="workplace">
       <div *ngIf="canAddWorker">
