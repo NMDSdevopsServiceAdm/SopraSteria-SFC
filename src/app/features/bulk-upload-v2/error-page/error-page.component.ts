@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorReport } from '@core/model/bulk-upload.model';
+import { ErrorReport, NumberOfErrorsAndWarnings } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
@@ -49,19 +49,4 @@ export class ErrorPageComponent implements OnInit, OnDestroy {
       },
     };
   }
-}
-
-export interface NumberOfErrorsAndWarnings {
-  establishments: {
-    errors: number;
-    warnings: number;
-  };
-  workers: {
-    errors: number;
-    warnings: number;
-  };
-  training: {
-    errors: number;
-    warnings: number;
-  };
 }

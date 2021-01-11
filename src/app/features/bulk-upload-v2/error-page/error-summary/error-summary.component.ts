@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { NumberOfErrorsAndWarnings } from '@core/model/bulk-upload.model';
 import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
-
-import { NumberOfErrorsAndWarnings } from '../error-page.component';
 
 @Component({
   selector: 'app-bu-error-summary',
