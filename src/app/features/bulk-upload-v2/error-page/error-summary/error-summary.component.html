@@ -9,18 +9,28 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <td class="govuk-table__cell">Workplace</td>
-      <td class="govuk-table__cell" data-testid="errorCount">{{ numberOfErrorsAndWarnings?.establishments.errors }}</td>
-      <td class="govuk-table__cell">{{ numberOfErrorsAndWarnings?.establishments.warnings }}</td>
+      <td class="govuk-table__cell" data-testid="establishmentsErrorCount">
+        {{ numberOfErrorsAndWarnings?.establishments.errors }}
+      </td>
+      <td class="govuk-table__cell" data-testid="establishmentsWarningCount">
+        {{ numberOfErrorsAndWarnings?.establishments.warnings }}
+      </td>
     </tr>
     <tr class="govuk-table__row">
       <td class="govuk-table__cell">Staff</td>
-      <td class="govuk-table__cell">{{ numberOfErrorsAndWarnings?.workers.errors }}</td>
-      <td class="govuk-table__cell" data-testid="warningCount">{{ numberOfErrorsAndWarnings?.workers.warnings }}</td>
+      <td class="govuk-table__cell" data-testid="workersErrorCount">{{ numberOfErrorsAndWarnings?.workers.errors }}</td>
+      <td class="govuk-table__cell" data-testid="workersWarningCount">
+        {{ numberOfErrorsAndWarnings?.workers.warnings }}
+      </td>
     </tr>
     <tr class="govuk-table__row">
       <td class="govuk-table__cell">Training</td>
-      <td class="govuk-table__cell">{{ numberOfErrorsAndWarnings?.training.errors }}</td>
-      <td class="govuk-table__cell">{{ numberOfErrorsAndWarnings?.training.warnings }}</td>
+      <td class="govuk-table__cell" data-testid="trainingErrorCount">
+        {{ numberOfErrorsAndWarnings?.training.errors }}
+      </td>
+      <td class="govuk-table__cell" data-testid="trainingWarningCount">
+        {{ numberOfErrorsAndWarnings?.training.warnings }}
+      </td>
     </tr>
   </tbody>
 </table>
