@@ -119,12 +119,9 @@ describe('DashboardComponent', () => {
     });
   });
 
-  describe('Archive Workplace', () => {
+  describe('Archive Workplace', async () => {
     it('should display a Delete Workplace link if user is an admin', async () => {
       const { component } = await setup(true, 0);
-      console.log(component.fixture.componentInstance.canDeleteEstablishment);
-
-      console.log(component.fixture.componentInstance.subsidiaryCount);
 
       component.getByText('Delete Workplace');
     });
