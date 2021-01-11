@@ -19,6 +19,52 @@ const reportHeaders = [
   { header: 'Error message', key: 'errorMessage' },
 ];
 
+const dummyData = {
+  establishments: {
+    errors: [
+      {
+        origin: 'Establishments',
+        errCode: 1280,
+        errType: 'ALL_JOBS_ERROR',
+        error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
+        items: [{ lineNumber: 2, name: 'cotton', source: '26' }],
+      },
+      {
+        origin: 'Establishments',
+        errCode: 1105,
+        errType: 'PROV_ID_ERROR',
+        error: 'PROVNUM has not been supplied',
+        items: [{ lineNumber: 2, name: 'cotton', source: '' }],
+      },
+      {
+        origin: 'Establishments',
+        errCode: 1110,
+        errType: 'LOCATION_ID_ERROR',
+        error: 'LOCATIONID has not been supplied',
+        items: [{ lineNumber: 2, name: 'cotton', source: '' }],
+      },
+      {
+        origin: 'Establishments',
+        errCode: 1310,
+        errType: 'STARTERS_ERROR',
+        error: 'ALLJOBROLES and STARTERS do not have the same number of items (i.e. numbers and/or semi colons).',
+        items: [{ lineNumber: 2, name: 'cotton', source: '1;2 - 26' }],
+      },
+    ],
+    warnings: [
+      {
+        origin: 'Establishments',
+        warnCode: 2320,
+        warnType: 'LEAVERS_WARNING',
+        warning: 'LEAVERS data you have entered does not fall within the expected range please ensure this is correct',
+        items: [{ lineNumber: 2, name: 'cotton', source: '11' }],
+      },
+    ],
+  },
+  workers: { errors: [], warnings: [] },
+  training: { errors: [], warnings: [] },
+};
+
 const errorReport = async (req, res) => {
   const establishmentsReportURI = `${req.establishmentId}/validation/establishments.validation.json`;
   const workersReportURI = `${req.establishmentId}/validation/workers.validation.json`;
@@ -55,15 +101,10 @@ const errorReport = async (req, res) => {
   }
 };
 
-// const filterData = async (rawData) => {
-// };
-
 const createTableHeader = (currentWorksheet) => {
-  // const headerFont = {
-  //   name: 'Arial',
-  //   size: 11,
-  //   bold: true,
-  // };
+  const headerRow = currentWorksheet.getRow(1);
+  headerRow.font = { bold: true, name: 'Calibri' };
+
   if (currentWorksheet.name !== 'Workplace') {
     currentWorksheet.columns = reportHeaders;
     return;
@@ -74,66 +115,28 @@ const createTableHeader = (currentWorksheet) => {
   currentWorksheet.columns = filtedArray;
 };
 
-// const fillData = (reportData, laData, WS1) => {
-//   let firstRow = true;
-//   let rowStyle = '';
-//   if (!reportData || reportData.length === 0) {
-//     return;
-//   }
+const fillData = (WS, errorData) => {
+  if (!errorData || (errorData.errors.length === 0 && errorData.warnings.length === 0)) {
+    return;
+  }
 
-//   reportData.forEach((establishment) => {
-//     const parentName = establishment.Parent ? establishment.Parent.NameValue : '';
-//     let region = '';
-//     let la = '';
-//     if (laData[establishment.id] && laData[establishment.id].theAuthority) {
-//       region = laData[establishment.id].theAuthority.region;
-//       la = laData[establishment.id].theAuthority.localAuthority;
-//     }
-
-//     const address = concatenateAddress(
-//       establishment.address,
-//       establishment.address2,
-//       establishment.address3,
-//       establishment.town,
-//       establishment.county,
-//     );
-//     WS1.addRow(
-//       [
-//         '',
-//         establishment.NameValue,
-//         address,
-//         establishment.postcode,
-//         establishment.nmdsId.trim(),
-//         establishment.id,
-//         region,
-//         la,
-//         establishment.mainService.name,
-//         establishment.EmployerTypeValue,
-//         excelUtils.formatBool(establishment.isRegulated),
-//         parentName,
-//         new Date(moment(getLastUpdate(establishment)).add(monthsToBeDelete, 'months').format('MM-DD-YYYY')),
-//       ],
-//       rowStyle,
-//     );
-//     if (firstRow) {
-//       // format the first Row, after that exeljs can copy it
-//       let currentColumn = 'B';
-//       for (let i = 0; i < headers.length; i++) {
-//         const currentCell = WS1.getCell(currentColumn + '9');
-//         currentCell.border = excelUtils.fullBorder;
-//         currentCell.alignment = { vertical: 'top', horizontal: 'center' };
-//         currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1);
-//       }
-//       rowStyle = 'i+';
-//       firstRow = false;
-//     }
-//   });
-// };
+  errorData.errors.forEach((data) => {
+    data.items.forEach((item) => {
+      WS.addRow({
+        type: 'ERROR',
+        workplace: item.name,
+        columnHeader: data.errType,
+        lineNumber: item.lineNumber,
+        errorMessage: data.error,
+      });
+    });
+  });
+};
 
 const generateBUReport = async (req, res) => {
   // const rawData = await models.establishment.generateDeleteReportData();
   // const establishmentsData = await filterData(rawData);
-
+  const data = dummyData;
   let workbook = new excelJS.Workbook();
 
   workbook.creator = 'Skills-For-Care';
@@ -147,7 +150,7 @@ const generateBUReport = async (req, res) => {
   createTableHeader(staffSheet);
   createTableHeader(trainingSheet);
 
-  // fillData(establishmentsData, laData, WS1);
+  fillData(workplaceSheet, data.establishments);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader(
@@ -160,7 +163,7 @@ const generateBUReport = async (req, res) => {
 };
 
 router.route('/').get(acquireLock.bind(null, errorReport, buStates.DOWNLOADING));
-router.route('/report').get(generateBUReport);
+router.route('/report').post(generateBUReport);
 
 module.exports = router;
 module.exports.errorReport = errorReport;
