@@ -10,6 +10,15 @@ const excelJS = require('exceljs');
 const moment = require('moment');
 // const excelUtils = require('../../../../utils/excelUtils');
 
+const reportHeaders = [
+  { header: 'Type', key: 'type' },
+  { header: 'Workplace reference (LOCALESTID)', key: 'workplace' },
+  { header: 'Staff reference (UNIQUEWORKERID)', key: 'staff' },
+  { header: 'Column header', key: 'columnHeader' },
+  { header: 'Line number', key: 'lineNumber' },
+  { header: 'Error message', key: 'errorMessage' },
+];
+
 const errorReport = async (req, res) => {
   const establishmentsReportURI = `${req.establishmentId}/validation/establishments.validation.json`;
   const workersReportURI = `${req.establishmentId}/validation/workers.validation.json`;
@@ -55,19 +64,14 @@ const createTableHeader = (currentWorksheet) => {
   //   size: 11,
   //   bold: true,
   // };
-
-  currentWorksheet.columns = [
-    { header: 'Type', key: 'type' },
-    { header: 'Workplace reference (LOCALESTID)', key: 'workplace' },
-    { header: 'Staff reference (UNIQUEWORKERID)', key: 'staff' },
-    { header: 'Column header', key: 'columnHeader' },
-    { header: 'Line number', key: 'lineNumber' },
-    { header: 'Error message', key: 'errorMessage' },
-  ];
-
-  if (currentWorksheet.name == 'Workplace') {
-    currentWorksheet.removeColumns(2, 1);
+  if (currentWorksheet.name !== 'Workplace') {
+    currentWorksheet.columns = reportHeaders;
+    return;
   }
+  const filtedArray = reportHeaders.filter(function (col) {
+    return col.key !== 'staff';
+  });
+  currentWorksheet.columns = filtedArray;
 };
 
 // const fillData = (reportData, laData, WS1) => {
@@ -136,15 +140,20 @@ const generateBUReport = async (req, res) => {
   workbook.properties.date1904 = true;
 
   const workplaceSheet = workbook.addWorksheet('Workplace');
-  // const staffSheet = workbook.addWorksheet('Staff Records');
-  // const trainingSheet = workbook.addWorksheet('Training');
+  const staffSheet = workbook.addWorksheet('Staff Records');
+  const trainingSheet = workbook.addWorksheet('Training');
 
   createTableHeader(workplaceSheet);
+  createTableHeader(staffSheet);
+  createTableHeader(trainingSheet);
 
   // fillData(establishmentsData, laData, WS1);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', 'attachment; filename=' + moment().format('DD-MM-YYYY') + '-deleteReport.xlsx');
+  res.setHeader(
+    'Content-Disposition',
+    'attachment; filename=' + moment().format('DD-MM-YYYY') + '-bulkUploadReport.xlsx',
+  );
 
   await workbook.xlsx.write(res);
   return res.status(200).end();
