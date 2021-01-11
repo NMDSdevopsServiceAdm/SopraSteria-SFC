@@ -32,7 +32,12 @@ const MockWindow = {
 describe('DashboardComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
     const component = await render(DashboardComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        SharedModule,
+        RouterModule,
+        RouterTestingModule.withRoutes([{ path: 'search-establishments', component: DashboardComponent }]),
+        HttpClientTestingModule,
+      ],
       declarations: [HomeTabComponent],
       providers: [
         {
@@ -59,7 +64,8 @@ describe('DashboardComponent', () => {
         },
         {
           provide: AuthService,
-          useClass: MockAuthService,
+          useFactory: MockAuthService.factory(true, isAdmin),
+          deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
         { provide: WindowToken, useValue: MockWindow },
       ],
