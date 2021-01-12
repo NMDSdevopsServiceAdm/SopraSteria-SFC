@@ -1221,15 +1221,5 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.retrieveEstablishmentFluJabs = async function (establishmentId) {
-    return await this.findAll({
-      attributes: ['id', 'uid', 'NameOrIdValue', 'FluJabValue'],
-      where: {
-        establishmentFk: establishmentId,
-        archived: false,
-      },
-    });
-  };
-
   return Worker;
 };

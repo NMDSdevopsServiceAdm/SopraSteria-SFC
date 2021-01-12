@@ -30,7 +30,6 @@ const LinkToParent = require('./linkToParent');
 const DataPermissions = require('./dataPermissions');
 const LocationDetails = require('./locationdetails');
 const MandatoryTraining = require('./mandatoryTraining');
-const FluJab = require('./fluJab');
 const Workers = require('./workers');
 const Benchmarks = require('./benchmarks');
 
@@ -82,7 +81,6 @@ router.use('/:id/linkToParent', LinkToParent);
 router.use('/:id/dataPermissions', DataPermissions);
 router.use('/:id/locationDetails', LocationDetails);
 router.use('/:id/mandatoryTraining', MandatoryTraining);
-router.use('/:id/fluJab', FluJab);
 router.use('/:id/workers', Workers);
 router.use('/:id/benchmarks', Benchmarks);
 
@@ -367,7 +365,6 @@ const updateEstablishment = async (req, res) => {
     return res.status(503).send({});
   }
 };
-
 
 router.route('/:id').get(hasPermission('canViewEstablishment'), getEstablishment);
 router.route('/:id').post(hasPermission('canAddEstablishment'), addEstablishment);
