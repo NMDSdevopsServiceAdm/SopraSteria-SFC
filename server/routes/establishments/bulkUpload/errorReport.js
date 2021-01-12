@@ -23,74 +23,6 @@ const reportHeaders = [
 ];
 
 let allFileHeaders = [];
-//
-// const dummyData = {
-//   establishments: {
-//     errors: [
-//       {
-//         origin: 'Establishments',
-//         errCode: 1280,
-//         errType: 'ALL_JOBS_ERROR',
-//         error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
-//         items: [{ lineNumber: 2, name: 'cotton', source: '26' }],
-//       },
-//       {
-//         origin: 'Establishments',
-//         errCode: 1105,
-//         errType: 'PROV_ID_ERROR',
-//         error: 'PROVNUM has not been supplied',
-//         items: [{ lineNumber: 2, name: 'cotton', source: '' }],
-//       },
-//       {
-//         origin: 'Establishments',
-//         errCode: 1110,
-//         errType: 'LOCATION_ID_ERROR',
-//         error: 'LOCATIONID has not been supplied',
-//         items: [{ lineNumber: 2, name: 'cotton', source: '' }],
-//       },
-//       {
-//         origin: 'Establishments',
-//         errCode: 1310,
-//         errType: 'STARTERS_ERROR',
-//         error: 'ALLJOBROLES and STARTERS do not have the same number of items (i.e. numbers and/or semi colons).',
-//         items: [{ lineNumber: 2, name: 'cotton', source: '1;2 - 26' }],
-//       },
-//     ],
-//     warnings: [
-//       {
-//         origin: 'Establishments',
-//         warnCode: 2320,
-//         warnType: 'LEAVERS_WARNING',
-//         warning: 'LEAVERS data you have entered does not fall within the expected range please ensure this is correct',
-//         items: [{ lineNumber: 2, name: 'cotton', source: '11' }],
-//       },
-//     ],
-//   },
-//   workers: {
-//     errors: [
-//       {
-//         origin: 'Workers',
-//         errCode: 1110,
-//         errType: 'LOCATION_ID_ERROR',
-//         error: 'LOCATIONID has not been supplied',
-//         items: [{ lineNumber: 2, name: 'cotton', source: '', worker: 'Justin' }],
-//       },
-//     ],
-//     warnings: [],
-//   },
-//   training: {
-//     errors: [
-//       {
-//         origin: 'Training',
-//         errCode: 1110,
-//         errType: 'LOCATION_ID_ERROR',
-//         error: 'LOCATIONID has not been supplied',
-//         items: [{ lineNumber: 2, name: 'cotton', source: '', worker: 'Justin' }],
-//       },
-//     ],
-//     warnings: [],
-//   },
-// };
 
 const getErrorReport = async (establishmentId) => {
   const establishmentsReportURI = `${establishmentId}/validation/establishments.validation.json`;
@@ -142,17 +74,17 @@ const createTableHeader = (currentWorksheet) => {
   }
 };
 
-const generateHeaderArray = () => {
-  allFileHeaders = allFileHeaders.concat(EstablishmentFileHeaders.split(','));
-  allFileHeaders = allFileHeaders.concat(WorkersFileHeaders.split(','));
-  allFileHeaders = allFileHeaders.concat(TrainingFileHeaders.split(','));
+const generateHeaderArray = (establishmentFileHeaders, workersFileHeaders, trainingFileHeaders) => {
+  allFileHeaders = allFileHeaders.concat(establishmentFileHeaders.split(','));
+  allFileHeaders = allFileHeaders.concat(workersFileHeaders.split(','));
+  allFileHeaders = allFileHeaders.concat(trainingFileHeaders.split(','));
 };
 
-const getColumnName = (errorMessage) => {
+const getColumnName = (errorMessage, columnNames) => {
   const wordsArray = errorMessage.split(' ');
 
   const result = wordsArray.filter((word) => {
-    return allFileHeaders.includes(word);
+    return columnNames.includes(word);
   });
 
   return result.join('/');
@@ -172,7 +104,7 @@ const fillData = (WS, errorData) => {
 
 const printRow = (WS, data, type) => {
   const text = type === 'WARNING' ? data.warning : data.error;
-  const columnName = getColumnName(text);
+  const columnName = getColumnName(text, allFileHeaders);
   data.items.forEach((item) => {
     const workerID = item.worker ? item.worker : null;
     WS.addRow({
@@ -188,11 +120,11 @@ const printRow = (WS, data, type) => {
 
 const generateBUReport = async (req, res) => {
   if (!req.establishmentId) {
-    console.error('Establishment not provided');
+    console.error('EstablishmentID invalid');
     return res.status(503).end();
   }
 
-  generateHeaderArray();
+  generateHeaderArray(EstablishmentFileHeaders, WorkersFileHeaders, TrainingFileHeaders);
   const data = await getErrorReport(req.establishmentId);
   let workbook = new excelJS.Workbook();
 
@@ -214,7 +146,7 @@ const generateBUReport = async (req, res) => {
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader(
     'Content-Disposition',
-    'attachment; filename=' + moment().format('DD-MM-YYYY') + '-Bulk_Upload_Report.xlsx',
+    'attachment; filename=' + moment().format('DD-MM-YYYY') + '-bulk_upload_report.xlsx',
   );
 
   await workbook.xlsx.write(res);
@@ -226,5 +158,6 @@ router.route('/report').get(generateBUReport);
 
 module.exports = router;
 module.exports.errorReport = errorReport;
+module.exports.getErrorReport = getErrorReport;
 module.exports.generateBUReport = generateBUReport;
-// module.exports.filterData = filterData;
+module.exports.getColumnName = getColumnName;
