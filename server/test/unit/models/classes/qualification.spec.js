@@ -47,9 +47,15 @@ let workerQualificationRecords = {
 
 describe('/server/models/class/qualification.js', () => {
   describe('getQualsCounts', () => {
-    sinon.stub(Qualification, 'fetch').callsFake(() => {
-      return workerQualificationRecords;
-    })
+    beforeEach(() => {
+      sinon.stub(Qualification, 'fetch').callsFake(() => {
+        return workerQualificationRecords;
+      })
+    });
+    afterEach(() => {
+      sinon.restore();
+    });
+
     it('should return updated worker records : Qualification.getQualsCounts', async () => {
       const updateWorkerRecords = await Qualification.getQualsCounts(establishmentId, workerRecords);
       if(updateWorkerRecords){

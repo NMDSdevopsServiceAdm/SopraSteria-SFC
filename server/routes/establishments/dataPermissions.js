@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Establishment = require('../../models/classes/establishment');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 // POST request for change data permissions
-router.route('/').post(async (req, res) => {
+const changeDataPermissions = async (req, res) => {
   try {
     const permissionRequestArr = ['Workplace', 'Workplace and Staff', 'None'];
     if (permissionRequestArr.indexOf(req.body.permissionToSet) === -1) {
@@ -30,6 +31,8 @@ router.route('/').post(async (req, res) => {
     console.error('/establishment/:id/dataPermissions: ERR: ', e.message);
     return res.status(503).send({}); // intentionally an empty JSON response
   }
-});
+};
+
+router.route('/').post(hasPermission('canEditEstablishment'), changeDataPermissions);
 
 module.exports = router;

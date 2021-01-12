@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const pCodeCheck = require('../../utils/postcodeSanitizer');
 
@@ -9,7 +10,7 @@ const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['LocationId', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'Postcode', 'Name'];
 
 // gets current employer type for the known establishment
-router.route('/').get(async (req, res) => {
+const getLocationDetails = async (req, res) => {
   const establishmentId = req.establishmentId;
 
   const showHistory =
@@ -52,10 +53,10 @@ router.route('/').get(async (req, res) => {
     console.error('establishment::cqcLocationId GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
-});
+};
 
 // updates the current employer type for the known establishment
-router.route('/').post(async (req, res) => {
+const updateLocationDetails = async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
@@ -117,6 +118,9 @@ router.route('/').post(async (req, res) => {
       console.error('Unexpected exception: ', err);
     }
   }
-});
+};
+
+router.route('/').get(hasPermission('canViewEstablishment'), getLocationDetails);
+router.route('/').post(hasPermission('canEditEstablishment'), updateLocationDetails);
 
 module.exports = router;

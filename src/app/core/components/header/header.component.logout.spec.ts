@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { fakeAsync, tick, TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -40,7 +40,7 @@ async function renderHeaderComponent(isAdmin: boolean) {
       },
       {
         provide: AuthService,
-        useFactory: MockAuthService.factory(true),
+        useFactory: MockAuthService.factory(true, isAdmin),
         deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
       },
       {

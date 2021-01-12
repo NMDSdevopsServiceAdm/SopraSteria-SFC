@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../models');
 const LaFormatters = require('../../models/api/la');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['Name', 'ShareWithLA'];
 
 // gets current set of Local Authorities to share with for the known establishment
-router.route('/').get(async (req, res) => {
+const getLAs = async (req, res) => {
   const establishmentId = req.establishmentId;
 
   const showHistory =
@@ -49,9 +50,9 @@ router.route('/').get(async (req, res) => {
     console.error('establishment::share GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
-});
+};
 
-router.route('/alt').get(async (req, res) => {
+const getAltLA = async (req, res) => {
   const establishmentId = req.establishmentId;
 
   try {
@@ -131,10 +132,10 @@ router.route('/alt').get(async (req, res) => {
     console.error('establishment::jobs GET - failed', err);
     return res.status(503).send(`Unable to retrive Establishment: ${escape(req.params.id)}`);
   }
-});
+};
 
 // updates the set of Local Authorities to share with for the known establishment
-router.route('/').post(async (req, res) => {
+const updateLAs = async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
@@ -177,9 +178,9 @@ router.route('/').post(async (req, res) => {
       console.error('Unexpected exception: ', err);
     }
   }
-});
+};
 
-router.route('/alt').post(async (req, res) => {
+const updateAltLA = async (req, res) => {
   const establishmentId = req.establishmentId;
   const givenLocalAuthorities = req.body.localAuthorities;
 
@@ -278,7 +279,7 @@ router.route('/alt').post(async (req, res) => {
     console.error('establishment::la POST - failed', err);
     return res.status(503).send(`Unable to update Establishment with local authorities: ${escape(req.params.id)}`);
   }
-});
+};
 
 // TODO - ensure the jobId is valid
 const isValidLAEntry = (entry, allKnownLAs) => {
@@ -315,5 +316,11 @@ const formatLAResponse = (establishment, primaryAuthority = null) => {
 
   return response;
 };
+
+router.route('/').get(hasPermission('canViewEstablishment'), getLAs);
+router.route('/').post(hasPermission('canEditEstablishment'), updateLAs);
+// These don't look to be used so could be removed
+router.route('/alt').get(hasPermission('canEditEstablishment'), getAltLA);
+router.route('/alt').post(hasPermission('canEditEstablishment'), updateAltLA);
 
 module.exports = router;

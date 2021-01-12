@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['CapacityServices', 'Name'];
 
-router.route('/').get(async (req, res) => {
+const getCapacity = async (req, res) => {
   const establishmentId = req.establishmentId;
-  
+
   const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
   const showHistoryTime = req.query.history === 'timeline' ? true : false;
   const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
@@ -35,10 +36,10 @@ router.route('/').get(async (req, res) => {
     console.error('establishment::capacity GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
-});
+};
 
 // updates the current set of capacity services for the known establishment
-router.route('/').post(async (req, res) => {
+const updateCapacity = async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
@@ -70,13 +71,13 @@ router.route('/').post(async (req, res) => {
       } else {
         return res.status(400).send('Unexpected Input.');
       }
-        
+
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    
+
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
       console.error("Establishment::services POST: ", err.message);
       return res.status(400).send(err.safe);
@@ -87,6 +88,9 @@ router.route('/').post(async (req, res) => {
       console.error("Unexpected exception: ", err);
     }
   }
-});
+};
+
+router.route('/').get(hasPermission('canViewEstablishment'), getCapacity);
+router.route('/').post(hasPermission('canEditEstablishment'), updateCapacity);
 
 module.exports = router;
