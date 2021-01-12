@@ -3,6 +3,7 @@ const router = express.Router();
 const models = require('../../models');
 const moment = require('moment-timezone');
 const config = require('../../config/config');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const getApprovalRequest = async (req, res) => {
   const establishmentId = req.params.establishmentId;
@@ -43,7 +44,7 @@ const becomeAParent = require('./becomeAParent');
 router.use('/become-a-parent', becomeAParent);
 
 // urls will look like this: api/approvals/establishment/${establishmentId}?type=becomeaparent&status=pending
-router.route('/establishment/:establishmentId').get(getApprovalRequest);
+router.route('/establishment/:establishmentId').get(hasPermission('canEditEstablishment'), getApprovalRequest);
 
 module.exports = router;
 module.exports.getApprovalRequest = getApprovalRequest;
