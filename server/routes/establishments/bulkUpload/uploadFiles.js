@@ -120,6 +120,7 @@ const uploadedPut = async (req, res) => {
   const establishmentMetadata = new MetaData();
   const workerMetadata = new MetaData();
   const trainingMetadata = new MetaData();
+  const otherMetadata = [];
 
   try {
     // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
@@ -168,6 +169,13 @@ const uploadedPut = async (req, res) => {
         trainingMetadata.size = myfile.size;
         trainingMetadata.key = myfile.key;
         trainingMetadata.lastModified = myfile.lastModified;
+      } else {
+        otherMetadata.push({
+          filename: myfile.filename,
+          key: myfile.key,
+          lastModified: myfile.lastModified,
+          username: myfile.username,
+        });
       }
     });
 
@@ -297,12 +305,13 @@ const uploadedPut = async (req, res) => {
         } else {
           const fileNameElements = myFile.Key.split('/');
           const fileName = fileNameElements[fileNameElements.length - 1];
+          const metadata = otherMetadata.find((m) => m.filename === fileName);
 
           returnData.push(
             generateReturnData({
               filename: fileName,
-              uploaded: myFile.LastModified,
-              username: myFile.username,
+              uploaded: metadata.lastModified,
+              username: metadata.username,
               records: 0,
               errors: 0,
               warnings: 0,

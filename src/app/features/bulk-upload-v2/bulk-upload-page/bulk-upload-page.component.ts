@@ -2,6 +2,7 @@ import { I18nPluralPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { ValidatedFile } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -73,10 +74,15 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
         }
       }),
     );
-  }
-
-  public filesUploaded(value: boolean): void {
-    this.showFilesList = value;
+    this.subscriptions.add(
+      this.bulkUploadService.uploadedFiles$.subscribe((uploadedFiles: ValidatedFile[]) => {
+        if (uploadedFiles) {
+          this.showFilesList = true;
+        } else {
+          this.showFilesList = false;
+        }
+      }),
+    );
   }
 
   /**

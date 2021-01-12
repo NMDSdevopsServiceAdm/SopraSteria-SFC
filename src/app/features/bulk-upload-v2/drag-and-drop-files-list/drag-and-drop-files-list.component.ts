@@ -52,7 +52,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getUploadedFiles();
-    //this.preValidateFilesSubscription();
+    this.preValidateFilesSubscription();
   }
 
   private getUploadedFiles(): void {
@@ -92,27 +92,12 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         .subscribe(
           (response: ValidatedFile[]) => {
             this.validationErrors = [];
-            this.checkForMandatoryFiles(response);
+            console.log(response);
             this.uploadedFiles = response;
           },
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
         ),
     );
-  }
-
-  private checkForMandatoryFiles(response: ValidatedFile[]): void {
-    const files: string[] = response.map((data) => this.bulkUploadFileTypeEnum[data.fileType]);
-
-    if (
-      !files.includes(this.bulkUploadFileTypeEnum.Establishment) ||
-      !files.includes(this.bulkUploadFileTypeEnum.Worker)
-    ) {
-      this.preValidationError = true;
-    } else {
-      this.preValidationError = false;
-    }
-
-    this.bulkUploadService.preValidationError$.next(this.preValidationError);
   }
 
   public getErrorMessage(file: ValidatedFile) {
