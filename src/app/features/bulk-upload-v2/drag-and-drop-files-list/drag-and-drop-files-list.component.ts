@@ -52,7 +52,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getUploadedFiles();
-    this.preValidateFilesSubscription();
+    //this.preValidateFilesSubscription();
   }
 
   private getUploadedFiles(): void {
