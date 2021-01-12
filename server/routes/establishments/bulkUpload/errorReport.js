@@ -187,11 +187,9 @@ const printRow = (WS, data, type) => {
 };
 
 const generateBUReport = async (req, res) => {
-  // const rawData = await models.establishment.generateDeleteReportData();
-  // const establishmentsData = await filterData(rawData);
   if (!req.establishmentId) {
     console.error('Establishment not provided');
-    return res.status(200).end();
+    return res.status(503).end();
   }
 
   generateHeaderArray();
@@ -216,7 +214,7 @@ const generateBUReport = async (req, res) => {
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader(
     'Content-Disposition',
-    'attachment; filename=' + moment().format('DD-MM-YYYY') + '-bulkUploadReport.xlsx',
+    'attachment; filename=' + moment().format('DD-MM-YYYY') + '-Bulk_Upload_Report.xlsx',
   );
 
   await workbook.xlsx.write(res);
