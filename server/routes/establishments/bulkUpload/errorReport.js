@@ -11,7 +11,7 @@ const { TrainingFileHeaders } = require('../../../models/BulkImport/csv/training
 
 const excelJS = require('exceljs');
 const moment = require('moment');
-// const excelUtils = require('../../../../utils/excelUtils');
+const excelUtils = require('../../../utils/excelUtils');
 
 const reportHeaders = [
   { header: 'Type', key: 'type' },
@@ -142,6 +142,10 @@ const generateBUReport = async (req, res) => {
   fillData(workplaceSheet, data.establishments);
   fillData(staffSheet, data.workers);
   fillData(trainingSheet, data.training);
+
+  excelUtils.autoFitColumns(workplaceSheet, 1);
+  excelUtils.autoFitColumns(staffSheet, 1);
+  excelUtils.autoFitColumns(trainingSheet, 1);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader(

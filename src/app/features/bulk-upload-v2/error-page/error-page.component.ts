@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 export class ErrorPageComponent implements OnInit, OnDestroy {
   public errorReport: ErrorReport;
   public workplaceId: string;
+  public now: Date = new Date();
   public numberOfErrorsAndWarnings: NumberOfErrorsAndWarnings;
   private subscriptions: Subscription = new Subscription();
 

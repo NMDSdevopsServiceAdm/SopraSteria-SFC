@@ -12,8 +12,6 @@ const {
   establishmentErrorWarnings,
 } = require('../../../mockdata/bulkUpload');
 
-const Excel = require('exceljs');
-
 describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
   afterEach(() => {
     sinon.restore();
@@ -357,10 +355,6 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
       params: {
         establishmentId,
       },
-      options: {
-        observe: 'response',
-        responseType: 'blob',
-      },
     });
 
     req.establishmentId = establishmentId;
@@ -382,32 +376,6 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
       expect(res._headers['content-type']).to.equal(
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       );
-      console.log(res);
-    });
-    it.only('should return correct data', async () => {
-      sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
-        if (url.includes('establishments')) {
-          return { data: establishmentErrorsWarnings };
-        } else if (url.includes('workers')) {
-          return { data: workerErrorsWarnings };
-        } else {
-          return { data: trainingErrorsWarnings };
-        }
-      });
-      await errorReport.generateBUReport(req, res);
-
-      expect(res.statusCode).to.equal(200);
-      var workbook = new Excel.Workbook();
-      console.log(res);
-
-      workbook.xlsx.readFile(res.body).then(function () {
-        console.log('Heello');
-        var worksheet = workbook.getWorksheet('Workplace');
-        worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
-          console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
-          expect(rowNumber).to.equal(200);
-        });
-      });
     });
   });
 });

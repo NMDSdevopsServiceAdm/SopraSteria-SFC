@@ -8,7 +8,17 @@
       Use this error report to correct the errors in your data files before you select them again for a bulk upload.
     </p>
     <app-bu-error-summary [numberOfErrorsAndWarnings]="numberOfErrorsAndWarnings"></app-bu-error-summary>
-
+    <ul class="govuk-list govuk-list--download">
+      <li>
+        <a
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-bulk_upload_report.xlsx"
+          class="govuk-body-m"
+          (click)="downloadBUReport($event)"
+        >
+          Download error report
+        </a>
+      </li>
+    </ul>
     <table *ngIf="errorReport.establishments.errors" class="govuk-table">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
@@ -46,8 +56,5 @@
         </tr>
       </tbody>
     </table>
-    <a href="/download/sfc-wdf-summary-report.csv" class="govuk-body-m" (click)="downloadBUReport($event)">
-      Bulk Upload Report
-    </a>
   </div>
 </div>
