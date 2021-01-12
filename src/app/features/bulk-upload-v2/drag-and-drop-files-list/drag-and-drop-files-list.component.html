@@ -11,9 +11,13 @@
   </thead>
   <tbody class="govuk-table__body">
     <ng-container *ngFor="let file of uploadedFiles">
-      <tr *ngIf="validationComplete">
+      <tr *ngIf="showValidationStatus">
         <td colspan="5">
-          <app-file-validate-status [warnings]="file.warnings" [errors]="file.errors"></app-file-validate-status>
+          <app-file-validate-status
+            [warnings]="file.warnings"
+            [errors]="file.errors"
+            [fileType]="file.fileType"
+          ></app-file-validate-status>
         </td>
       </tr>
       <tr [id]="getFileId(file)" class="govuk-table__row">
@@ -25,7 +29,7 @@
           </p>
         </td>
         <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
-          {{ file.fileType ? bulkUploadFileTypeEnum[file.fileType] : getFileType(file.filename) }}
+          {{ file.fileType ? bulkUploadFileTypeEnum[file.fileType] : '-' }}
         </td>
         <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
           {{ file.records ? file.records : '-' }}
@@ -46,17 +50,15 @@
   </tbody>
 </table>
 
-<ng-container *ngIf="!preValidationError && !validationComplete">
-  <button type="button" class="govuk-button govuk-!-margin-top-2" (click)="validateFiles()">Validate files</button>
-</ng-container>
+<button *ngIf="showValidateButton" type="button" class="govuk-button govuk-!-margin-top-2" (click)="validateFiles()">
+  Validate files
+</button>
 
-<ng-container *ngIf="validationComplete">
-  <button
-    *ngIf="!hasErrors"
-    type="button"
-    class="govuk-button govuk-button--primary govuk-!-margin-top-2"
-    (click)="beginCompleteUpload()"
-  >
-    Complete the upload
-  </button>
-</ng-container>
+<button
+  *ngIf="showCompleteUploadButton"
+  type="button"
+  class="govuk-button govuk-button--primary govuk-!-margin-top-2"
+  (click)="beginCompleteUpload()"
+>
+  Complete the upload
+</button>

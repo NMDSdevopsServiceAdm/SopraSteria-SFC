@@ -93,7 +93,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
           (response: ValidatedFile[]) => {
             this.validationErrors = [];
             this.checkForMandatoryFiles(response);
-            this.checkForInvalidFiles(response);
             this.uploadedFiles = response;
           },
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
@@ -116,27 +115,9 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.bulkUploadService.preValidationError$.next(this.preValidationError);
   }
 
-  private checkForInvalidFiles(response: ValidatedFile[]) {
-    response.forEach((file) => {
-      if (!file.fileType || file.fileType === null) {
-        file.errors = 1;
-        this.validationErrors.push({
-          name: this.getFileId(file),
-          message: 'The file was not recognised',
-        });
-        this.preValidationError = true;
-      }
-    });
-    this.bulkUploadService.validationErrors$.next(this.validationErrors);
-  }
-
   public getErrorMessage(file: ValidatedFile) {
     const errorDefinition = this.validationErrors.find((validatedFile) => validatedFile.name === this.getFileId(file));
     return errorDefinition ? errorDefinition.message : this.i18nPluralPipe.transform(file.errors, this.pluralMap);
-  }
-
-  public getFileType(fileName: string): string {
-    return this.bulkUploadService.getFileType(fileName);
   }
 
   public validateFiles(): void {
@@ -210,6 +191,21 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       name: this.getFileId(file),
       message: this.i18nPluralPipe.transform(file.errors, this.pluralMap),
     };
+  }
+
+  public get showValidationStatus(): boolean {
+    return this.validationComplete;
+  }
+
+  public get showCompleteUploadButton(): boolean {
+    return this.validationComplete && this.uploadedFiles.every((f) => f.fileType !== null) && !this.hasErrors;
+  }
+
+  public get showValidateButton(): boolean {
+    return (
+      !this.validationComplete ||
+      (this.validationComplete && this.uploadedFiles.some((f) => f.errors || f.fileType === null))
+    );
   }
 
   public downloadFile(event: Event, key: string) {

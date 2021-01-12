@@ -1,4 +1,7 @@
-<p *ngIf="errors === 0" class="govuk-file-validate-status--success">
+<p *ngIf="showInvalidFileMessage" class="govuk-file-validate-status--error">
+  This file was not recognised. Use the guidance to check it's set up correctly.
+</p>
+<p *ngIf="showValidationPassed" class="govuk-file-validate-status--success">
   <ng-container *ngIf="warnings === 0">This file has passed.</ng-container>
   <ng-container *ngIf="warnings" [ngPlural]="warnings">
     <ng-template ngPluralCase="=1">This file has passed, but there is {{ warnings }} warning.</ng-template>
@@ -6,7 +9,7 @@
     <a href="#">View warnings</a></ng-container
   >
 </p>
-<p *ngIf="errors" class="govuk-file-validate-status--error">
+<p *ngIf="showErrorMessages" class="govuk-file-validate-status--error">
   There
   <ng-container [ngPlural]="errors">
     <ng-template ngPluralCase="=1">is {{ errors }} error </ng-template>
