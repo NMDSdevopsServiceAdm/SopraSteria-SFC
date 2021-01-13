@@ -67,6 +67,19 @@ fdescribe('DragAndDropFilesListComponent', () => {
     component.fixture.componentInstance.uploadedFiles = dummyFiles;
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You need to select 2 or 3 files.');
     expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('You need to select 2 or 3 files.');
+  });
+
+  it('should change the error message if are more than 3 files', async () => {
+    const { component } = await setup();
+    const dummyFiles = [ValidatedFile, ValidatedFile, ValidatedFile, ValidatedFile];
+    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('You can only upload 2 or 3 files.');
+    expect(validationMsg.innerHTML).toContain('You can only upload 2 or 3 files.');
   });
 });
