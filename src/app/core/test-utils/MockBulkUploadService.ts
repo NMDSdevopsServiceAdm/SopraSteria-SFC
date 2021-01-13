@@ -5,15 +5,25 @@ import { Observable, of } from 'rxjs';
 
 const { build, fake } = require('@jackfranklin/test-data-bot');
 
+const itemBuilder = build('Item', {
+  lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
+  source: '',
+  name: 'SKILLS FOR CARE',
+});
+
 const bulkUploadErrorResponseBuilder = build('ErrorReportError', {
   fields: {
     errCode: fake((f) => f.random.number({ min: 1000, max: 9999 })),
     errType: 'ERROR',
     error: fake((f) => f.lorem.sentence()),
     origin: 'Establishment',
-    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
-    source: '',
-    name: 'SKILLS FOR CARE',
+    items: [],
+  },
+  postBuild: (errorReportError) => {
+    errorReportError.items = Array(fake((f) => f.random.number({ min: 2, max: 10 })))
+      .fill(undefined)
+      .map((_) => itemBuilder());
+    return errorReportError;
   },
 });
 
@@ -23,9 +33,13 @@ const bulkUploadWarningResponseBuilder = build('ErrorReportWarning', {
     warnType: 'ERROR',
     warning: fake((f) => f.lorem.sentence()),
     origin: 'Establishment',
-    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
-    source: '',
-    name: 'SKILLS FOR CARE',
+    items: [],
+  },
+  postBuild: (errorReportWarning) => {
+    errorReportWarning.items = Array(fake((f) => f.random.number({ min: 2, max: 10 })))
+      .fill(undefined)
+      .map((_) => itemBuilder());
+    return errorReportWarning;
   },
 });
 
