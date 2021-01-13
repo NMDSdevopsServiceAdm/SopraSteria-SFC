@@ -16,6 +16,7 @@ import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-a
 import { BulkUploadSidebarComponent } from './bulk-upload-sidebar/bulk-upload-sidebar.component';
 import { FileErrorMessageComponent } from '@features/bulk-upload-v2/file_error_message/file-error-message.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
+import { ValidationErrorMessageComponent } from './validation-error-message/validation-error-message.component';
 
 @NgModule({
   imports: [
@@ -34,6 +35,7 @@ import { FileValidateStatusComponent } from './file-validate-status/file-validat
     BulkUploadSidebarComponent,
     FileErrorMessageComponent,
     FileValidateStatusComponent,
+    ValidationErrorMessageComponent,
   ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
