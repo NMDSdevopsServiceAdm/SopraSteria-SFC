@@ -23,7 +23,6 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public filesUploading = false;
-  @Output() public filesUploaded: EventEmitter<boolean> = new EventEmitter<boolean>();
   public submitted = false;
   public selectedFiles: File[];
   public bulkUploadStatus: string;
@@ -67,7 +66,6 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
         .getUploadedFiles(this.establishmentService.primaryWorkplace.uid)
         .subscribe((response: ValidatedFile[]) => {
           if (response.length) {
-            this.filesUploaded.emit(true);
             this.bulkUploadService.uploadedFiles$.next(response);
           }
           this.checkForPreValidationError();
@@ -175,7 +173,6 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
         () => {
           this.bulkUploadService.preValidateFiles$.next(true);
           this.filesUploading = false;
-          this.filesUploaded.emit(true);
         },
       );
   }

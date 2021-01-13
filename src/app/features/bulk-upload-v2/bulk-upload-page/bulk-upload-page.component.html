@@ -27,7 +27,7 @@
     <div class="govuk-util__block">
       <h2 class="govuk-heading-m">Select your files</h2>
 
-      <app-drag-and-drop-files-upload (filesUploaded)="filesUploaded($event)"></app-drag-and-drop-files-upload>
+      <app-drag-and-drop-files-upload></app-drag-and-drop-files-upload>
     </div>
   </div>
   <div class="govuk-grid-column-one-third">
@@ -35,6 +35,6 @@
   </div>
 
   <div class="govuk-grid-column-full govuk-!-margin-top-2">
-    <app-drag-and-drop-files-list *ngIf="showFilesList"></app-drag-and-drop-files-list>
+    <app-drag-and-drop-files-list></app-drag-and-drop-files-list>
   </div>
 </div>
