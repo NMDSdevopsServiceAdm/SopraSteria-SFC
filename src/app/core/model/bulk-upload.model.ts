@@ -77,23 +77,26 @@ export interface ValidatedFile {
 }
 export interface ErrorReportError {
   origin: string;
-  lineNumber: number;
   errCode: number;
   errType: string;
-  source: string;
-  name: string;
+  items: Items[];
   error: string;
 }
 
 export interface ErrorReportWarning {
   origin: string;
-  lineNumber: number;
   warnCode: number;
   warnType: string;
-  source: string;
-  name: string;
+  items: Items[];
   warning: string;
 }
+
+export interface Items {
+  lineNumber: number;
+  source: string;
+  name: string;
+}
+
 export interface ErrorReportErrorsWarnings {
   errors: ErrorReportError[];
   warnings: ErrorReportWarning[];

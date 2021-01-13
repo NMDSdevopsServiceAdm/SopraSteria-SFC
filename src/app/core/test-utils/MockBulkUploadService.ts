@@ -6,9 +6,11 @@ import { Observable, of } from 'rxjs';
 const { build, fake } = require('@jackfranklin/test-data-bot');
 
 const itemBuilder = build('Item', {
-  lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
-  source: '',
-  name: 'SKILLS FOR CARE',
+  fields: {
+    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
+    source: '',
+    name: 'SKILLS FOR CARE',
+  },
 });
 
 const bulkUploadErrorResponseBuilder = build('ErrorReportError', {
@@ -20,7 +22,7 @@ const bulkUploadErrorResponseBuilder = build('ErrorReportError', {
     items: [],
   },
   postBuild: (errorReportError) => {
-    errorReportError.items = Array(fake((f) => f.random.number({ min: 2, max: 10 })))
+    errorReportError.items = Array(Math.floor(Math.random() * 10) + 1)
       .fill(undefined)
       .map((_) => itemBuilder());
     return errorReportError;
