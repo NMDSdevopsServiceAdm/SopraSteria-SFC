@@ -8,4 +8,11 @@ import { ErrorReportError } from '@core/model/bulk-upload.model';
 export class ErrorDetailsTableComponent {
   @Input() errors: ErrorReportError[];
   @Input() fileType: string;
+  private openErrors: string[] = [];
+
+  public toggleDetails(errCode: string, event) {
+    event.preventDefault();
+    const indexOfError = this.openErrors.indexOf(errCode);
+    indexOfError > -1 ? this.openErrors.splice(indexOfError, 1) : this.openErrors.push(errCode);
+  }
 }

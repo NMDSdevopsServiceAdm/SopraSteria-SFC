@@ -7,12 +7,21 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <tr class="govuk-table__row" *ngFor="let err of errors">
-      <td class="govuk-table__cell">{{ err.error }}</td>
-      <td class="govuk-table__cell">
-        {{ err.items.length }}
-      </td>
-      <td class="govuk-table__cell"></td>
-    </tr>
+    <ng-container *ngFor="let err of errors">
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">{{ err.error }}</td>
+        <td class="govuk-table__cell">
+          {{ err.items.length }}
+        </td>
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(err.errCode, $event)">{{
+            openErrors.includes(err.errCode) ? 'Close' : 'Open'
+          }}</a>
+        </td>
+      </tr>
+      <tr class="govuk-table__row" *ngIf="openErrors.includes(err.errCode)" class="govuk-panel--gray">
+        <p *ngFor="let item of err.items">For workplace called {{ item.name }} on line {{ item.lineNumber }}</p>
+      </tr>
+    </ng-container>
   </tbody>
 </table>
