@@ -14,23 +14,9 @@
       [fileType]="'Workplaces'"
     ></app-error-details-table>
 
-    <table *ngIf="errorReport?.establishments.warnings" class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Warnings</th>
-          <th scope="col" class="govuk-table__header">Workplaces</th>
-          <th scope="col" class="govuk-table__header">&nbsp;</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr class="govuk-table__row" *ngFor="let err of errorReport.establishments.warnings">
-          <td class="govuk-table__cell">{{ err.warning }}</td>
-          <td class="govuk-table__cell">
-            {{ err.items.length }}
-          </td>
-          <td class="govuk-table__cell"></td>
-        </tr>
-      </tbody>
-    </table>
+    <app-warning-details-table
+      [warnings]="errorReport?.establishments.warnings"
+      [fileType]="'Workplaces'"
+    ></app-warning-details-table>
   </div>
 </div>

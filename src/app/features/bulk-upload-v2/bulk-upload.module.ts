@@ -19,6 +19,7 @@ import { ErrorPageComponent } from './error-page/error-page.component';
 import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/error-summary.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
 import { ErrorDetailsTableComponent } from './error-details-table/error-details-table.component';
+import { WarningDetailsTableComponent } from './warning-details-table/warning-details-table.component';
 
 @NgModule({
   imports: [
@@ -40,6 +41,7 @@ import { ErrorDetailsTableComponent } from './error-details-table/error-details-
     FileErrorMessageComponent,
     FileValidateStatusComponent,
     ErrorDetailsTableComponent,
+    WarningDetailsTableComponent,
   ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })

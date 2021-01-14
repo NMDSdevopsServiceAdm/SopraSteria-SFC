@@ -1,0 +1,18 @@
+<table *ngIf="warnings" class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Warnings</th>
+      <th scope="col" class="govuk-table__header">{{ fileType }}</th>
+      <th scope="col" class="govuk-table__header">&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr class="govuk-table__row" *ngFor="let warn of warnings">
+      <td class="govuk-table__cell">{{ warn.warning }}</td>
+      <td class="govuk-table__cell">
+        {{ warn.items.length }}
+      </td>
+      <td class="govuk-table__cell"></td>
+    </tr>
+  </tbody>
+</table>
