@@ -190,7 +190,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Approvals.becomeAParentRequests = async function (establishmentId) {
-    await this.findOne({
+    return await this.findOne({
       where: {
         EstablishmentID: establishmentId,
         Status: 'Pending',
