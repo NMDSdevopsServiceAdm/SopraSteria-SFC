@@ -15,11 +15,11 @@ import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.c
 import { BulkUploadSidebarComponent } from './bulk-upload-sidebar/bulk-upload-sidebar.component';
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
+import { ErrorDetailsTableComponent } from './error-page/error-details-table/error-details-table.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/error-summary.component';
+import { WarningDetailsTableComponent } from './error-page/warning-details-table/warning-details-table.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
-import { ErrorDetailsTableComponent } from './error-details-table/error-details-table.component';
-import { WarningDetailsTableComponent } from './warning-details-table/warning-details-table.component';
 
 @NgModule({
   imports: [
