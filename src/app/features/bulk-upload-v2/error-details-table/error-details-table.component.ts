@@ -8,4 +8,5 @@ import { ErrorReportError } from '@core/model/bulk-upload.model';
 })
 export class ErrorDetailsTableComponent {
   @Input() errors: ErrorReportError[];
+  @Input() fileType: string;
 }

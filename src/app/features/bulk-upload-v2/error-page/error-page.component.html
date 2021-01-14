@@ -9,7 +9,10 @@
     </p>
     <app-bu-error-summary [numberOfErrorsAndWarnings]="numberOfErrorsAndWarnings"></app-bu-error-summary>
 
-    <app-error-details-table [errors]="errorReport?.establishments.errors"></app-error-details-table>
+    <app-error-details-table
+      [errors]="errorReport?.establishments.errors"
+      [fileType]="'Workplaces'"
+    ></app-error-details-table>
 
     <table *ngIf="errorReport?.establishments.warnings" class="govuk-table">
       <thead class="govuk-table__head">
