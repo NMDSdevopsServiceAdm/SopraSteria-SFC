@@ -18,6 +18,7 @@ import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/dr
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/error-summary.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
+import { ErrorDetailsTableComponent } from './error-details-table/error-details-table.component';
 
 @NgModule({
   imports: [
@@ -38,6 +39,7 @@ import { FileValidateStatusComponent } from './file-validate-status/file-validat
     BulkUploadErrorSummaryComponent,
     FileErrorMessageComponent,
     FileValidateStatusComponent,
+    ErrorDetailsTableComponent,
   ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
