@@ -1,4 +1,4 @@
-<table *ngIf="errors" class="govuk-table">
+<table class="govuk-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th scope="col" class="govuk-table__header">Errors</th>
@@ -7,21 +7,30 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <ng-container *ngFor="let err of errors">
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{{ err.error }}</td>
-        <td class="govuk-table__cell">
-          {{ err.items.length }}
-        </td>
-        <td class="govuk-table__cell govuk-!-font-weight-regular">
-          <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(err.errCode, $event)">{{
-            openErrors.includes(err.errCode) ? 'Close' : 'Open'
-          }}</a>
-        </td>
-      </tr>
-      <tr class="govuk-table__row" *ngIf="openErrors.includes(err.errCode)" class="govuk-panel--gray">
-        <p *ngFor="let item of err.items">For workplace called {{ item.name }} on line {{ item.lineNumber }}</p>
-      </tr>
+    <ng-container *ngIf="errors?.length > 0; else noErrors">
+      <ng-container *ngFor="let err of errors">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">{{ err.error }}</td>
+          <td class="govuk-table__cell">
+            {{ err.items.length }}
+          </td>
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(err.errCode, $event)">{{
+              openErrors.includes(err.errCode) ? 'Close' : 'Open'
+            }}</a>
+          </td>
+        </tr>
+        <tr class="govuk-table__row govuk-panel--gray" scope="row" *ngIf="openErrors.includes(err.errCode)">
+          <p width="100%" *ngFor="let item of err.items">
+            For workplace called {{ item.name }} on line {{ item.lineNumber }}
+          </p>
+        </tr>
+      </ng-container>
     </ng-container>
+    <ng-template #noErrors>
+      <tr class="govuk-table__row" scope="row">
+        <p>There are 0 errors in the Workplace data file.</p>
+      </tr>
+    </ng-template>
   </tbody>
 </table>
