@@ -8,15 +8,21 @@
       Use this error report to correct the errors in your data files before you select them again for a bulk upload.
     </p>
     <app-bu-error-summary [numberOfErrorsAndWarnings]="numberOfErrorsAndWarnings"></app-bu-error-summary>
-
-    <app-error-details-table
-      [errors]="errorReport?.establishments.errors"
-      [fileType]="'Workplaces'"
-    ></app-error-details-table>
-
-    <app-warning-details-table
-      [warnings]="errorReport?.establishments.warnings"
-      [fileType]="'Workplaces'"
-    ></app-warning-details-table>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <app-tabs>
+          <app-tab [title]="'Workplace'">
+            <app-error-details-table
+              [errors]="errorReport?.establishments.errors"
+              [fileType]="'Workplaces'"
+            ></app-error-details-table>
+            <app-warning-details-table
+              [warnings]="errorReport?.establishments.warnings"
+              [fileType]="'Workplaces'"
+            ></app-warning-details-table>
+          </app-tab>
+        </app-tabs>
+      </div>
+    </div>
   </div>
 </div>
