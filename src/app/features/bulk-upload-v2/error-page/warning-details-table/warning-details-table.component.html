@@ -21,9 +21,15 @@
           </td>
         </tr>
         <tr class="govuk-table__row govuk-panel--gray" scope="row" *ngIf="openWarnings.includes(warn.warnCode)">
-          <p width="100%" *ngFor="let item of warn.items">
-            For workplace called {{ item.name }} on line {{ item.lineNumber }}
-          </p>
+          <td colspan="3">
+            <div class="govuk-grid-row govuk-!-margin-2 govuk-!-margin-top-6">
+              <div class="govuk-grid-column-full">
+                <p *ngFor="let item of warn.items">
+                  For workplace called {{ item.name }} on line {{ item.lineNumber }}
+                </p>
+              </div>
+            </div>
+          </td>
         </tr>
       </ng-container>
     </ng-container>
