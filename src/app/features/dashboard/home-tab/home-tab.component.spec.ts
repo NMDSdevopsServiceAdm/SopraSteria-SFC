@@ -88,28 +88,24 @@ describe('HomeTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show flu jab when can add worker', async () => {
-    const { component } = await setup();
-    component.fixture.componentInstance.canEditEstablishment = true;
-    component.fixture.detectChanges();
-
-    expect(component.queryByTestId('flu-jab'));
-  });
-  it('should not show flu jab when cant add worker', async () => {
-    const { component } = await setup();
-    component.fixture.componentInstance.canEditEstablishment = false;
-    component.fixture.detectChanges();
-
-    expect(component.queryByTestId('flu-jab')).toBeNull();
-  });
   it('has Add Workplace Information', async () => {
     // Arrange
     const { component } = await setup();
-
     // Act
     const link = component.getByTestId('add-workplace-info');
 
     // Assert
     expect(link.innerHTML).toContain('Add workplace information');
+    expect(link.getAttribute('href')).toContain('start');
+  });
+  it('Add staff banner has correct title', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.updateStaffRecords = true;
+
+    const link = component.getByTestId('add-staff-banner');
+    // Assert
+    expect(link.innerHTML).toContain('Add staff records');
   });
 });

@@ -557,12 +557,16 @@ class Establishment {
 
     // adddress 1 is mandatory and no more than 40 characters
     const MAX_LENGTH = 40;
-    const postcodeExists = await models.pcodedata.findAll({
-      where: {
-        postcode: myPostcode,
-      },
-      order: [['uprn', 'ASC']],
-    });
+    let postcodeExists = [];
+
+    if (myPostcode && myPostcode.length) {
+      postcodeExists = await models.pcodedata.findAll({
+        where: {
+          postcode: myPostcode,
+        },
+        order: [['uprn', 'ASC']],
+      });
+    }
 
     const localValidationErrors = [];
     if (!myAddress1 || myAddress1.length === 0) {

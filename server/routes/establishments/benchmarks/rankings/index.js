@@ -84,23 +84,31 @@ const getComparisonGroupAndCalculateRanking = async function (
   };
 };
 
-router.route('/pay').get(async (req, res) => {
+const getResponse = async function (req, res, getRankingCallback) {
+  const establishmentId = req.establishmentId;
+
+  const responseData = await getRankingCallback(establishmentId);
+
+  res.status(200).json(responseData);
+};
+
+const getPayResponse = async (req, res) => {
   await getResponse(req, res, getPayRanking);
-});
+};
 
-router.route('/qualifications').get(async (req, res) => {
+const getQualificationsResponse = async (req, res) => {
   await getResponse(req, res, getQualificationsRanking);
-});
+};
 
-router.route('/sickness').get(async (req, res) => {
+const getSicknessResponse = async (req, res) => {
   await getResponse(req, res, getSicknessRanking);
-});
+};
 
-router.route('/turnover').get(async (req, res) => {
+const getTurnoverResponse = async (req, res) => {
   await getResponse(req, res, getTurnoverRanking);
-});
+};
 
-router.route('/').get(async (req, res) => {
+const getRankingsResponse = async (req, res) => {
   const establishmentId = req.establishmentId;
 
   const pay = await getPayRanking(establishmentId);
@@ -116,15 +124,13 @@ router.route('/').get(async (req, res) => {
   };
 
   res.status(200).json(data);
-});
-
-const getResponse = async function (req, res, getRankingCallback) {
-  const establishmentId = req.establishmentId;
-
-  const responseData = await getRankingCallback(establishmentId);
-
-  res.status(200).json(responseData);
 };
+
+router.route('/').get(getRankingsResponse);
+router.route('/pay').get(getPayResponse);
+router.route('/qualifications').get(getQualificationsResponse);
+router.route('/sickness').get(getSicknessResponse);
+router.route('/turnover').get(getTurnoverResponse);
 
 module.exports = router;
 module.exports.pay = getPayRanking;

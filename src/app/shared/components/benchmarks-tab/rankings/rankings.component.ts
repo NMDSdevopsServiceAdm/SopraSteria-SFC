@@ -1,7 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { AllRankingsResponse, BenchmarksResponse, Metric, MetricsContent, NoData, Tile } from '@core/model/benchmarks.model';
+import {
+  AllRankingsResponse,
+  BenchmarksResponse,
+  Metric,
+  MetricsContent,
+  NoData,
+  Tile,
+} from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';

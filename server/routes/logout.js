@@ -6,7 +6,7 @@ const Authorization = require('../utils/security/isAuthenticated');
 const config = require('../config/config');
 
 const logout = async function (username) {
-  const { registrationId, user } = await models.login.findByUsername(username);
+  const { registrationId } = await models.login.findByUsername(username);
 
   const auditEvent = {
     userFk: registrationId,
@@ -19,8 +19,8 @@ const logout = async function (username) {
     .subtract(config.get('satisfactionSurvey.timeSpan'), config.get('satisfactionSurvey.unit'))
     .toDate();
 
-  const logouts = await models.userAudit.countLogouts(user.establishmentId, fromDate);
-  const submissions = await models.satisfactionSurvey.countSubmissions(user.establishmentId, fromDate);
+  const logouts = await models.userAudit.countLogouts(registrationId, fromDate);
+  const submissions = await models.satisfactionSurvey.countSubmissions(registrationId, fromDate);
 
   const showSurvey = logouts <= 3 && submissions == 0;
 

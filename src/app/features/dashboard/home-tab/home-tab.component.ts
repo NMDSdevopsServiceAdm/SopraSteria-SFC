@@ -103,6 +103,9 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         firstTimeLogin: true,
         workplaceID: this?.workplace?.nmdsId ? this.workplace.nmdsId : null,
       });
+      this.window.dataLayer.push({
+        event: 'firstLogin',
+      });
     }
   }
 
@@ -173,10 +176,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
 
   public setReturn(): void {
     this.bulkUploadService.setReturnTo({ url: ['/dashboard'] });
-  }
-
-  public setReturnFluJab(): void {
-    this.establishmentService.setReturnTo({ url: ['/dashboard'] });
   }
 
   /**

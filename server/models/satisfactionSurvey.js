@@ -15,6 +15,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         field: 'EstablishmentFK'
       },
+      userFk: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: '"UserFK"',
+      },
       didYouDoEverything: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -47,13 +52,13 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  SatisfactionSurvey.countSubmissions = async function(establishmentId, fromDate) {
+  SatisfactionSurvey.countSubmissions = async function(userFk, fromDate) {
     return await this.count({
       where: {
         submittedDate: {
           [Op.gte]: fromDate
         },
-        establishmentFk: establishmentId
+        userFk
       },
     });
   }

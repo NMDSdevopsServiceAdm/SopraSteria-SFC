@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['LocalIdentifier'];
@@ -11,7 +12,7 @@ const filteredProperties = ['LocalIdentifier'];
     Otherwise returns 200 for GET and 202 for PUT.
 */
 
-router.route('/').get(async (req, res) => {
+const getLocalIdentifier = async (req, res) => {
   const establishmentId = req.establishmentId;
 
   const showHistory =
@@ -51,9 +52,9 @@ router.route('/').get(async (req, res) => {
     console.error('establishment::localIdentifier GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
-});
+};
 
-router.route('/').post(async (req, res) => {
+const addLocalIdentifier = async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
@@ -91,10 +92,10 @@ router.route('/').post(async (req, res) => {
       return res.status(503).send(err.safe);
     }
   }
-});
+};
 
 // a workaround to allow updating all local identifiers for all given establishments in one transaction
-router.route('/').put(async (req, res) => {
+const updateMultipleLocalIdentifiers = async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
 
@@ -132,6 +133,10 @@ router.route('/').put(async (req, res) => {
     console.error('Establishment::localidentifier PUT: ', err.message);
     return res.status(503).send(err.message);
   }
-});
+};
+
+router.route('/').get(hasPermission('canBulkUpload'), getLocalIdentifier);
+router.route('/').post(hasPermission('canBulkUpload'), addLocalIdentifier);
+router.route('/').put(hasPermission('canBulkUpload'), updateMultipleLocalIdentifiers);
 
 module.exports = router;

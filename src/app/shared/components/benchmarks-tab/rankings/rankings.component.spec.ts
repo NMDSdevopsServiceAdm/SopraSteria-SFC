@@ -16,7 +16,7 @@ import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.m
 import { BenchmarksRankingsComponent } from '@shared/components/benchmarks-tab/rankings/rankings.component';
 import { render } from '@testing-library/angular';
 import * as moment from 'moment';
-import { Observable } from 'rxjs/Rx';
+import { from } from 'rxjs';
 
 const payTileData = {
   workplaceValue: { value: 1000, hasValue: true },
@@ -85,7 +85,7 @@ const getBenchmarksRankingsComponent = async () => {
       {
         provide: ActivatedRoute,
         useValue: new MockActivatedRoute({
-          fragment: Observable.from('pay'),
+          fragment: from('pay'),
         }),
       },
     ],

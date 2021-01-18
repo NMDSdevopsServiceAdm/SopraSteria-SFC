@@ -2,10 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { UserToken } from '@core/model/auth.model';
+import * as Sentry from '@sentry/browser';
 import { isNull } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
-import * as Sentry from '@sentry/browser';
 
 import { EstablishmentService } from './establishment.service';
 import { PermissionsService } from './permissions/permissions.service';
@@ -43,6 +44,10 @@ export class AuthService {
     return this._isAuthenticated$.value;
   }
 
+  public get isAdmin(): boolean {
+    return this.isAuthenticated() && this.userInfo().role === 'Admin';
+  }
+
   public get isOnAdminScreen$(): Observable<boolean> {
     return this._isOnAdminScreen$.asObservable();
   }
@@ -60,7 +65,6 @@ export class AuthService {
   }
 
   public set token(token: string) {
-    console.log('Setting the token in localStorage');
     localStorage.setItem('auth-token', token);
   }
 
@@ -81,12 +85,9 @@ export class AuthService {
   }
 
   public authenticate(username: string, password: string) {
-    console.log('Authservice has been asked to authenticate a user');
     return this.http.post<any>('/api/login/', { username, password }, { observe: 'response' }).pipe(
       tap(
         (response) => {
-          console.log('Got response from API');
-          console.log(response);
           this.token = response.headers.get('authorization');
           Sentry.configureScope((scope) => {
             scope.setUser({
@@ -106,6 +107,12 @@ export class AuthService {
   }
 
   public logout(): void {
+    this.setPreviousUser();
+    this.unauthenticate();
+    this.router.navigate(['/logged-out']);
+  }
+
+  public logoutByUser(): void {
     this.http.post<any>(`/api/logout`, {}).subscribe(
       (data) => {
         this.logoutWithSurvey(data.showSurvey);
@@ -117,12 +124,13 @@ export class AuthService {
   }
 
   private logoutWithSurvey(showSurvey: boolean): void {
-    const wid = this.establishmentService.establishment.uid;
+    const uid = this.userService.loggedInUser.uid;
+    const wid = this.establishmentService.establishmentId;
     this.setPreviousUser();
     this.unauthenticate();
     if (showSurvey) {
       this.router.navigate(['/satisfaction-survey'], {
-        queryParams: { wid },
+        queryParams: { wid, uid },
       });
     } else {
       this.router.navigate(['/logged-out']);
@@ -162,5 +170,9 @@ export class AuthService {
   protected setPreviousUser(): void {
     const data = this.jwt.decodeToken(this.token);
     this.previousUser = data && data.sub ? data.sub : null;
+  }
+
+  public userInfo(): UserToken {
+    return this.jwt.decodeToken(this.token);
   }
 }

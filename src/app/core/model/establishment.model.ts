@@ -130,6 +130,7 @@ export interface Establishment {
   town?: string;
   county?: string;
   locationId?: string;
+  lastBulkUploaded?: string;
 }
 
 export interface UpdateJobsRequest {

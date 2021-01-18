@@ -4,7 +4,6 @@ import { AuthService } from '@core/services/auth.service';
 import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
-import { Roles } from '@core/model/roles.enum';
 
 @Component({
   selector: 'app-header',
@@ -42,7 +41,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public isAdminUser(): boolean {
-    return this.userService.loggedInUser ? this.userService.loggedInUser.role === Roles.Admin : false;
+    return this.authService.isAdmin;
   }
 
   public isOnAdminScreen(): boolean {
@@ -56,6 +55,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public signOut(event): void {
     event.preventDefault();
     this.idleService.clear();
-    this.authService.logout();
+    if (this.isAdminUser()) {
+      this.authService.logout();
+    } else {
+      this.authService.logoutByUser();
+    }
   }
 }

@@ -4,10 +4,10 @@ const express = require('express');
 const router = express.Router();
 const Establishment = require('../../models/classes/establishment');
 const Authorization = require('../../utils/security/isAuthenticated');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
-router.use('/parents', Authorization.isAuthorised);
 // Get request to fetch all the parents name and their post code
-router.route('/parents').get(async (req, res) => {
+const listParents = async (req, res) => {
   try {
     const getParentAndPostcodeDetails = await Establishment.Establishment.fetchAllParentsAndPostcode();
     if (getParentAndPostcodeDetails) {
@@ -19,6 +19,8 @@ router.route('/parents').get(async (req, res) => {
     console.error('/parentLinkingDetails/parents: ERR: ', e.message);
     return res.status(503).send({});
   }
-});
+};
+
+router.route('/parents').get(Authorization.isAuthorised, hasPermission('editEstablishment'), listParents);
 
 module.exports = router;

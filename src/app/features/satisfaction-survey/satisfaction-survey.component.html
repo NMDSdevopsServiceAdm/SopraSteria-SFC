@@ -15,6 +15,7 @@
               <input
                 class="govuk-radios__input"
                 id="didYouDoEverything-yes"
+                name="didYouDoEverything"
                 formControlName="didYouDoEverything"
                 type="radio"
                 value="Yes"
@@ -28,6 +29,7 @@
               <input
                 class="govuk-radios__input"
                 id="didYouDoEverything-some"
+                name="didYouDoEverything"
                 formControlName="didYouDoEverything"
                 type="radio"
                 value="Some"
@@ -63,6 +65,7 @@
                       class="govuk-textarea"
                       [class.govuk-textarea--error]="submitted && form.get('whatStoppedYouDoingEverything').invalid"
                       id="whatStoppedYouDoingEverything"
+                      name="whatStoppedYouDoingEverything"
                       formControlName="whatStoppedYouDoingEverything"
                       rows="5"
                     ></textarea>
@@ -81,6 +84,7 @@
               <input
                 class="govuk-radios__input"
                 id="didYouDoEverything-no"
+                name="didYouDoEverything"
                 formControlName="didYouDoEverything"
                 type="radio"
                 value="No"
@@ -116,6 +120,7 @@
                       class="govuk-textarea"
                       [class.govuk-textarea--error]="submitted && form.get('whatStoppedYouDoingAnything').invalid"
                       id="whatStoppedYouDoingAnything"
+                      name="whatStoppedYouDoingAnything"
                       formControlName="whatStoppedYouDoingAnything"
                       rows="5"
                     ></textarea>
@@ -132,6 +137,8 @@
             </div>
           </div>
         </fieldset>
+      </div>
+      <div class="govuk-form-group">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--s govuk-!-margin-bottom-5">
             Overall, how did you feel about your experience of ASC-WDS today?
@@ -140,6 +147,7 @@
             <input
               class="govuk-radios__input"
               id="howDidYouFeel-verySatisfied"
+              name="howDidYouFeel"
               formControlName="howDidYouFeel"
               type="radio"
               value="Very satisfied"
@@ -150,6 +158,7 @@
             <input
               class="govuk-radios__input"
               id="howDidYouFeel-satisfied"
+              name="howDidYouFeel"
               formControlName="howDidYouFeel"
               type="radio"
               value="Satisfied"
@@ -160,6 +169,7 @@
             <input
               class="govuk-radios__input"
               id="howDidYouFeel-neither"
+              name="howDidYouFeel"
               formControlName="howDidYouFeel"
               type="radio"
               value="Neither"
@@ -172,6 +182,7 @@
             <input
               class="govuk-radios__input"
               id="howDidYouFeel-dissatisfied"
+              name="howDidYouFeel"
               formControlName="howDidYouFeel"
               type="radio"
               value="Dissatisfied"
@@ -182,6 +193,7 @@
             <input
               class="govuk-radios__input"
               id="howDidYouFeel-veryDissatisfied"
+              name="howDidYouFeel"
               formControlName="howDidYouFeel"
               type="radio"
               value="Very dissatisfied"
