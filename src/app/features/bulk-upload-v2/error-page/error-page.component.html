@@ -21,6 +21,26 @@
               [fileType]="'Workplaces'"
             ></app-warning-details-table>
           </app-tab>
+          <app-tab [title]="'Staff'">
+            <app-error-details-table
+              [errors]="errorReport?.workers.errors"
+              [fileType]="'Staff'"
+            ></app-error-details-table>
+            <app-warning-details-table
+              [warnings]="errorReport?.workers.warnings"
+              [fileType]="'Staff'"
+            ></app-warning-details-table>
+          </app-tab>
+          <app-tab [title]="'Training'">
+            <app-error-details-table
+              [errors]="errorReport?.training.errors"
+              [fileType]="'Training'"
+            ></app-error-details-table>
+            <app-warning-details-table
+              [warnings]="errorReport?.training.warnings"
+              [fileType]="'Training'"
+            ></app-warning-details-table>
+          </app-tab>
         </app-tabs>
       </div>
     </div>
