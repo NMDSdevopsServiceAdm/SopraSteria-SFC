@@ -53,7 +53,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getUploadedFiles();
     this.preValidateFilesSubscription();
-    console.log(this.validationComplete);
   }
 
   private getUploadedFiles(): void {
@@ -163,7 +162,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
   public preValidateCheck(): void {
     const fileCount = this.uploadedFiles ? this.uploadedFiles.length : 0;
-    console.log(this.uploadedFiles);
 
     if (fileCount < 2) {
       this.preValidationErrorMessage = 'You need to select 2 or 3 files.';

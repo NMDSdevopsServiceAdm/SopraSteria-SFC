@@ -68,7 +68,6 @@ describe('DragAndDropFilesListComponent', () => {
     component.fixture.componentInstance.uploadedFiles = dummyFiles;
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
-    // component.debug();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You need to select 2 or 3 files.');
     expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('You need to select 2 or 3 files.');

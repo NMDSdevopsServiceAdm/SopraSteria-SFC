@@ -20,11 +20,4 @@ const ValidatedFileBuilder = build('ValidatedFile', {
 export const ValidatedFile = ValidatedFileBuilder();
 
 @Injectable()
-export class MockBulkUploadService extends BulkUploadService {
-  // public getUploadedFiles(establishmentUid, requiredTiles): Observable<BenchmarksResponse> {
-  //   return of(benchmarksData);
-  // }
-  // public getAllRankingData(establishmentUid): Observable<AllRankingsResponse> {
-  //   return of(allRankingsData);
-  // }
-}
+export class MockBulkUploadService extends BulkUploadService {}
