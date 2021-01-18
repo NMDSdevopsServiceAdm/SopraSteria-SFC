@@ -10,15 +10,16 @@ import { WindowRef } from '@core/services/window.ref';
 import { ValidatedFile } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list.component';
 
-fdescribe('DragAndDropFilesListComponent', () => {
+describe('DragAndDropFilesListComponent', () => {
   async function setup() {
     const component = await render(DragAndDropFilesListComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
       providers: [
         {
           provide: WindowRef,
@@ -67,8 +68,9 @@ fdescribe('DragAndDropFilesListComponent', () => {
     component.fixture.componentInstance.uploadedFiles = dummyFiles;
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
-    // const validationMsg = component.getByTestId('validationErrorMsg');
-    // expect(validationMsg.innerHTML).toContain('You need to select 2 or 3 files.');
+    // component.debug();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You need to select 2 or 3 files.');
     expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('You need to select 2 or 3 files.');
   });
 
@@ -78,8 +80,8 @@ fdescribe('DragAndDropFilesListComponent', () => {
     component.fixture.componentInstance.uploadedFiles = dummyFiles;
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
-    // const validationMsg = component.getByTestId('validationErrorMsg');
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You can only upload 2 or 3 files.');
     expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('You can only upload 2 or 3 files.');
-    // expect(validationMsg.innerHTML).toContain('You can only upload 2 or 3 files.');
   });
 });
